@@ -137,7 +137,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             taskManager.claim(tenantId, positionId, taskId);
-            TaskModel currentTask = taskManager.findById(tenantId, taskId);
+            TaskModel currentTask = taskManager.findById(tenantId, taskId).getData();
             List<String> userAndDeptIdList = new ArrayList<>();
             // 获取当前任务的前一个任务
             HistoricTaskInstanceModel hti = historicTaskManager.getThePreviousTask(tenantId, taskId).getData();
@@ -158,7 +158,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
              */
             if (SysVariables.PARALLEL.equals(htiMultiInstance)) {
                 List<TaskModel> taskNextList1 =
-                    taskManager.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId());
+                    taskManager.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId()).getData();
                 for (TaskModel taskModelNext : taskNextList1) {
                     Map<String, Object> val1 = new HashMap<>();
                     val1.put("val", assignee.split(SysVariables.COLON)[0]);
@@ -167,7 +167,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
                 }
             }
         } catch (Exception e) {
-            taskManager.unclaim(tenantId, taskId);
+            taskManager.unClaim(tenantId, taskId);
             LOGGER.error("退回失败{}", e.getMessage());
             return Y9Result.failure("退回失败");
         }

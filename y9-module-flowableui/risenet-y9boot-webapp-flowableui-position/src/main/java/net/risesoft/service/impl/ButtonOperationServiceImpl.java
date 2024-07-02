@@ -60,7 +60,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             map.put("infoOvert", infoOvert);
         }
         variableApi.setVariables(tenantId, taskId, map);
-        TaskModel taskModel = taskApi.findById(tenantId, taskId);
+        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         String processInstanceId = taskModel.getProcessInstanceId();
 
         /*

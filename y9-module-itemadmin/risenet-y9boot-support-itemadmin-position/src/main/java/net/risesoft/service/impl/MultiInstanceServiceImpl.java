@@ -39,7 +39,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         /*
          * 改变流程变量中users的值
          */
-        String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS);
+        String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS).getData();
         List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
         users.add(elementUser);
         Map<String, Object> val = new HashMap<String, Object>();
@@ -68,7 +68,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         /*
          * 改变流程变量中users的值
          */
-        String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS);
+        String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS).getData();
         List<Object> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
         List<String> usersTemp = new ArrayList<>();
         boolean isDelete = false;

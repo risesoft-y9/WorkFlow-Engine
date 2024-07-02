@@ -181,7 +181,7 @@ public class DoingServiceImpl implements DoingService {
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -232,7 +232,7 @@ public class DoingServiceImpl implements DoingService {
                     try {
                         String processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -310,7 +310,7 @@ public class DoingServiceImpl implements DoingService {
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -390,7 +390,7 @@ public class DoingServiceImpl implements DoingService {
                     try {
                         processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -481,7 +481,7 @@ public class DoingServiceImpl implements DoingService {
                     mapTemp.put("taskCreateTime", sdf.format(ardModel.getLastTime()));
                     mapTemp.put(SysVariables.ITEMID, itemId);
 
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");

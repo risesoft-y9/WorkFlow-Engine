@@ -242,7 +242,7 @@ public class MobileV1DocumentController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             if (StringUtils.isNotBlank(taskId)) {// 打开办件
-                TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                 if (taskModel != null && taskModel.getId() != null) {
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
@@ -450,7 +450,7 @@ public class MobileV1DocumentController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             if (StringUtils.isNotBlank(taskId)) {
-                TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                 ProcessParamModel processParam =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 if (taskModel != null && taskModel.getId() != null) {
@@ -465,7 +465,7 @@ public class MobileV1DocumentController {
                     } else {
                         taskId = "";
                         map.put("itembox", new HashMap<String, String>(16));
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         for (TaskModel task : taskList) {
                             taskId = Y9Util.genCustomStr(taskId, task.getId(), SysVariables.COMMA);
                         }
@@ -689,7 +689,7 @@ public class MobileV1DocumentController {
                 draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level,
                     title);
             } else {
-                TaskModel task = taskApi.findById(tenantId, taskId);
+                TaskModel task = taskApi.findById(tenantId, taskId).getData();
                 if (null != task) {
                     processInstanceId = task.getProcessInstanceId();
                 }
@@ -700,9 +700,9 @@ public class MobileV1DocumentController {
                 return Y9Result.failure("发生异常");
             }
             if (StringUtils.isNotBlank(temp_Ids)) {
-                List<String> TempIdList = Y9Util.stringToList(temp_Ids, SysVariables.COMMA);
+                List<String> tempIdList = Y9Util.stringToList(temp_Ids, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", formJsonData);
-                for (String formId : TempIdList) {
+                for (String formId : tempIdList) {
                     formDataApi.saveFormData(tenantId, formId, formJsonData);
                 }
             }

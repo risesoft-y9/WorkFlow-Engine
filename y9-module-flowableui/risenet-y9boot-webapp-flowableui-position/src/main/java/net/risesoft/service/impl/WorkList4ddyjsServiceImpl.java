@@ -123,7 +123,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
                         String taskCreateTime = sdf.format(hpim.getStartTime());
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -194,7 +194,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     try {
                         processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -516,7 +516,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -569,7 +569,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     processInstanceId = hpim.getId();
                     String processDefinitionId = hpim.getProcessDefinitionId();
                     String taskCreateTime = sdf.format(hpim.getStartTime());
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
@@ -706,7 +706,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             String taskId = "";
             String itembox = "done";
             if (!banjie) {
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                 String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                 newmodel.setTaskDefinitionKey(taskList.get(0).getTaskDefinitionKey());
@@ -835,12 +835,12 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("speakInfoNum", 0);
                     mapTemp.put("remindSetting", false);
 
-                    String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
+                    String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
                     if (Boolean.parseBoolean(rollBack)) {// 退回件
                         mapTemp.put("rollBack", true);
                     }
                     try {
-                        String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
+                        String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
                         if (Boolean.parseBoolean(takeBack)) {// 收回件
                             List<HistoricTaskInstanceModel> hlist = historicTaskApi
                                 .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "")

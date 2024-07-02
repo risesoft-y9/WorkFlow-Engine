@@ -36,11 +36,11 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> findTaskListByProcessInstanceId(String processInstanceId, int page, int rows) {
-        Map<String, Object> retMap;
+        Y9Page<TaskModel> taskPage;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            retMap = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, page, rows);
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            taskPage = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, page, rows);
+            List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
@@ -62,8 +62,7 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }

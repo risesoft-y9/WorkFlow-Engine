@@ -269,7 +269,7 @@ public class MobileDocumentController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
             if (StringUtils.isNotBlank(taskId)) {// 打开办件
-                TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                 if (taskModel != null && taskModel.getId() != null) {
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
@@ -501,7 +501,7 @@ public class MobileDocumentController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (StringUtils.isNotBlank(taskId)) {
-                TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                 ProcessParamModel processParam =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 if (taskModel != null && taskModel.getId() != null) {
@@ -516,7 +516,7 @@ public class MobileDocumentController {
                     } else {
                         taskId = "";
                         map.put("itembox", new HashMap<String, String>(16));
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         for (TaskModel task : taskList) {
                             taskId = Y9Util.genCustomStr(taskId, task.getId(), SysVariables.COMMA);
                         }
@@ -771,7 +771,7 @@ public class MobileDocumentController {
                 draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level,
                     title);
             } else {
-                TaskModel task = taskApi.findById(tenantId, taskId);
+                TaskModel task = taskApi.findById(tenantId, taskId).getData();
                 if (null != task) {
                     processInstanceId = task.getProcessInstanceId();
                 }

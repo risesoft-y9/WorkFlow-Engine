@@ -101,7 +101,7 @@ public class MultiInstanceRestController {
         Position position = Y9LoginUserHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = null;
-        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         if (!list.isEmpty()) {
             task = list.get(0);
         }
@@ -175,11 +175,11 @@ public class MultiInstanceRestController {
     @RequestMapping(value = "/setSponsor", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> setSponsor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel taskModel = taskApi.findById(tenantId, taskId);
-        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
+        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
         String sponsorTaskId = "";
         for (TaskModel task : list) {
-            String parallelSponsor = variableApi.getVariableLocal(tenantId, task.getId(), SysVariables.PARALLELSPONSOR);
+            String parallelSponsor = variableApi.getVariableLocal(tenantId, task.getId(), SysVariables.PARALLELSPONSOR).getData();
             if (parallelSponsor != null) {
                 sponsorTaskId = task.getId();
                 break;

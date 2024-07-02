@@ -199,7 +199,7 @@ public class ReminderApiImpl implements ReminderApi {
                 reminder.setTaskId(taskId);
                 reminderService.saveOrUpdate(reminder);
 
-                TaskModel task = taskManager.findById(tenantId, taskId);
+                TaskModel task = taskManager.findById(tenantId, taskId).getData();
                 if (!String.valueOf(task.getPriority()).contains("8")) {
                     taskManager.setPriority(tenantId, taskId, task.getPriority() + 8);
                 }

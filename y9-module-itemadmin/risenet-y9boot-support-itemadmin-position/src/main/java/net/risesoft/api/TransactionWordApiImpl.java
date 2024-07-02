@@ -612,7 +612,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         } else {
             String processDefinitionId;
             if (StringUtils.isNoneBlank(taskId)) {
-                TaskModel task = taskManager.findById(tenantId, taskId);
+                TaskModel task = taskManager.findById(tenantId, taskId).getData();
                 processDefinitionId = task.getProcessDefinitionId();
             } else {
                 SpmApproveItem item = spmApproveItemService.findById(itemId);

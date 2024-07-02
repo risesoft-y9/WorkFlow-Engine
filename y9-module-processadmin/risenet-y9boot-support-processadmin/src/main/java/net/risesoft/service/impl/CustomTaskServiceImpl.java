@@ -33,6 +33,7 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomTaskService;
@@ -324,18 +325,13 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     }
 
     @Override
-    public Map<String, Object> findListByProcessInstanceId(String processInstanceId, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<TaskModel> findListByProcessInstanceId(String processInstanceId, Integer page, Integer rows) {
         long totalCount = taskService.createTaskQuery().processInstanceId(processInstanceId).active().count();
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(processInstanceId).active()
             .orderByTaskCreateTime().asc().listPage((page - 1) * rows, rows);
-
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", taskModelList);
-        return returnMap;
+        int totalPages = (int)(totalCount + rows - 1) / rows;
+        return Y9Page.success(page, totalPages, totalCount, taskModelList);
     }
 
     @Override

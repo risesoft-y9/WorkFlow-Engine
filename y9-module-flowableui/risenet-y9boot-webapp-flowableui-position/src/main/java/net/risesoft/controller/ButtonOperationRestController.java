@@ -197,12 +197,12 @@ public class ButtonOperationRestController {
                 }
             } else {
                 if (multiInstance.equals(SysVariables.PARALLEL)) {// 并行处理
-                    List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     /*
                       改变流程变量中users的值
                      */
                     try {
-                        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
+                        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
                         List<String> users =
                             userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
                         if (users != null && users.isEmpty()) {
@@ -219,13 +219,13 @@ public class ButtonOperationRestController {
                     }
                     taskApi.complete(tenantId, taskId);
                 } else if (multiInstance.equals(SysVariables.SEQUENTIAL)) {// 串行处理
-                    TaskModel task = taskApi.findById(tenantId, taskId);
-                    Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);// 获取流程中当前任务的所有变量
+                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
+                    Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
                     vars.put(SysVariables.TASKSENDER, position.getName());
                     vars.put(SysVariables.TASKSENDERID, position.getId());
                     taskApi.completeWithVariables(tenantId, taskId, vars);
                     List<TaskModel> taskNextList =
-                        taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
+                        taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
                     for (TaskModel taskNext : taskNextList) {
                         Map<String, Object> mapTemp = new HashMap<>(16);
                         mapTemp.put(SysVariables.TASKSENDER, position.getName());
@@ -298,7 +298,7 @@ public class ButtonOperationRestController {
     public Y9Result<String> getHandleSerial(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel taskModel = taskApi.findById(tenantId, taskId);
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             String str = variableApi.getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(),
                 SysVariables.USERS).getData();
             List<String> users = Y9JsonUtil.readValue(str, List.class);
@@ -373,8 +373,8 @@ public class ButtonOperationRestController {
             retMap.put("employeeName", position.getName());
             retMap.put("employeeMobile", person.getMobile());
             List<Map<String, Object>> listMap = new ArrayList<>();
-            Map<String, Object> variables = variableApi.getVariables(tenantId, taskId);
-            TaskModel taskModel = taskApi.findById(tenantId, taskId);
+            Map<String, Object> variables = variableApi.getVariables(tenantId, taskId).getData();
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
             String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
                 taskModel.getTaskDefinitionKey());
@@ -441,7 +441,7 @@ public class ButtonOperationRestController {
                         Date endTime = hai.getEndTime();
                         String parallelSponsorObj;
                         if (null == endTime) {
-                            parallelSponsorObj = variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor");
+                            parallelSponsorObj = variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor").getData();
                         } else {
                             HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
                                 .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "").getData();
@@ -484,11 +484,11 @@ public class ButtonOperationRestController {
     public Y9Result<String> handleParallel(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             if (task == null) {
                 return Y9Result.failure("该件已被办理！");
             }
-            List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
+            List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
             if (list.size() == 1) {// 并行状态且不区分主协办时，多人同时打开办理页面，当其他人都已办理完成，最后一人需提示已是并行办理的最后一人，需刷新重新办理。
                 return Y9Result.failure("您是并行办理的最后一人，请刷新后重新办理。");
             }
@@ -496,7 +496,7 @@ public class ButtonOperationRestController {
              * 改变流程变量中users的值
              */
             try {
-                String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
+                String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
                 List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
                 if (users != null && users.isEmpty()) {
                     List<String> usersTemp = new ArrayList<>();
@@ -528,8 +528,8 @@ public class ButtonOperationRestController {
     public Y9Result<String> handleSerial(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel task = taskApi.findById(tenantId, taskId);
-            Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);// 获取流程中当前任务的所有变量
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
             taskApi.completeWithVariables(tenantId, taskId, vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
@@ -577,7 +577,7 @@ public class ButtonOperationRestController {
                     return Y9Result.failure("您好，该件已被签收");
                 }
             }
-            Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
+            Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
             ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
             for (Object obj : users) {
                 String user = obj.toString();
@@ -637,7 +637,7 @@ public class ButtonOperationRestController {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<String> users = new ArrayList<>();
             List<String> usersTemp = Y9Util.stringToList(userChoice, ";");
             for (String user : usersTemp) {
@@ -675,8 +675,8 @@ public class ButtonOperationRestController {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            TaskModel task = taskApi.findById(tenantId, taskId);
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
             String type =
                 processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
@@ -823,7 +823,7 @@ public class ButtonOperationRestController {
     public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
-            TaskModel taskModel = taskApi.findById(tenantId, taskId);
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             String routeToTaskId = taskModel.getTaskDefinitionKey();
             String processInstanceId = taskModel.getProcessInstanceId();
             String processDefinitionKey = taskModel.getProcessDefinitionId().split(":")[0];
@@ -833,7 +833,7 @@ public class ButtonOperationRestController {
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             Map<String, Object> variables = new HashMap<>(16);
 
-            String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID);
+            String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID).getData();
             String userChoice = "6:" + user;
 
             String multiInstance =
@@ -865,7 +865,7 @@ public class ButtonOperationRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            TaskModel taskModel = taskApi.findById(tenantId, taskId);
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             buttonOperation4PositionApi.specialComplete(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
             List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId).getData();
@@ -930,7 +930,7 @@ public class ButtonOperationRestController {
     public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            taskApi.unclaim(tenantId, taskId);
+            taskApi.unClaim(tenantId, taskId);
             return Y9Result.successMsg("撤销签收成功");
         } catch (Exception e) {
             LOGGER.error("unclaim error", e);

@@ -203,7 +203,7 @@ public class AsyncHandleService {
         throws Exception {
         Position position = Y9LoginUserHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = position.getId();
-        TaskModel task = taskManager.findById(tenantId, taskId);
+        TaskModel task = taskManager.findById(tenantId, taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
             processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
@@ -211,7 +211,7 @@ public class AsyncHandleService {
         }
         // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
         if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-            List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+            List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
             for (TaskModel taskNext : taskNextList1) {
                 if (!(taskId.equals(taskNext.getId()))) {
                     taskManager.complete(tenantId, taskNext.getId());
@@ -261,7 +261,6 @@ public class AsyncHandleService {
      * 发送后异步处理
      *
      * @param tenantId
-     * @param userId
      * @param taskId
      * @param processInstanceId
      * @param multiInstance
@@ -286,7 +285,7 @@ public class AsyncHandleService {
                 }
             }
             // 保存下个任务节点的时限
-            List<TaskModel> nextTaskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+            List<TaskModel> nextTaskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
             for (TaskModel taskNext : nextTaskList) {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.TASKSENDER, position.getName());

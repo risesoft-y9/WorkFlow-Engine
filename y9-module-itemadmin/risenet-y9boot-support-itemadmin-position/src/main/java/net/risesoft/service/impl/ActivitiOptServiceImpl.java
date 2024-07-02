@@ -42,7 +42,7 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
                 runtimeManager.startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map);
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
-            task = taskManager.findByProcessInstanceId(tenantId, processInstanceId).get(0);
+            task = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData().get(0);
         } catch (Exception e) {
             LOGGER.error("启动流程失败", e);
         }

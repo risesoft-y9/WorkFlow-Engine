@@ -104,7 +104,8 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -150,7 +151,8 @@ public class MonitorServiceImpl implements MonitorService {
                             i += 1;
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                        List<IdentityLinkModel> iList =
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
@@ -173,10 +175,12 @@ public class MonitorServiceImpl implements MonitorService {
                     String assignee = task.getAssignee();
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
-                            assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);// 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            // 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);
                             Position personTemp = positionApi.get(tenantId, assignee).getData();
                             if (personTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
+                                // 并行时，领导选取时存在顺序，因此这里也存在顺序
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                                 i += 1;
                             }
                         }
@@ -232,7 +236,8 @@ public class MonitorServiceImpl implements MonitorService {
                             taskId = task.getId();
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                        List<IdentityLinkModel> iList =
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
@@ -323,7 +328,7 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -412,7 +417,7 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put("status", 1);
                     mapTemp.put("taskDueDate", "");
 
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
@@ -536,7 +541,7 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put("taskName", "已办结");
                     mapTemp.put("taskAssignee", completer);
                 } else {
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String assigneeNames = listTemp.get(2);
                     mapTemp.put("taskName", taskList.get(0).getName());
