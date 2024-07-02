@@ -306,7 +306,7 @@ public class DocumentRestController {
             }
             for (Map<String, Object> nmap : list) {
                 long todoCount = processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, positionId,
-                    (String)nmap.get("systemName"));
+                    (String)nmap.get("systemName")).getData();
                 nmap.put("todoCount", todoCount);
                 List<ItemModel> itemList = new ArrayList<>();
                 for (ItemModel itemModel : listMap) {

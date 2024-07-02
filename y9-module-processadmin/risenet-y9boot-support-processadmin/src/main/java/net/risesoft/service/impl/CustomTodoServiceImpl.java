@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.CustomTodoService;
 import net.risesoft.util.FlowableModelConvertUtil;
 
@@ -59,34 +60,25 @@ public class CustomTodoServiceImpl implements CustomTodoService {
     }
 
     @Override
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+    public Y9Page<TaskModel> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey);
         List<Task> taskList =
             taskService.createTaskQuery().taskInvolvedUser(userId).active().processDefinitionKey(processDefinitionKey)
                 .orderByTaskPriority().desc().orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", taskModelList);
-        return returnMap;
+        int totalPages = (int)(totalCount + rows - 1) / rows;
+        return Y9Page.success(page, totalPages, totalCount, taskModelList);
     }
 
     @Override
-    public Map<String, Object> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
+    public Y9Page<TaskModel> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserIdAndSystemName(userId, systemName);
         List<Task> taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
             .orderByTaskPriority().desc().orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", taskModelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, taskModelList);
     }
 
     @Override
@@ -106,9 +98,8 @@ public class CustomTodoServiceImpl implements CustomTodoService {
     }
 
     @Override
-    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+    public Y9Page<TaskModel> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount =
             taskService.createTaskQuery().taskInvolvedUser(userId).active().processDefinitionKey(processDefinitionKey)
                 .processVariableValueLike("searchTerm", "%" + searchTerm + "%").count();
@@ -116,27 +107,18 @@ public class CustomTodoServiceImpl implements CustomTodoService {
             .processDefinitionKey(processDefinitionKey).processVariableValueLike("searchTerm", "%" + searchTerm + "%")
             .orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", taskModelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, taskModelList);
     }
 
     @Override
-    public Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+    public Y9Page<TaskModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
             .processVariableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<Task> taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
             .processVariableValueLike("searchTerm", "%" + searchTerm + "%").orderByTaskCreateTime().desc()
             .listPage((page - 1) * rows, rows);
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", taskModelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, taskModelList);
     }
 }

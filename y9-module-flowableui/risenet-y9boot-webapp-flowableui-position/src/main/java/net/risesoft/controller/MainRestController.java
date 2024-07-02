@@ -36,6 +36,7 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.model.processadmin.Y9FlowableCountModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -134,10 +135,10 @@ public class MainRestController {
                 map.put("processDefinitionKey", processDefinitionKey);
                 draftCount = draft4PositionApi.getDraftCount(tenantId, positionId, itemId).getData();
                 draftRecycleCount = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId).getData();
-                Map<String, Object> countMap =
-                    processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
-                todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
-                doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
+                Y9FlowableCountModel flowableCountModel = processTodoApi
+                    .getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey).getData();
+                todoCount = flowableCountModel.getTodoCount();
+                doingCount = flowableCountModel.getDoingCount();
                 try {
                     doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId).getData();
                 } catch (Exception e) {
@@ -201,10 +202,10 @@ public class MainRestController {
         try {
             draftCount = draft4PositionApi.countBySystemName(tenantId, positionId, systemName).getData();
             // draftRecycleCount = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, systemName);
-            Map<String, Object> countMap =
-                processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName);
-            todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
-            doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
+            Y9FlowableCountModel flowableCountModel =
+                processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName).getData();
+            todoCount = flowableCountModel.getTodoCount();
+            doingCount = flowableCountModel.getDoingCount();
             try {
                 doneCount = officeDoneInfo4PositionApi.countByPositionIdAndSystemName(tenantId, positionId, systemName)
                     .getData();
@@ -326,14 +327,18 @@ public class MainRestController {
             map.put("id", p.getId());
             map.put("name", p.getName());
             long todoCount = 0;
-            if (StringUtils.isNotBlank(count)) {// 是否统计待办数量
-                if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
+            // 是否统计待办数量
+            if (StringUtils.isNotBlank(count)) {
+                // 单个事项获取待办数量
+                if (StringUtils.isNotBlank(itemId)) {
                     ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
-                    todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(),
-                        itemModel.getWorkflowGuid());
+                    todoCount = processTodoApi.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, p.getId(),
+                        itemModel.getWorkflowGuid()).getData();
                     allCount = allCount + todoCount;
-                } else if (StringUtils.isNotBlank(systemName)) {// 单个事项获取待办数量
-                    todoCount = processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName);
+                } else if (StringUtils.isNotBlank(systemName)) {
+                    // 单个事项获取待办数量
+                    todoCount =
+                        processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName).getData();
                     allCount = allCount + todoCount;
                 } else {// 工作台获取所有待办数量
                     try {
@@ -358,15 +363,18 @@ public class MainRestController {
                         map1.put("id", position.getId());
                         map1.put("name", position.getName());
                         long todoCount1 = 0;
-                        if (StringUtils.isNotBlank(count)) {// 是否统计待办数量
-                            if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
+                        if (StringUtils.isNotBlank(count)) {
+                            // 是否统计待办数量
+                            if (StringUtils.isNotBlank(itemId)) {
+                                // 单个事项获取待办数量
                                 ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
-                                todoCount1 = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId,
-                                    position.getId(), itemModel.getWorkflowGuid());
+                                todoCount1 = processTodoApi.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId,
+                                    position.getId(), itemModel.getWorkflowGuid()).getData();
                                 allCount = allCount + todoCount1;
-                            } else if (StringUtils.isNotBlank(systemName)) {// 单个事项获取待办数量
+                            } else if (StringUtils.isNotBlank(systemName)) {
+                                // 单个事项获取待办数量
                                 todoCount1 = processTodoApi.getTodoCountByUserIdAndSystemName(tenantId,
-                                    position.getId(), systemName);
+                                    position.getId(), systemName).getData();
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {

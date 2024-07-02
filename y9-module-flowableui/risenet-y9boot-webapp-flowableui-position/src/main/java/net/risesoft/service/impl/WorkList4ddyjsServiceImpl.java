@@ -123,7 +123,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
                         String taskCreateTime = sdf.format(hpim.getStartTime());
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -155,16 +156,12 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put("processInstanceId", processInstanceId);
                         mapTemp.put("speakInfoNum", 0);
                         mapTemp.put("remindSetting", false);
-                        // int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId,
-                        // processInstanceId);
-                        // mapTemp.put("follow", countFollow > 0 ? true : false);
-
                         mapTemp.put("meeting", false);
-                        if (item.getSystemName().equals("gongwenguanli")) {
+                        if ("gongwenguanli".equals(item.getSystemName())) {
                             OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
                                 .findByProcessInstanceId(tenantId, processInstanceId).getData();
                             mapTemp.put("meeting",
-                                officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
+                                officeDoneInfo.getMeeting() != null && "1".equals(officeDoneInfo.getMeeting()));
                         }
                     } catch (Exception e) {
                         LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -194,7 +191,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     try {
                         processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -227,7 +225,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put("speakInfoNum", 0);
 
                         mapTemp.put("meeting", false);
-                        if (item.getSystemName().equals("gongwenguanli")) {
+                        if ("gongwenguanli".equals(item.getSystemName())) {
                             OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
                                 .findByProcessInstanceId(tenantId, processInstanceId).getData();
                             mapTemp.put("meeting",
@@ -516,7 +514,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -727,35 +726,34 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return Y9Page.success(y9page.getCurrPage(), y9page.getTotalPages(), y9page.getTotal(), list1, "获取成功");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows) {
-        Map<String, Object> retMap;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            Y9Page<TaskModel> taskPage;
             if (StringUtils.isBlank(searchTerm)) {
                 if (StringUtils.isNotBlank(searchItemId)) {
                     ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    retMap = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), page, rows);
                 } else {
-                    retMap = processTodoApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                    taskPage = processTodoApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
                         page, rows);
                 }
             } else {
                 if (StringUtils.isNotBlank(searchItemId)) {
                     ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), searchTerm, page, rows);
                 } else {
-                    retMap = processTodoApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                        searchTerm, page, rows);
+                    taskPage = processTodoApi.searchListByUserIdAndSystemName(tenantId, positionId,
+                        item.getSystemName(), searchTerm, page, rows);
                 }
             }
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
@@ -827,7 +825,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("isForwarding", false);
                     TaskVariableModel taskVariableModel =
                         taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding").getData();
-                    if (taskVariableModel != null) {// 是否正在发送标识
+                    // 是否正在发送标识
+                    if (taskVariableModel != null) {
                         mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
                     mapTemp.put(SysVariables.LEVEL, level);
@@ -836,11 +835,13 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("remindSetting", false);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-                    if (Boolean.parseBoolean(rollBack)) {// 退回件
+                    // 退回件
+                    if (Boolean.parseBoolean(rollBack)) {
                         mapTemp.put("rollBack", true);
                     }
                     try {
-                        String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+                        String takeBack =
+                            variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
                         if (Boolean.parseBoolean(takeBack)) {// 收回件
                             List<HistoricTaskInstanceModel> hlist = historicTaskApi
                                 .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "")
@@ -864,8 +865,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办信息异常", e);
         }
