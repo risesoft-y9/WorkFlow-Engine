@@ -90,7 +90,7 @@ public interface Draft4PositionApi {
     @GetMapping("/getDraftList")
     Y9Page<Map<String, Object>> getDraftList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("page") int page, @RequestParam("rows") int rows,
-        @RequestParam("title") String title, @RequestParam("itemId") String itemId,
+        @RequestParam(value = "title", required = false) String title, @RequestParam("itemId") String itemId,
         @RequestParam("delFlag") boolean delFlag);
 
     /**
@@ -108,7 +108,7 @@ public interface Draft4PositionApi {
     @GetMapping("/getDraftListBySystemName")
     Y9Page<DraftModel> getDraftListBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("page") int page, @RequestParam("rows") int rows,
-        @RequestParam("title") String title, @RequestParam("systemName") String systemName,
+        @RequestParam(value = "title", required = false) String title, @RequestParam("systemName") String systemName,
         @RequestParam("delFlag") boolean delFlag);
 
     /**

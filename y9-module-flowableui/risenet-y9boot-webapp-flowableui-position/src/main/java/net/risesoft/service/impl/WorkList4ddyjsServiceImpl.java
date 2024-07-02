@@ -342,7 +342,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                             i += 1;
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId());
+                        List<IdentityLinkModel> iList =
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
@@ -419,7 +420,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                             taskId = task.getId();
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId());
+                        List<IdentityLinkModel> iList =
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
@@ -841,7 +843,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
                         if (Boolean.parseBoolean(takeBack)) {// 收回件
                             List<HistoricTaskInstanceModel> hlist = historicTaskApi
-                                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "").getData();
+                                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "")
+                                .getData();
                             if (hlist.get(0).getTaskDefinitionKey().equals(task.getTaskDefinitionKey())) {// 起草收回件，可删除
                                 mapTemp.put("takeBack", true);
                             }

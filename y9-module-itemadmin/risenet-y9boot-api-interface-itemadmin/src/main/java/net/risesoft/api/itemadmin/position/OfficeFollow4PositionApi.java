@@ -77,7 +77,8 @@ public interface OfficeFollow4PositionApi {
     @GetMapping("/getFollowListBySystemName")
     Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName,
-        @RequestParam("searchName") String searchName, @RequestParam("page") int page, @RequestParam("rows") int rows);
+        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("page") int page,
+        @RequestParam("rows") int rows);
 
     /**
      * 获取关注列表
@@ -91,8 +92,9 @@ public interface OfficeFollow4PositionApi {
      */
     @GetMapping("/getOfficeFollowList")
     Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName,
-        @RequestParam("page") int page, @RequestParam("rows") int rows);
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("page") int page,
+        @RequestParam("rows") int rows);
 
     /**
      * 保存办件关注信息

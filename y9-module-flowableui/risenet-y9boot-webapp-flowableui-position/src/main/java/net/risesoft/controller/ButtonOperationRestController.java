@@ -92,7 +92,7 @@ public class ButtonOperationRestController {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId);
+            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
             for (IdentityLinkModel il : list) {
                 if ("assignee".equals(il.getType())) {// 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
                     return Y9Result.failure("您好，该件已被签收");
@@ -409,8 +409,8 @@ public class ButtonOperationRestController {
                         isEnd = false;
                     } else if (isEnd) {
                         map.put("status", "完成");
-                        List<HistoricTaskInstanceModel> htims =
-                            historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "");
+                        List<HistoricTaskInstanceModel> htims = historictaskApi
+                            .getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "").getData();
                         for (HistoricTaskInstanceModel hai : htims) {
                             if (hai.getAssignee().equals(users.get(i))) {// 获取串行多人处理的完成时间
                                 map.put("endTime", sdf.format(hai.getEndTime()));
@@ -427,7 +427,7 @@ public class ButtonOperationRestController {
             }
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 List<HistoricTaskInstanceModel> htims =
-                    historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "");
+                    historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "").getData();
                 for (HistoricTaskInstanceModel hai : htims) {
                     if (hai == null) {
                         continue;
@@ -571,7 +571,7 @@ public class ButtonOperationRestController {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId);
+            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
             for (IdentityLinkModel il : list) {
                 if ("assignee".equals(il.getType())) {// 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
                     return Y9Result.failure("您好，该件已被签收");

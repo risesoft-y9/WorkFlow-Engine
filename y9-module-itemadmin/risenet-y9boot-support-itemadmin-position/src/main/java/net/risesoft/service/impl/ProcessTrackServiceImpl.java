@@ -185,8 +185,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     }*/
                     HistoricVariableInstanceModel zhuBan = null;
                     try {
-                        zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, taskId,
-                            SysVariables.PARALLELSPONSOR, year).getData();
+                        zhuBan = historicVariableApi
+                            .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -200,7 +200,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             } else {// 处理单实例未签收的办理人显示
                 List<IdentityLinkModel> iList = null;
                 try {
-                    iList = identityManager.getIdentityLinksForTask(tenantId, taskId);
+                    iList = identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
                 } catch (Exception e) {
                 }
                 if (null != iList && !iList.isEmpty()) {
@@ -410,8 +410,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         Position ownerUser = positionApi.get(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                         employeeName = ownerUser.getName();
                     }
-                    HistoricVariableInstanceModel zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId,
-                        taskId, SysVariables.PARALLELSPONSOR, year).getData();
+                    HistoricVariableInstanceModel zhuBan = historicVariableApi
+                        .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
                     if (zhuBan != null) {
                         history.setAssignee(employeeName + "(主办)");
                     } else {
@@ -420,7 +420,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     history.setAssigneeId(assignee);
                 }
             } else {// 处理单实例未签收的办理人显示
-                List<IdentityLinkModel> iList = identityManager.getIdentityLinksForTask(tenantId, taskId);
+                List<IdentityLinkModel> iList = identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
                 if (!iList.isEmpty()) {
                     StringBuilder assignees = new StringBuilder();
                     int j = 0;
@@ -481,8 +481,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String name = items.get(items.size() - 1).getName();
         String seq = "串行办理";
         if (name.equals(seq)) {
-            HistoricVariableInstanceModel users = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId,
-                processInstanceId, SysVariables.USERS, "").getData();
+            HistoricVariableInstanceModel users = historicVariableApi
+                .getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "").getData();
             List<String> list = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<>();
             boolean start = false;
             String assigneeId = items.get(items.size() - 1).getAssigneeId();

@@ -74,8 +74,8 @@ public interface ItemDoingApi {
      */
     @GetMapping("/searchBySystemName")
     Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName, @RequestParam("tableName") String tableName,
-        @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam("systemName") String systemName, @RequestParam(value = "tableName") String tableName,
+        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 
     /**
@@ -94,6 +94,7 @@ public interface ItemDoingApi {
     @GetMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
-        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam(value = "tableName") String tableName,
+        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows) throws Exception;
 }

@@ -49,7 +49,7 @@ public interface ReceiveDeptAndPersonApi {
      */
     @GetMapping("/getReceiveDeptTreeById")
     Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("name") String name);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "name", required = false) String name);
 
     /**
      *

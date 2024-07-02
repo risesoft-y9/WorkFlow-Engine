@@ -109,7 +109,7 @@ public class ReminderServiceImpl implements ReminderService {
             model.setUserName("无");
             model.setTaskName("无");
 
-            historicTaskTemp = historicTaskManager.getById(tenantId, reminder.getTaskId());
+            historicTaskTemp = historicTaskManager.getById(tenantId, reminder.getTaskId()).getData();
             if (null != historicTaskTemp) {
                 model.setTaskName(historicTaskTemp.getName());
                 if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
