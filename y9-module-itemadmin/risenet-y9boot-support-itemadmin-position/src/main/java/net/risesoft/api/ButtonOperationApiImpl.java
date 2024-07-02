@@ -115,7 +115,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        ProcessInstanceModel processInstance = runtimeManager.getProcessInstance(tenantId, processInstanceId);
+        ProcessInstanceModel processInstance = runtimeManager.getProcessInstance(tenantId, processInstanceId).getData();
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
         Y9Result<String> y9Result = documentService.forwarding(taskId, "true", startUserId, routeToTask, "");
         if (y9Result.isSuccess()) {

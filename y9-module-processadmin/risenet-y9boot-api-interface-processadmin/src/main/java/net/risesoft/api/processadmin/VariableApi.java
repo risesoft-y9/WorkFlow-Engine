@@ -18,6 +18,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> deleteVariable(String tenantId, String taskId, String key);
 
@@ -27,6 +28,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> deleteVariableLocal(String tenantId, String taskId, String key);
 
@@ -36,7 +38,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return Object
+     * @return Y9Result<String>
      */
     Y9Result<String> getVariable(String tenantId, String taskId, String key);
 
@@ -46,7 +48,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程id
      * @param key 变量key
-     * @return Object
+     * @return Y9Result<String>
      */
     Y9Result<String> getVariableByProcessInstanceId(String tenantId, String processInstanceId, String key);
 
@@ -56,7 +58,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return Object
+     * @return Y9Result<String>
      */
     Y9Result<String> getVariableLocal(String tenantId, String taskId, String key);
 
@@ -75,7 +77,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param keys 变量keys
-     * @return Map
+     * @return Y9Result<Map<String, Object>>
      */
     Y9Result<Map<String, Object>> getVariablesByProcessInstanceId(String tenantId, String processInstanceId,
         Collection<String> keys);
@@ -85,7 +87,7 @@ public interface VariableApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Map
+     * @return Y9Result<Map<String, Object>>
      */
     Y9Result<Map<String, Object>> getVariablesLocal(String tenantId, String taskId);
 
@@ -96,6 +98,7 @@ public interface VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      * @param map 变量值
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setVariable(String tenantId, String taskId, String key, Map<String, Object> map);
 
@@ -106,8 +109,10 @@ public interface VariableApi {
      * @param processInstanceId 流程实例id
      * @param key 变量key
      * @param map 变量值
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
-    Y9Result<Object> setVariableByProcessInstanceId(String tenantId, String processInstanceId, String key, Map<String, Object> map);
+    Y9Result<Object> setVariableByProcessInstanceId(String tenantId, String processInstanceId, String key,
+        Map<String, Object> map);
 
     /**
      * 设置任务变量
@@ -116,6 +121,7 @@ public interface VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      * @param map 变量值
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setVariableLocal(String tenantId, String taskId, String key, Map<String, Object> map);
 
@@ -125,6 +131,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setVariables(String tenantId, String taskId, Map<String, Object> map);
 
@@ -134,6 +141,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setVariablesLocal(String tenantId, String taskId, Map<String, Object> map);
 }

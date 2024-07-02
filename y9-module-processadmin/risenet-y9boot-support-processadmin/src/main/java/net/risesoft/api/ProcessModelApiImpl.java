@@ -172,13 +172,11 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @param response response
      * @return Y9Result<String>
      */
     @Override
     @GetMapping(value = "/getModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId,
-        HttpServletResponse response) {
+    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         byte[] bpmnBytes;
         Model model = modelService.getModel(modelId);
@@ -192,11 +190,11 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param file 文件
-     * @return Y9Result<String>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/saveModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<Object> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
         MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {

@@ -23,6 +23,7 @@ public interface RuntimeApi {
      * @param activityId 执行实例id
      * @param parentExecutionId 父执行实例id
      * @param map 参数
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
         Map<String, Object> map);
@@ -34,7 +35,7 @@ public interface RuntimeApi {
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> complete4Position(String tenantId, String positionId, String processInstanceId, String taskId);
 
@@ -46,7 +47,7 @@ public interface RuntimeApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> completed(String tenantId, String userId, String processInstanceId, String taskId);
 
@@ -55,7 +56,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> deleteMultiInstanceExecution(String tenantId, String executionId);
 
@@ -64,18 +65,18 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return List&lt;String&gt;
+     * @return Y9Result<List<String>>
      */
-    List<String> getActiveActivityIds(String tenantId, String executionId);
+    Y9Result<List<String>> getActiveActivityIds(String tenantId, String executionId);
 
     /**
      * 根据执行实例Id查找执行实例
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return ExecutionModel
+     * @return Y9Result<ExecutionModel>
      */
-    ExecutionModel getExecutionById(String tenantId, String executionId);
+    Y9Result<ExecutionModel> getExecutionById(String tenantId, String executionId);
 
     /**
      * 根据父流程实例获取子流程实例
@@ -84,7 +85,7 @@ public interface RuntimeApi {
      * @param superProcessInstanceId 父流程实例id
      * @return List&lt;ProcessInstanceModel&gt;
      */
-    List<ProcessInstanceModel> getListBySuperProcessInstanceId(String tenantId, String superProcessInstanceId);
+    Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(String tenantId, String superProcessInstanceId);
 
     /**
      * 根据流程实例Id获取流程实例
@@ -93,7 +94,7 @@ public interface RuntimeApi {
      * @param processInstanceId 流程实例id
      * @return ProcessInstanceModel
      */
-    ProcessInstanceModel getProcessInstance(String tenantId, String processInstanceId);
+    Y9Result<ProcessInstanceModel> getProcessInstance(String tenantId, String processInstanceId);
 
     /**
      * 根据流程定义id获取流程实例列表
@@ -123,7 +124,8 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @param year 年份 @ 异常
+     * @param year 年份
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> recovery4Completed(String tenantId, String userId, String processInstanceId, String year);
 
@@ -132,7 +134,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> recovery4SetUpCompleted(String tenantId, String processInstanceId);
 
@@ -152,7 +154,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setUpCompleted(String tenantId, String processInstanceId);
 
@@ -163,7 +165,7 @@ public interface RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param key 变量key
      * @param map 变量值
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setVariable(String tenantId, String processInstanceId, String key, Map<String, Object> map);
 
@@ -173,6 +175,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param executionId 执行实例id
      * @param map 变量map
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setVariables(String tenantId, String executionId, Map<String, Object> map);
 
@@ -194,7 +197,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Boolean
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 属性判断流程是否挂起
      */
     Y9Result<Boolean> suspendedByProcessInstanceId(String tenantId, String processInstanceId);
 
@@ -204,7 +207,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param state 状态
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> switchSuspendOrActive(String tenantId, String processInstanceId, String state);
-
 }

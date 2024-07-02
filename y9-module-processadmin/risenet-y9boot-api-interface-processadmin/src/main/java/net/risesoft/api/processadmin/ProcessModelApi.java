@@ -29,7 +29,7 @@ public interface ProcessModelApi {
      * @return Y9Result<String>
      */
     @PostMapping(value = "/deleteModel")
-    public Y9Result<String> deleteModel(@RequestParam String tenantId, @RequestParam String modelId);
+    Y9Result<String> deleteModel(@RequestParam String tenantId, @RequestParam String modelId);
 
     /**
      * 根据Model部署流程
@@ -39,7 +39,7 @@ public interface ProcessModelApi {
      * @return Y9Result<String>
      */
     @PostMapping(value = "/deployModel")
-    public Y9Result<String> deployModel(@RequestParam String tenantId, @RequestParam String modelId);
+    Y9Result<String> deployModel(@RequestParam String tenantId, @RequestParam String modelId);
 
     /**
      * 导出model的xml文件
@@ -50,7 +50,7 @@ public interface ProcessModelApi {
      * @return
      */
     @PostMapping(value = "/exportModel")
-    public void exportModel(@RequestParam String tenantId, @RequestParam String modelId, HttpServletResponse response);
+    void exportModel(@RequestParam String tenantId, @RequestParam String modelId, HttpServletResponse response);
 
     /**
      * 获取模型列表
@@ -59,30 +59,26 @@ public interface ProcessModelApi {
      * @return Y9Result<List<Map<String, Object>>>
      */
     @GetMapping(value = "/getModelList")
-    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam String tenantId);
+    Y9Result<List<Map<String, Object>>> getModelList(@RequestParam String tenantId);
 
     /**
      * 获取模型xml
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @param response
-     * @return
+     * @return Y9Result<String>
      */
     @GetMapping(value = "/getModelXml")
-    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId,
-        HttpServletResponse response);
+    Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId);
 
     /**
      * 保存，导入模型文件
      *
      * @param tenantId 租户id
-     * @param userId人员id
      * @param file 文件
-     * @return
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
-        MultipartFile file);
+    Y9Result<Object> saveModelXml(@RequestParam String tenantId, @RequestParam String userId, MultipartFile file);
 
 }

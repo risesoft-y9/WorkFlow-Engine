@@ -165,11 +165,11 @@ public interface TaskApiClient extends TaskApi {
      * 查找所有的任务实例
      *
      * @param tenantId 租户id
-     * @return List&lt;TaskModel&gt;
+     * @return Y9Result<List<TaskModel>>
      */
     @Override
     @GetMapping("/findAll")
-    List<TaskModel> findAll(@RequestParam("tenantId") String tenantId);
+    Y9Result<List<TaskModel>> findAll(@RequestParam("tenantId") String tenantId);
 
     /**
      * 根据任务id查找任务

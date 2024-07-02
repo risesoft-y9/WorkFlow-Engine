@@ -291,9 +291,12 @@ public class ButtonUtil {
                 /*----- 下面是退回按钮的设置 -----*/
                 if (isAssignee && !customItem) {
                     /*----- 下面是退出按钮的判断 -----*/
-                    String returnDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-                    String takeBackDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-                    String repositionDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+                    String returnDoc =
+                        variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+                    String takeBackDoc =
+                        variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+                    String repositionDoc =
+                        variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
                     // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
                     if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
                         isButtonShow[3] = false;
@@ -503,7 +506,8 @@ public class ButtonUtil {
             isButtonShow[12] = false;
             String takeBackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
             String rollbackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-            String repositionObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            String repositionObj =
+                variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
             // 下面是收回按钮
             if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(positionId) && takeBackObj == null
                 && rollbackObj == null && repositionObj == null) {
@@ -519,8 +523,9 @@ public class ButtonUtil {
             // 抄送
             isButtonShow[17] = true;
             ProcessInstanceModel processInstanceModel =
-                runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId());
-            isButtonShow[15] = true;// 重定向按钮
+                runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
+            // 重定向按钮
+            isButtonShow[15] = true;
             if (positionId.equals(processInstanceModel.getStartUserId())) {
                 // 重定向
                 // isButtonShow[15] = true;

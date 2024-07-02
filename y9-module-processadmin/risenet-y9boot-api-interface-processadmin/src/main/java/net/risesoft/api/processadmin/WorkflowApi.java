@@ -18,8 +18,7 @@ public interface WorkflowApi {
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TargetModel>>
      */
-    Y9Result<List<TargetModel>> getCurrentTaskTargets(String tenantId, String processDefinitionId,
-                                                     String taskDefKey);
+    Y9Result<List<TargetModel>> getCurrentTaskTargets(String tenantId, String processDefinitionId, String taskDefKey);
 }
