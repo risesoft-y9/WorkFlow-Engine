@@ -60,4 +60,13 @@ public class ProcessDefinitionModel implements Serializable {
      */
     private String engineVersion;
 
+    /**
+     * 部署时间
+     */
+    private String deploymentTime;
+
+    /**
+     * 部署时间（毫秒）用于排序
+     */
+    private long sortTime;
 }

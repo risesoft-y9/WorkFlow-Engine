@@ -2,11 +2,11 @@ package net.risesoft.service;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -87,7 +87,7 @@ public interface CustomRepositoryService {
      * @param resourceId
      * @return
      */
-    Map<String, Object> list(String resourceId);
+    Y9Result<List<ProcessDefinitionModel>> list(String resourceId);
 
     /**
      * 激活或者挂起流程

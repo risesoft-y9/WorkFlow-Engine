@@ -114,7 +114,7 @@ public interface RepositoryApiClient extends RepositoryApi {
     */
     @Override
     @GetMapping("/list")
-    Y9Result<List<Map<String, Object>>> list(@RequestParam("tenantId") String tenantId);
+    Y9Result<List<ProcessDefinitionModel>> list(@RequestParam("tenantId") String tenantId);
 
     /**
      * 激活/挂起流程的状态

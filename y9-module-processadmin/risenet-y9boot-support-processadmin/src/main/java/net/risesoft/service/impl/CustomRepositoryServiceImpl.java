@@ -2,9 +2,7 @@ package net.risesoft.service.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FilenameUtils;
@@ -25,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
 import net.risesoft.util.Y9SqlPaginationUtil;
@@ -138,52 +137,47 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     }
 
     @Override
-    public Map<String, Object> list(String resourceId) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Map<String, Object>> items = new ArrayList<>();
+    public Y9Result<List<ProcessDefinitionModel>> list(String resourceId) {
+        List<ProcessDefinitionModel> items = new ArrayList<>();
+        Y9LoginUserHolder.setTenantId(Y9LoginUserHolder.getTenantId());
+        String sql = "select RES.* from ACT_RE_PROCDEF RES WHERE 1=1";
+        if (DialectEnum.MSSQL.getValue().equals(processEngineConfiguration.getDatabaseType())) {
+            sql = "select top 100 percent RES.* from ACT_RE_PROCDEF RES WHERE 1=1";
+        }
+        sql +=
+            " and RES.VERSION_ = (select max(VERSION_) from ACT_RE_PROCDEF where KEY_ = RES.KEY_ ) order by RES.KEY_ asc";
         try {
-            Y9LoginUserHolder.setTenantId(Y9LoginUserHolder.getTenantId());
-            // boolean tenantManager = userInfo.isGlobalManager();
-            String sql = "select RES.* from ACT_RE_PROCDEF RES WHERE 1=1";
-            if (DialectEnum.MSSQL.getValue().equals(processEngineConfiguration.getDatabaseType())) {
-                sql = "select top 100 percent RES.* from ACT_RE_PROCDEF RES WHERE 1=1";
-            }
-            sql +=
-                " and RES.VERSION_ = (select max(VERSION_) from ACT_RE_PROCDEF where KEY_ = RES.KEY_ ) order by RES.KEY_ asc";
             sql = Y9SqlPaginationUtil.generatePagedSql(processEngineConfiguration.getDataSource(), sql, 0, 1000);
             List<ProcessDefinition> processDefinitionList =
                 repositoryService.createNativeProcessDefinitionQuery().sql(sql).list();
-            Map<String, Object> mapTemp;
+            ProcessDefinitionModel processDefinitionModel;
             for (ProcessDefinition processDefinition : processDefinitionList) {
-                mapTemp = new HashMap<>(16);
+                processDefinitionModel = new ProcessDefinitionModel();
                 String deploymentId = processDefinition.getDeploymentId();
                 Deployment deployment =
                     repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
-                mapTemp.put("id", processDefinition.getId());
-                mapTemp.put("deploymentId", processDefinition.getDeploymentId());
-                mapTemp.put("name", processDefinition.getName());
-                mapTemp.put("key", processDefinition.getKey());
-                mapTemp.put("version", processDefinition.getVersion());
-                mapTemp.put("resourceName", processDefinition.getResourceName());
-                mapTemp.put("diagramResourceName", processDefinition.getDiagramResourceName());
-                mapTemp.put("suspended", processDefinition.isSuspended());
-                mapTemp.put("deploymentTime",
-                    DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
-                mapTemp.put("sortTime", deployment.getDeploymentTime().getTime());
-                items.add(mapTemp);
+                processDefinitionModel.setId(processDefinition.getId());
+                processDefinitionModel.setDeploymentId(processDefinition.getDeploymentId());
+                processDefinitionModel.setName(processDefinition.getName());
+                processDefinitionModel.setKey(processDefinition.getKey());
+                processDefinitionModel.setVersion(processDefinition.getVersion());
+                processDefinitionModel.setResourceName(processDefinition.getResourceName());
+                processDefinitionModel.setDiagramResourceName(processDefinition.getDiagramResourceName());
+                processDefinitionModel.setSuspended(processDefinition.isSuspended());
+                processDefinitionModel
+                    .setDeploymentTime(DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
+                processDefinitionModel.setSortTime(deployment.getDeploymentTime().getTime());
+                items.add(processDefinitionModel);
             }
             items.sort((o1, o2) -> {
-                long startTime1 = (long)o1.get("sortTime");
-                long startTime2 = (long)o2.get("sortTime");
+                long startTime1 = o1.getSortTime();
+                long startTime2 = o2.getSortTime();
                 return Long.compare(startTime2, startTime1);
             });
-            retMap.put("success", true);
+            return Y9Result.success(items);
         } catch (Exception e) {
-            retMap.put("success", false);
-            LOGGER.error("获取流程列表失败。", e);
+            return Y9Result.failure("操作异常");
         }
-        retMap.put("rows", items);
-        return retMap;
     }
 
     @Override

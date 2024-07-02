@@ -1,7 +1,6 @@
 package net.risesoft.api.processadmin;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,7 +94,7 @@ public interface RepositoryApi {
      * @param tenantId 租户id
      * @return Y9Result<List<Map<String, Object>>>
      */
-    Y9Result<List<Map<String, Object>>> list(String tenantId);
+    Y9Result<List<ProcessDefinitionModel>> list(String tenantId);
 
     /**
      * 激活/挂起流程的状态
