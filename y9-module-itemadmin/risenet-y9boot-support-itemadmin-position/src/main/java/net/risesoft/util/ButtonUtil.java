@@ -74,7 +74,7 @@ public class ButtonUtil {
         }
         TaskModel task = null;
         if (ItemBoxTypeEnum.TODO.getValue().equals(itembox) || ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
-            task = taskManager.findById(tenantId, taskId);
+            task = taskManager.findById(tenantId, taskId).getData();
         }
         Map<String, Object> vars = new HashMap<>(16);
         String varsUser = "";
@@ -88,7 +88,7 @@ public class ButtonUtil {
         }
         showSubmitButton = item.isShowSubmitButton();
         if (task != null) {
-            vars = variableManager.getVariables(tenantId, taskId);
+            vars = variableManager.getVariables(tenantId, taskId).getData();
             varsUsers = (List<String>)vars.get(SysVariables.USERS);
             varsUser = String.valueOf(vars.get(SysVariables.USER));
             varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLELSPONSOR));
@@ -291,9 +291,9 @@ public class ButtonUtil {
                 /*----- 下面是退回按钮的设置 -----*/
                 if (isAssignee && !customItem) {
                     /*----- 下面是退出按钮的判断 -----*/
-                    String returnDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
-                    String takeBackDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
-                    String repositionDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION);
+                    String returnDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+                    String takeBackDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+                    String repositionDoc = variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
                     // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
                     if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
                         isButtonShow[3] = false;
@@ -501,9 +501,9 @@ public class ButtonUtil {
             isButtonShow[2] = true;
             // 在办情况下，收回按钮默认为不显示，当配置了收回按钮时，且当前节点的下一个节点满足回收的条件时才显示回收按钮
             isButtonShow[12] = false;
-            String takeBackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
-            String rollbackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
-            String repositionObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION);
+            String takeBackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+            String rollbackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+            String repositionObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
             // 下面是收回按钮
             if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(positionId) && takeBackObj == null
                 && rollbackObj == null && repositionObj == null) {

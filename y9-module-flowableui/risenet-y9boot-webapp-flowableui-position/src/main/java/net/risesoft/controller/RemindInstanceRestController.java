@@ -32,6 +32,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -84,7 +85,7 @@ public class RemindInstanceRestController {
         }
         for (Map<String, Object> map : list0) {
             String taskDefName = (String)map.get("taskDefName");
-            if (!taskDefName.equals("流程")) {
+            if (!"流程".equals(taskDefName)) {
                 list.add(map);
             }
         }
@@ -132,14 +133,13 @@ public class RemindInstanceRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/taskList")
-    public Y9Result<Map<String, Object>> taskList(@RequestParam @NotBlank String processInstanceId) {
-        Map<String, Object> retMap;
+    public Y9Result<List<TaskModel>> taskList(@RequestParam @NotBlank String processInstanceId) {
+        Y9Page<TaskModel> taskPage ;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            retMap = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, 1, 500);
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            taskPage = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, 1, 500);
+            List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
@@ -150,11 +150,12 @@ public class RemindInstanceRestController {
             RemindInstanceModel remindInstance =
                 remindInstanceApi
                 .getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
-            retMap.put("remindType", "");
-            retMap.put("taskIds", "");
+            //TODO
+            //retMap.put("remindType", "");
+            //retMap.put("taskIds", "");
             if (remindInstance != null) {
-                retMap.put("remindType", remindInstance.getRemindType());
-                retMap.put("taskIds", remindInstance.getTaskId());
+                //retMap.put("remindType", remindInstance.getRemindType());
+                //retMap.put("taskIds", remindInstance.getTaskId());
             }
             for (TaskModel task : taskList) {
                 mapTemp = new HashMap<>(16);
@@ -170,8 +171,8 @@ public class RemindInstanceRestController {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            retMap.put("rows", items);
-            return Y9Result.success(retMap, "保存成功");
+            //retMap.put("rows", items);
+            return Y9Result.success(taskPage.getRows(), "保存成功");
         } catch (Exception e) {
             LOGGER.error("获取未办理任务失败", e);
         }

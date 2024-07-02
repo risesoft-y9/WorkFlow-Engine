@@ -203,13 +203,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         OpenDataModel model = new OpenDataModel();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
         if (taskList.isEmpty()) {
             itembox = ItemBoxTypeEnum.DONE.getValue();
         }
         if (ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
             taskId = taskList.get(0).getId();
-            TaskModel task = taskManager.findById(tenantId, taskId);
+            TaskModel task = taskManager.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
         }
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
@@ -237,7 +237,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             if (taskId.contains(SysVariables.COMMA)) {
                 taskId = taskId.split(SysVariables.COMMA)[0];
             }
-            TaskModel taskTemp = taskManager.findById(tenantId, taskId);
+            TaskModel taskTemp = taskManager.findById(tenantId, taskId).getData();
             taskDefinitionKey = taskTemp.getTaskDefinitionKey();
         }
         Position position = positionManager.get(tenantId, Y9LoginUserHolder.getPositionId()).getData();

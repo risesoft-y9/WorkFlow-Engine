@@ -77,7 +77,6 @@ public class MobileV1SystemDockingController {
      * @param mappingId 对接系统标识
      * @param positionChoice 接收岗位id，多岗位,隔开
      * @param formJsonData 表单数据
-     * @param files 附件列表
      * @return Y9Result<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
@@ -85,7 +84,7 @@ public class MobileV1SystemDockingController {
     public Y9Result<Object> startAndForwarding(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String routeToTaskId,
         @RequestParam @NotBlank String positionChoice, @RequestParam @NotBlank String formJsonData,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile[] files) {
+        @RequestParam(required = false) String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -114,7 +113,7 @@ public class MobileV1SystemDockingController {
             }
             String processInstanceId = "";
             if (StringUtils.isNotBlank(taskId)) {
-                TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                 if (null == taskModel) {
                     return Y9Result.failure("待办已被处理");
                 } else {

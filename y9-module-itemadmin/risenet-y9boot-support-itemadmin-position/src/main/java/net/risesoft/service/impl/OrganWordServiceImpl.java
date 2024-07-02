@@ -311,7 +311,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         String taskDefKey = "";
         String itemId = "";
         String processDefinitionId = "";
-        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
         taskDefKey = taskList.get(0).getTaskDefinitionKey();
         processDefinitionId = taskList.get(0).getProcessDefinitionId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);

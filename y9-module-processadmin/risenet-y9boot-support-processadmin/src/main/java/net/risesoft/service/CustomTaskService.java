@@ -7,6 +7,7 @@ import java.util.Map;
 import org.flowable.task.api.Task;
 
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -141,7 +142,7 @@ public interface CustomTaskService {
      * @param rows
      * @return
      */
-    Map<String, Object> findListByProcessInstanceId(String processInstanceId, Integer page, Integer rows);
+    Y9Page<TaskModel> findListByProcessInstanceId(String processInstanceId, Integer page, Integer rows);
 
     /**
      * 获取当前任务所在并行节点的多个任务的已完成的数量

@@ -377,7 +377,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("itemId", itemId);
                     mapTemp.put("itemName", itemName);
                     mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
-                    TaskModel task = taskApi.findById(tenantId, taskId);
+                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
                     mapTemp.put("taskId", taskId);
                     String processDefinitionId = task.getProcessDefinitionId();
                     String taskAssignee = ardModel.getAssignee();

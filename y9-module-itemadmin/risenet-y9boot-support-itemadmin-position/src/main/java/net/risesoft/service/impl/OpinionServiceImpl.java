@@ -405,8 +405,8 @@ public class OpinionServiceImpl implements OpinionService {
                     resList.add(model);
                     return resList;
                 }
-                TaskModel task = taskManager.findById(tenantId, taskId);
-                String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
+                TaskModel task = taskManager.findById(tenantId, taskId).getData();
+                String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
                 for (Opinion opinion : list) {
                     OpinionListModel model0 = new OpinionListModel();
                     opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
@@ -435,7 +435,7 @@ public class OpinionServiceImpl implements OpinionService {
                         }
                     } else {// 收回件可编辑意见
                         if (takeBack != null && Boolean.valueOf(takeBack)
-                            && Y9LoginUserHolder.getPersonId().equals(opinion.getUserId())) {// 收回件
+                            && Y9LoginUserHolder.getPersonId().equals(opinion.getUserId())) {
                             List<HistoricTaskInstanceModel> tlist = historicTaskApi
                                 .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "").getData();
                             for (int i = tlist.size() - 1; i >= 0; i--) {
@@ -591,7 +591,7 @@ public class OpinionServiceImpl implements OpinionService {
                 Boolean addableTemp = model.getAddable();
                 if (addableTemp) {
                     model.setAddable(false);
-                    TaskModel task = taskManager.findById(tenantId, taskId);
+                    TaskModel task = taskManager.findById(tenantId, taskId).getData();
                     ItemOpinionFrameBind bind =
                         itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
                             itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);

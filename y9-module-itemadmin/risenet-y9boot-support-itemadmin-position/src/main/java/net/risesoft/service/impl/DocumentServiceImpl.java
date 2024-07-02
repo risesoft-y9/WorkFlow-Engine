@@ -244,7 +244,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public void complete(String taskId) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel task = taskManager.findById(tenantId, taskId);
+        TaskModel task = taskManager.findById(tenantId, taskId).getData();
         String processInstanceId = task.getProcessInstanceId();
 
         /*
@@ -296,7 +296,7 @@ public class DocumentServiceImpl implements DocumentService {
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         startor = processParam.getStartor();
         if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
-            TaskModel task = taskManager.findById(tenantId, taskId);
+            TaskModel task = taskManager.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
             processSerialNumber = processParam.getProcessSerialNumber();
             processDefinitionId = task.getProcessDefinitionId();
@@ -355,7 +355,7 @@ public class DocumentServiceImpl implements DocumentService {
                 if (taskId.contains(SysVariables.COMMA)) {
                     taskId = taskId.split(SysVariables.COMMA)[0];
                 }
-                TaskModel taskTemp = taskManager.findById(tenantId, taskId);
+                TaskModel taskTemp = taskManager.findById(tenantId, taskId).getData();
                 taskDefinitionKey = taskTemp.getTaskDefinitionKey();
             }
         }
@@ -394,7 +394,7 @@ public class DocumentServiceImpl implements DocumentService {
         String processInstanceId = "";
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            TaskModel task = taskManager.findById(tenantId, taskId);
+            TaskModel task = taskManager.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             List<String> userList = new ArrayList<>(this.parseUserChoice(userChoice));
@@ -437,7 +437,7 @@ public class DocumentServiceImpl implements DocumentService {
             } else {
                 // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
                 if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-                    List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     /*
                      * 如果协办人数超过10人，启用异步后台处理。
                      */
@@ -1093,7 +1093,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             // 在一个事务中保存。taskId为空则创建新流程。
             String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel task = taskManager.findById(tenantId, taskId);
+            TaskModel task = taskManager.findById(tenantId, taskId).getData();
             String processInstanceId = task.getProcessInstanceId();
             List<String> userAndDeptIdList = new ArrayList<>();
             userChoice = userChoice.substring(2);
@@ -1104,7 +1104,7 @@ public class DocumentServiceImpl implements DocumentService {
             Map<String, Object> variables = new HashMap<>(16);
             variables.put(SysVariables.USER, userChoice);
             if (SysVariables.PARALLEL.equals(multiInstance)) {
-                List<TaskModel> taskNextList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                List<TaskModel> taskNextList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 // 查找未打开过的件，将未打开过的件重定位
                 for (TaskModel taskNext : taskNextList) {
                     if (StringUtils.isBlank(taskNext.getFormKey()) || taskNext.getFormKey().equals("1")) {
@@ -1126,7 +1126,7 @@ public class DocumentServiceImpl implements DocumentService {
                         taskManager.complete(tenantId, taskNext.getId());
                     }
                 }
-                TaskModel task1 = taskManager.findById(tenantId, taskId);
+                TaskModel task1 = taskManager.findById(tenantId, taskId).getData();
 
                 task1.setAssignee(userChoice);
                 taskManager.saveTask(tenantId, task1);
@@ -1326,7 +1326,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             Position position = Y9LoginUserHolder.getPosition();
-            TaskModel task = taskManager.findById(tenantId, taskId);
+            TaskModel task = taskManager.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
@@ -1483,7 +1483,7 @@ public class DocumentServiceImpl implements DocumentService {
                 processDefinitionKey, item.getSystemName(), vars);
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
-            TaskModel task = taskManager.findByProcessInstanceId(tenantId, processInstanceId).get(0);
+            TaskModel task = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData().get(0);
 
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
@@ -1559,7 +1559,7 @@ public class DocumentServiceImpl implements DocumentService {
             Position position = Y9LoginUserHolder.getPosition();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             String itemId = processParam.getItemId();
-            TaskModel task = taskManager.findById(tenantId, taskId);
+            TaskModel task = taskManager.findById(tenantId, taskId).getData();
             if (null == task || null == task.getId()) {
                 return Y9Result.failure("该件已被处理。");
             }

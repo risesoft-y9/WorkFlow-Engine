@@ -92,7 +92,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             if (task != null) {
                 String assigneeId = task.getAssignee();
                 if (StringUtils.isBlank(assigneeId)) {
@@ -164,14 +164,14 @@ public class MobileButtonOperationController {
         String itembox = ItemBoxTypeEnum.TODO.getValue();
         map.put("itembox", itembox);
         try {
-            TaskModel taskModel = taskApi.findById(tenantId, taskId);
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
             if (taskModel != null && taskModel.getId() != null) {
                 itembox = ItemBoxTypeEnum.TODO.getValue();
             } else {
                 if (hpi != null && hpi.getEndTime() == null) {
                     itembox = ItemBoxTypeEnum.DOING.getValue();
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     taskId = taskList.get(0).getId();
                     map.put("taskId", taskId);
                 } else {
@@ -200,12 +200,12 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setTenantId(tenantId);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "办理成功");
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             if (task == null) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "该件已被办理！");
             } else {
-                List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
+                List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
                 if (list.size() == 1) {// 并行状态且不区分主协办时，多人同时打开办理页面，当其他人都已办理完成，最后一人需提示已是并行办理的最后一人，需刷新重新办理。
                     map.put("msg", "您是并行办理的最后一人，请刷新后重新办理。");
                 } else {
@@ -213,7 +213,7 @@ public class MobileButtonOperationController {
                       改变流程变量中users的值
                      */
                     try {
-                        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
+                        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
                         List<String> users =
                             userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
                         if (users != null && users.isEmpty()) {
@@ -255,7 +255,7 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
             taskApi.completeWithVariables(tenantId, task.getId(), vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
@@ -316,10 +316,11 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<>(16);
         String activitiUser = "";
         try {
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "拒签成功");
-            if (isLastPerson4RefuseClaim) {// 最后一人拒签，退回
+            // 最后一人拒签，退回
+            if (isLastPerson4RefuseClaim) {
                 try {
                     Y9Result<Object> y9Result =
                         buttonOperation4PositionApi.refuseClaimRollback(tenantId, userId, taskId);
@@ -336,7 +337,7 @@ public class MobileButtonOperationController {
                 if (task != null) {
                     String assigneeId = task.getAssignee();
                     if (StringUtils.isBlank(assigneeId)) {
-                        Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
+                        Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
                         ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
                         for (Object obj : users) {
                             String user = obj.toString();
@@ -410,7 +411,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, "",
                 Y9Util.stringToList(userChoice, ","), "重定向", "");
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
@@ -440,8 +441,8 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
-            TaskModel task = taskApi.findById(tenantId, taskId);
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
             String type =
                 processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             String reason = "";
@@ -531,7 +532,7 @@ public class MobileButtonOperationController {
         map.put("msg", "发送拟稿人失败");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            TaskModel taskModel = taskApi.findById(tenantId, taskId);
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             String routeToTaskId = taskModel.getTaskDefinitionKey();
             String processInstanceId = taskModel.getProcessInstanceId();
             String processDefinitionKey = taskModel.getProcessDefinitionId().split(":")[0];
@@ -541,7 +542,7 @@ public class MobileButtonOperationController {
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             Map<String, Object> variables = new HashMap<>(16);
 
-            String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID);
+            String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID).getData();
             String userChoice = "3:" + user;
 
             String multiInstance =
@@ -584,7 +585,7 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setPosition(position);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            TaskModel taskModel = taskApi.findById(tenantId, taskId);
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             buttonOperation4PositionApi.specialComplete(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
             List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId).getData();
@@ -660,7 +661,7 @@ public class MobileButtonOperationController {
         try {
             map.put(UtilConsts.SUCCESS, true);
             if (StringUtils.isNotBlank(taskId)) {
-                taskApi.unclaim(tenantId, taskId);
+                taskApi.unClaim(tenantId, taskId);
                 map.put("msg", "撤销签收成功");
             } else {
                 map.put(UtilConsts.SUCCESS, false);

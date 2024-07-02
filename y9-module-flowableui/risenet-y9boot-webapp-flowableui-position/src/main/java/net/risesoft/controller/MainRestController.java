@@ -441,7 +441,7 @@ public class MainRestController {
             switch (type) {
                 case "fromTodo":
                     try {
-                        TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                         if (taskModel == null || taskModel.getId() == null) {
                             try {
                                 todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
@@ -474,23 +474,28 @@ public class MainRestController {
                     String itemId = processParamModel.getItemId();
                     ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     map.put("itemModel", itemModel);
-                    if (hisProcess == null || hisProcess.getId() == null) {// 办结件
+                    // 办结件
+                    if (hisProcess == null || hisProcess.getId() == null) {
                         // todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
                         // model.addAttribute("type", "");
                     } else {
-                        if (hisProcess.getEndTime() == null) {// 协作状态未办结
-                            List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        // 协作状态未办结
+                        if (hisProcess.getEndTime() == null) {
+                            List<TaskModel> list =
+                                taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                             boolean isTodo = false;
                             if (list != null) {
                                 for (TaskModel task : list) {
+                                    // 待办件
                                     if ((task.getAssignee() != null
-                                        && task.getAssignee().contains(Y9LoginUserHolder.getPositionId()))) {// 待办件
+                                        && task.getAssignee().contains(Y9LoginUserHolder.getPositionId()))) {
                                         taskId = task.getId();
                                         isTodo = true;
                                         break;
                                     }
                                 }
-                                if (!isTodo) {// 在办件
+                                // 在办件
+                                if (!isTodo) {
                                     taskId = list.get(0).getId();
                                 }
                             }

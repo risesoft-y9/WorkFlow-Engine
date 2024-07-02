@@ -181,7 +181,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 mapTemp.put("number",
                     StringUtils.isBlank(processParam.getCustomNumber()) ? "" : processParam.getCustomNumber());
                 mapTemp.put("startorName", processParam.getStartorName());
-                List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 String assigneeNames = getAssigneeIdsAndAssigneeNames(taskList);
                 mapTemp.put("assigneeNames", assigneeNames);
             } catch (Exception e) {

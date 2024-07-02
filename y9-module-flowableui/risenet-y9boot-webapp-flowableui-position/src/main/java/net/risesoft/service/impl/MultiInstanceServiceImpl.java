@@ -50,7 +50,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms,
         String isShuMing, String smsContent) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel task = taskApi.findById(tenantId, taskId);
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
         String activityId = task.getTaskDefinitionKey();
         String[] users = userChoice.split(";");
         ProcessParamModel processParamModel =
@@ -120,7 +120,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public List<Map<String, Object>> assigneeList4Parallel(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<Map<String, Object>> listMap = new ArrayList<>();
         Map<String, Object> mapTemp;
         Position personTemp;
@@ -152,7 +152,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public List<Map<String, Object>> assigneeList4Sequential(String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel taskModel = taskApi.findById(tenantId, taskId);
+        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         String currentAssignee = taskModel.getAssignee();
         String usersObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
         List<String> users = Y9JsonUtil.readValue(usersObj, List.class);
