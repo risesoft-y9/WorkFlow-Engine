@@ -23,10 +23,10 @@ public interface WorkflowApiClient extends WorkflowApi {
     /**
      * 获取当前任务节点的目标节点
      *
-     * @param tenantId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
+     * @param tenantId 租户id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping("/getCurrentTaskTargets")

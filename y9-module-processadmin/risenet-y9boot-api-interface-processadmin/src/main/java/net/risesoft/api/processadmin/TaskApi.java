@@ -21,6 +21,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> claim(String tenantId, String userId, String taskId);
 
@@ -29,6 +30,7 @@ public interface TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> complete(String tenantId, String taskId);
 
@@ -37,6 +39,7 @@ public interface TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> completeTask(String tenantId, String taskId);
 
@@ -46,6 +49,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param positionId 岗位Id
      * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> completeTaskWithoutAssignee(String tenantId, String positionId, String processInstanceId);
 
@@ -55,6 +59,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> completeWithVariables(String tenantId, String taskId, Map<String, Object> map);
 
@@ -66,6 +71,7 @@ public interface TaskApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param vars 变量map
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> completeWithVariables4Position(String tenantId, String userId, String positionId, String taskId,
         Map<String, Object> vars);
@@ -78,7 +84,7 @@ public interface TaskApi {
      * @param routeToTaskId 任务id
      * @param vars 变量map
      * @param userIdList 人员ids
-     * @return TaskModel
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> createWithVariables(String tenantId, String personId, String routeToTaskId,
         Map<String, Object> vars, List<String> userIdList);
@@ -92,7 +98,7 @@ public interface TaskApi {
      * @param routeToTaskId 任务id
      * @param vars 变量map
      * @param positionIdList 岗位ids
-     * @return TaskModel
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> createWithVariables(String tenantId, String positionId, String personId, String routeToTaskId,
         Map<String, Object> vars, List<String> positionIdList);
@@ -103,6 +109,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> delegateTask(String tenantId, String taskId, String assignee);
 
@@ -112,6 +119,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> deleteCandidateUser(String tenantId, String taskId, String assignee);
 
@@ -119,16 +127,16 @@ public interface TaskApi {
      * 查找所有的任务实例
      *
      * @param tenantId 租户id
-     * @return List&lt;TaskModel&gt;
+     * @return Y9Result<List<TaskModel>>
      */
-    List<TaskModel> findAll(String tenantId);
+    Y9Result<List<TaskModel>> findAll(String tenantId);
 
     /**
      * 根据任务id查找任务
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return TaskModel
+     * @return Y9Result<TaskModel>
      */
     Y9Result<TaskModel> findById(String tenantId, String taskId);
 
@@ -137,7 +145,7 @@ public interface TaskApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return List&lt;TaskModel&gt;
+     * @return Y9Result<List<TaskModel>>
      */
     Y9Result<List<TaskModel>> findByProcessInstanceId(String tenantId, String processInstanceId);
 
@@ -147,7 +155,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例Id
      * @param active 是否存活
-     * @return List&lt;TaskModel&gt;
+     * @return Y9Result<List<TaskModel>>
      */
     Y9Result<List<TaskModel>> findByProcessInstanceId(String tenantId, String processInstanceId, boolean active);
 
@@ -158,7 +166,7 @@ public interface TaskApi {
      * @param processInstanceId 流程实例Id
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<TaskModel>
      */
     Y9Page<TaskModel> findListByProcessInstanceId(String tenantId, String processInstanceId, Integer page,
                                        Integer rows);
@@ -168,6 +176,7 @@ public interface TaskApi {
      *
      * @param tenantId 租户id
      * @param taskModel 任务实体
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> saveTask(String tenantId, TaskModel taskModel);
 
@@ -177,6 +186,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setAssignee(String tenantId, String taskId, String assignee);
 
@@ -186,6 +196,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param date 日期
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setDueDate(String tenantId, String taskId, Date date);
 
@@ -195,6 +206,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param priority 优先级
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> setPriority(String tenantId, String taskId, Integer priority);
 
@@ -203,6 +215,7 @@ public interface TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> unClaim(String tenantId, String taskId);
 

@@ -156,9 +156,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/getActiveActivityIds", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> getActiveActivityIds(@RequestParam String tenantId, @RequestParam String executionId) {
+    public Y9Result<List<String>> getActiveActivityIds(@RequestParam String tenantId,
+        @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRuntimeService.getActiveActivityIds(executionId);
+        return Y9Result.success(customRuntimeService.getActiveActivityIds(executionId));
     }
 
     /**
@@ -170,13 +171,13 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/getExecutionById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ExecutionModel getExecutionById(@RequestParam String tenantId, @RequestParam String executionId) {
+    public Y9Result<ExecutionModel> getExecutionById(@RequestParam String tenantId, @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Execution execution = customRuntimeService.getExecutionById(executionId);
-        if (null != execution) {
-            return FlowableModelConvertUtil.execution2Model(execution);
+        if (null == execution) {
+            return Y9Result.failure("未找到执行实例");
         }
-        return null;
+        return Y9Result.success(FlowableModelConvertUtil.execution2Model(execution));
     }
 
     /**
@@ -188,11 +189,11 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/getListBySuperProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProcessInstanceModel> getListBySuperProcessInstanceId(@RequestParam String tenantId,
+    public Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String superProcessInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessInstance> list = customRuntimeService.getListBySuperProcessInstanceId(superProcessInstanceId);
-        return FlowableModelConvertUtil.processInstanceList2ModelList(list);
+        return Y9Result.success(FlowableModelConvertUtil.processInstanceList2ModelList(list));
     }
 
     /**
@@ -204,14 +205,14 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/getProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessInstanceModel getProcessInstance(@RequestParam String tenantId,
+    public Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessInstance pi = customRuntimeService.getProcessInstance(processInstanceId);
-        if (null != pi) {
-            return FlowableModelConvertUtil.processInstance2Model(pi);
+        if (null == pi) {
+            return Y9Result.failure("流程实例不存在");
         }
-        return null;
+        return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
     }
 
     /**

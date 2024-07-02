@@ -36,12 +36,12 @@ public class WorkflowApiImpl implements WorkflowApi {
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List<Map<String, String>>
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping(value = "/getCurrentTaskTargets", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TargetModel>> getCurrentTaskTargets(@RequestParam String tenantId,
-                                                             @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return workflowProcessInstanceService.getCurrentTaskTargets(processDefinitionId, taskDefKey);
     }

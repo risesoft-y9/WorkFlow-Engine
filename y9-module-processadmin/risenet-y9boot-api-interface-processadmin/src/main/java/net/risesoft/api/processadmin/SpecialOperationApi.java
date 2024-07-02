@@ -21,6 +21,7 @@ public interface SpecialOperationApi {
      * @param users 人员id集合
      * @param reason 重定向原因
      * @param sponsorGuid 主办人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * 
      */
     Y9Result<Object> reposition(String tenantId, String userId, String taskId, String targetTaskDefineKey,
@@ -36,6 +37,7 @@ public interface SpecialOperationApi {
      * @param userChoice 岗位id集合
      * @param reason 重定向原因
      * @param sponsorGuid 主办人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * 
      */
     Y9Result<Object> reposition4Position(String tenantId, String positionId, String taskId, String repositionToTaskId,
@@ -48,6 +50,7 @@ public interface SpecialOperationApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param reason 退回的原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * 
      */
     Y9Result<Object> rollBack(String tenantId, String userId, String taskId, String reason);
@@ -59,6 +62,7 @@ public interface SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 退回的原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * 
      */
     Y9Result<Object> rollBack4Position(String tenantId, String positionId, String taskId, String reason);
@@ -69,6 +73,7 @@ public interface SpecialOperationApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * 
      */
     Y9Result<Object> rollbackToSender4Position(String tenantId, String positionId, String taskId);
@@ -80,7 +85,7 @@ public interface SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> rollbackToStartor4Position(String tenantId, String positionId, String taskId, String reason);
 
@@ -91,7 +96,7 @@ public interface SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> specialComplete4Position(String tenantId, String positionId, String taskId, String reason);
 
@@ -102,7 +107,7 @@ public interface SpecialOperationApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param reason 收回的原因
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> takeBack(String tenantId, String userId, String taskId, String reason);
 
@@ -113,7 +118,7 @@ public interface SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 收回的原因
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> takeBack4Position(String tenantId, String positionId, String taskId, String reason);
 }

@@ -248,10 +248,10 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @GetMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskModel> findAll(@RequestParam String tenantId) {
+    public Y9Result<List<TaskModel>> findAll(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Task> taskList = customTaskService.findAll();
-        return FlowableModelConvertUtil.taskList2TaskModelList(taskList);
+        return Y9Result.success(FlowableModelConvertUtil.taskList2TaskModelList(taskList));
     }
 
     /**

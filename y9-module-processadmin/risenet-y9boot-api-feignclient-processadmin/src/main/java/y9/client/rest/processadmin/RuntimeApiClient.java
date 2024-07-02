@@ -87,11 +87,11 @@ public interface RuntimeApiClient extends RuntimeApi {
      *
      * @param tenantId
      * @param executionId
-     * @return
+     * @return Y9Result<List<String>>
      */
     @Override
     @GetMapping("/getActiveActivityIds")
-    List<String> getActiveActivityIds(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<String>> getActiveActivityIds(@RequestParam("tenantId") String tenantId,
         @RequestParam("executionId") String executionId);
 
     /**
@@ -104,7 +104,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getExecutionById")
-    ExecutionModel getExecutionById(@RequestParam("tenantId") String tenantId,
+    Y9Result<ExecutionModel> getExecutionById(@RequestParam("tenantId") String tenantId,
         @RequestParam("executionId") String executionId);
 
     /**
@@ -116,7 +116,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getListBySuperProcessInstanceId")
-    List<ProcessInstanceModel> getListBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("superProcessInstanceId") String superProcessInstanceId);
 
     /**
@@ -128,7 +128,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getProcessInstance")
-    ProcessInstanceModel getProcessInstance(@RequestParam("tenantId") String tenantId,
+    Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
