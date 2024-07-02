@@ -14,6 +14,7 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -36,7 +37,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping(value = "/addMultiInstanceExecution", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void addMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> addMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
         @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId,
         @RequestBody Map<String, Object> map);
 
@@ -47,14 +48,13 @@ public interface RuntimeApiClient extends RuntimeApi {
      * @param tenantId
      * @param positionId
      * @param processInstanceId
-     * @param taskId
-     * @throws Exception
+     * @param taskId @
      */
     @Override
     @PostMapping("/complete4Position")
-    void complete4Position(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId)
-        throws Exception;
+    Y9Result<Object> complete4Position(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskId") String taskId);
 
     /**
      *
@@ -63,14 +63,12 @@ public interface RuntimeApiClient extends RuntimeApi {
      * @param tenantId
      * @param userId
      * @param processInstanceId
-     * @param taskId
-     * @throws Exception
+     * @param taskId @
      */
     @Override
     @PostMapping("/completed")
-    void completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId)
-        throws Exception;
+    Y9Result<Object> completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId);
 
     /**
      *
@@ -81,7 +79,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/deleteMultiInstanceExecution")
-    void deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
         @RequestParam("executionId") String executionId);
 
     /**
@@ -167,27 +165,25 @@ public interface RuntimeApiClient extends RuntimeApi {
      * @param tenantId
      * @param userId
      * @param processInstanceId
-     * @param year
-     * @throws Exception
+     * @param year @
      */
     @Override
     @PostMapping("/recovery4Completed")
-    void recovery4Completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year)
-        throws Exception;
+    Y9Result<Object> recovery4Completed(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("year") String year);
 
     /**
      *
      * Description: 恢复流程实例为待办状态，其实是先激活，再设置流程实例的结束时间为null
      *
      * @param tenantId
-     * @param processInstanceId
-     * @throws Exception
+     * @param processInstanceId @
      */
     @Override
     @PostMapping("/recovery4SetUpCompleted")
-    void recovery4SetUpCompleted(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Y9Result<Object> recovery4SetUpCompleted(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      *
@@ -203,13 +199,12 @@ public interface RuntimeApiClient extends RuntimeApi {
      * Description: 设置流程实例为办结的状态，其实是先暂停，再设置流程结束时间为当前时间
      *
      * @param tenantId
-     * @param processInstanceId
-     * @throws Exception
+     * @param processInstanceId @
      */
     @Override
     @PostMapping("/setUpCompleted")
-    void setUpCompleted(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Y9Result<Object> setUpCompleted(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      *
@@ -217,14 +212,13 @@ public interface RuntimeApiClient extends RuntimeApi {
      *
      * @param tenantId
      * @param processInstanceId
-     * @param key
-     * @throws Exception
+     * @param key @
      */
     @Override
     @PostMapping(value = "/setVariable", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariable(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> setVariable(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key,
-        @RequestBody Map<String, Object> map) throws Exception;
+        @RequestBody Map<String, Object> map);
 
     /**
      *
@@ -236,8 +230,8 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping(value = "/setVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariables(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId,
-        @RequestBody Map<String, Object> map);
+    Y9Result<Object> setVariables(@RequestParam("tenantId") String tenantId,
+        @RequestParam("executionId") String executionId, @RequestBody Map<String, Object> map);
 
     /**
      * 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是人员Id
@@ -276,7 +270,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/switchSuspendOrActive")
-    void switchSuspendOrActive(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> switchSuspendOrActive(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("state") String state);
 
 }

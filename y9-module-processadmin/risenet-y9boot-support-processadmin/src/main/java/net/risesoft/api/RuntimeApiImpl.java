@@ -32,6 +32,7 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
@@ -75,30 +76,35 @@ public class RuntimeApiImpl implements RuntimeApi {
     @Override
     @PostMapping(value = "/addMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String activityId,
+    public Y9Result<Object> addMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String activityId,
         @RequestParam String parentExecutionId, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.addMultiInstanceExecution(activityId, parentExecutionId, map);
+        return Y9Result.success();
     }
 
     /**
-     * 加签/岗位
+     * 真办结/岗位
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/complete4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void complete4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String processInstanceId, @RequestParam String taskId) throws Exception {
+    public Y9Result<Object> complete4Position(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String processInstanceId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        customTaskService.complete4Position(processInstanceId, taskId);
+        try {
+            customTaskService.complete4Position(processInstanceId, taskId);
+            return Y9Result.success();
+        } catch (Exception e) {
+            return Y9Result.failure("办结异常");
+        }
     }
 
     /**
@@ -108,17 +114,22 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/completed", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void completed(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processInstanceId, @RequestParam String taskId) throws Exception {
+    public Y9Result<Object> completed(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processInstanceId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        customTaskService.complete(processInstanceId, taskId);
+        try {
+            customTaskService.complete(processInstanceId, taskId);
+            return Y9Result.success();
+        } catch (Exception e) {
+            return Y9Result.failure("办结异常");
+        }
+
     }
 
     /**
@@ -129,9 +140,11 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @PostMapping(value = "/deleteMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String executionId) {
+    public Y9Result<Object> deleteMultiInstanceExecution(@RequestParam String tenantId,
+        @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.deleteMultiInstanceExecution(executionId);
+        return Y9Result.success();
     }
 
     /**
@@ -251,22 +264,31 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param userId 用户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/recovery4Completed", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void recovery4Completed(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processInstanceId, @RequestParam String year) throws Exception {
+    public Y9Result<Object> recovery4Completed(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         if (person != null && StringUtils.isNotBlank(person.getId())) {
             Y9LoginUserHolder.setPerson(person);
-            customRuntimeService.recovery4Completed(processInstanceId, year);
+            try {
+                customRuntimeService.recovery4Completed(processInstanceId, year);
+                return Y9Result.success();
+            } catch (Exception e) {
+                return Y9Result.failure("恢复待办失败");
+            }
         } else {
             Position position = positionManager.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPosition(position);
-            customRuntimeService.recoveryCompleted4Position(processInstanceId, year);
+            try {
+                customRuntimeService.recoveryCompleted4Position(processInstanceId, year);
+                return Y9Result.success();
+            } catch (Exception e) {
+                return Y9Result.failure("恢复待办失败");
+            }
         }
     }
 
@@ -278,9 +300,11 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @PostMapping(value = "/recovery4SetUpCompleted", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void recovery4SetUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> recovery4SetUpCompleted(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.recovery4SetUpCompleted(processInstanceId);
+        return Y9Result.success();
     }
 
     /**
@@ -363,9 +387,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @PostMapping(value = "/setUpCompleted", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> setUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.setUpCompleted(processInstanceId);
+        return Y9Result.success();
     }
 
     /**
@@ -379,11 +404,12 @@ public class RuntimeApiImpl implements RuntimeApi {
     @Override
     @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariable(@RequestParam String tenantId, @RequestParam String processInstanceId,
+    public Y9Result<Object> setVariable(@RequestParam String tenantId, @RequestParam String processInstanceId,
         @RequestParam String key, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customRuntimeService.setVariable(processInstanceId, key, map.get("val"));
+        return Y9Result.success();
     }
 
     /**
@@ -396,11 +422,12 @@ public class RuntimeApiImpl implements RuntimeApi {
     @Override
     @PostMapping(value = "/setVariables", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariables(@RequestParam String tenantId, @RequestParam String executionId,
+    public Y9Result<Object> setVariables(@RequestParam String tenantId, @RequestParam String executionId,
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customRuntimeService.setVariables(executionId, map);
+        return Y9Result.success();
     }
 
     /**
@@ -458,9 +485,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @PostMapping(value = "/switchSuspendOrActive", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String processInstanceId,
+    public Y9Result<Object> switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String processInstanceId,
         @RequestParam String state) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.switchSuspendOrActive(processInstanceId, state);
+        return Y9Result.success();
     }
 }
