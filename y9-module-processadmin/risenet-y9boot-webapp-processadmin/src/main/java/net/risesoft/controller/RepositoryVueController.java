@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
@@ -20,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
 
@@ -71,14 +70,9 @@ public class RepositoryVueController {
     /**
      * 获取流程定义列表
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> list(@RequestParam(required = false) String resourceId) {
-        Map<String, Object> map = customRepositoryService.list(resourceId);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
-        }
-        return Y9Result.failure("获取失败");
+    public Y9Result<List<ProcessDefinitionModel>> list(@RequestParam(required = false) String resourceId) {
+        return customRepositoryService.list(resourceId);
     }
 
     /**

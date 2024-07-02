@@ -1,5 +1,8 @@
 package net.risesoft.service;
 
+import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Page;
+
 import java.util.Map;
 
 /**
@@ -46,15 +49,15 @@ public interface CustomTodoService {
     Map<String, Object> getListByUserId(String userId, Integer page, Integer rows);
 
     /**
-     * Description: 根据人员Id，查找人员所有的待办任务(包含流程变量和任务变量)(itemId为空则查询全部个人待办，不为空则查询当前事项应用待办)
-     * 
-     * @param userId
-     * @param processDefinitionKey
-     * @param page
-     * @param rows
-     * @return
+     * 根据人员Id，事项id获取用户的待办任务(分页)
+     *
+     * @param userId 人员Id
+     * @param processDefinitionKey 流程定义Key
+     * @param page 页码
+     * @param rows 行数
+     * @return Y9Page<TaskModel>
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
+    Y9Page<TaskModel> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
         Integer rows);
 
     /**
@@ -64,9 +67,9 @@ public interface CustomTodoService {
      * @param systemName
      * @param page
      * @param rows
-     * @return
+     * @return Y9Page<TaskModel>
      */
-    Map<String, Object> getListByUserIdAndSystemName(String userId, String systemName, Integer page, Integer rows);
+    Y9Page<TaskModel> getListByUserIdAndSystemName(String userId, String systemName, Integer page, Integer rows);
 
     /**
      * 条件搜索待办件
@@ -87,9 +90,9 @@ public interface CustomTodoService {
      * @param searchTerm
      * @param page
      * @param rows
-     * @return
+     * @return Y9Page<TaskModel>
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+    Y9Page<TaskModel> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         String searchTerm, Integer page, Integer rows);
 
     /**
@@ -102,6 +105,6 @@ public interface CustomTodoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+    Y9Page<TaskModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
         Integer page, Integer rows);
 }

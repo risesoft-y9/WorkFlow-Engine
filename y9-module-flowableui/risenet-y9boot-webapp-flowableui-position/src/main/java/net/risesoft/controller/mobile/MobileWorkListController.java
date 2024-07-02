@@ -37,6 +37,7 @@ import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.platform.Resource;
+import net.risesoft.model.processadmin.Y9FlowableCountModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoingService;
 import net.risesoft.service.DoneService;
@@ -172,8 +173,9 @@ public class MobileWorkListController {
                     String itemId = url.split("itemId=")[1];
                     ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     String processDefinitionKey = item.getWorkflowGuid();
-                    long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                        processDefinitionKey);
+                    long todoCount = processTodoApi
+                        .getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
+                        .getData();
                     Map<String, Object> m = new HashMap<>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
                     List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
@@ -261,11 +263,10 @@ public class MobileWorkListController {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
-            Map<String, Object> countMap =
-                processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
-            int todoCount = countMap != null ? (int)countMap.get("todoCount") : 0;
-            int doingCount = countMap != null ? (int)countMap.get("doingCount") : 0;
-            // int doneCount = countMap != null ? (int) countMap.get("doneCount") : 0;
+            Y9FlowableCountModel flowableCountModel = processTodoApi
+                .getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey).getData();
+            int todoCount = (int)flowableCountModel.getTodoCount();
+            int doingCount = (int)flowableCountModel.getDoingCount();
             int doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId).getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);

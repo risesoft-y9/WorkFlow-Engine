@@ -80,7 +80,6 @@ public class TodoServiceImpl implements TodoService {
 
     private final TaskApi taskApi;
 
-    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> list(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<>(16);
@@ -89,14 +88,15 @@ public class TodoServiceImpl implements TodoService {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
+            Y9Page<TaskModel> taskPage;
             if (StringUtils.isBlank(searchTerm)) {
-                retMap = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                     processDefinitionKey, page, rows);
             } else {
-                retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                     processDefinitionKey, searchTerm, page, rows);
             }
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
@@ -123,7 +123,8 @@ public class TodoServiceImpl implements TodoService {
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
-                    Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
+                    // 催办的时候任务的优先级+5
+                    Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
                     String documentTitle =
@@ -184,29 +185,30 @@ public class TodoServiceImpl implements TodoService {
                 items.add(mapTemp);
             }
             retMap.put("rows", items);
+            retMap.put("totalpages", taskPage.getTotalPages());
+            retMap.put("total", taskPage.getTotal());
         } catch (Exception e) {
             LOGGER.error("查询待办任务出错", e);
         }
         return retMap;
     }
 
-    @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
+            Y9Page<TaskModel> taskPage;
             if (StringUtils.isBlank(searchTerm)) {
-                retMap = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                     processDefinitionKey, page, rows);
             } else {
-                retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                     processDefinitionKey, searchTerm, page, rows);
             }
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
@@ -314,10 +316,12 @@ public class TodoServiceImpl implements TodoService {
                         mapTemp.put("rollBack", true);
                     }
                     try {
-                        String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+                        String takeBack =
+                            variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
                         if (Boolean.parseBoolean(takeBack)) {// 收回件
                             List<HistoricTaskInstanceModel> hlist = historicTaskApi
-                                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "").getData();
+                                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "")
+                                .getData();
                             if (hlist.get(0).getTaskDefinitionKey().equals(task.getTaskDefinitionKey())) {// 起草收回件，可删除
                                 mapTemp.put("takeBack", true);
                             }
@@ -332,8 +336,7 @@ public class TodoServiceImpl implements TodoService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办异常", e);
         }

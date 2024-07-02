@@ -648,7 +648,7 @@ public class DocumentServiceImpl implements DocumentService {
                     model.setName(spmApproveitem.getName());
                     model.setItemName(spmApproveitem.getName());
                     todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId,
-                        spmApproveitem.getWorkflowGuid());
+                        spmApproveitem.getWorkflowGuid()).getData();
                     model.setTodoCount((int)todoCount);
                     model.setAppIcon(
                         StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
