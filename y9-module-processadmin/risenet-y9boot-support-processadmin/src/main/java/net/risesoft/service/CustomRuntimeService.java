@@ -14,12 +14,12 @@ import org.flowable.engine.runtime.ProcessInstance;
 public interface CustomRuntimeService {
 
     /**
+     *
      * Description: 加签
-     * 
-     * @param activityId
-     * @param parentExecutionId
-     * @param map
-     * @return
+     *
+     * @param activityId 执行实例id
+     * @param parentExecutionId 父执行实例id
+     * @param map 参数
      */
     Execution addMultiInstanceExecution(String activityId, String parentExecutionId, Map<String, Object> map);
 
@@ -27,7 +27,6 @@ public interface CustomRuntimeService {
      * 减签
      *
      * @param executionId
-     * @param executionIsCompleted
      */
     void deleteMultiInstanceExecution(String executionId);
 

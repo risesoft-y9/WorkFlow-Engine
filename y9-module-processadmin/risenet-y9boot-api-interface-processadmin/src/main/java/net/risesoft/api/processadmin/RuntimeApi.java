@@ -6,6 +6,7 @@ import java.util.Map;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -23,20 +24,19 @@ public interface RuntimeApi {
      * @param parentExecutionId 父执行实例id
      * @param map 参数
      */
-    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
+    Y9Result<Object> addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
         Map<String, Object> map);
 
     /**
-     * 加签/岗位
+     * 办结/岗位
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @throws Exception Exception
+     * 
      */
-    void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId)
-        throws Exception;
+    Y9Result<Object> complete4Position(String tenantId, String positionId, String processInstanceId, String taskId);
 
     /**
      *
@@ -46,18 +46,18 @@ public interface RuntimeApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @throws Exception Exception
+     * 
      */
-    void completed(String tenantId, String userId, String processInstanceId, String taskId) throws Exception;
+    Y9Result<Object> completed(String tenantId, String userId, String processInstanceId, String taskId);
 
     /**
      * 减签
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @throws Exception Exception
+     * 
      */
-    void deleteMultiInstanceExecution(String tenantId, String executionId);
+    Y9Result<Object> deleteMultiInstanceExecution(String tenantId, String executionId);
 
     /**
      * 根据执行Id获取当前活跃的节点信息
@@ -123,19 +123,18 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @param year 年份
-     * @throws Exception 异常
+     * @param year 年份 @ 异常
      */
-    void recovery4Completed(String tenantId, String userId, String processInstanceId, String year) throws Exception;
+    Y9Result<Object> recovery4Completed(String tenantId, String userId, String processInstanceId, String year);
 
     /**
      * 恢复流程实例为待办状态，其实是先激活，再设置流程实例的结束时间为null
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @throws Exception Exception
+     * 
      */
-    void recovery4SetUpCompleted(String tenantId, String processInstanceId) throws Exception;
+    Y9Result<Object> recovery4SetUpCompleted(String tenantId, String processInstanceId);
 
     /**
      * 获取正在运行流程实例列表
@@ -143,7 +142,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param page 页吗
-     * @param rows条数
+     * @param rows 条数
      * @return Y9Page<Map<String, Object>>
      */
     Y9Page<Map<String, Object>> runningList(String tenantId, String processInstanceId, int page, int rows);
@@ -153,9 +152,9 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @throws Exception Exception
+     * 
      */
-    void setUpCompleted(String tenantId, String processInstanceId) throws Exception;
+    Y9Result<Object> setUpCompleted(String tenantId, String processInstanceId);
 
     /**
      * 根据流程实例id设置流程变量
@@ -164,9 +163,9 @@ public interface RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param key 变量key
      * @param map 变量值
-     * @throws Exception Exception
+     * 
      */
-    void setVariable(String tenantId, String processInstanceId, String key, Map<String, Object> map) throws Exception;
+    Y9Result<Object> setVariable(String tenantId, String processInstanceId, String key, Map<String, Object> map);
 
     /**
      * 根据流程实例id设置流程变量
@@ -175,7 +174,7 @@ public interface RuntimeApi {
      * @param executionId 执行实例id
      * @param map 变量map
      */
-    void setVariables(String tenantId, String executionId, Map<String, Object> map);
+    Y9Result<Object> setVariables(String tenantId, String executionId, Map<String, Object> map);
 
     /**
      * 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是人员Id
@@ -206,6 +205,6 @@ public interface RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param state 状态
      */
-    void switchSuspendOrActive(String tenantId, String processInstanceId, String state);
+    Y9Result<Object> switchSuspendOrActive(String tenantId, String processInstanceId, String state);
 
 }
