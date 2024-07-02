@@ -245,7 +245,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping(value = "/startProcessInstanceByKey", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ProcessInstanceModel startProcessInstanceByKey(@RequestParam("tenantId") String tenantId,
+    Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
         @RequestParam("systemName") String systemName, @RequestBody Map<String, Object> map);
 
@@ -258,7 +258,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/suspendedByProcessInstanceId")
-    Boolean suspendedByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**

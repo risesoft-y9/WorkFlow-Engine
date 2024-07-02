@@ -68,7 +68,7 @@ public class ItemWordTemplateBindController {
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid(), tenantId = Y9LoginUserHolder.getTenantId();
         ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
         String processDefinitionId = processDefinition.getId();
         map.put("processDefinitionId", processDefinitionId);
         List<WordTemplate> templateList = wordTemplateService.findAll();

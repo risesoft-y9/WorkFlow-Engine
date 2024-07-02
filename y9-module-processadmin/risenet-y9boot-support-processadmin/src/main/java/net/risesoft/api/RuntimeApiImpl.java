@@ -443,8 +443,8 @@ public class RuntimeApiImpl implements RuntimeApi {
     @Override
     @PostMapping(value = "/startProcessInstanceByKey", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessInstanceModel startProcessInstanceByKey(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processDefinitionKey, @RequestParam String systemName,
+    public Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam String systemName,
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -452,12 +452,12 @@ public class RuntimeApiImpl implements RuntimeApi {
         if (person != null && StringUtils.isNotBlank(person.getId())) {
             Y9LoginUserHolder.setPerson(person);
             ProcessInstance pi = customRuntimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
-            return FlowableModelConvertUtil.processInstance2Model(pi);
+            return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
         } else {
             Y9LoginUserHolder.setPositionId(userId);
             ProcessInstance pi =
                 customRuntimeService.startProcessInstanceByKey4Position(processDefinitionKey, systemName, map);
-            return FlowableModelConvertUtil.processInstance2Model(pi);
+            return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
         }
     }
 
@@ -470,10 +470,11 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/suspendedByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean suspendedByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult()
-            .isSuspended();
+        return Y9Result.success(runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
+            .singleResult().isSuspended());
     }
 
     /**

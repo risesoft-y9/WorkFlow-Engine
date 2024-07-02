@@ -316,7 +316,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = processDefinition.getId();
             ItemWordTemplateBind wordTemplateBind =
                 wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
@@ -618,7 +618,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 SpmApproveItem item = spmApproveItemService.findById(itemId);
                 String processDefinitionKey = item.getWorkflowGuid();
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
                 processDefinitionId = processDefinitionModel.getId();
             }
             ItemWordTemplateBind wordTemplateBind =

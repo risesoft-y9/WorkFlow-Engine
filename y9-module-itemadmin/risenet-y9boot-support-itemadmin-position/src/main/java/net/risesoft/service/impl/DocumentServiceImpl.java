@@ -202,7 +202,7 @@ public class DocumentServiceImpl implements DocumentService {
             model.setProcessDefinitionKey(item.getWorkflowGuid());
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel pdModel =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = pdModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             model = this.genDocumentModel(itemId, processDefinitionKey, "", taskDefKey, mobile, model);
@@ -434,7 +434,8 @@ public class DocumentServiceImpl implements DocumentService {
             } else {
                 // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
                 if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-                    List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    List<TaskModel> taskNextList1 =
+                        taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     /*
                      * 如果协办人数超过10人，启用异步后台处理。
                      */
@@ -500,7 +501,7 @@ public class DocumentServiceImpl implements DocumentService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(processDefinitionId)) {
             processDefinitionId =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getId();
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
         }
         // Y9表单
         String formIds = "";
@@ -601,7 +602,7 @@ public class DocumentServiceImpl implements DocumentService {
     public String getFormIdByItemId(String itemId, String processDefinitionKey) {
         String formIds = "";
         String processDefinitionId = repositoryManager
-            .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey).getId();
+            .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey).getData().getId();
         List<Y9FormItemBind> eformTaskBinds =
             y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
         if (!eformTaskBinds.isEmpty()) {
@@ -1101,7 +1102,8 @@ public class DocumentServiceImpl implements DocumentService {
             Map<String, Object> variables = new HashMap<>(16);
             variables.put(SysVariables.USER, userChoice);
             if (SysVariables.PARALLEL.equals(multiInstance)) {
-                List<TaskModel> taskNextList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskNextList =
+                    taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 // 查找未打开过的件，将未打开过的件重定位
                 for (TaskModel taskNext : taskNextList) {
                     if (StringUtils.isBlank(taskNext.getFormKey()) || taskNext.getFormKey().equals("1")) {
@@ -1204,7 +1206,7 @@ public class DocumentServiceImpl implements DocumentService {
             SpmApproveItem item = spmApproveitemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinitionModel =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = processDefinitionModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             Y9Result<Map<String, String>> routeToTaskIdResult =
@@ -1410,7 +1412,7 @@ public class DocumentServiceImpl implements DocumentService {
             assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
                 List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService
                     .findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
@@ -1475,8 +1477,9 @@ public class DocumentServiceImpl implements DocumentService {
             vars = CommonOpt.setVariables(position.getId(), position.getName(), "",
                 Arrays.asList(positionIds.split(",")), processSerialNumber, "", vars);
             assert item != null;
-            ProcessInstanceModel piModel = runtimeManager.startProcessInstanceByKey(tenantId, position.getId(),
-                processDefinitionKey, item.getSystemName(), vars);
+            ProcessInstanceModel piModel = runtimeManager
+                .startProcessInstanceByKey(tenantId, position.getId(), processDefinitionKey, item.getSystemName(), vars)
+                .getData();
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
             TaskModel task = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData().get(0);

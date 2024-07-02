@@ -65,7 +65,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     public Y9Result<String> dataTransfer(String processDefinitionId, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionId.split(":")[0]);
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionId.split(":")[0]).getData();
         String latestProcessDefinitionId = processDefinition.getId();
         // 迁移所有
         if (StringUtils.isEmpty(processInstanceId)) {

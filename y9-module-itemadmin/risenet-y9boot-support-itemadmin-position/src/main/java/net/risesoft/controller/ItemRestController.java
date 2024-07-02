@@ -187,7 +187,7 @@ public class ItemRestController {
         map.put("item", item);
         map.put("manager", manager);
         List<Map<String, Object>> workflowList = new ArrayList<>();
-        List<ProcessDefinitionModel> pdModelList = repositoryManager.getLatestProcessDefinitionList(tenantId);
+        List<ProcessDefinitionModel> pdModelList = repositoryManager.getLatestProcessDefinitionList(tenantId).getData();
         for (ProcessDefinitionModel pdModel : pdModelList) {
             Map<String, Object> row = new HashMap<>(16);
             row.put("id", pdModel.getKey());

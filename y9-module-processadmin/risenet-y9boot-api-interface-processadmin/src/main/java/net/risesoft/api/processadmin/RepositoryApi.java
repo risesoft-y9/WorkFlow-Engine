@@ -20,9 +20,9 @@ public interface RepositoryApi {
      *
      * @param tenantId 租户id
      * @param deploymentId 部署id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
-    Map<String, Object> delete(String tenantId, String deploymentId);
+    Y9Result<Object> delete(String tenantId, String deploymentId);
 
     /**
      * 部署流程
@@ -31,24 +31,24 @@ public interface RepositoryApi {
      * @param file 流程文件
      * @return Y9Result<String>
      */
-    Y9Result<String> deploy(String tenantId, MultipartFile file);
+    Y9Result<Object> deploy(String tenantId, MultipartFile file);
 
     /**
      * 根据流程定义key获取最新部署的流程定义
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return ProcessDefinitionModel
+     * @return Y9Result<ProcessDefinitionModel>
      */
-    ProcessDefinitionModel getLatestProcessDefinitionByKey(String tenantId, String processDefinitionKey);
+    Y9Result<ProcessDefinitionModel> getLatestProcessDefinitionByKey(String tenantId, String processDefinitionKey);
 
     /**
      * 获取所有流程定义最新版本的集合
      *
      * @param tenantId 租户id
-     * @return List&lt;ProcessDefinitionModel&gt;
+     * @return Y9Result<List<ProcessDefinitionModel>>
      */
-    List<ProcessDefinitionModel> getLatestProcessDefinitionList(String tenantId);
+    Y9Result<List<ProcessDefinitionModel>> getLatestProcessDefinitionList(String tenantId);
 
     /**
      * 根据流程定义Id获取上一个版本的流程定义，如果当前版本是1，则返回自己
@@ -57,7 +57,7 @@ public interface RepositoryApi {
      * @param processDefinitionId 流程定义Id
      * @return ProcessDefinitionModel
      */
-    ProcessDefinitionModel getPreviousProcessDefinitionById(String tenantId, String processDefinitionId);
+    Y9Result<ProcessDefinitionModel> getPreviousProcessDefinitionById(String tenantId, String processDefinitionId);
 
     /**
      * 根据流程定义Id获取流程定义
@@ -66,7 +66,7 @@ public interface RepositoryApi {
      * @param processDefinitionId 流程定义Id
      * @return ProcessDefinitionModel
      */
-    ProcessDefinitionModel getProcessDefinitionById(String tenantId, String processDefinitionId);
+    Y9Result<ProcessDefinitionModel> getProcessDefinitionById(String tenantId, String processDefinitionId);
 
     /**
      * 根据流程定义key获取最新部署的流程定义
@@ -84,12 +84,10 @@ public interface RepositoryApi {
      * @param resourceType xml
      * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
-     * @param response
      * @return Y9Result<String>
-     * @throws Exception
      */
     Y9Result<String> getXmlByProcessInstance(String tenantId, String resourceType, String processInstanceId,
-        String processDefinitionId) throws Exception;
+        String processDefinitionId);
 
     /**
      * 获取已部署流程定义列表
@@ -105,8 +103,7 @@ public interface RepositoryApi {
      * @param tenantId 租户id
      * @param state 状态
      * @param processDefinitionId 流程定义Id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
-    Map<String, Object> switchSuspendOrActive(String tenantId, String state, String processDefinitionId);
-
+    Y9Result<Object> switchSuspendOrActive(String tenantId, String state, String processDefinitionId);
 }

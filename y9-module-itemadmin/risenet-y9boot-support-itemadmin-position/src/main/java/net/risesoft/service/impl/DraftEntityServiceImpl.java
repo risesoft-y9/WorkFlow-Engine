@@ -159,7 +159,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
         String processDefinitionId =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getId();
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         List<Map<String, String>> routeToTasks =
             processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);

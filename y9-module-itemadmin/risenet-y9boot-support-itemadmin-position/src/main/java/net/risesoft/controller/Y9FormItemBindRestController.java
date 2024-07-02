@@ -174,7 +174,8 @@ public class Y9FormItemBindRestController {
             eformItemBind.setId(id);
             eformItemBind.setProcessDefinitionId(procDefId);
         }
-        ProcessDefinitionModel processDefinition = repositoryManager.getProcessDefinitionById(tenantId, procDefId);
+        ProcessDefinitionModel processDefinition =
+            repositoryManager.getProcessDefinitionById(tenantId, procDefId).getData();
         eformItemBind.setProcDefName(processDefinition.getName());
         return Y9Result.success(eformItemBind, "获取成功");
     }

@@ -353,7 +353,7 @@ public class OpinionServiceImpl implements OpinionService {
                 SpmApproveItem item = spmApproveItemService.findById(itemId);
                 String proDefKey = item.getWorkflowGuid();
                 ProcessDefinitionModel latestpd =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey);
+                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
                 String processDefinitionId = latestpd.getId();
                 ItemOpinionFrameBind bind =
                     itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(

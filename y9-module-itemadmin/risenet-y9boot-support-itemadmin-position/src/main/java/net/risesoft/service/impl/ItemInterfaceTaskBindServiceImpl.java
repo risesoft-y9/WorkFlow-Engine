@@ -43,13 +43,13 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
-        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey);
+        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
                 ProcessDefinitionModel previouspd =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
                 previouspdId = previouspd.getId();
             }
         }
