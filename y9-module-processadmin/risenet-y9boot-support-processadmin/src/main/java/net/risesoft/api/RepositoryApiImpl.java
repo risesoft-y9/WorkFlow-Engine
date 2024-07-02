@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.flowable.engine.repository.ProcessDefinition;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
@@ -179,16 +177,11 @@ public class RepositoryApiImpl implements RepositoryApi {
      * @param tenantId 租户id
      * @return Y9Result<List<Map<String, Object>>>
      */
-    @SuppressWarnings("unchecked")
     @Override
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<List<Map<String, Object>>> list(@RequestParam String tenantId) {
+    public Y9Result<List<ProcessDefinitionModel>> list(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> map = customRepositoryService.list("");
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
-        }
-        return Y9Result.failure("获取失败");
+        return customRepositoryService.list("");
     }
 
     /**
