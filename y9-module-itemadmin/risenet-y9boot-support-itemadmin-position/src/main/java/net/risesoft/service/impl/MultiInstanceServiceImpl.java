@@ -34,7 +34,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @SuppressWarnings("unchecked")
     @Override
     public void addMultiInstanceExecution(String activityId, String parentExecutionId, String taskId,
-        String elementUser) throws Exception {
+        String elementUser) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 改变流程变量中users的值
@@ -63,7 +63,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void deleteMultiInstanceExecution(String executionId, String taskId, String elementUser) throws Exception {
+    public void deleteMultiInstanceExecution(String executionId, String taskId, String elementUser){
         String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 改变流程变量中users的值
@@ -92,6 +92,5 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
          * 新删除执行实例
          */
         runtimeManager.deleteMultiInstanceExecution(tenantId, executionId);
-
     }
 }

@@ -17,6 +17,7 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.OperationService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -54,13 +55,15 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     @Override
     @PostMapping(value = "/reposition", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void reposition(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String taskId,
-        @RequestParam String targetTaskDefineKey, @RequestBody List<String> users, String reason, String sponsorGuid) {
+    public Y9Result<Object> reposition(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String taskId, @RequestParam String targetTaskDefineKey, @RequestBody List<String> users,
+        String reason, String sponsorGuid) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         operationService.reposition(taskId, targetTaskDefineKey, users, reason, sponsorGuid);
+        return Y9Result.success();
     }
 
     /**
@@ -77,7 +80,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     @Override
     @PostMapping(value = "/reposition4Position", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void reposition4Position(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> reposition4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice, @RequestParam String reason,
         @RequestParam String sponsorGuid) {
@@ -86,6 +89,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.reposition4Position(taskId, repositionToTaskId, userChoice, reason, sponsorGuid);
+        return Y9Result.success();
     }
 
     /**
@@ -98,13 +102,14 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/rollBack", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void rollBack(@RequestParam String tenantId, @RequestParam String userId, String taskId,
+    public Y9Result<Object> rollBack(@RequestParam String tenantId, @RequestParam String userId, String taskId,
         @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         operationService.rollBack(taskId, reason);
+        return Y9Result.success();
     }
 
     /**
@@ -117,31 +122,14 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/rollBack4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void rollBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> rollBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.rollBack4Position(taskId, reason);
-    }
-
-    /**
-     * 发回给发送人
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param taskId 任务id
-     */
-    @Override
-    @PostMapping(value = "/rollbackToSender", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void rollbackToSender(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String taskId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        operationService.rollbackToSender(taskId);
+        return Y9Result.success();
     }
 
     /**
@@ -153,32 +141,14 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/rollbackToSender4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void rollbackToSender4Position(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> rollbackToSender4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.rollbackToSender4Position(taskId);
-    }
-
-    /**
-     * 返回拟稿人
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param taskId 任务id
-     * @param reason 原因
-     */
-    @Override
-    @PostMapping(value = "/rollbackToStartor", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void rollbackToStartor(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String taskId, @RequestParam String reason) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        operationService.rollbackToStartor(taskId, reason);
+        return Y9Result.success();
     }
 
     /**
@@ -191,33 +161,14 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/rollbackToStartor4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void rollbackToStartor4Position(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> rollbackToStartor4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.rollbackToStartor4Position(taskId, reason);
-    }
-
-    /**
-     * 特殊办结
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param taskId 任务id
-     * @param reason 原因
-     * @throws Exception Exception
-     */
-    @Override
-    @PostMapping(value = "/specialComplete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void specialComplete(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String taskId,
-        @RequestParam String reason) throws Exception {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        operationService.specialComplete(taskId, reason);
+        return Y9Result.success();
     }
 
     /**
@@ -227,17 +178,17 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/specialComplete4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void specialComplete4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String taskId, @RequestParam String reason) throws Exception {
+    public Y9Result<Object> specialComplete4Position(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.specialComplete4Position(taskId, reason);
+        return Y9Result.success();
     }
 
     /**
@@ -250,13 +201,14 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/takeBack", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void takeBack(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String taskId,
-        @RequestParam String reason) {
+    public Y9Result<Object> takeBack(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         operationService.takeBack(taskId, reason);
+        return Y9Result.success();
     }
 
     /**
@@ -269,12 +221,13 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/takeBack4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void takeBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> takeBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.takeBack4Position(taskId, reason);
+        return Y9Result.success();
     }
 }

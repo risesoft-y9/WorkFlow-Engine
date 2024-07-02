@@ -293,7 +293,7 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     @Transactional
-    public void specialComplete(String taskId, String reason) throws Exception {
+    public void specialComplete(String taskId, String reason){
         String processInstanceId = "";
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -357,13 +357,12 @@ public class OperationServiceImpl implements OperationService {
                 LOGGER.error("保存错误日志失败", e1);
             }
             LOGGER.error("特殊办结失败", e);
-            throw new Exception("OperationServiceImpl specialComplete error");
         }
     }
 
     @Override
     @Transactional
-    public void specialComplete4Position(String taskId, String reason) throws Exception {
+    public void specialComplete4Position(String taskId, String reason){
         String processInstanceId = "";
         try {
             String userName = Y9LoginUserHolder.getPosition().getName();
@@ -426,7 +425,6 @@ public class OperationServiceImpl implements OperationService {
                 LOGGER.error("保存错误日志失败", e1);
             }
             LOGGER.error("特殊办结失败", e);
-            throw new Exception("OperationServiceImpl specialComplete4Position error");
         }
     }
 

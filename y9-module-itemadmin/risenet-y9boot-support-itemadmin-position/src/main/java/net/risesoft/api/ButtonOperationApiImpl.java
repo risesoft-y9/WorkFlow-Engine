@@ -71,11 +71,11 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param elementUser 选择人id
      * @return Y9Result<Object>
-     * @throws Exception exception
+     * 
      */
     @Override
     public Y9Result<Object> addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
-        String taskId, String elementUser) throws Exception {
+        String taskId, String elementUser) {
         Y9LoginUserHolder.setTenantId(tenantId);
         multiInstanceService.addMultiInstanceExecution(activityId, parentExecutionId, taskId, elementUser);
         return Y9Result.success();
@@ -89,11 +89,11 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param elementUser 选择人id
      * @return Y9Result<Object>
-     * @throws Exception exception
+     * 
      */
     @Override
     public Y9Result<Object> deleteMultiInstanceExecution(String tenantId, String executionId, String taskId,
-        String elementUser) throws Exception {
+        String elementUser) {
         Y9LoginUserHolder.setTenantId(tenantId);
         multiInstanceService.deleteMultiInstanceExecution(executionId, taskId, elementUser);
         return Y9Result.success();
@@ -185,11 +185,10 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param reason 原因
      * @param sponsorGuid 主办人id
      * @return Y9Result<Object>
-     * @throws Exception exception
      */
     @Override
     public Y9Result<Object> reposition(String tenantId, String positionId, String taskId, String repositionToTaskId,
-        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) throws Exception {
+        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         specialOperationManager.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, userChoice,
             reason, sponsorGuid);
@@ -204,14 +203,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param reason 原因
      * @return Y9Result<Object>
-     * @throws Exception exception
      */
     @Override
-    public Y9Result<Object> rollBack(String tenantId, String positionId, String taskId, String reason)
-        throws Exception {
+    public Y9Result<Object> rollBack(String tenantId, String positionId, String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.rollBack4Position(tenantId, positionId, taskId, reason);
-        return Y9Result.success();
+        return Y9Result
+            .success(specialOperationManager.rollBack4Position(tenantId, positionId, taskId, reason).isSuccess());
     }
 
     /**
@@ -221,13 +218,13 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @return Y9Result<Object>
-     * @throws Exception exception
+     * 
      */
     @Override
-    public Y9Result<Object> rollbackToSender(String tenantId, String positionId, String taskId) throws Exception {
+    public Y9Result<Object> rollbackToSender(String tenantId, String positionId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.rollbackToSender4Position(tenantId, positionId, taskId);
-        return Y9Result.success();
+        return Y9Result
+            .success(specialOperationManager.rollbackToSender4Position(tenantId, positionId, taskId).isSuccess());
     }
 
     /**
@@ -238,14 +235,13 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param reason 原因
      * @return Y9Result<Object>
-     * @throws Exception exception
+     * 
      */
     @Override
-    public Y9Result<Object> rollbackToStartor(String tenantId, String positionId, String taskId, String reason)
-        throws Exception {
+    public Y9Result<Object> rollbackToStartor(String tenantId, String positionId, String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.rollbackToStartor4Position(tenantId, positionId, taskId, reason);
-        return Y9Result.success();
+        return Y9Result.success(
+            specialOperationManager.rollbackToStartor4Position(tenantId, positionId, taskId, reason).isSuccess());
     }
 
     /**
@@ -256,14 +252,13 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param reason 原因
      * @return Y9Result<Object>
-     * @throws Exception exception
+     * 
      */
     @Override
-    public Y9Result<Object> specialComplete(String tenantId, String positionId, String taskId, String reason)
-        throws Exception {
+    public Y9Result<Object> specialComplete(String tenantId, String positionId, String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.specialComplete4Position(tenantId, positionId, taskId, reason);
-        return Y9Result.success();
+        return Y9Result.success(
+            specialOperationManager.specialComplete4Position(tenantId, positionId, taskId, reason).isSuccess());
     }
 
     /**
@@ -274,13 +269,11 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param reason 原因
      * @return Y9Result<Object>
-     * @throws Exception exception
+     * 
      */
     @Override
-    public Y9Result<Object> takeback(String tenantId, String positionId, String taskId, String reason)
-        throws Exception {
+    public Y9Result<Object> takeback(String tenantId, String positionId, String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.takeBack4Position(tenantId, positionId, taskId, reason);
-        return Y9Result.success();
+        return Y9Result.success(specialOperationManager.takeBack4Position(tenantId, positionId, taskId, reason).isSuccess());
     }
 }
