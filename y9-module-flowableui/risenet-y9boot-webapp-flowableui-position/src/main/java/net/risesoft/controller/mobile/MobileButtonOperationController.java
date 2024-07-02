@@ -378,19 +378,16 @@ public class MobileButtonOperationController {
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
+        map.put(UtilConsts.SUCCESS, false);
+        map.put("msg", "重定向失败");
         try {
-            map.put(UtilConsts.SUCCESS, true);
-            if (StringUtils.isNotBlank(taskId)) {
-                specialOperationApi.reposition4Position(tenantId, positionId, taskId, repositionToTaskId,
-                    Y9Util.stringToList(userChoice, ","), "重定向", "");
+            Y9Result<Object> result = specialOperationApi.reposition4Position(tenantId, positionId, taskId,
+                repositionToTaskId, Y9Util.stringToList(userChoice, ","), "重定向", "");
+            if (result.isSuccess()) {
                 map.put("msg", "重定向成功");
-            } else {
-                map.put(UtilConsts.SUCCESS, false);
-                map.put("msg", "重定向失败");
+                map.put(UtilConsts.SUCCESS, true);
             }
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "重定向失败");
             LOGGER.error("重定位失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));

@@ -83,18 +83,16 @@ public interface OperationService {
      * 
      * @param taskId
      * @param reason
-     * @throws Exception
      */
-    void specialComplete(String taskId, String reason) throws Exception;
+    void specialComplete(String taskId, String reason);
 
     /**
      * Description: 特殊办结
      * 
      * @param taskId
      * @param reason
-     * @throws Exception
      */
-    void specialComplete4Position(String taskId, String reason) throws Exception;
+    void specialComplete4Position(String taskId, String reason);
 
     /**
      * 收回

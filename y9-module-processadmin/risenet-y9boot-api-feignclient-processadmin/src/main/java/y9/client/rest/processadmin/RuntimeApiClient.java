@@ -33,13 +33,12 @@ public interface RuntimeApiClient extends RuntimeApi {
      * @param activityId
      * @param parentExecutionId
      * @param map
-     * @throws Exception
      */
     @Override
     @PostMapping(value = "/addMultiInstanceExecution", consumes = MediaType.APPLICATION_JSON_VALUE)
     void addMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
         @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId,
-        @RequestBody Map<String, Object> map) throws Exception;
+        @RequestBody Map<String, Object> map);
 
     /**
      *
@@ -79,12 +78,11 @@ public interface RuntimeApiClient extends RuntimeApi {
      *
      * @param tenantId
      * @param executionId
-     * @throws Exception
      */
     @Override
     @PostMapping("/deleteMultiInstanceExecution")
     void deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
-        @RequestParam("executionId") String executionId) throws Exception;
+        @RequestParam("executionId") String executionId);
 
     /**
      * 根据执行Id获取当前活跃的节点信息
@@ -220,7 +218,6 @@ public interface RuntimeApiClient extends RuntimeApi {
      * @param tenantId
      * @param processInstanceId
      * @param key
-     * @param val
      * @throws Exception
      */
     @Override

@@ -22,10 +22,9 @@ public interface RuntimeApi {
      * @param activityId 执行实例id
      * @param parentExecutionId 父执行实例id
      * @param map 参数
-     * @throws Exception 异常
      */
     void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
-        Map<String, Object> map) throws Exception;
+        Map<String, Object> map);
 
     /**
      * 加签/岗位
@@ -58,7 +57,7 @@ public interface RuntimeApi {
      * @param executionId 执行实例id
      * @throws Exception Exception
      */
-    void deleteMultiInstanceExecution(String tenantId, String executionId) throws Exception;
+    void deleteMultiInstanceExecution(String tenantId, String executionId);
 
     /**
      * 根据执行Id获取当前活跃的节点信息
