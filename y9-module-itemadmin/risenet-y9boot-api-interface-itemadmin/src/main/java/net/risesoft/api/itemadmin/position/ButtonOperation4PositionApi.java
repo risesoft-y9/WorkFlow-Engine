@@ -86,7 +86,7 @@ public interface ButtonOperation4PositionApi {
     @PostMapping(value = "/reposition", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> reposition(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("repositionToTaskId")String repositionToTaskId,
        @RequestParam("userChoice") List<String> userChoice,
-        @RequestParam("reason") String reason, @RequestParam("sponsorGuid") String sponsorGuid);
+        @RequestParam(value = "reason", required = false) String reason, @RequestParam("sponsorGuid") String sponsorGuid);
 
     /**
      * 退回操作
@@ -99,7 +99,7 @@ public interface ButtonOperation4PositionApi {
      */
     @PostMapping("/rollBack")
     Y9Result<Object> rollBack(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
-        @RequestParam("taskId") String taskId, @RequestParam("reason") String reason);
+        @RequestParam("taskId") String taskId, @RequestParam(value = "reason", required = false) String reason);
 
     /**
      * 发回给上一步的发送人
@@ -125,7 +125,7 @@ public interface ButtonOperation4PositionApi {
     @PostMapping("/rollbackToStartor")
     Y9Result<Object> rollbackToStartor(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
-        @RequestParam("resson") String resson)
+        @RequestParam(value = "resson", required = false) String resson)
         ;
 
     /**
@@ -140,7 +140,7 @@ public interface ButtonOperation4PositionApi {
     @PostMapping("/specialComplete")
     Y9Result<Object> specialComplete(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
-        @RequestParam("reason") String reason);
+        @RequestParam(value = "reason", required = false) String reason);
 
     /**
      * 收回操作
@@ -153,6 +153,6 @@ public interface ButtonOperation4PositionApi {
      */
     @PostMapping("/takeback")
     Y9Result<Object> takeback(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
-        @RequestParam("taskId") String taskId, @RequestParam("reason") String reason);
+        @RequestParam("taskId") String taskId, @RequestParam(value = "reason", required = false) String reason);
 
 }
