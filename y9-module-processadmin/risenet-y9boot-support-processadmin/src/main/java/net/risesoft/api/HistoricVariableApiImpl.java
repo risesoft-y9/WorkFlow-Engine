@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,10 +38,9 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return List<HistoricVariableInstanceModel>
+     * @return Y9Result<List<HistoricVariableInstanceModel>>
      */
     @Override
-    @GetMapping(value = "/getByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<HistoricVariableInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -59,10 +56,9 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      * @param processInstanceId 流程实例id
      * @param variableName 变量名
      * @param year 年份
-     * @return HistoricVariableInstanceModel
+     * @return Y9Result<HistoricVariableInstanceModel>
      */
     @Override
-    @GetMapping(value = "/getByProcessInstanceIdAndVariableName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<HistoricVariableInstanceModel> getByProcessInstanceIdAndVariableName(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String variableName, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -75,14 +71,13 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     }
 
     /**
-     * 根据流程实例Id,获取历史任务变量的值集合
+     * 根据任务Id,获取历史任务变量的值集合
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return List<HistoricVariableInstanceModel>
+     * @return Y9Result<List<HistoricVariableInstanceModel>>
      */
     @Override
-    @GetMapping(value = "/getByTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam String tenantId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -91,16 +86,15 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     }
 
     /**
-     * 根据流程实例Id和流程变量的Key,获取历史任务变量的值
+     * 根据任务Id和变量Key,获取历史任务变量的值
      *
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param variableName 变量名
      * @param year 年份
-     * @return HistoricVariableInstanceModel
+     * @return Y9Result<HistoricVariableInstanceModel>
      */
     @Override
-    @GetMapping(value = "/getByTaskIdAndVariableName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(@RequestParam String tenantId,
         @RequestParam String taskId, @RequestParam String variableName, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -118,11 +112,9 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param keys 变量集合
-     * @return Map<String, Object>
+     * @return Y9Result<Map<String, Object>>
      */
     @Override
-    @GetMapping(value = "/getVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getVariables(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestBody Collection<String> keys) {
         FlowableTenantInfoHolder.setTenantId(tenantId);

@@ -3,8 +3,6 @@ package net.risesoft.api;
 import java.util.List;
 
 import org.flowable.engine.history.HistoricActivityInstance;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,10 +35,9 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return List<HistoricActivityInstanceModel>
+     * @return Y9Result<List<HistoricActivityInstanceModel>>
      */
     @Override
-    @GetMapping(value = "/getByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -57,7 +54,6 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
      * @return Y9Result<List<HistoricActivityInstanceModel>>
      */
     @Override
-    @GetMapping(value = "/getByProcessInstanceIdAndYear", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
