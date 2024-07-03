@@ -1,7 +1,6 @@
 package y9.client.rest.processadmin;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -97,7 +96,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getProcessDefinitionListByKey")
-    List<ProcessDefinitionModel> getProcessDefinitionListByKey(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionListByKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**

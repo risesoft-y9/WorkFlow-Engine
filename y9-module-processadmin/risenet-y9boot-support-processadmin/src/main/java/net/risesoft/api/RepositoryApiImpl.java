@@ -139,11 +139,11 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @GetMapping(value = "/getProcessDefinitionListByKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProcessDefinitionModel> getProcessDefinitionListByKey(@RequestParam String tenantId,
+    public Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionListByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessDefinition> pdList = customRepositoryService.getProcessDefinitionListByKey(processDefinitionKey);
-        return FlowableModelConvertUtil.processDefinitionList2ModelList(pdList);
+        return Y9Result.success(FlowableModelConvertUtil.processDefinitionList2ModelList(pdList));
     }
 
     /**

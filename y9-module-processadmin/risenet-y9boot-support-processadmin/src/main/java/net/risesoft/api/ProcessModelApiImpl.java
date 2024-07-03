@@ -1,20 +1,15 @@
 package net.risesoft.api;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
@@ -47,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.ProcessModelApi;
 import net.risesoft.model.platform.Person;
+import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -110,31 +106,6 @@ public class ProcessModelApiImpl implements ProcessModelApi {
     }
 
     /**
-     * 导出model的xml文件
-     *
-     * @param tenantId 租户id
-     * @param modelId 模型id
-     * @param response response
-     */
-    @Override
-    @PostMapping(value = "/exportModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void exportModel(@RequestParam String tenantId, @RequestParam String modelId, HttpServletResponse response) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        try {
-            Model model = modelService.getModel(modelId);
-            byte[] bpmnBytes = modelService.getBpmnXML(model);
-
-            ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
-            String filename = model.getKey() + ".bpmn20.xml";
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            IOUtils.copy(in, response.getOutputStream());
-            response.flushBuffer();
-        } catch (Exception e) {
-            LOGGER.error("导出模型文件失败", e);
-        }
-    }
-
-    /**
      * 获取模型列表
      *
      * @param tenantId 租户id
@@ -142,27 +113,27 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      */
     @GetMapping(value = "/getModelList", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam String tenantId) {
+    public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<Map<String, Object>> items = new ArrayList<>();
+        List<FlowableBpmnModel> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition;
-        Map<String, Object> mapTemp;
+        FlowableBpmnModel flowableBpmnModel;
         for (AbstractModel model : list) {
-            mapTemp = new HashMap<>(16);
-            mapTemp.put("id", model.getId());
-            mapTemp.put("key", model.getKey());
-            mapTemp.put("name", model.getName());
-            mapTemp.put("version", 0);
+            flowableBpmnModel = new FlowableBpmnModel();
+            flowableBpmnModel.setId(model.getId());
+            flowableBpmnModel.setKey(model.getKey());
+            flowableBpmnModel.setName(model.getName());
+            flowableBpmnModel.setVersion(0);
             processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
                 .latestVersion().singleResult();
             if (null != processDefinition) {
-                mapTemp.put("version", processDefinition.getVersion());
+                flowableBpmnModel.setVersion(processDefinition.getVersion());
             }
-            mapTemp.put("createTime", sdf.format(model.getCreated()));
-            mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
-            items.add(mapTemp);
+            flowableBpmnModel.setCreateTime(sdf.format(model.getCreated()));
+            flowableBpmnModel.setLastUpdateTime(sdf.format(model.getLastUpdated()));
+            items.add(flowableBpmnModel);
         }
         return Y9Result.success(items, "获取成功");
     }

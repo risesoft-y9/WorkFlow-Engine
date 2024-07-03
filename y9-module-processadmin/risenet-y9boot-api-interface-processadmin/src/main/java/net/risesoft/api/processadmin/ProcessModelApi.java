@@ -1,15 +1,13 @@
 package net.risesoft.api.processadmin;
 
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -42,24 +40,13 @@ public interface ProcessModelApi {
     Y9Result<String> deployModel(@RequestParam String tenantId, @RequestParam String modelId);
 
     /**
-     * 导出model的xml文件
-     *
-     * @param tenantId 租户id
-     * @param modelId 模型id
-     * @param response
-     * @return
-     */
-    @PostMapping(value = "/exportModel")
-    void exportModel(@RequestParam String tenantId, @RequestParam String modelId, HttpServletResponse response);
-
-    /**
      * 获取模型列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return Y9Result<List<FlowableBpmnModel>>
      */
     @GetMapping(value = "/getModelList")
-    Y9Result<List<Map<String, Object>>> getModelList(@RequestParam String tenantId);
+    Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId);
 
     /**
      * 获取模型xml
