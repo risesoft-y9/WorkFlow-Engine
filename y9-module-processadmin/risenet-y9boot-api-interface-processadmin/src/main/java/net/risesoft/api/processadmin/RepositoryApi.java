@@ -74,7 +74,7 @@ public interface RepositoryApi {
      * @param processDefinitionKey 流程定义key
      * @return List&lt;ProcessDefinitionModel&gt;
      */
-    List<ProcessDefinitionModel> getProcessDefinitionListByKey(String tenantId, String processDefinitionKey);
+    Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionListByKey(String tenantId, String processDefinitionKey);
 
     /**
      * 获取流程定义xml
