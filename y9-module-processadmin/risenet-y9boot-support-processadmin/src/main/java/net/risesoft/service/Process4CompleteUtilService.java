@@ -301,7 +301,11 @@ public class Process4CompleteUtilService {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);
             }
-            this.saveYearData(year, processInstanceId);
+            String year0 = year;
+            if (StringUtils.isBlank(year)) {
+                year0 = startTime.substring(0, 4);
+            }
+            this.saveYearData(year0, processInstanceId);
             this.deleteDoneData(processInstanceId);
             LOGGER.info("#################保存办结件数据到数据中心成功#################");
         } catch (Exception e) {

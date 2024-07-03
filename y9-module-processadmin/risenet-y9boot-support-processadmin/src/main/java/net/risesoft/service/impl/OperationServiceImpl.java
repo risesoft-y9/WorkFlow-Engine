@@ -293,7 +293,7 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     @Transactional
-    public void specialComplete(String taskId, String reason){
+    public void specialComplete(String taskId, String reason) {
         String processInstanceId = "";
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -330,9 +330,9 @@ public class OperationServiceImpl implements OperationService {
             if (!list1.isEmpty()) {
                 managementService.executeCommand(
                     new JumpCommand(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
-                // 保存到数据中心
-                process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
-                    userInfo.getPersonId(), processInstanceId, userName);
+                // 保存到数据中心，在流程办结监听执行
+                // process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
+                // userInfo.getPersonId(), processInstanceId, userName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -362,7 +362,7 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     @Transactional
-    public void specialComplete4Position(String taskId, String reason){
+    public void specialComplete4Position(String taskId, String reason) {
         String processInstanceId = "";
         try {
             String userName = Y9LoginUserHolder.getPosition().getName();
@@ -398,9 +398,9 @@ public class OperationServiceImpl implements OperationService {
             if (!list1.isEmpty()) {
                 managementService.executeCommand(
                     new JumpCommand4Position(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
-                // 保存到数据中心
-                process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
-                    Y9LoginUserHolder.getPositionId(), processInstanceId, userName);
+                // 保存到数据中心，在流程办结监听执行
+                // process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
+                // Y9LoginUserHolder.getPositionId(), processInstanceId, userName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();

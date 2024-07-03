@@ -132,9 +132,9 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.ROUTETOTASKID, endNodeKey);
                 this.completeWithVariables(taskId, vars);
-                // 保存到数据中心
-                process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
-                    userInfo.getPersonId(), processInstanceId, personName);
+                // 保存到数据中心，在流程办结监听执行
+                // process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
+                // userInfo.getPersonId(), processInstanceId, personName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -213,9 +213,9 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.ROUTETOTASKID, endNodeKey);
                 this.completeWithVariables(taskId, vars);
-                // 保存到数据中心
-                process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year, position.getId(),
-                    processInstanceId, personName);
+                // 保存到数据中心，在流程办结监听执行
+                // process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year, position.getId(),
+                // processInstanceId, personName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();

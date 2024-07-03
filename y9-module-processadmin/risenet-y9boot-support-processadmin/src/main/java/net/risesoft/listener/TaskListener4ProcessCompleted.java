@@ -10,8 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.service.InterfaceUtilService;
+import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -42,6 +44,10 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 } catch (Exception e) {
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_COMPLETED");
                 }
+                Process4CompleteUtilService process4CompleteUtilService =
+                    Y9Context.getBean(Process4CompleteUtilService.class);
+                process4CompleteUtilService.saveToDataCenter(tenantId, "", Y9LoginUserHolder.getPositionId(),
+                    executionEntity.getProcessInstanceId(), Y9LoginUserHolder.getPosition().getName());
 
                 Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
                     executionEntity.getProcessInstanceId());
