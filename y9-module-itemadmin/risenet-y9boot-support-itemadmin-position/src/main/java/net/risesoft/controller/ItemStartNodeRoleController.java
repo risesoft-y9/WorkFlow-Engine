@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemStartNodeRole;
 import net.risesoft.model.platform.Role;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemStartNodeRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -54,11 +55,11 @@ public class ItemStartNodeRoleController {
             itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
             String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
-            List<Map<String, String>> nodeList =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode);
-            for (Map<String, String> map : nodeList) {
-                itemStartNodeRoleService.initRole(itemId, processDefinitionId, map.get("taskDefKey"),
-                    map.get("taskDefName"));
+            List<TargetModel> nodeList =
+                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
+            for (TargetModel targetModel : nodeList) {
+                itemStartNodeRoleService.initRole(itemId, processDefinitionId, targetModel.getTaskDefKey(),
+                    targetModel.getTaskDefName());
             }
             oldList = itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         }
@@ -101,11 +102,11 @@ public class ItemStartNodeRoleController {
             itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
             String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
-            List<Map<String, String>> nodeList =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode);
-            for (Map<String, String> map : nodeList) {
-                itemStartNodeRoleService.initRole(itemId, processDefinitionId, map.get("taskDefKey"),
-                    map.get("taskDefName"));
+            List<TargetModel> nodeList =
+                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
+            for (TargetModel targetModel : nodeList) {
+                itemStartNodeRoleService.initRole(itemId, processDefinitionId, targetModel.getTaskDefKey(),
+                    targetModel.getTaskDefName());
             }
             oldList = itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         }

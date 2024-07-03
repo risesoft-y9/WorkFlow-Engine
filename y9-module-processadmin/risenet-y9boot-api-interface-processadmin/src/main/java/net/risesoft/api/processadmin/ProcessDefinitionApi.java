@@ -3,6 +3,9 @@ package net.risesoft.api.processadmin;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -101,9 +104,9 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TargetModel>>
      */
-    List<Map<String, String>> getTargetNodes(String tenantId, String processDefinitionId, String taskDefKey);
+    Y9Result<List<TargetModel>> getTargetNodes(String tenantId, String processDefinitionId, String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合,去除名称相等的节点，并且加上结束节点
@@ -133,9 +136,9 @@ public interface ProcessDefinitionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
      * @param isContainEndNode 是否包含结束节点
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TargetModel>
      */
-    List<Map<String, String>> getTargetNodes4UserTask(String tenantId, String processDefinitionId, String taskDefKey,
+    Y9Result<List<TargetModel>> getTargetNodes4UserTask(String tenantId, String processDefinitionId, String taskDefKey,
         Boolean isContainEndNode);
 
     /**
@@ -144,9 +147,9 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
-    Boolean isCallActivity(String tenantId, String processDefinitionId, String taskDefKey);
+    Y9Result<Boolean> isCallActivity(String tenantId, String processDefinitionId, String taskDefKey);
 
     /**
      * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
@@ -154,7 +157,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param taskId 任务id
      * @param nodeType 节点类型
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
-    Boolean isContainNodeType(String tenantId, String taskId, String nodeType);
+    Y9Result<Boolean> isContainNodeType(String tenantId, String taskId, String nodeType);
 }
