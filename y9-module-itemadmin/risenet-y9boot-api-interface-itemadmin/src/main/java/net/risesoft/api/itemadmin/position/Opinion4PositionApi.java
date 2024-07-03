@@ -111,9 +111,10 @@ public interface Opinion4PositionApi {
     @GetMapping("/personCommentList")
     Y9Result<List<OpinionListModel>> personCommentList(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
+        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
         @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
-        @RequestParam("taskDefinitionKey") String taskDefinitionKey, @RequestParam("activitiUser") String activitiUser,
+        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey,
+        @RequestParam(value = "activitiUser", required = false) String activitiUser,
         @RequestParam(value = "orderByUser", required = false) String orderByUser);
 
     /**

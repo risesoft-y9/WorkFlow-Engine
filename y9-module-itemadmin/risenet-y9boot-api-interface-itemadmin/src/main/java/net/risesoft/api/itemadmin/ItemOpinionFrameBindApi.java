@@ -55,7 +55,7 @@ public interface ItemOpinionFrameBindApi {
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
         @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+        @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
 
     /**
      * 根据事项id和任务id获取绑定意见框（包含角色信息）
@@ -71,6 +71,6 @@ public interface ItemOpinionFrameBindApi {
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
         @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+        @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
 
 }
