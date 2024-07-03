@@ -2,6 +2,9 @@ package net.risesoft.api.processadmin;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -20,5 +23,7 @@ public interface WorkflowApi {
      * @param taskDefKey 任务key
      * @return Y9Result<List<TargetModel>>
      */
-    Y9Result<List<TargetModel>> getCurrentTaskTargets(String tenantId, String processDefinitionId, String taskDefKey);
+    @GetMapping("/getCurrentTaskTargets")
+    Y9Result<List<TargetModel>> getCurrentTaskTargets(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 }

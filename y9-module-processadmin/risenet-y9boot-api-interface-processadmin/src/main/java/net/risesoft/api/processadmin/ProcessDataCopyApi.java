@@ -1,5 +1,8 @@
 package net.risesoft.api.processadmin;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -15,8 +18,10 @@ public interface ProcessDataCopyApi {
      * @param sourceTenantId 源租户Id
      * @param targetTenantId 目标租户Id
      * @param modelKey 流程定义key
-     * @throws Exception 异常
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> copyModel(String sourceTenantId, String targetTenantId, String modelKey) throws Exception;
+    @PostMapping("/copyModel")
+    Y9Result<Object> copyModel(@RequestParam("sourceTenantId") String sourceTenantId,
+        @RequestParam("targetTenantId") String targetTenantId, @RequestParam("modelKey") String modelKey);
 
 }

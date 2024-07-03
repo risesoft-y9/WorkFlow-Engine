@@ -3,8 +3,6 @@ package net.risesoft.api;
 import java.util.List;
 
 import org.flowable.identitylink.api.IdentityLink;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,10 +35,9 @@ public class IdentityApiImpl implements IdentityApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return List<IdentityLinkModel>
+     * @return Y9Result<List<IdentityLinkModel>>
      */
     @Override
-    @GetMapping(value = "/getIdentityLinksForTask", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam String tenantId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
