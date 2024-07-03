@@ -812,8 +812,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
                     mapTemp.put(SysVariables.NUMBER, number);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(),
-                        task.getTaskDefinitionKey());
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
