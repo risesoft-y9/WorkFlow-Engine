@@ -89,7 +89,7 @@ public interface ButtonOperation4PositionApi {
         @RequestParam("repositionToTaskId") String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice,
         @RequestParam(value = "reason", required = false) String reason,
-        @RequestParam("sponsorGuid") String sponsorGuid);
+        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
 
     /**
      * 退回操作

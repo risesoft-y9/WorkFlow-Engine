@@ -70,8 +70,10 @@ public interface Document4PositionApi {
     Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskId") String taskId,
-        @RequestParam("routeToTask") String routeToTask, @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam(value = "taskId", required = false) String taskId,
+        @RequestParam("routeToTask") String routeToTask,
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      *
@@ -89,8 +91,9 @@ public interface Document4PositionApi {
     @GetMapping("/edit")
     Y9Result<OpenDataModel> edit(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("itembox") String itembox,
-        @RequestParam("taskId") String taskId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
+        @RequestParam(value = "taskId", required = false) String taskId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itemId") String itemId,
+        @RequestParam("mobile") boolean mobile);
 
     /**
      * 带自定义变量发送
@@ -111,11 +114,14 @@ public interface Document4PositionApi {
      */
     @PostMapping(value = "/saveAndForwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<String> saveAndForwarding(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+        @RequestParam(value = "taskId", required = false) String taskId,
+        @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
         @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
+        @RequestParam("userChoice") String userChoice,
+        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid,
         @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> variables);
 
     /**
@@ -139,11 +145,14 @@ public interface Document4PositionApi {
      */
     @PostMapping(value = "/saveAndForwardingByTaskKey", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<String> saveAndForwardingByTaskKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+        @RequestParam(value = "taskId", required = false) String taskId,
+        @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
         @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
+        @RequestParam("userChoice") String userChoice,
+        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid,
         @RequestParam("routeToTaskId") String routeToTaskId,
         @RequestParam("startRouteToTaskId") String startRouteToTaskId, @RequestBody Map<String, Object> variables);
 
@@ -159,7 +168,7 @@ public interface Document4PositionApi {
      */
     @PostMapping(value = "/saveAndSubmitTo", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveAndSubmitTo(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
+        @RequestParam("positionId") String positionId, @RequestParam(value = "taskId", required = false) String taskId,
         @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**

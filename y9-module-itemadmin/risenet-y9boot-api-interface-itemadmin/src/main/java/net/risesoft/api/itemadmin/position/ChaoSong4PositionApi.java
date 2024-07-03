@@ -22,19 +22,19 @@ public interface ChaoSong4PositionApi {
      * 改变抄送件意见状态
      *
      * @param tenantId 租户id
-     * @param id id
+     * @param id 抄送id
      * @param type type
      * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/changeChaoSongState")
     Y9Result<Object> changeChaoSongState(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
-        @RequestParam("type") String type);
+        @RequestParam(value = "type", required = false) String type);
 
     /**
      * 抄送件状态设为已阅
      *
      * @param tenantId 租户id
-     * @param ids ids
+     * @param ids 抄送ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping(value = "/changeStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
