@@ -103,9 +103,9 @@ public interface RuntimeApi {
      * @param processDefinitionId 流程定义id
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<ProcessInstanceModel>
      */
-    Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page,
+    Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page,
         Integer rows);
 
     /**
@@ -113,9 +113,9 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return List&lt;ProcessInstanceModel&gt;
+     * @return Y9Result<List<ProcessInstanceModel>>
      */
-    List<ProcessInstanceModel> getProcessInstancesByKey(String tenantId, String processDefinitionKey);
+    Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(String tenantId, String processDefinitionKey);
 
     /**
      *

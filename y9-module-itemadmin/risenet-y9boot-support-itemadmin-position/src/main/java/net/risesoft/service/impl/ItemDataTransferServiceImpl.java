@@ -155,14 +155,14 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
         return assigneeNames;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page,
         Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
-        Map<String, Object> map = runtimeManager.getProcessInstancesByDefId(tenantId, processDefinitionId, page, rows);
-        List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)map.get("rows");
+        Y9Page<ProcessInstanceModel> piPage =
+            runtimeManager.getProcessInstancesByDefId(tenantId, processDefinitionId, page, rows);
+        List<ProcessInstanceModel> list = piPage.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
         List<ProcessInstanceModel> pList =
             objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
@@ -189,8 +189,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
             }
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
-            Integer.parseInt(map.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
     }
 
 }

@@ -226,7 +226,7 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/getProcessInstancesByDefId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getProcessInstancesByDefId(@RequestParam String tenantId,
+    public Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Map<String, Object> returnMap = new HashMap<>(16);
@@ -239,7 +239,7 @@ public class RuntimeApiImpl implements RuntimeApi {
         returnMap.put("totalpages", (totalCount + rows - 1) / rows);
         returnMap.put("total", totalCount);
         returnMap.put("rows", hpiModelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, hpiModelList);
     }
 
     /**
@@ -251,11 +251,11 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/getProcessInstancesByKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProcessInstanceModel> getProcessInstancesByKey(@RequestParam String tenantId,
+    public Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessInstance> list = customRuntimeService.getProcessInstancesByKey(processDefinitionKey);
-        return FlowableModelConvertUtil.processInstanceList2ModelList(list);
+        return Y9Result.success(FlowableModelConvertUtil.processInstanceList2ModelList(list));
     }
 
     /**

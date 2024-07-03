@@ -138,11 +138,11 @@ public interface RuntimeApiClient extends RuntimeApi {
      * @param processDefinitionId
      * @param page
      * @param rows
-     * @return
+     * @return Y9Page<ProcessInstanceModel>
      */
     @Override
     @GetMapping("/getProcessInstancesByDefId")
-    Map<String, Object> getProcessInstancesByDefId(@RequestParam("tenantId") String tenantId,
+    Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
@@ -151,11 +151,11 @@ public interface RuntimeApiClient extends RuntimeApi {
      *
      * @param tenantId
      * @param processDefinitionKey
-     * @return
+     * @return Y9Result<List<ProcessInstanceModel>>
      */
     @Override
     @GetMapping("/getProcessInstancesByKey")
-    List<ProcessInstanceModel> getProcessInstancesByKey(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
