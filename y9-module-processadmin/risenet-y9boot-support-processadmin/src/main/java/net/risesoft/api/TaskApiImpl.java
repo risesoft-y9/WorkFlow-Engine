@@ -10,7 +10,6 @@ import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,9 +54,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/claim", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> claim(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -70,9 +69,9 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/complete", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> complete(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -85,9 +84,9 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/completeTask", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> completeTask(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskId);
@@ -105,9 +104,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param positionId 岗位Id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/completeTaskWithoutAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> completeTaskWithoutAssignee(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -124,10 +123,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/completeWithVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> completeWithVariables(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -144,10 +142,9 @@ public class TaskApiImpl implements TaskApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param vars 变量map
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/completeWithVariables4Position", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> completeWithVariables4Position(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String positionId, @RequestParam String taskId, @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -167,7 +164,7 @@ public class TaskApiImpl implements TaskApi {
      * @param routeToTaskId 任务id
      * @param vars 变量map
      * @param positionIdList 岗位ids
-     * @return TaskModel
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/createWithVariables", produces = MediaType.APPLICATION_JSON_VALUE,
@@ -191,7 +188,7 @@ public class TaskApiImpl implements TaskApi {
      * @param routeToTaskId 任务id
      * @param vars 变量map
      * @param positionIdList 岗位ids
-     * @return TaskModel
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/createWithVariables1", produces = MediaType.APPLICATION_JSON_VALUE,
@@ -214,9 +211,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/delegateTask", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> delegateTask(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -230,9 +227,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteCandidateUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteCandidateUser(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -244,10 +241,9 @@ public class TaskApiImpl implements TaskApi {
      * 查找所有的任务实例
      *
      * @param tenantId 租户id
-     * @return List<TaskModel>
+     * @return Y9Result<List<TaskModel>>
      */
     @Override
-    @GetMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TaskModel>> findAll(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Task> taskList = customTaskService.findAll();
@@ -259,10 +255,9 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return TaskModel
+     * @return Y9Result<TaskModel>
      */
     @Override
-    @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<TaskModel> findById(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskId);
@@ -274,10 +269,9 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return List<TaskModel>
+     * @return Y9Result<List<TaskModel>>
      */
     @Override
-    @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -291,10 +285,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例Id
      * @param active 是否存活
-     * @return List<TaskModel>
+     * @return Y9Result<List<TaskModel>>
      */
     @Override
-    @GetMapping(value = "/findByProcessInstanceId1", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam boolean active) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -309,12 +302,11 @@ public class TaskApiImpl implements TaskApi {
      * @param processInstanceId 流程实例Id
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return Y9Page<TaskModel>
      */
     @Override
-    @GetMapping(value = "/findListByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<TaskModel> findListByProcessInstanceId(@RequestParam String tenantId,
-                                                         @RequestParam String processInstanceId, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam String processInstanceId, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customTaskService.findListByProcessInstanceId(processInstanceId, page, rows);
     }
@@ -324,10 +316,9 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskModel 任务实体
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveTask", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveTask(@RequestParam String tenantId, @RequestBody TaskModel taskModel) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskModel.getId());
@@ -342,9 +333,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setAssignee(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -358,9 +349,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param date 日期
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setDueDate", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setDueDate(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam Date date) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -374,9 +365,9 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param priority 优先级
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setPriority", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setPriority(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam Integer priority) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -389,9 +380,9 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/unClaim", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> unClaim(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customTaskService.unclaim(taskId);

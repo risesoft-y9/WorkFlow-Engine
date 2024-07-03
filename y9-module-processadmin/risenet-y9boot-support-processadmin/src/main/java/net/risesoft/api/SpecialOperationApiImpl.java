@@ -2,8 +2,6 @@ package net.risesoft.api;
 
 import java.util.List;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,10 +49,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param users 人员id集合
      * @param reason 重定向原因
      * @param sponsorGuid 主办人id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/reposition", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> reposition(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String taskId, @RequestParam String targetTaskDefineKey, @RequestBody List<String> users,
         String reason, String sponsorGuid) {
@@ -76,10 +73,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param userChoice 岗位id集合
      * @param reason 重定向原因
      * @param sponsorGuid 主办人id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/reposition4Position", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> reposition4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice, @RequestParam String reason,
@@ -99,9 +95,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param reason 退回的原因
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/rollBack", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> rollBack(@RequestParam String tenantId, @RequestParam String userId, String taskId,
         @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -119,9 +115,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 退回的原因
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/rollBack4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> rollBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -138,9 +134,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/rollbackToSender4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> rollbackToSender4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -158,9 +154,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/rollbackToStartor4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> rollbackToStartor4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -178,9 +174,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/specialComplete4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> specialComplete4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -198,9 +194,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param reason 收回的原因
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/takeBack", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> takeBack(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -218,9 +214,9 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 收回的原因
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/takeBack4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> takeBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
