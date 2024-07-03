@@ -5,9 +5,6 @@ import java.util.Map;
 
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,9 +43,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteVariable", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteVariable(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -62,9 +59,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -78,10 +75,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
-    @GetMapping(value = "/getVariable", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getVariable(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -95,10 +91,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程id
      * @param key 变量key
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
-    @GetMapping(value = "/getVariableByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getVariableByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -112,10 +107,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
-    @GetMapping(value = "/getVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -128,10 +122,9 @@ public class VariableApiImpl implements VariableApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Map<String, Object>
+     * @return Y9Result<Map<String, Object>>
      */
     @Override
-    @GetMapping(value = "/getVariables", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getVariables(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customVariableService.getVariables(taskId));
@@ -143,11 +136,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param keys 变量keys
-     * @return Map
+     * @return Y9Result<Map<String, Object>>
      */
     @Override
-    @RequestMapping(value = "/getVariablesByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getVariablesByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestBody Collection<String> keys) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -160,10 +151,9 @@ public class VariableApiImpl implements VariableApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Map
+     * @return Y9Result<Map<String, Object>>
      */
     @Override
-    @GetMapping(value = "/getVariablesLocal", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getVariablesLocal(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customVariableService.getVariables(taskId));
@@ -176,10 +166,9 @@ public class VariableApiImpl implements VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      * @param map 变量值
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setVariable(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String key, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -194,10 +183,9 @@ public class VariableApiImpl implements VariableApi {
      * @param processInstanceId 流程实例id
      * @param key 变量key
      * @param map 变量值
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setVariableByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setVariableByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String key, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -212,10 +200,9 @@ public class VariableApiImpl implements VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      * @param map 变量值
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String key, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -229,10 +216,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setVariables(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -246,10 +232,9 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setVariablesLocal", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setVariablesLocal(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
