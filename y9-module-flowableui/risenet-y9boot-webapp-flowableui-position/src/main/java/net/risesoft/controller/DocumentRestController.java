@@ -353,7 +353,7 @@ public class DocumentRestController {
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
-                taskModel.getTaskDefinitionKey());
+                taskModel.getTaskDefinitionKey()).getData();
             if (multiInstance.equals(SysVariables.PARALLEL)) {// 并行
                 map.put("isParallel", true);
                 list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true).getData();

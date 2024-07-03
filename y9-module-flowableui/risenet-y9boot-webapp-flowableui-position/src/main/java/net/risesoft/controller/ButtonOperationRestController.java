@@ -377,7 +377,7 @@ public class ButtonOperationRestController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
             String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
-                taskModel.getTaskDefinitionKey());
+                taskModel.getTaskDefinitionKey()).getData();
             List<String> users = (List<String>)variables.get("users");
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (String user : users) {
@@ -679,7 +679,7 @@ public class ButtonOperationRestController {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
             String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
                     reason = "未填写。";
@@ -838,7 +838,7 @@ public class ButtonOperationRestController {
             String userChoice = "6:" + user;
 
             String multiInstance =
-                processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId);
+                processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId).getData();
             String sponsorHandle = "";
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 sponsorHandle = "true";

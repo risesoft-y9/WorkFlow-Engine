@@ -258,7 +258,7 @@ public class DocumentServiceImpl implements DocumentService {
         String taskId, String taskDefKey, String processInstanceId) {
         DocUserChoiseModel model = new DocUserChoiseModel();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefKey);
+        String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefKey).getData();
         Map<String, Object> tabMap =
             itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
 
@@ -404,7 +404,7 @@ public class DocumentServiceImpl implements DocumentService {
             Position position = Y9LoginUserHolder.getPosition();
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             String multiInstance =
-                processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId);
+                processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1099,7 +1099,7 @@ public class DocumentServiceImpl implements DocumentService {
             userAndDeptIdList.add(userChoice);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(),
-                task.getTaskDefinitionKey());
+                task.getTaskDefinitionKey()).getData();
             Map<String, Object> variables = new HashMap<>(16);
             variables.put(SysVariables.USER, userChoice);
             if (SysVariables.PARALLEL.equals(multiInstance)) {
@@ -1217,7 +1217,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult =
                 this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
             if (!userResult.isSuccess()) {
@@ -1250,7 +1250,7 @@ public class DocumentServiceImpl implements DocumentService {
             boolean searchPerson = true;
             String tenantId = Y9LoginUserHolder.getTenantId();
             String multiInstance =
-                processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefinitionKey);
+                processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefinitionKey).getData();
             if (SysVariables.COMMON.equals(multiInstance)) {
                 ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
                     processDefinitionId, taskDefinitionKey);
@@ -1330,7 +1330,7 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             String multiInstance =
-                processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId);
+                processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
             // 子流程信息
@@ -1572,7 +1572,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId,
                 routeToTaskName, processInstanceId, multiInstance);
             if (!userResult.isSuccess()) {

@@ -146,7 +146,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             userAndDeptIdList.add(assignee);
             Position position = positionManager.get(tenantId, positionId).getData();
             String htiMultiInstance = processDefinitionManager.getNodeType(tenantId, hti.getProcessDefinitionId(),
-                hti.getTaskDefinitionKey());
+                hti.getTaskDefinitionKey()).getData();
             Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, "");
             Map<String, Object> val = new HashMap<>();
