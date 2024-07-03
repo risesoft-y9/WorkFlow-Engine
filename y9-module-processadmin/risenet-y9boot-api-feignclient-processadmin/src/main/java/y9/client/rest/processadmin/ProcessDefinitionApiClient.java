@@ -26,11 +26,11 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义id
-     * @return
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping("/getContainEndEvent4UserTask")
-    List<Map<String, String>> getContainEndEvent4UserTask(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
@@ -38,11 +38,12 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping("/getEndNodeKeyByTaskId")
-    String getEndNodeKeyByTaskId(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    Y9Result<String> getEndNodeKeyByTaskId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     @Override
     @GetMapping("/getFlowElement")
@@ -70,11 +71,11 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId processDefinitionId
      * @param taskDefKey taskDefKey
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping("/getNodeType")
-    String getNodeType(@RequestParam("tenantId") String tenantId,
+    Y9Result<String> getNodeType(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
@@ -86,7 +87,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getOutPutNodeCount")
-    Integer getOutPutNodeCount(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    Y9Result<Integer> getOutPutNodeCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -106,11 +108,11 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping("/getStartNodeKeyByProcessDefinitionId")
-    String getStartNodeKeyByProcessDefinitionId(@RequestParam("tenantId") String tenantId,
+    Y9Result<String> getStartNodeKeyByProcessDefinitionId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
@@ -118,11 +120,11 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey processDefinitionKey
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping("/getStartNodeKeyByProcessDefinitionKey")
-    String getStartNodeKeyByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+    Y9Result<String> getStartNodeKeyByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**

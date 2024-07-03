@@ -68,8 +68,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getContainEndEvent4UserTask(String processDefinitionId) {
-        List<Map<String, String>> userTaskList = new ArrayList<>();
+    public Y9Result<List<TargetModel>> getContainEndEvent4UserTask(String processDefinitionId) {
+        List<TargetModel> userTaskList = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -86,24 +86,24 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         for (SequenceFlow tr1 : list1) {
                             FlowElement element1 = tr1.getTargetFlowElement();
                             if (element1 instanceof EndEvent) {
-                                Map<String, String> map = new HashMap<>(16);
-                                map.put(SysVariables.TASKDEFKEY, event.getId());
-                                map.put(SysVariables.TASKDEFNAME, event.getName());
-                                userTaskList.add(map);
+                                TargetModel targetModel = new TargetModel();
+                                targetModel.setTaskDefKey(event.getId());
+                                targetModel.setTaskDefName(event.getName());
+                                userTaskList.add(targetModel);
                                 break;
                             }
                         }
                     } else if (element instanceof EndEvent) {
-                        Map<String, String> map = new HashMap<>(16);
-                        map.put(SysVariables.TASKDEFKEY, event.getId());
-                        map.put(SysVariables.TASKDEFNAME, event.getName());
-                        userTaskList.add(map);
+                        TargetModel targetModel = new TargetModel();
+                        targetModel.setTaskDefKey(event.getId());
+                        targetModel.setTaskDefName(event.getName());
+                        userTaskList.add(targetModel);
                         break;
                     }
                 }
             }
         }
-        return userTaskList;
+        return Y9Result.success(userTaskList);
     }
 
     @Override

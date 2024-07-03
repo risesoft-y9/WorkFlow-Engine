@@ -18,18 +18,18 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TargetModel>>
      */
-    List<Map<String, String>> getContainEndEvent4UserTask(String tenantId, String processDefinitionId);
+    Y9Result<List<TargetModel>> getContainEndEvent4UserTask(String tenantId, String processDefinitionId);
 
     /**
      * 获取某一任务所在节点的目标是结束节点的目标节点Key
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return String
+     * @return Y9Result<String>
      */
-    String getEndNodeKeyByTaskId(String tenantId, String taskId);
+    Y9Result<String> getEndNodeKeyByTaskId(String tenantId, String taskId);
 
     /**
      * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
@@ -57,18 +57,18 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return String
+     * @return Y9Result<String>
      */
-    String getNodeType(String tenantId, String processDefinitionId, String taskDefKey);
+    Y9Result<String> getNodeType(String tenantId, String processDefinitionId, String taskDefKey);
 
     /**
      * 根据taskId获取某个节点除去end节点和默认路由节点的所有的输出线路的个数
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return Integer
+     * @return Y9Result<Integer>
      */
-    Integer getOutPutNodeCount(String tenantId, String taskId);
+    Y9Result<Integer> getOutPutNodeCount(String tenantId, String taskId);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -85,18 +85,18 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @return String
+     * @return Y9Result<String>
      */
-    String getStartNodeKeyByProcessDefinitionId(String tenantId, String processDefinitionId);
+    Y9Result<String> getStartNodeKeyByProcessDefinitionId(String tenantId, String processDefinitionId);
 
     /**
      * 根据流程定义key获取最新版本的流程定义的启动节点的taskdefineKey
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return String
+     * @return Y9Result<String>
      */
-    String getStartNodeKeyByProcessDefinitionKey(String tenantId, String processDefinitionKey);
+    Y9Result<String> getStartNodeKeyByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合

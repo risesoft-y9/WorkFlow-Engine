@@ -319,7 +319,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 获取第一节点任务key,可能多个
             String startTaskDefKey = "";
             String startNode =
-                processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+                processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
             List<TargetModel> nodeList =
                 processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
             for (TargetModel map : nodeList) {

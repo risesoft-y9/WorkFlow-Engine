@@ -40,7 +40,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getContainEndEvent4UserTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getContainEndEvent4UserTask(@RequestParam String tenantId,
+    public Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam String tenantId,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getContainEndEvent4UserTask(processDefinitionId);
@@ -51,13 +51,13 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping(value = "/getEndNodeKeyByTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getEndNodeKeyByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
+    public Y9Result<String> getEndNodeKeyByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getEndNodeKeyByTaskId(taskId);
+        return Y9Result.success(customProcessDefinitionService.getEndNodeKeyByTaskId(taskId));
     }
 
     /**
@@ -102,10 +102,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getNodeType", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getNodeType(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+    public Y9Result<String> getNodeType(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getNodeType(processDefinitionId, taskDefKey);
+        return Y9Result.success(customProcessDefinitionService.getNodeType(processDefinitionId, taskDefKey));
     }
 
     /**
@@ -113,13 +113,13 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return Integer
+     * @return Y9Result<Integer>
      */
     @Override
     @GetMapping(value = "/getOutPutNodeCount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Integer getOutPutNodeCount(@RequestParam String tenantId, @RequestParam String taskId) {
+    public Y9Result<Integer> getOutPutNodeCount(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getOutPutNodeCount(taskId);
+        return Y9Result.success(customProcessDefinitionService.getOutPutNodeCount(taskId));
     }
 
     /**
@@ -147,10 +147,11 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getStartNodeKeyByProcessDefinitionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getStartNodeKeyByProcessDefinitionId(@RequestParam String tenantId,
+    public Y9Result<String> getStartNodeKeyByProcessDefinitionId(@RequestParam String tenantId,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getStartNodeKeyByProcessDefinitionId(processDefinitionId);
+        return Y9Result
+            .success(customProcessDefinitionService.getStartNodeKeyByProcessDefinitionId(processDefinitionId));
     }
 
     /**
@@ -158,14 +159,15 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping(value = "/getStartNodeKeyByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getStartNodeKeyByProcessDefinitionKey(@RequestParam String tenantId,
+    public Y9Result<String> getStartNodeKeyByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getStartNodeKeyByProcessDefinitionKey(processDefinitionKey);
+        return Y9Result
+            .success(customProcessDefinitionService.getStartNodeKeyByProcessDefinitionKey(processDefinitionKey));
     }
 
     /**
@@ -223,7 +225,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
      * @param isContainEndNode 是否包含结束节点
-     * @return  Y9Result<List<TargetModel>>
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping(value = "/getTargetNodes4UserTask", produces = MediaType.APPLICATION_JSON_VALUE)

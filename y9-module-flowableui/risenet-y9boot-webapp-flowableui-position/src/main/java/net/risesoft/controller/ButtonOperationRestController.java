@@ -271,16 +271,13 @@ public class ButtonOperationRestController {
      * 获取有办结权限的UserTask
      *
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<List < Map < String, String>>>
+     * @return Y9Result<List<TargetModel>>
      */
     @RequestMapping(value = "/getContainEndEvent4UserTask", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, String>>>
-        getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
+    public Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<Map<String, String>> routeToTasks =
-                processDefinitionApi.getContainEndEvent4UserTask(tenantId, processDefinitionId);
-            return Y9Result.success(routeToTasks, "获取成功");
+            return processDefinitionApi.getContainEndEvent4UserTask(tenantId, processDefinitionId);
         } catch (Exception e) {
             LOGGER.error("获取失败", e);
         }
@@ -338,7 +335,7 @@ public class ButtonOperationRestController {
             List<TargetModel> routeToTasks;
             if (StringUtils.isBlank(taskDefKey)) {
                 String startNodeKey =
-                    processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+                    processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
                 // 获取起草节点
                 routeToTasks =
                     processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNodeKey).getData();

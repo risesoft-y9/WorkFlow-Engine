@@ -77,10 +77,10 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      */
     @Override
     @PostMapping(value = "/deleteModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
+    public Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         modelService.deleteModel(modelId);
-        return Y9Result.successMsg("删除成功");
+        return Y9Result.success();
     }
 
     /**
@@ -88,11 +88,11 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<String>
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/deployModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
+    public Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Model modelData = modelService.getModel(modelId);
         BpmnModel model = modelService.getBpmnModel(modelData);
@@ -102,7 +102,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
         byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
         String processName = modelData.getName() + ".bpmn20.xml";
         repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
-        return Y9Result.successMsg("部署成功");
+        return Y9Result.success();
     }
 
     /**

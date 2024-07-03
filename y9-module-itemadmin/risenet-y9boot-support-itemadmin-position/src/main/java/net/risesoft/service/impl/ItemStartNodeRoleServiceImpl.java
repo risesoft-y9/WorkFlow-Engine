@@ -74,7 +74,8 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         List<ItemStartNodeRole> isnrList =
             itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
-        String startNodeKey = processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, latestpdId);
+        String startNodeKey =
+            processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, latestpdId).getData();
         List<TargetModel> nodes = processDefinitionManager.getTargetNodes(tenantId, latestpdId, startNodeKey).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
@@ -198,7 +199,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             startTaskDefKey = list.get(0).getTaskDefKey();
         } else {
             String startNodeKey =
-                processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+                processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
             List<TargetModel> nodes =
                 processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNodeKey).getData();
             startTaskDefKey = nodes.get(0).getTaskDefKey();

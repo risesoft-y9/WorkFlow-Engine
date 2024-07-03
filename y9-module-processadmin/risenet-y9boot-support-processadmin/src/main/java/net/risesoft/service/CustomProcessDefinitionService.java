@@ -19,7 +19,7 @@ public interface CustomProcessDefinitionService {
      * @param processDefinitionId
      * @return
      */
-    List<Map<String, String>> getContainEndEvent4UserTask(String processDefinitionId);
+    Y9Result<List<TargetModel>> getContainEndEvent4UserTask(String processDefinitionId);
 
     /**
      * 获取某一任务所在节点的目标是结束节点的目标节点Key,如果有多个结束节点则获取第一个
