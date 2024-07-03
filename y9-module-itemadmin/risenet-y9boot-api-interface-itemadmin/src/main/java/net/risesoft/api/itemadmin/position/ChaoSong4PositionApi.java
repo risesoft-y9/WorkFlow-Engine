@@ -269,9 +269,10 @@ public interface ChaoSong4PositionApi {
     @PostMapping("/save")
     Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("users") String users, @RequestParam("isSendSms") String isSendSms,
-        @RequestParam("isShuMing") String isShuMing, @RequestParam("smsContent") String smsContent,
-        @RequestParam("smsPersonId") String smsPersonId);
+        @RequestParam("users") String users, @RequestParam(value = "isSendSms", required = false) String isSendSms,
+        @RequestParam(value = "isShuMing", required = false) String isShuMing,
+        @RequestParam(value = "smsContent", required = false) String smsContent,
+        @RequestParam(value = "smsPersonId", required = false) String smsPersonId);
 
     /**
      * Description: 个人阅件搜索

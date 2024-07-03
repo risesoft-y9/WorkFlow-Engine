@@ -162,7 +162,8 @@ public interface Draft4PositionApi {
     @PostMapping("/saveDraft")
     Y9Result<Object> saveDraft(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
         @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("number") String number,
-        @RequestParam("level") String level, @RequestParam("title") String title);
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam(value = "number", required = false) String number,
+        @RequestParam(value = "level", required = false) String level, @RequestParam("title") String title);
 
 }
