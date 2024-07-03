@@ -21,11 +21,26 @@ public class TargetModel implements Serializable {
      */
     private String taskDefKey;
     /**
-     * 节点名称
+     * 任务名称（线上名称存在这里就是线的名字）
      */
     private String taskDefName;
     /**
      * 多实例类型
      */
     private String multiInstance;
+
+    /**
+     * 节点类型
+     */
+    private String type;
+
+    /**
+     * 条件表达式
+     */
+    private String conditionExpression;
+
+    /**
+     * 实际任务名称
+     */
+    private String realTaskDefName;
 }

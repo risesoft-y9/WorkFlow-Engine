@@ -1,5 +1,8 @@
 package net.risesoft.service;
 
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
+
 import java.util.List;
 import java.util.Map;
 
@@ -91,9 +94,9 @@ public interface CustomProcessDefinitionService {
      *
      * @param processDefinitionId
      * @param taskDefKey
-     * @return
+     * @return Y9Result<List<TargetModel>>
      */
-    List<Map<String, String>> getTargetNodes(String processDefinitionId, String taskDefKey);
+    Y9Result<List<TargetModel>> getTargetNodes(String processDefinitionId, String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合,去除名称相等的节点，并且加上结束节点
@@ -121,7 +124,7 @@ public interface CustomProcessDefinitionService {
      * @param isContainEndNode
      * @return
      */
-    List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
+    Y9Result<List<TargetModel>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
         Boolean isContainEndNode);
 
     /**

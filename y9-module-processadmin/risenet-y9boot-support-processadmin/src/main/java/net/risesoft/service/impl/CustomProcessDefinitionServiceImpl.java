@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.util.SysVariables;
@@ -419,8 +421,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getTargetNodes(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetNodes = new ArrayList<>();
+    public Y9Result<List<TargetModel>> getTargetNodes(String processDefinitionId, String taskDefKey) {
+        List<TargetModel> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -442,7 +444,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 }
                 if (!isGateway) {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<>(16);
+                        TargetModel targetModel = new TargetModel();
                         FlowElement fe = tr.getTargetFlowElement();
                         if (tr.getTargetFlowElement() instanceof ParallelGateway) {
                             break;
@@ -459,54 +461,54 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         if (fe instanceof EndEvent) {
                             break;
                         }
-                        map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
+                        targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
                         String name = tr.getName();
                         if (StringUtils.isNotBlank(name) && !"skip".equals(name)) {
                             // 如果输出线上有名称且不为skip，则使用线上的名称作为路由名称
-                            map.put(SysVariables.TASKDEFNAME, name);
+                            targetModel.setTaskDefName(name);
                         } else {
                             // 如果输出线上没有名称，则使用目标节点名称作为路由名称
-                            map.put(SysVariables.TASKDEFNAME, tr.getTargetFlowElement().getName());
+                            targetModel.setTaskDefName(tr.getTargetFlowElement().getName());
                         }
-                        map.put(SysVariables.REALTASKDEFNAME, tr.getTargetFlowElement().getName());
-                        targetNodes.add(map);
+                        targetModel.setRealTaskDefName(tr.getTargetFlowElement().getName());
+                        targetNodes.add(targetModel);
                     }
                 } else {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<>(16);
+                        TargetModel targetModel = new TargetModel();
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)
                             && !(fe instanceof ParallelGateway)) {
-                            map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
-                            map.put(SysVariables.CONDITIONEXPRESSION, tr.getConditionExpression());
-                            map.put(SysVariables.REALTASKDEFNAME, tr.getTargetFlowElement().getName());
+                            targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
+                            targetModel.setConditionExpression(tr.getConditionExpression());
+                            targetModel.setRealTaskDefName(tr.getTargetFlowElement().getName());
                             String name = tr.getName();
                             if (StringUtils.isNotBlank(name) && !"skip".equals(name)) {
                                 // 如果输出线上有名称且不为skip，则使用线上的名称作为路由名称
-                                map.put(SysVariables.TASKDEFNAME, name);
+                                targetModel.setTaskDefName(name);
                             } else {
                                 // 如果输出线上没有名称，则使用目标节点名称作为路由名称
-                                map.put(SysVariables.TASKDEFNAME, tr.getTargetFlowElement().getName());
+                                targetModel.setRealTaskDefName(tr.getTargetFlowElement().getName());
                             }
                             if (fe instanceof SubProcess) {
-                                map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                                targetModel.setMultiInstance(SysVariables.PARALLEL);
                             } else {
                                 UserTask userTask = (UserTask)fe;
                                 if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                                    map.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
+                                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                                 } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                                    map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                                    targetModel.setMultiInstance(SysVariables.PARALLEL);
                                 }
                             }
-                            targetNodes.add(map);
+                            targetNodes.add(targetModel);
                         }
 
                     }
                 }
             }
         }
-        return targetNodes;
+        return Y9Result.success(targetNodes);
     }
 
     @Override
@@ -640,9 +642,9 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
+    public Y9Result<List<TargetModel>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
         Boolean isContainEndNode) {
-        List<Map<String, String>> targetNodes = new ArrayList<>();
+        List<TargetModel> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -654,62 +656,62 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     list = task.getOutgoingFlows();
                 }
                 for (SequenceFlow tr : list) {
-                    Map<String, String> map = new HashMap<>(16);
+                    TargetModel targetModel = new TargetModel();
                     FlowElement flowElementTemp = tr.getTargetFlowElement();
                     if (flowElementTemp instanceof UserTask) {
-                        map.put(SysVariables.TASKDEFKEY, flowElementTemp.getId());
-                        map.put(SysVariables.TASKDEFNAME, flowElementTemp.getName());
-                        map.put(SysVariables.TYPE, SysVariables.USERTASK);
-                        targetNodes.add(map);
+                        targetModel.setTaskDefKey(flowElementTemp.getId());
+                        targetModel.setTaskDefName(flowElementTemp.getName());
+                        targetModel.setType(SysVariables.USERTASK);
+                        targetNodes.add(targetModel);
                     } else if (flowElementTemp instanceof ExclusiveGateway) {
                         ExclusiveGateway task = (ExclusiveGateway)flowElementTemp;
                         List<SequenceFlow> list0 = task.getOutgoingFlows();
                         for (SequenceFlow tr0 : list0) {
-                            Map<String, String> map0 = new HashMap<>(16);
+                            TargetModel targetModel0 = new TargetModel();
                             FlowElement flowElementTemp0 = tr0.getTargetFlowElement();
                             if (flowElementTemp0 instanceof UserTask) {
-                                map0.put(SysVariables.TASKDEFKEY, flowElementTemp0.getId());
-                                map0.put(SysVariables.TASKDEFNAME, flowElementTemp0.getName());
-                                map0.put(SysVariables.TYPE, SysVariables.USERTASK);
-                                targetNodes.add(map0);
+                                targetModel0.setTaskDefKey(flowElementTemp0.getId());
+                                targetModel0.setTaskDefName(flowElementTemp0.getName());
+                                targetModel0.setType(SysVariables.USERTASK);
+                                targetNodes.add(targetModel0);
                             } else if (flowElementTemp0 instanceof EndEvent) {
                                 if (isContainEndNode) {
                                     if (StringUtils.isNotBlank(tr0.getName())) {
-                                        map0.put(SysVariables.TASKDEFKEY, tr0.getId());
-                                        map0.put(SysVariables.TASKDEFNAME, tr0.getName());
+                                        targetModel0.setTaskDefKey(tr0.getId());
+                                        targetModel0.setTaskDefName(tr0.getName());
                                     } else if (StringUtils.isNotBlank(flowElementTemp0.getName())) {
-                                        map0.put(SysVariables.TASKDEFKEY, flowElementTemp0.getId());
-                                        map0.put(SysVariables.TASKDEFNAME, flowElementTemp0.getName());
+                                        targetModel0.setTaskDefKey(flowElementTemp0.getId());
+                                        targetModel0.setTaskDefName(flowElementTemp0.getName());
                                     } else {
-                                        map0.put(SysVariables.TASKDEFKEY, tr0.getId());
-                                        map0.put(SysVariables.TASKDEFNAME, "办结");
+                                        targetModel0.setTaskDefKey(tr0.getId());
+                                        targetModel0.setTaskDefName("办结");
                                     }
-                                    map0.put(SysVariables.TYPE, SysVariables.ENDEVENT);
-                                    targetNodes.add(map0);
+                                    targetModel0.setType(SysVariables.ENDEVENT);
+                                    targetNodes.add(targetModel0);
                                 }
                             }
                         }
                     } else if (flowElementTemp instanceof EndEvent) {
                         if (isContainEndNode) {
-                            Map<String, String> map0 = new HashMap<>(16);
+                            TargetModel targetModel0 = new TargetModel();
                             if (StringUtils.isNotBlank(tr.getName())) {
-                                map0.put(SysVariables.TASKDEFKEY, tr.getId());
-                                map0.put(SysVariables.TASKDEFNAME, tr.getName());
+                                targetModel0.setTaskDefKey(tr.getId());
+                                targetModel0.setTaskDefName(tr.getName());
                             } else if (StringUtils.isNotBlank(flowElementTemp.getName())) {
-                                map0.put(SysVariables.TASKDEFKEY, flowElementTemp.getId());
-                                map0.put(SysVariables.TASKDEFNAME, flowElementTemp.getName());
+                                targetModel0.setTaskDefKey(flowElementTemp.getId());
+                                targetModel0.setTaskDefName(flowElementTemp.getName());
                             } else {
-                                map0.put(SysVariables.TASKDEFKEY, tr.getId());
-                                map0.put(SysVariables.TASKDEFNAME, "办结");
+                                targetModel0.setTaskDefKey(tr.getId());
+                                targetModel0.setTaskDefName("办结");
                             }
-                            map0.put(SysVariables.TYPE, SysVariables.ENDEVENT);
-                            targetNodes.add(map0);
+                            targetModel0.setType(SysVariables.ENDEVENT);
+                            targetNodes.add(targetModel0);
                         }
                     }
                 }
             }
         }
-        return targetNodes;
+        return Y9Result.success(targetNodes);
     }
 
     @Override

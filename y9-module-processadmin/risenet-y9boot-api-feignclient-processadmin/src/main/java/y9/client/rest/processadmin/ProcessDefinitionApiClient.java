@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -129,11 +131,11 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId processDefinitionId
      * @param taskDefKey taskDefKey
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping("/getTargetNodes")
-    List<Map<String, String>> getTargetNodes(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<TargetModel>> getTargetNodes(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
@@ -173,7 +175,7 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getTargetNodes4UserTask")
-    List<Map<String, String>> getTargetNodes4UserTask(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<TargetModel>> getTargetNodes4UserTask(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
         @RequestParam("isContainEndNode") Boolean isContainEndNode);
 
@@ -183,11 +185,11 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId processDefinitionId
      * @param taskDefKey taskDefKey
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @Override
     @GetMapping("/isCallActivity")
-    Boolean isCallActivity(@RequestParam("tenantId") String tenantId,
+    Y9Result<Boolean> isCallActivity(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
@@ -196,10 +198,10 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param taskId 任务id
      * @param nodeType nodeType
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @Override
     @GetMapping("/isContainNodeType")
-    Boolean isContainNodeType(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("nodeType") String nodeType);
+    Y9Result<Boolean> isContainNodeType(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId, @RequestParam("nodeType") String nodeType);
 }

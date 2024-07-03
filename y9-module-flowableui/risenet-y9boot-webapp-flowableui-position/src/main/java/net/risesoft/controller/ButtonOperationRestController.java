@@ -40,6 +40,7 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -299,8 +300,9 @@ public class ButtonOperationRestController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-            String str = variableApi.getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(),
-                SysVariables.USERS).getData();
+            String str = variableApi
+                .getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), SysVariables.USERS)
+                .getData();
             List<String> users = Y9JsonUtil.readValue(str, List.class);
             StringBuilder userNames = new StringBuilder();
             if (users != null) {
@@ -329,23 +331,24 @@ public class ButtonOperationRestController {
      * @return Y9Result<List < Map < String, String>>>
      */
     @RequestMapping(value = "/getTargetNodes", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId,
+    public Y9Result<List<TargetModel>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<Map<String, String>> routeToTasks;
+            List<TargetModel> routeToTasks;
             if (StringUtils.isBlank(taskDefKey)) {
                 String startNodeKey =
                     processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
                 // 获取起草节点
-                routeToTasks = processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNodeKey);
-                Map<String, String> startNode = routeToTasks.get(0);
-                routeToTasks = processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId,
-                    startNode.get("taskDefKey"), true);
+                routeToTasks =
+                    processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNodeKey).getData();
+                TargetModel startNode = routeToTasks.get(0);
+                routeToTasks = processDefinitionApi
+                    .getTargetNodes4UserTask(tenantId, processDefinitionId, startNode.getTaskDefKey(), true).getData();
                 routeToTasks.add(0, startNode);
             } else {
-                routeToTasks =
-                    processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId, taskDefKey, true);
+                routeToTasks = processDefinitionApi
+                    .getTargetNodes4UserTask(tenantId, processDefinitionId, taskDefKey, true).getData();
             }
             return Y9Result.success(routeToTasks, "获取成功");
         } catch (Exception e) {
@@ -441,7 +444,8 @@ public class ButtonOperationRestController {
                         Date endTime = hai.getEndTime();
                         String parallelSponsorObj;
                         if (null == endTime) {
-                            parallelSponsorObj = variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor").getData();
+                            parallelSponsorObj =
+                                variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor").getData();
                         } else {
                             HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
                                 .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "").getData();
