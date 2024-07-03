@@ -86,7 +86,7 @@ public interface ButtonOperation4PositionApi {
     @PostMapping(value = "/reposition", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> reposition(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("repositionToTaskId")String repositionToTaskId,
        @RequestParam("userChoice") List<String> userChoice,
-        @RequestParam(value = "reason", required = false) String reason, @RequestParam("sponsorGuid") String sponsorGuid);
+        @RequestParam(value = "reason", required = false) String reason, @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
 
     /**
      * 退回操作
