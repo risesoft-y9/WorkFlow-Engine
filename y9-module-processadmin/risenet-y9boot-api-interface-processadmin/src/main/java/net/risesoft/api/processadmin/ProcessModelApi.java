@@ -27,17 +27,17 @@ public interface ProcessModelApi {
      * @return Y9Result<String>
      */
     @PostMapping(value = "/deleteModel")
-    Y9Result<String> deleteModel(@RequestParam String tenantId, @RequestParam String modelId);
+    Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId);
 
     /**
      * 根据Model部署流程
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<String>
+     * @return Y9Result<Object>
      */
     @PostMapping(value = "/deployModel")
-    Y9Result<String> deployModel(@RequestParam String tenantId, @RequestParam String modelId);
+    Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId);
 
     /**
      * 获取模型列表

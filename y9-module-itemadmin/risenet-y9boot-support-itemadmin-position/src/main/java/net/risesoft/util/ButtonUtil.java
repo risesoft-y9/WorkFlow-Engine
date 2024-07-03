@@ -196,7 +196,7 @@ public class ButtonUtil {
                 Boolean isContainEndEvent =
                     processDefinitionManager.isContainNodeType(tenantId, taskId, SysVariables.ENDEVENT).getData();
                 // 获取某个节点除去end节点的所有的输出线路的个数
-                int outPutNodeCount = processDefinitionManager.getOutPutNodeCount(tenantId, taskId);
+                int outPutNodeCount = processDefinitionManager.getOutPutNodeCount(tenantId, taskId).getData();
                 String processDefinitionId = task.getProcessDefinitionId();
                 String taskDefKey = task.getTaskDefinitionKey();
                 /*----- 下面是保存按钮的设置 -----*/

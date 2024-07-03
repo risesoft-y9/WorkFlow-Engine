@@ -54,7 +54,7 @@ public class ItemStartNodeRoleController {
         List<ItemStartNodeRole> oldList =
             itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
-            String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+            String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
             List<TargetModel> nodeList =
                 processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
             for (TargetModel targetModel : nodeList) {
@@ -101,7 +101,7 @@ public class ItemStartNodeRoleController {
         List<ItemStartNodeRole> oldList =
             itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
-            String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+            String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
             List<TargetModel> nodeList =
                 processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
             for (TargetModel targetModel : nodeList) {
