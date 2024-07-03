@@ -73,6 +73,7 @@ import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.Y9Page;
@@ -319,10 +320,10 @@ public class DocumentServiceImpl implements DocumentService {
             String startTaskDefKey = "";
             String startNode =
                 processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
-            List<Map<String, String>> nodeList =
-                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNode);
-            for (Map<String, String> map : nodeList) {
-                startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.get("taskDefKey"));
+            List<TargetModel> nodeList =
+                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
+            for (TargetModel map : nodeList) {
+                startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.getTaskDefKey());
             }
             model.setStartTaskDefKey(startTaskDefKey);
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
@@ -859,16 +860,16 @@ public class DocumentServiceImpl implements DocumentService {
                     /*
                      * 添加发送下面的路由
                      */
-                    List<Map<String, String>> routeToTasks =
-                        processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
-                    for (Map<String, String> m : routeToTasks) {
+                    List<TargetModel> routeToTasks =
+                        processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+                    for (TargetModel m : routeToTasks) {
                         Map<String, Object> map2 = new HashMap<>(16);
                         // 退回、路由网关不显示在发送下面
-                        if (!m.get("taskDefName").equals("退回") && !m.get("taskDefName").equals("Exclusive Gateway")) {
-                            sendName = Y9Util.genCustomStr(sendName, m.get("taskDefName"));
-                            sendKey = Y9Util.genCustomStr(sendKey, m.get("taskDefKey"));
-                            map2.put("sendName", m.get("taskDefName"));
-                            map2.put("sendKey", m.get("taskDefKey"));
+                        if (!m.getTaskDefName().equals("退回") && !m.getTaskDefName().equals("Exclusive Gateway")) {
+                            sendName = Y9Util.genCustomStr(sendName, m.getTaskDefName());
+                            sendKey = Y9Util.genCustomStr(sendKey, m.getTaskDefKey());
+                            map2.put("sendName", m.getTaskDefName());
+                            map2.put("sendKey", m.getTaskDefKey());
                             sendMap.add(map2);
                         }
                     }
@@ -997,16 +998,15 @@ public class DocumentServiceImpl implements DocumentService {
         return result;
     }
 
-    public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber,
+    public Y9Result<TargetModel> parserRouteToTaskId(String itemId, String processSerialNumber,
         String processDefinitionId, String taskDefKey, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Y9Result<Map<String, String>> result = Y9Result.failure("解析目标路由失败");
+        Y9Result<TargetModel> result = Y9Result.failure("解析目标路由失败");
         try {
-            List<Map<String, String>> targetNodes =
-                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
+            List<TargetModel> targetNodes =
+                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
             if (targetNodes.isEmpty()) {
-                result.setMsg("目标路由不存在");
-                return result;
+                return Y9Result.failure("目标路由不存在");
             }
             if (1 == targetNodes.size()) {
                 result.setData(targetNodes.get(0));
@@ -1017,11 +1017,12 @@ public class DocumentServiceImpl implements DocumentService {
                 y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
             Map<String, Object> variables =
                 y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
-            List<Map<String, String>> targetNodesTemp = new ArrayList<>();
-            for (Map<String, String> targetNode : targetNodes) {
+            List<TargetModel> targetNodesTemp = new ArrayList<>();
+            for (TargetModel targetNode : targetNodes) {
                 for (String columnName : variables.keySet()) {
                     String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
-                    if (StringUtils.isNumeric(str)) {// 是数值
+                    // 是数值
+                    if (StringUtils.isNumeric(str)) {
                         if (variables.get(columnName).toString().contains(".")) {
                             System.out
                                 .println("*************************Double:" + variables.get(columnName).toString());
@@ -1036,8 +1037,8 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 System.out.println("*************************Y9JsonUtil:" + Y9JsonUtil.writeValueAsString(variables));
 
-                boolean b = conditionParserApi
-                    .parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables).getData();
+                boolean b =
+                    conditionParserApi.parser(tenantId, targetNode.getConditionExpression(), variables).getData();
                 if (b) {
                     targetNodesTemp.add(targetNode);
                 }
@@ -1209,13 +1210,13 @@ public class DocumentServiceImpl implements DocumentService {
                 repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = processDefinitionModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
-            Y9Result<Map<String, String>> routeToTaskIdResult =
+            Y9Result<TargetModel> routeToTaskIdResult =
                 this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, "");
             if (!routeToTaskIdResult.isSuccess()) {
                 return Y9Result.failure(routeToTaskIdResult.getMsg());
             }
-            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY),
-                routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
+            String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
+                routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
             Y9Result<List<String>> userResult =
                 this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
@@ -1564,13 +1565,13 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(),
                 processInstanceId = task.getProcessInstanceId();
-            Y9Result<Map<String, String>> routeToTaskIdResult =
-                this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
+
+            Y9Result<TargetModel> routeToTaskIdResult=this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
             if (!routeToTaskIdResult.isSuccess()) {
                 return Y9Result.failure(routeToTaskIdResult.getMsg());
             }
-            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY),
-                routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
+            String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
+                routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
             Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId,
                 routeToTaskName, processInstanceId, multiInstance);

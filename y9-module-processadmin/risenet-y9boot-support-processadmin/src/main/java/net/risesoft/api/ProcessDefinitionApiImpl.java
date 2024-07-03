@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 
@@ -172,11 +174,11 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List<Map<String, String>>
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping(value = "/getTargetNodes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes(@RequestParam String tenantId,
+    public Y9Result<List<TargetModel>> getTargetNodes(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getTargetNodes(processDefinitionId, taskDefKey);
@@ -221,11 +223,11 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
      * @param isContainEndNode 是否包含结束节点
-     * @return List<Map<String, String>>
+     * @return  Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping(value = "/getTargetNodes4UserTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes4UserTask(@RequestParam String tenantId,
+    public Y9Result<List<TargetModel>> getTargetNodes4UserTask(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
         @RequestParam Boolean isContainEndNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -239,14 +241,14 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @Override
     @GetMapping(value = "/isCallActivity", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean isCallActivity(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+    public Y9Result<Boolean> isCallActivity(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.isCallActivity(processDefinitionId, taskDefKey);
+        return Y9Result.success(customProcessDefinitionService.isCallActivity(processDefinitionId, taskDefKey));
     }
 
     /**
@@ -255,13 +257,13 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param taskId 任务id
      * @param nodeType 节点类型
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @Override
     @GetMapping(value = "/isContainNodeType", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean isContainNodeType(@RequestParam String tenantId, @RequestParam String taskId,
+    public Y9Result<Boolean> isContainNodeType(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String nodeType) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.isContainNodeType(taskId, nodeType);
+        return Y9Result.success(customProcessDefinitionService.isContainNodeType(taskId, nodeType));
     }
 }

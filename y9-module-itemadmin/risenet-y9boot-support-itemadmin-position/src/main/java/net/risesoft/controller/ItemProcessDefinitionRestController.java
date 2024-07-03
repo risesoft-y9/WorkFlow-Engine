@@ -29,7 +29,8 @@ public class ItemProcessDefinitionRestController {
     @RequestMapping(value = "/getProcessDefinitionList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionList(@RequestParam String processDefineKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ProcessDefinitionModel> pdList = repositoryApi.getProcessDefinitionListByKey(tenantId, processDefineKey);
+        List<ProcessDefinitionModel> pdList =
+            repositoryApi.getProcessDefinitionListByKey(tenantId, processDefineKey).getData();
         return Y9Result.success(pdList, "获取成功");
     }
 }

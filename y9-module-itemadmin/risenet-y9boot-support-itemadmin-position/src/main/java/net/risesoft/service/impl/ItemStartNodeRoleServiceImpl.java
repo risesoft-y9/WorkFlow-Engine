@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemStartNodeRoleRepository;
 import net.risesoft.service.ItemStartNodeRoleService;
@@ -60,7 +60,8 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestpd =
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
@@ -74,9 +75,9 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
         String startNodeKey = processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, latestpdId);
-        List<Map<String, String>> nodes = processDefinitionManager.getTargetNodes(tenantId, latestpdId, startNodeKey);
-        for (Map<String, String> map : nodes) {
-            String currentTaskDefKey = map.get("taskDefKey");
+        List<TargetModel> nodes = processDefinitionManager.getTargetNodes(tenantId, latestpdId, startNodeKey).getData();
+        for (TargetModel targetModel : nodes) {
+            String currentTaskDefKey = targetModel.getTaskDefKey();
             for (ItemStartNodeRole isnr : isnrList) {
                 if (currentTaskDefKey.equals(isnr.getTaskDefKey())) {
                     ItemStartNodeRole oldisnr = itemStartNodeRoleRepository
@@ -198,9 +199,9 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         } else {
             String startNodeKey =
                 processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
-            List<Map<String, String>> nodes =
-                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNodeKey);
-            startTaskDefKey = nodes.get(0).get(SysVariables.TASKDEFKEY);
+            List<TargetModel> nodes =
+                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNodeKey).getData();
+            startTaskDefKey = nodes.get(0).getTaskDefKey();
         }
         return startTaskDefKey;
     }
