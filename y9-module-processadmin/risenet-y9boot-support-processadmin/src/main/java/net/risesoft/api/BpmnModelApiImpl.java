@@ -50,11 +50,7 @@ import org.flowable.validation.ProcessValidator;
 import org.flowable.validation.ProcessValidatorFactory;
 import org.flowable.validation.ValidationError;
 import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -136,7 +132,6 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @return Y9Result<String>
      */
     @Override
-    @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         modelService.deleteModel(modelId);
@@ -151,7 +146,6 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @return Y9Result<String>
      */
     @Override
-    @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Model modelData = modelService.getModel(modelId);
@@ -173,7 +167,6 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @return Y9Result<String>
      */
     @Override
-    @PostMapping(value = "/genProcessDiagram", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> genProcessDiagram(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricProcessInstance pi = customHistoricProcessService.getById(processInstanceId);
@@ -221,10 +214,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Map<String, Object>
+     * @return Y9Result<Y9BpmnModel>
      */
     @Override
-    @GetMapping(value = "/getBpmnModel", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Y9BpmnModel> getBpmnModel(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricProcessInstance pi = customHistoricProcessService.getById(processInstanceId);
@@ -325,10 +317,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Map<String, Object>
+     * @return Y9Result<Y9FlowChartModel>
      */
     @Override
-    @GetMapping(value = "/getFlowChart", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Y9FlowChartModel> getFlowChart(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         Y9FlowChartModel flowChartModel = new Y9FlowChartModel();
@@ -504,10 +495,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * 获取模型列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return Y9Result<List<FlowableBpmnModel>>
      */
     @Override
-    @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<FlowableBpmnModel> items = new ArrayList<>();
@@ -539,10 +529,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<Map<String, Object>>
+     * @return Y9Result<FlowableBpmnModel>
      */
     @Override
-    @RequestMapping(value = "/getModelXml")
     public Y9Result<FlowableBpmnModel> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         FlowableBpmnModel flowableBpmnModel = new FlowableBpmnModel();
@@ -566,10 +555,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param file 模型文件
-     * @return Map<String, Object>
+     * @return Y9Result<Object>
      */
     @Override
-    @RequestMapping(value = "/import")
     public Y9Result<Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -644,7 +632,6 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @return Y9Result<String>
      */
     @Override
-    @RequestMapping(value = "/saveModelXml")
     public Y9Result<Object> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String modelId, @RequestParam MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);

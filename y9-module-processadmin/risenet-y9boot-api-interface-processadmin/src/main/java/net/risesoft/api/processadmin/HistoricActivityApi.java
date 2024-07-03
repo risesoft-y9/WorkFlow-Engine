@@ -2,6 +2,9 @@ package net.risesoft.api.processadmin;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -17,18 +20,22 @@ public interface HistoricActivityApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return List&lt;HistoricActivityInstanceModel&gt;
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>}
      */
-    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(String tenantId, String processInstanceId);
+    @GetMapping("/getByProcessInstanceId")
+    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 根据流程实例获取历史节点实例
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年度
-     * @return List<HistoricActivityInstanceModel>
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>}
      */
-    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(String tenantId, String processInstanceId,
-        String year);
+    @GetMapping("/getByProcessInstanceIdAndYear")
+    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(
+        @RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam(value = "year", required = false) String year);
+
 }

@@ -2,6 +2,10 @@ package net.risesoft.api.processadmin;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -17,46 +21,57 @@ public interface HistoricProcessApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> deleteProcessInstance(String tenantId, String processInstanceId);
+    @PostMapping("/deleteProcessInstance")
+    Y9Result<Object> deleteProcessInstance(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id获取实例
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return HistoricProcessInstanceModel
+     * @return Y9Result<HistoricProcessInstanceModel>
      */
-    Y9Result<HistoricProcessInstanceModel> getById(String tenantId, String processInstanceId);
+    @GetMapping("/getById")
+    Y9Result<HistoricProcessInstanceModel> getById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id和年度获取实例
      *
      * @param tenantId 租户id
-     * @param id 流程实例id
+     * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return HistoricProcessInstanceModel
+     * @return Y9Result<HistoricProcessInstanceModel>
      */
-    Y9Result<HistoricProcessInstanceModel> getByIdAndYear(String tenantId, String id, String year);
+    @GetMapping("/getByIdAndYear")
+    Y9Result<HistoricProcessInstanceModel> getByIdAndYear(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam(value = "year", required = false) String year);
 
     /**
      * 根据父流程实例获取所有历史子流程实例
      *
      * @param tenantId 租户id
      * @param superProcessInstanceId 父流程实例id
-     * @return List&lt;HistoricProcessInstanceModel&gt;
+     * @return Y9Result<List<HistoricProcessInstanceModel>>
      */
-    Y9Result<List<HistoricProcessInstanceModel>> getBySuperProcessInstanceId(String tenantId, String superProcessInstanceId);
+    @GetMapping("/getBySuperProcessInstanceId")
+    Y9Result<List<HistoricProcessInstanceModel>> getBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("superProcessInstanceId") String superProcessInstanceId);
 
     /**
      * 根据流程实例获取父流程实例
      *
      * @param tenantId 租户id
      * @param processInstanceId 父流程实例id
-     * @return HistoricProcessInstanceModel
+     * @return Y9Result<HistoricProcessInstanceModel>
      */
-    Y9Result<HistoricProcessInstanceModel> getSuperProcessInstanceById(String tenantId, String processInstanceId);
+    @GetMapping("/getSuperProcessInstanceById")
+    Y9Result<HistoricProcessInstanceModel> getSuperProcessInstanceById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 恢复流程实例
@@ -64,35 +79,46 @@ public interface HistoricProcessApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> recoveryProcess(String tenantId, String userId, String processInstanceId);
+    @PostMapping("/recoveryProcess")
+    Y9Result<Object> recoveryProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 彻底删除流程实例
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> removeProcess(String tenantId, String processInstanceId);
+    @PostMapping("/removeProcess")
+    Y9Result<Object> removeProcess(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 彻底删除流程实例,岗位
+     * 彻底删除流程实例，岗位
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> removeProcess4Position(String tenantId, String processInstanceId);
+    @PostMapping("/removeProcess4Position")
+    Y9Result<Object> removeProcess4Position(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 设置优先级
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param priority priority
+     * @param priority 优先级
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
-    Y9Result<Object> setPriority(String tenantId, String processInstanceId, String priority) throws Exception;
+    @PostMapping("/setPriority")
+    Y9Result<Object> setPriority(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("priority") String priority)
+        throws Exception;
+
 }

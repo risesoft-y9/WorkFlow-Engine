@@ -8,8 +8,6 @@ import org.flowable.engine.RepositoryService;
 import org.flowable.ui.modeler.domain.AbstractModel;
 import org.flowable.ui.modeler.domain.Model;
 import org.flowable.ui.modeler.serviceapi.ModelService;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,9 +42,9 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
      * @param sourceTenantId 源租户id
      * @param targetTenantId 目标租户id
      * @param modelKey 定义key
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/copyModel", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId,
         @RequestParam String modelKey) {
         try {

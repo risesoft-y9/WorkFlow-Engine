@@ -1,9 +1,6 @@
 package y9.client.rest.processadmin;
 
-import net.risesoft.pojo.Y9Result;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.ProcessDataCopyApi;
 
@@ -16,18 +13,5 @@ import net.risesoft.api.processadmin.ProcessDataCopyApi;
     url = "${y9.service.processAdmin.directUrl:}",
     path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/processDataCopy")
 public interface ProcessDataCopyApiClient extends ProcessDataCopyApi {
-
-    /**
-     * 复制拷贝流程定义数据
-     *
-     * @param sourceTenantId 源租户id
-     * @param targetTenantId 目标租户id
-     * @param modelKey 定义key
-     * @return
-     */
-    @Override
-    @PostMapping("/copyModel")
-    Y9Result<Object> copyModel(@RequestParam("sourceTenantId") String sourceTenantId,
-                               @RequestParam("targetTenantId") String targetTenantId, @RequestParam("modelKey") String modelKey);
 
 }

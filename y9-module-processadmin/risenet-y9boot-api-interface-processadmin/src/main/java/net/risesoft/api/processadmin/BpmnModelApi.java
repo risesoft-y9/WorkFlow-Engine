@@ -2,6 +2,9 @@ package net.risesoft.api.processadmin;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.risesoft.model.processadmin.FlowableBpmnModel;
@@ -23,16 +26,18 @@ public interface BpmnModelApi {
      * @param modelId 模型id
      * @return {@code Y9Result<Boolean>}
      */
-    Y9Result<Object> deleteModel(String tenantId, String modelId);
+    @PostMapping(value = "/deleteModel")
+    Y9Result<Object> deleteModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
 
     /**
      * 根据Model部署流程
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> deployModel(String tenantId, String modelId);
+    @PostMapping(value = "/deployModel")
+    Y9Result<Object> deployModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
 
     /**
      * 生成流程图
@@ -40,9 +45,10 @@ public interface BpmnModelApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>
-     * @throws Exception Exception
      */
-    Y9Result<String> genProcessDiagram(String tenantId, String processInstanceId);
+    @PostMapping("/genProcessDiagram")
+    Y9Result<String> genProcessDiagram(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取流程图模型
@@ -51,7 +57,9 @@ public interface BpmnModelApi {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Y9BpmnModel>
      */
-    Y9Result<Y9BpmnModel> getBpmnModel(String tenantId, String processInstanceId);
+    @GetMapping("/getBpmnModel")
+    Y9Result<Y9BpmnModel> getBpmnModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取流程图数据
@@ -60,24 +68,29 @@ public interface BpmnModelApi {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Y9FlowChartModel>
      */
-    Y9Result<Y9FlowChartModel> getFlowChart(String tenantId, String processInstanceId);
+    @GetMapping("/getFlowChart")
+    Y9Result<Y9FlowChartModel> getFlowChart(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取模型列表
      *
      * @param tenantId 租户id
-     * @return
+     * @return Y9Result<List<FlowableBpmnModel>>
      */
-    Y9Result<List<FlowableBpmnModel>> getModelList(String tenantId);
+    @GetMapping(value = "/getModelList")
+    Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam("tenantId") String tenantId);
 
     /**
      * 获取流程设计模型xml
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return
+     * @return Y9Result<FlowableBpmnModel>
      */
-    Y9Result<FlowableBpmnModel> getModelXml(String tenantId, String modelId);
+    @GetMapping(value = "/getModelXml")
+    Y9Result<FlowableBpmnModel> getModelXml(@RequestParam("tenantId") String tenantId,
+        @RequestParam("modelId") String modelId);
 
     /**
      * 导入流程模板
@@ -85,9 +98,11 @@ public interface BpmnModelApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param file 导入的xml文件
-     * @return
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> importProcessModel(String tenantId, String userId, MultipartFile file);
+    @PostMapping(value = "/import")
+    Y9Result<Object> importProcessModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("file") MultipartFile file);
 
     /**
      * 保存模型xml
@@ -96,8 +111,10 @@ public interface BpmnModelApi {
      * @param userId 用户id
      * @param modelId 模板id
      * @param file 模型文件
-     * @return
+     * @return Y9Result<Object>
      */
-    Y9Result<Object> saveModelXml(String tenantId, String userId, String modelId, MultipartFile file);
+    @PostMapping(value = "/saveModelXml")
+    Y9Result<Object> saveModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("modelId") String modelId, @RequestParam("file") MultipartFile file);
 
 }
