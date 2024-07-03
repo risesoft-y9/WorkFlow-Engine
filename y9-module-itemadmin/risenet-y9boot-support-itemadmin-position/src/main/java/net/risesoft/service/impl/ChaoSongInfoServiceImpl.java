@@ -963,6 +963,11 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName));
         }
+
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+
         if (StringUtils.isNotBlank(userName)) {
             criteria.subCriteria(new Criteria("userName").contains(userName));
         }

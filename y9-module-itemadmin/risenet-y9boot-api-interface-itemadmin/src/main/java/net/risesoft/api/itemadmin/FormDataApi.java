@@ -15,6 +15,8 @@ import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 表单接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -57,8 +59,8 @@ public interface FormDataApi {
      */
     @GetMapping("/findFormItemBind")
     Y9Result<List<BindFormModel>> findFormItemBind(@RequestParam("tenantId") String tenantId,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefinitionKey") String taskDefinitionKey);
+        @RequestParam(value = "itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey);
 
     /**
      * 获取表单所有字段权限

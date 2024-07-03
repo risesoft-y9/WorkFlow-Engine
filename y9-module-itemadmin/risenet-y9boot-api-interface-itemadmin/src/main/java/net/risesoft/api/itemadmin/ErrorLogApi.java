@@ -9,6 +9,8 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 错误日志记录接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19

@@ -73,7 +73,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestpd =
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
@@ -94,7 +95,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
                         itemId, latestpdId, currentTaskDefKey, bind.getOpinionFrameMark());
                 if (null == oldBind) {
-                    String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldbindId = bind.getId();
+                    String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                    String oldbindId = bind.getId();
                     /**
                      * 保存意见框绑定
                      */
@@ -247,7 +249,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
     /**
      * Description:
-     * 
+     *
      * @param opinionFrameNameAndMarks
      * @param itemId
      * @param processDefinitionId
@@ -257,7 +259,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Transactional
     public void save(String opinionFrameNameAndMarks, String itemId, String processDefinitionId, String taskDefKey) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<ItemOpinionFrameBind> resList = new ArrayList<ItemOpinionFrameBind>();
+        List<ItemOpinionFrameBind> resList = new ArrayList<>();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotEmpty(opinionFrameNameAndMarks)) {

@@ -10,6 +10,8 @@ import net.risesoft.model.itemadmin.DocumentWpsModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * WPS正文接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19

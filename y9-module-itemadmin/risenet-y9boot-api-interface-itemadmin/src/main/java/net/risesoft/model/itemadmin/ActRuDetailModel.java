@@ -15,12 +15,9 @@ import lombok.Data;
 @Data
 public class ActRuDetailModel implements Serializable {
 
-    private static final long serialVersionUID = 3387901751275051825L;
-
     public static final Integer TODO = 0;
-
     public static final Integer DOING = 1;
-
+    private static final long serialVersionUID = 3387901751275051825L;
     /**
      * 唯一标示
      */

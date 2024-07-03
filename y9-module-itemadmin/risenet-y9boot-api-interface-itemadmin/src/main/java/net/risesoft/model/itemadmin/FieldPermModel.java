@@ -2,7 +2,6 @@ package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
 
-
 import lombok.Data;
 
 /**

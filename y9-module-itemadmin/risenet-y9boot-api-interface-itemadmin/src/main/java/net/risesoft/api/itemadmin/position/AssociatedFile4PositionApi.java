@@ -26,7 +26,8 @@ public interface AssociatedFile4PositionApi {
      * @return Y9Result<Integer>
      */
     @GetMapping("/countAssociatedFile")
-    Y9Result<Integer> countAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Integer> countAssociatedFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 删除关联流程
@@ -37,7 +38,8 @@ public interface AssociatedFile4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/deleteAllAssociatedFile")
-    Y9Result<Object> deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delIds") String delIds);
+    Y9Result<Object> deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delIds") String delIds);
 
     /**
      * 删除关联流程
@@ -48,7 +50,8 @@ public interface AssociatedFile4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/deleteAssociatedFile")
-    Y9Result<Object> deleteAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delId") String delId);
+    Y9Result<Object> deleteAssociatedFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delId") String delId);
 
     /**
      * 获取关联流程列表,包括未办结件
@@ -59,7 +62,8 @@ public interface AssociatedFile4PositionApi {
      * @return Y9Result<List<AssociatedFileModel>> 关联流程列表
      */
     @GetMapping("/getAssociatedFileAllList")
-    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存关联流程
@@ -71,6 +75,8 @@ public interface AssociatedFile4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/saveAssociatedFile")
-    Y9Result<Object> saveAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processInstanceIds") String processInstanceIds);
+    Y9Result<Object> saveAssociatedFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processInstanceIds") String processInstanceIds);
 
 }
