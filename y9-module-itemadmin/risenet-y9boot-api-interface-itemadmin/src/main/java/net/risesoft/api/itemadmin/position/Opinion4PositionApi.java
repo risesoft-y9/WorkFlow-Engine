@@ -95,7 +95,7 @@ public interface Opinion4PositionApi {
 
     /**
      * 获取个人意见列表
-     *
+     * 
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
@@ -105,7 +105,8 @@ public interface Opinion4PositionApi {
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
      * @param activitiUser activitiUser
-     * @return Y9Result<List<OpinionListModel>>
+     * @param orderByUser orderByUser
+     * @return
      */
     @GetMapping("/personCommentList")
     Y9Result<List<OpinionListModel>> personCommentList(@RequestParam("tenantId") String tenantId,
@@ -113,7 +114,7 @@ public interface Opinion4PositionApi {
         @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
         @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
         @RequestParam("taskDefinitionKey") String taskDefinitionKey, @RequestParam("activitiUser") String activitiUser,
-        @RequestParam("orderByUser") String orderByUser);
+        @RequestParam(value = "orderByUser", required = false) String orderByUser);
 
     /**
      * 保存意见

@@ -70,7 +70,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
          */
         for (Y9FormItemBind eib : previouseibList) {
-            String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
+            String taskDefKey = eib.getTaskDefKey();
+            String formId = eib.getFormId();
             if (StringUtils.isEmpty(taskDefKey)) {
                 Y9FormItemBind eibTemp = y9FormItemBindRepository
                     .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
@@ -79,7 +80,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                 }
             } else {
                 for (Map<String, Object> mapTemp : nodes) {
-                    if (((String)mapTemp.get("taskDefKey")).equals(taskDefKey)) {
+                    if (mapTemp.get("taskDefKey").equals(taskDefKey)) {
                         Y9FormItemBind eibTemp = y9FormItemBindRepository
                             .findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, taskDefKey, formId);
                         if (null == eibTemp) {
@@ -110,7 +111,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     @Override
     public List<Y9FormItemBind> findByItemIdAndProcDefId(String itemId, String procDefId) {
-        List<Y9FormItemBind> eformTaskBinds = new ArrayList<Y9FormItemBind>();
+        List<Y9FormItemBind> eformTaskBinds = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
                 eformTaskBinds =
@@ -125,24 +126,22 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Override
     public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId,
         String taskDefKey) {
-        List<Y9FormItemBind> eformTaskBinds = new ArrayList<Y9FormItemBind>();
+        List<Y9FormItemBind> eformTaskBinds = new ArrayList<>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
-                // 查找本任务的form,在任务上设置的表单有优先权。
-                List<Map<String, Object>> list = new ArrayList<>();
-                // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
-                if (taskDefKey == "") {
-                    list = processDefinitionManager.getNodes(tenantId, procDefId, false);
-                    taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
-                }
+            // 查找本任务的form,在任务上设置的表单有优先权。
+            List<Map<String, Object>> list = new ArrayList<>();
+            // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
+            if (StringUtils.isBlank(taskDefKey)) {
+                list = processDefinitionManager.getNodes(tenantId, procDefId, false);
+                taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
+            }
+            eformTaskBinds =
+                y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
+            if (eformTaskBinds.isEmpty()) {
+                // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
                 eformTaskBinds =
-                    y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
-                if (eformTaskBinds.isEmpty()) {
-                    // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
-                    eformTaskBinds =
-                        y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
-                }
+                    y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -153,24 +152,22 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Override
     public List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4Mobile(String itemId, String procDefId,
         String taskDefKey) {
-        List<Y9FormItemMobileBind> eformTaskBinds = new ArrayList<Y9FormItemMobileBind>();
+        List<Y9FormItemMobileBind> eformTaskBinds = new ArrayList<>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
-                // 查找本任务的form,在任务上设置的表单有优先权。
-                List<Map<String, Object>> list = new ArrayList<>();
-                // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
-                if (taskDefKey == "") {
-                    list = processDefinitionManager.getNodes(tenantId, procDefId, false);
-                    taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
-                }
+            // 查找本任务的form,在任务上设置的表单有优先权。
+            List<Map<String, Object>> list = new ArrayList<>();
+            // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
+            if (StringUtils.isBlank(taskDefKey)) {
+                list = processDefinitionManager.getNodes(tenantId, procDefId, false);
+                taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
+            }
+            eformTaskBinds =
+                y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
+            if (eformTaskBinds.isEmpty()) {
+                // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
                 eformTaskBinds =
-                    y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
-                if (eformTaskBinds.isEmpty()) {
-                    // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
-                    eformTaskBinds =
-                        y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
-                }
+                    y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,7 +178,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Override
     public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey4Own(String itemId, String procDefId,
         String taskDefKey) {
-        List<Y9FormItemBind> y9FormItemBinds = new ArrayList<Y9FormItemBind>();
+        List<Y9FormItemBind> y9FormItemBinds = new ArrayList<>();
         try {
             if (StringUtils.isNotEmpty(taskDefKey)) {
                 y9FormItemBinds =
@@ -199,7 +196,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Override
     public List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(String itemId, String procDefId,
         String taskDefKey) {
-        List<Y9FormItemMobileBind> y9FormItemBinds = new ArrayList<Y9FormItemMobileBind>();
+        List<Y9FormItemMobileBind> y9FormItemBinds = new ArrayList<>();
         try {
             if (StringUtils.isNotEmpty(taskDefKey)) {
                 y9FormItemBinds =
@@ -216,7 +213,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     @Override
     public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKeyIsNull(String itemId, String procDefId) {
-        List<Y9FormItemBind> eformTaskBinds = new ArrayList<Y9FormItemBind>();
+        List<Y9FormItemBind> eformTaskBinds = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
                 eformTaskBinds =

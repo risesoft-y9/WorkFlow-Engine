@@ -14,10 +14,8 @@ import lombok.Data;
 @Data
 public class EntrustModel implements Serializable {
 
-    private static final long serialVersionUID = 1227671437196285577L;
-
     public static final String ALL = "ALL";
-
+    private static final long serialVersionUID = 1227671437196285577L;
     /**
      * 唯一标示
      */

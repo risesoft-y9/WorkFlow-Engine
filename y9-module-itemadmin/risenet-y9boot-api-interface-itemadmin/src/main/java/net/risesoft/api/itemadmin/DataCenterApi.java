@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 数据中心接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -21,5 +23,6 @@ public interface DataCenterApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/saveToDateCenter")
-    public Y9Result<Object> saveToDateCenter(@RequestParam("processInstanceId") String processInstanceId, @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    Y9Result<Object> saveToDateCenter(@RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
 }

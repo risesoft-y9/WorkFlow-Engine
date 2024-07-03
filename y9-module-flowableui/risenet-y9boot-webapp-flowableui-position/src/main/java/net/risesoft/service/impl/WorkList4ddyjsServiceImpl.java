@@ -324,7 +324,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
      */
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "";
+        String taskIds = "";
+        String assigneeIds = "";
+        String assigneeNames = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {
@@ -397,8 +399,11 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     private List<String> getAssigneeIdsAndAssigneeNames1(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
-            taskId = "";
+        String taskIds = "";
+        String assigneeIds = "";
+        String assigneeNames = "";
+        String itembox = ItemBoxTypeEnum.DOING.getValue();
+        String taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {
@@ -549,12 +554,15 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows) {
-        Map<String, Object> retMap;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = doingApi.getListByUserId(tenantId, positionId, page, rows);
+            String positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            Map<String, Object> retMap = doingApi.getListByUserId(tenantId, positionId, page, rows);
+            if (retMap == null) {
+                return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+            }
             List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
             List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -570,7 +578,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     String taskCreateTime = sdf.format(hpim.getStartTime());
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                    String taskIds = listTemp.get(0);
+                    String assigneeIds = listTemp.get(1);
+                    String assigneeNames = listTemp.get(2);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
@@ -629,7 +639,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     public Y9Page<Map<String, Object>> homeDoneList(Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
-            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
             y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", "",
                 "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();

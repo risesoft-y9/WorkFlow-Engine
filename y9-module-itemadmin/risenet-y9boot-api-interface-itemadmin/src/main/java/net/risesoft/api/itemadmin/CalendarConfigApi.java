@@ -7,6 +7,8 @@ import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 日历配置接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -21,5 +23,6 @@ public interface CalendarConfigApi {
      * @return Y9Result<CalendarConfigModel>
      */
     @GetMapping("/findByYear")
-    Y9Result<CalendarConfigModel> findByYear(@RequestParam("tenantId") String tenantId, @RequestParam("year") String year);
+    Y9Result<CalendarConfigModel> findByYear(@RequestParam("tenantId") String tenantId,
+        @RequestParam("year") String year);
 }

@@ -81,15 +81,15 @@ public class Y9FormServiceImpl implements Y9FormService {
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
-            StringBuffer sqlStr = new StringBuffer();
+            StringBuilder sqlStr = new StringBuilder();
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                sqlStr = new StringBuilder("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                sqlStr = new StringBuilder("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
             } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                sqlStr = new StringBuilder("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
             } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("delete FROM " + tableName + " where guid = '" + guid + "'");
+                sqlStr = new StringBuilder("delete FROM " + tableName + " where guid = '" + guid + "'");
             }
             jdbcTemplate4Tenant.execute(sqlStr.toString());
         } catch (Exception e) {
@@ -154,15 +154,15 @@ public class Y9FormServiceImpl implements Y9FormService {
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {
-                StringBuffer sqlStr = new StringBuffer();
+                StringBuilder sqlStr = new StringBuilder();
                 if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                    sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                    sqlStr = new StringBuilder("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
                 } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                    sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                    sqlStr = new StringBuilder("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
                 } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                    sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                    sqlStr = new StringBuilder("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
                 } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                    sqlStr = new StringBuffer("delete FROM " + tableName + " where guid = '" + guid + "'");
+                    sqlStr = new StringBuilder("delete FROM " + tableName + " where guid = '" + guid + "'");
                 }
                 jdbcTemplate4Tenant.execute(sqlStr.toString());
             }
@@ -204,15 +204,15 @@ public class Y9FormServiceImpl implements Y9FormService {
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
-            StringBuffer sqlStr = new StringBuffer();
+            StringBuilder sqlStr = new StringBuilder();
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
+                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
+                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
             } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
+                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
             } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where parentProcessSerialNumber =?");
+                sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where parentProcessSerialNumber =?");
             }
             datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
             return datamap;
@@ -253,7 +253,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 dataSql = "select * from " + tableName + " t where t.guid=?";
             }
             List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(dataSql, guid);
-            if (datamap.size() == 0) {
+            if (datamap.isEmpty()) {
                 map.put("edittype", "0");
             } else {
                 map.put("edittype", "1");
@@ -287,18 +287,18 @@ public class Y9FormServiceImpl implements Y9FormService {
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
                 if (y9Table.getTableType() == 1) {
-                    StringBuffer sqlStr = new StringBuffer();
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("dm".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("kingbase".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("mysql".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
                     }
                     List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
-                    if (datamap.size() > 0) {
+                    if (!datamap.isEmpty()) {
                         List<Y9FormField> elementList =
                             y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
                         for (Y9FormField element : elementList) {
@@ -339,18 +339,18 @@ public class Y9FormServiceImpl implements Y9FormService {
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
                 if (y9Table.getTableType() == 1) {
-                    StringBuffer sqlStr = new StringBuffer();
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("dm".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("kingbase".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("mysql".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
                     }
                     List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
-                    if (datamap.size() > 0) {
+                    if (!datamap.isEmpty()) {
                         List<Y9TableField> tableFieldList =
                             y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(y9Table.getId());
                         for (Y9TableField tableField : tableFieldList) {
@@ -389,15 +389,15 @@ public class Y9FormServiceImpl implements Y9FormService {
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
                 if (y9Table.getTableType() == 1) {
-                    StringBuffer sqlStr = new StringBuffer();
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\"");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\"");
                     } else if ("dm".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\"");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\"");
                     } else if ("kingbase".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\"");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\"");
                     } else if ("mysql".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM " + tableName);
+                        sqlStr = new StringBuilder("SELECT * FROM " + tableName);
                     }
                     List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString());
                     for (Map<String, Object> data : datamap) {
@@ -485,7 +485,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     private final Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
         Map<String, Object> map = new CaseInsensitiveMap<>(16);
         for (Map<String, Object> m : listMap) {
-            map.put((String)m.get("name"), (String)m.get("value"));
+            map.put((String)m.get("name"), m.get("value"));
         }
         return map;
     }
@@ -513,13 +513,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                 }
                 String actionType = "0";
                 Map<String, Object> m = this.getData(guid, tableName);
-                if (((String)m.get("edittype")).equals("0")) {
+                if (m.get("edittype").equals("0")) {
                     actionType = "0";
                 } else {
                     actionType = "1";
                 }
                 if (actionType.equals("0")) {
-                    StringBuffer sqlStr = new StringBuffer("");
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
                         sqlStr.append("insert into \"" + tableName + "\" (");
                     }
@@ -532,7 +532,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     } else if ("kingbase".equals(dialect)) {
                         sqlStr.append("insert into \"" + tableName + "\" (");
                     }
-                    StringBuffer sqlStr1 = new StringBuffer(") values (");
+                    StringBuilder sqlStr1 = new StringBuilder(") values (");
                     boolean isHaveField = false;
                     for (Y9FormField element : elementList) {
                         String fieldName = element.getFieldName();
@@ -619,7 +619,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     String sql = sqlStr.toString();
                     jdbcTemplate4Tenant.execute(sql);
                 } else {// 编辑
-                    StringBuffer sqlStr = new StringBuffer("");
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
                         sqlStr.append("update \"" + tableName + "\" set ");
 
@@ -632,7 +632,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     } else if ("kingbase".equals(dialect)) {
                         sqlStr.append("update \"" + tableName + "\" set ");
                     }
-                    StringBuffer sqlStr1 = new StringBuffer("");
+                    StringBuilder sqlStr1 = new StringBuilder();
                     boolean isHaveField = false;
                     for (Y9FormField element : elementList) {
                         if (element.getTableName().equals(tableName)) {
@@ -741,7 +741,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 }
                 String actionType = "0";
                 Map<String, Object> m = this.getData(guid, tableName);
-                if (((String)m.get("edittype")).equals("0")) {
+                if (m.get("edittype").equals("0")) {
                     actionType = "0";
                 } else {
                     actionType = "1";
@@ -749,7 +749,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableName(tableName);
                 if (actionType.equals("0")) {
                     List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                    StringBuffer sqlStr = new StringBuffer("");
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
                         sqlStr.append("insert into \"" + tableName + "\" (");
                     }
@@ -762,7 +762,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     } else if ("kingbase".equals(dialect)) {
                         sqlStr.append("insert into \"" + tableName + "\" (");
                     }
-                    StringBuffer sqlStr1 = new StringBuffer(") values (");
+                    StringBuilder sqlStr1 = new StringBuilder(") values (");
                     boolean isHaveField = false;
                     for (Y9FormField element : elementList) {
                         String fieldName = element.getFieldName();
@@ -845,7 +845,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     jdbcTemplate4Tenant.execute(sql);
                 } else {// 编辑
                     List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                    StringBuffer sqlStr = new StringBuffer("");
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
                         sqlStr.append("update \"" + tableName + "\" set ");
 
@@ -858,7 +858,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     } else if ("kingbase".equals(dialect)) {
                         sqlStr.append("update \"" + tableName + "\" set ");
                     }
-                    StringBuffer sqlStr1 = new StringBuffer("");
+                    StringBuilder sqlStr1 = new StringBuilder();
                     boolean isHaveField = false;
                     for (Y9FormField element : elementList) {
                         if (element.getTableName().equals(tableName)) {

@@ -9,6 +9,8 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 意见框绑定接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19

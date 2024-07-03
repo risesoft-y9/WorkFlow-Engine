@@ -9,6 +9,13 @@ import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
+/**
+ * 办结接口
+ *
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 public interface ItemDoneApi {
 
     /**
@@ -71,7 +78,7 @@ public interface ItemDoneApi {
     @GetMapping("/searchBySystemName")
     Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("systemName") String systemName, @RequestParam(value = "tableName") String tableName,
-        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam(value = "searchMapStr") String searchMapStr, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 
     /**
@@ -90,7 +97,6 @@ public interface ItemDoneApi {
     @GetMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
-        @RequestParam(value = "tableName") String tableName,
-        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam(value = "tableName") String tableName, @RequestParam(value = "searchMapStr") String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 }

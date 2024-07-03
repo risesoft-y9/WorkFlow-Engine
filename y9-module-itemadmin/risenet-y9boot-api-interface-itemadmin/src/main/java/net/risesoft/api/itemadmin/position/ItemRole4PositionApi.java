@@ -30,7 +30,7 @@ public interface ItemRole4PositionApi {
     @GetMapping("/findCsUser")
     Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
-        @RequestParam("id") String id, @RequestParam("principalType") Integer principalType,
+        @RequestParam(value = "id", required = false) String id, @RequestParam("principalType") Integer principalType,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -61,8 +61,7 @@ public interface ItemRole4PositionApi {
     @GetMapping("/findCsUserSearch")
     Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
-        @RequestParam(value = "name", required = false) String name,
-        @RequestParam("principalType") Integer principalType,
+        @RequestParam(value = "name") String name, @RequestParam("principalType") Integer principalType,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -84,7 +83,8 @@ public interface ItemRole4PositionApi {
         @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType,
-        @RequestParam("id") String id, @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam(value = "id", required = false) String id,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 发送选人搜索
@@ -118,7 +118,7 @@ public interface ItemRole4PositionApi {
      */
     @GetMapping("/findPermUserSendReceive")
     Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("id") String id);
+        @RequestParam("positionId") String positionId, @RequestParam(value = "id", required = false) String id);
 
     /**
      * 获取组织机构树
@@ -133,7 +133,7 @@ public interface ItemRole4PositionApi {
      */
     @GetMapping("/getOrgTree")
     Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("id") String id,
+        @RequestParam("positionId") String positionId, @RequestParam(value = "id", required = false) String id,
         @RequestParam("treeType") OrgTreeTypeEnum treeType,
         @RequestParam(value = "name", required = false) String name);
 

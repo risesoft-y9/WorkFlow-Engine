@@ -60,8 +60,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/transactionWord", produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/services/rest/transactionWord", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TransactionWordApiImpl implements TransactionWordApi {
 
     private final TransactionWordRepository transactionWordRepository;
@@ -341,16 +340,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @Override
     public Y9Result<String> openDocumentByProcessSerialNumber(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<TransactionWord> list = new ArrayList<>();
-        if (StringUtils.isNotBlank(processSerialNumber)) {
-            // 获取套红文档
-            list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, "1");
-            /*
-             * 套红文档不存在,则获取未套红文档
-             */
-            if (list.isEmpty()) {
-                list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, "0");
-            }
+        // 获取套红文档
+        List<TransactionWord> list =
+            transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, "1");
+        /*
+         * 套红文档不存在,则获取未套红文档
+         */
+        if (list.isEmpty()) {
+            list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, "0");
         }
         TransactionWord transactionWord;
         if (!list.isEmpty()) {

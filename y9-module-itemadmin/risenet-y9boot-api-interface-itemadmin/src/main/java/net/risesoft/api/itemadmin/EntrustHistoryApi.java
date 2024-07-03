@@ -9,6 +9,8 @@ import net.risesoft.model.itemadmin.EntrustHistoryModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 出差委托历史接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19

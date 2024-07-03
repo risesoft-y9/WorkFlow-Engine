@@ -54,7 +54,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
         List<ItemInterfaceTaskBind> list = itemInterfaceTaskBindRepository
             .findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(itemId, taskKey,
                 processDefinitionId, condition);
-        List<InterfaceModel> res_list = new ArrayList<>();
+        List<InterfaceModel> resList = new ArrayList<>();
         for (ItemInterfaceTaskBind bind : list) {
             InterfaceModel model = new InterfaceModel();
             InterfaceInfo info = interfaceInfoRepository.findById(bind.getInterfaceId()).orElse(null);
@@ -65,11 +65,11 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
                 model.setRequestType(info.getRequestType());
                 model.setAsyn(info.getAsyn());
                 model.setAbnormalStop(info.getAbnormalStop());
-                res_list.add(model);
+                resList.add(model);
             }
 
         }
-        return Y9Result.success(res_list, "获取成功");
+        return Y9Result.success(resList, "获取成功");
     }
 
     /**
@@ -85,7 +85,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemInterfaceParamsBind> list =
             itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, interfaceId);
-        List<InterfaceParamsModel> res_list = new ArrayList<>();
+        List<InterfaceParamsModel> resList = new ArrayList<>();
         for (ItemInterfaceParamsBind bind : list) {
             InterfaceParamsModel model = new InterfaceParamsModel();
             model.setId(bind.getId());
@@ -94,10 +94,10 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
             model.setParameterName(bind.getParameterName());
             model.setParameterType(bind.getParameterType());
             model.setTableName(bind.getTableName());
-            res_list.add(model);
+            resList.add(model);
 
         }
-        return Y9Result.success(res_list, "获取成功");
+        return Y9Result.success(resList, "获取成功");
     }
 
 }
