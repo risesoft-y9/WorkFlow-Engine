@@ -64,7 +64,8 @@ public interface ItemTodoApi {
     @GetMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam(value = "tableName") String tableName, @RequestParam(value = "searchMapStr") String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam(value = "tableName") String tableName,
+        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows) throws Exception;
 
 }

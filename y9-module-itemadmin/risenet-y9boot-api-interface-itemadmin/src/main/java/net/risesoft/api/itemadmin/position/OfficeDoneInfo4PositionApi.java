@@ -63,7 +63,8 @@ public interface OfficeDoneInfo4PositionApi {
      */
     @GetMapping("/countByPositionIdAndSystemName")
     Y9Result<Integer> countByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName);
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "systemName", required = false) String systemName);
 
     /**
      * 监控在办统计

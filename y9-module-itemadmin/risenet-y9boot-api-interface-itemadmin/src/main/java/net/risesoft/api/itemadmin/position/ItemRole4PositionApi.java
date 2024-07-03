@@ -31,7 +31,7 @@ public interface ItemRole4PositionApi {
     Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
         @RequestParam(value = "id", required = false) String id, @RequestParam("principalType") Integer principalType,
-        @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      * 查询委办局下的部门
@@ -62,7 +62,7 @@ public interface ItemRole4PositionApi {
     Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
         @RequestParam(value = "name") String name, @RequestParam("principalType") Integer principalType,
-        @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      * 获取发送人
@@ -84,7 +84,7 @@ public interface ItemRole4PositionApi {
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType,
         @RequestParam(value = "id", required = false) String id,
-        @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      * 发送选人搜索
@@ -106,7 +106,7 @@ public interface ItemRole4PositionApi {
         @RequestParam(value = "name", required = false) String name,
         @RequestParam("principalType") Integer principalType, @RequestParam("itemId") String itemId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
-        @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      * Description: 获取发送人（收发单位）

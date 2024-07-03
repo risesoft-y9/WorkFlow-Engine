@@ -68,14 +68,15 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param formId 表单Id
-     * @param taskDefKey taskDefKey
+     * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
      * @return Y9Result<List<FieldPermModel>>
      */
     @GetMapping("/getAllFieldPerm")
     Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("formId") String formId,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processDefinitionId") String processDefinitionId);
+        @RequestParam(value = "taskDefKey") String taskDefKey,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据事项id获取绑定前置表单

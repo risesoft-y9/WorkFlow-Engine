@@ -211,7 +211,8 @@ public interface TransactionWordApi {
     @GetMapping(value = "/showWord")
     Y9Result<Y9WordInfo> showWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId,
-        @RequestParam("itembox") String itembox, @RequestParam("taskId") String taskId);
+        @RequestParam(value = "itembox", required = false) String itembox,
+        @RequestParam(value = "taskId", required = false) String taskId);
 
     /**
      * 获取套红模板列表
@@ -243,9 +244,10 @@ public interface TransactionWordApi {
     @PostMapping(value = "/uploadWord")
     Y9Result<Boolean> uploadWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("documentTitle") String documentTitle, @RequestParam("fileType") String fileType,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("isTaoHong") String isTaoHong,
-        @RequestParam("taskId") String taskId, @RequestParam("fileSizeString") String fileSizeString,
-        @RequestParam("fileStoreId") String fileStoreId);
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam(value = "isTaoHong", required = false) String isTaoHong,
+        @RequestParam(value = "taskId", required = false) String taskId,
+        @RequestParam("fileSizeString") String fileSizeString, @RequestParam("fileStoreId") String fileStoreId);
 
     /**
      * 下载正文

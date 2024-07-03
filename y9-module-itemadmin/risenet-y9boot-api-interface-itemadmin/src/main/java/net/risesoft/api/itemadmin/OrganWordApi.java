@@ -53,7 +53,8 @@ public interface OrganWordApi {
     @GetMapping("/exist")
     Y9Result<OrganWordModel> exist(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("custom") String custom, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itembox") String itembox);
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+        @RequestParam("itembox") String itembox);
 
     /**
      *
@@ -71,7 +72,7 @@ public interface OrganWordApi {
     Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("custom") String custom,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+        @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
 
     /**
      * 获取编号
