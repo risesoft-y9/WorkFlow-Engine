@@ -22,7 +22,7 @@ public interface ItemOpinionFrameBindApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<List<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
      */
     @GetMapping("/findByItemId")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam("tenantId") String tenantId,
@@ -34,7 +34,7 @@ public interface ItemOpinionFrameBindApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<List<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
      */
     @GetMapping("/findByItemIdAndProcessDefinitionId")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(
@@ -49,7 +49,7 @@ public interface ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey taskDefKey
-     * @return Y9Result<<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
      */
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKey")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
@@ -65,7 +65,7 @@ public interface ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey taskDefKey
-     * @return Y9Result<List<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
      */
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(

@@ -40,7 +40,6 @@ public interface TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程序列号
      * @param isTaoHong 是否套红
-     *
      * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping(value = "/deleteByIsTaoHong")
@@ -140,6 +139,7 @@ public interface TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @GetMapping(value = "/openHistoryVersionDoc")
     Y9Result<Object> openHistoryVersionDoc(@RequestParam("tenantId") String tenantId,

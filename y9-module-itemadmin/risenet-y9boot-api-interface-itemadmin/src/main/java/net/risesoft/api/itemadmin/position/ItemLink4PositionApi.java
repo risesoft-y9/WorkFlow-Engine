@@ -25,7 +25,7 @@ public interface ItemLink4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return Y9Result<List<LinkInfoModel>>
+     * @return {@code Y9Result<List<LinkInfoModel>>} 通用请求返回对象 - data 是事项绑定链接
      */
     @GetMapping("/getItemLinkList")
     Y9Result<List<LinkInfoModel>> getItemLinkList(@RequestParam("tenantId") @NotBlank String tenantId,

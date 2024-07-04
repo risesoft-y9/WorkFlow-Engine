@@ -65,8 +65,7 @@ public interface ProcessInstanceApi {
      * @param assigneeId 受让人id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @param itembox 状态
-     * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
+     * @param itembox 办件状态 -todo（待办） -doing（在办） -done（办结）
      * @param endTime 结束时间
      * @return{@code Y9Result<Boolean>} 通用请求返回对象
      */

@@ -22,7 +22,7 @@ public interface ItemOpinionFrameRoleApi {
      *
      * @param tenantId 租户id
      * @param itemOpinionFrameId 意见框绑定id
-     * @return Y9Result<List<ItemOpinionFrameRoleModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameRoleModel>>} 通用请求返回对象 - data 是意见框绑定角色列表
      */
     @GetMapping("/findByItemOpinionFrameId")
     Y9Result<List<ItemOpinionFrameRoleModel>> findByItemOpinionFrameId(@RequestParam("tenantId") String tenantId,

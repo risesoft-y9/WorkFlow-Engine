@@ -30,7 +30,7 @@ public interface FormDataApi {
      * @param formId 表单Id
      * @param tableId 对应的表id
      * @param guid guid
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/delChildTableRow")
     Y9Result<Object> delChildTableRow(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
@@ -42,7 +42,7 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单id
      * @param guid 主键id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/delPreFormData")
     Y9Result<Object> delPreFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
@@ -55,7 +55,7 @@ public interface FormDataApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务key
-     * @return
+     * @return {@code Y9Result<List<BindFormModel>>} 通用请求返回对象 - data 是事项绑定表单
      */
     @GetMapping("/findFormItemBind")
     Y9Result<List<BindFormModel>> findFormItemBind(@RequestParam("tenantId") String tenantId,
@@ -70,7 +70,7 @@ public interface FormDataApi {
      * @param formId 表单Id
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<List<FieldPermModel>>
+     * @return {@code Y9Result<List<FieldPermModel>>} 通用请求返回对象 - data 是表单所有字段权限列表
      */
     @GetMapping("/getAllFieldPerm")
     Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam("tenantId") String tenantId,
@@ -83,7 +83,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<BindFormModel>
+     * @return {@code Y9Result<BindFormModel>} 通用请求返回对象 - data 是前置表单
      */
     @GetMapping("/getBindPreFormByItemId")
     Y9Result<BindFormModel> getBindPreFormByItemId(@RequestParam("tenantId") String tenantId,
@@ -96,7 +96,7 @@ public interface FormDataApi {
      * @param formId 表单Id
      * @param tableId 对应的表id
      * @param processSerialNumber 流程序列号
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是子表数据
      * @throws Exception Exception
      */
     @GetMapping("/getChildTableData")
@@ -110,7 +110,7 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processSerialNumber 流程序列号
-     * @return Y9Result<Map<String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象
      */
     @GetMapping("/getData")
     Y9Result<Map<String, Object>> getData(@RequestParam("tenantId") String tenantId,
@@ -125,7 +125,7 @@ public interface FormDataApi {
      * @param fieldName 字段名称
      * @param taskDefKey 任务定义key
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<FieldPermModel>
+     * @return {@code Y9Result<FieldPermModel>} 通用请求返回对象 - data 是字段权限
      */
     @GetMapping("/getFieldPerm")
     Y9Result<FieldPermModel> getFieldPerm(@RequestParam("tenantId") String tenantId,
@@ -138,7 +138,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<List<Y9FormFieldModel>>
+     * @return {@code Y9Result<List<Y9FormFieldModel>>} 通用请求返回对象 - data 是表单绑定字段列表
      */
     @GetMapping("/getFormField")
     Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam("tenantId") String tenantId,
@@ -149,7 +149,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单Id
-     * @return Y9Result<List<FormFieldDefineModel>>
+     * @return {@code Y9Result<List<FormFieldDefineModel>>} 通用请求返回对象 - data 是绑定字段信息列表
      */
     @GetMapping("/getFormFieldDefine")
     Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(@RequestParam("tenantId") String tenantId,
@@ -160,7 +160,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单Id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是表单json数据
      */
     @GetMapping("/getFormJson")
     Y9Result<String> getFormJson(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId);
@@ -171,7 +171,7 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单Id
      * @param processSerialNumber 流程序列号
-     * @return Y9Result<Map<String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是表单数据
      */
     @GetMapping("/getFromData")
     Y9Result<Map<String, Object>> getFromData(@RequestParam("tenantId") String tenantId,
@@ -182,7 +182,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是前置表单数据
      */
     @GetMapping("/getPreFormDataByFormId")
     Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam("tenantId") String tenantId,
@@ -196,7 +196,7 @@ public interface FormDataApi {
      * @param tableId 对应的表id
      * @param processSerialNumber 流程序列号
      * @param jsonData 数据
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      */
     @PostMapping("/saveChildTableData")
@@ -210,7 +210,7 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单Id
      * @param formJsonData 表单数据
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveFormData")
@@ -224,7 +224,7 @@ public interface FormDataApi {
      * @param itemId 事项id
      * @param formId 表单id
      * @param formJsonData json表数据
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象
      * @throws Exception Exception
      */
     @PostMapping(value = "/savePreFormData")

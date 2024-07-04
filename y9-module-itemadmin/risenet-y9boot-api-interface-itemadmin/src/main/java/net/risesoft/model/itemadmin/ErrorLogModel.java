@@ -53,49 +53,50 @@ public class ErrorLogModel implements Serializable {
      * 错误标识：抄送保存
      */
     public static final String ERROR_FLAG_SAVE_CHAOSONG = "saveChaoSong";
+
     private static final long serialVersionUID = -4465213360378742347L;
     /**
-     * @FieldCommit(value = "主键")
+     * 主键
      */
     private String id;
 
     /**
-     * @FieldCommit(value = "流程实例")
+     * 流程实例
      */
     private String processInstanceId;
 
     /**
-     * @FieldCommit(value = "任务id")
+     * 任务id
      */
     private String taskId;
 
     /**
-     * @FieldCommit(value = "错误类型")
+     * 错误类型
      */
     private String errorType;
 
     /**
-     * @FieldCommit(value = "错误标识")
+     * 错误标识
      */
     private String errorFlag;
 
     /**
-     * @FieldCommit(value = "扩展字段")
+     * 扩展字段
      */
     private String extendField;
 
     /**
-     * @FieldCommit(value = "错误日志信息")
+     * 错误日志信息
      */
     private String text;
 
     /**
-     * @FieldCommit(value="创建时间")
+     * 创建时间
      */
     private String createTime;
 
     /**
-     * @FieldCommit(value="更新时间")
+     * 更新时间
      */
     private String updateTime;
 

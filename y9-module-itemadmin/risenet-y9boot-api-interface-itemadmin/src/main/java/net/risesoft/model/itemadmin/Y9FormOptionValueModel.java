@@ -4,6 +4,14 @@ import java.io.Serializable;
 
 import lombok.Data;
 
+/**
+ * 数据字典
+ * 
+ * @author qinman
+ * @author zhangchongjie
+ * @author mengjuhua
+ * @date 2024/06/24
+ */
 @Data
 public class Y9FormOptionValueModel implements Serializable {
     private static final long serialVersionUID = 4453324429396249500L;

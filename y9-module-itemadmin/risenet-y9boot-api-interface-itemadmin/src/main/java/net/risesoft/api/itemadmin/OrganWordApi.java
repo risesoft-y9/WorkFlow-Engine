@@ -30,7 +30,7 @@ public interface OrganWordApi {
      * @param itemId 事项id
      * @param common common
      * @param processSerialNumber 流程编号
-     * @return @return {@code Y9Result<Integer>} 通用请求返回对象
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
      */
     @GetMapping("/checkNumberStr")
     Y9Result<Integer> checkNumberStr(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,

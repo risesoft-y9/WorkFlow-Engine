@@ -19,22 +19,22 @@ public class LinkInfoModel implements Serializable {
     private static final long serialVersionUID = -5083430850698025796L;
 
     /**
-     * @FieldCommit(value = "主键")
+     * 主键
      */
     private String id;
 
     /**
-     * @FieldCommit(value = "链接名称")
+     * 链接名称
      */
     private String linkName;
 
     /**
-     * @FieldCommit(value = "链接地址")
+     * 链接地址
      */
     private String linkUrl;
 
     /**
-     * @FieldCommit(value = "创建时间")
+     * 创建时间
      */
     private String createTime;
 

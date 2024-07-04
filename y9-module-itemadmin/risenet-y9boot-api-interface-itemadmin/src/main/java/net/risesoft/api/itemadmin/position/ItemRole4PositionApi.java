@@ -25,7 +25,7 @@ public interface ItemRole4PositionApi {
      * @param id id
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      */
     @GetMapping("/findCsUser")
     Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam("tenantId") String tenantId,
@@ -40,7 +40,7 @@ public interface ItemRole4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      */
     @GetMapping("/findCsUserBureau")
     Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(@RequestParam("tenantId") String tenantId,
@@ -56,7 +56,7 @@ public interface ItemRole4PositionApi {
      * @param name 人员名称
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例Id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      */
     @GetMapping("/findCsUserSearch")
     Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam("tenantId") String tenantId,
@@ -76,7 +76,7 @@ public interface ItemRole4PositionApi {
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param id 唯一标识
      * @param processInstanceId 流程实例Id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      */
     @GetMapping("/findPermUser")
     Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam("tenantId") String tenantId,
@@ -98,7 +98,7 @@ public interface ItemRole4PositionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 流程定义中节点Id
      * @param processInstanceId 流程实例Id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      */
     @GetMapping("/findPermUserByName")
     Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(@RequestParam("tenantId") String tenantId,
@@ -114,7 +114,7 @@ public interface ItemRole4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param id id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      */
     @GetMapping("/findPermUserSendReceive")
     Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(@RequestParam("tenantId") String tenantId,
@@ -129,7 +129,7 @@ public interface ItemRole4PositionApi {
      * @param treeType 树的类型:tree_type_org(组织机构)，tree_type_dept（部门） tree_type_group（用户组）, tree_type_position（岗位）
      *            tree_type_person（人员）, tree_type_bureau（委办局）
      * @param name 人员名称
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      */
     @GetMapping("/getOrgTree")
     Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(@RequestParam("tenantId") String tenantId,
