@@ -10,6 +10,8 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 历史任务相关接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -22,7 +24,7 @@ public interface HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
      */
     @GetMapping("/findTaskByProcessInstanceIdOrByEndTimeAsc")
     Y9Result<List<HistoricTaskInstanceModel>> findTaskByProcessInstanceIdOrByEndTimeAsc(
@@ -35,7 +37,7 @@ public interface HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
      */
     @GetMapping("/findTaskByProcessInstanceIdOrderByStartTimeAsc")
     Y9Result<List<HistoricTaskInstanceModel>> findTaskByProcessInstanceIdOrderByStartTimeAsc(
@@ -47,7 +49,7 @@ public interface HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<HistoricTaskInstanceModel>
+     * @return {@code Y9Result<HistoricTaskInstanceModel>} 通用请求返回对象 - data 任务实例列表
      */
     @GetMapping("/getById")
     Y9Result<HistoricTaskInstanceModel> getById(@RequestParam("tenantId") String tenantId,
@@ -59,7 +61,7 @@ public interface HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
      */
     @GetMapping("/getByProcessInstanceId")
     Y9Result<List<HistoricTaskInstanceModel>> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -72,7 +74,7 @@ public interface HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
      */
     @GetMapping("/getByProcessInstanceIdOrderByEndTimeDesc")
     Y9Result<List<HistoricTaskInstanceModel>> getByProcessInstanceIdOrderByEndTimeDesc(
@@ -84,7 +86,7 @@ public interface HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return Y9Result<Long> 任务数量
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 任务数量
      */
     @GetMapping("/getFinishedCountByExecutionId")
     Y9Result<Long> getFinishedCountByExecutionId(@RequestParam("tenantId") String tenantId,
@@ -95,7 +97,7 @@ public interface HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<HistoricTaskInstanceModel>
+     * @return {@code Y9Result<HistoricTaskInstanceModel>} 通用请求返回对象 - data 任务实例
      */
     @GetMapping("/getThePreviousTask")
     Y9Result<HistoricTaskInstanceModel> getThePreviousTask(@RequestParam("tenantId") String tenantId,
@@ -106,7 +108,7 @@ public interface HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<List<HistoricTaskInstanceModel>> 任务实例列表
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>> } 通用请求返回对象 - data 任务实例列表
      */
     @GetMapping("/getThePreviousTasks")
     Y9Result<List<HistoricTaskInstanceModel>> getThePreviousTasks(@RequestParam("tenantId") String tenantId,
@@ -117,7 +119,7 @@ public interface HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping("/setTenantId")
     Y9Result<Object> setTenantId(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);

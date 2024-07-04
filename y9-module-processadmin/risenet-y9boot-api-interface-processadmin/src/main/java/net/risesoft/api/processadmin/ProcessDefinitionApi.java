@@ -8,6 +8,8 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 流程设计相关接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -19,7 +21,7 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code Y9Result<List<TargetModel>>} 通用请求返回对象 - data 有办结权限的UserTask
      */
     Y9Result<List<TargetModel>> getContainEndEvent4UserTask(String tenantId, String processDefinitionId);
 
@@ -28,7 +30,7 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 目标节点Key
      */
     Y9Result<String> getEndNodeKeyByTaskId(String tenantId, String taskId);
 
@@ -38,7 +40,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return Y9Result<List<FlowElementModel>>
+     * @return {@code List<Map<String, Object>>} 通用请求返回对象 - data 节点集合
      */
     Y9Result<List<FlowElementModel>> getFlowElement(String tenantId, String processDefinitionId,
         Boolean isContainStartNode);
@@ -49,7 +51,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code List<Map<String, Object>>} 通用请求返回对象 - data 节点信息集合
      */
     Y9Result<List<TargetModel>> getNodes(String tenantId, String processDefinitionId, Boolean isContainStartNode);
 
@@ -59,7 +61,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 节点类型
      */
     Y9Result<String> getNodeType(String tenantId, String processDefinitionId, String taskDefKey);
 
@@ -68,7 +70,7 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 输出线路的个数
      */
     Y9Result<Integer> getOutPutNodeCount(String tenantId, String taskId);
 
@@ -78,7 +80,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return {@code List<Map<String, String>>} 通用请求返回对象 - data 任务节点集合
      */
     List<Map<String, String>> getParallelGatewayList(String tenantId, String processDefinitionId, String taskDefKey);
 
@@ -87,7 +89,7 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 开始节点
      */
     Y9Result<String> getStartNodeKeyByProcessDefinitionId(String tenantId, String processDefinitionId);
 
@@ -96,7 +98,7 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data taskdefineKey
      */
     Y9Result<String> getStartNodeKeyByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
@@ -106,7 +108,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code Y9Result<List<TargetModel>>} 通用请求返回对象 - data 任务节点集合
      */
     Y9Result<List<TargetModel>> getTargetNodes(String tenantId, String processDefinitionId, String taskDefKey);
 
@@ -116,7 +118,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return {@code List<Map<String, String>>} 通用请求返回对象 - data 任务节点集合
      */
     List<Map<String, String>> getTargetNodes1(String tenantId, String processDefinitionId, String taskDefKey);
 
@@ -126,7 +128,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return {@code  List<Map<String, String>>} 通用请求返回对象 - data 任务节点集合
      */
     List<Map<String, String>> getTargetNodes4ParallelGateway(String tenantId, String processDefinitionId,
         String taskDefKey);
@@ -138,7 +140,7 @@ public interface ProcessDefinitionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
      * @param isContainEndNode 是否包含结束节点
-     * @return Y9Result<List<TargetModel>
+     * @return {@code Y9Result<List<TargetModel>} 通用请求返回对象 - data 任务节点集合
      */
     Y9Result<List<TargetModel>> getTargetNodes4UserTask(String tenantId, String processDefinitionId, String taskDefKey,
         Boolean isContainEndNode);
@@ -149,7 +151,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
      */
     Y9Result<Boolean> isCallActivity(String tenantId, String processDefinitionId, String taskDefKey);
 
@@ -159,7 +161,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param taskId 任务id
      * @param nodeType 节点类型
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
      */
     Y9Result<Boolean> isContainNodeType(String tenantId, String taskId, String nodeType);
 }

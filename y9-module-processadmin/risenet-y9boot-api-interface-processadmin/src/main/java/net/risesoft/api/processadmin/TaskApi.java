@@ -15,6 +15,8 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 正在运行任务相关接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -147,7 +149,7 @@ public interface TaskApi {
      * 查找所有的任务实例
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<TaskModel>>
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
      */
     @GetMapping("/findAll")
     Y9Result<List<TaskModel>> findAll(@RequestParam("tenantId") String tenantId);
@@ -157,7 +159,7 @@ public interface TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<TaskModel>
+     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - data 任务信息
      */
     @GetMapping("/findById")
     Y9Result<TaskModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
@@ -167,7 +169,7 @@ public interface TaskApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<TaskModel>>
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
      */
     @GetMapping("/findByProcessInstanceId")
     Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -179,7 +181,7 @@ public interface TaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例Id
      * @param active 是否存活
-     * @return Y9Result<List<TaskModel>>
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
      */
     @GetMapping("/findByProcessInstanceId1")
     Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -192,7 +194,7 @@ public interface TaskApi {
      * @param processInstanceId 流程实例Id
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<TaskModel>
+     * @return {@code Y9Page<TaskModel>} 通用分页请求返回对象 - rows 是待办任务
      */
     @GetMapping("/findListByProcessInstanceId")
     Y9Page<TaskModel> findListByProcessInstanceId(@RequestParam("tenantId") String tenantId,

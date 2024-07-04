@@ -24,7 +24,7 @@ public interface ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/deleteModel")
     Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId);
@@ -34,7 +34,7 @@ public interface ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/deployModel")
     Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId);
@@ -43,7 +43,7 @@ public interface ProcessModelApi {
      * 获取模型列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<FlowableBpmnModel>>
+     * @return {@code Y9Result<List<FlowableBpmnModel>>} 通用请求返回对象 - data 模型列表
      */
     @GetMapping(value = "/getModelList")
     Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId);
@@ -53,7 +53,7 @@ public interface ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 模型xml
      */
     @GetMapping(value = "/getModelXml")
     Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId);
@@ -62,6 +62,7 @@ public interface ProcessModelApi {
      * 保存，导入模型文件
      *
      * @param tenantId 租户id
+     * @param userId 用户id
      * @param file 文件
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */

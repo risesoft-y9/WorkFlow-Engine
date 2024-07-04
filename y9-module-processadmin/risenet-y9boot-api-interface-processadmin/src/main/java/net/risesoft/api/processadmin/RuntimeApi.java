@@ -15,6 +15,8 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 正在运行流程实例操作接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -80,7 +82,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return Y9Result<List<String>>
+     * @return {@code Y9Result<List<String>>} 通用请求返回对象 - data 是当前活跃的节点信息
      */
     @GetMapping("/getActiveActivityIds")
     Y9Result<List<String>> getActiveActivityIds(@RequestParam("tenantId") String tenantId,
@@ -91,7 +93,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return Y9Result<ExecutionModel>
+     * @return {@code Y9Result<ExecutionModel>} 通用请求返回对象 - data 是执行实例
      */
     @GetMapping("/getExecutionById")
     Y9Result<ExecutionModel> getExecutionById(@RequestParam("tenantId") String tenantId,
@@ -102,7 +104,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param superProcessInstanceId 父流程实例id
-     * @return Y9Result<List<ProcessInstanceModel>>
+     * @return {@code Y9Result<List<ProcessInstanceModel>>} 通用请求返回对象 - data 是子流程实例列表
      */
     @GetMapping("/getListBySuperProcessInstanceId")
     Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -113,7 +115,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<ProcessInstanceModel>
+     * @return {@code Y9Result<ProcessInstanceModel>} 通用请求返回对象 - data 是流程实例
      */
     @GetMapping("/getProcessInstance")
     Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam("tenantId") String tenantId,
@@ -126,7 +128,7 @@ public interface RuntimeApi {
      * @param processDefinitionId 流程定义id
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<ProcessInstanceModel>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用分页请求返回对象 - rows 是流程实例
      */
     @GetMapping("/getProcessInstancesByDefId")
     Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam("tenantId") String tenantId,
@@ -138,7 +140,7 @@ public interface RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return Y9Result<List<ProcessInstanceModel>>
+     * @return {@code Y9Result<List<ProcessInstanceModel>>} 通用请求返回对象 - data 是流程实例
      */
     @GetMapping("/getProcessInstancesByKey")
     Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam("tenantId") String tenantId,
@@ -177,7 +179,7 @@ public interface RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param page 页吗
      * @param rows 条数
-     * @return Y9Page<Map<String, Object>>
+     * @return {@code Y9Page<Map<String, Object>>} 通用分页请求返回对象 - rows 是流程实例
      */
     @GetMapping(value = "/runningList")
     Y9Page<Map<String, Object>> runningList(@RequestParam("tenantId") String tenantId,
@@ -229,7 +231,7 @@ public interface RuntimeApi {
      * @param processDefinitionKey 流程定义key
      * @param systemName 系统名称
      * @param map 变量map
-     * @return Y9Result<ProcessInstanceModel>
+     * @return {@code Y9Result<ProcessInstanceModel>} 通用请求返回对象 - data 是流程实例
      */
     @PostMapping(value = "/startProcessInstanceByKey", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam("tenantId") String tenantId,

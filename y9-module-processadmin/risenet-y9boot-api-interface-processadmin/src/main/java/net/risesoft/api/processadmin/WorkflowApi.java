@@ -9,6 +9,8 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 获取当前任务节点的目标节点
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -21,7 +23,7 @@ public interface WorkflowApi {
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code Y9Result<List<TargetModel>>} 通用请求返回对象 - data 是目标节点信息
      */
     @GetMapping("/getCurrentTaskTargets")
     Y9Result<List<TargetModel>> getCurrentTaskTargets(@RequestParam("tenantId") String tenantId,

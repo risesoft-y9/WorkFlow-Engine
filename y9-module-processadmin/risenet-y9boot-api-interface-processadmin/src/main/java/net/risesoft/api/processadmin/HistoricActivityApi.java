@@ -9,6 +9,8 @@ import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 历史活动实例模型
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19

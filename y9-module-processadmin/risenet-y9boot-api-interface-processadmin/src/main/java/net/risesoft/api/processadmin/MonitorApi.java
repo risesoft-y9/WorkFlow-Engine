@@ -3,6 +3,8 @@ package net.risesoft.api.processadmin;
 import java.util.Map;
 
 /**
+ * 监控流程实例接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -14,7 +16,7 @@ public interface MonitorApi {
      * 
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 在办件数量
      */
     long getDoingCountByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
@@ -23,7 +25,7 @@ public interface MonitorApi {
      * 
      * @param tenantId 租户Id
      * @param systemName 系统英文名称
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 在办件数量
      */
     long getDoingCountBySystemName(String tenantId, String systemName);
 
@@ -34,7 +36,7 @@ public interface MonitorApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      */
     Map<String, Object> getDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page,
         Integer rows);
@@ -46,7 +48,7 @@ public interface MonitorApi {
      * @param systemName 系统英文名称
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      */
     Map<String, Object> getDoingListBySystemName(String tenantId, String systemName, Integer page, Integer rows);
 
@@ -55,7 +57,7 @@ public interface MonitorApi {
      * 
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 办结件统计
      */
     long getDoneCountByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
@@ -64,7 +66,7 @@ public interface MonitorApi {
      * 
      * @param tenantId 租户Id
      * @param systemName 系统英文名称
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 办结件统计
      */
     long getDoneCountBySystemName(String tenantId, String systemName);
 
@@ -75,7 +77,7 @@ public interface MonitorApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      */
     Map<String, Object> getDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page,
         Integer rows);
@@ -87,7 +89,7 @@ public interface MonitorApi {
      * @param systemName 系统英文名称
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      */
     Map<String, Object> getDoneListBySystemName(String tenantId, String systemName, Integer page, Integer rows);
 
@@ -96,7 +98,7 @@ public interface MonitorApi {
      * 
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 回收站统计
      */
     long getRecycleCountByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
@@ -105,7 +107,7 @@ public interface MonitorApi {
      * 
      * @param tenantId 租户Id
      * @param systemName 系统英文名称
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 回收站统计
      */
     long getRecycleCountBySystemName(String tenantId, String systemName);
 
@@ -115,7 +117,7 @@ public interface MonitorApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param processDefinitionKey 流程定义Key
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 回收站统计
      */
     long getRecycleCountByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey);
 
@@ -125,7 +127,7 @@ public interface MonitorApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统英文名称
-     * @return Integer
+     * @return {@code Integer} 通用请求返回对象 - data 回收站统计
      */
     long getRecycleCountByUserIdAndSystemName(String tenantId, String userId, String systemName);
 
@@ -136,7 +138,7 @@ public interface MonitorApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 回收站列表
      */
     Map<String, Object> getRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page,
         Integer rows);
@@ -148,7 +150,7 @@ public interface MonitorApi {
      * @param systemName 系统英文名称
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 回收站列表
      */
     Map<String, Object> getRecycleListBySystemName(String tenantId, String systemName, Integer page, Integer rows);
 
@@ -160,7 +162,7 @@ public interface MonitorApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 回收站列表
      */
     Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
         String processDefinitionKey, Integer page, Integer rows);
@@ -173,7 +175,7 @@ public interface MonitorApi {
      * @param systemName 系统英文名称
      * @param page 当前页
      * @param rows 总条数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 回收站列表
      */
     Map<String, Object> getRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName,
         Integer page, Integer rows);
@@ -186,7 +188,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
@@ -200,7 +202,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchDoingListBySystemName(String tenantId, String systemName, String searchTerm, Integer page,
@@ -214,7 +216,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object> } 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
@@ -228,7 +230,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchDoneListBySystemName(String tenantId, String systemName, String searchTerm, Integer page,
@@ -242,7 +244,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
@@ -256,7 +258,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchRecycleListBySystemName(String tenantId, String systemName, String searchTerm,
@@ -271,7 +273,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
@@ -286,7 +288,7 @@ public interface MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件
      * @throws Exception Exception
      */
     Map<String, Object> searchRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName,
