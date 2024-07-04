@@ -1,7 +1,6 @@
 package net.risesoft.api.processadmin;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.GatewayModel;
@@ -95,11 +94,11 @@ public interface ProcessDefinitionApi {
     Y9Result<String> getStartNodeKeyByProcessDefinitionId(String tenantId, String processDefinitionId);
 
     /**
-     * 根据流程定义key获取最新版本的流程定义的启动节点的taskdefineKey
+     * 根据流程定义key获取最新版本的流程定义的启动节点的taskDefineKey
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return {@code Y9Result<String>} 通用请求返回对象 - data taskdefineKey
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data taskDefineKey
      */
     Y9Result<String> getStartNodeKeyByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
@@ -119,9 +118,9 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return {@code List<Map<String, String>>} 通用请求返回对象 - data 任务节点集合
+     * @return {@code Y9Result<List<TargetModel>> } 通用请求返回对象 - data 任务节点集合
      */
-    List<Map<String, String>> getTargetNodes1(String tenantId, String processDefinitionId, String taskDefKey);
+    Y9Result<List<TargetModel>> getTargetNodes1(String tenantId, String processDefinitionId, String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -129,9 +128,9 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return {@code  List<Map<String, String>>} 通用请求返回对象 - data 任务节点集合
+     * @return {@code  Y9Result<List<GatewayModel>>} 通用请求返回对象 - data 任务节点集合
      */
-    List<Map<String, String>> getTargetNodes4ParallelGateway(String tenantId, String processDefinitionId,
+    Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(String tenantId, String processDefinitionId,
         String taskDefKey);
 
     /**
