@@ -151,10 +151,10 @@ public class DoingServiceImpl implements DoingService {
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> list(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<>(16);
+        Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -162,26 +162,23 @@ public class DoingServiceImpl implements DoingService {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
-                // retMap = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId,
-                // userId, processDefinitionKey, page, rows);
-                retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
+                piPage = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
                     processDefinitionKey, page, rows);
-                List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
-                ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
+                List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 ProcessParamModel processParam;
                 SimpleDateFormat sdfT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-                for (Map<String, Object> hpim : hpiModelList) {// 以办理时间排序
+                for (ProcessInstanceModel piModel : hpiModelList) {// 以办理时间排序
                     mapTemp = new HashMap<>(16);
                     try {
-                        String processInstanceId = (String)hpim.get("processInstanceId");
-                        String processDefinitionId = (String)hpim.get("processDefinitionId");
-                        Date endTime = sdfT.parse(hpim.get("endTime").toString());
+                        String processInstanceId = piModel.getId();
+                        String processDefinitionId = piModel.getProcessDefinitionId();
+                        Date endTime = sdfT.parse(piModel.getEndTime().toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
-                        String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        String taskCreateTime = piModel.getEndTime() != null ? sdf.format(endTime) : "";
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -221,18 +218,19 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             } else {
-                retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey,
+                piPage = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey,
                     searchTerm, page, rows);
-                List<ProcessInstanceModel> hpiModelList = (List<ProcessInstanceModel>)retMap.get("rows");
+                List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 ProcessParamModel processParam;
-                for (ProcessInstanceModel hpim : hpiModelList) {
+                for (ProcessInstanceModel piModel : hpiModelList) {
                     mapTemp = new HashMap<>(16);
                     try {
-                        String processInstanceId = hpim.getId();
-                        String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        String processInstanceId = piModel.getId();
+                        String processDefinitionId = piModel.getProcessDefinitionId();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -273,6 +271,9 @@ public class DoingServiceImpl implements DoingService {
                 }
             }
             retMap.put("rows", items);
+            retMap.put("currpage", page);
+            retMap.put("totalpages", piPage.getTotalPages());
+            retMap.put("total", piPage.getTotal());
         } catch (Exception e) {
             LOGGER.error("获取待办列表失败", e);
         }
@@ -283,6 +284,7 @@ public class DoingServiceImpl implements DoingService {
     @Override
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap;
+        Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdfT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
@@ -291,26 +293,25 @@ public class DoingServiceImpl implements DoingService {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
-                retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
+                piPage = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
                     processDefinitionKey, page, rows);
-                List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
-                ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
+                List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 Map<String, Object> formDataMap;
                 ProcessParamModel processParam;
                 ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
                 String processInstanceId = "";
-                for (Map<String, Object> hpim : hpiModelList) {// 以办理时间排序
+                for (ProcessInstanceModel piModel : hpiModelList) {// 以办理时间排序
                     mapTemp = new HashMap<>(16);
                     try {
-                        processInstanceId = (String)hpim.get("processInstanceId");
-                        String processDefinitionId = (String)hpim.get("processDefinitionId");
-                        Date endTime = sdfT.parse(hpim.get("endTime").toString());
+                        processInstanceId = piModel.getId();
+                        String processDefinitionId = piModel.getProcessDefinitionId();
+                        Date endTime = sdfT.parse(piModel.getEndTime().toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
-                        String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        String taskCreateTime = piModel.getEndTime() != null ? sdf.format(endTime) : "";
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -375,22 +376,21 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             } else {
-                retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey,
+                piPage = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey,
                     searchTerm, page, rows);
-                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
-                ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
+                List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 Map<String, Object> formDataMap;
                 ProcessParamModel processParam;
                 String processInstanceId = "";
-                for (ProcessInstanceModel hpim : hpiModelList) {
+                for (ProcessInstanceModel piModel : hpiModelList) {
                     mapTemp = new HashMap<>(16);
                     try {
-                        processInstanceId = hpim.getId();
-                        String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        processInstanceId = piModel.getId();
+                        String processDefinitionId = piModel.getProcessDefinitionId();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -436,8 +436,7 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办列表失败", e);
         }

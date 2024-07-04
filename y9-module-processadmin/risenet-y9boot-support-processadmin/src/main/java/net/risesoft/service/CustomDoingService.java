@@ -1,6 +1,7 @@
 package net.risesoft.service;
 
-import java.util.Map;
+import net.risesoft.model.processadmin.ProcessInstanceModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -43,7 +44,7 @@ public interface CustomDoingService {
      * @param rows 行数
      * @return Map<String, Object>
      */
-    Map<String, Object> getListByUserId(String userId, Integer page, Integer rows);
+    Y9Page<ProcessInstanceModel> getListByUserId(String userId, Integer page, Integer rows);
 
     /**
      * 根据用户Id获取用户所有的在办流程
@@ -54,8 +55,8 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
-        Integer rows);
+    Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+        Integer page, Integer rows);
 
     /**
      * Description:
@@ -66,7 +67,8 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> getListByUserIdAndSystemName(String userId, String systemName, Integer page, Integer rows);
+    Y9Page<ProcessInstanceModel> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
+        Integer rows);
 
     /**
      * 条件搜索在办件
@@ -77,7 +79,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows);
+    Y9Page<ProcessInstanceModel> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -89,7 +91,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+    Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         String searchTerm, Integer page, Integer rows);
 
     /**
@@ -102,7 +104,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+    Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
         Integer page, Integer rows);
 
 }
