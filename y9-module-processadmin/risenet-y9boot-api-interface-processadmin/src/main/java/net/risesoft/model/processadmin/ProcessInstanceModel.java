@@ -73,4 +73,14 @@ public class ProcessInstanceModel implements Serializable {
      * 流程变量
      */
     private Map<String, Object> variables;
+
+    /**
+     * 活动节点
+     */
+    private String activityName;
+
+    /**
+     * 启动用户名称
+     */
+    private String startUserName;
 }
