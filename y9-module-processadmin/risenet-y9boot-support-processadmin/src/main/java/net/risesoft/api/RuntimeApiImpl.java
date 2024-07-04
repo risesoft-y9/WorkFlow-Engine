@@ -1,8 +1,6 @@
 package net.risesoft.api;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -220,16 +218,11 @@ public class RuntimeApiImpl implements RuntimeApi {
     public Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId).count();
         List<ProcessInstance> list =
             runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId)
                 .orderBy(HistoricProcessInstanceQueryProperty.START_TIME).desc().listPage((page - 1) * rows, rows);
         List<ProcessInstanceModel> hpiModelList = FlowableModelConvertUtil.processInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", hpiModelList);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, hpiModelList);
     }
 
@@ -308,11 +301,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @return Y9Page<Map<String, Object>>
      */
     @Override
-    public Y9Page<Map<String, Object>> runningList(@RequestParam String tenantId,
+    public Y9Page<ProcessInstanceModel> runningList(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<Map<String, Object>> items = new ArrayList<>();
+        List<ProcessInstanceModel> items = new ArrayList<>();
         long totalCount;
         List<ProcessInstance> processInstanceList;
         if (StringUtils.isBlank(processInstanceId)) {
@@ -326,36 +318,35 @@ public class RuntimeApiImpl implements RuntimeApi {
         }
         Position position;
         OrgUnit orgUnit;
-        Map<String, Object> map;
+        ProcessInstanceModel piModel;
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
-            map = new HashMap<>(16);
-            map.put("processInstanceId", processInstanceId);
-            map.put("processDefinitionId", processInstance.getProcessDefinitionId());
-            map.put("processDefinitionName", processInstance.getProcessDefinitionName());
-            map.put("startTime",
-                processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
+            piModel = new ProcessInstanceModel();
+            piModel.setId(processInstanceId);
+            piModel.setProcessDefinitionId(processInstance.getProcessDefinitionId());
+            piModel.setProcessDefinitionName(processInstance.getProcessDefinitionName());
+            piModel.setStartTime(processInstance.getStartTime());
             try {
-                map.put("activityName",
-                    runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId)
+                piModel
+                    .setActivityName(runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId)
                         .orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
-                map.put("suspended", processInstance.isSuspended());
-                map.put("startUserName", "无");
+                piModel.setSuspended(processInstance.isSuspended());
+                piModel.setStartUserName("无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                     String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                     if (userIdAndDeptId.length == 1) {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         orgUnit = orgUnitApi.getParent(tenantId, position.getId()).getData();
-                        map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
+                        piModel.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
                     } else {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         if (null != position) {
                             orgUnit = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
                                 .getData();
                             if (null == orgUnit) {
-                                map.put("startUserName", position.getName());
+                                piModel.setStartUserName(position.getName());
                             } else {
-                                map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
+                                piModel.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
                             }
                         }
                     }
@@ -363,10 +354,9 @@ public class RuntimeApiImpl implements RuntimeApi {
             } catch (Exception e) {
                 LOGGER.error("获取流程实例[" + processInstanceId + "]的活动节点名称失败", e);
             }
-            items.add(map);
+            items.add(piModel);
         }
-        int totalpages = (int)totalCount / rows + 1;
-        return Y9Page.success(page, totalpages, totalCount, items, "获取列表成功");
+        return Y9Page.success(page, (int)totalCount / rows + 1, totalCount, items, "获取列表成功");
     }
 
     /**

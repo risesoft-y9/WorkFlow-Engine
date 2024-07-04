@@ -182,7 +182,7 @@ public interface RuntimeApi {
      * @return {@code Y9Page<Map<String, Object>>} 通用分页请求返回对象 - rows 是流程实例
      */
     @GetMapping(value = "/runningList")
-    Y9Page<Map<String, Object>> runningList(@RequestParam("tenantId") String tenantId,
+    Y9Page<ProcessInstanceModel> runningList(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") int page,
         @RequestParam("rows") int rows);
 
