@@ -77,7 +77,8 @@ public class MobileMonitorController {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoingCount = monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoingCount =
+                monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();
             map.put("monitorDoingCount", monitorDoingCount);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
@@ -130,7 +131,8 @@ public class MobileMonitorController {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoneCount = monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoneCount =
+                monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();
             map.put("monitorDoneCount", monitorDoneCount);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
