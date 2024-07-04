@@ -54,7 +54,7 @@ public interface DoingApi {
      * @param processDefinitionKey 流程定义key
      * @param page 页码
      * @param rows 行数
-     * @return {@code Map} 通用请求返回对象 - rows 已办件列表
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
      */
     Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(String tenantId, String userId,
         String processDefinitionKey, Integer page, Integer rows);
@@ -67,7 +67,7 @@ public interface DoingApi {
      * @param systemName 英文系统名称
      * @param page 页码
      * @param rows 行数
-     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 已办件列表
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
      * @throws Exception Exception
      */
     Y9Page<ProcessInstanceModel> getListByUserIdAndSystemName(String tenantId, String userId, String systemName,
@@ -81,7 +81,7 @@ public interface DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
      * @throws Exception Exception
      */
     Y9Page<ProcessInstanceModel> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
@@ -96,11 +96,10 @@ public interface DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
-     * @throws Exception Exception
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
      */
     Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -111,9 +110,8 @@ public interface DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
-     * @throws Exception Exception
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
      */
     Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
-        String searchTerm, Integer page, Integer rows) throws Exception;
+        String searchTerm, Integer page, Integer rows);
 }

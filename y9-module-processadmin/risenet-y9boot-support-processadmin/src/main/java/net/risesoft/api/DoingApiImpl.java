@@ -132,7 +132,7 @@ public class DoingApiImpl implements DoingApi {
 
         totalCount = (int)historyService.createNativeHistoricProcessInstanceQuery().sql(countSql)
             .parameter("processDefinitionKey", processDefinitionKey + "%").parameter("USER_ID_", userId).count();
-        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, resList);
+        return Y9Page.success(page, (totalCount + rows - 1) / rows, totalCount, resList);
     }
 
     /**
