@@ -19,12 +19,12 @@ public interface ProcInstanceRelationshipRepository
     extends JpaRepository<ProcInstanceRelationship, String>, JpaSpecificationExecutor<ProcInstanceRelationship> {
 
     @Query("from ProcInstanceRelationship where parentProcInstanceId=?1")
-    public List<ProcInstanceRelationship> findByParentProcInstanceId(String parentProcInstanceId);
+    List<ProcInstanceRelationship> findByParentProcInstanceId(String parentProcInstanceId);
 
     @Query("from ProcInstanceRelationship where procDefinitionKey=?1")
-    public List<ProcInstanceRelationship> findByProcDefKey(String procDefinitionKey);
+    List<ProcInstanceRelationship> findByProcDefKey(String procDefinitionKey);
 
     @Query("select count(*) from ProcInstanceRelationship t where t.procInstanceId=?1")
-    public int getSubProcessInstanceIdCount(String processInstanceId);
+    int getSubProcessInstanceIdCount(String processInstanceId);
 
 }

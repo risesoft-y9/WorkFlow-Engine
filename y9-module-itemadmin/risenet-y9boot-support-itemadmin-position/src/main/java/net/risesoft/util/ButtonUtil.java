@@ -93,8 +93,8 @@ public class ButtonUtil {
             varsUser = String.valueOf(vars.get(SysVariables.USER));
             varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLELSPONSOR));
             taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
-            multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(),
-                task.getTaskDefinitionKey()).getData();
+            multiInstance = processDefinitionManager
+                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
         }
 
         //// 在待办件列表中打开公文显示按钮(itembox==todo表示在待办件列表)，在在办件列表和办结件列表里打开公文不显示任何按钮

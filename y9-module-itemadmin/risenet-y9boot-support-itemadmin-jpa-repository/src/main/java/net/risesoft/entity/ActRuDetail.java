@@ -32,9 +32,9 @@ import lombok.NoArgsConstructor;
 @Comment("流转信息表")
 public class ActRuDetail implements Serializable {
 
-    private static final long serialVersionUID = 1276030927802869240L;
-
     public static final Integer DOING = 1;
+
+    private static final long serialVersionUID = 1276030927802869240L;
 
     @Id
     @Comment("主键")

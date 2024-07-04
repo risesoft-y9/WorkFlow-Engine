@@ -50,9 +50,6 @@ import net.risesoft.y9.util.Y9Util;
 @RequiredArgsConstructor
 public class Process4SearchService {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
-
     private final OfficeDoneInfoService officeDoneInfoService;
 
     private final PositionApi positionManager;
@@ -63,12 +60,15 @@ public class Process4SearchService {
 
     private final ErrorLogService errorLogService;
 
+    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
+
     /**
      * 启动流程保存流程信息
      *
      * @param tenantId
      * @param processParam
-     * @param person
+     * @param position
      */
     public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final Position position) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -133,7 +133,6 @@ public class Process4SearchService {
             officeDoneInfo.setStartTime(startTime);
             officeDoneInfo.setTenantId(tenantId);
             officeDoneInfoService.saveOfficeDone(officeDoneInfo);
-            return;
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
@@ -267,7 +266,6 @@ public class Process4SearchService {
             officeDoneInfo.setDeptId(deptIds);
             officeDoneInfo.setAllUserId(allUserId);
             officeDoneInfoService.saveOfficeDone(officeDoneInfo);
-            return;
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);

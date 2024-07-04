@@ -145,8 +145,8 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
             Position position = positionManager.get(tenantId, positionId).getData();
-            String htiMultiInstance = processDefinitionManager.getNodeType(tenantId, hti.getProcessDefinitionId(),
-                hti.getTaskDefinitionKey()).getData();
+            String htiMultiInstance = processDefinitionManager
+                .getNodeType(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
             Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, "");
             Map<String, Object> val = new HashMap<>();
@@ -274,6 +274,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     @Override
     public Y9Result<Object> takeback(String tenantId, String positionId, String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(specialOperationManager.takeBack4Position(tenantId, positionId, taskId, reason).isSuccess());
+        return Y9Result
+            .success(specialOperationManager.takeBack4Position(tenantId, positionId, taskId, reason).isSuccess());
     }
 }

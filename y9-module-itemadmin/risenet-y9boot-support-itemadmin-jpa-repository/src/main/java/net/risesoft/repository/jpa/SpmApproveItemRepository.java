@@ -26,11 +26,11 @@ public interface SpmApproveItemRepository extends PagingAndSortingRepository<Spm
     List<SpmApproveItem> findAll(String systemName);
 
     @Query("from SpmApproveItem s where s.workflowGuid=?1")
-    public SpmApproveItem findItemByKey(String processDefinitionKey);
+    SpmApproveItem findItemByKey(String processDefinitionKey);
 
     @Query(" from SpmApproveItem s where s.departmentId=?1 and s.accountability=?2 order by s.createDate ")
-    public List<SpmApproveItem> getItemListByDeptAndAccountability(String departmentId, String accountability);
+    List<SpmApproveItem> getItemListByDeptAndAccountability(String departmentId, String accountability);
 
     @Query("select distinct t.systemName as systemName, t.sysLevel as sysLevel from SpmApproveItem t ")
-    public List<Map<String, Object>> getItemSystem();
+    List<Map<String, Object>> getItemSystem();
 }

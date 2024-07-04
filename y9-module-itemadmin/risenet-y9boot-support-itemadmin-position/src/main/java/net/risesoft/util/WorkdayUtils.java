@@ -45,15 +45,6 @@ public class WorkdayUtils {
      * @fields HOLIDAY 普通假日
      */
     public static final int HOLIDAY = 4;
-
-    public static void main(String[] args) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        WorkdayUtils workdayUtils = new WorkdayUtils();
-        Date date = workdayUtils.getWorkday(new Date(), 15);
-        System.out.println(format.format(date));
-        System.out.println(workdayUtils.getWorkdayCount(new Date(), format.parse("2013-08-13")));
-    }
-
     /**
      * @fields 日期格式化类型，默认是“yyyy-MM-dd”
      */
@@ -62,7 +53,6 @@ public class WorkdayUtils {
      * @fields legalWorkday 法定工作日列表，日期格式 yyyy-MM-dd
      */
     private String legalWorkday;
-
     /**
      * @fields LegalHoliday 法定节假日列表，日期格式yyyy-MM-dd
      */
@@ -75,7 +65,7 @@ public class WorkdayUtils {
     /**
      * @description 构造方法
      * @param legalWorkday 法定工作日列表
-     * @param LegalHoliday 法定假日列表
+     * @param legalHoliday 法定假日列表
      */
     public WorkdayUtils(String legalWorkday, String legalHoliday) {
         super();
@@ -86,7 +76,7 @@ public class WorkdayUtils {
     /**
      * @description 构造方法
      * @param legalWorkday 法定工作日列表
-     * @param LegalHoliday 法定假日列表
+     * @param legalHoliday 法定假日列表
      * @param datePattern 日期模式，默认为“yyyy-MM-dd”
      */
     public WorkdayUtils(String legalWorkday, String legalHoliday, String datePattern) {
@@ -94,6 +84,14 @@ public class WorkdayUtils {
         this.legalWorkday = legalWorkday;
         this.legalHoliday = legalHoliday;
         this.datePattern = datePattern;
+    }
+
+    public static void main(String[] args) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        WorkdayUtils workdayUtils = new WorkdayUtils();
+        Date date = workdayUtils.getWorkday(new Date(), 15);
+        System.out.println(format.format(date));
+        System.out.println(workdayUtils.getWorkdayCount(new Date(), format.parse("2013-08-13")));
     }
 
     /**
@@ -114,6 +112,17 @@ public class WorkdayUtils {
      */
     public String getDatePattern() {
         return datePattern;
+    }
+
+    /**
+     * 设置日期格式化类型，如果参数为空或null则使用默认格式“yyyy-MM-dd”
+     *
+     * @param datePattern
+     */
+    public void setDatePattern(String datePattern) {
+        if (StringUtils.isNotBlank(datePattern)) {
+            this.datePattern = datePattern;
+        }
     }
 
     /**
@@ -241,27 +250,13 @@ public class WorkdayUtils {
      */
     public boolean isWorkday(Date date) {
         int dayType = getDayType(date);
-        if (dayType == LEGAL_WORKDAY || dayType == WORKDAY) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 设置日期格式化类型，如果参数为空或null则使用默认格式“yyyy-MM-dd”
-     *
-     * @param datePattern
-     */
-    public void setDatePattern(String datePattern) {
-        if (StringUtils.isNotBlank(datePattern)) {
-            this.datePattern = datePattern;
-        }
+        return dayType == LEGAL_WORKDAY || dayType == WORKDAY;
     }
 
     /**
      * 设置法定节假日列表
      *
-     * @param LegalHoliday
+     * @param legalHoliday
      */
     public void setLegalHoliday(String legalHoliday) {
         this.legalHoliday = legalHoliday;

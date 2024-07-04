@@ -35,7 +35,7 @@ public interface Y9TableFieldRepository
     Y9TableField findByTableNameAndFieldNameIgnoreCase(String tableName, String fieldName);
 
     @Query("select max(t.displayOrder) from Y9TableField t where t.tableId = ?1")
-    public Integer getMaxDisplayOrder(String tableId);
+    Integer getMaxDisplayOrder(String tableId);
 
     @Modifying
     @Transactional(readOnly = false)

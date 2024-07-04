@@ -88,7 +88,7 @@ public interface ExtendedContentRepository
      * @return
      */
     @Query(" from ExtendedContent t where t.processSerialNumber=?1 and t.userId=?2 and t.category=?3")
-    public ExtendedContent getResultByUserIdAndCategory(String processSerialNumber, String userid, String category);
+    ExtendedContent getResultByUserIdAndCategory(String processSerialNumber, String userid, String category);
 
     /**
      * 更新内容

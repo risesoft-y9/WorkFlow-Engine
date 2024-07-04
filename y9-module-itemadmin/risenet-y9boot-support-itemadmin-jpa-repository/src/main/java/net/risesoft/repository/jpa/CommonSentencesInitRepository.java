@@ -25,5 +25,5 @@ public interface CommonSentencesInitRepository
      * @return
      */
     @Query("from CommonSentencesInit t where t.userId=?1")
-    public List<CommonSentencesInit> findByUserId(String userId);
+    List<CommonSentencesInit> findByUserId(String userId);
 }

@@ -212,7 +212,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                         model.setItembox(ItemBoxTypeEnum.DONE.getValue());
                         model.setStartTimes(hpim.getStartTime());
                         if (StringUtils.isBlank(hpim.getEndTime())) {
-                            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                            List<TaskModel> taskList =
+                                taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                             List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                             String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                                 assigneeNames = listTemp.get(2);

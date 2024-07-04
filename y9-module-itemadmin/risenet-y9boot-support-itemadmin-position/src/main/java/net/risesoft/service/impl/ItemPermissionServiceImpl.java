@@ -66,7 +66,8 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestpd =
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
