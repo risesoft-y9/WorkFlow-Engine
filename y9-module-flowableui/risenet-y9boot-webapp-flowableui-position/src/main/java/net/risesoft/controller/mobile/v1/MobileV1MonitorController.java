@@ -66,7 +66,8 @@ public class MobileV1MonitorController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoingCount = monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoingCount =
+                monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();
             return Y9Result.success(monitorDoingCount, "获取数据成功");
         } catch (Exception e) {
             LOGGER.error("监控在办件统计失败", e);
@@ -101,7 +102,8 @@ public class MobileV1MonitorController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoneCount = monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoneCount =
+                monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();
             return Y9Result.success(monitorDoneCount, "获取数据成功");
         } catch (Exception e) {
             LOGGER.error("监控办结件统计失败", e);

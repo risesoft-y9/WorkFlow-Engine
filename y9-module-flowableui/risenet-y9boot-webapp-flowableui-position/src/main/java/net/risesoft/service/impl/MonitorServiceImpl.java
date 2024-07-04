@@ -328,7 +328,8 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -508,14 +509,15 @@ public class MonitorServiceImpl implements MonitorService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
+            Y9Page<HistoricProcessInstanceModel> hpiPage;
             if (StringUtils.isBlank(searchTerm)) {
-                retMap = monitorApi.getRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, page, rows);
+                hpiPage = monitorApi.getRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, page, rows);
             } else {
-                retMap = monitorApi.searchRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, searchTerm,
+                hpiPage = monitorApi.searchRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, searchTerm,
                     page, rows);
             }
             List<Map<String, Object>> items = new ArrayList<>();
-            List<HistoricProcessInstanceModel> hpiModelList = (List<HistoricProcessInstanceModel>)retMap.get("rows");
+            List<HistoricProcessInstanceModel> hpiModelList = hpiPage.getRows();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             ProcessParamModel processParam;
@@ -550,6 +552,9 @@ public class MonitorServiceImpl implements MonitorService {
                 items.add(mapTemp);
             }
             retMap.put("rows", items);
+            retMap.put("currpage", page);
+            retMap.put("totalpages", hpiPage.getTotalPages());
+            retMap.put("total", hpiPage.getTotal());
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }

@@ -1,6 +1,7 @@
 package net.risesoft.service;
 
-import java.util.Map;
+import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -33,7 +34,8 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> getDoingListByProcessDefinitionKey(String processDefinitionKey, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * 查询监控在办件列表
@@ -43,7 +45,7 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> getDoingListBySystemName(String systemName, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(String systemName, Integer page, Integer rows);
 
     /**
      * 监控办结件列表统计
@@ -69,7 +71,8 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> getDoneListByProcessDefinitionKey(String processDefinitionKey, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getDoneListByProcessDefinitionKey(String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * 查询监控办结件列表
@@ -79,7 +82,7 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> getDoneListBySystemName(String systemName, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getDoneListBySystemName(String systemName, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -90,8 +93,8 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchDoingListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
-        Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchDoingListByProcessDefinitionKey(String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -102,7 +105,8 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchDoingListBySystemName(String systemName, String searchTerm, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchDoingListBySystemName(String systemName, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 条件搜索在办件
@@ -113,8 +117,8 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchDoneListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
-        Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchDoneListByProcessDefinitionKey(String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -125,5 +129,6 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchDoneListBySystemName(String systemName, String searchTerm, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchDoneListBySystemName(String systemName, String searchTerm, Integer page,
+        Integer rows);
 }

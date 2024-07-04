@@ -1,8 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -12,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.CustomMonitorService;
 import net.risesoft.util.FlowableModelConvertUtil;
 
@@ -40,36 +39,27 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     }
 
     @Override
-    public Map<String, Object> getDoingListByProcessDefinitionKey(String processDefinitionKey, Integer page,
-        Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(String processDefinitionKey,
+        Integer page, Integer rows) {
         long totalCount = this.getDoingCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted()
             .unfinished().processDefinitionKey(processDefinitionKey).orderByProcessInstanceStartTime().desc()
             .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 
     @Override
-    public Map<String, Object> getDoingListBySystemName(String systemName, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(String systemName, Integer page,
+        Integer rows) {
         long totalCount = this.getDoingCountBySystemName(systemName);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).notDeleted()
                 .unfinished().orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 
     @Override
@@ -85,42 +75,31 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     }
 
     @Override
-    public Map<String, Object> getDoneListByProcessDefinitionKey(String processDefinitionKey, Integer page,
-        Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> getDoneListByProcessDefinitionKey(String processDefinitionKey,
+        Integer page, Integer rows) {
         long totalCount = this.getDoneCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processDefinitionKey(processDefinitionKey).notDeleted()
                 .finished().orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 
     @Override
-    public Map<String, Object> getDoneListBySystemName(String systemName, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> getDoneListBySystemName(String systemName, Integer page, Integer rows) {
         long totalCount = this.getDoneCountBySystemName(systemName);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).notDeleted()
                 .finished().orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 
     @Override
-    public Map<String, Object> searchDoingListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
-        Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> searchDoingListByProcessDefinitionKey(String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) {
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().unfinished()
             .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list =
@@ -129,17 +108,12 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
                 .orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 
     @Override
-    public Map<String, Object> searchDoingListBySystemName(String systemName, String searchTerm, Integer page,
-        Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> searchDoingListBySystemName(String systemName, String searchTerm,
+        Integer page, Integer rows) {
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().unfinished()
             .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted()
@@ -147,17 +121,12 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
             .orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 
     @Override
-    public Map<String, Object> searchDoneListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
-        Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> searchDoneListByProcessDefinitionKey(String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) {
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()
             .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()
@@ -165,17 +134,12 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
             .orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 
     @Override
-    public Map<String, Object> searchDoneListBySystemName(String systemName, String searchTerm, Integer page,
-        Integer rows) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public Y9Page<HistoricProcessInstanceModel> searchDoneListBySystemName(String systemName, String searchTerm,
+        Integer page, Integer rows) {
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()
             .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()
@@ -183,10 +147,6 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
             .orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        returnMap.put("currpage", page);
-        returnMap.put("totalpages", (totalCount + rows - 1) / rows);
-        returnMap.put("total", totalCount);
-        returnMap.put("rows", modelList);
-        return returnMap;
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
     }
 }

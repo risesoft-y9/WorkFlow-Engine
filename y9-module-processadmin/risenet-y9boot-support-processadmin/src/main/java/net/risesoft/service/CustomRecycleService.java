@@ -1,6 +1,7 @@
 package net.risesoft.service;
 
-import java.util.Map;
+import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -20,7 +21,6 @@ public interface CustomRecycleService {
     /**
      * 获取监控回收站统计
      *
-     * @param tenantId 租户Id
      * @param systemName 系统英文名称
      * @return Integer
      */
@@ -50,20 +50,20 @@ public interface CustomRecycleService {
      * @param processDefinitionKey 流程定义Key
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Map<String, Object> getRecycleListByProcessDefinitionKey(String processDefinitionKey, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getRecycleListByProcessDefinitionKey(String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * 获取回收站列表
      *
-     * @param processDefinitionKey 事项id
      * @param systemName 系统英文名称
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Map<String, Object> getRecycleListBySystemName(String systemName, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getRecycleListBySystemName(String systemName, Integer page, Integer rows);
 
     /**
      * 获取回收站列表
@@ -72,10 +72,10 @@ public interface CustomRecycleService {
      * @param processDefinitionKey 流程定义Key
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
-        Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndProcessDefinitionKey(String userId,
+        String processDefinitionKey, Integer page, Integer rows);
 
     /**
      * 根据人员id获取回收站列表
@@ -84,10 +84,10 @@ public interface CustomRecycleService {
      * @param systemName 系统英文名称
      * @param page 当前页
      * @param rows 总条数
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Map<String, Object> getRecycleListByUserIdAndSystemName(String userId, String systemName, Integer page,
-        Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndSystemName(String userId, String systemName,
+        Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -98,8 +98,8 @@ public interface CustomRecycleService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchRecycleListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
-        Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchRecycleListByProcessDefinitionKey(String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -110,7 +110,8 @@ public interface CustomRecycleService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchRecycleListBySystemName(String systemName, String searchTerm, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchRecycleListBySystemName(String systemName, String searchTerm,
+        Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -122,8 +123,8 @@ public interface CustomRecycleService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
-        String searchTerm, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchRecycleListByUserIdAndProcessDefinitionKey(String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows);
 
     /**
      * Description: 条件搜索在办件
@@ -135,6 +136,6 @@ public interface CustomRecycleService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchRecycleListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
-        Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchRecycleListByUserIdAndSystemName(String userId, String systemName,
+        String searchTerm, Integer page, Integer rows);
 }
