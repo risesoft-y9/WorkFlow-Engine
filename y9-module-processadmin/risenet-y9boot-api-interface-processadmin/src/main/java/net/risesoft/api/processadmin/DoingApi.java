@@ -3,6 +3,8 @@ package net.risesoft.api.processadmin;
 import java.util.Map;
 
 /**
+ * 在办件列表
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -14,7 +16,7 @@ public interface DoingApi {
      *
      * @param tenantId 租户Id
      * @param userId 人员Id
-     * @return Map&lt;String, Object&gt;
+     * @return {@code long} 通用请求返回对象 - data 在办件统计
      */
     long getCountByUserId(String tenantId, String userId);
 
@@ -25,7 +27,7 @@ public interface DoingApi {
      * @param userId 人员id
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - data 在办任务
      * @throws Exception Exception
      */
     Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows) throws Exception;
@@ -38,8 +40,7 @@ public interface DoingApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
-     * @throws Exception Exception
+     * @return {@code Map<String, Object>} 通用请求返回对象 - data 在办列表
      */
     Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
         String processDefinitionKey, Integer page, Integer rows);
@@ -52,8 +53,7 @@ public interface DoingApi {
      * @param processDefinitionKey 流程定义key
      * @param page 页码
      * @param rows 行数
-     * @return Map
-     * @throws Exception Exception
+     * @return {@code Map} 通用请求返回对象 - rows 已办件列表
      */
     Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(String tenantId, String userId,
         String processDefinitionKey, Integer page, Integer rows);
@@ -66,7 +66,7 @@ public interface DoingApi {
      * @param systemName 英文系统名称
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 已办件列表
      * @throws Exception Exception
      */
     Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page,
@@ -80,7 +80,7 @@ public interface DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      * @throws Exception Exception
      */
     Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
@@ -95,7 +95,7 @@ public interface DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      * @throws Exception Exception
      */
     Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
@@ -110,7 +110,7 @@ public interface DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      * @throws Exception Exception
      */
     Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,

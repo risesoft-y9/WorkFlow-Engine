@@ -13,6 +13,8 @@ import net.risesoft.model.processadmin.Y9FlowChartModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 流程图接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -24,7 +26,7 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return {@code Y9Result<Boolean>}
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/deleteModel")
     Y9Result<Object> deleteModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
@@ -34,7 +36,7 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/deployModel")
     Y9Result<Object> deployModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
@@ -44,7 +46,7 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 流程图
      */
     @PostMapping("/genProcessDiagram")
     Y9Result<String> genProcessDiagram(@RequestParam("tenantId") String tenantId,
@@ -55,7 +57,7 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Y9BpmnModel>
+     * @return {@code Y9Result<Y9BpmnModel>} 通用请求返回对象 - data 流程图模型
      */
     @GetMapping("/getBpmnModel")
     Y9Result<Y9BpmnModel> getBpmnModel(@RequestParam("tenantId") String tenantId,
@@ -66,7 +68,7 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Y9FlowChartModel>
+     * @return {@code Y9Result<Y9FlowChartModel>} 通用请求返回对象 - data 流程图数据
      */
     @GetMapping("/getFlowChart")
     Y9Result<Y9FlowChartModel> getFlowChart(@RequestParam("tenantId") String tenantId,
@@ -76,7 +78,7 @@ public interface BpmnModelApi {
      * 获取模型列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<FlowableBpmnModel>>
+     * @return {@code Y9Result<List<FlowableBpmnModel>>} 通用请求返回对象 - data 流模型列表
      */
     @GetMapping(value = "/getModelList")
     Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam("tenantId") String tenantId);
@@ -86,7 +88,7 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<FlowableBpmnModel>
+     * @return {@code Y9Result<FlowableBpmnModel>} 通用请求返回对象 - data 流程设计模型xml
      */
     @GetMapping(value = "/getModelXml")
     Y9Result<FlowableBpmnModel> getModelXml(@RequestParam("tenantId") String tenantId,
@@ -98,7 +100,7 @@ public interface BpmnModelApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param file 导入的xml文件
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/import")
     Y9Result<Object> importProcessModel(@RequestParam("tenantId") String tenantId,
@@ -111,7 +113,7 @@ public interface BpmnModelApi {
      * @param userId 用户id
      * @param modelId 模板id
      * @param file 模型文件
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @PostMapping(value = "/saveModelXml")
     Y9Result<Object> saveModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,

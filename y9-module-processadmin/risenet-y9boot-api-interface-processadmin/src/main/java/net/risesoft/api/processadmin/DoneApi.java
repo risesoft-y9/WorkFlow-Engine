@@ -3,6 +3,8 @@ package net.risesoft.api.processadmin;
 import java.util.Map;
 
 /**
+ * 办结件列表
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -16,7 +18,7 @@ public interface DoneApi {
      * @param userId 人员id
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      * @throws Exception Exception
      */
     Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows) throws Exception;
@@ -29,7 +31,7 @@ public interface DoneApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      * @throws Exception Exception
      */
     Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
@@ -43,7 +45,7 @@ public interface DoneApi {
      * @param systemName 系统名称
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      * @throws Exception Exception
      */
     Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page,
@@ -57,7 +59,7 @@ public interface DoneApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      * @throws Exception Exception
      */
     Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
@@ -72,7 +74,7 @@ public interface DoneApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      * @throws Exception Exception
      */
     Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
@@ -87,7 +89,7 @@ public interface DoneApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Map<String, Object>} 通用请求返回对象 - rows 办结件列表
      * @throws Exception Exception
      */
     Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,

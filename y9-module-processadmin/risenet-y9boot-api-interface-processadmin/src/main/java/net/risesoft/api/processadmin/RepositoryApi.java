@@ -8,6 +8,8 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 部署流程相关接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -19,7 +21,7 @@ public interface RepositoryApi {
      *
      * @param tenantId 租户id
      * @param deploymentId 部署id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> delete(String tenantId, String deploymentId);
 
@@ -28,7 +30,7 @@ public interface RepositoryApi {
      *
      * @param tenantId 租户id
      * @param file 流程文件
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> deploy(String tenantId, MultipartFile file);
 
@@ -37,7 +39,7 @@ public interface RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return Y9Result<ProcessDefinitionModel>
+     * @return {@code Y9Result<ProcessDefinitionModel>} 通用请求返回对象 - data 是最新部署的流程定义
      */
     Y9Result<ProcessDefinitionModel> getLatestProcessDefinitionByKey(String tenantId, String processDefinitionKey);
 
@@ -45,7 +47,7 @@ public interface RepositoryApi {
      * 获取所有流程定义最新版本的集合
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ProcessDefinitionModel>>
+     * @return {@code Y9Result<List<ProcessDefinitionModel>>} 通用请求返回对象 - data 是最新部署的流程定义列表
      */
     Y9Result<List<ProcessDefinitionModel>> getLatestProcessDefinitionList(String tenantId);
 
@@ -54,7 +56,7 @@ public interface RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义Id
-     * @return ProcessDefinitionModel
+     * @return {@code Y9Result<ProcessDefinitionModel>} 通用请求返回对象 - data 是流程定义信息
      */
     Y9Result<ProcessDefinitionModel> getPreviousProcessDefinitionById(String tenantId, String processDefinitionId);
 
@@ -63,7 +65,7 @@ public interface RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义Id
-     * @return ProcessDefinitionModel
+     * @return {@code Y9Result<ProcessDefinitionModel>} 通用请求返回对象 - data 是流程定义信息
      */
     Y9Result<ProcessDefinitionModel> getProcessDefinitionById(String tenantId, String processDefinitionId);
 
@@ -72,7 +74,7 @@ public interface RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return List&lt;ProcessDefinitionModel&gt;
+     * @return {@code Y9Result<List<ProcessDefinitionModel>>} 通用请求返回对象 - data 是流程定义信息
      */
     Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionListByKey(String tenantId, String processDefinitionKey);
 
@@ -83,7 +85,7 @@ public interface RepositoryApi {
      * @param resourceType xml
      * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是流程定义xml
      */
     Y9Result<String> getXmlByProcessInstance(String tenantId, String resourceType, String processInstanceId,
         String processDefinitionId);
@@ -92,7 +94,7 @@ public interface RepositoryApi {
      * 获取已部署流程定义列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是流程定义信息
      */
     Y9Result<List<ProcessDefinitionModel>> list(String tenantId);
 
@@ -102,7 +104,7 @@ public interface RepositoryApi {
      * @param tenantId 租户id
      * @param state 状态
      * @param processDefinitionId 流程定义Id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     Y9Result<Object> switchSuspendOrActive(String tenantId, String state, String processDefinitionId);
 }

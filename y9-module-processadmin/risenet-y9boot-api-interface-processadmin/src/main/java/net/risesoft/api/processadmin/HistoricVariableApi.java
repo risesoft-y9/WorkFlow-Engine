@@ -13,6 +13,8 @@ import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 历史变量相关接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -24,7 +26,7 @@ public interface HistoricVariableApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<HistoricVariableInstanceModel>>
+     * @return {@code Y9Result<List<HistoricVariableInstanceModel>>} 通用请求返回对象 - data 历史任务变量的值列表
      */
     @GetMapping("/getByProcessInstanceId")
     Y9Result<List<HistoricVariableInstanceModel>> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -37,7 +39,7 @@ public interface HistoricVariableApi {
      * @param processInstanceId 流程实例id
      * @param variableName 变量名
      * @param year 年份
-     * @return Y9Result<HistoricVariableInstanceModel>
+     * @return {@code Y9Result<HistoricVariableInstanceModel>} 通用请求返回对象 - data 历史任务变量的值
      */
     @GetMapping("/getByProcessInstanceIdAndVariableName")
     Y9Result<HistoricVariableInstanceModel> getByProcessInstanceIdAndVariableName(
@@ -49,7 +51,7 @@ public interface HistoricVariableApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<List<HistoricVariableInstanceModel>>
+     * @return {@code Y9Result<List<HistoricVariableInstanceModel>>} 通用请求返回对象 - data 历史任务变量的值列表
      */
     @GetMapping("/getByTaskId")
     Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam("tenantId") String tenantId,
@@ -62,7 +64,7 @@ public interface HistoricVariableApi {
      * @param taskId 任务id
      * @param variableName 变量名
      * @param year 年份
-     * @return Y9Result<HistoricVariableInstanceModel>
+     * @return {@code Y9Result<HistoricVariableInstanceModel>} 通用请求返回对象 - data 历史任务变量的值
      */
     @GetMapping("/getByTaskIdAndVariableName")
     Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(@RequestParam("tenantId") String tenantId,
@@ -75,7 +77,7 @@ public interface HistoricVariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param keys 变量集合
-     * @return Y9Result<Map<String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 流程变量
      */
     @GetMapping(value = "/getVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Map<String, Object>> getVariables(@RequestParam("tenantId") String tenantId,
