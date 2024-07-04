@@ -11,9 +11,6 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,10 +69,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param activityId 活动节点id
      * @param parentExecutionId 父执行实例id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/addMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> addMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String activityId,
         @RequestParam String parentExecutionId, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -90,9 +86,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/complete4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> complete4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String processInstanceId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -114,9 +110,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/completed", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> completed(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -137,9 +133,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteMultiInstanceExecution(@RequestParam String tenantId,
         @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -152,10 +148,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return List<String>
+     * @return Y9Result<List<String>>
      */
     @Override
-    @GetMapping(value = "/getActiveActivityIds", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<String>> getActiveActivityIds(@RequestParam String tenantId,
         @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -167,10 +162,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return ExecutionModel
+     * @return Y9Result<ExecutionModel>
      */
     @Override
-    @GetMapping(value = "/getExecutionById", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ExecutionModel> getExecutionById(@RequestParam String tenantId, @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Execution execution = customRuntimeService.getExecutionById(executionId);
@@ -185,10 +179,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param superProcessInstanceId 父流程实例id
-     * @return List<ProcessInstanceModel>
+     * @return Y9Result<List<ProcessInstanceModel>>
      */
     @Override
-    @GetMapping(value = "/getListBySuperProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String superProcessInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -201,10 +194,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return ProcessInstanceModel
+     * @return Y9Result<ProcessInstanceModel>
      */
     @Override
-    @GetMapping(value = "/getProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -222,10 +214,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param processDefinitionId 流程定义id
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return Y9Page<ProcessInstanceModel>
      */
     @Override
-    @GetMapping(value = "/getProcessInstancesByDefId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -247,10 +238,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return List<ProcessInstanceModel>
+     * @return Y9Result<List<ProcessInstanceModel>>
      */
     @Override
-    @GetMapping(value = "/getProcessInstancesByKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -265,9 +255,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param userId 用户id
      * @param processInstanceId 流程实例id
      * @param year 年份
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/recovery4Completed", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> recovery4Completed(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -298,9 +288,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/recovery4SetUpCompleted", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> recovery4SetUpCompleted(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -317,7 +307,6 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param rows 条数
      * @return Y9Page<Map<String, Object>>
      */
-    @GetMapping(value = "/runningList", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public Y9Page<Map<String, Object>> runningList(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam int page, @RequestParam int rows) {
@@ -385,9 +374,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setUpCompleted", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.setUpCompleted(processInstanceId);
@@ -401,10 +390,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param key 变量key
      * @param map 变量map
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setVariable(@RequestParam String tenantId, @RequestParam String processInstanceId,
         @RequestParam String key, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -419,10 +407,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param executionId 执行实例id
      * @param map 变量map
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setVariables(@RequestParam String tenantId, @RequestParam String executionId,
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -439,11 +426,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param processDefinitionKey 流程定义key
      * @param systemName 系统名称
      * @param map 变量map
-     * @return ProcessInstanceModel
+     * @return Y9Result<ProcessInstanceModel>
      */
     @Override
-    @PostMapping(value = "/startProcessInstanceByKey", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam String systemName,
         @RequestBody Map<String, Object> map) {
@@ -467,10 +452,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @Override
-    @GetMapping(value = "/suspendedByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -484,9 +468,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param state 状态
+     * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/switchSuspendOrActive", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String processInstanceId,
         @RequestParam String state) {
         FlowableTenantInfoHolder.setTenantId(tenantId);

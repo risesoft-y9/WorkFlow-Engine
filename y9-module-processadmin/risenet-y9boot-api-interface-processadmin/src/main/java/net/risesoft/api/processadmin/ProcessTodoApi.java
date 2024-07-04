@@ -1,5 +1,10 @@
 package net.risesoft.api.processadmin;
 
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.processadmin.Y9FlowableCountModel;
 import net.risesoft.pojo.Y9Page;
@@ -18,10 +23,11 @@ public interface ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<Y9FlowableCountModel>
+     * @return {@code Y9Result<Y9FlowableCountModel>} 通用请求返回对象 - data 是办件统计
      */
-    Y9Result<Y9FlowableCountModel> getCountByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey);
+    @GetMapping("/getCountByUserIdAndProcessDefinitionKey")
+    Y9Result<Y9FlowableCountModel> getCountByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 根据人员id，系统标识获取对应事项的办件统计（包括待办件，在办件，办结件）
@@ -29,9 +35,11 @@ public interface ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统名称
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<Y9FlowableCountModel>} 通用请求返回对象 - data 是办件统计
      */
-    Y9Result<Y9FlowableCountModel> getCountByUserIdAndSystemName(String tenantId, String userId, String systemName);
+    @GetMapping("/getCountByUserIdAndSystemName")
+    Y9Result<Y9FlowableCountModel> getCountByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
 
     /**
      * 根据人员Id，事项id获取用户的待办任务(分页)
@@ -41,10 +49,13 @@ public interface ProcessTodoApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<TaskModel>
+     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
      */
-    Y9Page<TaskModel> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey, Integer page, Integer rows);
+    @GetMapping("/getListByUserIdAndProcessDefinitionKey")
+    Y9Page<TaskModel> getListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("userId") @NotBlank String userId,
+        @RequestParam("processDefinitionKey") @NotBlank String processDefinitionKey, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 根据人员Id,系统标识获取用户的待办任务(分页)
@@ -54,11 +65,12 @@ public interface ProcessTodoApi {
      * @param systemName 系统名称
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
-     * @throws Exception Exception
+     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
      */
-    Y9Page<TaskModel> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page,
-        Integer rows) throws Exception;
+    @GetMapping("/getListByUserIdAndSystemName")
+    Y9Page<TaskModel> getListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 根据岗位id,流程定义key获取对应事项的待办数量
@@ -66,10 +78,12 @@ public interface ProcessTodoApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processDefinitionKey 流程定义key
-     * @return Y9Result<Long> 待办数量
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是待办数量
      */
-    Y9Result<Long> getTodoCountByPositionIdAndProcessDefinitionKey(String tenantId, String positionId,
-        String processDefinitionKey);
+    @GetMapping("/getTodoCountByPositionIdAndProcessDefinitionKey")
+    Y9Result<Long> getTodoCountByPositionIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 根据人员id，系统标识获取对应事项的待办数量
@@ -77,9 +91,11 @@ public interface ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统名称
-     * @return int 待办数量
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是待办数量
      */
-    Y9Result<Long> getTodoCountByUserIdAndSystemName(String tenantId, String userId, String systemName);
+    @GetMapping("/getTodoCountByUserIdAndSystemName")
+    Y9Result<Long> getTodoCountByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
 
     /**
      * 条件搜索待办件
@@ -90,10 +106,13 @@ public interface ProcessTodoApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
      */
-    Y9Page<TaskModel> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    @GetMapping("/searchListByUserIdAndProcessDefinitionKey")
+    Y9Page<TaskModel> searchListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 条件搜索待办件
@@ -104,8 +123,12 @@ public interface ProcessTodoApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
      */
-    Y9Page<TaskModel> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
-        String searchTerm, Integer page, Integer rows);
+    @GetMapping("/searchListByUserIdAndSystemName")
+    Y9Page<TaskModel> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
+
 }
