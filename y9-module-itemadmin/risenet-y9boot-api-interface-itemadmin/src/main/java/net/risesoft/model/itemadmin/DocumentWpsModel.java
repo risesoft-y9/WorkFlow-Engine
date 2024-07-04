@@ -24,12 +24,12 @@ public class DocumentWpsModel implements Serializable {
     private String id;
 
     /**
-     * @FieldCommit(value = "文件Id")
+     * 文件Id
      */
     private String fileId;
 
     /**
-     * @FieldCommit(value = "卷Id")
+     * 卷Id
      */
     private String volumeId;
 

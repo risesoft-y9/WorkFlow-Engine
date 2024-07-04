@@ -22,7 +22,7 @@ public interface ErrorLogApi {
      *
      * @param tenantId 租户id
      * @param errorLogModel 错误日志
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping(value = "/saveErrorLog", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveErrorLog(@RequestParam("tenantId") String tenantId, @RequestBody ErrorLogModel errorLogModel);

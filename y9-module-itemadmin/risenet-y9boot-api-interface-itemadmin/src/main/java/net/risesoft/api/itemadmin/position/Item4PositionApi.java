@@ -23,7 +23,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param systemName 系统名称
-     * @return Y9Result<List<ItemModel>>
+     * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
      */
     @GetMapping("/findAll")
     Y9Result<List<ItemModel>> findAll(@RequestParam("tenantId") String tenantId,
@@ -34,7 +34,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<ItemModel>
+     * @return {@code Y9Result<ItemModel>} 通用请求返回对象 - data 是事项信息
      */
     @GetMapping("/findByProcessDefinitionKey")
     Y9Result<ItemModel> findByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
@@ -44,7 +44,7 @@ public interface Item4PositionApi {
      * 获取所有事项列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ItemModel>>
+     * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
      */
     @GetMapping("/getAllItem")
     Y9Result<List<ItemModel>> getAllItem(@RequestParam("tenantId") String tenantId);
@@ -53,7 +53,7 @@ public interface Item4PositionApi {
      * 获取所有事项
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ItemModel>>
+     * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
      */
     @GetMapping("/getAllItemList")
     Y9Result<List<ItemModel>> getAllItemList(@RequestParam("tenantId") String tenantId);
@@ -63,7 +63,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<ItemModel>
+     * @return {@code Y9Result<ItemModel>} 通用请求返回对象 - data 是事项信息
      */
     @GetMapping("/getByItemId")
     Y9Result<ItemModel> getByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId);
@@ -73,7 +73,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是事项id
      */
     @GetMapping("/getFirstItem")
     Y9Result<String> getFirstItem(@RequestParam("tenantId") String tenantId,
@@ -85,7 +85,7 @@ public interface Item4PositionApi {
      * @param tenantId 租户Id
      * @param itemId 事项id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是表单id
      */
     @GetMapping("/getFormIdByItemId")
     Y9Result<String> getFormIdByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
@@ -96,7 +96,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<List<ItemListModel>>
+     * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是事项列表
      */
     @GetMapping("/getItemList")
     Y9Result<List<ItemListModel>> getItemList(@RequestParam("tenantId") String tenantId,
@@ -108,7 +108,7 @@ public interface Item4PositionApi {
      * @param tenantId 租户Id
      * @param itemId 事项id
      * @param mappingId 系统标识
-     * @return Y9Result<List<ItemMappingConfModel>>
+     * @return {@code Y9Result<List<ItemMappingConfModel>>} 通用请求返回对象 - data 是事项映射列表
      */
     @GetMapping("/getItemMappingConf")
     Y9Result<List<ItemMappingConfModel>> getItemMappingConf(@RequestParam("tenantId") String tenantId,
@@ -118,7 +118,7 @@ public interface Item4PositionApi {
      * 获取事项系统
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ItemSystemListModel>>
+     * @return {@code Y9Result<List<ItemSystemListModel>>} 通用请求返回对象 - data 是事项系统列表
      */
     @GetMapping("/getItemSystem")
     Y9Result<List<ItemSystemListModel>> getItemSystem(@RequestParam("tenantId") String tenantId);
@@ -128,7 +128,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户Id
      * @param positionId 岗位id
-     * @return Y9Result<List<ItemListModel>>
+     * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是新建事项列表
      */
     @GetMapping("/getMyItemList")
     Y9Result<List<ItemListModel>> getMyItemList(@RequestParam("tenantId") String tenantId,
@@ -139,7 +139,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象
      */
     @GetMapping("/hasProcessDefinitionByKey")
     Y9Result<Boolean> hasProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,

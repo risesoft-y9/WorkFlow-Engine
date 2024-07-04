@@ -24,7 +24,7 @@ public interface Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
      */
     @GetMapping("/countBySystemName")
     Y9Result<Integer> countBySystemName(@RequestParam("tenantId") String tenantId,
@@ -35,7 +35,7 @@ public interface Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param ids ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/deleteDraft")
     Y9Result<Object> deleteDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
@@ -46,7 +46,7 @@ public interface Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
      */
     @GetMapping("/getDeleteDraftCount")
     Y9Result<Integer> getDeleteDraftCount(@RequestParam("tenantId") String tenantId,
@@ -57,7 +57,7 @@ public interface Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
-     * @return Y9Result<DraftModel>
+     * @return {@code Y9Result<DraftModel>} 通用请求返回对象
      */
     @GetMapping("/getDraftByProcessSerialNumber")
     Y9Result<DraftModel> getDraftByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
@@ -69,7 +69,7 @@ public interface Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
      */
     @GetMapping("/getDraftCount")
     Y9Result<Integer> getDraftCount(@RequestParam("tenantId") String tenantId,
@@ -85,7 +85,7 @@ public interface Draft4PositionApi {
      * @param title 标题
      * @param itemId 事项id
      * @param delFlag 是否删除
-     * @return Y9Page<Map<String, Object>>
+     * @return {@code Y9Page<Map<String, Object>>} 通用请求返回对象 - rows 是草稿列表
      */
     @GetMapping("/getDraftList")
     Y9Page<Map<String, Object>> getDraftList(@RequestParam("tenantId") String tenantId,
@@ -103,7 +103,7 @@ public interface Draft4PositionApi {
      * @param title 标题
      * @param systemName 系统名称
      * @param delFlag 是否删除
-     * @return Y9Page<DraftModel>
+     * @return {@code Y9Page<DraftModel>} 通用请求返回对象 - rows 是草稿情数据
      */
     @GetMapping("/getDraftListBySystemName")
     Y9Page<DraftModel> getDraftListBySystemName(@RequestParam("tenantId") String tenantId,
@@ -119,7 +119,7 @@ public interface Draft4PositionApi {
      * @param itemId 事项id
      * @param processSerialNumber 流程序列号
      * @param mobile 是否发送手机端
-     * @return Y9Result<OpenDataModel>
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data 是流程详情数据
      */
     @GetMapping("/openDraft4Position")
     Y9Result<OpenDataModel> openDraft4Position(@RequestParam("tenantId") String tenantId,
@@ -131,7 +131,7 @@ public interface Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param ids ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/reduction")
     Y9Result<Object> reduction(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
@@ -141,7 +141,7 @@ public interface Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param ids ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/removeDraft")
     Y9Result<Object> removeDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
@@ -157,7 +157,7 @@ public interface Draft4PositionApi {
      * @param number 编号
      * @param level 紧急程度
      * @param title 标题
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/saveDraft")
     Y9Result<Object> saveDraft(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,

@@ -28,6 +28,7 @@ public interface ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param id 唯一标识
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception 删除导致的异常
      */
     @PostMapping("/deleteById")
     Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id)
@@ -38,7 +39,7 @@ public interface ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return {@code Y9Result<List<ProcessTrackModel>>} 通用请求返回对象
+     * @return {@code Y9Result<List<ProcessTrackModel>>} 通用请求返回对象 - data 是流程跟踪信息
      */
     @GetMapping("/findByTaskId")
     Y9Result<List<ProcessTrackModel>> findByTaskId(@RequestParam("tenantId") String tenantId,
@@ -49,7 +50,7 @@ public interface ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return {@code Y9Result<List<ProcessTrackModel>>} 通用请求返回对象
+     * @return {@code Y9Result<List<ProcessTrackModel>>} 通用请求返回对象 - data 是流程跟踪信息
      */
     @GetMapping("/findByTaskIdAsc")
     Y9Result<List<ProcessTrackModel>> findByTaskIdAsc(@RequestParam("tenantId") String tenantId,
@@ -60,7 +61,7 @@ public interface ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>} 通用请求返回对象
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>} 通用请求返回对象 - data 是历史活动实例列表
      */
     @GetMapping("/getTaskList")
     Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam("tenantId") String tenantId,
@@ -72,7 +73,7 @@ public interface ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象
+     * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象- data 是历程信息
      */
     @GetMapping("/processTrackList")
     Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam("tenantId") String tenantId,
@@ -84,7 +85,7 @@ public interface ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<HistoryProcessModel>>
+     * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象 - data 是历程信息列表
      */
     @GetMapping("/processTrackList4Simple")
     Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam("tenantId") String tenantId,
@@ -95,7 +96,8 @@ public interface ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param processTrack 实体类对象（ProcessTrackModel）
-     * @return Y9Result<ProcessTrackModel>
+     * @return {@code Y9Result<ProcessTrackModel>} 通用请求返回对象 - data 是流程跟踪信息
+     * @throws Exception 保存或更新导致的异常
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<ProcessTrackModel> saveOrUpdate(@RequestParam("tenantId") String tenantId,

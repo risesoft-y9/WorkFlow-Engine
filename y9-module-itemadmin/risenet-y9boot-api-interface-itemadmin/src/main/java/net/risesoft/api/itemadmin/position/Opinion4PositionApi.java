@@ -28,7 +28,7 @@ public interface Opinion4PositionApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是是否已经签写意见
      */
     @GetMapping("/checkSignOpinion")
     Y9Result<Boolean> checkSignOpinion(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -40,7 +40,7 @@ public interface Opinion4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param opinionFrameMark 意见框id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是意见框历史记录数量
      */
     @GetMapping("/countOpinionHistory")
     Y9Result<Integer> countOpinionHistory(@RequestParam("tenantId") String tenantId,
@@ -52,7 +52,7 @@ public interface Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 唯一标识
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      */
     @PostMapping("/delete")
@@ -64,7 +64,7 @@ public interface Opinion4PositionApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义Id
-     * @return Y9Result<List<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是事项意见框绑定信息
      */
     @GetMapping("/getBindOpinionFrame")
     Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam("tenantId") String tenantId,
@@ -75,7 +75,7 @@ public interface Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 唯一标识
-     * @return Y9Result<OpinionModel>
+     * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      */
     @GetMapping("/getById")
     Y9Result<OpinionModel> getById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
@@ -86,7 +86,7 @@ public interface Opinion4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param opinionFrameMark 意见框Id
-     * @return Y9Result<List<OpinionHistoryModel>>
+     * @return {@code Y9Result<List<OpinionHistoryModel>>} 通用请求返回对象 - data 是历史意见列表
      */
     @GetMapping("/opinionHistoryList")
     Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam("tenantId") String tenantId,
@@ -106,7 +106,7 @@ public interface Opinion4PositionApi {
      * @param taskDefinitionKey 任务定义key
      * @param activitiUser activitiUser
      * @param orderByUser orderByUser
-     * @return
+     * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      */
     @GetMapping("/personCommentList")
     Y9Result<List<OpinionListModel>> personCommentList(@RequestParam("tenantId") String tenantId,
@@ -122,7 +122,7 @@ public interface Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param opinion OpinionModel
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      */
     @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -136,7 +136,7 @@ public interface Opinion4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param opinion 意见实体
-     * @return Y9Result<OpinionModel>
+     * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)

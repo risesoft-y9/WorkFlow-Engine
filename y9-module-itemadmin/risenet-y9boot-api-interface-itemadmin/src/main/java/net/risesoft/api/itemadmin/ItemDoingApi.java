@@ -22,7 +22,7 @@ public interface ItemDoingApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是在办任务数量
      * @throws Exception Exception
      */
     @GetMapping("/countByUserIdAndSystemName")
@@ -36,7 +36,7 @@ public interface ItemDoingApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
      * @throws Exception Exception
      */
     @GetMapping("/findBySystemName")
@@ -52,7 +52,7 @@ public interface ItemDoingApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
      * @throws Exception Exception
      */
     @GetMapping("/findByUserIdAndSystemName")
@@ -69,7 +69,7 @@ public interface ItemDoingApi {
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
      * @throws Exception Exception
      */
     @GetMapping("/searchBySystemName")
@@ -88,7 +88,7 @@ public interface ItemDoingApi {
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
      * @throws Exception Exception
      */
     @GetMapping("/searchByUserIdAndSystemName")

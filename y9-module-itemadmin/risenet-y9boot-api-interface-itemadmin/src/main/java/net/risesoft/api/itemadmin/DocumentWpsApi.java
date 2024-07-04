@@ -23,7 +23,7 @@ public interface DocumentWpsApi {
      *
      * @param tenantId 租户id
      * @param id id
-     * @return Y9Result<DocumentWpsModel>
+     * @return {@code Y9Result<DocumentWpsModel>} 通用请求返回对象 - data 是wps文档
      */
     @GetMapping("/findById")
     Y9Result<DocumentWpsModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
@@ -33,7 +33,7 @@ public interface DocumentWpsApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
-     * @return Y9Result<DocumentWpsModel>
+     * @return {@code Y9Result<DocumentWpsModel>} 通用请求返回对象- data 是wps文档
      */
     @GetMapping("/findByProcessSerialNumber")
     Y9Result<DocumentWpsModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
@@ -44,7 +44,7 @@ public interface DocumentWpsApi {
      *
      * @param tenantId 租户id
      * @param documentWps wps文档对象
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping(value = "/saveDocumentWps", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveDocumentWps(@RequestParam("tenantId") String tenantId,
@@ -56,7 +56,7 @@ public interface DocumentWpsApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
      * @param hasContent 是否有内容
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/saveWpsContent")
     Y9Result<Object> saveWpsContent(@RequestParam("tenantId") String tenantId,

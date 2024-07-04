@@ -24,7 +24,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/cancelMeeting")
     Y9Result<Object> cancelMeeting(@RequestParam("tenantId") String tenantId,
@@ -35,7 +35,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是监控办结统计
      */
     @GetMapping("/countByItemId")
     Y9Result<Integer> countByItemId(@RequestParam("tenantId") String tenantId,
@@ -47,7 +47,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是个人办结件数量
      */
     @GetMapping("/countByPositionId")
     Y9Result<Integer> countByPositionId(@RequestParam("tenantId") String tenantId,
@@ -59,7 +59,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统名称
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是个人办结件数量
      */
     @GetMapping("/countByPositionIdAndSystemName")
     Y9Result<Integer> countByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
@@ -71,7 +71,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<Long>
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是监控在办统计
      */
     @GetMapping("/countDoingByItemId")
     Y9Result<Long> countDoingByItemId(@RequestParam("tenantId") String tenantId,
@@ -82,7 +82,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/deleteOfficeDoneInfo")
     Y9Result<Object> deleteOfficeDoneInfo(@RequestParam("tenantId") String tenantId,
@@ -93,7 +93,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<OfficeDoneInfoModel>
+     * @return {@code Y9Result<OfficeDoneInfoModel>} 通用请求返回对象 - data 是办结信息
      */
     @GetMapping("/findByProcessInstanceId")
     Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -109,7 +109,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param meetingType 会议类型
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<OfficeDoneInfoModel>
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      */
     @GetMapping("/getMeetingList")
     Y9Page<OfficeDoneInfoModel> getMeetingList(@RequestParam("tenantId") String tenantId,
@@ -124,7 +124,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param info 办结信息
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveOfficeDone", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -143,7 +143,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param year 年份
      * @param page page
      * @param rows rows
-     * @return Y9Page<OfficeDoneInfoModel>
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      */
     @GetMapping("/searchAllByDeptId")
     Y9Page<OfficeDoneInfoModel> searchAllByDeptId(@RequestParam("tenantId") String tenantId,
@@ -168,7 +168,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param endDate 查询结束日期
      * @param page page
      * @param rows rows
-     * @return Y9Page<OfficeDoneInfoModel>
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      */
     @GetMapping("/searchAllByPositionId")
     Y9Page<OfficeDoneInfoModel> searchAllByPositionId(@RequestParam("tenantId") String tenantId,
@@ -192,7 +192,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param year 年份
      * @param page page
      * @param rows rows
-     * @return Y9Page<OfficeDoneInfoModel>
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      */
     @GetMapping("/searchAllList")
     Y9Page<OfficeDoneInfoModel> searchAllList(@RequestParam("tenantId") String tenantId,
@@ -214,7 +214,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page page
      * @param rows rows
-     * @return Y9Page<OfficeDoneInfoModel>
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      */
     @GetMapping("/searchByItemId")
     Y9Page<OfficeDoneInfoModel> searchByItemId(@RequestParam("tenantId") String tenantId,
@@ -236,7 +236,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page page
      * @param rows rows
-     * @return Y9Page<OfficeDoneInfoModel>
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      */
     @GetMapping("/searchByPositionId")
     Y9Page<OfficeDoneInfoModel> searchByPositionId(@RequestParam("tenantId") String tenantId,
@@ -257,7 +257,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page page
      * @param rows rows
-     * @return Y9Page<OfficeDoneInfoModel>
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      */
     @GetMapping("/searchByPositionIdAndSystemName")
     Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
@@ -273,7 +273,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param meetingType 会议类型
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/setMeeting")
     Y9Result<Object> setMeeting(@RequestParam("tenantId") String tenantId,

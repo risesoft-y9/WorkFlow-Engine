@@ -24,7 +24,7 @@ public interface EntrustHistoryApi {
      * @param userId 人员滴
      * @param ownerId 委托人id
      * @param itemId 事项粒度
-     * @return Y9Result<List<EntrustHistoryModel>>
+     * @return {@code Y9Result<List<EntrustHistoryModel>>} 通用请求返回对象 - data 是委托历史列表
      */
     @GetMapping("/findByOwnerIdAndItemId")
     Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId,
@@ -37,7 +37,7 @@ public interface EntrustHistoryApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param ownerId 委托人id
-     * @return Y9Result<List<EntrustHistoryModel>>
+     * @return {@code Y9Result<List<EntrustHistoryModel>>} 通用请求返回对象 - data 是委托历史列表
      */
     @GetMapping("/findOneByOwnerId")
     Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(@RequestParam("tenantId") String tenantId,

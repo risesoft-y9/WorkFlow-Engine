@@ -20,7 +20,7 @@ public interface CalendarConfigApi {
      *
      * @param tenantId 租户id
      * @param year 年份
-     * @return Y9Result<CalendarConfigModel>
+     * @return {@code Y9Result<CalendarConfigModel>} 通用请求返回对象 - data 是日历配置
      */
     @GetMapping("/findByYear")
     Y9Result<CalendarConfigModel> findByYear(@RequestParam("tenantId") String tenantId,

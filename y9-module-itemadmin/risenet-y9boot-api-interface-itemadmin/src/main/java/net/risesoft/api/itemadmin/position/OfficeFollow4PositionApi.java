@@ -23,7 +23,7 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是关注数量
      */
     @GetMapping("/countByProcessInstanceId")
     Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -35,7 +35,7 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceIds 流程实例ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/delOfficeFollow")
     Y9Result<Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
@@ -46,7 +46,7 @@ public interface OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/deleteByProcessInstanceId")
     Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -57,7 +57,7 @@ public interface OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是我的关注数量
      */
     @GetMapping("/getFollowCount")
     Y9Result<Integer> getFollowCount(@RequestParam("tenantId") String tenantId,
@@ -72,7 +72,7 @@ public interface OfficeFollow4PositionApi {
      * @param searchName 搜索内容
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<OfficeFollowModel>
+     * @return {@code Y9Page<OfficeFollowModel>} 通用分页请求返回对象 - rows 是关注模型信息
      */
     @GetMapping("/getFollowListBySystemName")
     Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam("tenantId") String tenantId,
@@ -88,7 +88,7 @@ public interface OfficeFollow4PositionApi {
      * @param searchName 搜索内容
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<OfficeFollowModel>
+     * @return {@code Y9Page<OfficeFollowModel>} 通用分页请求返回对象 - rows 是关注模型信息
      */
     @GetMapping("/getOfficeFollowList")
     Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
@@ -101,7 +101,7 @@ public interface OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param officeFollow 办件关注信息
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping(value = "/saveOfficeFollow", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOfficeFollow(@RequestParam("tenantId") String tenantId,
@@ -113,7 +113,7 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param documentTitle 文档标题
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/updateTitle")
     Y9Result<Object> updateTitle(@RequestParam("tenantId") String tenantId,
