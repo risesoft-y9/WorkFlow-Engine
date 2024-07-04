@@ -1,6 +1,8 @@
 package net.risesoft.api.processadmin;
 
-import java.util.Map;
+import net.risesoft.model.processadmin.ProcessInstanceModel;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * 在办件列表
@@ -13,12 +15,12 @@ public interface DoingApi {
 
     /**
      * 根据人员id获取在办件统计
-     *
+     * 
      * @param tenantId 租户Id
      * @param userId 人员Id
-     * @return {@code long} 通用请求返回对象 - data 在办件统计
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件统计
      */
-    long getCountByUserId(String tenantId, String userId);
+    Y9Result<Long> getCountByUserId(String tenantId, String userId);
 
     /**
      * 根据人员Id获取用户的在办任务(分页,包含流程变量)
@@ -27,10 +29,9 @@ public interface DoingApi {
      * @param userId 人员id
      * @param page 页码
      * @param rows 行数
-     * @return {@code Map<String, Object>} 通用请求返回对象 - data 在办任务
-     * @throws Exception Exception
+     * @return {@code Y9Page<ProcessInstanceModel> } 通用请求返回对象 - data 在办任务
      */
-    Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows) throws Exception;
+    Y9Page<ProcessInstanceModel> getListByUserId(String tenantId, String userId, Integer page, Integer rows);
 
     /**
      * 根据人员Id,事项ID获取用户的在办列表(分页,包含流程变量)
@@ -40,9 +41,9 @@ public interface DoingApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return {@code Map<String, Object>} 通用请求返回对象 - data 在办列表
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+    Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
         String processDefinitionKey, Integer page, Integer rows);
 
     /**
@@ -55,7 +56,7 @@ public interface DoingApi {
      * @param rows 行数
      * @return {@code Map} 通用请求返回对象 - rows 已办件列表
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(String tenantId, String userId,
+    Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(String tenantId, String userId,
         String processDefinitionKey, Integer page, Integer rows);
 
     /**
@@ -69,8 +70,8 @@ public interface DoingApi {
      * @return {@code Map<String, Object>} 通用请求返回对象 - rows 已办件列表
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page,
-        Integer rows) throws Exception;
+    Y9Page<ProcessInstanceModel> getListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -83,7 +84,7 @@ public interface DoingApi {
      * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
+    Y9Page<ProcessInstanceModel> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
         Integer rows) throws Exception;
 
     /**
@@ -98,7 +99,7 @@ public interface DoingApi {
      * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+    Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
         String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
@@ -113,6 +114,6 @@ public interface DoingApi {
      * @return {@code Map<String, Object>} 通用请求返回对象 - rows 在办件列表
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+    Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
         String searchTerm, Integer page, Integer rows) throws Exception;
 }

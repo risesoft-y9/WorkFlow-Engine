@@ -62,6 +62,10 @@ public class ProcessInstanceModel implements Serializable {
      */
     private Date startTime;
     /**
+     * 结束时间
+     */
+    private Date endTime;
+    /**
      * 开始用户id
      */
     private String startUserId;

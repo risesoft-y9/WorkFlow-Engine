@@ -91,11 +91,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     @Value("${y9.common.flowableBaseUrl}")
     private String flowableBaseUrl;
 
-    @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> doingList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -104,13 +103,13 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             if (StringUtils.isBlank(searchTerm)) {
                 if (StringUtils.isNotBlank(searchItemId)) {
                     ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    retMap = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    piPage = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), page, rows);
                 } else {
-                    retMap =
+                    piPage =
                         doingApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
                 }
-                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
+                List<ProcessInstanceModel> list = piPage.getRows();
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
                 int serialNumber = (page - 1) * rows;
@@ -173,13 +172,13 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             } else {
                 if (StringUtils.isNotBlank(searchItemId)) {
                     ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    piPage = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), searchTerm, page, rows);
                 } else {
-                    retMap = doingApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                    piPage = doingApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
                         searchTerm, page, rows);
                 }
-                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
+                List<ProcessInstanceModel> list = piPage.getRows();
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
                 int serialNumber = (page - 1) * rows;
@@ -239,8 +238,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     items.add(mapTemp);
                 }
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办列表失败", e);
         }
@@ -292,9 +290,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 mapTemp.put("number", number);
                 mapTemp.put("chaosongNum", 0);
                 mapTemp.put("processInstanceId", processInstanceId);
-                // int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId,
-                // processInstanceId);
-                // mapTemp.put("follow", countFollow > 0 ? true : false);
                 mapTemp.put("meeting", false);
                 if (item.getSystemName().equals("gongwenguanli")) {
                     mapTemp.put("meeting", hpim.getMeeting() != null && hpim.getMeeting().equals("1"));
@@ -559,11 +554,11 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Map<String, Object> retMap = doingApi.getListByUserId(tenantId, positionId, page, rows);
-            if (retMap == null) {
+            Y9Page<ProcessInstanceModel> piPage = doingApi.getListByUserId(tenantId, positionId, page, rows);
+            if (!piPage.getSuccess()) {
                 return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
             }
-            List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
+            List<ProcessInstanceModel> list = piPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
@@ -627,8 +622,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
