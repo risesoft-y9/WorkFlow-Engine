@@ -31,6 +31,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.Position;
+import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
@@ -249,9 +250,9 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     public void completeTaskWithoutAssignee(String processInstanceId) {
         List<Task> taskList = this.findByProcessInstanceId(processInstanceId);
         Task task = taskList.get(0);
-        List<Map<String, String>> parallelGatewayList = customProcessDefinitionService
-            .getParallelGatewayList(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
-        String routeToTaskId = parallelGatewayList.get(0).get(SysVariables.TASKDEFKEY);
+        List<GatewayModel> parallelGatewayList = customProcessDefinitionService
+            .getParallelGatewayList(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+        String routeToTaskId = parallelGatewayList.get(0).getTaskDefKey();
         Map<String, Object> vars = new HashMap<>(16);
         vars.put(SysVariables.ROUTETOTASKID, routeToTaskId);
         for (Task t : taskList) {

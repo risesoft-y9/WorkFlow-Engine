@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.model.processadmin.FlowElementModel;
+import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomProcessDefinitionService;
@@ -129,11 +130,11 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List<Map<String, String>>
+     * @return {@code Y9Result<List<GatewayModel>} 通用请求返回对象 - data 并行网关节点集合
      */
     @Override
     @GetMapping(value = "/getParallelGatewayList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getParallelGatewayList(@RequestParam String tenantId,
+    public Y9Result<List<GatewayModel>> getParallelGatewayList(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getParallelGatewayList(processDefinitionId, taskDefKey);
