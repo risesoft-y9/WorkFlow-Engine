@@ -2,8 +2,6 @@ package net.risesoft.api;
 
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,10 +42,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param processDefinitionKey 流程定义Key
-     * @return Map<String, Object>
+     * @return Y9Result<Y9FlowableCountModel>
      */
     @Override
-    @GetMapping(value = "/getCountByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Y9FlowableCountModel> getCountByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -64,10 +61,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统名称
-     * @return Map<String, Object>
+     * @return Y9Result<Y9FlowableCountModel>
      */
     @Override
-    @GetMapping(value = "/getCountByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Y9FlowableCountModel> getCountByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -86,10 +82,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return Y9Page<TaskModel>
      */
     @Override
-    @GetMapping(value = "/getListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<TaskModel> getListByUserIdAndProcessDefinitionKey(@RequestParam @NotBlank String tenantId,
         @RequestParam @NotBlank String userId, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -105,10 +100,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param systemName 系统名称
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return Y9Page<TaskModel>
      */
     @Override
-    @GetMapping(value = "/getListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<TaskModel> getListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId,
         @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -122,10 +116,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processDefinitionKey 流程定义key
-     * @return long
+     * @return Y9Result<Long>
      */
     @Override
-    @GetMapping(value = "/getTodoCountByPositionIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getTodoCountByPositionIdAndProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String positionId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -139,10 +132,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统名称
-     * @return long
+     * @return Y9Result<Long>
      */
     @Override
-    @GetMapping(value = "/getTodoCountByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getTodoCountByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String systemName) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -158,10 +150,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return Y9Page<TaskModel>
      */
     @Override
-    @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<TaskModel> searchListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -179,10 +170,9 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return Y9Page<TaskModel>
      */
     @Override
-    @GetMapping(value = "/searchListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<TaskModel> searchListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId,
         @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName,
         @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
