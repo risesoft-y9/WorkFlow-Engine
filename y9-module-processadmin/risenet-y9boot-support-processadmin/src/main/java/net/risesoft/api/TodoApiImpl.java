@@ -14,7 +14,6 @@ import net.risesoft.model.processadmin.Y9FlowableCountModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomDoingService;
-import net.risesoft.service.CustomDoneService;
 import net.risesoft.service.CustomTodoService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 
@@ -33,8 +32,6 @@ public class TodoApiImpl implements ProcessTodoApi {
     private final CustomTodoService customTodoService;
 
     private final CustomDoingService customDoingService;
-
-    private final CustomDoneService customDoneService;
 
     /**
      * 根据人员id，流程定义Key获取对应事项的办件统计（包括待办件，在办件，办结件）
