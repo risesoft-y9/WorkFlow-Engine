@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.model.processadmin.FlowElementModel;
+import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -95,13 +96,13 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
      *
      * @param tenantId 租户Id
-     * @param processDefinitionId processDefinitionId
-     * @param taskDefKey taskDefKey
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @return {@code Y9Result<List<GatewayModel>} 通用请求返回对象 - data 并行网关节点集合
      */
     @Override
     @GetMapping("/getParallelGatewayList")
-    List<Map<String, String>> getParallelGatewayList(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<GatewayModel>> getParallelGatewayList(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**

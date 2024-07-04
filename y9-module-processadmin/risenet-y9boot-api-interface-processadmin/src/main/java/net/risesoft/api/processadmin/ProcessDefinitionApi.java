@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.model.processadmin.FlowElementModel;
+import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -80,9 +81,9 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return {@code List<Map<String, String>>} 通用请求返回对象 - data 任务节点集合
+     * @return {@code Y9Result<List<GatewayModel>} 通用请求返回对象 - data 并行网关节点集合
      */
-    List<Map<String, String>> getParallelGatewayList(String tenantId, String processDefinitionId, String taskDefKey);
+    Y9Result<List<GatewayModel>> getParallelGatewayList(String tenantId, String processDefinitionId, String taskDefKey);
 
     /**
      * 根据流程定义id获取开始节点

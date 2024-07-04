@@ -1,6 +1,7 @@
 package net.risesoft.service;
 
 import net.risesoft.model.processadmin.FlowElementModel;
+import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -70,9 +71,9 @@ public interface CustomProcessDefinitionService {
      *
      * @param processDefinitionId
      * @param taskDefKey
-     * @return
+     * @return Y9Result<List<GatewayModel>>
      */
-    List<Map<String, String>> getParallelGatewayList(String processDefinitionId, String taskDefKey);
+    Y9Result<List<GatewayModel>> getParallelGatewayList(String processDefinitionId, String taskDefKey);
 
     /**
      * Description:

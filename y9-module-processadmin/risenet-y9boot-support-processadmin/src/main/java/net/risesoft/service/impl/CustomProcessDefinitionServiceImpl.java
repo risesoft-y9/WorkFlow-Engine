@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.model.processadmin.FlowElementModel;
+import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricTaskService;
@@ -278,8 +279,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getParallelGatewayList(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetNodes = new ArrayList<>();
+    public Y9Result<List<GatewayModel>> getParallelGatewayList(String processDefinitionId, String taskDefKey) {
+        List<GatewayModel> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -297,13 +298,13 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 }
                 if (!isGateway) {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<>(16);
+                        GatewayModel gatewayModel = new GatewayModel();
                         String conditionText = tr.getConditionExpression();
                         FlowElement flowElementTemp = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && flowElementTemp instanceof ParallelGateway) {
-                            map.put(SysVariables.TASKDEFKEY, flowElementTemp.getId());
-                            map.put(SysVariables.TASKDEFNAME, flowElementTemp.getName());
-                            targetNodes.add(map);
+                            gatewayModel.setTaskDefKey(flowElementTemp.getId());
+                            gatewayModel.setTaskDefName(flowElementTemp.getName());
+                            targetNodes.add(gatewayModel);
                         } else if (flowElementTemp instanceof ExclusiveGateway) {
                             /*
                              * 当发现是Gateway类型时，需要从头再遍历一次activitiList，所以这里将i重置为-1，因为在for循环运行中会先加1
@@ -318,19 +319,19 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     }
                 } else {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<>(16);
+                        GatewayModel gatewayModel = new GatewayModel();
                         String conditionText = tr.getConditionExpression();
                         FlowElement flowElementTemp = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && (flowElementTemp instanceof ParallelGateway)) {
-                            map.put(SysVariables.TASKDEFKEY, flowElementTemp.getId());
-                            map.put(SysVariables.TASKDEFNAME, flowElementTemp.getName());
-                            targetNodes.add(map);
+                            gatewayModel.setTaskDefKey(flowElementTemp.getId());
+                            gatewayModel.setTaskDefName(flowElementTemp.getName());
+                            targetNodes.add(gatewayModel);
                         }
                     }
                 }
             }
         }
-        return targetNodes;
+        return Y9Result.success(targetNodes);
     }
 
     /**
