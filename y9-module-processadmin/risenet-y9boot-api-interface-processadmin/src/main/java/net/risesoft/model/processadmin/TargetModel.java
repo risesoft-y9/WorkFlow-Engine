@@ -43,4 +43,29 @@ public class TargetModel implements Serializable {
      * 实际任务名称
      */
     private String realTaskDefName;
+
+    /**
+     * 节点绑定的普通按钮
+     */
+    private String commonButtonNames;
+
+    /**
+     * 节点绑定的发送按钮
+     */
+    private String sendButtonNames;
+
+    /**
+     * 节点绑定的意见框名称
+     */
+    private String opinionFrameNames;
+
+    /**
+     * 节点绑定的编号信息
+     */
+    private String bindNames;
+
+    /**
+     * 节点绑定的角色信息
+     */
+    private String roleNames;
 }

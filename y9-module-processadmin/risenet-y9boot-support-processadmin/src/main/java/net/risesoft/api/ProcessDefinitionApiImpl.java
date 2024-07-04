@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomProcessDefinitionService;
@@ -70,7 +71,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getFlowElement", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getFlowElement(@RequestParam String tenantId,
+    public Y9Result<List<FlowElementModel>> getFlowElement(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getFlowElement(processDefinitionId, isContainStartNode);
@@ -82,11 +83,11 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return List<Map<String, Object>>
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping(value = "/getNodes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+    public Y9Result<List<TargetModel>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getNodes(processDefinitionId, isContainStartNode);

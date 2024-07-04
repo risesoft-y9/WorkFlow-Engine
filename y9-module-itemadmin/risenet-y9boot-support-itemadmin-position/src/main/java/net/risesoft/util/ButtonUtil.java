@@ -82,7 +82,7 @@ public class ButtonUtil {
         List<String> varsUsers = new ArrayList<>();
         String multiInstance = "", varsSponsorGuid = "";
         SpmApproveItem item = itemService.findById(itemId);
-        boolean customItem = false, showSubmitButton = false;
+        boolean customItem = false, showSubmitButton;
         if (null != item.getCustomItem()) {
             customItem = item.getCustomItem();
         }
@@ -94,7 +94,7 @@ public class ButtonUtil {
             varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLELSPONSOR));
             taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
             multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(),
-                task.getTaskDefinitionKey());
+                task.getTaskDefinitionKey()).getData();
         }
 
         //// 在待办件列表中打开公文显示按钮(itembox==todo表示在待办件列表)，在在办件列表和办结件列表里打开公文不显示任何按钮

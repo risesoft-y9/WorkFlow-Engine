@@ -19,6 +19,7 @@ import net.risesoft.entity.ItemButtonBind;
 import net.risesoft.entity.SendButton;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemButtonTypeEnum;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.ItemButtonBindService;
@@ -93,11 +94,11 @@ public class ItemButtonBindRestController {
 
             String taskDefName = "整个流程";
             if (StringUtils.isNotEmpty(bind.getTaskDefKey())) {
-                List<Map<String, Object>> list =
-                    processDefinitionManager.getNodes(tenantId, bind.getProcessDefinitionId(), false);
-                for (Map<String, Object> mapTemp : list) {
-                    if (mapTemp.get("taskDefKey").equals(bind.getTaskDefKey())) {
-                        taskDefName = (String)mapTemp.get("taskDefName");
+                List<TargetModel> list =
+                    processDefinitionManager.getNodes(tenantId, bind.getProcessDefinitionId(), false).getData();
+                for (TargetModel targetModel : list) {
+                    if (targetModel.getTaskDefKey().equals(bind.getTaskDefKey())) {
+                        taskDefName = targetModel.getTaskDefName();
                     }
                 }
             }
@@ -110,26 +111,26 @@ public class ItemButtonBindRestController {
 
     /**
      * 获取任务节点信息和流程定义信息
-     *
+     * 
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @return
+     * @return Y9Result<Map<String, Object>>
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
-        List<Map<String, Object>> list;
+        List<TargetModel> list;
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
+        list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         List<ItemButtonBind> cbList, sbList;
-        for (Map<String, Object> map : list) {
+        for (TargetModel targetModel : list) {
             String commonButtonNames = "";
             String sendButtonNames = "";
             cbList = itemButtonBindService.findListContainRole(itemId, ItemButtonTypeEnum.COMMON.getValue(),
-                processDefinitionId, (String)map.get("taskDefKey"));
+                processDefinitionId, targetModel.getTaskDefKey());
             sbList = itemButtonBindService.findListContainRole(itemId, ItemButtonTypeEnum.SEND.getValue(),
-                processDefinitionId, (String)map.get("taskDefKey"));
+                processDefinitionId, targetModel.getTaskDefKey());
             for (ItemButtonBind cb : cbList) {
                 if (StringUtils.isEmpty(commonButtonNames)) {
                     commonButtonNames = cb.getButtonName();
@@ -144,10 +145,11 @@ public class ItemButtonBindRestController {
                     sendButtonNames += "、" + sb.getButtonName();
                 }
             }
-            map.put("commonButtonNames", commonButtonNames);
-            map.put("sendButtonNames", sendButtonNames);
+            targetModel.setCommonButtonNames(commonButtonNames);
+            targetModel.setSendButtonNames(sendButtonNames);
         }
         resMap.put("rows", list);
+        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 

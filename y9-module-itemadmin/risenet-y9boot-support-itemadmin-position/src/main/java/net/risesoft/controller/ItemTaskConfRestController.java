@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemTaskConf;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
@@ -59,17 +60,19 @@ public class ItemTaskConfRestController {
         List<Map<String, Object>> resList = new ArrayList<>();
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
-        for (Map<String, Object> map : list) {
-            if (map.get(SysVariables.MULTIINSTANCE) != null
-                && !map.get(SysVariables.MULTIINSTANCE).equals(SysVariables.SEQUENTIAL)) {
+        List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+        Map<String, Object> map;
+        for (TargetModel targetModel : list) {
+            map = new HashMap<>(16);
+            if (targetModel.getMultiInstance() != null
+                && !targetModel.getMultiInstance().equals(SysVariables.SEQUENTIAL)) {
                 map.put("id", "");
                 map.put("signTask", false);
                 map.put("taskType", "单人");
-                if (map.get(SysVariables.MULTIINSTANCE).equals(SysVariables.PARALLEL)) {
+                if (targetModel.getMultiInstance().equals(SysVariables.PARALLEL)) {
                     map.put("taskType", "并行");
                 }
-                String taskDefKey = (String)map.get("taskDefKey");
+                String taskDefKey = targetModel.getTaskDefKey();
                 ItemTaskConf confTemp = taskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId,
                     processDefinitionId, taskDefKey);
                 if (null != confTemp) {
@@ -80,6 +83,7 @@ public class ItemTaskConfRestController {
             }
         }
         resMap.put("rows", resList);
+        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 

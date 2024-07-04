@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.entity.ItemPermission;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemPermissionService;
 import net.risesoft.util.SysVariables;
@@ -74,22 +75,22 @@ public class ItemPermissionRestController {
         @RequestParam String processDefinitionId) {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
+        List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         String freeFlowKey = y9Conf.getApp().getItemAdmin().getFreeFlowKey();
         /*
          * 自由流程额外添加一个办结角色，规定自由流的办结按钮控制
          */
         if (processDefinitionId.startsWith(freeFlowKey)) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("taskDefKey", SysVariables.FREEFLOWENDROLE);
-            map.put("taskDefName", "办结");
-            list.add(map);
+            TargetModel targetModel = new TargetModel();
+            targetModel.setTaskDefKey(SysVariables.FREEFLOWENDROLE);
+            targetModel.setTaskDefName("办结");
+            list.add(targetModel);
         }
         List<ItemPermission> ipList;
-        for (Map<String, Object> map : list) {
+        for (TargetModel targetModel : list) {
             String roleNames = "";
             ipList = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
-                (String)map.get("taskDefKey"));
+                targetModel.getTaskDefKey());
             for (ItemPermission ip : ipList) {
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = ip.getRoleName();
@@ -97,9 +98,10 @@ public class ItemPermissionRestController {
                     roleNames += "、" + ip.getRoleName();
                 }
             }
-            map.put("roleNames", roleNames);
+            targetModel.setRoleNames(roleNames);
         }
         resMap.put("rows", list);
+        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 
