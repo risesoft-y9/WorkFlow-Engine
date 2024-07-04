@@ -1,12 +1,11 @@
 package net.risesoft.service;
 
+import java.util.List;
+
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -107,7 +106,7 @@ public interface CustomProcessDefinitionService {
      * @param taskDefKey
      * @return
      */
-    List<Map<String, String>> getTargetNodes1(String processDefinitionId, String taskDefKey);
+    Y9Result<List<TargetModel>> getTargetNodes1(String processDefinitionId, String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -116,7 +115,7 @@ public interface CustomProcessDefinitionService {
      * @param taskDefKey
      * @return
      */
-    List<Map<String, String>> getTargetNodes4ParallelGateway(String processDefinitionId, String taskDefKey);
+    Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(String processDefinitionId, String taskDefKey);
 
     /**
      * Description: 根据流程定义Id和流程节点Key获取目标任务节点集合

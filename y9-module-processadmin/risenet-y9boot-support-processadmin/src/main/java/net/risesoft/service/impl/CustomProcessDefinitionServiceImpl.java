@@ -2,7 +2,6 @@ package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -516,8 +515,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getTargetNodes1(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetNodes = new ArrayList<>();
+    public Y9Result<List<TargetModel>> getTargetNodes1(String processDefinitionId, String taskDefKey) {
+        List<TargetModel> targetNodes = new ArrayList<>();
         List<String> nameListTemp = new ArrayList<>();
 
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
@@ -548,7 +547,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             isGateway = true;
                             break;
                         } else {
-                            Map<String, String> map = new HashMap<>(16);
+                            TargetModel targetModel = new TargetModel();
                             String name = tr.getName();
                             /*
                              * 如果输出线上有名称，则使用线上的名称作为路由名称,否则就使用节点名称
@@ -556,18 +555,18 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             if (StringUtils.isBlank(name) && !"skip".equals(name)) {
                                 name = tr.getTargetFlowElement().getName();
                             } else {
-                                map.put(SysVariables.TASKDEFNAME, name);
+                                targetModel.setTaskDefName(name);
                             }
-                            map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
+                            targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
                             if (!nameListTemp.contains(name)) {
-                                targetNodes.add(map);
+                                targetNodes.add(targetModel);
                                 nameListTemp.add(name);
                             }
                         }
                     }
                 } else {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<>(16);
+                        TargetModel targetModel = new TargetModel();
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)) {
@@ -579,32 +578,32 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                 name = tr.getTargetFlowElement().getName();
                             }
                             if (!nameListTemp.contains(name)) {
-                                map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
-                                map.put(SysVariables.TASKDEFNAME, name);
+                                targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
+                                targetModel.setTaskDefName(name);
                                 if (fe instanceof CallActivity) {
                                     // 当节点为子流程CallActivity时，默认多人并行
-                                    map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                                    targetModel.setMultiInstance(SysVariables.PARALLEL);
                                 } else {
                                     UserTask userTask = (UserTask)fe;
                                     if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                                        map.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
+                                        targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                                     } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                                        map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                                        targetModel.setMultiInstance(SysVariables.PARALLEL);
                                     }
                                 }
-                                targetNodes.add(map);
+                                targetNodes.add(targetModel);
                                 nameListTemp.add(name);
                             } else {
                                 UserTask userTask = (UserTask)fe;
                                 if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
                                     for (int j = 0; j < targetNodes.size(); j++) {
                                         // 当节点名称相同时，默认选择并行节点
-                                        if (targetNodes.get(j).get("taskDefName").equals(name)) {
+                                        if (targetNodes.get(j).getTaskDefName().equals(name)) {
                                             targetNodes.remove(j);
-                                            map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
-                                            map.put(SysVariables.TASKDEFNAME, name);
-                                            map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
-                                            targetNodes.add(map);
+                                            targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
+                                            targetModel.setTaskDefName(name);
+                                            targetModel.setMultiInstance(SysVariables.PARALLEL);
+                                            targetNodes.add(targetModel);
                                         }
                                     }
                                 }
@@ -615,12 +614,12 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 }
             }
         }
-        return targetNodes;
+        return Y9Result.success(targetNodes);
     }
 
     @Override
-    public List<Map<String, String>> getTargetNodes4ParallelGateway(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetNodes = new ArrayList<>();
+    public Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(String processDefinitionId, String taskDefKey) {
+        List<GatewayModel> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -631,18 +630,19 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     ParallelGateway task = (ParallelGateway)flowElement;
                     list = task.getOutgoingFlows();
                 }
+                GatewayModel gatewayModel;
                 for (SequenceFlow tr : list) {
-                    Map<String, String> map = new HashMap<>(16);
+                    gatewayModel = new GatewayModel();
                     FlowElement flowElementTemp = tr.getTargetFlowElement();
                     if (flowElementTemp instanceof UserTask) {
-                        map.put(SysVariables.TASKDEFKEY, flowElementTemp.getId());
-                        map.put(SysVariables.TASKDEFNAME, flowElementTemp.getName());
-                        targetNodes.add(map);
+                        gatewayModel.setTaskDefKey(flowElementTemp.getId());
+                        gatewayModel.setTaskDefName(flowElementTemp.getName());
+                        targetNodes.add(gatewayModel);
                     }
                 }
             }
         }
-        return targetNodes;
+        return Y9Result.success(targetNodes);
     }
 
     @Override

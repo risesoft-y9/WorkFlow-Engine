@@ -1,7 +1,6 @@
 package y9.client.rest.processadmin;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -146,13 +145,13 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      * 根据流程定义Id和流程节点Key获取目标任务节点集合,去除名称相等的节点，并且加上结束节点
      *
      * @param tenantId 租户Id
-     * @param processDefinitionId processDefinitionId
-     * @param taskDefKey taskDefKey
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @return {@code Y9Result<List<TargetModel>> } 通用请求返回对象 - data 任务节点集合
      */
     @Override
     @GetMapping("/getTargetNodes1")
-    List<Map<String, String>> getTargetNodes1(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<TargetModel>> getTargetNodes1(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
@@ -165,7 +164,7 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getTargetNodes4ParallelGateway")
-    List<Map<String, String>> getTargetNodes4ParallelGateway(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**

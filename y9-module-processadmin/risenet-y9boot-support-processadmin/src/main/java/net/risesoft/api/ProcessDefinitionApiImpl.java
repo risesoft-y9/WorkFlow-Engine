@@ -198,7 +198,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getTargetNodes1", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes1(@RequestParam String tenantId,
+    public Y9Result<List<TargetModel>> getTargetNodes1(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getTargetNodes1(processDefinitionId, taskDefKey);
@@ -214,7 +214,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getTargetNodes4ParallelGateway", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes4ParallelGateway(@RequestParam String tenantId,
+    public Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getTargetNodes4ParallelGateway(processDefinitionId, taskDefKey);
