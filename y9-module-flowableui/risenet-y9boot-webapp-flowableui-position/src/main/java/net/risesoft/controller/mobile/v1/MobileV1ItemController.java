@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.model.itemadmin.ItemListModel;
@@ -20,7 +19,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2024/01/17
  */
-@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor

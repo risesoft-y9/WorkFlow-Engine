@@ -168,20 +168,20 @@ public class DoingServiceImpl implements DoingService {
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 ProcessParamModel processParam;
-                SimpleDateFormat sdfT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
                 for (ProcessInstanceModel piModel : hpiModelList) {// 以办理时间排序
                     mapTemp = new HashMap<>(16);
                     try {
                         String processInstanceId = piModel.getId();
                         String processDefinitionId = piModel.getProcessDefinitionId();
-                        Date endTime = sdfT.parse(piModel.getEndTime().toString());
-                        endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
+                        Date endTime = piModel.getEndTime();
+                        // endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = piModel.getEndTime() != null ? sdf.format(endTime) : "";
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0);
+                        String assigneeIds = listTemp.get(1);
+                        String assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();
@@ -280,14 +280,11 @@ public class DoingServiceImpl implements DoingService {
         return retMap;
     }
 
-    @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap;
         Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
-            SimpleDateFormat sdfT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
@@ -307,14 +304,15 @@ public class DoingServiceImpl implements DoingService {
                     try {
                         processInstanceId = piModel.getId();
                         String processDefinitionId = piModel.getProcessDefinitionId();
-                        Date endTime = sdfT.parse(piModel.getEndTime().toString());
-                        endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
+                        Date endTime = piModel.getEndTime();
+                        // endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = piModel.getEndTime() != null ? sdf.format(endTime) : "";
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0);
+                        String assigneeIds = listTemp.get(1);
+                        String assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();

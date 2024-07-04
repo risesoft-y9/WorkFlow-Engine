@@ -33,7 +33,6 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
 
     private final OrgUnitApi orgUnitApi;
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> findTaskListByProcessInstanceId(String processInstanceId, int page, int rows) {
         Y9Page<TaskModel> taskPage;
