@@ -125,14 +125,13 @@ public interface DoingApiClient extends DoingApi {
      * @param page
      * @param rows
      * @return
-     * @throws Exception
      */
     @Override
     @GetMapping("/searchListByUserIdAndProcessDefinitionKey")
     Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
         @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("rows") Integer rows);
 
     /**
      *
@@ -145,12 +144,11 @@ public interface DoingApiClient extends DoingApi {
      * @param page
      * @param rows
      * @return
-     * @throws Exception
      */
     @Override
     @GetMapping("/searchListByUserIdAndSystemName")
     Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
         @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("rows") Integer rows);
 }
