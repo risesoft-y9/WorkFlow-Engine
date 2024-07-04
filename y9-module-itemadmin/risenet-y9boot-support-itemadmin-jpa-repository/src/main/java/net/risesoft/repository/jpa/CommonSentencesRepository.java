@@ -19,7 +19,7 @@ public interface CommonSentencesRepository
     extends JpaRepository<CommonSentences, String>, JpaSpecificationExecutor<CommonSentences> {
 
     @Query("from CommonSentences t where t.userId=?1 order by t.useNumber desc, t.tabIndex asc")
-    public List<CommonSentences> findAllByUserId(String userId);
+    List<CommonSentences> findAllByUserId(String userId);
 
     /**
      * 根据人员id获取常用语
@@ -28,7 +28,7 @@ public interface CommonSentencesRepository
      * @return
      */
     @Query("from CommonSentences t where t.userId=?1 order by t.tabIndex")
-    public List<CommonSentences> findByUserId(String userId);
+    List<CommonSentences> findByUserId(String userId);
 
     /**
      * 根据人员id，序号获取常用语
@@ -38,5 +38,5 @@ public interface CommonSentencesRepository
      * @return
      */
     @Query("from CommonSentences t where t.userId=?1 and t.tabIndex=?2")
-    public CommonSentences findByUserIdAndTabIndex(String userId, int tabIndex);
+    CommonSentences findByUserIdAndTabIndex(String userId, int tabIndex);
 }

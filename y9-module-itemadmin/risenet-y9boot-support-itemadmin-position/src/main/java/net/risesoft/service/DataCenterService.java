@@ -247,8 +247,8 @@ public class DataCenterService {
         Position position = Y9LoginUserHolder.getPosition();
         HistoricProcessInstanceModel processInstance =
             historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
-        HistoricVariableInstanceModel vmap =
-            historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "infoOvert", "").getData();
+        HistoricVariableInstanceModel vmap = historicVariableManager
+            .getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "infoOvert", "").getData();
 
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         String itemId = processParam.getItemId();

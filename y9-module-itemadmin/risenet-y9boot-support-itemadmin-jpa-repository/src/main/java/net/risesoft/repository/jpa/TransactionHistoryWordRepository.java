@@ -40,12 +40,12 @@ public interface TransactionHistoryWordRepository
     List<TransactionHistoryWord> findByProcessSerialNumberAndIsTaoHong(String processSerialNumber, String isTaoHong);
 
     @Query("From TransactionHistoryWord d where d.processSerialNumber in (?1)")
-    public List<TransactionHistoryWord> findByProcessSerialNumbers(List<String> processSerialNumbers);
+    List<TransactionHistoryWord> findByProcessSerialNumbers(List<String> processSerialNumbers);
 
     /**
      * 根据任务ID获取历史正文
      * 
-     * @param processSerialNumber
+     * @param taskId 任务ID
      * @return
      */
     @Query("From TransactionHistoryWord d where d.taskId=?1 order by d.saveDate desc")
@@ -103,6 +103,6 @@ public interface TransactionHistoryWordRepository
     @Transactional(readOnly = false)
     @Modifying
     @Query("update TransactionHistoryWord t set t.fileStoreId=?1,t.fileSize=?2,t.istaohong=?3,t.saveDate=?4,t.userId=?5 where t.id=?6")
-    public void updateTransactionHistoryWordById(String fileStoreId, String fileSize, String isTaoHong, String saveDate,
+    void updateTransactionHistoryWordById(String fileStoreId, String fileSize, String isTaoHong, String saveDate,
         String userId, String id);
 }

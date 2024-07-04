@@ -41,21 +41,24 @@ public interface TransactionWordRepository
     List<TransactionWord> findByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong);
 
     @Query("From TransactionWord d where d.processSerialNumber in (?1)")
-    public List<TransactionWord> findByProcessSerialNumbers(List<String> processSerialNumbers);
+    List<TransactionWord> findByProcessSerialNumbers(List<String> processSerialNumbers);
 
     /**
      * 更新word
      * 
-     * @param tenantId
-     * @param content
+     * @param fileStoreId
+     * @param fileType
+     * @param fileName
+     * @param fileSize
      * @param saveDate
+     * @param isTaoHong
      * @param userId
      * @param id
      */
     @Transactional(readOnly = false)
     @Modifying
     @Query("update TransactionWord t set t.fileStoreId=?1,t.fileType=?2,t.fileName=?3,t.fileSize=?4,t.saveDate=?5,t.istaohong=?6,t.userId=?7 where t.id=?8")
-    public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
+    void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
         String saveDate, String isTaoHong, String userId, String id);
 
 }

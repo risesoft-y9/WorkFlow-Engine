@@ -232,8 +232,8 @@ public class FormDataServiceImpl implements FormDataService {
         try {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
+            ProcessDefinitionModel processDefinition = repositoryManager
+                .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             for (Y9FormItemBind form : formList) {
@@ -331,8 +331,8 @@ public class FormDataServiceImpl implements FormDataService {
             // 获取事项绑定主表信息
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
+            ProcessDefinitionModel processDefinition = repositoryManager
+                .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
             List<Y9FormItemBind> list =
                 y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             String bindFormId = "";

@@ -17,9 +17,9 @@ public interface PrintTemplateItemBindRepository
     extends JpaRepository<ItemPrintTemplateBind, String>, JpaSpecificationExecutor<ItemPrintTemplateBind> {
 
     @Query(" from ItemPrintTemplateBind p where p.itemId=?1")
-    public ItemPrintTemplateBind findByItemId(String itemId);
+    ItemPrintTemplateBind findByItemId(String itemId);
 
     @Query(" from ItemPrintTemplateBind p where p.itemId=?1 and p.templateId=?2")
-    public ItemPrintTemplateBind findByItemIdAndTemplateId(String itemId, String templateId);
+    ItemPrintTemplateBind findByItemIdAndTemplateId(String itemId, String templateId);
 
 }

@@ -46,7 +46,7 @@ public interface TransactionFileRepository
     List<TransactionFile> findByProcessSerialNumbers(List<String> processSerialNumbers);
 
     @Query("from TransactionFile t where t.processSerialNumber=?1 order by t.tabIndex ASC")
-    public List<TransactionFile> findTransactionFileByProcessSerialNumber(String processSerialNumber);
+    List<TransactionFile> findTransactionFileByProcessSerialNumber(String processSerialNumber);
 
     @Query("from TransactionFile t where t.processSerialNumber=?1")
     List<TransactionFile> getAttachmentList(String processSerialNumber);
@@ -61,7 +61,7 @@ public interface TransactionFileRepository
     Page<TransactionFile> getAttachmentList(String processSerialNumber, String fileSource, Pageable pageable);
 
     @Query("from TransactionFile t where t.name=?1 and t.processSerialNumber=?2 order by t.uploadTime desc")
-    public TransactionFile getFileInfoByFileName(String name, String processSerialNumber);
+    TransactionFile getFileInfoByFileName(String name, String processSerialNumber);
 
     @Query("select count(*) from TransactionFile t where t.processSerialNumber=?1 and t.fileSource = ?2")
     Integer getTransactionFileCount(String processSerialNumber, String fileSource);
@@ -70,7 +70,7 @@ public interface TransactionFileRepository
     Integer getTransactionFileCountByFileType(String processSerialNumber, String fileSource, String fileType);
 
     @Query("from TransactionFile t where t.tabIndex=?1 and t.processSerialNumber=?2 order by t.tabIndex asc")
-    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber);
+    TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber);
 
     @Modifying
     @Transactional(readOnly = false)

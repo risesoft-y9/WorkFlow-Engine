@@ -16,10 +16,10 @@ import net.risesoft.entity.TaoHongTemplate;
 public interface TaoHongTemplateRepository
     extends JpaRepository<TaoHongTemplate, String>, JpaSpecificationExecutor<TaoHongTemplate> {
     @Query("from TaoHongTemplate t where t.bureauGuid=?1 order by t.tabIndex asc")
-    public List<TaoHongTemplate> findByBureauGuid(String bureauGuid);
+    List<TaoHongTemplate> findByBureauGuid(String bureauGuid);
 
     @Query("from TaoHongTemplate t where t.tenantId=?1 and t.bureauName like ?2 order by t.tabIndex asc")
-    public List<TaoHongTemplate> findByTenantId(String tenantId, String name);
+    List<TaoHongTemplate> findByTenantId(String tenantId, String name);
 
     /**
      * 获取最大的tabIndex

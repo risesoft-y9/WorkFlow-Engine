@@ -63,7 +63,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void deleteMultiInstanceExecution(String executionId, String taskId, String elementUser){
+    public void deleteMultiInstanceExecution(String executionId, String taskId, String elementUser) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 改变流程变量中users的值

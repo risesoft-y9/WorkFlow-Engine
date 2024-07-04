@@ -78,44 +78,44 @@ public class BasicButton implements Comparable<BasicButton>, Serializable {
         return customId;
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Boolean getShow() {
-        return show;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
     public void setCustomId(String customId) {
         this.customId = customId;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 
     public void setIcon(String icon) {
         this.icon = icon;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public Boolean getShow() {
+        return show;
+    }
+
     public void setShow(Boolean show) {
         this.show = show;
+    }
+
+    public Integer getType() {
+        return type;
     }
 
     public void setType(Integer type) {
