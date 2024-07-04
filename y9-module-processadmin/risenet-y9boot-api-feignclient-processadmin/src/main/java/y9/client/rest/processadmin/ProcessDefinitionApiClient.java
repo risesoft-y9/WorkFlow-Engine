@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -47,7 +48,7 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
 
     @Override
     @GetMapping("/getFlowElement")
-    List<Map<String, Object>> getFlowElement(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<FlowElementModel>> getFlowElement(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("isContainStartNode") Boolean isContainStartNode);
 
@@ -57,11 +58,11 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId processDefinitionId
      * @param isContainStartNode isContainStartNode
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TargetModel>>
      */
     @Override
     @GetMapping("/getNodes")
-    List<Map<String, Object>> getNodes(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<TargetModel>> getNodes(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("isContainStartNode") Boolean isContainStartNode);
 

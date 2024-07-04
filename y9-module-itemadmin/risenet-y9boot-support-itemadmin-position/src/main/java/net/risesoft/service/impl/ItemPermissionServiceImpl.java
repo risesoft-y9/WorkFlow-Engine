@@ -26,6 +26,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.ItemPermissionRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
@@ -78,12 +79,12 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         List<ItemPermission> previousipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
-        List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
+        List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
         /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的角色，没有就保存
          */
-        for (Map<String, Object> map : nodes) {
-            String currentTaskDefKey = (String)map.get("taskDefKey");
+        for (TargetModel targetModel : nodes) {
+            String currentTaskDefKey = targetModel.getTaskDefKey();
             for (ItemPermission ip : previousipList) {
                 String taskDefKeyTemp = ip.getTaskDefKey(), roleId = ip.getRoleId();
                 Integer roleType = ip.getRoleType();
@@ -263,10 +264,8 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                     }
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                         existDepartment = true;
-                        continue;
                     }
                 }
-                continue;
             }
         }
         map.put("existDepartment", existDepartment);

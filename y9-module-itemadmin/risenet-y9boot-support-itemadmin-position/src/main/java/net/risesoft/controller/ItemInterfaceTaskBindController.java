@@ -1,7 +1,6 @@
 package net.risesoft.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemInterfaceTaskBind;
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.ItemInterfaceTaskBindService;
@@ -54,22 +54,23 @@ public class ItemInterfaceTaskBindController {
      * @param itemId 事项id
      * @param interfaceId 接口id
      * @param processDefinitionId 流程定义id
-     * @return
+     * @return Y9Result<List<FlowElementModel>>
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId,
+    public Y9Result<List<FlowElementModel>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> list = processDefinitionApi.getFlowElement(tenantId, processDefinitionId, false);
-        for (Map<String, Object> map : list) {
-            String elementKey = (String)map.get("elementKey");
+        List<FlowElementModel> list =
+            processDefinitionApi.getFlowElement(tenantId, processDefinitionId, false).getData();
+        for (FlowElementModel feModel : list) {
+            String elementKey = feModel.getElementKey();
             ItemInterfaceTaskBind bind =
                 itemInterfaceTaskBindRepository.findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(
                     elementKey, itemId, processDefinitionId, interfaceId);
-            map.put("bind", false);
+            feModel.setBind(false);
             if (bind != null) {
-                map.put("bind", true);
-                map.put("condition", bind.getExecuteCondition());
+                feModel.setBind(true);
+                feModel.setCondition(bind.getExecuteCondition());
             }
         }
         return Y9Result.success(list, "获取成功");

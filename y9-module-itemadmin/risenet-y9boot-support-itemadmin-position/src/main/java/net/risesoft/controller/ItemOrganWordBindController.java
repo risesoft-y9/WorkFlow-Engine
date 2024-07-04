@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemOrganWordBind;
 import net.risesoft.entity.OrganWord;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemOrganWordBindService;
 import net.risesoft.service.OrganWordService;
@@ -69,12 +70,12 @@ public class ItemOrganWordBindController {
         @RequestParam String processDefinitionId) {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
+        List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         List<ItemOrganWordBind> bindList;
-        for (Map<String, Object> map : list) {
+        for (TargetModel targetModel : list) {
             String bindNames = "";
             bindList = itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
-                processDefinitionId, (String)map.get("taskDefKey"));
+                processDefinitionId, targetModel.getTaskDefKey());
             for (ItemOrganWordBind cb : bindList) {
                 if (StringUtils.isEmpty(bindNames)) {
                     bindNames = cb.getOrganWordName();
@@ -82,9 +83,10 @@ public class ItemOrganWordBindController {
                     bindNames += "、" + cb.getOrganWordName();
                 }
             }
-            map.put("bindNames", bindNames);
+            targetModel.setBindNames(bindNames);
         }
         resMap.put("rows", list);
+        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 

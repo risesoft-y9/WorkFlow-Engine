@@ -19,6 +19,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.ItemOpinionFrameRole;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.ItemOpinionFrameRoleService;
@@ -129,11 +130,11 @@ public class ItemOpinionFrameBindRestController {
             map.put("roleNames", StringUtils.isEmpty(roleNames) ? "未绑定角色（所有人都可以签写）" : roleNames);
             String taskDefName = "整个流程";
             if (StringUtils.isNotEmpty(bind.getTaskDefKey())) {
-                List<Map<String, Object>> list =
-                    processDefinitionManager.getNodes(tenantId, bind.getProcessDefinitionId(), false);
-                for (Map<String, Object> mapTemp : list) {
-                    if (mapTemp.get("taskDefKey").equals(bind.getTaskDefKey())) {
-                        taskDefName = (String)mapTemp.get("taskDefName");
+                List<TargetModel> list =
+                    processDefinitionManager.getNodes(tenantId, bind.getProcessDefinitionId(), false).getData();
+                for (TargetModel targetModel : list) {
+                    if (targetModel.getTaskDefKey().equals(bind.getTaskDefKey())) {
+                        taskDefName = targetModel.getTaskDefName();
                     }
                 }
             }
@@ -154,15 +155,15 @@ public class ItemOpinionFrameBindRestController {
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
-        List<Map<String, Object>> list;
+        List<TargetModel> list;
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
-        for (Map<String, Object> map : list) {
+        list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+        for (TargetModel targetModel : list) {
             String opinionFrameNames = "";
             List<ItemOpinionFrameBind> bindList =
                 itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
-                    (String)map.get("taskDefKey"));
+                    targetModel.getTaskDefKey());
             for (ItemOpinionFrameBind bind : bindList) {
                 if (StringUtils.isEmpty(opinionFrameNames)) {
                     opinionFrameNames = bind.getOpinionFrameName();
@@ -170,9 +171,10 @@ public class ItemOpinionFrameBindRestController {
                     opinionFrameNames += "、" + bind.getOpinionFrameName();
                 }
             }
-            map.put("opinionFrameNames", opinionFrameNames);
+            targetModel.setOpinionFrameNames(opinionFrameNames);
         }
         resMap.put("rows", list);
+        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 

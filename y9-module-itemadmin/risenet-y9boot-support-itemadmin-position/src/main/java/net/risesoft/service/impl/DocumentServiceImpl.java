@@ -258,7 +258,8 @@ public class DocumentServiceImpl implements DocumentService {
         String taskId, String taskDefKey, String processInstanceId) {
         DocUserChoiseModel model = new DocUserChoiseModel();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefKey).getData();
+        String multiInstance =
+            processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefKey).getData();
         Map<String, Object> tabMap =
             itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
 
@@ -911,16 +912,16 @@ public class DocumentServiceImpl implements DocumentService {
              */
             String taskDefNameJson;
             if (k == 15 && isButtonShow[15]) {
-                List<Map<String, Object>> taskNodes =
-                    processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
-                for (Map<String, Object> node : taskNodes) {
+                List<TargetModel> taskNodes =
+                    processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+                for (TargetModel node : taskNodes) {
                     Map<String, Object> map3 = new HashMap<>(16);
                     // 流程不显示在重定向按钮下面
-                    if (!node.get("taskDefName").equals("流程")) {
-                        repositionName = Y9Util.genCustomStr(repositionName, node.get("taskDefName").toString());
-                        repositionKey = Y9Util.genCustomStr(repositionKey, node.get("taskDefKey").toString());
-                        map3.put("repositionName", node.get("taskDefName").toString());
-                        map3.put("repositionKey", node.get("taskDefKey").toString());
+                    if (!node.getTaskDefName().equals("流程")) {
+                        repositionName = Y9Util.genCustomStr(repositionName, node.getTaskDefName());
+                        repositionKey = Y9Util.genCustomStr(repositionKey, node.getTaskDefKey());
+                        map3.put("repositionName", node.getTaskDefName());
+                        map3.put("repositionKey", node.getTaskDefKey());
                         repositionMap.add(map3);
                     }
                 }
@@ -1098,8 +1099,8 @@ public class DocumentServiceImpl implements DocumentService {
             userChoice = userChoice.substring(2);
             userAndDeptIdList.add(userChoice);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(),
-                task.getTaskDefinitionKey()).getData();
+            String multiInstance = processDefinitionManager
+                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             Map<String, Object> variables = new HashMap<>(16);
             variables.put(SysVariables.USER, userChoice);
             if (SysVariables.PARALLEL.equals(multiInstance)) {
@@ -1217,7 +1218,8 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
+            String multiInstance =
+                processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult =
                 this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
             if (!userResult.isSuccess()) {
@@ -1566,13 +1568,15 @@ public class DocumentServiceImpl implements DocumentService {
             String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(),
                 processInstanceId = task.getProcessInstanceId();
 
-            Y9Result<TargetModel> routeToTaskIdResult=this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
+            Y9Result<TargetModel> routeToTaskIdResult =
+                this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
             if (!routeToTaskIdResult.isSuccess()) {
                 return Y9Result.failure(routeToTaskIdResult.getMsg());
             }
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
+            String multiInstance =
+                processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId,
                 routeToTaskName, processInstanceId, multiInstance);
             if (!userResult.isSuccess()) {

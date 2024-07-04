@@ -24,6 +24,7 @@ import net.risesoft.entity.form.Y9Form;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
@@ -185,26 +186,29 @@ public class Y9FormItemBindRestController {
      *
      * @param processDefinitionId 流程定义id
      * @param itemId 事项id
-     * @return
+     * @return Y9Result<Map<String, Object>>
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
-        List<Map<String, Object>> list;
+        List<Map<String, Object>> list = new ArrayList<>();
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
+        List<TargetModel> targetModelList =
+            processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         List<Y9FormItemBind> eibList;
         List<Y9FormItemMobileBind> eibList1;
-        for (Map<String, Object> map : list) {
+        Map<String, Object> map;
+        for (TargetModel targetModel : targetModelList) {
+            map = new HashMap<>(16);
             String eformNames = "";
             String mobileFormName = "";
             String mobileFormId = "";
             String mobileBindId = "";
             eibList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId,
-                (String)map.get("taskDefKey"));
+                targetModel.getTaskDefKey());
             eibList1 = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId,
-                processDefinitionId, (String)map.get("taskDefKey"));
+                processDefinitionId, targetModel.getTaskDefKey());
             for (Y9FormItemBind eib : eibList) {
                 String formId = eib.getFormId();
                 Y9Form form = y9FormRepository.findById(formId).orElse(null);
@@ -220,8 +224,11 @@ public class Y9FormItemBindRestController {
             map.put("mobileFormName", mobileFormName);
             map.put("mobileFormId", mobileFormId);
             map.put("mobileBindId", mobileBindId);
+            map.put("taskDefKey", targetModel.getTaskDefKey());
+            list.add(map);
         }
         resMap.put("rows", list);
+        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 

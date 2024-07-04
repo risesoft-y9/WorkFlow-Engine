@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +23,7 @@ import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemButtonBindRepository;
 import net.risesoft.service.CommonButtonService;
@@ -106,10 +106,10 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                 previouspdId = previouspd.getId();
             }
         }
-        List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
-        for (Map<String, Object> map : nodes) {
-            String currentTaskDefKey = (String)map.get("taskDefKey");
-            List<ItemButtonBind> bindList = new ArrayList<>();
+        List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
+        for (TargetModel targetModel : nodes) {
+            String currentTaskDefKey = targetModel.getTaskDefKey();
+            List<ItemButtonBind> bindList;
             if (StringUtils.isBlank(currentTaskDefKey)) {
                 bindList = buttonItemBindRepository
                     .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId, previouspdId);

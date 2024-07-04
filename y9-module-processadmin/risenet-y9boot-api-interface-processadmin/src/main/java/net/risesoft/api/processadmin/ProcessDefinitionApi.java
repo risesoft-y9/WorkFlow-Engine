@@ -3,6 +3,7 @@ package net.risesoft.api.processadmin;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -37,9 +38,10 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return
+     * @return Y9Result<List<FlowElementModel>>
      */
-    List<Map<String, Object>> getFlowElement(String tenantId, String processDefinitionId, Boolean isContainStartNode);
+    Y9Result<List<FlowElementModel>> getFlowElement(String tenantId, String processDefinitionId,
+        Boolean isContainStartNode);
 
     /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
@@ -47,9 +49,9 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TargetModel>>
      */
-    List<Map<String, Object>> getNodes(String tenantId, String processDefinitionId, Boolean isContainStartNode);
+    Y9Result<List<TargetModel>> getNodes(String tenantId, String processDefinitionId, Boolean isContainStartNode);
 
     /**
      * 获取具体流程的某个节点类型

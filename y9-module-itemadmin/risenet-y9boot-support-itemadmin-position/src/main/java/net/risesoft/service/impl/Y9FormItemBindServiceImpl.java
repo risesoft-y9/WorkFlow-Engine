@@ -20,6 +20,7 @@ import net.risesoft.entity.Y9FormItemMobileBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.Y9FormItemBindRepository;
 import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
 import net.risesoft.service.SpmApproveItemService;
@@ -65,8 +66,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             }
         }
         List<Y9FormItemBind> previouseibList = y9FormItemBindRepository.findByItemIdAndProcDefId(itemId, previouspdId);
-        List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
-        /**
+        List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
+        /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
          */
         for (Y9FormItemBind eib : previouseibList) {
@@ -79,8 +80,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                     save(eib, latestpdId, formId, itemId, taskDefKey, tenantId);
                 }
             } else {
-                for (Map<String, Object> mapTemp : nodes) {
-                    if (mapTemp.get("taskDefKey").equals(taskDefKey)) {
+                for (TargetModel targetModel : nodes) {
+                    if (targetModel.getTaskDefKey().equals(taskDefKey)) {
                         Y9FormItemBind eibTemp = y9FormItemBindRepository
                             .findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, taskDefKey, formId);
                         if (null == eibTemp) {
@@ -130,11 +131,11 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             // 查找本任务的form,在任务上设置的表单有优先权。
-            List<Map<String, Object>> list = new ArrayList<>();
+            List<TargetModel> list;
             // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
             if (StringUtils.isBlank(taskDefKey)) {
-                list = processDefinitionManager.getNodes(tenantId, procDefId, false);
-                taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
+                list = processDefinitionManager.getNodes(tenantId, procDefId, false).getData();
+                taskDefKey = list.get(list.size() - 1).getTaskDefKey();
             }
             eformTaskBinds =
                 y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
@@ -156,11 +157,11 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             // 查找本任务的form,在任务上设置的表单有优先权。
-            List<Map<String, Object>> list = new ArrayList<>();
+            List<TargetModel> list;
             // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
             if (StringUtils.isBlank(taskDefKey)) {
-                list = processDefinitionManager.getNodes(tenantId, procDefId, false);
-                taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
+                list = processDefinitionManager.getNodes(tenantId, procDefId, false).getData();
+                taskDefKey = list.get(list.size() - 1).getTaskDefKey();
             }
             eformTaskBinds =
                 y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
@@ -279,7 +280,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         return map;
     }
 
-    private final void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
+    private void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
         String tenantId) {
         Y9FormItemBind eibTemp = new Y9FormItemBind();
         eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));

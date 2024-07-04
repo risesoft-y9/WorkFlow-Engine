@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemOrganWordBindRepository;
 import net.risesoft.repository.jpa.OrganWordRepository;
@@ -74,9 +74,9 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
                 previouspdId = previouspd.getId();
             }
         }
-        List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
-        for (Map<String, Object> map : nodes) {
-            String currentTaskDefKey = (String)map.get("taskDefKey");
+        List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
+        for (TargetModel targetModel : nodes) {
+            String currentTaskDefKey = targetModel.getTaskDefKey();
             List<ItemOrganWordBind> bindList = itemOrganWordBindRepository
                 .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, previouspdId, currentTaskDefKey);
             for (ItemOrganWordBind bind : bindList) {
@@ -126,7 +126,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
         List<ItemOrganWordBind> owtrbList =
             itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-        OrganWord organWord = null;
+        OrganWord organWord;
         for (ItemOrganWordBind bind : owtrbList) {
             String custom = bind.getOrganWordCustom();
             organWord = organWordRepository.findByCustom(custom);
@@ -156,7 +156,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         String processDefinitionId, String taskDefKey) {
         List<ItemOrganWordBind> owtrbList = itemOrganWordBindRepository
             .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        OrganWord organWord = null;
+        OrganWord organWord;
         for (ItemOrganWordBind bind : owtrbList) {
             String custom = bind.getOrganWordCustom();
             organWord = organWordRepository.findByCustom(custom);

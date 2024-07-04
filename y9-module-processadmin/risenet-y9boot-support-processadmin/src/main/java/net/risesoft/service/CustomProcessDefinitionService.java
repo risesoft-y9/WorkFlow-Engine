@@ -1,5 +1,6 @@
 package net.risesoft.service;
 
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -34,18 +35,18 @@ public interface CustomProcessDefinitionService {
      *
      * @param processDefinitionId
      * @param isContainStartNode
-     * @return
+     * @return Y9Result<List<FlowElementModel>>
      */
-    List<Map<String, Object>> getFlowElement(String processDefinitionId, Boolean isContainStartNode);
+    Y9Result<List<FlowElementModel>> getFlowElement(String processDefinitionId, Boolean isContainStartNode);
 
     /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
      *
      * @param processDefinitionId
      * @param isContainStartNode
-     * @return
+     * @return Y9Result<List<TargetModel>>
      */
-    List<Map<String, Object>> getNodes(String processDefinitionId, Boolean isContainStartNode);
+    Y9Result<List<TargetModel>> getNodes(String processDefinitionId, Boolean isContainStartNode);
 
     /**
      * 获取具体流程的某个节点类型
