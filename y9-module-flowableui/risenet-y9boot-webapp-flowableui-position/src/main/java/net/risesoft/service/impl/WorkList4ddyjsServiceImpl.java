@@ -546,7 +546,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows) {
         try {

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.springframework.util.StringUtils;
+
 import lombok.Data;
 
 /**
@@ -71,14 +73,14 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
     public int compareTo(HistoryProcessModel o) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date startTime1 = sdf.parse(this.getStartTime());
-            Date startTime2 = sdf.parse(o.getStartTime());
-
+            Date now = new Date();
+            Date startTime1 = StringUtils.hasText(this.getStartTime()) ? sdf.parse(this.getStartTime()) : now;
+            Date startTime2 = StringUtils.hasText(o.getStartTime()) ? sdf.parse(o.getStartTime()) : now;
             if (startTime1.getTime() > startTime2.getTime()) {
                 return 1;
             } else if (startTime1.getTime() == startTime2.getTime()) {
-                Date date1 = "".equals(this.getEndTime()) ? new Date() : sdf.parse(this.getEndTime());
-                Date date2 = "".equals(o.getEndTime()) ? new Date() : sdf.parse(o.getEndTime());
+                Date date1 = !StringUtils.hasText(this.getEndTime()) ? now : sdf.parse(this.getEndTime());
+                Date date2 = !StringUtils.hasText(o.getEndTime()) ? now : sdf.parse(o.getEndTime());
                 if (date1.getTime() > date2.getTime()) {// 开始时间相等的才排序
                     return 1;
                 }

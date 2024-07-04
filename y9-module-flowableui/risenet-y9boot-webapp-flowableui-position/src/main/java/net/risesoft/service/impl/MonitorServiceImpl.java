@@ -500,7 +500,6 @@ public class MonitorServiceImpl implements MonitorService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> monitorRecycleList(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<>(16);
