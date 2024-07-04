@@ -5,7 +5,7 @@
     //是否开启严格模式
     "allInOne": true,
     //是否将文档合并到一个文件中，一般推荐为true
-    "outPath": "../../../docs/smart-docs/flowableUI-position",
+    "outPath": "../../../y9-digitalbase-pro/docs/smart-docs/flowableUI-position",
     //指定文档的输出路径
     "coverOld": true,
     //是否覆盖旧的文件，主要用于mardown文件覆盖
