@@ -1,7 +1,6 @@
 package net.risesoft.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -15,6 +14,7 @@ import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.ItemTaskConfRepository;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -40,7 +40,8 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     public void copyTaskConf(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
-        ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestpd =
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
@@ -52,9 +53,9 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         }
         if (latestpd.getVersion() > 1) {
             List<ItemTaskConf> confList = taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
-            List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
-            for (Map<String, Object> map : nodes) {
-                String currentTaskDefKey = (String)map.get("taskDefKey");
+            List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
+            for (TargetModel targetModel : nodes) {
+                String currentTaskDefKey = targetModel.getTaskDefKey();
                 ItemTaskConf currentConf =
                     this.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, latestpdId, currentTaskDefKey);
                 if (null == currentConf) {
@@ -106,7 +107,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     @Override
     public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
         String taskDefKey) {
-        ItemTaskConf conf = null;
+        ItemTaskConf conf;
         if (StringUtils.isEmpty(taskDefKey)) {
             conf =
                 taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
@@ -124,7 +125,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     @Override
     public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(String itemId, String processDefinitionId,
         String taskDefKey) {
-        ItemTaskConf conf = null;
+        ItemTaskConf conf;
         if (StringUtils.isEmpty(taskDefKey)) {
             conf =
                 taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
@@ -138,7 +139,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     @Override
     public boolean getSponserStatus(String itemId, String processDefinitionId, String taskDefKey) {
         boolean sponserStatus = false;
-        ItemTaskConf conf = null;
+        ItemTaskConf conf;
         if (StringUtils.isEmpty(taskDefKey)) {
             conf =
                 taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);

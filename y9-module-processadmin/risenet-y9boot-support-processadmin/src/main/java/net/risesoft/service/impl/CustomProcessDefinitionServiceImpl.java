@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricTaskService;
@@ -145,8 +146,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, Object>> getFlowElement(String processDefinitionId, Boolean isContainStartNode) {
-        List<Map<String, Object>> list = new ArrayList<>();
+    public Y9Result<List<FlowElementModel>> getFlowElement(String processDefinitionId, Boolean isContainStartNode) {
+        List<FlowElementModel> list = new ArrayList<>();
         List<FlowElement> activitieList = new ArrayList<>();
         if (!isContainStartNode) {
             List<FlowElement> listTemp;
@@ -162,40 +163,41 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             activitieList = getFilteredActivityImpls(processDefinitionId);
         }
         for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMap = new LinkedHashMap<>();
-            tempMap.put("elementKey", activity.getId());
-            tempMap.put("elementName", activity.getName());
+            Map<String, Object> tempMapA = new LinkedHashMap<>();
+            FlowElementModel feModel = new FlowElementModel();
+            feModel.setElementKey(activity.getId());
+            feModel.setElementName(activity.getName());
             if (activity instanceof UserTask) {
-                tempMap.put("type", "UserTask");
+                feModel.setType("UserTask");
             } else if (activity instanceof SequenceFlow) {
-                tempMap.put("type", "SequenceFlow");
+                feModel.setType("SequenceFlow");
             }
             if (activity instanceof UserTask) {
                 UserTask userTask = (UserTask)activity;
                 if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                    tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
+                    feModel.setMultiInstance(SysVariables.SEQUENTIAL);
                 } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                    tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                    feModel.setMultiInstance(SysVariables.PARALLEL);
                 } else {
-                    tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.COMMON);
+                    feModel.setMultiInstance(SysVariables.COMMON);
                 }
             }
             if (activity.getName() != null && !activity.getName().isEmpty() && activity.getId() != null
                 && !activity.getId().isEmpty()) {
-                list.add(tempMap);
+                list.add(feModel);
             }
         }
-        Map<String, Object> tempMap = new LinkedHashMap<>();
-        tempMap.put("elementKey", "");
-        tempMap.put("elementName", "流程");
-        tempMap.put("type", "Process");
-        list.add(0, tempMap);
-        return list;
+        FlowElementModel feModel = new FlowElementModel();
+        feModel.setElementKey("");
+        feModel.setElementName("流程");
+        feModel.setType("Process");
+        list.add(0, feModel);
+        return Y9Result.success(list);
     }
 
     @Override
-    public List<Map<String, Object>> getNodes(String processDefinitionId, Boolean isContainStartNode) {
-        List<Map<String, Object>> list = new ArrayList<>();
+    public Y9Result<List<TargetModel>> getNodes(String processDefinitionId, Boolean isContainStartNode) {
+        List<TargetModel> list = new ArrayList<>();
         List<FlowElement> activitieList = new ArrayList<>();
         if (!isContainStartNode) {
             List<FlowElement> listTemp;
@@ -212,26 +214,27 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             activitieList = getFilteredActivityImpls(processDefinitionId);
         }
         for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMap = new LinkedHashMap<>();
-            tempMap.put("taskDefKey", activity.getId());
-            tempMap.put("taskDefName", activity.getName());
+            Map<String, Object> tempMapA = new LinkedHashMap<>();
+            TargetModel targetModel = new TargetModel();
+            targetModel.setTaskDefKey(activity.getId());
+            targetModel.setTaskDefName(activity.getName());
             if (activity instanceof UserTask) {
                 UserTask userTask = (UserTask)activity;
                 if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                    tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
+                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                 } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                    tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                    targetModel.setMultiInstance(SysVariables.PARALLEL);
                 } else {
-                    tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.COMMON);
+                    targetModel.setMultiInstance(SysVariables.COMMON);
                 }
             }
-            list.add(tempMap);
+            list.add(targetModel);
         }
-        Map<String, Object> tempMap = new LinkedHashMap<>();
-        tempMap.put("taskDefKey", "");
-        tempMap.put("taskDefName", "流程");
-        list.add(0, tempMap);
-        return list;
+        TargetModel targetModel = new TargetModel();
+        targetModel.setTaskDefKey("");
+        targetModel.setTaskDefName("流程");
+        list.add(0, targetModel);
+        return Y9Result.success(list);
     }
 
     @Override

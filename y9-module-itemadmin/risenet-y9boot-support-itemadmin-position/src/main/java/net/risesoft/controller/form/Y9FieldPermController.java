@@ -1,26 +1,30 @@
 package net.risesoft.controller.form;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.entity.Y9FormItemBind;
-import net.risesoft.entity.Y9FormItemMobileBind;
-import net.risesoft.entity.form.Y9FieldPerm;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.form.Y9FieldPermRepository;
-import net.risesoft.repository.jpa.Y9FormItemBindRepository;
-import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.entity.Y9FormItemBind;
+import net.risesoft.entity.Y9FormItemMobileBind;
+import net.risesoft.entity.form.Y9FieldPerm;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.repository.form.Y9FieldPermRepository;
+import net.risesoft.repository.jpa.Y9FormItemBindRepository;
+import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -123,22 +127,29 @@ public class Y9FieldPermController {
         if (!bindList.isEmpty()) {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
         }
-        if (bindList.isEmpty()) {// 手机端表单
+        // 手机端表单
+        if (bindList.isEmpty()) {
             List<Y9FormItemMobileBind> bindList1 = y9FormItemMobileBindRepository.findByFormIdList(list);
             if (!bindList1.isEmpty()) {
                 processDefinitionId = bindList1.get(0).getProcessDefinitionId();
             }
         }
         if (StringUtils.isNotBlank(processDefinitionId)) {
-            resList = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
-            for (Map<String, Object> map : resList) {
+            List<TargetModel> targetList =
+                processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+            Map<String, Object> map;
+            for (TargetModel targetModel : targetList) {
                 Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName,
-                    (String)map.get("taskDefKey"));
+                    targetModel.getTaskDefKey());
+                map = new HashMap<>();
                 map.put("writeRoleId", y9FieldPerm != null ? y9FieldPerm.getWriteRoleId() : "");
                 map.put("writeRoleName", y9FieldPerm != null ? y9FieldPerm.getWriteRoleName() : "");
                 map.put("id", y9FieldPerm != null ? y9FieldPerm.getId() : "");
+                map.put("taskDefKey", targetModel.getTaskDefKey());
+                resList.add(map);
             }
         }
+        // TODO
         return Y9Result.success(resList, "获取成功");
     }
 
