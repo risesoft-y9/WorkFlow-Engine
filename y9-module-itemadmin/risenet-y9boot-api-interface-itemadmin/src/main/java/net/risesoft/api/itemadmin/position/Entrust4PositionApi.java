@@ -12,6 +12,8 @@ import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 出差委托接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -24,41 +26,43 @@ public interface Entrust4PositionApi {
      * @param tenantId 租户id
      * @param id 委托id
      * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @PostMapping(value = "/deleteEntrust")
-    Y9Result<Object> deleteEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id)
-        throws Exception;
+    Y9Result<Object> deleteEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
-     * 获取委托设置列表
+     * 获取委托列表
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
+     * @since 9.6.6
      */
     @GetMapping(value = "/getEntrustList")
     Y9Result<List<EntrustModel>> getEntrustList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId);
 
     /**
-     * 获取当前岗被委托记录
+     * 获取我的委托列表
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
+     * @since 9.6.6
      */
     @GetMapping(value = "/getMyEntrustList")
     Y9Result<List<EntrustModel>> getMyEntrustList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId);
 
     /**
-     * 保存或者更新委托对象
+     * 保存或更新委托
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param entrustModel 实体类（EntrustModel）
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,

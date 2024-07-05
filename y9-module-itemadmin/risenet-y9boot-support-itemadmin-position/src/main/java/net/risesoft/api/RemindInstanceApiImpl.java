@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 消息提醒接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -36,10 +37,12 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<RemindInstanceModel>>
+     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是消息提醒列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<RemindInstanceModel>> findRemindInstance(String tenantId, String processInstanceId) {
+    public Y9Result<List<RemindInstanceModel>> findRemindInstance(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list = remindInstanceService.findRemindInstance(processInstanceId);
         List<RemindInstanceModel> newList = new ArrayList<>();
@@ -56,12 +59,13 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param taskKey 任务ley
-     * @return Y9Result<List<RemindInstanceModel>>
+     * @param taskKey 任务key
+     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是消息提醒列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String tenantId,
-        String processInstanceId, String taskKey) {
+    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(
+        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(processInstanceId, taskKey);
@@ -79,12 +83,13 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param taskKey 任务ley
-     * @return Y9Result<List<RemindInstanceModel>>
+     * @param taskKey taskKey
+     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是消息提醒列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String tenantId,
-        String processInstanceId, String taskKey) {
+    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(
+        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(processInstanceId, taskKey);
@@ -103,11 +108,12 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param remindType 提醒类型
-     * @return {@code Y9Result<List<RemindInstanceModel>>}
+     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是消息提醒列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndRemindType(String tenantId,
-        String processInstanceId, String remindType) {
+    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndRemindType(
+        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String remindType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndRemindType(processInstanceId, remindType);
@@ -126,11 +132,12 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @return {@code Y9Result<List<RemindInstanceModel>>}
+     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是消息提醒列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndTaskId(String tenantId,
-        String processInstanceId, String taskId) {
+    public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndTaskId(
+        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndTaskId(processInstanceId, taskId);
@@ -149,10 +156,12 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<RemindInstanceModel>}
+     * @return {@code Y9Result<RemindInstanceModel>} 通用请求返回对象 - data 是消息提醒对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<RemindInstanceModel> getRemindInstance(String tenantId, String userId, String processInstanceId) {
+    public Y9Result<RemindInstanceModel> getRemindInstance(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(userId);
         RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
@@ -174,11 +183,13 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @param process 是否流程办结提醒
      * @param arriveTaskKey 节点到达任务
      * @param completeTaskKey 节点完成任务
-     * @return {@code Y9Result<String>}
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveRemindInstance(String tenantId, String userId, String processInstanceId, String taskIds,
-        Boolean process, String arriveTaskKey, String completeTaskKey) {
+    public Y9Result<String> saveRemindInstance(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processInstanceId, @RequestParam String taskIds, @RequestParam Boolean process,
+        @RequestParam String arriveTaskKey, @RequestParam String completeTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(userId);
         return remindInstanceService.saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey,

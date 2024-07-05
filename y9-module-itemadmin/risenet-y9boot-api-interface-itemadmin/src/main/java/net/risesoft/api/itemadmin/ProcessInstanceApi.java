@@ -27,6 +27,7 @@ public interface ProcessInstanceApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return{@code Y9Result<Boolean>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/deleteProcessInstance")
     Y9Result<Boolean> deleteProcessInstance(@RequestParam("tenantId") String tenantId,
@@ -41,6 +42,7 @@ public interface ProcessInstanceApi {
      * @param page 页码
      * @param rows 条数
      * @return{@code Y9Page<ProcessCooperationModel>} 通用请求返回对象 -rows 协作状态信息
+     * @since 9.6.6
      */
     @GetMapping("/processInstanceList")
     Y9Page<ProcessCooperationModel> processInstanceList(@RequestParam("tenantId") String tenantId,
@@ -53,6 +55,7 @@ public interface ProcessInstanceApi {
      * @param tenantId 租户id
      * @param model 状态详情
      * @return{@code Y9Result<Boolean>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveProcessInstanceDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Boolean> saveProcessInstanceDetails(@RequestParam("tenantId") String tenantId,
@@ -65,9 +68,10 @@ public interface ProcessInstanceApi {
      * @param assigneeId 受让人id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @param itembox 办件状态 -todo（待办） -doing（在办） -done（办结）
+     * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
      * @param endTime 结束时间
      * @return{@code Y9Result<Boolean>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/updateProcessInstanceDetails")
     Y9Result<Boolean> updateProcessInstanceDetails(@RequestParam("tenantId") String tenantId,

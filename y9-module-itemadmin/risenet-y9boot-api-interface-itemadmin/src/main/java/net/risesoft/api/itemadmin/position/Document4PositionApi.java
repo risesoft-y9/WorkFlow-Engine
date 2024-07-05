@@ -24,14 +24,14 @@ import net.risesoft.pojo.Y9Result;
 public interface Document4PositionApi {
 
     /**
-     *
-     * Description: 新建
+     * 新建
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @param mobile 是否发送手机端
+     * @param mobile 是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
+     * @since 9.6.6
      */
     @GetMapping("/add")
     Y9Result<OpenDataModel> add(@RequestParam("tenantId") String tenantId,
@@ -39,32 +39,33 @@ public interface Document4PositionApi {
         @RequestParam("mobile") boolean mobile);
 
     /**
-     * 流程办结
+     * 办件办结
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
+     * @since 9.6.6
      */
     @PostMapping("/complete")
     Y9Result<Object> complete(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
         @RequestParam("taskId") String taskId) throws Exception;
 
     /**
-     *
-     * Description: 获取发送选人信息
+     * 获取发送选人信息
      *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param processDefinitionKey 流程定义key
-     * @param processDefinitionId 流程定义id
+     * @param processDefinitionId 流程定义Id
      * @param taskId 任务id
      * @param routeToTask 任务key
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<DocUserChoiseModel>} 通用请求返回对象 - data是发送选人信息
+     * @since 9.6.6
      */
     @GetMapping("/docUserChoise")
     Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam("tenantId") String tenantId,
@@ -76,17 +77,17 @@ public interface Document4PositionApi {
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
-     *
-     * Description: 编辑文档
+     * 编辑文档
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
+     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @param taskId 任务id
      * @param processInstanceId 流程实例id
      * @param itemId 事项id
-     * @param mobile 是否发送手机端
+     * @param mobile 是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
+     * @since 9.6.6
      */
     @GetMapping("/edit")
     Y9Result<OpenDataModel> edit(@RequestParam("tenantId") String tenantId,
@@ -111,6 +112,7 @@ public interface Document4PositionApi {
      * @param routeToTaskId 任务key
      * @param variables 保存变量
      * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveAndForwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<String> saveAndForwarding(@RequestParam("tenantId") String tenantId,
@@ -125,23 +127,23 @@ public interface Document4PositionApi {
         @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> variables);
 
     /**
-     *
-     * Description: 指定任务节点发送
+     * 指定任务节点发送
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @param sponsorHandle sponsorHandle
+     * @param sponsorHandle 是否主办人办理
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param userChoice 选择的发送人员
      * @param sponsorGuid 主办人id
      * @param routeToTaskId 任务key
-     * @param startRouteToTaskId startRouteToTaskId
+     * @param startRouteToTaskId 启动节点key
      * @param variables 保存变量
      * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveAndForwardingByTaskKey", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<String> saveAndForwardingByTaskKey(@RequestParam("tenantId") String tenantId,
@@ -165,6 +167,7 @@ public interface Document4PositionApi {
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveAndSubmitTo", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveAndSubmitTo(@RequestParam("tenantId") String tenantId,
@@ -178,9 +181,10 @@ public interface Document4PositionApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @param taskDefinitionKey 任务定义key
+     * @param taskDefinitionKey 任务key
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<SignTaskConfigModel>} 通用请求返回对象 - data是签收任务配置
+     * @since 9.6.6
      */
     @GetMapping("/signTaskConfig")
     Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam("tenantId") String tenantId,
@@ -199,6 +203,7 @@ public interface Document4PositionApi {
      * @param processDefinitionKey 流程定义key
      * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
      * @throws Exception Exception
+     * @since 9.6.6
      */
     @PostMapping("/startProcess")
     Y9Result<StartProcessResultModel> startProcess(@RequestParam("tenantId") String tenantId,
@@ -217,6 +222,7 @@ public interface Document4PositionApi {
      * @param positionIds 岗位ids
      * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
      * @throws Exception Exception
+     * @since 9.6.6
      */
     @PostMapping("/startProcess1")
     Y9Result<StartProcessResultModel> startProcess(@RequestParam("tenantId") String tenantId,

@@ -24,6 +24,7 @@ public interface ReceiveDeptAndPersonApi {
      * @param tenantId 租户id
      * @param name 搜索名称
      * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @GetMapping("/findByDeptNameLike")
     Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(@RequestParam("tenantId") String tenantId,
@@ -34,30 +35,31 @@ public interface ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @GetMapping("/getReceiveDeptTree")
     Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTree(@RequestParam("tenantId") String tenantId);
 
     /**
-     *
-     * Description: 获取所有收发单位
+     * 获取所有收发单位
      *
      * @param tenantId 租户id
-     * @param orgUnitId 组织id
+     * @param orgUnitId 单位Id
      * @param name 名称
      * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @GetMapping("/getReceiveDeptTreeById")
     Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "name", required = false) String name);
 
     /**
-     *
-     * Description: 根据收发单位id,获取人员集合
+     * 根据收发单位id,获取人员集合
      *
      * @param tenantId 租户id
-     * @param deptId 单位id
+     * @param deptId 部门id
      * @return {@code Y9Result<List<Person>>} 通用请求返回对象 - data 是人员集合
+     * @since 9.6.6
      */
     @GetMapping("/getSendReceiveByDeptId")
     Y9Result<List<Person>> getSendReceiveByDeptId(@RequestParam("tenantId") String tenantId,
@@ -69,6 +71,7 @@ public interface ReceiveDeptAndPersonApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @GetMapping("/getSendReceiveByUserId")
     Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam("tenantId") String tenantId,

@@ -152,13 +152,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public int findByProcSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcSerialNumber(processSerialNumber);
+    public List<Opinion> findByProcessSerialNumber(String processSerialNumber) {
+        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
-    public List<Opinion> findByProcessSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
+    public int findByProcSerialNumber(String processSerialNumber) {
+        return opinionRepository.findByProcSerialNumber(processSerialNumber);
     }
 
     @Override
@@ -295,16 +295,15 @@ public class OpinionServiceImpl implements OpinionService {
             model.setAddAgent(false);
             model.setOpinionFrameMark(opinionFrameMark);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             List<Opinion> list =
                 opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
             if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && list.size() > 1) {// 按岗位排序号排序
                 for (Opinion Opinion : list) {
-                    String PositionId = Opinion.getPositionId();
-                    Position Position = positionManager.get(tenantId, PositionId).getData();
+                    String positionId = Opinion.getPositionId();
+                    Position position = positionManager.get(tenantId, positionId).getData();
                     Opinion.setOrderStr(
-                        (Position != null && Position.getOrderedPath() != null) ? Position.getOrderedPath() : "");
+                        (position != null && position.getOrderedPath() != null) ? position.getOrderedPath() : "");
                 }
                 list = list.stream().sorted().collect(Collectors.toList());
             }

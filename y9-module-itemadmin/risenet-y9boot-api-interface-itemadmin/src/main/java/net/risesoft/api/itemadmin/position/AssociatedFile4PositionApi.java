@@ -28,6 +28,7 @@ public interface AssociatedFile4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是关联流程计数
+     * @since 9.6.6
      */
     @GetMapping("/countAssociatedFile")
     Y9Result<Integer> countAssociatedFile(@RequestParam("tenantId") @NotBlank String tenantId,
@@ -40,6 +41,7 @@ public interface AssociatedFile4PositionApi {
      * @param processSerialNumber 流程编号
      * @param delIds 关联流程实例id(,隔开)
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/deleteAllAssociatedFile")
     Y9Result<Object> deleteAllAssociatedFile(@RequestParam("tenantId") @NotBlank String tenantId,
@@ -53,6 +55,7 @@ public interface AssociatedFile4PositionApi {
      * @param processSerialNumber 流程编号
      * @param delId 关联流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/deleteAssociatedFile")
     Y9Result<Object> deleteAssociatedFile(@RequestParam("tenantId") @NotBlank String tenantId,
@@ -65,6 +68,7 @@ public interface AssociatedFile4PositionApi {
      * @param positionId 岗位id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<List<AssociatedFileModel>>} 通用请求返回对象 - data是关联流程列表
+     * @since 9.6.6
      */
     @GetMapping("/getAssociatedFileAllList")
     Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") @NotBlank String tenantId,

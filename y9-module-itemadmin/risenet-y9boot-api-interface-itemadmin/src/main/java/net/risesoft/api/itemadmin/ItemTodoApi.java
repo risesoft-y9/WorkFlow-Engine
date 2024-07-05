@@ -19,21 +19,20 @@ import net.risesoft.pojo.Y9Result;
 public interface ItemTodoApi {
 
     /**
-     * 查询待办任务数量
+     * 根据用户id和系统名称查询待办数量
      *
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
      * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
     Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName)
-        throws Exception;
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName);
 
     /**
-     * 查询待办任务，以发送时间排序
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -41,15 +40,15 @@ public interface ItemTodoApi {
      * @param page page
      * @param rows rows
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
-     * @throws Exception Exception
+     * @@since 9.6.6
      */
     @GetMapping("/findByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
-     * 查询待办任务，以发送时间排序
+     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -59,13 +58,13 @@ public interface ItemTodoApi {
      * @param page page
      * @param rows rows
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @GetMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestParam(value = "tableName") String tableName,
         @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("rows") Integer rows);
 
 }

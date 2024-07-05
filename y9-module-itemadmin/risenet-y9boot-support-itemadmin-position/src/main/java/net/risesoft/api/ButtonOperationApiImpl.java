@@ -70,12 +70,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param parentExecutionId 父执行实例id
      * @param taskId 任务id
      * @param elementUser 选择人id
-     * @return Y9Result<Object>
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
-        String taskId, String elementUser) {
+    public Y9Result<Object> addMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String activityId,
+        @RequestParam String parentExecutionId, @RequestParam String taskId, @RequestParam String elementUser) {
         Y9LoginUserHolder.setTenantId(tenantId);
         multiInstanceService.addMultiInstanceExecution(activityId, parentExecutionId, taskId, elementUser);
         return Y9Result.success();
@@ -88,12 +88,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param executionId 执行实例id
      * @param taskId 任务id
      * @param elementUser 选择人id
-     * @return Y9Result<Object>
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteMultiInstanceExecution(String tenantId, String executionId, String taskId,
-        String elementUser) {
+    public Y9Result<Object> deleteMultiInstanceExecution(@RequestParam String tenantId,
+        @RequestParam String executionId, @RequestParam String taskId, @RequestParam String elementUser) {
         Y9LoginUserHolder.setTenantId(tenantId);
         multiInstanceService.deleteMultiInstanceExecution(executionId, taskId, elementUser);
         return Y9Result.success();
@@ -107,11 +107,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param routeToTask 任务key
      * @param processInstanceId 流程实例ID
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> directSend(String tenantId, String positionId, String taskId, String routeToTask,
-        String processInstanceId) {
+    public Y9Result<Object> directSend(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId, @RequestParam String routeToTask, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -130,10 +131,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> refuseClaimRollback(String tenantId, String positionId, String taskId) {
+    public Y9Result<Object> refuseClaimRollback(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             taskManager.claim(tenantId, positionId, taskId);
@@ -184,10 +187,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param userChoice 选择人id
      * @param reason 原因
      * @param sponsorGuid 主办人id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> reposition(String tenantId, String positionId, String taskId, String repositionToTaskId,
+    public Y9Result<Object> reposition(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId, @RequestParam String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         specialOperationManager.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, userChoice,
@@ -202,10 +207,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> rollBack(String tenantId, String positionId, String taskId, String reason) {
+    public Y9Result<Object> rollBack(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result
             .success(specialOperationManager.rollBack4Position(tenantId, positionId, taskId, reason).isSuccess());
@@ -217,11 +224,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
-     * @return Y9Result<Object>
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> rollbackToSender(String tenantId, String positionId, String taskId) {
+    public Y9Result<Object> rollbackToSender(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result
             .success(specialOperationManager.rollbackToSender4Position(tenantId, positionId, taskId).isSuccess());
@@ -234,11 +242,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * @return Y9Result<Object>
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> rollbackToStartor(String tenantId, String positionId, String taskId, String reason) {
+    public Y9Result<Object> rollbackToStartor(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(
             specialOperationManager.rollbackToStartor4Position(tenantId, positionId, taskId, reason).isSuccess());
@@ -251,11 +260,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * @return Y9Result<Object>
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> specialComplete(String tenantId, String positionId, String taskId, String reason) {
+    public Y9Result<Object> specialComplete(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(
             specialOperationManager.specialComplete4Position(tenantId, positionId, taskId, reason).isSuccess());
@@ -268,11 +278,12 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * @return Y9Result<Object>
-     * 
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> takeback(String tenantId, String positionId, String taskId, String reason) {
+    public Y9Result<Object> takeback(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result
             .success(specialOperationManager.takeBack4Position(tenantId, positionId, taskId, reason).isSuccess());

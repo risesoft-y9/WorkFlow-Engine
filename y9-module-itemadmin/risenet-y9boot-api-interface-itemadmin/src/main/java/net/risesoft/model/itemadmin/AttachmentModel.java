@@ -32,7 +32,7 @@ public class AttachmentModel implements Serializable {
     private String taskId;
 
     /**
-     * 流程序列号
+     * 流程编号
      */
     private String processSerialNumber;
 

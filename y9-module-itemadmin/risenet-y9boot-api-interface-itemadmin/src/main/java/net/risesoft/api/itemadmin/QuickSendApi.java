@@ -11,7 +11,7 @@ import net.risesoft.pojo.Y9Result;
 
 /**
  * 快捷发送
- * 
+ *
  * @author zhangchongjie
  * @date 2023/09/07
  */
@@ -19,13 +19,14 @@ import net.risesoft.pojo.Y9Result;
 public interface QuickSendApi {
 
     /**
-     * 获取快捷发送人
+     * 获取快速发送设置
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是快捷发送人
+     * @since 9.6.6
      */
     @GetMapping("/getAssignee")
     Y9Result<String> getAssignee(@RequestParam("tenantId") @NotBlank String tenantId,
@@ -33,7 +34,7 @@ public interface QuickSendApi {
         @RequestParam("taskKey") @NotBlank String taskKey);
 
     /**
-     * 保存快捷发送人
+     * 保存快速发送设置
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
@@ -41,6 +42,7 @@ public interface QuickSendApi {
      * @param taskKey 任务key
      * @param assignee 发送人
      * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/saveOrUpdate")
     Y9Result<String> saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId,

@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -37,10 +38,12 @@ public class RejectReasonApiImpl implements RejectReasonApi {
      * @param action action
      * @param taskId 任务id
      * @param reason 理由
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> save(String tenantId, String userId, Integer action, String taskId, String reason) {
+    public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam Integer action, @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);

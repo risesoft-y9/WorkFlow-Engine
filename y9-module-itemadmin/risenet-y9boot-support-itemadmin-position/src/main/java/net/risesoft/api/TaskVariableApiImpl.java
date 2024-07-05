@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,12 @@ public class TaskVariableApiImpl implements TaskVariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param keyName keyName
-     * @return Y9Result<TaskVariableModel>
+     * @return {@code Y9Result<TaskVariableModel>} 通用请求返回对象 - data 是变量值
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<TaskVariableModel> findByTaskIdAndKeyName(String tenantId, String taskId, String keyName) {
+    public Y9Result<TaskVariableModel> findByTaskIdAndKeyName(@RequestParam String tenantId,
+        @RequestParam String taskId, @RequestParam String keyName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, keyName);
         TaskVariableModel taskVariableModel = null;

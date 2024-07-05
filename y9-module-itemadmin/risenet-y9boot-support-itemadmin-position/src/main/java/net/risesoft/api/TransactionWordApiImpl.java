@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -94,10 +95,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumbers 流程编号
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delBatchByProcessSerialNumbers(String tenantId,
+    public Y9Result<Object> delBatchByProcessSerialNumbers(@RequestParam String tenantId,
         @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
         transactionWordService.delBatchByProcessSerialNumbers(processSerialNumbers);
@@ -112,11 +114,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByIsTaoHong(String tenantId, String userId, String processSerialNumber,
-        String isTaoHong) {
+    public Y9Result<Object> deleteByIsTaoHong(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber, @RequestParam String isTaoHong) {
         List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
             list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
@@ -141,11 +144,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<TransactionWordModel>
+     * @return {@code Y9Result<TransactionWordModel>} 通用请求返回对象 - data 是正文文件信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionWordModel> exchangeFindWordByProcessSerialNumber(String tenantId, String userId,
-        String processSerialNumber) {
+    public Y9Result<TransactionWordModel> exchangeFindWordByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String processSerialNumber) {
         TransactionWordModel word = new TransactionWordModel();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -172,10 +176,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
-     * @return Y9Result<TransactionHistoryWordModel>
+     * @return {@code Y9Result<TransactionHistoryWordModel>} 通用请求返回对象 - data 是历史正文文件信息对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionHistoryWordModel> findHistoryVersionDoc(String tenantId, String userId, String taskId) {
+    public Y9Result<TransactionHistoryWordModel> findHistoryVersionDoc(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -217,10 +223,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<TransactionWordModel>
+     * @return {@code Y9Result<TransactionWordModel>} 通用请求返回对象 - data 是正文文件信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionWordModel> findWordByProcessSerialNumber(String tenantId, String processSerialNumber) {
+    public Y9Result<TransactionWordModel> findWordByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
         TransactionWordModel word = new TransactionWordModel();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -262,11 +270,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<List<TransactionWordModel>>
+     * @return {@code Y9Result<List<TransactionWordModel>>} 通用请求返回对象 - data 是正文文件信息列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<TransactionWordModel>> getWordList(String tenantId, String userId,
-        String processSerialNumber) {
+    public Y9Result<List<TransactionWordModel>> getWordList(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber) {
         List<TransactionWordModel> retList = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -291,10 +300,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是正文文件地址
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> openDocument(String tenantId, String userId, String processSerialNumber, String itemId) {
+    public Y9Result<String> openDocument(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -335,10 +346,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是正文文件地址
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> openDocumentByProcessSerialNumber(String tenantId, String processSerialNumber) {
+    public Y9Result<String> openDocumentByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         // 获取套红文档
         List<TransactionWord> list =
@@ -366,12 +379,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * 打开套红模板
      *
      * @param tenantId 租户id
-     * @param userId 人id
+     * @param userId 用户id
      * @param templateGuid 模板id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是套红文件地址
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> openDocumentTemplate(String tenantId, String userId, String templateGuid) {
+    public Y9Result<String> openDocumentTemplate(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String templateGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -401,10 +416,13 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> openHistoryVersionDoc(String tenantId, String userId, String taskId) {
+    @Deprecated
+    public Y9Result<Object> openHistoryVersionDoc(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String taskId) {
         /*
          * Runtime runtime = Runtime.getRuntime(); TransactionHistoryWord hword =
          * transactionHistoryWordService.getTransactionHistoryWordByTaskId( taskId);
@@ -430,10 +448,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是PDF文件地址
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> openPdf(String tenantId, String userId, String processSerialNumber) {
+    public Y9Result<String> openPdf(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -461,11 +481,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是PDF文件地址
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber,
-        String isTaoHong) {
+    public Y9Result<String> openRevokePdfAfterDocument(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber, @RequestParam String isTaoHong) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -492,10 +513,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param activitiUser activitiUser
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是当前人员的委办局GUID
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> openTaoHong(String tenantId, String userId, String activitiUser) {
+    public Y9Result<String> openTaoHong(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String activitiUser) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -511,13 +534,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param docjson 正文json信息
-     * @param processSerialNumber 流程序列号
-     * @return Y9Result<Boolean>
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是保存是否成功的信息
+     * @since 9.6.6
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Result<Boolean> saveImportTransationWord(String tenantId, String userId, String docjson,
-        String processSerialNumber) {
+    public Y9Result<Boolean> saveImportTransationWord(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String docjson, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -557,11 +581,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param itemId 事项id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @param taskId 任务id
-     * @return Y9Result<Y9WordInfo>
+     * @return {@code Y9Result<WordInfo>} 通用请求返回对象 - data 是正文详情
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Y9WordInfo> showWord(String tenantId, String userId, String processSerialNumber, String itemId,
-        String itembox, String taskId) {
+    public Y9Result<Y9WordInfo> showWord(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber, @RequestParam String itemId, String itembox, String taskId) {
         Y9WordInfo retMap = new Y9WordInfo();
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
@@ -648,11 +673,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param currentBureauGuid 委办局id
-     * @return Y9Result<List<TaoHongTemplateModel>>
+     * @return {@code Y9Result<List<TaoHongTemplateModel>>} 通用请求返回对象 - data 是套红模板列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<TaoHongTemplateModel>> taoHongTemplateList(String tenantId, String userId,
-        String currentBureauGuid) {
+    public Y9Result<List<TaoHongTemplateModel>> taoHongTemplateList(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String currentBureauGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -688,12 +714,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param taskId 任务id
      * @param fileSizeString 文件大小
      * @param fileStoreId 文件id
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是保存是否成功的信息
+     * @since 9.6.6
      */
     @Override
     @PostMapping(value = "/uploadWord")
-    public Y9Result<Boolean> uploadWord(String tenantId, String userId, String documentTitle, String fileType,
-        String processSerialNumber, String isTaoHong, String taskId, String fileSizeString, String fileStoreId) {
+    public Y9Result<Boolean> uploadWord(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String documentTitle, @RequestParam String fileType, @RequestParam String processSerialNumber,
+        String isTaoHong, String taskId, String fileSizeString, @RequestParam String fileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -751,10 +779,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户Id
      * @param id 正文id
-     * @return Y9Result<TransactionWordModel>
+     * @return {@code Y9Result<WordInfo>} 通用请求返回对象 - data 是正文详情
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionWordModel> wordDownload(String tenantId, String id) {
+    public Y9Result<TransactionWordModel> wordDownload(@RequestParam String tenantId, @RequestParam String id) {
         TransactionWord transactionWord = transactionWordRepository.findById(id).orElse(null);
         assert transactionWord != null;
         TransactionWordModel model = getTransactionWord(transactionWord);

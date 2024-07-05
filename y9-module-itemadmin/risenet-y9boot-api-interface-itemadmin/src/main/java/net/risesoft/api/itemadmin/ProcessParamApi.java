@@ -20,10 +20,11 @@ public interface ProcessParamApi {
 
     /**
      * 根据流程实例id删除流程变量
-     * 
+     *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/deleteByPprocessInstanceId")
     Y9Result<Object> deleteByPprocessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -31,11 +32,12 @@ public interface ProcessParamApi {
 
     /**
      *
-     * Description: 根据流程实例查找流程数据
+     * 根据流程实例查找流程数据
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
+     * @since 9.6.6
      */
     @GetMapping("/findByProcessInstanceId")
     Y9Result<ProcessParamModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -43,11 +45,12 @@ public interface ProcessParamApi {
 
     /**
      *
-     * Description: 根据流程序列号查找流程数据
+     * 根据流程编号查找流程数据
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
+     * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
     Y9Result<ProcessParamModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
@@ -59,6 +62,7 @@ public interface ProcessParamApi {
      * @param tenantId 租户ID
      * @param processParam 流程数据对象
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,
@@ -71,7 +75,6 @@ public interface ProcessParamApi {
      * @param processSerialNumber 流程编号
      * @param isCustomItem 是否定制流程
      * @return{@code Y9Result<Object>} 通用请求返回对象
-     *
      * @since 9.6.6
      */
     @PostMapping("/updateCustomItem")

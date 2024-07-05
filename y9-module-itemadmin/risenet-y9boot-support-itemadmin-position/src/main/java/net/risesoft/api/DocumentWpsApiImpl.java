@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -32,11 +33,12 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * 根据id查询WPS正文
      *
      * @param tenantId 租户id
-     * @param id 正文id
-     * @return Y9Result<DocumentWpsModel>
+     * @param id id
+     * @return {@code Y9Result<DocumentWpsModel>} 通用请求返回对象 - data 是wps文档
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<DocumentWpsModel> findById(String tenantId, String id) {
+    public Y9Result<DocumentWpsModel> findById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DocumentWps documentWps = documentWpsService.findById(id);
         DocumentWpsModel documentWpsModel = null;
@@ -52,10 +54,12 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
-     * @return Y9Result<DocumentWpsModel>
+     * @return {@code Y9Result<DocumentWpsModel>} 通用请求返回对象- data 是wps文档
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<DocumentWpsModel> findByProcessSerialNumber(String tenantId, String processSerialNumber) {
+    public Y9Result<DocumentWpsModel> findByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DocumentWps documentWps = documentWpsService.findByProcessSerialNumber(processSerialNumber);
         DocumentWpsModel documentWpsModel = null;
@@ -71,10 +75,12 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      *
      * @param tenantId 租户id
      * @param documentWpsModel wps文档对象
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveDocumentWps(String tenantId, @RequestBody DocumentWpsModel documentWpsModel) {
+    public Y9Result<Object> saveDocumentWps(@RequestParam String tenantId,
+        @RequestBody DocumentWpsModel documentWpsModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DocumentWps documentWps = new DocumentWps();
         Y9BeanUtil.copyProperties(documentWpsModel, documentWps);
@@ -88,10 +94,12 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
      * @param hasContent 是否有内容
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveWpsContent(String tenantId, String processSerialNumber, String hasContent) {
+    public Y9Result<Object> saveWpsContent(@RequestParam String tenantId, @RequestParam String processSerialNumber,
+        @RequestParam String hasContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
         documentWpsService.saveWpsContent(processSerialNumber, hasContent);
         return Y9Result.success();

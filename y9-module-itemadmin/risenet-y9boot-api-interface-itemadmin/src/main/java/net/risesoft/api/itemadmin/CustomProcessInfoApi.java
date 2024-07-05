@@ -25,6 +25,7 @@ public interface CustomProcessInfoApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<CustomProcessInfoModel>} 通用请求返回对象 - data 是自定义流程信息
+     * @since 9.6.6
      */
     @GetMapping("/getCurrentTaskNextNode")
     Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(@RequestParam("tenantId") String tenantId,
@@ -38,6 +39,7 @@ public interface CustomProcessInfoApi {
      * @param processSerialNumber 流程编号
      * @param taskList 任务列表
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/saveOrUpdate")
     Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
@@ -50,6 +52,7 @@ public interface CustomProcessInfoApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/updateCurrentTask")
     Y9Result<Object> updateCurrentTask(@RequestParam("tenantId") String tenantId,

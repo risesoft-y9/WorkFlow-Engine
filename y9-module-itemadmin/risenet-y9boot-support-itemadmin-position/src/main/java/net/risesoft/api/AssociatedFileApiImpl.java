@@ -2,6 +2,9 @@ package net.risesoft.api;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/associatedFile4Position")
@@ -37,23 +41,25 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是关联流程计数
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countAssociatedFile(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber) {
+    public Y9Result<Integer> countAssociatedFile(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = associatedFileService.countAssociatedFile(processSerialNumber);
         return Y9Result.success(num);
     }
 
     /**
-     * 批量删除关联流程
+     * 删除关联流程
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param delIds 关联流程实例id(,隔开)
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteAllAssociatedFile(@RequestParam String tenantId,
@@ -69,7 +75,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param delId 关联流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteAssociatedFile(@RequestParam String tenantId,
@@ -80,12 +87,13 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     }
 
     /**
-     * 获取关联流程列表(包括未办结件)
+     * 获取关联流程列表,包括未办结件
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<List<AssociatedFileModel>>
+     * @return {@code Y9Result<List<AssociatedFileModel>>} 通用请求返回对象 - data是关联流程列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam String tenantId,
@@ -104,7 +112,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      * @param positionId 岗位id
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 关联的流程实例ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String positionId,

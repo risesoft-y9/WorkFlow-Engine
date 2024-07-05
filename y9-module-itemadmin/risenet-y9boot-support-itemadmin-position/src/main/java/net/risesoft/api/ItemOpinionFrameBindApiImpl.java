@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -39,10 +40,12 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<List<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(String tenantId, String itemId) {
+    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam String tenantId,
+        @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemId(itemId);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
@@ -62,11 +65,12 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<List<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(String tenantId, String itemId,
-        String processDefinitionId) {
+    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(@RequestParam String tenantId,
+        @RequestParam String itemId, @RequestParam String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list =
             itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
@@ -89,11 +93,13 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<< ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId,
-        String userId, String itemId, String processDefinitionId, String taskDefKey) {
+    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
+        @RequestParam String tenantId, @RequestParam String userId, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
@@ -116,11 +122,13 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<List<ItemOpinionFrameBindModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
-        String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey) {
+        @RequestParam String tenantId, @RequestParam String userId, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);

@@ -21,8 +21,9 @@ public interface OptionClassApi {
      * 获取数据字典列表
      *
      * @param tenantId 租户id
-     * @param type 字典类型
+     * @param type 字典标识
      * @return {@code Y9Result<List<Y9FormOptionValueModel>>} 通用请求返回对象 -data是数据字典列表
+     * @since 9.6.6
      */
     @GetMapping(value = "/getOptionValueList")
     Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam("tenantId") String tenantId,

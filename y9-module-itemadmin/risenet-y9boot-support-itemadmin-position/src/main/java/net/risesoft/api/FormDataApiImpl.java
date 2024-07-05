@@ -6,9 +6,11 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -35,6 +37,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/formData")
+@Slf4j
 public class FormDataApiImpl implements FormDataApi {
 
     private final FormDataService formDataService;
@@ -50,10 +53,12 @@ public class FormDataApiImpl implements FormDataApi {
      * @param formId 表单id
      * @param tableId 表id
      * @param guid 数据id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delChildTableRow(String tenantId, String formId, String tableId, String guid) {
+    public Y9Result<Object> delChildTableRow(@RequestParam String tenantId, @RequestParam String formId,
+        @RequestParam String tableId, @RequestParam String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.delChildTableRow(formId, tableId, guid);
         if ((Boolean)map.get(UtilConsts.SUCCESS)) {
@@ -68,10 +73,12 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单id
      * @param guid 主键id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delPreFormData(String tenantId, String formId, String guid) {
+    public Y9Result<Object> delPreFormData(@RequestParam String tenantId, @RequestParam String formId,
+        @RequestParam String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.delPreFormData(formId, guid);
         if ((Boolean)map.get(UtilConsts.SUCCESS)) {
@@ -87,11 +94,12 @@ public class FormDataApiImpl implements FormDataApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务key
-     * @return Y9Result<List<BindFormModel>>
+     * @return {@code Y9Result<List<BindFormModel>>} 通用请求返回对象 - data 是事项绑定表单
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<BindFormModel>> findFormItemBind(String tenantId, String itemId, String processDefinitionId,
-        String taskDefinitionKey) {
+    public Y9Result<List<BindFormModel>> findFormItemBind(@RequestParam String tenantId, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, String taskDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<BindFormModel> res_list = new ArrayList<>();
         List<Y9FormItemBind> list =
@@ -112,11 +120,12 @@ public class FormDataApiImpl implements FormDataApi {
      * @param formId 表单id
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<List<FieldPermModel>>
+     * @return {@code Y9Result<List<FieldPermModel>>} 通用请求返回对象 - data 是表单所有字段权限列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<FieldPermModel>> getAllFieldPerm(String tenantId, String userId, String formId,
-        String taskDefKey, String processDefinitionId) {
+    public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String formId, @RequestParam String taskDefKey, @RequestParam String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
@@ -129,10 +138,11 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<BindFormModel>
+     * @return {@code Y9Result<BindFormModel>} 通用请求返回对象 - data 是前置表单
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<BindFormModel> getBindPreFormByItemId(String tenantId, String itemId) {
+    public Y9Result<BindFormModel> getBindPreFormByItemId(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.getBindPreFormByItemId(itemId);
         BindFormModel bindFormModel = new BindFormModel();
@@ -148,12 +158,14 @@ public class FormDataApiImpl implements FormDataApi {
      * @param formId 表单id
      * @param tableId 表id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<List < Map < String, Object>>>
-     * @throws Exception 抛出异常
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是子表数据
+     * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<Map<String, Object>>> getChildTableData(String tenantId, String formId, String tableId,
-        String processSerialNumber) throws Exception {
+    public Y9Result<List<Map<String, Object>>> getChildTableData(@RequestParam String tenantId,
+        @RequestParam String formId, @RequestParam String tableId, @RequestParam String processSerialNumber)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> list = formDataService.getChildTableData(formId, tableId, processSerialNumber);
         return Y9Result.success(list);
@@ -165,10 +177,12 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Map < String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Map<String, Object>> getData(String tenantId, String itemId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getData(@RequestParam String tenantId, @RequestParam String itemId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.getData(tenantId, itemId, processSerialNumber);
         return Y9Result.success(map);
@@ -183,11 +197,13 @@ public class FormDataApiImpl implements FormDataApi {
      * @param fieldName 字段名
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<FieldPermModel>
+     * @return {@code Y9Result<FieldPermModel>} 通用请求返回对象 - data 是字段权限
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<FieldPermModel> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
-        String taskDefKey, String processDefinitionId) {
+    public Y9Result<FieldPermModel> getFieldPerm(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String formId, @RequestParam String fieldName, @RequestParam String taskDefKey,
+        @RequestParam String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
@@ -200,10 +216,11 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<List<Y9FormFieldModel>>
+     * @return {@code Y9Result<List<Y9FormFieldModel>>} 通用请求返回对象 - data 是表单绑定字段列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<Y9FormFieldModel>> getFormField(String tenantId, String itemId) {
+    public Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Y9FormFieldModel> list = formDataService.getFormField(itemId);
         return Y9Result.success(list);
@@ -214,10 +231,12 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return Y9Result<List<FormFieldDefineModel>>
+     * @return {@code Y9Result<List<FormFieldDefineModel>>} 通用请求返回对象 - data 是绑定字段信息列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(String tenantId, String formId) {
+    public Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(@RequestParam String tenantId,
+        @RequestParam String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<FormFieldDefineModel> list = formDataService.getFormFieldDefine(formId);
         return Y9Result.success(list);
@@ -228,10 +247,11 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是表单json数据
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getFormJson(String tenantId, String formId) {
+    public Y9Result<String> getFormJson(@RequestParam String tenantId, @RequestParam String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String json = formDataService.getFormJson(formId);
         return Y9Result.success(json);
@@ -243,11 +263,13 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Map<String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是表单数据
+     * @since 9.6.6
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Result<Map<String, Object>> getFromData(String tenantId, String formId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getFromData(@RequestParam String tenantId, @RequestParam String formId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.getFromData(formId, processSerialNumber);
         if ((Boolean)map.get(UtilConsts.SUCCESS)) {
@@ -261,10 +283,12 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是前置表单数据
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(String tenantId, String formId) {
+    public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam String tenantId,
+        @RequestParam String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> list = formDataService.getPreFormDataByFormId(formId);
         return Y9Result.success(list);
@@ -278,11 +302,14 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tableId 表id
      * @param processSerialNumber 流程编号
      * @param jsonData json表数据
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveChildTableData(String tenantId, String formId, String tableId,
-        String processSerialNumber, @RequestBody String jsonData) throws Exception {
+    public Y9Result<Object> saveChildTableData(@RequestParam String tenantId, @RequestParam String formId,
+        @RequestParam String tableId, @RequestParam String processSerialNumber, @RequestBody String jsonData)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
         return Y9Result.success();
@@ -294,12 +321,13 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单id
      * @param formJsonData json表数据
-     * @return Y9Result<Object>
-     * @throws Exception 抛出异常
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveFormData(String tenantId, String formId, @RequestBody String formJsonData)
-        throws Exception {
+    public Y9Result<Object> saveFormData(@RequestParam String tenantId, @RequestParam String formId,
+        @RequestBody String formJsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveFormData(formJsonData, formId);
         return Y9Result.success();
@@ -312,14 +340,15 @@ public class FormDataApiImpl implements FormDataApi {
      * @param itemId 事项id
      * @param formId 表单id
      * @param formJsonData json表数据
-     * @return Y9Result<String>
-     * @throws Exception 抛出异常
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> savePreFormData(String tenantId, String itemId, String formId,
-        @RequestBody String formJsonData) throws Exception {
+    public Y9Result<String> savePreFormData(@RequestParam String tenantId, @RequestParam String itemId,
+        @RequestParam String formId, @RequestBody String formJsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        System.out.println("***********************savePreFormData   formJsonData****************" + formJsonData);
+        LOGGER.info("***********************savePreFormData   formJsonData****************" + formJsonData);
         String processSerialNumber = formDataService.saveAFormData(itemId, formJsonData, formId);
         return Y9Result.success(processSerialNumber);
     }

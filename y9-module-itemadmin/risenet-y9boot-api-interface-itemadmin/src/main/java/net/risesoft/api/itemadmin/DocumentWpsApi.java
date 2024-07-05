@@ -19,44 +19,48 @@ import net.risesoft.pojo.Y9Result;
 public interface DocumentWpsApi {
 
     /**
-     * 根据id获取正文信息
+     * 根据id查询WPS正文
      *
      * @param tenantId 租户id
      * @param id id
      * @return {@code Y9Result<DocumentWpsModel>} 通用请求返回对象 - data 是wps文档
+     * @since 9.6.6
      */
     @GetMapping("/findById")
     Y9Result<DocumentWpsModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
-     * 根据流程编号获取正文
+     * 根据流程编号查询WPS正文
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return {@code Y9Result<DocumentWpsModel>} 通用请求返回对象- data 是wps文档
+     * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
     Y9Result<DocumentWpsModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
-     * 保存正文信息
+     * 保存WPS正文
      *
      * @param tenantId 租户id
-     * @param documentWps wps文档对象
+     * @param documentWpsModel wps文档对象
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveDocumentWps", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveDocumentWps(@RequestParam("tenantId") String tenantId,
-        @RequestBody DocumentWpsModel documentWps);
+        @RequestBody DocumentWpsModel documentWpsModel);
 
     /**
-     * 保存正文内容状态
+     * 保存WPS正文内容
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param hasContent 是否有内容
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/saveWpsContent")
     Y9Result<Object> saveWpsContent(@RequestParam("tenantId") String tenantId,

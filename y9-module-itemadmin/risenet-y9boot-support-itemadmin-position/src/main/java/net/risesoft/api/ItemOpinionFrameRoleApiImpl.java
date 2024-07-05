@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -35,11 +36,12 @@ public class ItemOpinionFrameRoleApiImpl implements ItemOpinionFrameRoleApi {
      *
      * @param tenantId 租户id
      * @param itemOpinionFrameId 意见框绑定id
-     * @return Y9Result<List < ItemOpinionFrameRoleModel>>
+     * @return {@code Y9Result<List<ItemOpinionFrameRoleModel>>} 通用请求返回对象 - data 是意见框绑定角色列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemOpinionFrameRoleModel>> findByItemOpinionFrameId(String tenantId,
-        String itemOpinionFrameId) {
+    public Y9Result<List<ItemOpinionFrameRoleModel>> findByItemOpinionFrameId(@RequestParam String tenantId,
+        @RequestParam String itemOpinionFrameId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameRoleModel> modelList = new ArrayList<>();
         List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameId(itemOpinionFrameId);

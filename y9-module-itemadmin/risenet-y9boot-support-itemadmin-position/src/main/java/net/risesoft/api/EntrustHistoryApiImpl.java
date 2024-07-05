@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -36,11 +37,12 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
      * @param userId 人员滴
      * @param ownerId 委托人id
      * @param itemId 事项id
-     * @return Y9Result<List<EntrustHistoryModel>>
+     * @return {@code Y9Result<List<EntrustHistoryModel>>} 通用请求返回对象 - data 是委托历史列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId,
-        String itemId) {
+    public Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String ownerId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustHistory> ehList = entrustHistoryService.list(ownerId, itemId);
         List<EntrustHistoryModel> list = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
@@ -53,10 +55,12 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param ownerId 委托人id
-     * @return Y9Result<List<EntrustHistoryModel>>
+     * @return {@code Y9Result<List<EntrustHistoryModel>>} 通用请求返回对象 - data 是委托历史列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(String tenantId, String userId, String ownerId) {
+    public Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String ownerId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustHistory> ehList = entrustHistoryService.list(ownerId);
         List<EntrustHistoryModel> list = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.BookMarkBindApi;
@@ -42,11 +43,12 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
      * @param tenantId 租户id
      * @param wordTemplateId 模板id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Map < String, Object>>
+     * @return {@code Y9Result<Map < String, Object>>} 通用请求返回对象 - data 是书签对应的值
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId,
-        String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getBookMarkData(@RequestParam String tenantId,
+        @RequestParam String wordTemplateId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);

@@ -12,6 +12,8 @@ import net.risesoft.model.itemadmin.LinkInfoModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 事项链接接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -26,6 +28,7 @@ public interface ItemLink4PositionApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<List<LinkInfoModel>>} 通用请求返回对象 - data 是事项绑定链接
+     * @since 9.6.6
      */
     @GetMapping("/getItemLinkList")
     Y9Result<List<LinkInfoModel>> getItemLinkList(@RequestParam("tenantId") @NotBlank String tenantId,

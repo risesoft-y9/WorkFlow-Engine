@@ -11,7 +11,7 @@ import net.risesoft.pojo.Y9Page;
 
 /**
  * 综合查询
- * 
+ *
  * @author zhangchongjie
  * @date 2023/09/07
  */
@@ -19,7 +19,7 @@ import net.risesoft.pojo.Y9Page;
 public interface QueryListApi {
 
     /**
-     * 获取综合查询列表
+     * 综合搜索
      *
      * @param tenantId 租户id
      * @param userId 岗位id
@@ -31,6 +31,7 @@ public interface QueryListApi {
      * @param page 页面
      * @param rows 条数
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - data 是综合查询列表
+     * @since 9.6.6
      */
     @GetMapping("/getQueryList")
     Y9Page<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId,

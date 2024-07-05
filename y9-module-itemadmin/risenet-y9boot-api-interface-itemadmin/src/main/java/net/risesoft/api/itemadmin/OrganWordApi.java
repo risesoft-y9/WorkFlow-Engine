@@ -11,7 +11,7 @@ import net.risesoft.pojo.Y9Result;
 
 /**
  * 编号
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -26,11 +26,12 @@ public interface OrganWordApi {
      * @param characterValue 机关代字
      * @param custom 机关代字标志
      * @param year 文号年份
-     * @param numberTemp numberTemp
+     * @param numberTemp 编号
      * @param itemId 事项id
      * @param common common
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Integer>} 通用请求返回对象
+     * @since 9.6.6
      */
     @GetMapping("/checkNumberStr")
     Y9Result<Integer> checkNumberStr(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -47,8 +48,9 @@ public interface OrganWordApi {
      * @param custom 机关代字标志
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
-     * @param itembox 办件状态:todo(待办),doing(在办),done(办结)
-     * @return {@code Y9Result<OrganWordModel>} 通用请求返回对象 -data是数据字典列表
+     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
+     * @return {@code Y9Result<OrganWordModel>} 通用请求返回对象 -data 是编号的机关代字
+     * @since 9.6.6
      */
     @GetMapping("/exist")
     Y9Result<OrganWordModel> exist(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -58,7 +60,7 @@ public interface OrganWordApi {
 
     /**
      *
-     * Description: 查找有权限的机构代字
+     * 查找有权限的机构代字
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -67,6 +69,7 @@ public interface OrganWordApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
      * @return {@code Y9Result<List<OrganWordPropertyModel>>} 通用请求返回对象 -data是数据字典列表
+     * @since 9.6.6
      */
     @GetMapping("/findByCustom")
     Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam("tenantId") String tenantId,
@@ -84,7 +87,8 @@ public interface OrganWordApi {
      * @param year 文号年份
      * @param common common
      * @param itemId 事项id
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是数据字典列表
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号
+     * @since 9.6.6
      */
     @GetMapping("/getNumber")
     Y9Result<Integer> getNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -103,7 +107,8 @@ public interface OrganWordApi {
      * @param common common
      * @param itemId 事项id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号的数字
-     * 
+     * @since 9.6.6
+     *
      */
     @GetMapping("/getNumberOnly")
     Y9Result<Integer> getNumberOnly(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,

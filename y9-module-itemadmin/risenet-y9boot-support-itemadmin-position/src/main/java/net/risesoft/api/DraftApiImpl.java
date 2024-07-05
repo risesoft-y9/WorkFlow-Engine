@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -55,10 +56,12 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countBySystemName(String tenantId, String positionId, String systemName) {
+    public Y9Result<Integer> countBySystemName(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         int num = draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, positionId);
@@ -70,10 +73,11 @@ public class DraftApiImpl implements Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param ids 草稿ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteDraft(String tenantId, String ids) {
+    public Y9Result<Object> deleteDraft(@RequestParam String tenantId, @RequestParam("ids") String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         draftEntityService.deleteDraft(ids);
         return Y9Result.success();
@@ -85,10 +89,12 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDeleteDraftCount(String tenantId, String positionId, String itemId) {
+    public Y9Result<Integer> getDeleteDraftCount(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int count = 0;
         if (StringUtils.isEmpty(itemId)) {
@@ -104,10 +110,12 @@ public class DraftApiImpl implements Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
-     * @return Y9Result<DraftModel>
+     * @return {@code Y9Result<DraftModel>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<DraftModel> getDraftByProcessSerialNumber(String tenantId, String processSerialNumber) {
+    public Y9Result<DraftModel> getDraftByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DraftEntity draftEntity = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
         DraftModel model = null;
@@ -124,10 +132,12 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDraftCount(String tenantId, String positionId, String itemId) {
+    public Y9Result<Integer> getDraftCount(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         int count = 0;
@@ -149,11 +159,12 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param title 标题
      * @param itemId 事项id
      * @param delFlag 是否删除
-     * @return Y9Page<Map<String, Object>>
+     * @return {@code Y9Page<Map<String, Object>>} 通用请求返回对象 - rows 是草稿列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<Map<String, Object>> getDraftList(String tenantId, String positionId, int page, int rows,
-        String title, String itemId, boolean delFlag) {
+    public Y9Page<Map<String, Object>> getDraftList(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam int page, @RequestParam int rows, String title, @RequestParam String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         if (StringUtils.isEmpty(title)) {
@@ -168,7 +179,7 @@ public class DraftApiImpl implements Draft4PositionApi {
         for (DraftEntity draftEntity : pageList) {
             Map<String, Object> retMap = new HashMap<>(16);
             Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
-            if (spmApproveitem != null && spmApproveitem.get().getId() != null) {
+            if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
                 retMap.put("itemName", spmApproveitem.get().getName());
             } else {
                 retMap.put("itemName", "");
@@ -210,16 +221,18 @@ public class DraftApiImpl implements Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param page page
-     * @param rows rows
+     * @param page 页码
+     * @param rows 条数
      * @param title 标题
      * @param systemName 系统名称
      * @param delFlag 是否删除
-     * @return Y9Page<DraftModel>
+     * @return {@code Y9Page<DraftModel>} 通用请求返回对象 - rows 是草稿情数据
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<DraftModel> getDraftListBySystemName(String tenantId, String positionId, int page, int rows,
-        String title, String systemName, boolean delFlag) {
+    public Y9Page<DraftModel> getDraftListBySystemName(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam int page, @RequestParam int rows, String title, @RequestParam String systemName,
+        @RequestParam boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         if (StringUtils.isEmpty(title)) {
@@ -233,7 +246,7 @@ public class DraftApiImpl implements Draft4PositionApi {
             DraftModel model = new DraftModel();
             Y9BeanUtil.copyProperties(draftEntity, model);
             Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
-            if (spmApproveitem != null && spmApproveitem.get().getId() != null) {
+            if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
                 model.setItemName(spmApproveitem.get().getName());
             } else {
                 model.setItemName("");
@@ -254,11 +267,12 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param mobile 是否手机端
-     * @return Y9Result<OpenDataModel>
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data 是流程详情数据
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> openDraft4Position(String tenantId, String positionId, String itemId,
-        String processSerialNumber, boolean mobile) {
+    public Y9Result<OpenDataModel> openDraft4Position(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId, @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         OpenDataModel model = null;
@@ -273,10 +287,11 @@ public class DraftApiImpl implements Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param ids 草稿ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> reduction(String tenantId, String ids) {
+    public Y9Result<Object> reduction(@RequestParam String tenantId, @RequestParam("ids") String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         draftEntityService.reduction(ids);
         return Y9Result.success();
@@ -287,10 +302,11 @@ public class DraftApiImpl implements Draft4PositionApi {
      *
      * @param tenantId 租户id
      * @param ids 草稿ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> removeDraft(String tenantId, String ids) {
+    public Y9Result<Object> removeDraft(@RequestParam String tenantId, @RequestParam("ids") String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         draftEntityService.removeDraft(ids);
         return Y9Result.success();
@@ -307,11 +323,13 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param number 编号
      * @param level 紧急程度
      * @param title 标题
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
-        String processDefinitionKey, String number, String level, String title) {
+    public Y9Result<Object> saveDraft(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam String processDefinitionKey, String number, String level, @RequestParam String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, "");

@@ -19,36 +19,35 @@ import net.risesoft.pojo.Y9Result;
 public interface ItemDoneApi {
 
     /**
-     * 查询办结任务数量
+     * 根据用户id和系统名称查询办结数量
      *
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是办结任务数量
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
     Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName)
-        throws Exception;
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName);
 
     /**
-     * 获取监控办结列表
+     * 根据系统名称查询办结列表
      *
      * @param tenantId 租户id
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是监控办结列表
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @GetMapping("/findBySystemName")
     Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("systemName") String systemName, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("rows") Integer rows);
 
     /**
-     * 获取个人办结列表
+     * 根据用户id和系统名称查询办结列表
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -56,15 +55,15 @@ public interface ItemDoneApi {
      * @param page page
      * @param rows rows
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是个人办结列表
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @GetMapping("/findByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
-     * 监控办结列表搜索
+     * 根据系统名称、表名称、搜索内容查询办结列表
      *
      * @param tenantId 租户id
      * @param systemName 系统名称
@@ -73,16 +72,16 @@ public interface ItemDoneApi {
      * @param page page
      * @param rows rows
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是监控办结列表
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @GetMapping("/searchBySystemName")
     Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("systemName") String systemName, @RequestParam(value = "tableName") String tableName,
         @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("rows") Integer rows);
 
     /**
-     * 个人办结列表搜索
+     * 根据用户id、系统名称、表名称、搜索内容查询办结列表
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -92,12 +91,12 @@ public interface ItemDoneApi {
      * @param page page
      * @param rows rows
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是个人办结列表
-     * @throws Exception Exception
+     * @since 9.6.6
      */
     @GetMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
         @RequestParam(value = "tableName") String tableName,
         @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("rows") Integer rows);
 }

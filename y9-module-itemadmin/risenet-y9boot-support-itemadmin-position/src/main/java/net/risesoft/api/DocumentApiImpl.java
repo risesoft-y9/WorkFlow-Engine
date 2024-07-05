@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -51,10 +52,12 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param mobile 是否手机端
-     * @return Y9Result<OpenDataModel>
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> add(String tenantId, String positionId, String itemId, boolean mobile) {
+    public Y9Result<OpenDataModel> add(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -68,11 +71,13 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> complete(String tenantId, String positionId, String taskId) throws Exception {
+    public Y9Result<Object> complete(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String taskId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -92,11 +97,13 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param taskId 任务id
      * @param routeToTask 任务key
      * @param processInstanceId 流程实例id
-     * @return Y9Result<DocUserChoiseModel>
+     * @return {@code Y9Result<DocUserChoiseModel>} 通用请求返回对象 - data是发送选人信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<DocUserChoiseModel> docUserChoise(String tenantId, String userId, String positionId, String itemId,
-        String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask,
+    public Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String positionId, @RequestParam String itemId, @RequestParam String processDefinitionKey,
+        @RequestParam String processDefinitionId, String taskId, @RequestParam String routeToTask,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
@@ -118,11 +125,13 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param processInstanceId 流程实例id
      * @param itemId 事项id
      * @param mobile 是否手机端
-     * @return Y9Result<OpenDataModel>
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> edit(String tenantId, String positionId, String itembox, String taskId,
-        String processInstanceId, String itemId, boolean mobile) {
+    public Y9Result<OpenDataModel> edit(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itembox, @RequestParam(required = false) String taskId,
+        @RequestParam String processInstanceId, @RequestParam String itemId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -145,12 +154,15 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param sponsorGuid 主办人id
      * @param routeToTaskId 任务key
      * @param variables 保存变量
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveAndForwarding(String tenantId, String positionId, String processInstanceId,
-        String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
-        String userChoice, String sponsorGuid, String routeToTaskId, @RequestBody Map<String, Object> variables) {
+    public Y9Result<String> saveAndForwarding(@RequestParam String tenantId, @RequestParam String positionId,
+        String processInstanceId, String taskId, String sponsorHandle, @RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
+        @RequestParam String userChoice, String sponsorGuid, @RequestParam String routeToTaskId,
+        @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -179,13 +191,15 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param routeToTaskId 任务key
      * @param startRouteToTaskId 启动节点key
      * @param variables 保存变量
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveAndForwardingByTaskKey(String tenantId, String positionId, String processInstanceId,
-        String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
-        String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId,
-        @RequestBody Map<String, Object> variables) {
+    public Y9Result<String> saveAndForwardingByTaskKey(@RequestParam String tenantId, @RequestParam String positionId,
+        String processInstanceId, String taskId, String sponsorHandle, @RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
+        @RequestParam String userChoice, String sponsorGuid, @RequestParam String routeToTaskId,
+        @RequestParam String startRouteToTaskId, @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -208,11 +222,12 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param taskId 任务id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveAndSubmitTo(String tenantId, String positionId, String taskId, String itemId,
-        String processSerialNumber) {
+    public Y9Result<Object> saveAndSubmitTo(@RequestParam String tenantId, @RequestParam String positionId,
+        String taskId, @RequestParam String itemId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -232,11 +247,13 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务key
      * @param processSerialNumber 流程编号
-     * @return Y9Result<SignTaskConfigModel>
+     * @return {@code Y9Result<SignTaskConfigModel>} 通用请求返回对象 - data是签收任务配置
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<SignTaskConfigModel> signTaskConfig(String tenantId, String positionId, String itemId,
-        String processDefinitionId, String taskDefinitionKey, String processSerialNumber) {
+    public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String taskDefinitionKey,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -253,11 +270,14 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @return Y9Result<StartProcessResultModel>
+     * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
+     * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<StartProcessResultModel> startProcess(String tenantId, String positionId, String itemId,
-        String processSerialNumber, String processDefinitionKey) {
+    public Y9Result<StartProcessResultModel> startProcess(@RequestParam String tenantId,
+        @RequestParam String positionId, @RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -274,11 +294,14 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param positionIds 岗位ids
-     * @return Y9Result<StartProcessResultModel>
+     * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
+     * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<StartProcessResultModel> startProcess(String tenantId, String positionId, String itemId,
-        String processSerialNumber, String processDefinitionKey, String positionIds) {
+    public Y9Result<StartProcessResultModel> startProcess(@RequestParam String tenantId,
+        @RequestParam String positionId, @RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam String processDefinitionKey, @RequestParam String positionIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

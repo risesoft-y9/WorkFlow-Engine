@@ -12,6 +12,8 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
 /**
+ * 抄送件接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -22,9 +24,10 @@ public interface ChaoSong4PositionApi {
      * 改变抄送件意见状态
      *
      * @param tenantId 租户id
-     * @param id 抄送id
-     * @param type type
+     * @param id 抄送件id
+     * @param type 状态类型
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/changeChaoSongState")
     Y9Result<Object> changeChaoSongState(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
@@ -34,8 +37,9 @@ public interface ChaoSong4PositionApi {
      * 抄送件状态设为已阅
      *
      * @param tenantId 租户id
-     * @param ids 抄送ids
+     * @param ids 抄送件ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/changeStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> changeStatus(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
@@ -46,18 +50,20 @@ public interface ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param chaoSongId 抄送id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/changeStatus2read")
     Y9Result<Object> changeStatus2read(@RequestParam("tenantId") String tenantId,
         @RequestParam("chaoSongId") String chaoSongId);
 
     /**
-     * Description: 根据流程实例id统计除当前人外是否有抄送件
+     * 根据流程实例id统计除当前人外是否有抄送件
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人外是否有抄送件的数量
+     * @since 9.6.6
      */
     @GetMapping("/countByProcessInstanceId")
     Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -70,6 +76,7 @@ public interface ChaoSong4PositionApi {
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人是否有抄送件的数量
+     * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndProcessInstanceId")
     Y9Result<Integer> countByUserIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -79,8 +86,9 @@ public interface ChaoSong4PositionApi {
      * 删除抄送件
      *
      * @param tenantId 租户id
-     * @param ids ids
+     * @param ids 抄送件ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/deleteByIds", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> deleteByIds(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
@@ -91,21 +99,23 @@ public interface ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/deleteByProcessInstanceId")
     Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * Description: 展开抄送件
+     * 获取抄送件详情
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param id id
-     * @param processInstanceId 流程实例id
-     * @param status status
-     * @param mobile 是否发送手机端
+     * @param id 抄送id
+     * @param processInstanceId 抄送的流程实例id
+     * @param status 传阅的状态,0未阅,1已阅,2新件
+     * @param mobile 是否为移动端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是送件对象
+     * @since 9.6.6
      */
     @GetMapping("/detail")
     Y9Result<OpenDataModel> detail(@RequestParam("tenantId") String tenantId,
@@ -119,6 +129,7 @@ public interface ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是批阅件计数
+     * @since 9.6.6
      */
     @GetMapping("/getDone4OpinionCountByUserId")
     Y9Result<Integer> getDone4OpinionCountByUserId(@RequestParam("tenantId") String tenantId,
@@ -130,20 +141,22 @@ public interface ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是抄送未阅件统计
+     * @since 9.6.6
      */
     @GetMapping("/getDoneCount")
     Y9Result<Integer> getDoneCount(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId);
 
     /**
-     * Description: 获取抄送已阅件列表
+     * 获取抄送已阅件列表
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param documentTitle 文档标题
-     * @param rows rows
-     * @param page page
+     * @param documentTitle 标题
+     * @param rows 条数
+     * @param page 页码
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送已阅件列表
+     * @since 9.6.6
      */
     @GetMapping("/getDoneList")
     Y9Page<ChaoSongModel> getDoneList(@RequestParam("tenantId") String tenantId,
@@ -152,15 +165,16 @@ public interface ChaoSong4PositionApi {
         @RequestParam("page") int page);
 
     /**
-     * Description: 根据流程实例获取除当前人外的其他抄送件
+     * 根据流程实例获取除当前人外的其他抄送件
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @param userName 用户名称
-     * @param rows rows
-     * @param page page
+     * @param userName 收件人
+     * @param rows 条数
+     * @param page 页码
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是除当前人外的其他抄送件列表
+     * @since 9.6.6
      */
     @GetMapping("/getListByProcessInstanceId")
     Y9Page<ChaoSongModel> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -169,15 +183,16 @@ public interface ChaoSong4PositionApi {
         @RequestParam("page") int page);
 
     /**
-     * Description: 根据流程实例获取当前人的抄送件
+     * 根据流程实例获取当前人的抄送件
      *
      * @param tenantId 租户id
-     * @param senderId senderId
+     * @param senderId 用户id
      * @param processInstanceId 流程实例id
-     * @param userName 用户名称
-     * @param rows rows
-     * @param page page
+     * @param userName 收件人
+     * @param rows 条数
+     * @param page 页码
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是当前人的抄送件列表
+     * @since 9.6.6
      */
     @GetMapping("/getListBySenderIdAndProcessInstanceId")
     Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -190,10 +205,11 @@ public interface ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param documentTitle 文档标题
-     * @param rows rows
-     * @param page page
+     * @param documentTitle 标题
+     * @param rows 条数
+     * @param page 页码
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是批阅件列表
+     * @since 9.6.6
      */
     @GetMapping("/getOpinionChaosongByUserId")
     Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId,
@@ -207,20 +223,22 @@ public interface ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是抄送已阅件统计
+     * @since 9.6.6
      */
     @GetMapping("/getTodoCount")
     Y9Result<Integer> getTodoCount(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId);
 
     /**
-     * Description: 获取抄送未阅件列表
+     * 获取抄送未阅件列表
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param documentTitle 文档标题
-     * @param rows rows
-     * @param page page
+     * @param documentTitle 标题
+     * @param rows 条数
+     * @param page 页码
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送未阅件列表
+     * @since 9.6.6
      */
     @GetMapping("/getTodoList")
     Y9Page<ChaoSongModel> getTodoList(@RequestParam("tenantId") String tenantId,
@@ -241,6 +259,7 @@ public interface ChaoSong4PositionApi {
      * @param page 页码
      * @param rows 条数
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是我的抄送列表
+     * @since 9.6.6
      */
     @GetMapping("/myChaoSongList")
     Y9Page<ChaoSongModel> myChaoSongList(@RequestParam("tenantId") String tenantId,
@@ -253,18 +272,19 @@ public interface ChaoSong4PositionApi {
         @RequestParam("rows") int rows);
 
     /**
-     * Description: 点击抄送按钮之后保存
+     * 抄送保存
      *
      * @param tenantId 租户id
      * @param userId 用户id
      * @param positionId 岗位id
-     * @param processInstanceId 流程实例id
-     * @param users users
-     * @param isSendSms 是否发送短信
-     * @param isShuMing isShuMing
+     * @param processInstanceId 抄送的流程实例id
+     * @param users 抄送目标orgUnitIds
+     * @param isSendSms 是否短信提醒
+     * @param isShuMing 是否署名
      * @param smsContent 短信内容
-     * @param smsPersonId 短信人员id
+     * @param smsPersonId 短信提醒人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/save")
     Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -275,18 +295,19 @@ public interface ChaoSong4PositionApi {
         @RequestParam(value = "smsPersonId", required = false) String smsPersonId);
 
     /**
-     * Description: 个人阅件搜索
+     * 个人阅件搜索
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param searchName 搜索信息
+     * @param searchName 搜索词
      * @param itemId 事项id
-     * @param userName 用户名称
+     * @param userName 发送人
      * @param state 状态
      * @param year 年份
-     * @param page page
-     * @param rows rows
+     * @param page 页码
+     * @param rows 条数
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是个人阅件搜索列表
+     * @since 9.6.6
      */
     @GetMapping("/searchAllByUserId")
     Y9Page<ChaoSongModel> searchAllByUserId(@RequestParam("tenantId") String tenantId,
@@ -302,15 +323,16 @@ public interface ChaoSong4PositionApi {
      * 监控阅件列表
      *
      * @param tenantId 租户id
-     * @param searchName 搜索信息
+     * @param searchName 搜索词
      * @param itemId 事项id
      * @param senderName 发送人
-     * @param userName 用户名称
+     * @param userName 接收人
      * @param state 状态
      * @param year 年份
-     * @param page page
-     * @param rows rows
+     * @param page 页码
+     * @param rows 条数
      * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是监控阅件列表
+     * @since 9.6.6
      */
     @GetMapping("/searchAllList")
     Y9Page<ChaoSongModel> searchAllList(@RequestParam("tenantId") String tenantId,
@@ -327,8 +349,9 @@ public interface ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param documentTitle 文档标题
+     * @param documentTitle 标题
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/updateTitle")
     Y9Result<Object> updateTitle(@RequestParam("tenantId") String tenantId,

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,12 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<CustomProcessInfoModel>
+     * @return {@code Y9Result<CustomProcessInfoModel>} 通用请求返回对象 - data 是自定义流程信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(String tenantId, String processSerialNumber) {
+    public Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CustomProcessInfo info = customProcessInfoService.getCurrentTaskNextNode(processSerialNumber);
         CustomProcessInfoModel model = null;
@@ -57,11 +60,12 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param taskList 任务列表
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveOrUpdate(String tenantId, String itemId, String processSerialNumber,
-        @RequestBody List<Map<String, Object>> taskList) {
+    public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestBody List<Map<String, Object>> taskList) {
         Y9LoginUserHolder.setTenantId(tenantId);
         customProcessInfoService.saveOrUpdate(itemId, processSerialNumber, taskList);
         return Y9Result.success();
@@ -72,10 +76,11 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> updateCurrentTask(String tenantId, String processSerialNumber) {
+    public Y9Result<Object> updateCurrentTask(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         customProcessInfoService.updateCurrentTask(processSerialNumber);
         return Y9Result.success();

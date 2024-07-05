@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -33,10 +34,11 @@ public class ErrorLogApiImpl implements ErrorLogApi {
      *
      * @param tenantId 租户id
      * @param errorLogModel 日志信息
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveErrorLog(String tenantId, @RequestBody ErrorLogModel errorLogModel) {
+    public Y9Result<Object> saveErrorLog(@RequestParam String tenantId, @RequestBody ErrorLogModel errorLogModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ErrorLog errorLog = new ErrorLog();
         Y9BeanUtil.copyProperties(errorLogModel, errorLog);

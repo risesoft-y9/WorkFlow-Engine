@@ -24,6 +24,7 @@ public interface CommonSentencesApi {
      * @param tenantId 租户id
      * @param id 常用语id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/delete")
     Y9Result<Object> delete(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
@@ -34,6 +35,7 @@ public interface CommonSentencesApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @return {@code Y9Result<List<CommonSentencesModel>>} 通用请求返回对象 - data 是常用语列表
+     * @since 9.6.6
      */
     @GetMapping("/listSentencesService")
     Y9Result<List<CommonSentencesModel>> listSentencesService(@RequestParam("tenantId") String tenantId,
@@ -46,17 +48,19 @@ public interface CommonSentencesApi {
      * @param userId 人员id
      * @param tabIndex 排序号
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/removeCommonSentences")
     Y9Result<Object> removeCommonSentences(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("tabIndex") int tabIndex);
 
     /**
-     * 清除常用语使用次数
+     * 清空常用语使用次数
      *
      * @param tenantId 租户id
      * @param userId 人员id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/removeUseNumber")
     Y9Result<Object> removeUseNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
@@ -69,6 +73,7 @@ public interface CommonSentencesApi {
      * @param id 常用语的唯一标识
      * @param content 内容
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/save")
     Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -82,6 +87,7 @@ public interface CommonSentencesApi {
      * @param content 常用语内容
      * @param tabIndex 排序号
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/saveCommonSentences")
     Y9Result<Object> saveCommonSentences(@RequestParam("tenantId") String tenantId,
@@ -94,6 +100,7 @@ public interface CommonSentencesApi {
      * @param tenantId 租户id
      * @param id 常用语id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/updateUseNumber")
     Y9Result<Object> updateUseNumber(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);

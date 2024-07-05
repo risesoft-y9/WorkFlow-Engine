@@ -3,10 +3,10 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -46,11 +46,12 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 唯一标识
-     * @return Y9Result<Object>
-     * @throws Exception Exception
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception 删除导致的异常
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteById(String tenantId, String id) throws Exception {
+    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String id) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         processTrackService.deleteById(id);
         return Y9Result.success();
@@ -61,17 +62,16 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<List<ProcessTrackModel>>
+     * @return {@code Y9Result<List<ProcessTrackModel>>} 通用请求返回对象 - data 是流程跟踪信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ProcessTrackModel>> findByTaskId(String tenantId, String taskId) {
+    public Y9Result<List<ProcessTrackModel>> findByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ProcessTrackModel> items = new ArrayList<>();
         try {
-            if (StringUtils.isNotBlank(taskId)) {
-                List<ProcessTrack> list = processTrackService.findByTaskId(taskId);
-                items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
-            }
+            List<ProcessTrack> list = processTrackService.findByTaskId(taskId);
+            items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
         } catch (Exception e) {
             LOGGER.error("根据任务id获取自定义历程异常：{}", e.getMessage());
         }
@@ -83,17 +83,17 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<List<ProcessTrackModel>>
+     * @return {@code Y9Result<List<ProcessTrackModel>>} 通用请求返回对象 - data 是流程跟踪信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ProcessTrackModel>> findByTaskIdAsc(String tenantId, String taskId) {
+    public Y9Result<List<ProcessTrackModel>> findByTaskIdAsc(@RequestParam String tenantId,
+        @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ProcessTrackModel> items = new ArrayList<>();
         try {
-            if (StringUtils.isNotBlank(taskId)) {
-                List<ProcessTrack> list = processTrackService.findByTaskIdAsc(taskId);
-                items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
-            }
+            List<ProcessTrack> list = processTrackService.findByTaskIdAsc(taskId);
+            items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
         } catch (Exception e) {
             LOGGER.error("根据任务id获取自定义历程异常：{}", e.getMessage());
         }
@@ -105,10 +105,12 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List < HistoricActivityInstanceModel>>
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>} 通用请求返回对象 - data 是历史活动实例列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(String tenantId, String processInstanceId) {
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return processTrackService.getTaskList(processInstanceId);
     }
@@ -119,20 +121,18 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<HistoryProcessModel>>
+     * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象- data 是历程信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<HistoryProcessModel>> processTrackList(String tenantId, String positionId,
-        String processInstanceId) {
+    public Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam String tenantId,
+        @RequestParam String positionId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         try {
-            if (StringUtils.isNotBlank(processInstanceId)) {
-                List<HistoryProcessModel> items = processTrackService.getListMap(processInstanceId);
-                return Y9Result.success(items);
-            }
-            return Y9Result.failure("流程实例id为空 ");
+            List<HistoryProcessModel> items = processTrackService.getListMap(processInstanceId);
+            return Y9Result.success(items);
         } catch (Exception e) {
             LOGGER.error("获取历程列表异常：{}", e.getMessage());
             return Y9Result.failure("获取历程列表异常 ");
@@ -145,21 +145,19 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<HistoryProcessModel>>
+     * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象 - data 是历程信息列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<HistoryProcessModel>> processTrackList4Simple(String tenantId, String positionId,
-        String processInstanceId) {
+    public Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam String tenantId,
+        @RequestParam String positionId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
 
         try {
-            if (StringUtils.isNotBlank(processInstanceId)) {
-                List<HistoryProcessModel> items = processTrackService.getListMap4Simple(processInstanceId);
-                return Y9Result.success(items);
-            }
-            return Y9Result.failure("流程实例id为空 ");
+            List<HistoryProcessModel> items = processTrackService.getListMap4Simple(processInstanceId);
+            return Y9Result.success(items);
         } catch (Exception e) {
             LOGGER.error("获取历程列表异常：{}", e.getMessage());
             return Y9Result.failure("获取历程列表异常 ");
@@ -171,13 +169,14 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 保存或更新历程
      *
      * @param tenantId 租户id
-     * @return processTrackModel 实体类对象
-     * @return Y9Result<ProcessTrackModel>
-     * @throws Exception Exception
+     * @param processTrackModel 实体类对象（ProcessTrackModel）
+     * @return {@code Y9Result<ProcessTrackModel>} 通用请求返回对象 - data 是流程跟踪信息
+     * @throws Exception 保存或更新导致的异常
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<ProcessTrackModel> saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel)
-        throws Exception {
+    public Y9Result<ProcessTrackModel> saveOrUpdate(@RequestParam String tenantId,
+        @RequestBody ProcessTrackModel processTrackModel) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessTrack processTrack = ItemAdminModelConvertUtil.processTrackModel2ProcessTrack(processTrackModel);
         ProcessTrack ptTemp = processTrackService.saveOrUpdate(processTrack);

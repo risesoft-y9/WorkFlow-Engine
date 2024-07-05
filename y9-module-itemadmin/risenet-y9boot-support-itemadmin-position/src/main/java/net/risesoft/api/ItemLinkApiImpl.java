@@ -42,17 +42,18 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
     private final ItemLinkRoleRepository itemLinkRoleRepository;
 
     /**
-     * 获取事项链接列表
+     * 获取有权限的事项绑定链接
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return Y9Result<List < LinkInfoModel>>
+     * @return {@code Y9Result<List<LinkInfoModel>>} 通用请求返回对象 - data 是事项绑定链接
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<LinkInfoModel>> getItemLinkList(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<LinkInfoModel> res_list = new ArrayList<>();
+        List<LinkInfoModel> linkList = new ArrayList<>();
         List<ItemLinkBind> list = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
         for (ItemLinkBind bind : list) {
             List<ItemLinkRole> roleList = itemLinkRoleRepository.findByItemLinkId(bind.getId());
@@ -65,12 +66,12 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
                     LinkInfo linkInfo = linkInfoRepository.findById(bind.getLinkId()).orElse(null);
                     LinkInfoModel model = new LinkInfoModel();
                     Y9BeanUtil.copyProperties(linkInfo, model);
-                    res_list.add(model);
+                    linkList.add(model);
                     break;
                 }
             }
         }
-        return Y9Result.success(res_list);
+        return Y9Result.success(linkList);
     }
 
 }

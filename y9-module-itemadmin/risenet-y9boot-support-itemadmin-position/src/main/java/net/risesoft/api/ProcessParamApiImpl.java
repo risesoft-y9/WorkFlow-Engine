@@ -3,6 +3,7 @@ package net.risesoft.api;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -32,26 +33,31 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     /**
      * 根据流程实例id删除流程变量
      *
-     * @param tenantId 租户Id
-     * @param processInstanceId 流程实例Id
-     * @return Y9Result<Object>
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByPprocessInstanceId(String tenantId, String processInstanceId) {
+    public Y9Result<Object> deleteByPprocessInstanceId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         processParamService.deleteByPprocessInstanceId(processInstanceId);
         return Y9Result.success();
     }
 
     /**
+     *
      * 根据流程实例查找流程数据
      *
-     * @param tenantId 租户Id
-     * @param processInstanceId 流程实例Id
-     * @return Y9Result<ProcessParamModel>
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<ProcessParamModel> findByProcessInstanceId(String tenantId, String processInstanceId) {
+    public Y9Result<ProcessParamModel> findByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         ProcessParamModel pp = null;
@@ -63,14 +69,17 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     }
 
     /**
-     * 根据流程序列号查找流程数据
      *
-     * @param tenantId 租户Id
+     * 根据流程编号查找流程数据
+     *
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<ProcessParamModel>
+     * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<ProcessParamModel> findByProcessSerialNumber(String tenantId, String processSerialNumber) {
+    public Y9Result<ProcessParamModel> findByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         ProcessParamModel pp = null;
@@ -86,10 +95,11 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      *
      * @param tenantId 租户ID
      * @param processParam 流程数据对象
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveOrUpdate(String tenantId, @RequestBody ProcessParamModel processParam) {
+    public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestBody ProcessParamModel processParam) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParam pp = new ProcessParam();
         Y9BeanUtil.copyProperties(processParam, pp);
@@ -100,14 +110,15 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     /**
      * 更新定制流程状态
      *
-     * @param tenantId 租户ID
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param isCustomItem 是否定制流程
+     * @return{@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
-     * @return Y9Result<Object>
      */
     @Override
-    public Y9Result<Object> updateCustomItem(String tenantId, String processSerialNumber, boolean isCustomItem) {
+    public Y9Result<Object> updateCustomItem(@RequestParam String tenantId, @RequestParam String processSerialNumber,
+        @RequestParam boolean isCustomItem) {
         Y9LoginUserHolder.setTenantId(tenantId);
         processParamService.updateCustomItem(processSerialNumber, isCustomItem);
         return Y9Result.success();

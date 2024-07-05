@@ -48,7 +48,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
@@ -58,14 +59,15 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     /**
-     * 根据用户id和系统名称查询待办列表
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @@since 9.6.6
      */
     @Override
     public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
@@ -88,7 +90,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     /**
-     * 根据用户id和系统名称、表名称、搜索集合查询待办列表
+     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -97,7 +99,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @param searchMapStr 搜索集合
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
