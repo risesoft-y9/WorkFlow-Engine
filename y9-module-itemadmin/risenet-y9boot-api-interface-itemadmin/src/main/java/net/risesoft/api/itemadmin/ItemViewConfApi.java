@@ -24,6 +24,7 @@ public interface ItemViewConfApi {
      * @param itemId 事项id
      * @param viewType 视图类型
      * @return {@code Y9Result<List<ItemViewConfModel>>} 通用请求返回对象 -data是事项视图配置列表
+     * @since 9.6.6
      */
     @GetMapping("/findByItemIdAndViewType")
     Y9Result<List<ItemViewConfModel>> findByItemIdAndViewType(@RequestParam("tenantId") String tenantId,

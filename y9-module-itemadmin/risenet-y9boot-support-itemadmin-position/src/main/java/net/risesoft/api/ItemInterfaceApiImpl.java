@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -45,11 +46,12 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @param taskKey 任务key
      * @param processDefinitionId 流程定义id
      * @param condition 执行条件
-     * @return Y9Result<List<InterfaceModel>>
+     * @return {@code Y9Result<List<InterfaceModel>>} 通用请求返回对象 - data 是接口绑定参数列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceModel>> getInterface(String tenantId, String itemId, String taskKey,
-        String processDefinitionId, String condition) {
+    public Y9Result<List<InterfaceModel>> getInterface(@RequestParam String tenantId, @RequestParam String itemId,
+        @RequestParam String taskKey, @RequestParam String processDefinitionId, @RequestParam String condition) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemInterfaceTaskBind> list = itemInterfaceTaskBindRepository
             .findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(itemId, taskKey,
@@ -78,10 +80,12 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param interfaceId 接口id
-     * @return Y9Result<List<InterfaceParamsModel>>
+     * @return {@code Y9Result<List<InterfaceParamsModel>>} 通用请求返回对象 - data 是接口绑定参数列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(String tenantId, String itemId, String interfaceId) {
+    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam String tenantId,
+        @RequestParam String itemId, @RequestParam String interfaceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemInterfaceParamsBind> list =
             itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, interfaceId);

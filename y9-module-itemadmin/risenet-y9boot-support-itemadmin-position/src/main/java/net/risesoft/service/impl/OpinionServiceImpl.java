@@ -152,13 +152,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public int findByProcSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcSerialNumber(processSerialNumber);
+    public List<Opinion> findByProcessSerialNumber(String processSerialNumber) {
+        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
-    public List<Opinion> findByProcessSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
+    public int findByProcSerialNumber(String processSerialNumber) {
+        return opinionRepository.findByProcSerialNumber(processSerialNumber);
     }
 
     @Override
@@ -284,7 +284,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public List<OpinionListModel> personCommentList(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser) {
+        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser) {
         List<OpinionListModel> resList = new ArrayList<>();
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -295,10 +295,18 @@ public class OpinionServiceImpl implements OpinionService {
             model.setAddAgent(false);
             model.setOpinionFrameMark(opinionFrameMark);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             List<Opinion> list =
                 opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+            if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && list.size() > 1) {// 按岗位排序号排序
+                for (Opinion Opinion : list) {
+                    String positionId = Opinion.getPositionId();
+                    Position position = positionManager.get(tenantId, positionId).getData();
+                    Opinion.setOrderStr(
+                        (position != null && position.getOrderedPath() != null) ? position.getOrderedPath() : "");
+                }
+                list = list.stream().sorted().collect(Collectors.toList());
+            }
             if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())) {
                 if (list.size() >= 1) {

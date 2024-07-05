@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -35,10 +36,12 @@ public class OptionClassApiImpl implements OptionClassApi {
      *
      * @param tenantId 租户id
      * @param type 字典标识
-     * @return Y9Result<List<Y9FormOptionValueModel>>
+     * @return {@code Y9Result<List<Y9FormOptionValueModel>>} 通用请求返回对象 -data是数据字典列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(String tenantId, String type) {
+    public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam String tenantId,
+        @RequestParam String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Y9FormOptionValue> list = y9FormOptionClassService.findByTypeOrderByTabIndexAsc(type);
         List<Y9FormOptionValueModel> listMap = new ArrayList<>();

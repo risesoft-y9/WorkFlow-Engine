@@ -20,7 +20,7 @@ public class StartProcessResultModel implements Serializable {
     private static final long serialVersionUID = -2451099058363077071L;
 
     /**
-     * 流程序列号
+     * 流程编号
      */
     private String processSerialNumber;
 

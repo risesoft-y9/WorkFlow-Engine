@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -39,10 +40,12 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Boolean>
+     * @return{@code Y9Result<Boolean>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Boolean> deleteProcessInstance(String tenantId, String processInstanceId) {
+    public Y9Result<Boolean> deleteProcessInstance(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(processInstanceDetailsService.deleteProcessInstance(processInstanceId));
     }
@@ -55,11 +58,12 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * @param title 标题或文号
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<ProcessCooperationModel>
+     * @return{@code Y9Page<ProcessCooperationModel>} 通用请求返回对象 -rows 协作状态信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ProcessCooperationModel> processInstanceList(String tenantId, String userId, String title, int page,
-        int rows) {
+    public Y9Page<ProcessCooperationModel> processInstanceList(@RequestParam String tenantId,
+        @RequestParam String userId, String title, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return processInstanceDetailsService.processInstanceList(userId, title, page, rows);
     }
@@ -69,10 +73,11 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      *
      * @param tenantId 租户id
      * @param model 状态详情
-     * @return Y9Result<Boolean>
+     * @return{@code Y9Result<Boolean>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Boolean> saveProcessInstanceDetails(String tenantId,
+    public Y9Result<Boolean> saveProcessInstanceDetails(@RequestParam String tenantId,
         @RequestBody ProcessInstanceDetailsModel model) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(processInstanceDetailsService.save(model));
@@ -87,11 +92,13 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * @param taskId 任务id
      * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
      * @param endTime 结束时间
-     * @return Y9Result<Boolean>
+     * @return{@code Y9Result<Boolean>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Boolean> updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId,
-        String taskId, String itembox, Date endTime) {
+    public Y9Result<Boolean> updateProcessInstanceDetails(@RequestParam String tenantId,
+        @RequestParam String assigneeId, @RequestParam String processInstanceId, @RequestParam String taskId,
+        @RequestParam String itembox, @RequestParam Date endTime) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, assigneeId).getData();
         Y9LoginUserHolder.setPosition(position);

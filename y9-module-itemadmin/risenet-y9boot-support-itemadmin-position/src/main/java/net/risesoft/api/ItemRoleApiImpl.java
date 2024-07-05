@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -56,13 +57,14 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param id 唯一标识
-     * @param principalType 类型
+     * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List < ItemRoleOrgUnitModel>>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(String tenantId, String userId, String positionId, String id,
-        Integer principalType, String processInstanceId) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String positionId, String id, @RequestParam Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -79,11 +81,12 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(String tenantId, String userId, String positionId,
-        Integer principalType) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String positionId, @RequestParam Integer principalType) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -111,11 +114,13 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param name 人员名称
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例Id
-     * @return Y9Result<List < ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(String tenantId, String userId, String positionId,
-        String name, Integer principalType, String processInstanceId) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String positionId, @RequestParam String name,
+        @RequestParam Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -137,12 +142,13 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param id 唯一标识
      * @param processInstanceId 流程实例Id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(String tenantId, String userId, String positionId,
-        String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id,
-        String processInstanceId) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String positionId, @RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey, @RequestParam Integer principalType, String id, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -165,11 +171,13 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 流程定义中节点Id
      * @param processInstanceId 流程实例Id
-     * @return Y9Result<List < ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(String tenantId, String userId, String positionId,
-        String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey,
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String positionId, String name, @RequestParam Integer principalType,
+        @RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -187,10 +195,12 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param id 父节点id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(String tenantId, String positionId, String id) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(@RequestParam String tenantId,
+        @RequestParam String positionId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -207,11 +217,12 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param treeType 树的类型:tree_type_org(组织机构)，tree_type_dept（部门） tree_type_group（用户组）, tree_type_position（岗位）
      *            tree_type_person（人员）, tree_type_bureau（委办局）
      * @param name 人员名称
-     * @return Y9Result<List < ItemRoleOrgUnitModel>>
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(String tenantId, String positionId, String id,
-        OrgTreeTypeEnum treeType, String name) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(@RequestParam String tenantId,
+        @RequestParam String positionId, String id, @RequestParam OrgTreeTypeEnum treeType, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

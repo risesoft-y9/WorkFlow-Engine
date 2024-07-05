@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -40,10 +41,11 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 委托id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteEntrust(String tenantId, String id) {
+    public Y9Result<Object> deleteEntrust(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         entrustService.destroyEntrust(id);
         return Y9Result.success();
@@ -54,10 +56,11 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<List<EntrustModel>>
+     * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustModel>> getEntrustList(String tenantId, String positionId) {
+    public Y9Result<List<EntrustModel>> getEntrustList(@RequestParam String tenantId, @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustModel> list = entrustService.getEntrustList(positionId);
         return Y9Result.success(list);
@@ -68,10 +71,12 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<List < EntrustModel>>
+     * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustModel>> getMyEntrustList(String tenantId, String positionId) {
+    public Y9Result<List<EntrustModel>> getMyEntrustList(@RequestParam String tenantId,
+        @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustModel> list = entrustService.getMyEntrustList(positionId);
         return Y9Result.success(list);
@@ -83,10 +88,12 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param entrustModel 实体类（EntrustModel）
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel) {
+    public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestBody EntrustModel entrustModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

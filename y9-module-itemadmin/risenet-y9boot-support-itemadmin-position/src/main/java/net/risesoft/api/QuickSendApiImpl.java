@@ -3,6 +3,7 @@ package net.risesoft.api;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -33,10 +34,12 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是快捷发送人
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getAssignee(String tenantId, String positionId, String itemId, String taskKey) {
+    public Y9Result<String> getAssignee(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId, @RequestParam String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return Y9Result.success(quickSendService.getAssignee(itemId, taskKey));
@@ -49,12 +52,13 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
-     * @param assignee 快速发送人
-     * @return Y9Result<String>
+     * @param assignee 发送人
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveOrUpdate(String tenantId, String positionId, String itemId, String taskKey,
-        String assignee) {
+    public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId, @RequestParam String taskKey, @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);

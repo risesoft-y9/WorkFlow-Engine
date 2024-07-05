@@ -21,22 +21,24 @@ import net.risesoft.pojo.Y9Result;
 public interface ActRuDetailApi {
 
     /**
-     * 标记流程为办结
+     * 根据流程实例id标记流程为办结
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/endByProcessInstanceId")
     Y9Result<Object> endByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 标记流程为办结
+     * 根据流程编号标记流程为办结
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/endByProcessSerialNumber")
     Y9Result<Object> endByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
@@ -49,41 +51,45 @@ public interface ActRuDetailApi {
      * @param processInstanceId 流程实例id
      * @param status 0为待办，1位在办
      * @return {@code Y9Result<List < ActRuDetailModel>>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @GetMapping("/findByProcessInstanceIdAndStatus")
     Y9Result<List<ActRuDetailModel>> findByProcessInstanceIdAndStatus(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") int status);
 
     /**
-     * 根据流程序列号查找正在办理的人员信息
+     * 根据流程编号查找正在办理的人员信息
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return {@code Y9Result<List < ActRuDetailModel>>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
     Y9Result<List<ActRuDetailModel>> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
-     * 根据流程序列号查找正在办理的人员信息
+     * 根据流程编号查找正在办理的人员信息
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
-     * @param assignee 办理人Id
+     * @param processSerialNumber 流程编号
+     * @param assignee 办理人id
      * @return {@code Y9Result<ActRuDetailModel>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumberAndAssignee")
     Y9Result<ActRuDetailModel> findByProcessSerialNumberAndAssignee(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("assignee") String assignee);
 
     /**
-     * 根据流程序列号查找正在办理的人员信息
+     * 根据流程编号查找正在办理的人员信息
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param status 0为待办，1位在办
      * @return {@code Y9Result<List<ActRuDetailModel>>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumberAndStatus")
     Y9Result<List<ActRuDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam("tenantId") String tenantId,
@@ -95,28 +101,31 @@ public interface ActRuDetailApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/recoveryByProcessInstanceId")
     Y9Result<Object> recoveryByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 删除整个流程的办件详情
+     * 根据流程实例id删除整个流程的办件详情
      *
      * @param tenantId 租户id
-     * @param processInstanceId 流程实例Id
+     * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/removeByProcessInstanceId")
     Y9Result<Object> removeByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 删除整个流程的办件详情
+     * 根据流程编号删除整个流程的办件详情
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/removeByProcessSerialNumber")
     Y9Result<Object> removeByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
@@ -126,9 +135,10 @@ public interface ActRuDetailApi {
      * 删除某个参与人的办件详情
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
-     * @param assignee 办理人Id
+     * @param processSerialNumber 流程编号
+     * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/removeByProcessSerialNumberAndAssignee")
     Y9Result<Object> removeByProcessSerialNumberAndAssignee(@RequestParam("tenantId") String tenantId,
@@ -138,8 +148,9 @@ public interface ActRuDetailApi {
      * 保存或者更新
      *
      * @param tenantId 租户id
-     * @param actRuDetailModel 办理详情实体
+     * @param actRuDetailModel 详情对象
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,
@@ -149,8 +160,9 @@ public interface ActRuDetailApi {
      * 恢复整个流程的办件详情
      *
      * @param tenantId 租户id
-     * @param processInstanceId 流程实例Id
+     * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/syncByProcessInstanceId")
     Y9Result<Object> syncByProcessInstanceId(@RequestParam("tenantId") String tenantId,

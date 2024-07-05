@@ -21,6 +21,7 @@ public interface PrintApi {
      * @param userId 人员id
      * @param itemId 事项id
      * @return {@code Y9Result<String>} 通用请求返回对象 -data是模版文件ID
+     * @since 9.6.6
      */
     @GetMapping("/openDocument")
     Y9Result<String> openDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,

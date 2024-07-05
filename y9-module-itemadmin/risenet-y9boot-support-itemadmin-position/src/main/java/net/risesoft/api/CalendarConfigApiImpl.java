@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,11 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
      *
      * @param tenantId 租户id
      * @param year 年份
-     * @return Y9Result<CalendarConfigModel>
+     * @return {@code Y9Result<CalendarConfigModel>} 通用请求返回对象 - data 是日历配置
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<CalendarConfigModel> findByYear(String tenantId, String year) {
+    public Y9Result<CalendarConfigModel> findByYear(@RequestParam String tenantId, @RequestParam String year) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
         CalendarConfigModel calendarConfigModel =

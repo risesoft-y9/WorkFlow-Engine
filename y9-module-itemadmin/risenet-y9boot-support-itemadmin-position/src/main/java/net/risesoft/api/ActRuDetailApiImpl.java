@@ -39,7 +39,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> endByProcessInstanceId(@RequestParam String tenantId,
@@ -54,7 +55,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> endByProcessSerialNumber(@RequestParam String tenantId,
@@ -70,7 +72,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param status 0为待办，1位在办
-     * @return Y9Result<List < ActRuDetailModel>>
+     * @return {@code Y9Result<List < ActRuDetailModel>>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<ActRuDetailModel>> findByProcessInstanceIdAndStatus(@RequestParam String tenantId,
@@ -93,7 +96,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<List < ActRuDetailModel>>
+     * @return {@code Y9Result<List < ActRuDetailModel>>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<ActRuDetailModel>> findByProcessSerialNumber(@RequestParam String tenantId,
@@ -116,7 +120,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param assignee 办理人id
-     * @return Y9Result<ActRuDetailModel>
+     * @return {@code Y9Result<ActRuDetailModel>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Result<ActRuDetailModel> findByProcessSerialNumberAndAssignee(@RequestParam String tenantId,
@@ -135,7 +140,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param status 0为待办，1位在办
-     * @return Y9Result<List<ActRuDetailModel>>
+     * @return {@code Y9Result<List<ActRuDetailModel>>} 通用请求返回对象 - data 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<ActRuDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam String tenantId,
@@ -158,7 +164,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> recoveryByProcessInstanceId(@RequestParam String tenantId,
@@ -173,7 +180,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> removeByProcessInstanceId(@RequestParam String tenantId,
@@ -188,7 +196,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> removeByProcessSerialNumber(@RequestParam String tenantId,
@@ -204,7 +213,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param assignee 办理人id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> removeByProcessSerialNumberAndAssignee(@RequestParam String tenantId,
@@ -219,7 +229,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param actRuDetailModel 详情对象
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId,
@@ -236,7 +247,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> syncByProcessInstanceId(@RequestParam String tenantId,

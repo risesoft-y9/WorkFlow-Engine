@@ -25,20 +25,22 @@ public interface SpeakInfoApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param id 唯一标示
+     * @param id 主键id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/deleteById")
     Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("id") String id);
 
     /**
-     * 根据唯一标示超找发言信息
+     * 根据唯一标示获取发言信息
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param id 唯一标示
+     * @param id 主键id
      * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发言信息
+     * @since 9.6.6
      */
     @GetMapping(value = "/findById")
     Y9Result<SpeakInfoModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -51,6 +53,7 @@ public interface SpeakInfoApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<SpeakInfoModel>>} 通用请求返回对象 - data 是发言信息列表
+     * @since 9.6.6
      */
     @GetMapping(value = "/findByProcessInstanceId")
     Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -63,6 +66,7 @@ public interface SpeakInfoApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是未读消息计数
+     * @since 9.6.6
      */
     @GetMapping(value = "/getNotReadCount")
     Y9Result<Integer> getNotReadCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -73,8 +77,9 @@ public interface SpeakInfoApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param speakInfoModel speakInfoModel
+     * @param speakInfoModel 发言信息
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是发言ID
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<String> saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,

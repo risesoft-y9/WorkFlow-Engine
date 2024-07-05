@@ -21,8 +21,9 @@ public interface ErrorLogApi {
      * 保存错误日志
      *
      * @param tenantId 租户id
-     * @param errorLogModel 错误日志
+     * @param errorLogModel 日志信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping(value = "/saveErrorLog", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveErrorLog(@RequestParam("tenantId") String tenantId, @RequestBody ErrorLogModel errorLogModel);

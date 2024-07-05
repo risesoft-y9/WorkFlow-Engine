@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -53,10 +54,11 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @param name 搜索名称
-     * @return Y9Result<List<ReceiveOrgUnit>>
+     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(String tenantId, String name) {
+    public Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(@RequestParam String tenantId, @RequestParam String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
         if (StringUtils.isBlank(name)) {
@@ -88,10 +90,11 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 获取所有收发单位
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ReceiveOrgUnit>>
+     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTree(String tenantId) {
+    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTree(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
@@ -121,10 +124,12 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * @param tenantId 租户id
      * @param orgUnitId 单位Id
      * @param name 名称
-     * @return Y9Result<List<ReceiveOrgUnit>>
+     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(String tenantId, String orgUnitId, String name) {
+    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(@RequestParam String tenantId,
+        @RequestParam String orgUnitId, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
         List<ReceiveDepartment> list;
@@ -203,10 +208,11 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @param deptId 部门id
-     * @return Y9Result<List<Person>>
+     * @return {@code Y9Result<List<Person>>} 通用请求返回对象 - data 是人员集合
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<Person>> getSendReceiveByDeptId(String tenantId, String deptId) {
+    public Y9Result<List<Person>> getSendReceiveByDeptId(@RequestParam String tenantId, @RequestParam String deptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ReceivePerson> list = receivePersonRepository.findByDeptId(deptId);
         List<Person> users = new ArrayList<>();
@@ -225,11 +231,13 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return Y9Result<List<ReceiveOrgUnit>>
+     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
      */
     @Override
     @GetMapping(value = "/getSendReceiveByUserId")
-    public Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(String tenantId, String userId) {
+    public Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam String tenantId,
+        @RequestParam String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         List<ReceiveOrgUnit> listMap = new ArrayList<>();

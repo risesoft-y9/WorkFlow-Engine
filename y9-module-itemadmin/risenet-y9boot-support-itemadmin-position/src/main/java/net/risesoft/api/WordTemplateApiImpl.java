@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,12 @@ public class WordTemplateApiImpl implements WordTemplateApi {
     /**
      * 根据id获取正文模板文件路径
      *
-     * @param id 正文模板id
-     * @return Y9Result<String>
+     * @param id 模板id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getFilePathById(String id) {
+    public Y9Result<String> getFilePathById(@RequestParam String id) {
         String y9FilePathId = "";
         WordTemplate wordTemplate = wordTemplateService.findById(id);
         if (null != wordTemplate) {

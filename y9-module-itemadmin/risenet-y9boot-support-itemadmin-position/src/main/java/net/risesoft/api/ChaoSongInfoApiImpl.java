@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -46,10 +47,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param id 抄送件id
      * @param type 状态类型
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> changeChaoSongState(String tenantId, String id, String type) {
+    public Y9Result<Object> changeChaoSongState(@RequestParam String tenantId, @RequestParam String id, String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.changeChaoSongState(id, type);
         return Y9Result.success();
@@ -60,10 +62,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param ids 抄送件ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> changeStatus(String tenantId, @RequestBody String[] ids) {
+    public Y9Result<Object> changeStatus(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.changeStatus(ids);
         return Y9Result.success();
@@ -74,10 +77,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param chaoSongId 抄送id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> changeStatus2read(String tenantId, String chaoSongId) {
+    public Y9Result<Object> changeStatus2read(@RequestParam String tenantId, @RequestParam String chaoSongId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.changeStatus(chaoSongId);
         return Y9Result.success();
@@ -89,10 +93,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人外是否有抄送件的数量
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countByProcessInstanceId(String tenantId, String positionId, String processInstanceId) {
+    public Y9Result<Integer> countByProcessInstanceId(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.countByProcessInstanceId(positionId, processInstanceId);
         return Y9Result.success(num);
@@ -104,11 +110,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人是否有抄送件的数量
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countByUserIdAndProcessInstanceId(String tenantId, String positionId,
-        String processInstanceId) {
+    public Y9Result<Integer> countByUserIdAndProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String positionId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.countByUserIdAndProcessInstanceId(positionId, processInstanceId);
         return Y9Result.success(num);
@@ -118,11 +125,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * 删除抄送件
      *
      * @param tenantId 租户id
-     * @param ids 抄送ids
-     * @return Y9Result<Object>
+     * @param ids 抄送件ids
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByIds(String tenantId, @RequestBody String[] ids) {
+    public Y9Result<Object> deleteByIds(@RequestParam String tenantId, @RequestParam @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.deleteByIds(ids);
         return Y9Result.success();
@@ -133,29 +141,33 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByProcessInstanceId(String tenantId, String processInstanceId) {
+    public Y9Result<Object> deleteByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.deleteByProcessInstanceId(processInstanceId);
         return Y9Result.success();
     }
 
     /**
-     * 获取抄送件详情
+     * 展开抄送件
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param id 抄送id
-     * @param processInstanceId 抄送的流程实例ID
+     * @param processInstanceId 抄送的流程实例id
      * @param status 传阅的状态,0未阅,1已阅,2新件
      * @param mobile 是否为移动端
-     * @return Y9Result<OpenDataModeld>
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是送件对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> detail(String tenantId, String positionId, String id, String processInstanceId,
-        Integer status, boolean mobile) {
+    public Y9Result<OpenDataModel> detail(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String id, @RequestParam String processInstanceId, @RequestParam Integer status,
+        @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         OpenDataModel model = chaoSongInfoService.detail(processInstanceId, status, mobile);
@@ -173,10 +185,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是批阅件计数
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDone4OpinionCountByUserId(String tenantId, String positionId) {
+    public Y9Result<Integer> getDone4OpinionCountByUserId(@RequestParam String tenantId,
+        @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.getDone4OpinionCountByUserId(positionId);
         return Y9Result.success(num);
@@ -187,10 +201,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是抄送未阅件统计
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDoneCount(String tenantId, String positionId) {
+    public Y9Result<Integer> getDoneCount(@RequestParam String tenantId, @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.getDoneCountByUserId(positionId);
         return Y9Result.success(num);
@@ -204,11 +219,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return Y9Page<ChaoSongModel>
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送已阅件列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getDoneList(String tenantId, String positionId, String documentTitle, int rows,
-        int page) {
+    public Y9Page<ChaoSongModel> getDoneList(@RequestParam String tenantId, @RequestParam String positionId,
+        String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.getDoneList(positionId, documentTitle, rows, page);
     }
@@ -222,11 +238,13 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param userName 收件人
      * @param rows 条数
      * @param page 页码
-     * @return Y9Page<ChaoSongModel>
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是除当前人外的其他抄送件列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getListByProcessInstanceId(String tenantId, String positionId,
-        String processInstanceId, String userName, int rows, int page) {
+    public Y9Page<ChaoSongModel> getListByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String positionId, @RequestParam String processInstanceId, String userName,
+        @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return chaoSongInfoService.getListByProcessInstanceId(processInstanceId, userName, rows, page);
@@ -241,29 +259,32 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param userName 收件人
      * @param rows 条数
      * @param page 页码
-     * @return Y9Page<ChaoSongModel>
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是当前人的抄送件列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
-        String processInstanceId, String userName, int rows, int page) {
+    public Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String senderId, @RequestParam String processInstanceId, String userName, @RequestParam int rows,
+        @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.getListBySenderIdAndProcessInstanceId(senderId, processInstanceId, userName, rows,
             page);
     }
 
     /**
-     * 批阅件列表
+     * 批阅件
      *
      * @param tenantId 租户id
-     * @param positionId 用户id
+     * @param positionId 岗位id
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return Map
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是批阅件列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle,
-        int rows, int page) {
+    public Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam String tenantId,
+        @RequestParam String positionId, String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.getOpinionChaosongByUserId(positionId, documentTitle, rows, page);
     }
@@ -273,10 +294,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是抄送已阅件统计
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getTodoCount(String tenantId, String positionId) {
+    public Y9Result<Integer> getTodoCount(@RequestParam String tenantId, @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.getTodoCountByUserId(positionId);
         return Y9Result.success(num);
@@ -290,11 +312,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return Y9Page<ChaoSongModel>
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送未阅件列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getTodoList(String tenantId, String positionId, String documentTitle, int rows,
-        int page) {
+    public Y9Page<ChaoSongModel> getTodoList(@RequestParam String tenantId, @RequestParam String positionId,
+        String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.getTodoList(positionId, documentTitle, rows, page);
     }
@@ -311,11 +334,13 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param year 年度
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<ChaoSongModel>
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是我的抄送列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> myChaoSongList(String tenantId, String positionId, String searchName, String itemId,
-        String userName, String state, String year, int page, int rows) {
+    public Y9Page<ChaoSongModel> myChaoSongList(@RequestParam String tenantId, @RequestParam String positionId,
+        String searchName, String itemId, String userName, String state, String year, @RequestParam int page,
+        @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return chaoSongInfoService.myChaoSongList(searchName, itemId, userName, state, year, rows, page);
@@ -327,17 +352,19 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param positionId 岗位id
-     * @param processInstanceId 抄送的流程实例ID
+     * @param processInstanceId 抄送的流程实例id
      * @param users 抄送目标orgUnitIds
      * @param isSendSms 是否短信提醒
      * @param isShuMing 是否署名
      * @param smsContent 短信内容
      * @param smsPersonId 短信提醒人id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> save(String tenantId, String userId, String positionId, String processInstanceId,
-        String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
+    public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String positionId, @RequestParam String processInstanceId, @RequestParam String users,
+        String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -363,11 +390,13 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<ChaoSongModel>
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是个人阅件搜索列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId,
-        String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSongModel> searchAllByUserId(@RequestParam String tenantId, @RequestParam String positionId,
+        String searchName, String itemId, String userName, String state, String year, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return chaoSongInfoService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
@@ -385,11 +414,13 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<ChaoSongModel>
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是监控阅件列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> searchAllList(String tenantId, String searchName, String itemId, String senderName,
-        String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSongModel> searchAllList(@RequestParam String tenantId, String searchName, String itemId,
+        String senderName, String userName, String state, String year, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);
     }
@@ -400,10 +431,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param documentTitle 标题
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> updateTitle(String tenantId, String processInstanceId, String documentTitle) {
+    public Y9Result<Object> updateTitle(@RequestParam String tenantId, @RequestParam String processInstanceId,
+        @RequestParam String documentTitle) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.updateTitle(processInstanceId, documentTitle);
         return Y9Result.success();

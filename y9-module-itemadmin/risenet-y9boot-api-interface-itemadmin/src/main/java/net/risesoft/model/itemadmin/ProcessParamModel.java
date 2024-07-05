@@ -25,7 +25,7 @@ public class ProcessParamModel implements Serializable {
      */
     private String processInstanceId;
     /**
-     * 流程序列号
+     * 流程编号
      */
     private String processSerialNumber;
     /**

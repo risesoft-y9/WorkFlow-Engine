@@ -3,10 +3,14 @@ package net.risesoft.api;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @author zhangchongjie
  * @date 2023/02/06
  */
+@Validated
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -46,11 +51,14 @@ public class QueryListApiImpl implements QueryListApi {
      * @param searchMapStr 搜索条件
      * @param page 页面
      * @param rows 条数
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - data 是综合查询列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state,
-        String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
+    public Y9Page<ActRuDetailModel> getQueryList(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, String state,
+        String createDate, @RequestParam @NotBlank String tableName, String searchMapStr, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String sql0 = "";

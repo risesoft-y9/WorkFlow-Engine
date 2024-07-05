@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -42,9 +43,11 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param userId 人员id
      * @param id 主键id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteById(String tenantId, String userId, String id) {
+    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return speakInfoService.deleteById(id);
     }
@@ -56,9 +59,11 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param userId 人员id
      * @param id 主键id
      * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发言信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<SpeakInfoModel> findById(String tenantId, String userId, String id) {
+    public Y9Result<SpeakInfoModel> findById(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SpeakInfo speakInfo = speakInfoService.findById(id);
         return Y9Result.success(ItemAdminModelConvertUtil.speakInfo2Model(speakInfo));
@@ -71,10 +76,11 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<SpeakInfoModel>>} 通用请求返回对象 - data 是发言信息列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(String tenantId, String userId,
-        String processInstanceId) {
+    public Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String processInstanceId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
@@ -90,9 +96,11 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是未读消息计数
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getNotReadCount(String tenantId, String userId, String processInstanceId) {
+    public Y9Result<Integer> getNotReadCount(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(speakInfoService.getNotReadCount(processInstanceId, userId));
     }
@@ -103,10 +111,12 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param speakInfoModel 发言信息
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是发言ID
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveOrUpdate(String tenantId, String userId, @RequestBody SpeakInfoModel speakInfoModel) {
+    public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestBody SpeakInfoModel speakInfoModel) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);

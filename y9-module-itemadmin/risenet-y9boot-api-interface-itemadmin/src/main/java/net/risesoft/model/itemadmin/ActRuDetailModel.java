@@ -29,7 +29,7 @@ public class ActRuDetailModel implements Serializable {
     private String itemId;
 
     /**
-     * 流程序列号
+     * 流程编号
      */
     private String processSerialNumber;
 

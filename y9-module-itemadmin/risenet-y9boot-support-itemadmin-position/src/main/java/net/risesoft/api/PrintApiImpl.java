@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,12 @@ public class PrintApiImpl implements PrintApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param itemId 事项id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 -data是模版文件ID
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> openDocument(String tenantId, String userId, String itemId) {
+    public Y9Result<String> openDocument(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String itemId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);

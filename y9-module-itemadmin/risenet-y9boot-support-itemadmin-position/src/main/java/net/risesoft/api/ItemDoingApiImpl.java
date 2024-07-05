@@ -49,7 +49,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是在办任务数量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
@@ -66,7 +67,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
@@ -78,8 +80,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             "SELECT COUNT(DISTINCT T.PROCESSSERIALNUMBER) FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME= ? AND T.STATUS=0 AND T.DELETED = FALSE ";
         Object[] args = new Object[1];
         args[0] = systemName;
-        ItemPage itemPage = itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class),
-            countSql, args, page, rows);
+        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
     }
@@ -92,7 +94,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
@@ -122,11 +125,12 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
-        String tableName, String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam String tableName, String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
         StringBuilder sql1 = new StringBuilder();
@@ -145,8 +149,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             + " WHERE T.SYSTEMNAME= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
         Object[] args = new Object[1];
         args[0] = systemName;
-        ItemPage itemPage = itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class),
-            countSql, args, page, rows);
+        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
     }
@@ -161,7 +165,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
-     * @return Y9Page<ActRuDetailModel>
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
+     * @since 9.6.6
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
@@ -186,8 +191,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
-        ItemPage itemPage = itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class),
-            countSql, args, page, rows);
+        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
     }

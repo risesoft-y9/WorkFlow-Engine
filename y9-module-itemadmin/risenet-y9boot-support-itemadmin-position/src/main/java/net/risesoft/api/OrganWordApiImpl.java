@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -49,11 +50,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param itemId 事项id
      * @param common common
      * @param processSerialNumber 流程编号
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> checkNumberStr(String tenantId, String userId, String characterValue, String custom,
-        Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
+    public Y9Result<Integer> checkNumberStr(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String characterValue, @RequestParam String custom, @RequestParam Integer year,
+        @RequestParam Integer numberTemp, @RequestParam String itemId, @RequestParam Integer common,
+        @RequestParam String processSerialNumber) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -70,11 +74,13 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
-     * @return Y9Result<OrganWordModel>
+     * @return {@code Y9Result<OrganWordModel>} 通用请求返回对象 -data 是编号的机关代字
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<OrganWordModel> exist(String tenantId, String userId, String custom, String processSerialNumber,
-        String processInstanceId, String itembox) {
+    public Y9Result<OrganWordModel> exist(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String custom, @RequestParam String processSerialNumber, String processInstanceId,
+        @RequestParam String itembox) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -82,6 +88,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
+     *
      * 查找有权限的机构代字
      *
      * @param tenantId 租户id
@@ -90,11 +97,13 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
-     * @return Y9Result<List<OrganWordPropertyModel>>
+     * @return {@code Y9Result<List<OrganWordPropertyModel>>} 通用请求返回对象 -data是数据字典列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<OrganWordPropertyModel>> findByCustom(String tenantId, String userId, String custom,
-        String itemId, String processDefinitionId, String taskDefKey) {
+    public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String custom, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, String taskDefKey) {
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -111,11 +120,13 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param year 文号年份
      * @param common common
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getNumber(String tenantId, String userId, String custom, String characterValue,
-        Integer year, Integer common, String itemId) {
+    public Y9Result<Integer> getNumber(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String custom, @RequestParam String characterValue, @RequestParam Integer year,
+        @RequestParam Integer common, @RequestParam String itemId) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -132,11 +143,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param year 文号年份
      * @param common common
      * @param itemId 事项id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号的数字
+     * @since 9.6.6
+     *
      */
     @Override
-    public Y9Result<Integer> getNumberOnly(String tenantId, String userId, String custom, String characterValue,
-        Integer year, Integer common, String itemId) {
+    public Y9Result<Integer> getNumberOnly(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String custom, @RequestParam String characterValue, @RequestParam Integer year,
+        @RequestParam Integer common, @RequestParam String itemId) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);

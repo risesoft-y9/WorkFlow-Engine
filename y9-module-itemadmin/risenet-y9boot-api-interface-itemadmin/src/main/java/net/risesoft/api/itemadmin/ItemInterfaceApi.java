@@ -22,7 +22,7 @@ import net.risesoft.pojo.Y9Result;
 public interface ItemInterfaceApi {
 
     /**
-     * 获取任务绑定接口
+     * 获取事项接口信息
      *
      * @param tenantId 租户id
      * @param itemId 事项id
@@ -30,6 +30,7 @@ public interface ItemInterfaceApi {
      * @param processDefinitionId 流程定义id
      * @param condition 执行条件
      * @return {@code Y9Result<List<InterfaceModel>>} 通用请求返回对象 - data 是接口绑定参数列表
+     * @since 9.6.6
      */
     @GetMapping("/getInterface")
     Y9Result<List<InterfaceModel>> getInterface(@RequestParam("tenantId") @NotBlank String tenantId,
@@ -37,12 +38,13 @@ public interface ItemInterfaceApi {
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("condition") String condition);
 
     /**
-     * 获取接口绑定参数，包括请求参数和响应参数
+     * 获取事项接口参数信息
      *
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param interfaceId 接口id
      * @return {@code Y9Result<List<InterfaceParamsModel>>} 通用请求返回对象 - data 是接口绑定参数列表
+     * @since 9.6.6
      */
     @GetMapping("/getInterfaceParams")
     Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam("tenantId") @NotBlank String tenantId,

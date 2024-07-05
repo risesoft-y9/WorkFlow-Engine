@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -52,10 +53,11 @@ public class ReminderApiImpl implements ReminderApi {
      *
      * @param tenantId 租户id
      * @param ids 催办ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteList(String tenantId, @RequestBody String[] ids) {
+    public Y9Result<Object> deleteList(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         reminderService.deleteList(ids);
         return Y9Result.success();
@@ -66,10 +68,11 @@ public class ReminderApiImpl implements ReminderApi {
      *
      * @param tenantId 租户id
      * @param id 催办id
-     * @return Y9Result<ReminderModel>
+     * @return {@code Y9Result<ReminderModel>} 通用请求返回对象 - rows 是待办的催办信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<ReminderModel> findById(String tenantId, String id) {
+    public Y9Result<ReminderModel> findById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Reminder reminder = reminderService.findById(id);
         if (reminder != null && reminder.getId() != null) {
@@ -94,11 +97,12 @@ public class ReminderApiImpl implements ReminderApi {
      * @param processInstanceId 流程实例id
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<ReminderModel>
+     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是催办信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ReminderModel> findByProcessInstanceId(String tenantId, String processInstanceId, int page,
-        int rows) {
+    public Y9Page<ReminderModel> findByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return reminderService.findByProcessInstanceId(processInstanceId, page, rows);
     }
@@ -111,11 +115,13 @@ public class ReminderApiImpl implements ReminderApi {
      * @param processInstanceId 流程实例id
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<ReminderModel>
+     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是催办信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ReminderModel> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId,
-        String processInstanceId, int page, int rows) {
+    public Y9Page<ReminderModel> findBySenderIdAndProcessInstanceIdAndActive(@RequestParam String tenantId,
+        @RequestParam String senderId, @RequestParam String processInstanceId, @RequestParam int page,
+        @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return reminderService.findBySenderIdAndProcessInstanceIdAndActive(senderId, processInstanceId, page, rows);
     }
@@ -127,10 +133,12 @@ public class ReminderApiImpl implements ReminderApi {
      * @param taskId 任务id
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<ReminderModel>
+     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是待办的催办信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Page<ReminderModel> findByTaskId(String tenantId, String taskId, int page, int rows) {
+    public Y9Page<ReminderModel> findByTaskId(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return reminderService.findByTaskId(taskId, page, rows);
     }
@@ -142,10 +150,12 @@ public class ReminderApiImpl implements ReminderApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param type 类型，todo（待办），doing（在办），done（办结）
-     * @return Y9Result<ReminderModel>
+     * @return {@code Y9Result<ReminderModel>} 通用请求返回对象 -data 是催办信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<ReminderModel> getReminder(String tenantId, String userId, String taskId, String type) {
+    public Y9Result<ReminderModel> getReminder(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String taskId, @RequestParam String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
         taskId = taskId.contains(SysVariables.COMMA) ? taskId.split(SysVariables.COMMA)[0] : taskId;
         Reminder reminder = new Reminder();
@@ -182,11 +192,12 @@ public class ReminderApiImpl implements ReminderApi {
      * @param processInstanceId 流程实例id
      * @param taskIds taskIds
      * @param msgContent 催办信息
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveReminder(String tenantId, String userId, String processInstanceId,
-        @RequestBody String[] taskIds, String msgContent) {
+    public Y9Result<String> saveReminder(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processInstanceId, @RequestBody String[] taskIds, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -223,11 +234,14 @@ public class ReminderApiImpl implements ReminderApi {
      * @param taskId 任务id
      * @param taskAssigneeId 任务受让人Id
      * @param msgContent 催办信息
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
-        String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent) {
+    public Y9Result<String> sendReminderMessage(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String remType, @RequestParam String procInstId, @RequestParam String processInstanceId,
+        @RequestParam String documentTitle, @RequestParam String taskId, @RequestParam String taskAssigneeId,
+        @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -267,10 +281,11 @@ public class ReminderApiImpl implements ReminderApi {
      *
      * @param tenantId 租户id
      * @param ids 催办ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> setReadTime(String tenantId, @RequestBody String[] ids) {
+    public Y9Result<Object> setReadTime(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         reminderService.setReadTime(ids);
         return Y9Result.successMsg("设置为查看状态成功!");
@@ -282,10 +297,12 @@ public class ReminderApiImpl implements ReminderApi {
      * @param tenantId 租户id
      * @param id 催办id
      * @param msgContent 催办信息
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> updateReminder(String tenantId, String id, String msgContent) {
+    public Y9Result<String> updateReminder(@RequestParam String tenantId, @RequestParam String id,
+        @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Reminder reminder = new Reminder();

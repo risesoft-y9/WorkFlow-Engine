@@ -24,7 +24,7 @@ public class OfficeFollowModel implements Serializable {
     private String guid;
 
     /**
-     * 工作流流程序列号
+     * 工作流流程编号
      */
     private String processSerialNumber;
 

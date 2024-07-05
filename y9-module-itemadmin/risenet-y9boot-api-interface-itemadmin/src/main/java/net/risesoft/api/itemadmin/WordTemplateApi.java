@@ -13,12 +13,13 @@ import net.risesoft.pojo.Y9Result;
  * @date 2022/12/19
  */
 public interface WordTemplateApi {
+
     /**
-     *
-     * Description: 根据唯一标示获取模板辣眼睛
+     * 根据id获取正文模板文件路径
      *
      * @param id 模板id
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @GetMapping(value = "/getFilePathById")
     Y9Result<String> getFilePathById(@RequestParam("id") String id);

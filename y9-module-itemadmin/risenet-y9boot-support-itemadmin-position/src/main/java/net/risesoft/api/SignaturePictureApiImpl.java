@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,10 +45,11 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      *
      * @param tenantId 租户id
      * @param id id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteById(String tenantId, String id) {
+    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         signaturePictureService.deleteById(id);
         return Y9Result.success();
@@ -58,10 +60,11 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      *
      * @param tenantId 租户id
      * @param id id
-     * @return Y9Result<SignaturePictureModel>
+     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<SignaturePictureModel> findById(String tenantId, String id) {
+    public Y9Result<SignaturePictureModel> findById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SignaturePicture sp = signaturePictureService.findById(id);
         SignaturePictureModel spModel = new SignaturePictureModel();
@@ -76,10 +79,11 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return Y9Result<SignaturePictureModel>
+     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<SignaturePictureModel> findByUserId(String tenantId, String userId) {
+    public Y9Result<SignaturePictureModel> findByUserId(@RequestParam String tenantId, @RequestParam String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
 
         SignaturePictureModel spModel = new SignaturePictureModel();
@@ -96,10 +100,12 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param spJson spJson
-     * @return Y9Result<SignaturePictureModel>
+     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<SignaturePictureModel> saveOrUpdate(String tenantId, String userId, String spJson) {
+    public Y9Result<SignaturePictureModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String spJson) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);

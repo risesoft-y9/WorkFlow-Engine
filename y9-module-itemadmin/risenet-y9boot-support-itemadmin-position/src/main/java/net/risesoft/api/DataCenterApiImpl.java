@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,12 @@ public class DataCenterApiImpl implements DataCenterApi {
      * @param processInstanceId 流程实例id
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveToDateCenter(String processInstanceId, String tenantId, String userId) {
+    public Y9Result<Object> saveToDateCenter(@RequestParam String processInstanceId, @RequestParam String tenantId,
+        @RequestParam String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);

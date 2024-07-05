@@ -15,7 +15,7 @@ import net.risesoft.pojo.Y9Result;
 public interface RejectReasonApi {
 
     /**
-     * 保存退回/收回的原因
+     * 保存驳回原因
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -23,6 +23,7 @@ public interface RejectReasonApi {
      * @param taskId 任务id
      * @param reason 理由
      * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
      */
     @PostMapping("/save")
     Y9Result<Object> save(@RequestParam("userId") String tenantId, @RequestParam("userId") String userId,

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -53,10 +54,11 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param systemName 系统名称
-     * @return Y9Result<List<ItemModel>>
+     * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemModel>> findAll(String tenantId, String systemName) {
+    public Y9Result<List<ItemModel>> findAll(@RequestParam String tenantId, @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll(systemName);
         List<ItemModel> itemModelList = new ArrayList<>();
@@ -73,10 +75,12 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<ItemModel>
+     * @return {@code Y9Result<ItemModel>} 通用请求返回对象 - data 是事项信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<ItemModel> findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
+    public Y9Result<ItemModel> findByProcessDefinitionKey(@RequestParam String tenantId,
+        @RequestParam String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ItemModel itemModel = spmApproveItemService.findByProcessDefinitionKey(tenantId, processDefinitionKey);
         return Y9Result.success(itemModel);
@@ -86,10 +90,11 @@ public class ItemApiImpl implements Item4PositionApi {
      * 获取所有事项列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ItemModel>>
+     * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemModel>> getAllItem(String tenantId) {
+    public Y9Result<List<ItemModel>> getAllItem(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll();
         List<ItemModel> itemModelList = new ArrayList<>();
@@ -105,11 +110,12 @@ public class ItemApiImpl implements Item4PositionApi {
      * 获取所有事项
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ItemModel>>
+     * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
+     * @since 9.6.6
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Result<List<ItemModel>> getAllItemList(String tenantId) {
+    public Y9Result<List<ItemModel>> getAllItemList(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = spmApproveItemService.list();
         List<SpmApproveItem> list = (List<SpmApproveItem>)map.get("rows");
@@ -127,10 +133,11 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Y9Result<ItemModel>
+     * @return {@code Y9Result<ItemModel>} 通用请求返回对象 - data 是事项信息
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<ItemModel> getByItemId(String tenantId, String itemId) {
+    public Y9Result<ItemModel> getByItemId(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         ItemModel itemModel = new ItemModel();
@@ -145,10 +152,11 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是事项id
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getFirstItem(String tenantId, String positionId) {
+    public Y9Result<String> getFirstItem(@RequestParam String tenantId, @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -162,10 +170,12 @@ public class ItemApiImpl implements Item4PositionApi {
      * @param tenantId 租户Id
      * @param itemId 事项id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是表单id
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getFormIdByItemId(String tenantId, String itemId, String processDefinitionKey) {
+    public Y9Result<String> getFormIdByItemId(@RequestParam String tenantId, @RequestParam String itemId,
+        @RequestParam String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String formId = documentService.getFormIdByItemId(itemId, processDefinitionKey);
         return Y9Result.success(formId);
@@ -176,10 +186,11 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<List<ItemListModel>>
+     * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是事项列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemListModel>> getItemList(String tenantId, String positionId) {
+    public Y9Result<List<ItemListModel>> getItemList(@RequestParam String tenantId, @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -193,10 +204,12 @@ public class ItemApiImpl implements Item4PositionApi {
      * @param tenantId 租户Id
      * @param itemId 事项id
      * @param mappingId 系统标识
-     * @return Y9Result<List<ItemMappingConfModel>>
+     * @return {@code Y9Result<List<ItemMappingConfModel>>} 通用请求返回对象 - data 是事项映射列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemMappingConfModel>> getItemMappingConf(String tenantId, String itemId, String mappingId) {
+    public Y9Result<List<ItemMappingConfModel>> getItemMappingConf(@RequestParam String tenantId,
+        @RequestParam String itemId, @RequestParam String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemMappingConf> list =
             itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
@@ -213,31 +226,33 @@ public class ItemApiImpl implements Item4PositionApi {
      * 获取事项系统
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<ItemSystemListModel>>
+     * @return {@code Y9Result<List<ItemSystemListModel>>} 通用请求返回对象 - data 是事项系统列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemSystemListModel>> getItemSystem(String tenantId) {
+    public Y9Result<List<ItemSystemListModel>> getItemSystem(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> list = spmApproveItemRepository.getItemSystem();
-        List<ItemSystemListModel> res_list = new ArrayList<>();
+        List<ItemSystemListModel> itemList = new ArrayList<>();
         for (Map<String, Object> map : list) {
             ItemSystemListModel itemSystemListModel = new ItemSystemListModel();
             itemSystemListModel.setSystemName(map.get("systemName").toString());
             itemSystemListModel.setSysLevel(map.get("sysLevel").toString());
-            res_list.add(itemSystemListModel);
+            itemList.add(itemSystemListModel);
         }
-        return Y9Result.success(res_list);
+        return Y9Result.success(itemList);
     }
 
     /**
      * 获取个人有权限事项列表
      *
-     * @param tenantId 租户id
+     * @param tenantId 租户Id
      * @param positionId 岗位id
-     * @return Y9Result<List<ItemListModel>>
+     * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是新建事项列表
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemListModel>> getMyItemList(String tenantId, String positionId) {
+    public Y9Result<List<ItemListModel>> getMyItemList(@RequestParam String tenantId, @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -250,10 +265,12 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Boolean> hasProcessDefinitionByKey(String tenantId, String processDefinitionKey) {
+    public Y9Result<Boolean> hasProcessDefinitionByKey(@RequestParam String tenantId,
+        @RequestParam String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Boolean hasProcessDefinition = spmApproveItemService.hasProcessDefinitionByKey(processDefinitionKey);
         return Y9Result.success(hasProcessDefinition);
