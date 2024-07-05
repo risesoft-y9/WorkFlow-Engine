@@ -866,7 +866,7 @@ public class DocumentServiceImpl implements DocumentService {
                     for (TargetModel m : routeToTasks) {
                         Map<String, Object> map2 = new HashMap<>(16);
                         // 退回、路由网关不显示在发送下面
-                        if (!m.getTaskDefName().equals("退回") && !m.getTaskDefName().equals("Exclusive Gateway")) {
+                        if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
                             sendName = Y9Util.genCustomStr(sendName, m.getTaskDefName());
                             sendKey = Y9Util.genCustomStr(sendKey, m.getTaskDefKey());
                             map2.put("sendName", m.getTaskDefName());
@@ -917,7 +917,7 @@ public class DocumentServiceImpl implements DocumentService {
                 for (TargetModel node : taskNodes) {
                     Map<String, Object> map3 = new HashMap<>(16);
                     // 流程不显示在重定向按钮下面
-                    if (!node.getTaskDefName().equals("流程")) {
+                    if (!"流程".equals(node.getTaskDefName())) {
                         repositionName = Y9Util.genCustomStr(repositionName, node.getTaskDefName());
                         repositionKey = Y9Util.genCustomStr(repositionKey, node.getTaskDefKey());
                         map3.put("repositionName", node.getTaskDefName());
@@ -958,45 +958,6 @@ public class DocumentServiceImpl implements DocumentService {
         model.setMultiInstance(map.get("multiInstance") != null ? (String)map.get("multiInstance") : "");
         model.setNextNode(map.get("nextNode") != null ? (Boolean)map.get("nextNode") : false);
         return model;
-    }
-
-    @Override
-    public List<String> parseUserChoice(String userChoice) {
-        String users = "";
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        if (StringUtils.isNotBlank(userChoice)) {
-            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-            for (String s : userChoices) {
-                String[] s2 = s.split(SysVariables.COLON);
-                int principalType = Integer.parseInt(s2[0]);
-                String userIdTemp = s2[1];
-                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionManager.get(tenantId, s2[1]).getData();
-                    if (null == position) {
-                        continue;
-                    }
-                    users = this.addUserId(users, userIdTemp);
-                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                    List<Position> employeeList = new ArrayList<>();
-                    this.getAllPosition(employeeList, s2[1]);
-                    for (Position pTemp : employeeList) {
-                        users = this.addUserId(users, pTemp.getId());
-                    }
-                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
-                    for (CustomGroupMember pTemp : list) {
-                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
-                        if (position != null && StringUtils.isNotBlank(position.getId())) {
-                            users = this.addUserId(users, position.getId());
-                        }
-                    }
-                }
-            }
-        }
-        List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
-        ListUtil.removeDuplicateWithOrder(result);
-        return result;
     }
 
     public Y9Result<TargetModel> parserRouteToTaskId(String itemId, String processSerialNumber,
@@ -1083,6 +1044,45 @@ public class DocumentServiceImpl implements DocumentService {
         }
         result.setData(userList);
         result.setSuccess(true);
+        return result;
+    }
+
+    @Override
+    public List<String> parseUserChoice(String userChoice) {
+        String users = "";
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        if (StringUtils.isNotBlank(userChoice)) {
+            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+            for (String s : userChoices) {
+                String[] s2 = s.split(SysVariables.COLON);
+                int principalType = Integer.parseInt(s2[0]);
+                String userIdTemp = s2[1];
+                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
+                    Position position = positionManager.get(tenantId, s2[1]).getData();
+                    if (null == position) {
+                        continue;
+                    }
+                    users = this.addUserId(users, userIdTemp);
+                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
+                    List<Position> employeeList = new ArrayList<>();
+                    this.getAllPosition(employeeList, s2[1]);
+                    for (Position pTemp : employeeList) {
+                        users = this.addUserId(users, pTemp.getId());
+                    }
+                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
+                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
+                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
+                    for (CustomGroupMember pTemp : list) {
+                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
+                        if (position != null && StringUtils.isNotBlank(position.getId())) {
+                            users = this.addUserId(users, position.getId());
+                        }
+                    }
+                }
+            }
+        }
+        List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
+        ListUtil.removeDuplicateWithOrder(result);
         return result;
     }
 
