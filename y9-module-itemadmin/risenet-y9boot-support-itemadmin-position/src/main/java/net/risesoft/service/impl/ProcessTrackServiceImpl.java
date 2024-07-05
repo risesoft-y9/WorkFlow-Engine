@@ -258,7 +258,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             // 意见
             List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId,
                 StringUtils.isBlank(assignee) ? "" : assignee);
-
+            model.setStartTime(hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
             model.setOpinion(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
 
             try {
