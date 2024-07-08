@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.service.delegate.DelegateTask;
@@ -25,7 +27,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "task4ActRuDetaillService")
 public class Task4ActRuDetaillService {
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     private final ActRuDetailApi actRuDetailApi;
