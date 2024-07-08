@@ -4,9 +4,11 @@ import java.util.Map;
 
 import jakarta.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +32,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/ddyjs/workList")
+@RequestMapping(value = "/vue/ddyjs/workList", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WorkList4ddyjsRestController {
 
     private final WorkList4ddyjsService workList4ddyjsService;
@@ -53,7 +55,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/chuanyueList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/chuanyueList")
     public Y9Page<ChaoSongModel> chuanyueList(@RequestParam(required = false) String searchName,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
@@ -70,7 +72,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/doingList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/doingList")
     public Y9Page<Map<String, Object>> doingList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -86,7 +88,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/doneList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/doneList")
     public Y9Page<Map<String, Object>> doneList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -102,7 +104,7 @@ public class WorkList4ddyjsRestController {
      * @param title 搜索词
      * @return Y9Page<DraftModel>
      */
-    @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/draftList")
     public Y9Page<DraftModel> draftList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -121,7 +123,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<OfficeFollowModel>
      */
-    @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/followList")
     public Y9Page<OfficeFollowModel> followList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.followList(itemId, searchTerm, page, rows);
@@ -134,7 +136,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/homeChaosongList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/homeChaosongList")
     public Y9Page<ChaoSongModel> homeChaosongList(@RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.myChaoSongList("", "", "", "", "", page, rows);
     }
@@ -146,7 +148,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/homeDoingList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/homeDoingList")
     public Y9Page<Map<String, Object>> homeDoingList(@RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.homeDoingList(page, rows);
     }
@@ -158,7 +160,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/homeDoneList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/homeDoneList")
     public Y9Page<Map<String, Object>> homeDoneList(@RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.homeDoneList(page, rows);
     }
@@ -175,7 +177,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/queryList", method = RequestMethod.GET, produces = "application/json")
+    @PostMapping(value = "/queryList")
     public Y9Page<Map<String, Object>> queryList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
@@ -192,7 +194,7 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/todoList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {

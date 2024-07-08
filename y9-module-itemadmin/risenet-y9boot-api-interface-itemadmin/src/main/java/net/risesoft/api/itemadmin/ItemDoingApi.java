@@ -1,6 +1,8 @@
 package net.risesoft.api.itemadmin;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -72,11 +74,10 @@ public interface ItemDoingApi {
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
      * @since 9.6.6
      */
-    @GetMapping("/searchBySystemName")
+    @PostMapping("/searchBySystemName")
     Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("systemName") String systemName, @RequestParam(value = "tableName") String tableName,
-        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询在办列表
@@ -91,10 +92,9 @@ public interface ItemDoingApi {
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
      * @since 9.6.6
      */
-    @GetMapping("/searchByUserIdAndSystemName")
+    @PostMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
-        @RequestParam(value = "tableName") String tableName,
-        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+        @RequestParam(value = "tableName") String tableName, @RequestBody String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 }

@@ -6,11 +6,13 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -29,6 +31,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2024/06/05
  */
+@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -115,7 +118,7 @@ public class WorkListRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/queryList")
+    @PostMapping(value = "/queryList")
     public Y9Page<Map<String, Object>> queryList(@RequestParam String itemId,
         @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
@@ -133,7 +136,7 @@ public class WorkListRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/searchDoingList")
+    @PostMapping(value = "/searchDoingList")
     public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -150,7 +153,7 @@ public class WorkListRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/searchDoneList")
+    @PostMapping(value = "/searchDoneList")
     public Y9Page<Map<String, Object>> searchDoneList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -167,7 +170,7 @@ public class WorkListRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/searchTodoList")
+    @PostMapping(value = "/searchTodoList")
     public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
