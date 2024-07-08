@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +41,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/entrust")
+@RequestMapping(value = "/vue/entrust", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EntrustController {
 
     private final EntrustService entrustService;
@@ -60,7 +62,7 @@ public class EntrustController {
      * @param name 搜索词
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/deptTreeSearch", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/deptTreeSearch")
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<>();
@@ -101,7 +103,7 @@ public class EntrustController {
      * @param id 部门id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/getDeptTree", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getDeptTree")
     public Y9Result<List<Map<String, Object>>> getDeptTree(@RequestParam(required = false) String id) {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -149,7 +151,7 @@ public class EntrustController {
      * @param id 委托id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getEntrustInfo", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getEntrustInfo")
     public Y9Result<Map<String, Object>> getEntrustInfo(String id) {
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotEmpty(id)) {
@@ -191,7 +193,7 @@ public class EntrustController {
      *
      * @return Y9Result<List < Entrust>>
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<Entrust>> list() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         List<Entrust> entrustList = entrustService.list(person.getPersonId());
@@ -231,7 +233,7 @@ public class EntrustController {
      *
      * @param id 委托id
      */
-    @RequestMapping(value = "/removeEntrust", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeEntrust")
     public Y9Result<String> removeEntrust(String id) {
         entrustService.removeEntrust(id);
         return Y9Result.successMsg("删除成功");
@@ -243,7 +245,7 @@ public class EntrustController {
      * @param entrust 委托对象实体
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(Entrust entrust) {
         try {
             entrustService.saveOrUpdate(entrust);

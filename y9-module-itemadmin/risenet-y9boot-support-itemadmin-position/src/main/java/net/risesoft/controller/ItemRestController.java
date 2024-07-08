@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +42,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/item")
+@RequestMapping(value = "/vue/item", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemRestController {
 
     private final SpmApproveItemService spmApproveItemService;
@@ -61,7 +63,7 @@ public class ItemRestController {
      * @param id 事项id
      * @return
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String id) {
         Map<String, Object> map = spmApproveItemService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -115,12 +117,12 @@ public class ItemRestController {
      */
     @RequestMapping(value = "/getDept")
     public String getDept(@RequestParam String id) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         getJson(sb, id);
         return "[" + sb.substring(0, sb.lastIndexOf(",")) + "]";
     }
 
-    public void getJson(StringBuffer sb, String deptId) {
+    public void getJson(StringBuilder sb, String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(deptId)) {
             List<Organization> orgList = organizationManager.list(tenantId).getData();
@@ -152,7 +154,7 @@ public class ItemRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<SpmApproveItem>> list() {
         Map<String, Object> map = spmApproveItemService.list();
         List<SpmApproveItem> list = (List<SpmApproveItem>)map.get("rows");
@@ -165,7 +167,7 @@ public class ItemRestController {
      * @param id 事项id
      * @return
      */
-    @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/newOrModify")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -204,7 +206,7 @@ public class ItemRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/publishToSystemApp", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/publishToSystemApp")
     public Y9Result<String> publishToSystemApp(@RequestParam String itemId) {
         Map<String, Object> map = spmApproveItemService.publishToSystemApp(itemId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -218,7 +220,7 @@ public class ItemRestController {
      *
      * @return
      */
-    @RequestMapping(value = "/readAppIconFile", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/readAppIconFile")
     public Y9Result<Map<String, Object>> readAppIconFile() {
         List<Map<String, String>> iconList;
         List<AppIcon> list = appIconManager.listAllIcon().getData();
@@ -243,7 +245,7 @@ public class ItemRestController {
      * @param itemJson 事项信息json
      * @return
      */
-    @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/save")
     public Y9Result<String> save(String itemJson) {
         SpmApproveItem item = Y9JsonUtil.readValue(itemJson, SpmApproveItem.class);
         Map<String, Object> map = spmApproveItemService.save(item);
@@ -259,7 +261,7 @@ public class ItemRestController {
      * @param name 搜索词
      * @return
      */
-    @RequestMapping(value = "/searchAppIcon", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/searchAppIcon")
     public Y9Result<Map<String, Object>> searchAppIcon(@RequestParam(required = false) String name) {
         List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%").getData();
         List<Map<String, String>> iconList = new ArrayList<>();

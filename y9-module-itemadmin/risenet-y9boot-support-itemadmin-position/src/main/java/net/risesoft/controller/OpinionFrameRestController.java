@@ -1,8 +1,10 @@
 package net.risesoft.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,7 @@ import net.risesoft.service.OpinionFrameService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/opinionFrame")
+@RequestMapping(value = "/vue/opinionFrame", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OpinionFrameRestController {
 
     private final OpinionFrameService opinionFrameService;
@@ -31,7 +33,7 @@ public class OpinionFrameRestController {
      * @param id 意见框id
      * @return
      */
-    @RequestMapping(value = "/getOpinionFrame", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOpinionFrame")
     public Y9Result<OpinionFrame> getOpinionFrame(@RequestParam String id) {
         OpinionFrame opinionFrame = opinionFrameService.findOne(id);
         return Y9Result.success(opinionFrame, "获取成功");
@@ -44,7 +46,7 @@ public class OpinionFrameRestController {
      * @param rows 条数
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Page<OpinionFrame> list(@RequestParam Integer page, @RequestParam Integer rows) {
         Page<OpinionFrame> pageList = opinionFrameService.findAll(page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
@@ -61,7 +63,7 @@ public class OpinionFrameRestController {
      * @param rows 条数
      * @return
      */
-    @RequestMapping(value = "/list4NotUsed", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list4NotUsed")
     public Y9Page<OpinionFrame> list4NotUsed(@RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam int page, @RequestParam int rows) {
         Page<OpinionFrame> pageList =
@@ -76,7 +78,7 @@ public class OpinionFrameRestController {
      * @param ids 意见框ids
      * @return
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String[] ids) {
         opinionFrameService.remove(ids);
         return Y9Result.successMsg("删除成功");
@@ -88,7 +90,7 @@ public class OpinionFrameRestController {
      * @param opinionFrame 意见框信息
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(OpinionFrame opinionFrame) {
         opinionFrameService.saveOrUpdate(opinionFrame);
         return Y9Result.successMsg("保存成功");
@@ -102,7 +104,7 @@ public class OpinionFrameRestController {
      * @param keyword 意见框名称
      * @return
      */
-    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/search")
     public Y9Page<OpinionFrame> search(@RequestParam Integer page, @RequestParam Integer rows,
         @RequestParam(required = false) String keyword) {
         Page<OpinionFrame> pageList = opinionFrameService.search(page, rows, keyword);
@@ -121,7 +123,7 @@ public class OpinionFrameRestController {
      * @param keyword 意见名称
      * @return
      */
-    @RequestMapping(value = "/search4NotUsed", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/search4NotUsed")
     public Y9Page<OpinionFrame> search4NotUsed(@RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam int page, @RequestParam int rows,
         @RequestParam(required = false) String keyword) {

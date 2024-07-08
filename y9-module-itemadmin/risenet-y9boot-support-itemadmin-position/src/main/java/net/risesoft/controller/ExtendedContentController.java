@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ import net.risesoft.service.ExtendedContentService;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/extendedContent")
+@RequestMapping(value = "/extendedContent", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ExtendedContentController {
 
     private final ExtendedContentService extendedContentService;
@@ -84,7 +85,7 @@ public class ExtendedContentController {
      * @param content 扩展内容实体类
      * @return Map<String, Object>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
+    @PostMapping(value = "/saveOrUpdate")
     public Map<String, Object> saveOrUpdate(ExtendedContent content) {
         return extendedContentService.saveOrUpdate(content);
     }

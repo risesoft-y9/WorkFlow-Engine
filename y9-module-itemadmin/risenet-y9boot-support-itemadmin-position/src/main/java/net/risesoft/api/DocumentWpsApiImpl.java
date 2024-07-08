@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +25,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/documentWps")
+@RequestMapping(value = "/services/rest/documentWps", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentWpsApiImpl implements DocumentWpsApi {
 
     private final DocumentWpsService documentWpsService;

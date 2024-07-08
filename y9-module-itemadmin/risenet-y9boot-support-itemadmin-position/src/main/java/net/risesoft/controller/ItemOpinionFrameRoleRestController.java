@@ -2,8 +2,10 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,7 @@ import net.risesoft.service.ItemOpinionFrameRoleService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemOpinionFrameRole")
+@RequestMapping(value = "/vue/itemOpinionFrameRole", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemOpinionFrameRoleRestController {
 
     private final ItemOpinionFrameRoleService itemOpinionFrameRoleService;
@@ -32,7 +34,7 @@ public class ItemOpinionFrameRoleRestController {
      * @param itemOpinionFrameId 意见框标识
      * @return
      */
-    @RequestMapping(value = "/bindRole", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/bindRole")
     public Y9Result<String> bindRole(@RequestParam String roleIds, @RequestParam String itemOpinionFrameId) {
         String[] roleIdarr = roleIds.split(";");
         for (String roleId : roleIdarr) {
@@ -47,7 +49,7 @@ public class ItemOpinionFrameRoleRestController {
      * @param itemOpinionFrameId 意见框标识
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam String itemOpinionFrameId) {
         List<ItemOpinionFrameRole> list =
             itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
@@ -60,7 +62,7 @@ public class ItemOpinionFrameRoleRestController {
      * @param ids 角色ids
      * @return
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String[] ids) {
         itemOpinionFrameRoleService.remove(ids);
         return Y9Result.successMsg("删除成功");

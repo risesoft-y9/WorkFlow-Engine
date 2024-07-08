@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +35,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemOpinionFrameBind")
+@RequestMapping(value = "/vue/itemOpinionFrameBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemOpinionFrameBindRestController {
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -55,7 +57,7 @@ public class ItemOpinionFrameBindRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/bindOpinionFrame", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/bindOpinionFrame")
     public Y9Result<String> bindOpinionFrame(@RequestParam String opinionFrameNameAndMarks, @RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         itemOpinionFrameBindService.save(opinionFrameNameAndMarks, itemId, processDefinitionId, taskDefKey);
@@ -81,7 +83,7 @@ public class ItemOpinionFrameBindRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/copyBind")
     public Y9Result<String> copyBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemOpinionFrameBindService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
@@ -95,7 +97,7 @@ public class ItemOpinionFrameBindRestController {
      * @param taskDefKey 任务节点key
      * @return
      */
-    @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemOpinionFrameBind>> getBindList(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService
@@ -103,7 +105,7 @@ public class ItemOpinionFrameBindRestController {
         return Y9Result.success(oftrbList, "获取成功");
     }
 
-    @RequestMapping(value = "/getBindListByMark", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindListByMark")
     public Y9Result<List<Map<String, Object>>> getBindListByMark(@RequestParam String mark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.findByMark(mark);
@@ -152,7 +154,7 @@ public class ItemOpinionFrameBindRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
         List<TargetModel> list;
@@ -160,21 +162,20 @@ public class ItemOpinionFrameBindRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         for (TargetModel targetModel : list) {
-            String opinionFrameNames = "";
+            StringBuilder opinionFrameNames = new StringBuilder();
             List<ItemOpinionFrameBind> bindList =
                 itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
                     targetModel.getTaskDefKey());
             for (ItemOpinionFrameBind bind : bindList) {
                 if (StringUtils.isEmpty(opinionFrameNames)) {
-                    opinionFrameNames = bind.getOpinionFrameName();
+                    opinionFrameNames.append(bind.getOpinionFrameName());
                 } else {
-                    opinionFrameNames += "、" + bind.getOpinionFrameName();
+                    opinionFrameNames.append("、" + bind.getOpinionFrameName());
                 }
             }
-            targetModel.setOpinionFrameNames(opinionFrameNames);
+            targetModel.setOpinionFrameNames(opinionFrameNames.toString());
         }
         resMap.put("rows", list);
-        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 
@@ -184,7 +185,7 @@ public class ItemOpinionFrameBindRestController {
      * @param ids 绑定ids
      * @return
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String[] ids) {
         itemOpinionFrameBindService.delete(ids);
         return Y9Result.successMsg("删除成功");
@@ -197,7 +198,7 @@ public class ItemOpinionFrameBindRestController {
      * @param opinionFrameNameAndMarks 意见框标识与名称
      * @return
      */
-    @RequestMapping(value = "/saveModify", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveModify")
     public Y9Result<String> saveModify(@RequestParam String id, @RequestParam String opinionFrameNameAndMarks) {
         ItemOpinionFrameBind opinionBind = itemOpinionFrameBindService.findOne(id);
         String[] opinionFrameNameAndMark = opinionFrameNameAndMarks.split(":");

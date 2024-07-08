@@ -9,9 +9,11 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +32,7 @@ import net.risesoft.util.form.DbMetaDataUtil;
  */
 @Slf4j
 @RestController
-@RequestMapping(value = "/vue/y9form/tableField")
+@RequestMapping(value = "/vue/y9form/tableField", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TableFieldRestController {
 
     private final JdbcTemplate jdbcTemplate4Tenant;
@@ -49,7 +51,7 @@ public class TableFieldRestController {
      * @param id 字段id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String id) {
         Map<String, Object> map = y9TableFieldService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -64,7 +66,7 @@ public class TableFieldRestController {
      * @param tableId 表id
      * @return Y9Result<Map<String, Object>>
      */
-    @RequestMapping(value = "/getTableFieldList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTableFieldList")
     public Y9Result<Map<String, Object>> getTableFieldList(@RequestParam String tableId) {
         Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
         return Y9Result.success(map, "获取成功");
@@ -77,7 +79,7 @@ public class TableFieldRestController {
      * @param tableId 表id
      * @return Y9Result<Map<String, Object>>
      */
-    @RequestMapping(value = "/newOrModifyField", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/newOrModifyField")
     public Y9Result<Map<String, Object>> newOrModifyField(@RequestParam(required = false) String id,
         @RequestParam String tableId) {
         Map<String, Object> map = new HashMap<>(16);
@@ -121,7 +123,7 @@ public class TableFieldRestController {
      * @param field 字段信息
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveField", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveField")
     public Y9Result<String> saveField(Y9TableField field) {
         Map<String, Object> map = y9TableFieldService.saveOrUpdate(field);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {

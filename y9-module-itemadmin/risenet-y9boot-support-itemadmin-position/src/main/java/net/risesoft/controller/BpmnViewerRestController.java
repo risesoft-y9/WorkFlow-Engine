@@ -5,8 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +38,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/bpmnViewer")
+@RequestMapping(value = "/vue/bpmnViewer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BpmnViewerRestController {
 
     private final HistoricActivityApi historicActivityApi;
@@ -56,7 +57,7 @@ public class BpmnViewerRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List<HistoricActivityInstanceModel>>
      */
-    @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTaskList")
     public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricActivityInstanceModel> list = new ArrayList<>();

@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,7 +35,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/document4Position")
+@RequestMapping(value = "/services/rest/document4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentApiImpl implements Document4PositionApi {
 
     private final DocumentService documentService;

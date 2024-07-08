@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/actRuDetail")
+@RequestMapping(value = "/services/rest/actRuDetail", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ActRuDetailApiImpl implements ActRuDetailApi {
 
     private final ActRuDetailService actRuDetailService;

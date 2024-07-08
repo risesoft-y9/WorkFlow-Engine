@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ import net.risesoft.y9.Y9Context;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/role")
+@RequestMapping(value = "/vue/role", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoleRestController {
 
     private final RoleApi roleManager;
@@ -45,7 +46,7 @@ public class RoleRestController {
      * @param id 节点id
      * @return
      */
-    @RequestMapping(value = "/findRole", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findRole")
     public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id) {
         List<Map<String, Object>> listMap = new ArrayList<>();
         if (StringUtils.isBlank(id)) {

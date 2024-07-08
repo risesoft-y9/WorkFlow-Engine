@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +38,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/itemRole4Position")
+@RequestMapping(value = "/services/rest/itemRole4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemRoleApiImpl implements ItemRole4PositionApi {
 
     private final RoleService roleService;

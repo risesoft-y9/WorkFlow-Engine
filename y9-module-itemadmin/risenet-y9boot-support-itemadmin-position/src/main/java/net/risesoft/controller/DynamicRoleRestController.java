@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +25,7 @@ import net.risesoft.service.DynamicRoleService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/dynamicRole")
+@RequestMapping(value = "/vue/dynamicRole", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DynamicRoleRestController {
 
     private final DynamicRoleService dynamicRoleService;
@@ -33,7 +35,7 @@ public class DynamicRoleRestController {
      *
      * @return Y9Result<List<DynamicRole>>
      */
-    @RequestMapping(value = "/dynamicRoleList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/dynamicRoleList")
     public Y9Result<List<DynamicRole>> dynamicRoleList() {
         List<DynamicRole> drList = dynamicRoleService.findAll();
         return Y9Result.success(drList, "获取成功");
@@ -45,7 +47,7 @@ public class DynamicRoleRestController {
      * @param id 角色id
      * @return Y9Result<DynamicRole>
      */
-    @RequestMapping(value = "/getDynamicRole", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getDynamicRole")
     public Y9Result<DynamicRole> getDynamicRole(@RequestParam String id) {
         DynamicRole dynamicRole = dynamicRoleService.findOne(id);
         return Y9Result.success(dynamicRole, "获取成功");
@@ -56,7 +58,7 @@ public class DynamicRoleRestController {
      *
      * @return Y9Result<List<Map<String, Object>>>
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<Map<String, Object>>> list() {
         List<Map<String, Object>> listMap = new ArrayList<>();
         List<DynamicRole> dynamicRoleList = dynamicRoleService.findAll();
@@ -77,7 +79,7 @@ public class DynamicRoleRestController {
      * @param dynamicRoleIds 角色ids
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String[] dynamicRoleIds) {
         dynamicRoleService.removeDynamicRoles(dynamicRoleIds);
         return Y9Result.successMsg("删除成功");
@@ -89,7 +91,7 @@ public class DynamicRoleRestController {
      * @param dynamicRole 动态角色
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(DynamicRole dynamicRole) {
         dynamicRoleService.saveOrUpdate(dynamicRole);
         return Y9Result.successMsg("保存成功");

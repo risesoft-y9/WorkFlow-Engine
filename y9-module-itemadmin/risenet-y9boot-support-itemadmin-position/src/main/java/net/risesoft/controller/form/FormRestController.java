@@ -7,8 +7,10 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +31,7 @@ import net.risesoft.service.form.Y9FormService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/y9form")
+@RequestMapping(value = "/vue/y9form", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FormRestController {
 
     private final Y9FormService y9FormService;
@@ -42,7 +44,7 @@ public class FormRestController {
      * @param id 字段id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteFormFieldBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteFormFieldBind")
     public Y9Result<String> deleteFormFieldBind(@RequestParam @NotBlank String id) {
         Map<String, Object> map = y9FormFieldService.deleteFormFieldBind(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -57,7 +59,7 @@ public class FormRestController {
      * @param id 表单id
      * @return
      */
-    @RequestMapping(value = "/getForm", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getForm")
     public Y9Result<Map<String, Object>> getForm(@RequestParam String id) {
         Map<String, Object> map = new HashMap<>(16);
         Y9Form y9Form = y9FormService.findById(id);
@@ -75,7 +77,7 @@ public class FormRestController {
      * @param rows 条数
      * @return
      */
-    @RequestMapping(value = "/getFormBindFieldList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getFormBindFieldList")
     public Y9Page<Y9FormField> getFormBindFieldList(@RequestParam String formId, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Page<Y9FormField> pageList = y9FormFieldService.findByFormId(formId, page, rows);
@@ -92,7 +94,7 @@ public class FormRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getFormList")
     public Y9Page<Map<String, Object>> getFormList(@RequestParam(required = false) String systemName,
         @RequestParam int page, @RequestParam int rows) {
         Map<String, Object> map = y9FormService.getFormList(systemName, page, rows);
@@ -107,7 +109,7 @@ public class FormRestController {
      * @param form 表单信息
      * @return
      */
-    @RequestMapping(value = "/newOrModifyForm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/newOrModifyForm")
     public Y9Result<String> newOrModifyForm(Y9Form form) {
         Map<String, Object> map = y9FormService.saveOrUpdate(form);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -122,7 +124,7 @@ public class FormRestController {
      * @param ids 表单id
      * @return
      */
-    @RequestMapping(value = "/removeForm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeForm")
     public Y9Result<String> removeForm(@RequestParam String ids) {
         Map<String, Object> map = y9FormService.delete(ids);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -138,7 +140,7 @@ public class FormRestController {
      * @param fieldJson 字段绑定信息
      * @return
      */
-    @RequestMapping(value = "/saveFormField", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveFormField")
     public Y9Result<String> saveFormField(@RequestParam String formId,
         @RequestParam(required = false) String fieldJson) {
         Map<String, Object> map = y9FormService.saveFormField(formId, fieldJson);
@@ -155,7 +157,7 @@ public class FormRestController {
      * @param formJson 表单json
      * @return
      */
-    @RequestMapping(value = "/saveFormJson", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveFormJson")
     public Y9Result<String> saveFormJson(@RequestParam String id, @RequestParam(required = false) String formJson) {
         Map<String, Object> map = y9FormService.saveFormJson(id, formJson);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {

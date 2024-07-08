@@ -2,8 +2,10 @@ package net.risesoft.controller;
 
 import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,7 @@ import net.risesoft.service.ItemDataTransferService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/dataTransfer")
+@RequestMapping(value = "/vue/dataTransfer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemDataTransferRestController {
 
     private final ItemDataTransferService itemDataTransferService;
@@ -32,7 +34,7 @@ public class ItemDataTransferRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @RequestMapping(value = "/dataTransfer", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/dataTransfer")
     public Y9Result<String> dataTransfer(@RequestParam String processDefinitionId,
         @RequestParam(required = false) String processInstanceId) {
         return itemDataTransferService.dataTransfer(processDefinitionId, processInstanceId);
@@ -47,7 +49,7 @@ public class ItemDataTransferRestController {
      * @param rows 条数
      * @return
      */
-    @RequestMapping(value = "/getProcessInstanceList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getProcessInstanceList")
     public Y9Page<Map<String, Object>> getProcessInstanceList(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         return itemDataTransferService.getProcessInstanceList(itemId, processDefinitionId, page, rows);

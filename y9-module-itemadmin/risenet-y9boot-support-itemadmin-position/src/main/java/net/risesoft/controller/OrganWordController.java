@@ -5,8 +5,10 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ import net.risesoft.service.OrganWordService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/organWord")
+@RequestMapping(value = "/vue/organWord", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrganWordController {
 
     private final OrganWordService organWordService;
@@ -35,7 +37,7 @@ public class OrganWordController {
      * @param custom 编号标识
      * @return
      */
-    @RequestMapping(value = "/checkCustom", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/checkCustom")
     public Y9Result<Boolean> checkCustom(String id, String custom) {
         Boolean b = organWordService.checkCustom(id, custom);
         return Y9Result.success(b, "获取成功");
@@ -47,7 +49,7 @@ public class OrganWordController {
      * @param id 编号id
      * @return
      */
-    @RequestMapping(value = "/getOrganWord", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOrganWord")
     public Y9Result<OrganWord> getOrganWord(String id) {
         OrganWord organWord = organWordService.findOne(id);
         return Y9Result.success(organWord, "获取成功");
@@ -58,7 +60,7 @@ public class OrganWordController {
      *
      * @return
      */
-    @RequestMapping(value = "/organWordList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/organWordList")
     public Y9Result<List<OrganWord>> organWordList() {
         List<OrganWord> drList = organWordService.findAll();
         return Y9Result.success(drList, "获取成功");
@@ -70,7 +72,7 @@ public class OrganWordController {
      * @param organWordId 编号id
      * @return
      */
-    @RequestMapping(value = "/removeOrganWords", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeOrganWords")
     public Y9Result<String> removeOrganWords(String[] organWordId) {
         organWordService.removeOrganWords(organWordId);
         return Y9Result.successMsg("删除成功");
@@ -82,7 +84,7 @@ public class OrganWordController {
      * @param organWord 编号实体
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<Map<String, Object>> saveOrUpdate(@Valid OrganWord organWord) {
         Map<String, Object> map = organWordService.save(organWord);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {

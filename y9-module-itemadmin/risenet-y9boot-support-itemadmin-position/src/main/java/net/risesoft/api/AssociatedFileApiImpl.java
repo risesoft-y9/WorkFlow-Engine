@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +30,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/associatedFile4Position")
+@RequestMapping(value = "/services/rest/associatedFile4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
 
     private final AssociatedFileService associatedFileService;

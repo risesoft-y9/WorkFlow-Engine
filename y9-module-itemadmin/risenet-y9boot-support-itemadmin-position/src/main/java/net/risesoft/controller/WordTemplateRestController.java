@@ -9,8 +9,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +40,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/wordTemplate")
+@RequestMapping(value = "/vue/wordTemplate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WordTemplateRestController {
 
     private final WordTemplateService wordTemplateService;
@@ -75,7 +77,7 @@ public class WordTemplateRestController {
      * @param id 模板id
      * @return
      */
-    @RequestMapping(value = "/deleteWordTemplate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteWordTemplate")
     public Y9Result<String> deleteWordTemplate(@RequestParam String id) {
         Map<String, Object> map = wordTemplateService.deleteWordTemplate(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -104,7 +106,7 @@ public class WordTemplateRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/getBookMarkBind", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBookMarkBind")
     public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName,
         @RequestParam String wordTemplateId) {
         Map<String, Object> resMap = new HashMap<>(16);
@@ -140,7 +142,7 @@ public class WordTemplateRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getColumns")
     public Y9Result<List<String>> getColumns(@RequestParam String tableId) {
         List<String> columnList = new ArrayList<>();
         Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
@@ -157,7 +159,7 @@ public class WordTemplateRestController {
      * @param file 文件
      * @return
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/upload")
     public Y9Result<String> upload(MultipartFile file) {
         Map<String, Object> map = wordTemplateService.upload(file);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -171,7 +173,7 @@ public class WordTemplateRestController {
      *
      * @return
      */
-    @RequestMapping(value = "/wordTemplateList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/wordTemplateList")
     public Y9Result<List<Map<String, Object>>> wordTemplateList() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();

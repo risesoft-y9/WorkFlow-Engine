@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +28,7 @@ import net.risesoft.service.Y9PreFormItemBindService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vue/preFormBind")
+@RequestMapping(value = "/vue/preFormBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class Y9PreFormItemBindRestController {
 
     private final Y9PreFormItemBindService y9PreFormItemBindService;
@@ -39,7 +41,7 @@ public class Y9PreFormItemBindRestController {
      * @param id 绑定id
      * @return
      */
-    @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteBind")
     public Y9Result<String> deleteBind(@RequestParam String id) {
         Map<String, Object> map = y9PreFormItemBindService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -54,7 +56,7 @@ public class Y9PreFormItemBindRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindList")
     public Y9Result<Y9PreFormItemBind> getBindList(@RequestParam String itemId) {
         Y9PreFormItemBind bind = y9PreFormItemBindService.findByItemId(itemId);
         if (bind != null) {
@@ -72,7 +74,7 @@ public class Y9PreFormItemBindRestController {
      * @param systemName 系统名称
      * @return
      */
-    @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getFormList")
     public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId, @RequestParam String systemName,
         @RequestParam(required = false) String formName) {
         List<Map<String, Object>> listmap = new ArrayList<>();
@@ -98,7 +100,7 @@ public class Y9PreFormItemBindRestController {
      * @param formName 表单名称
      * @return
      */
-    @RequestMapping(value = "/saveBindForm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBindForm")
     public Y9Result<String> saveBindForm(String itemId, String formId, String formName) {
         Map<String, Object> map = y9PreFormItemBindService.saveBindForm(itemId, formId, formName);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {

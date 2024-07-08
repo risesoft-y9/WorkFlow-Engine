@@ -2,8 +2,10 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/taoHongTemplateType")
+@RequestMapping(value = "/vue/taoHongTemplateType", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TaoHongTemplateTypeRestController {
 
     private final TaoHongTemplateTypeService taoHongTemplateTypeService;
@@ -36,7 +38,7 @@ public class TaoHongTemplateTypeRestController {
      *
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<TaoHongTemplateType>> list() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
@@ -56,7 +58,7 @@ public class TaoHongTemplateTypeRestController {
      * @param id 类型id
      * @return
      */
-    @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/newOrModify")
     public Y9Result<TaoHongTemplateType> newOrModify(@RequestParam String id) {
         TaoHongTemplateType t = taoHongTemplateTypeService.findOne(id);
         return Y9Result.success(t, "获取成功");
@@ -68,7 +70,7 @@ public class TaoHongTemplateTypeRestController {
      * @param ids 类型ids
      * @return
      */
-    @RequestMapping(value = "/removeTaoHongTemplateType", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeTaoHongTemplateType")
     public Y9Result<String> removeTaoHongTemplateType(@RequestParam String[] ids) {
         taoHongTemplateTypeService.removeTaoHongTemplateType(ids);
         return Y9Result.successMsg("删除成功");
@@ -80,7 +82,7 @@ public class TaoHongTemplateTypeRestController {
      * @param idAndTabIndexs 排序id
      * @return
      */
-    @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrder")
     public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
         taoHongTemplateTypeService.saveOrder(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
@@ -92,7 +94,7 @@ public class TaoHongTemplateTypeRestController {
      * @param t 类型信息
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(TaoHongTemplateType t) {
         taoHongTemplateTypeService.saveOrUpdate(t);
         return Y9Result.successMsg("保存成功");

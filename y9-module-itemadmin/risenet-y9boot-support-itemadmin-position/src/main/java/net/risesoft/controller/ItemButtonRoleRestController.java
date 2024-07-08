@@ -3,8 +3,10 @@ package net.risesoft.controller;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +23,7 @@ import net.risesoft.service.ItemButtonRoleService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemButtonRole")
+@RequestMapping(value = "/vue/itemButtonRole", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemButtonRoleRestController {
 
     private final ItemButtonRoleService itemButtonRoleService;
@@ -32,7 +34,7 @@ public class ItemButtonRoleRestController {
      * @param itemButtonId 绑定id
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<ItemButtonRole>> list(@RequestParam String itemButtonId) {
         List<ItemButtonRole> list = itemButtonRoleService.findByItemButtonIdContainRoleName(itemButtonId);
         return Y9Result.success(list, "获取成功");
@@ -44,7 +46,7 @@ public class ItemButtonRoleRestController {
      * @param ids 绑定id
      * @return
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String[] ids) {
         itemButtonRoleService.remove(ids);
         return Y9Result.successMsg("删除成功");
@@ -57,7 +59,7 @@ public class ItemButtonRoleRestController {
      * @param roleIds 角色ids
      * @return
      */
-    @RequestMapping(value = "/saveRole", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveRole")
     public Y9Result<String> saveRole(@RequestParam String itemButtonId, @RequestParam String roleIds) {
         if (StringUtils.isNotEmpty(roleIds)) {
             String[] roleIdArr = roleIds.split(";");

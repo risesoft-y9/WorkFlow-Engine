@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +32,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemWordBind")
+@RequestMapping(value = "/vue/itemWordBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemWordTemplateBindController {
 
     private final WordTemplateService wordTemplateService;
@@ -47,7 +49,7 @@ public class ItemWordTemplateBindController {
      * @param id 绑定id
      * @return
      */
-    @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteBind")
     public Y9Result<String> deleteBind(@RequestParam String id) {
         Map<String, Object> map = itemWordTemplateBindService.deleteBind(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -62,7 +64,7 @@ public class ItemWordTemplateBindController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/getTemplateBind", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTemplateBind")
     public Y9Result<Map<String, Object>> getTemplateBind(@RequestParam String itemId) {
         Map<String, Object> map = new HashMap<>(16);
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -97,7 +99,7 @@ public class ItemWordTemplateBindController {
      * @param templateId 模板id
      * @return
      */
-    @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/save")
     public Y9Result<String> save(@RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam String templateId) {
         Map<String, Object> map = itemWordTemplateBindService.save(itemId, processDefinitionId, templateId);

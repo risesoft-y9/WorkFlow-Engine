@@ -2,8 +2,10 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +23,7 @@ import net.risesoft.service.ItemLinkBindService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemLinkBind")
+@RequestMapping(value = "/vue/itemLinkBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemLinkBindController {
 
     private final ItemLinkBindService itemLinkBindService;
@@ -32,7 +34,7 @@ public class ItemLinkBindController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemLinkBind>> getBindList(@RequestParam String itemId) {
         List<ItemLinkBind> list = itemLinkBindService.findByItemId(itemId);
         return Y9Result.success(list, "获取成功");
@@ -44,7 +46,7 @@ public class ItemLinkBindController {
      * @param itemLinkId 绑定关系id
      * @return
      */
-    @RequestMapping(value = "/getBindRoleList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindRoleList")
     public Y9Result<List<ItemLinkRole>> getBindRoleList(@RequestParam String itemLinkId) {
         List<ItemLinkRole> list = itemLinkBindService.getBindRoleList(itemLinkId);
         return Y9Result.success(list, "获取成功");
@@ -56,7 +58,7 @@ public class ItemLinkBindController {
      * @param ids 绑定ids
      * @return
      */
-    @RequestMapping(value = "/removeBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeBind")
     public Y9Result<String> removeBind(@RequestParam String[] ids) {
         itemLinkBindService.removeBind(ids);
         return Y9Result.successMsg("删除成功");
@@ -68,7 +70,7 @@ public class ItemLinkBindController {
      * @param ids 绑定ids
      * @return
      */
-    @RequestMapping(value = "/removeRole", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeRole")
     public Y9Result<String> removeRole(@RequestParam String[] ids) {
         itemLinkBindService.removeRole(ids);
         return Y9Result.successMsg("删除成功");
@@ -81,7 +83,7 @@ public class ItemLinkBindController {
      * @param itemLinkId 绑定关系id
      * @return
      */
-    @RequestMapping(value = "/saveBindRole", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBindRole")
     public Y9Result<String> saveBindRole(@RequestParam String roleIds, @RequestParam String itemLinkId) {
         itemLinkBindService.saveBindRole(itemLinkId, roleIds);
         return Y9Result.successMsg("保存成功");
@@ -94,7 +96,7 @@ public class ItemLinkBindController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/saveItemLinkBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveItemLinkBind")
     public Y9Result<String> saveItemLinkBind(@RequestParam String[] linkIds, @RequestParam String itemId) {
         itemLinkBindService.saveItemLinkBind(itemId, linkIds);
         return Y9Result.successMsg("保存成功");

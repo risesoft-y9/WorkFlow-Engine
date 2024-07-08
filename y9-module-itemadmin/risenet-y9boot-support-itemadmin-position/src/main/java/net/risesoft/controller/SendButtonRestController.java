@@ -2,8 +2,10 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,7 @@ import net.risesoft.service.SendButtonService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/sendButton")
+@RequestMapping(value = "/vue/sendButton", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SendButtonRestController {
 
     private final SendButtonService sendButtonService;
@@ -31,7 +33,7 @@ public class SendButtonRestController {
      * @param customId 定义key
      * @return
      */
-    @RequestMapping(value = "/checkCustomId", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/checkCustomId")
     public Y9Result<Boolean> checkCustomId(@RequestParam String customId) {
         boolean b = sendButtonService.checkCustomId(customId);
         return Y9Result.success(b, "获取成功");
@@ -43,7 +45,7 @@ public class SendButtonRestController {
      * @param id 按钮id
      * @return
      */
-    @RequestMapping(value = "/getSendButton", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getSendButton")
     public Y9Result<SendButton> getSendButton(@RequestParam String id) {
         SendButton sendButton = sendButtonService.findOne(id);
         return Y9Result.success(sendButton, "获取成功");
@@ -54,7 +56,7 @@ public class SendButtonRestController {
      *
      * @return
      */
-    @RequestMapping(value = "/getSendButtonList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getSendButtonList")
     public Y9Result<List<SendButton>> getSendButtonList() {
         List<SendButton> sendButtonList = sendButtonService.findAll();
         return Y9Result.success(sendButtonList, "获取成功");
@@ -66,7 +68,7 @@ public class SendButtonRestController {
      * @param sendButtonIds 按钮id
      * @return
      */
-    @RequestMapping(value = "/removeSendButtons", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeSendButtons")
     public Y9Result<String> removeSendButtons(@RequestParam String[] sendButtonIds) {
         sendButtonService.removeSendButtons(sendButtonIds);
         return Y9Result.successMsg("删除成功");
@@ -78,7 +80,7 @@ public class SendButtonRestController {
      * @param sendButton 按钮信息
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(SendButton sendButton) {
         sendButtonService.saveOrUpdate(sendButton);
         return Y9Result.successMsg("保存成功");

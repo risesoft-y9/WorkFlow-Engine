@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +38,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vue/itemMappingConf")
+@RequestMapping(value = "/vue/itemMappingConf", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemMappingConfRestController {
 
     private final Y9FormItemBindService y9FormItemBindService;
@@ -59,7 +61,7 @@ public class ItemMappingConfRestController {
      * @param tableName 表名
      * @return
      */
-    @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getColumns")
     public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName) {
         List<Y9FormField> list = new ArrayList<>();
         List<String> fieldNameList = new ArrayList<>();
@@ -81,7 +83,7 @@ public class ItemMappingConfRestController {
      * @param mappingItemId 对接事项id
      * @return
      */
-    @RequestMapping(value = "/getConfInfo", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getConfInfo")
     public Y9Result<Map<String, Object>> getConfInfo(@RequestParam(required = false) String id,
         @RequestParam String itemId, @RequestParam(required = false) String mappingItemId) {
         Map<String, Object> resMap = new HashMap<>(16);
@@ -142,7 +144,7 @@ public class ItemMappingConfRestController {
      * @param mappingId 映射标识
      * @return
      */
-    @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getList")
     public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId, @RequestParam String mappingId) {
         List<ItemMappingConf> list = itemMappingConfService.getList(itemId, mappingId);
         return Y9Result.success(list, "获取成功");
@@ -153,7 +155,7 @@ public class ItemMappingConfRestController {
      *
      * @param ids id数组
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String[] ids) {
         itemMappingConfService.delItemMappingConf(ids);
         return Y9Result.successMsg("删除成功");
@@ -165,7 +167,7 @@ public class ItemMappingConfRestController {
      * @param itemMappingConf 映射信息
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(ItemMappingConf itemMappingConf) {
         itemMappingConfService.saveItemMappingConf(itemMappingConf);
         return Y9Result.successMsg("保存成功");

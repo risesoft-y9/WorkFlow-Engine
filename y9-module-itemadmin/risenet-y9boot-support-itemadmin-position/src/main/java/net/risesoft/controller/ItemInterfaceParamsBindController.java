@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/interfaceParamsBind")
+@RequestMapping(value = "/vue/interfaceParamsBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemInterfaceParamsBindController {
 
     private final ItemInterfaceParamsBindService itemInterfaceParamsBindService;
@@ -59,7 +61,7 @@ public class ItemInterfaceParamsBindController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/getBindInfo", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindInfo")
     public Y9Result<Map<String, Object>> getBindInfo(@RequestParam(required = false) String id,
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
@@ -111,7 +113,7 @@ public class ItemInterfaceParamsBindController {
      * @param type 参数类型
      * @return
      */
-    @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemInterfaceParamsBind>> getBindList(@RequestParam String itemId,
         @RequestParam String interfaceId, @RequestParam String type) {
         List<ItemInterfaceParamsBind> list = itemInterfaceParamsBindService.getBindList(itemId, interfaceId, type);
@@ -124,7 +126,7 @@ public class ItemInterfaceParamsBindController {
      * @param id 绑定id
      * @return
      */
-    @RequestMapping(value = "/removeBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeBind")
     public Y9Result<String> removeBind(@RequestParam String id) {
         itemInterfaceParamsBindService.removeBind(id);
         return Y9Result.successMsg("删除成功");
@@ -136,7 +138,7 @@ public class ItemInterfaceParamsBindController {
      * @param info 绑定信息
      * @return
      */
-    @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBind")
     public Y9Result<String> saveBind(ItemInterfaceParamsBind info) {
         itemInterfaceParamsBindService.saveBind(info);
         return Y9Result.successMsg("保存成功");

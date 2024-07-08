@@ -2,8 +2,10 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,7 @@ import net.risesoft.service.CommonButtonService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/commonButton")
+@RequestMapping(value = "/vue/commonButton", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonButtonRestController {
 
     private final CommonButtonService commonButtonService;
@@ -31,7 +33,7 @@ public class CommonButtonRestController {
      * @param customId 定义key
      * @return Y9Result<Boolean>
      */
-    @RequestMapping(value = "/checkCustomId", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/checkCustomId")
     public Y9Result<Boolean> checkCustomId(@RequestParam String customId) {
         boolean b = commonButtonService.checkCustomId("common_" + customId);
         return Y9Result.success(b, "获取成功");
@@ -43,7 +45,7 @@ public class CommonButtonRestController {
      * @param id 按钮id
      * @return Y9Result<CommonButton>
      */
-    @RequestMapping(value = "/getCommonButton", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getCommonButton")
     public Y9Result<CommonButton> getCommonButton(@RequestParam String id) {
         CommonButton commonButton = commonButtonService.findOne(id);
         return Y9Result.success(commonButton, "获取成功");
@@ -54,7 +56,7 @@ public class CommonButtonRestController {
      *
      * @return Y9Result<List<CommonButton>>
      */
-    @RequestMapping(value = "/getCommonButtonList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getCommonButtonList")
     public Y9Result<List<CommonButton>> getCommonButtonList() {
         List<CommonButton> list = commonButtonService.findAll();
         return Y9Result.success(list, "获取成功");
@@ -66,7 +68,7 @@ public class CommonButtonRestController {
      * @param commonButtonIds 按钮id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/removeCommonButtons", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeCommonButtons")
     public Y9Result<String> removeCommonButtons(@RequestParam String[] commonButtonIds) {
         commonButtonService.removeCommonButtons(commonButtonIds);
         return Y9Result.successMsg("删除成功");
@@ -78,7 +80,7 @@ public class CommonButtonRestController {
      * @param commonButton 按钮信息
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(CommonButton commonButton) {
         commonButtonService.saveOrUpdate(commonButton);
         return Y9Result.successMsg("保存成功");

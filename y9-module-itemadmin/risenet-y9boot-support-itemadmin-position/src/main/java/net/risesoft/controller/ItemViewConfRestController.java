@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vue/itemViewConf")
+@RequestMapping(value = "/vue/itemViewConf", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemViewConfRestController {
 
     private final Y9FormItemBindService y9FormItemBindService;
@@ -52,12 +54,12 @@ public class ItemViewConfRestController {
 
     /**
      * 保存或者修改
-     * 
+     *
      * @param ids 视图id
      * @param viewType 视图类型
      * @return
      */
-    @RequestMapping(value = "/copyView", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/copyView")
     public Y9Result<String> copyView(String[] ids, String viewType) {
         itemViewConfService.copyView(ids, viewType);
         return Y9Result.successMsg("保存成功");
@@ -70,7 +72,7 @@ public class ItemViewConfRestController {
      * @param viewType 视图类型
      * @return
      */
-    @RequestMapping(value = "/findByItemId", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findByItemId")
     public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId, @RequestParam String viewType) {
         List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
@@ -82,7 +84,7 @@ public class ItemViewConfRestController {
      * @param tableName 表名
      * @return
      */
-    @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getColumns")
     public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName, @RequestParam String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Y9FormField> list = new ArrayList<>();
@@ -114,7 +116,7 @@ public class ItemViewConfRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/newOrModify")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id,
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
@@ -164,7 +166,7 @@ public class ItemViewConfRestController {
      * @param id 主键id
      * @return
      */
-    @RequestMapping(value = "/newOrModify4Custom", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/newOrModify4Custom")
     public Y9Result<ItemViewConf> newOrModify4Custom(@RequestParam(required = false) String id) {
         if (StringUtils.isNotBlank(id)) {
             ItemViewConf itemViewConf = itemViewConfService.findById(id);
@@ -178,7 +180,7 @@ public class ItemViewConfRestController {
      *
      * @param ids 视图id
      */
-    @RequestMapping(value = "/removeView", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeView")
     public Y9Result<String> removeView(@RequestParam String[] ids) {
         itemViewConfService.removeItemViewConfs(ids);
         return Y9Result.successMsg("删除成功");
@@ -189,7 +191,7 @@ public class ItemViewConfRestController {
      *
      * @param idAndTabIndexs 视图id和排序索引
      */
-    @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrder")
     public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
         itemViewConfService.update4Order(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
@@ -201,7 +203,7 @@ public class ItemViewConfRestController {
      * @param itemViewConf 视图信息
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(ItemViewConf itemViewConf) {
         itemViewConfService.saveOrUpdate(itemViewConf);
         return Y9Result.successMsg("保存成功");

@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vue/department")
+@RequestMapping(value = "/vue/department", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DepartmentRestController {
 
     private final OrgUnitApi orgUnitManager;
@@ -45,7 +46,7 @@ public class DepartmentRestController {
      * @param id 部门表中的主键Id
      * @return Y9Result<List<Map<String, Object>>>
      */
-    @RequestMapping(value = "/findDeptAndUserById", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findDeptAndUserById")
     public Y9Result<List<Map<String, Object>>> findDeptAndUserById(@RequestParam(required = false) String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
@@ -82,7 +83,7 @@ public class DepartmentRestController {
      * @param id 部门表中的主键Id
      * @return Y9Result<List<Map<String, Object>>>
      */
-    @RequestMapping(value = "/findDeptById", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findDeptById")
     public Y9Result<List<Map<String, Object>>> findDeptById(@RequestParam(required = false) String id) {
         List<Map<String, Object>> items = findDeptById(id, false);
         return Y9Result.success(items, "获取成功");
@@ -139,24 +140,24 @@ public class DepartmentRestController {
 
     /**
      * 查找部门及部门下的人员
-     * 
+     *
      * @return Y9Result<List<Organization>>
      */
-    @RequestMapping(value = "/getOrgList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOrgList")
     public Y9Result<List<Organization>> getOrgList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Organization> list = organizationApi.list(tenantId).getData();
         return Y9Result.success(list, "获取成功");
     }
 
-    @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOrgTree")
     public Y9Result<List<OrgUnit>> getOrgTree(String id, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
         return Y9Result.success(list, "获取成功");
     }
 
-    @RequestMapping(value = "/searchDept", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/searchDept")
     public Y9Result<List<Map<String, Object>>> searchDept(@RequestParam(required = false) String name) {
         List<Map<String, Object>> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -174,7 +175,7 @@ public class DepartmentRestController {
         return Y9Result.success(items, "获取成功");
     }
 
-    @RequestMapping(value = "/searchDeptAndPosition", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/searchDeptAndPosition")
     public Y9Result<List<Map<String, Object>>> searchDeptAndPosition(@RequestParam(required = false) String name) {
         List<Map<String, Object>> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -193,7 +194,7 @@ public class DepartmentRestController {
         return Y9Result.success(items, "获取成功");
     }
 
-    @RequestMapping(value = "/treeSearch", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/treeSearch")
     public Y9Result<List<OrgUnit>> treeSearch(String name, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType).getData();

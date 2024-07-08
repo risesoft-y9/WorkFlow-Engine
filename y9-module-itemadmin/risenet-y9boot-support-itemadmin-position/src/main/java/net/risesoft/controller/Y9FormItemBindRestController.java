@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,7 +43,7 @@ import net.risesoft.y9.util.Y9Util;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vue/y9form/item")
+@RequestMapping(value = "/vue/y9form/item", produces = MediaType.APPLICATION_JSON_VALUE)
 public class Y9FormItemBindRestController {
 
     private final Y9FormItemBindService y9FormItemBindService;
@@ -66,7 +68,7 @@ public class Y9FormItemBindRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/bindList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/bindList")
     public Y9Result<List<Y9FormItemBind>> bindList(@RequestParam String itemId, @RequestParam String procDefId,
         @RequestParam(required = false) String taskDefKey) {
         List<Y9FormItemBind> eformItemList =
@@ -85,7 +87,7 @@ public class Y9FormItemBindRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/copyForm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/copyForm")
     public Y9Result<String> copyForm(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         y9FormItemBindService.copyEform(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
@@ -97,7 +99,7 @@ public class Y9FormItemBindRestController {
      * @param id 绑定id
      * @return
      */
-    @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteBind")
     public Y9Result<String> delete(@RequestParam String id) {
         Map<String, Object> map = y9FormItemBindService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -112,7 +114,7 @@ public class Y9FormItemBindRestController {
      * @param id 绑定id
      * @return
      */
-    @RequestMapping(value = "/deleteMobileBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteMobileBind")
     public Y9Result<String> deleteMobileBind(@RequestParam String id) {
         y9FormItemMobileBindRepository.deleteById(id);
         return Y9Result.successMsg("删除成功");
@@ -127,7 +129,7 @@ public class Y9FormItemBindRestController {
      * @param systemName 系统名称
      * @return
      */
-    @RequestMapping(value = "/formList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/formList")
     public Y9Result<List<Map<String, Object>>> formList(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam String systemName) {
@@ -160,7 +162,7 @@ public class Y9FormItemBindRestController {
      * @param procDefId 流程定义id
      * @return
      */
-    @RequestMapping(value = "/getBindForm", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindForm")
     public Y9Result<Y9FormItemBind> getBindForm(@RequestParam(required = false) String id,
         @RequestParam String procDefId) {
         Y9FormItemBind eformItemBind;
@@ -188,7 +190,7 @@ public class Y9FormItemBindRestController {
      * @param itemId 事项id
      * @return Y9Result<Map<String, Object>>
      */
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
         List<Map<String, Object>> list = new ArrayList<>();
@@ -228,7 +230,6 @@ public class Y9FormItemBindRestController {
             list.add(map);
         }
         resMap.put("rows", list);
-        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 
@@ -238,17 +239,17 @@ public class Y9FormItemBindRestController {
      * @param systemName 系统名称
      * @return
      */
-    @RequestMapping(value = "/getformList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getformList")
     public Y9Result<List<Map<String, Object>>> getformList(@RequestParam String systemName) {
-        List<Map<String, Object>> listmap = new ArrayList<>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%%");
         for (Y9Form y9Form : list) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("formName", y9Form.getFormName());
             map.put("formId", y9Form.getId());
-            listmap.add(map);
+            listMap.add(map);
         }
-        return Y9Result.success(listmap, "获取成功");
+        return Y9Result.success(listMap, "获取成功");
     }
 
     /**
@@ -258,7 +259,7 @@ public class Y9FormItemBindRestController {
      * @param formName 表单名称
      * @return
      */
-    @RequestMapping(value = "/getPrintFormList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getPrintFormList")
     public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId,
         @RequestParam(required = false) String formName) {
         List<Map<String, Object>> listmap = new ArrayList<>();
@@ -286,7 +287,7 @@ public class Y9FormItemBindRestController {
      * @param eformItem 绑定信息
      * @return
      */
-    @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBind")
     public Y9Result<String> save(Y9FormItemBind eformItem) {
         Map<String, Object> map = y9FormItemBindService.save(eformItem);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -301,7 +302,7 @@ public class Y9FormItemBindRestController {
      * @param eformItem 绑定信息
      * @return
      */
-    @RequestMapping(value = "/saveMobileBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveMobileBind")
     public Y9Result<String> saveMobileBind(Y9FormItemMobileBind eformItem) {
         Map<String, Object> map = y9FormItemBindService.save(eformItem);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {

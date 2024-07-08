@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/officeFollow4Position")
+@RequestMapping(value = "/services/rest/officeFollow4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
 
     private final OfficeFollowService officeFollowService;

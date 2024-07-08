@@ -5,8 +5,10 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ import net.risesoft.service.OrganWordPropertyService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/organWordProperty")
+@RequestMapping(value = "/vue/organWordProperty", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrganWordPropertyController {
 
     private final OrganWordPropertyService organWordPropertyService;
@@ -34,7 +36,7 @@ public class OrganWordPropertyController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/getOrganWordProperty", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOrganWordProperty")
     public Y9Result<OrganWordProperty> getOrganWordProperty(String id) {
         OrganWordProperty property = organWordPropertyService.findById(id);
         return Y9Result.success(property, "获取成功");
@@ -46,7 +48,7 @@ public class OrganWordPropertyController {
      * @param organWordId 编号id
      * @return
      */
-    @RequestMapping(value = "/propertyList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/propertyList")
     public Y9Result<List<OrganWordProperty>> organWordList(String organWordId) {
         List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWordId);
         return Y9Result.success(propertyList, "获取成功");
@@ -58,7 +60,7 @@ public class OrganWordPropertyController {
      * @param propertyIds 机关代字id
      * @return
      */
-    @RequestMapping(value = "/removeProperty", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeProperty")
     public Y9Result<String> removePropertyIds(String[] propertyIds) {
         organWordPropertyService.removeOrganWordPropertys(propertyIds);
         return Y9Result.successMsg("删除成功");
@@ -70,7 +72,7 @@ public class OrganWordPropertyController {
      * @param organWordProperty 机关代字实体
      * @return
      */
-    @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/save")
     public Y9Result<Map<String, Object>> save(@Valid OrganWordProperty organWordProperty) {
         Map<String, Object> map = organWordPropertyService.save(organWordProperty);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -79,7 +81,7 @@ public class OrganWordPropertyController {
         return Y9Result.failure("保存失败");
     }
 
-    @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrder")
     public Y9Result<String> saveOrder(String[] idAndTabIndexs) {
         organWordPropertyService.update4Order(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");

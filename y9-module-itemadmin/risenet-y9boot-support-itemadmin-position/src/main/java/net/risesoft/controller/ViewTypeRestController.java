@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +29,7 @@ import net.risesoft.service.ViewTypeService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/viewType")
+@RequestMapping(value = "/vue/viewType", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ViewTypeRestController {
 
     private final ViewTypeService viewTypeService;
@@ -42,7 +44,7 @@ public class ViewTypeRestController {
      * @param id 意见框id
      * @return
      */
-    @RequestMapping(value = "/findById", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findById")
     public Y9Result<ViewType> getOpinionFrame(@RequestParam String id) {
         ViewType viewType = viewTypeService.findById(id);
         return Y9Result.success(viewType, "获取成功");
@@ -55,13 +57,13 @@ public class ViewTypeRestController {
      * @param rows 条数
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Page<ViewType> list(@RequestParam Integer page, @RequestParam Integer rows) {
         Page<ViewType> pageList = viewTypeService.findAll(page, rows);
         List<ViewType> list = pageList.getContent();
         for (ViewType viewType : list) {
             StringBuilder itemIds = new StringBuilder();
-            String itemNames = "";
+            StringBuilder itemNames = new StringBuilder();
             List<ItemViewConf> ivcList = itemViewConfService.findByViewType(viewType.getMark());
             for (ItemViewConf ivc : ivcList) {
                 String itemId = ivc.getItemId();
@@ -70,19 +72,19 @@ public class ViewTypeRestController {
                     if (null != item) {
                         itemIds.append(itemId).append(";");
                         if (StringUtils.isEmpty(itemNames)) {
-                            itemNames = item.getName();
+                            itemNames.append(item.getName());
                         } else {
-                            itemNames += "、" + item.getName();
+                            itemNames.append("、" + item.getName());
                         }
                     }
                 }
             }
-            viewType.setItemNames(itemNames);
+            viewType.setItemNames(itemNames.toString());
         }
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list, "获取列表成功");
     }
 
-    @RequestMapping(value = "/listAll", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/listAll")
     public Y9Result<List<ViewType>> listAll() {
         List<ViewType> list = viewTypeService.findAll();
         return Y9Result.success(list, "获取成功");
@@ -94,7 +96,7 @@ public class ViewTypeRestController {
      * @param ids 视图类型id
      * @return
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String[] ids) {
         viewTypeService.remove(ids);
         return Y9Result.successMsg("删除成功");
@@ -106,7 +108,7 @@ public class ViewTypeRestController {
      * @param viewType 视图类型
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(ViewType viewType) {
         String id = viewType.getId();
         if (StringUtils.isEmpty(id)) {
@@ -127,7 +129,7 @@ public class ViewTypeRestController {
      * @param keyword 视图类型名称
      * @return
      */
-    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/search")
     public Y9Page<ViewType> search(@RequestParam Integer page, @RequestParam Integer rows,
         @RequestParam(required = false) String keyword) {
         Page<ViewType> pageList = viewTypeService.search(page, rows, keyword);

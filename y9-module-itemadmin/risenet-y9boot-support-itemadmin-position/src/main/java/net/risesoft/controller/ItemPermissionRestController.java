@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +32,7 @@ import net.risesoft.y9.configuration.Y9Properties;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vue/itemPerm")
+@RequestMapping(value = "/vue/itemPerm", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemPermissionRestController {
 
     private final ItemPermissionService itemPermissionService;
@@ -45,7 +47,7 @@ public class ItemPermissionRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/copyPerm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/copyPerm")
     public Y9Result<String> copyPerm(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemPermissionService.copyPerm(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
@@ -57,7 +59,7 @@ public class ItemPermissionRestController {
      * @param id 权限id
      * @return
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String id) {
         itemPermissionService.delete(id);
         return Y9Result.successMsg("删除成功");
@@ -70,7 +72,7 @@ public class ItemPermissionRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         Map<String, Object> resMap = new HashMap<>(16);
@@ -101,7 +103,6 @@ public class ItemPermissionRestController {
             targetModel.setRoleNames(roleNames);
         }
         resMap.put("rows", list);
-        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 
@@ -113,7 +114,7 @@ public class ItemPermissionRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindList")
     public Y9Result<List<Map<String, Object>>> getPerm(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<Map<String, Object>> list = new ArrayList<>();
@@ -136,7 +137,7 @@ public class ItemPermissionRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/removePerm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removePerm")
     public Y9Result<String> removePerm(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemPermissionService.removePerm(itemId, processDefinitionId);
         return Y9Result.successMsg("清空成功");
@@ -152,7 +153,7 @@ public class ItemPermissionRestController {
      * @param roleType 角色类型
      * @return
      */
-    @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBind")
     public Y9Result<String> save(@RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam String roleId,
         @RequestParam Integer roleType) {

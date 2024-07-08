@@ -15,9 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +45,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Slf4j
 @RestController
-@RequestMapping(value = "/vue/taoHongTemplate")
+@RequestMapping(value = "/vue/taoHongTemplate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TaoHongTemplateRestContronller {
 
     private final JdbcTemplate jdbcTemplate;
@@ -72,7 +74,7 @@ public class TaoHongTemplateRestContronller {
      * @param name 部门名称
      * @return
      */
-    @RequestMapping(value = "/bureauTree", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/bureauTree")
     public Y9Result<List<Map<String, Object>>> bureauTree(@RequestParam(required = false) String name) {
         List<Map<String, Object>> listMap = new ArrayList<>();
         name = StringUtils.isBlank(name) ? "" : name;
@@ -127,7 +129,7 @@ public class TaoHongTemplateRestContronller {
      * @param name 委办局名称
      * @return
      */
-    @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getList")
     public Y9Result<List<Map<String, Object>>> getList(@RequestParam(required = false) String name) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -163,7 +165,7 @@ public class TaoHongTemplateRestContronller {
      * @param id 套红id
      * @return
      */
-    @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/newOrModify")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
@@ -192,7 +194,7 @@ public class TaoHongTemplateRestContronller {
      * @param ids 套红ids
      * @return
      */
-    @RequestMapping(value = "/removeTaoHongTemplate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeTaoHongTemplate")
     public Y9Result<String> removeTaoHongTemplate(@RequestParam String[] ids) {
         taoHongTemplateService.removeTaoHongTemplate(ids);
         return Y9Result.successMsg("删除成功");
@@ -208,7 +210,7 @@ public class TaoHongTemplateRestContronller {
      * @param file 模板文件
      * @return
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid,
         @RequestParam String bureauGuid, @RequestParam String bureauName, @RequestParam String templateType,
         MultipartFile file) {
