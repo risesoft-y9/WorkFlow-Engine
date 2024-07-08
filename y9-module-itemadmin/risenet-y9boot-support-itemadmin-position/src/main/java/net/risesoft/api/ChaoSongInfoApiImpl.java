@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +33,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/chaoSong4Position")
+@RequestMapping(value = "/services/rest/chaoSong4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
 
     private final ChaoSongInfoService chaoSongInfoService;

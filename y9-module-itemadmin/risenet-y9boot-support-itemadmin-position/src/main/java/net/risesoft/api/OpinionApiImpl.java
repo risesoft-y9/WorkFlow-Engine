@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +37,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/opinion4Position")
+@RequestMapping(value = "/services/rest/opinion4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OpinionApiImpl implements Opinion4PositionApi {
 
     private final OpinionService opinionService;

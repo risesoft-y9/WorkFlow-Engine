@@ -1,6 +1,19 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.model.processadmin.TargetModel;
@@ -8,15 +21,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -25,7 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemTaskConfig")
+@RequestMapping(value = "/vue/itemTaskConfig", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemTaskConfRestController {
 
     private final ItemTaskConfService taskConfService;
@@ -39,7 +43,7 @@ public class ItemTaskConfRestController {
      * @param processDefinitionId 流程定义id
      * @return
      */
-    @RequestMapping(value = "/copyTaskConfig", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/copyTaskConfig")
     public Y9Result<String> copyTaskConfig(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         taskConfService.copyTaskConf(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
@@ -52,7 +56,7 @@ public class ItemTaskConfRestController {
      * @param processDefinitionId 流程定义id
      * @return
      */
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<Map<String, Object>> resList = new ArrayList<>();
@@ -81,7 +85,6 @@ public class ItemTaskConfRestController {
             }
         }
         resMap.put("rows", resList);
-        // TODO
         return Y9Result.success(resMap, "获取成功");
     }
 
@@ -91,7 +94,7 @@ public class ItemTaskConfRestController {
      * @param itemTaskConf 任务基本配置
      * @return
      */
-    @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBind")
     public Y9Result<String> save(ItemTaskConf itemTaskConf) {
         taskConfService.save(itemTaskConf);
         return Y9Result.successMsg("保存成功");

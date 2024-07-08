@@ -1,13 +1,16 @@
 package net.risesoft.controller;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.BookMarkBindService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author qinman
@@ -16,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/bookMarkBind")
+@RequestMapping(value = "/vue/bookMarkBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BookMarkBindRestController {
 
     private final BookMarkBindService bookMarkBindService;
@@ -28,7 +31,7 @@ public class BookMarkBindRestController {
      * @param bookMarkName 书签名称
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteBind")
     public Y9Result<String> deleteBind(@RequestParam String wordTemplateId, @RequestParam String bookMarkName) {
         bookMarkBindService.deleteBind(wordTemplateId, bookMarkName);
         return Y9Result.successMsg("删除成功");
@@ -40,7 +43,7 @@ public class BookMarkBindRestController {
      * @param bookMarkBind 绑定信息
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(BookMarkBind bookMarkBind) {
         bookMarkBindService.saveOrUpdate(bookMarkBind);
         return Y9Result.successMsg("保存成功");

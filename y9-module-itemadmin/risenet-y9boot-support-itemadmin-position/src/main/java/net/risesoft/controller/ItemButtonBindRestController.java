@@ -1,6 +1,20 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.CommonButton;
 import net.risesoft.entity.ItemButtonBind;
@@ -14,16 +28,6 @@ import net.risesoft.service.ItemButtonBindService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -32,7 +36,7 @@ import java.util.Map;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemButtonBind")
+@RequestMapping(value = "/vue/itemButtonBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemButtonBindRestController {
 
     private final ItemButtonBindService itemButtonBindService;
@@ -51,7 +55,7 @@ public class ItemButtonBindRestController {
      * @param itemId 事项id
      * @return
      */
-    @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/copyBind")
     public Y9Result<String> copyBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemButtonBindService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
@@ -66,7 +70,7 @@ public class ItemButtonBindRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemButtonBind>> getBindList(@RequestParam String itemId, @RequestParam Integer buttonType,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<ItemButtonBind> list =
@@ -74,7 +78,7 @@ public class ItemButtonBindRestController {
         return Y9Result.success(list, "获取成功");
     }
 
-    @RequestMapping(value = "/getBindListByButtonId", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindListByButtonId")
     public Y9Result<List<Map<String, Object>>> getBindListByButtonId(@RequestParam String buttonId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemButtonBind> ibbList = itemButtonBindService.findListByButtonId(buttonId);
@@ -109,12 +113,12 @@ public class ItemButtonBindRestController {
 
     /**
      * 获取任务节点信息和流程定义信息
-     * 
+     *
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @return Y9Result<Map<String, Object>>
      */
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<TargetModel> list;
@@ -160,7 +164,7 @@ public class ItemButtonBindRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/getButtonList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getButtonList")
     public Y9Result<Map<String, Object>> getButtonList(@RequestParam String itemId, @RequestParam Integer buttonType,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         Map<String, Object> map = new HashMap<>(16);
@@ -219,7 +223,7 @@ public class ItemButtonBindRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/getButtonOrderList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getButtonOrderList")
     public Y9Result<List<ItemButtonBind>> getButtonOrderList(@RequestParam String itemId,
         @RequestParam Integer buttonType, @RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
@@ -233,7 +237,7 @@ public class ItemButtonBindRestController {
      * @param ids 绑定ids
      * @return
      */
-    @RequestMapping(value = "/removeBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeBind")
     public Y9Result<String> removeBind(@RequestParam String[] ids) {
         itemButtonBindService.removeButtonItemBinds(ids);
         return Y9Result.successMsg("删除成功");
@@ -249,7 +253,7 @@ public class ItemButtonBindRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/saveBindButton", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBindButton")
     public Y9Result<String> saveBindButton(@RequestParam String buttonId, @RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam Integer buttonType,
         @RequestParam(required = false) String taskDefKey) {
@@ -263,7 +267,7 @@ public class ItemButtonBindRestController {
      * @param idAndTabIndexs 排序id
      * @return
      */
-    @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrder")
     public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
         itemButtonBindService.saveOrder(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");

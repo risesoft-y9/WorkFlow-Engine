@@ -2,8 +2,10 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/interfaceTaskBind")
+@RequestMapping(value = "/vue/interfaceTaskBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemInterfaceTaskBindController {
 
     private final ProcessDefinitionApi processDefinitionApi;
@@ -41,7 +43,7 @@ public class ItemInterfaceTaskBindController {
      * @param processDefinitionId 流程定义id
      * @return
      */
-    @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/copyBind")
     public Y9Result<String> copyBind(@RequestParam String interfaceId, @RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         itemInterfaceTaskBindService.copyBind(itemId, interfaceId, processDefinitionId);
@@ -56,7 +58,7 @@ public class ItemInterfaceTaskBindController {
      * @param processDefinitionId 流程定义id
      * @return Y9Result<List<FlowElementModel>>
      */
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<List<FlowElementModel>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -86,7 +88,7 @@ public class ItemInterfaceTaskBindController {
      * @param condition 执行条件
      * @return
      */
-    @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveBind")
     public Y9Result<String> saveBind(@RequestParam String interfaceId, @RequestParam String itemId,
         @RequestParam String processDefinitionId, String elementKey, @RequestParam String condition) {
         itemInterfaceTaskBindService.saveBind(itemId, interfaceId, processDefinitionId, elementKey, condition);

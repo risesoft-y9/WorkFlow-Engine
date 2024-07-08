@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +35,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/y9form/fieldPerm")
+@RequestMapping(value = "/vue/y9form/fieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
 public class Y9FieldPermController {
 
     private final Y9FormItemBindRepository y9FormItemBindRepository;
@@ -51,7 +53,7 @@ public class Y9FieldPermController {
      * @param fieldName 字段名称
      * @return
      */
-    @RequestMapping(value = "/countPerm", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/countPerm")
     public Y9Result<Boolean> countPerm(@RequestParam String formId, @RequestParam String fieldName) {
         int count = y9FieldPermRepository.countByFormIdAndFieldName(formId, fieldName);
         return Y9Result.success(count != 0, "获取成功");
@@ -65,7 +67,7 @@ public class Y9FieldPermController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/deleteRole", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteRole")
     public Y9Result<String> deleteRole(@RequestParam String formId, @RequestParam String fieldName,
         @RequestParam(required = false) String taskDefKey) {
         Y9FieldPerm y9FieldPerm =
@@ -86,7 +88,7 @@ public class Y9FieldPermController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/delNodePerm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delNodePerm")
     public Y9Result<String> delNodePerm(@RequestParam String formId, @RequestParam String fieldName,
         @RequestParam(required = false) String taskDefKey) {
         Y9FieldPerm y9FieldPerm =
@@ -103,7 +105,7 @@ public class Y9FieldPermController {
      * @param formId 表单id
      * @return
      */
-    @RequestMapping(value = "/getAllPerm", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getAllPerm")
     public Y9Result<List<String>> getAllPerm(@RequestParam String formId) {
         List<String> list = y9FieldPermRepository.findByFormId(formId);
         return Y9Result.success(list, "获取成功");
@@ -116,7 +118,7 @@ public class Y9FieldPermController {
      * @param fieldName 字段名称
      * @return
      */
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String formId, @RequestParam String fieldName) {
         List<Map<String, Object>> resList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -149,7 +151,6 @@ public class Y9FieldPermController {
                 resList.add(map);
             }
         }
-        // TODO
         return Y9Result.success(resList, "获取成功");
     }
 
@@ -161,7 +162,7 @@ public class Y9FieldPermController {
      * @param taskDefKey 任务key
      * @return
      */
-    @RequestMapping(value = "/saveNodePerm", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveNodePerm")
     public Y9Result<String> saveNodePerm(@RequestParam String formId, @RequestParam String fieldName,
         @RequestParam(required = false) String taskDefKey) {
         String processDefinitionId = "";
@@ -201,7 +202,7 @@ public class Y9FieldPermController {
      * @param roleIds 角色ids
      * @return
      */
-    @RequestMapping(value = "/saveRoleChoice", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveRoleChoice")
     public Y9Result<String> saveRoleChoice(@RequestParam String formId, @RequestParam String fieldName,
         @RequestParam(required = false) String taskDefKey, @RequestParam String roleNames,
         @RequestParam String roleIds) {

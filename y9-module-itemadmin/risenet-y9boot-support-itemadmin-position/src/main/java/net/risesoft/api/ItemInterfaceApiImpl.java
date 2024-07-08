@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/itemInterface")
+@RequestMapping(value = "/services/rest/itemInterface", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemInterfaceApiImpl implements ItemInterfaceApi {
 
     private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;

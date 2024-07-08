@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/commonSentences")
+@RequestMapping(value = "/services/rest/commonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSentencesApiImpl implements CommonSentencesApi {
 
     private final CommonSentencesService commonSentencesService;

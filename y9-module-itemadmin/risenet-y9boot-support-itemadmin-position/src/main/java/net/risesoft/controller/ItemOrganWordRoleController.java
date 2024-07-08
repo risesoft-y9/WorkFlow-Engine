@@ -5,8 +5,9 @@ import net.risesoft.entity.ItemOrganWordRole;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemOrganWordRoleService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/itemOrganWordRole")
+@RequestMapping(value = "/vue/itemOrganWordRole", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemOrganWordRoleController {
 
     private final ItemOrganWordRoleService itemOrganWordRoleService;
@@ -42,7 +43,7 @@ public class ItemOrganWordRoleController {
         return Y9Result.successMsg("保存成功");
     }
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<ItemOrganWordRole>> list(@RequestParam String itemOrganWordBindId) {
         List<ItemOrganWordRole> list =
             itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);

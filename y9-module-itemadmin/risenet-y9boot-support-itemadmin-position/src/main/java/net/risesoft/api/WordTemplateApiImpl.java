@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ import net.risesoft.service.WordTemplateService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/wordTemplate")
+@RequestMapping(value = "/services/rest/wordTemplate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WordTemplateApiImpl implements WordTemplateApi {
 
     private final WordTemplateService wordTemplateService;

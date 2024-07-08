@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +40,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/draft4Position")
+@RequestMapping(value = "/services/rest/draft4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DraftApiImpl implements Draft4PositionApi {
 
     private final DraftEntityService draftEntityService;

@@ -1,7 +1,19 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
@@ -15,15 +27,6 @@ import net.risesoft.repository.jpa.OpinionRepository;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 流程图展示
@@ -35,7 +38,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/bpmnViewer")
+@RequestMapping(value = "/vue/bpmnViewer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BpmnViewerRestController {
 
     private final HistoricActivityApi historicActivityApi;
@@ -54,7 +57,7 @@ public class BpmnViewerRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List<HistoricActivityInstanceModel>>
      */
-    @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTaskList")
     public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricActivityInstanceModel> list = new ArrayList<>();

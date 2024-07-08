@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
-@RequestMapping(value = "/services/rest/bookMarkBind")
+@RequestMapping(value = "/services/rest/bookMarkBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BookMarkBindApiImpl implements BookMarkBindApi {
 
     private final JdbcTemplate jdbcTemplate;

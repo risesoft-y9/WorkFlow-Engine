@@ -2,8 +2,9 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ import net.risesoft.service.ProcessTrackService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/processTrack")
+@RequestMapping(value = "/vue/processTrack", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessHistoryRestController {
 
     private final ProcessTrackService processTrackService;
@@ -32,7 +33,7 @@ public class ProcessHistoryRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @RequestMapping(value = "/historyList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/historyList")
     public Y9Result<List<HistoryProcessModel>> historyList(@RequestParam String processInstanceId) {
         List<HistoryProcessModel> items = processTrackService.getListMap(processInstanceId);
         return Y9Result.success(items, "获取成功");
