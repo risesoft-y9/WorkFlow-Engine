@@ -3,12 +3,11 @@ package net.risesoft.api;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotBlank;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,15 +54,14 @@ public class QueryListApiImpl implements QueryListApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> getQueryList(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, String state,
-        String createDate, @RequestParam @NotBlank String tableName, String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+    public Y9Page<ActRuDetailModel> getQueryList(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String systemName, String state, String createDate, String tableName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String sql0 = "";
             StringBuilder sql1 = new StringBuilder();
-            if (StringUtils.isNotBlank(searchMapStr)) {// 表单搜索
+            if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(searchMapStr)) {// 表单搜索
                 boolean query = false;
                 sql0 = " LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
                 List<Map<String, Object>> list = Y9JsonUtil.readListOfMap(searchMapStr, String.class, Object.class);

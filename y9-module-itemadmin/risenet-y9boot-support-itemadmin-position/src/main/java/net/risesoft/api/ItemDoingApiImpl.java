@@ -6,8 +6,10 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +38,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/itemDoing")
+@RequestMapping(value = "/services/rest/itemDoing", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemDoingApiImpl implements ItemDoingApi {
 
     private final ItemPageService itemPageService;
@@ -130,7 +132,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
-        @RequestParam String tableName, String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam String tableName, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
         StringBuilder sql1 = new StringBuilder();
@@ -171,7 +174,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
         StringBuilder sql1 = new StringBuilder();

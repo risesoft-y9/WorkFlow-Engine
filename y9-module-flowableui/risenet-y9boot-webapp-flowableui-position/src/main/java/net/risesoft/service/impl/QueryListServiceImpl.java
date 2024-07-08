@@ -172,7 +172,8 @@ public class QueryListServiceImpl implements QueryListService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);

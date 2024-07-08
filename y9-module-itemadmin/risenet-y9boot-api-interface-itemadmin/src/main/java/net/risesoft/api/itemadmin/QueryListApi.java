@@ -1,9 +1,7 @@
 package net.risesoft.api.itemadmin;
 
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -15,7 +13,6 @@ import net.risesoft.pojo.Y9Page;
  * @author zhangchongjie
  * @date 2023/09/07
  */
-@Validated
 public interface QueryListApi {
 
     /**
@@ -33,13 +30,12 @@ public interface QueryListApi {
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - data 是综合查询列表
      * @since 9.6.6
      */
-    @GetMapping("/getQueryList")
-    Y9Page<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
+    @PostMapping("/getQueryList")
+    Y9Page<ActRuDetailModel> getQueryList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
         @RequestParam(value = "state", required = false) String state,
         @RequestParam(value = "createDate", required = false) String createDate,
-        @RequestParam(value = "tableName") String tableName,
-        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+        @RequestParam(value = "tableName", required = false) String tableName, @RequestBody String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }

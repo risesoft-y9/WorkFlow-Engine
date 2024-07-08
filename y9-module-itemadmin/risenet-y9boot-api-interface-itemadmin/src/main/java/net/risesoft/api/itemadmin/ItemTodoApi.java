@@ -3,6 +3,8 @@ package net.risesoft.api.itemadmin;
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -60,11 +62,10 @@ public interface ItemTodoApi {
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
      * @since 9.6.6
      */
-    @GetMapping("/searchByUserIdAndSystemName")
+    @PostMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam(value = "tableName") String tableName,
-        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+        @RequestParam(value = "tableName") String tableName, @RequestBody String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }

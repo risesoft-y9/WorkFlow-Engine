@@ -712,12 +712,9 @@ public class DocumentServiceImpl implements DocumentService {
             processDefinitionId, taskDefinitionKey);
         List<OrgUnit> orgUnitList = new ArrayList<>();
         for (ItemPermission o : list) {
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
-                if (null != orgUnit) {
-                    orgUnitList.add(orgUnit);
-                }
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())) {
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())
+                || Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())
+                || Objects.equals(o.getRoleType(), ItemPermissionEnum.USER.getValue())) {
                 OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     orgUnitList.add(orgUnit);
@@ -986,19 +983,15 @@ public class DocumentServiceImpl implements DocumentService {
                     // 是数值
                     if (StringUtils.isNumeric(str)) {
                         if (variables.get(columnName).toString().contains(".")) {
-                            System.out
-                                .println("*************************Double:" + variables.get(columnName).toString());
+                            LOGGER.info("*************************Double:" + variables.get(columnName).toString());
                             variables.put(columnName, Double.valueOf(variables.get(columnName).toString()));
                         } else {
-                            System.out
-                                .println("*************************Integer:" + variables.get(columnName).toString());
+                            LOGGER.info("*************************Integer:" + variables.get(columnName).toString());
                             variables.put(columnName, Integer.parseInt(variables.get(columnName).toString()));
-
                         }
                     }
                 }
-                System.out.println("*************************Y9JsonUtil:" + Y9JsonUtil.writeValueAsString(variables));
-
+                LOGGER.info("*************************Y9JsonUtil:" + Y9JsonUtil.writeValueAsString(variables));
                 boolean b =
                     conditionParserApi.parser(tenantId, targetNode.getConditionExpression(), variables).getData();
                 if (b) {
@@ -1424,11 +1417,11 @@ public class DocumentServiceImpl implements DocumentService {
                     String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
                     if (StringUtils.isNumeric(str)) {// 是数值
                         if (variables.get(columnName).toString().contains(".")) {
-                            System.out.println(
+                            LOGGER.info(
                                 "*************************startProcess_Double:" + variables.get(columnName).toString());
                             variables.put(columnName, Double.valueOf(variables.get(columnName).toString()));
                         } else {
-                            System.out.println("*************************startProcess_Integer:"
+                            LOGGER.info("*************************startProcess_Integer:"
                                 + variables.get(columnName).toString());
                             variables.put(columnName, Integer.parseInt(variables.get(columnName).toString()));
                         }
