@@ -455,7 +455,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<Map<String, Object>> items = new ArrayList<>();
+        List<FlowableBpmnModel> items = new ArrayList<>();
         return Y9Result.success(items, "获取成功");
     }
 
@@ -469,8 +469,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<FlowableBpmnModel> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<>();
-        return Y9Result.success(map, "获取成功");
+        return Y9Result.success(null, "获取成功");
     }
 
     /**
@@ -484,10 +483,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam MultipartFile file) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("success", false);
-        map.put("msg", "导入失败");
-        return map;
+        return Y9Result.success();
     }
 
     /**

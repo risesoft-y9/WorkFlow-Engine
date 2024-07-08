@@ -122,7 +122,7 @@ public class MobileV1OpintionController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
+            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
     }
 
     /**

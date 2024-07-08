@@ -57,7 +57,7 @@ public class DeleteProcessUtilService {
 
     private final ActRuDetailApi actRuDetailApi;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi,

@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_OPINION")
 @Comment("意见信息表")
-public class Opinion implements Serializable {
+public class Opinion implements Serializable, Comparable<Opinion> {
 
     private static final long serialVersionUID = -611638086177612070L;
 
@@ -141,4 +142,12 @@ public class Opinion implements Serializable {
     @Comment("自定义历程id")
     @Column(name = "PROCESSTRACKID", length = 50)
     private String processTrackId;
+
+    @Transient
+    private String orderStr;
+
+    @Override
+    public int compareTo(Opinion o) {
+        return this.orderStr.compareTo(o.getOrderStr());
+    }
 }

@@ -53,7 +53,7 @@ public class DocumentUtil {
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
             List<OpinionListModel> listMap =
                 Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId, processSerialNumber,
-                    taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser).getData();
+                    taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, "").getData();
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
             opinionMap.put("opinionList", listMap);

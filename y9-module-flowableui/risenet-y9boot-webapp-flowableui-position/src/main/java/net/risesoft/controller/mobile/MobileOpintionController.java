@@ -146,7 +146,7 @@ public class MobileOpintionController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-                opinionFrameMark, itemId, taskDefinitionKey, activitiUser).getData();
+                opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser).getData();
             map.put("opinionList", listMap);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取成功");

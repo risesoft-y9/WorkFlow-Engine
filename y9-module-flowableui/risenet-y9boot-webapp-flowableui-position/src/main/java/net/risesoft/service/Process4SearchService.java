@@ -47,7 +47,7 @@ public class Process4SearchService {
     private final PositionApi positionApi;
     private final ErrorLogApi errorLogApi;
     private final ProcessParamApi processParamApi;
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     /**

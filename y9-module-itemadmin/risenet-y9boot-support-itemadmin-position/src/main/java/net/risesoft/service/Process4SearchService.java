@@ -60,7 +60,7 @@ public class Process4SearchService {
 
     private final ErrorLogService errorLogService;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     /**

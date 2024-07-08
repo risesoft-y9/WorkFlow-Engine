@@ -2,7 +2,7 @@ package net.risesoft.api.itemadmin.position;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,8 +71,8 @@ public interface AssociatedFile4PositionApi {
      * @since 9.6.6
      */
     @GetMapping("/getAssociatedFileAllList")
-    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") @NotBlankString tenantId,
-        @RequestParam("positionId")@NotBlankString positionId,
+    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("positionId")@NotBlank String positionId,
        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**

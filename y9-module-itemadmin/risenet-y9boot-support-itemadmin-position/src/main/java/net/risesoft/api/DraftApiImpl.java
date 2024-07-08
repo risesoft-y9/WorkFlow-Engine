@@ -164,42 +164,40 @@ public class DraftApiImpl implements Draft4PositionApi {
      */
     @Override
     public Y9Page<Map<String, Object>> getDraftList(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam int page, @RequestParamint rows, String title,
-       @RequestParam String itemId, boolean delFlag) {
+        @RequestParam int page, @RequestParam int rows, String title, @RequestParam String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        
-            if (StringUtils.isEmpty(title)) {
-                title = "";
+
+        if (StringUtils.isEmpty(title)) {
+            title = "";
+        }
+        Page<DraftEntity> pageList = draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
+        List<Map<String, Object>> draftList = new ArrayList<>();
+        Map<String, Object> formDataMap = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        int number = (page - 1) * rows;
+        ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
+        for (DraftEntity draftEntity : pageList) {
+            Map<String, Object> retMap = new HashMap<>(16);
+            Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
+            if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
+                retMap.put("itemName", spmApproveitem.get().getName());
+            } else {
+                retMap.put("itemName", "");
             }
-            Page<DraftEntity> pageList =
-                draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
-            List<Map<String, Object>> draftList = new ArrayList<>();
-            Map<String, Object> formDataMap = null;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            int number = (page - 1) * rows;
-            ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
-            for (DraftEntity draftEntity : pageList) {
-                Map<String, Object> retMap = new HashMap<>(16);
-                Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
-                if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
-                    retMap.put("itemName", spmApproveitem.get().getName());
-                } else {
-                    retMap.put("itemName", "");
-                }
-                retMap.put("serialNumber", number + 1);
-                retMap.put("id", draftEntity.getId());
-                retMap.put("type", draftEntity.getType());
-                retMap.put("creater", draftEntity.getCreater());
-                retMap.put("createrId", draftEntity.getCreaterId());
-                retMap.put("docNumber", draftEntity.getDocNumber());
-                retMap.put("itemId", draftEntity.getItemId());
-                retMap.put("processDefinitionKey", draftEntity.getProcessDefinitionKey());
-                retMap.put("processInstanceId", draftEntity.getProcessInstanceId());
-                retMap.put("processSerialNumber", draftEntity.getProcessSerialNumber());
-                retMap.put("title", StringUtils.isEmpty(draftEntity.getTitle()) ? "无标题" : draftEntity.getTitle());
-                retMap.put("urgency", draftEntity.getUrgency());
-                retMap.put("draftTime", sdf.format(draftEntity.getDraftTime()));
+            retMap.put("serialNumber", number + 1);
+            retMap.put("id", draftEntity.getId());
+            retMap.put("type", draftEntity.getType());
+            retMap.put("creater", draftEntity.getCreater());
+            retMap.put("createrId", draftEntity.getCreaterId());
+            retMap.put("docNumber", draftEntity.getDocNumber());
+            retMap.put("itemId", draftEntity.getItemId());
+            retMap.put("processDefinitionKey", draftEntity.getProcessDefinitionKey());
+            retMap.put("processInstanceId", draftEntity.getProcessInstanceId());
+            retMap.put("processSerialNumber", draftEntity.getProcessSerialNumber());
+            retMap.put("title", StringUtils.isEmpty(draftEntity.getTitle()) ? "无标题" : draftEntity.getTitle());
+            retMap.put("urgency", draftEntity.getUrgency());
+            retMap.put("draftTime", sdf.format(draftEntity.getDraftTime()));
 
             formDataMap = formDataService.getData(tenantId, itemId, draftEntity.getProcessSerialNumber());
             if (formDataMap.get("leaveType") != null) {
@@ -238,13 +236,13 @@ public class DraftApiImpl implements Draft4PositionApi {
         @RequestParam boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        
-            if (StringUtils.isEmpty(title)) {
-                title = "";
-            }
-            Page<DraftEntity> pageList =
-                draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
-            
+
+        if (StringUtils.isEmpty(title)) {
+            title = "";
+        }
+        Page<DraftEntity> pageList =
+            draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
+
         int number = (page - 1) * rows;
         List<DraftModel> list = new ArrayList<>();
         for (DraftEntity draftEntity : pageList) {

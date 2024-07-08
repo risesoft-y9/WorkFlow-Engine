@@ -244,7 +244,7 @@ public class OpinionRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
+            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
     }
 
     /**

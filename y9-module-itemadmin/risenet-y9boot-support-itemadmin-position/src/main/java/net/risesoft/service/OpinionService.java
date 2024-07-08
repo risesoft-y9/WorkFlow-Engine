@@ -167,7 +167,7 @@ public interface OpinionService {
      * @return
      */
     List<OpinionListModel> personCommentList(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser);
+        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser);
 
     /**
      * 保存多条意见

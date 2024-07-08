@@ -178,12 +178,12 @@ public class OpinionApiImpl implements Opinion4PositionApi {
     public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processSerialNumber, String taskId,
         @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId,
-        String taskDefinitionKey, String activitiUser) {
+        String taskDefinitionKey, String activitiUser, String orderByUser) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<OpinionListModel> opinionList = opinionService.personCommentList(processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
+            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
         return Y9Result.success(opinionList);
     }
 
