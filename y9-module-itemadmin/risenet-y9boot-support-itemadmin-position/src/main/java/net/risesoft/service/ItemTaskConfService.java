@@ -80,4 +80,13 @@ public interface ItemTaskConfService {
      * @return
      */
     ItemTaskConf save(String id, String processDefinitionId, String taskDefKey);
+
+    /**
+     * Description:复制任务签收绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
 }
