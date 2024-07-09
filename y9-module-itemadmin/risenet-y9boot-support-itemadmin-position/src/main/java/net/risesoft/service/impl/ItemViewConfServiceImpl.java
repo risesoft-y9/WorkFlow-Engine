@@ -1,17 +1,8 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.entity.ItemViewConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -21,6 +12,13 @@ import net.risesoft.service.ItemViewConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
@@ -29,6 +27,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemViewConfServiceImpl implements ItemViewConfService {
 
@@ -155,6 +154,32 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
+            if(null != list && !list.isEmpty()){
+                for(ItemViewConf itemViewConf : list){
+                    ItemViewConf newConf = new ItemViewConf();
+                    Y9BeanUtil.copyProperties(itemViewConf, newConf);
+                    newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    newConf.setItemId(newItemId);
+                    newConf.setCreateTime(sdf.format(new Date()));
+                    newConf.setUpdateTime(sdf.format(new Date()));
+                    newConf.setUserId(person.getPersonId());
+                    newConf.setUserName(person.getName());
+                    newConf.setTabIndex(itemViewConf.getTabIndex());
+                    itemViewConfRepository.save(newConf);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制视图配置信息失败", e);
         }
     }
 }
