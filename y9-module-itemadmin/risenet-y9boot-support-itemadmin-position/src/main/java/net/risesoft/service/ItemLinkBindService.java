@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
-import java.util.List;
-
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.ItemLinkRole;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -74,4 +74,11 @@ public interface ItemLinkBindService {
      * @return
      */
     void saveItemLinkBind(String itemId, String[] linkIds);
+
+    /**
+     * 复制事项链接绑定信息
+     * @param itemId
+     * @param newItemId
+     */
+    void copyBindInfo(String itemId, String newItemId);
 }

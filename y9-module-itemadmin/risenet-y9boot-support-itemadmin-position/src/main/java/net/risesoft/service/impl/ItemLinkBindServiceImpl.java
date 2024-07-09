@@ -1,16 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.ItemLinkRole;
@@ -22,8 +13,16 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.repository.jpa.ItemLinkBindRepository;
 import net.risesoft.repository.jpa.ItemLinkRoleRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemLinkBindService;
-import net.risesoft.service.SpmApproveItemService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
@@ -32,6 +31,7 @@ import net.risesoft.service.SpmApproveItemService;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemLinkBindServiceImpl implements ItemLinkBindService {
 
@@ -43,7 +43,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
 
     private final RoleApi roleManager;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     @Override
     public List<ItemLinkBind> findByItemId(String itemId) {
@@ -81,7 +81,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     public List<ItemLinkBind> findByLinkId(String linkId) {
         List<ItemLinkBind> list = itemLinkBindRepository.findByLinkIdOrderByCreateTimeDesc(linkId);
         for (ItemLinkBind bind : list) {
-            SpmApproveItem item = spmApproveItemService.findById(bind.getItemId());
+            SpmApproveItem item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
             bind.setItemName(item != null ? item.getName() : "事项不存在");
             List<String> roleIds = new ArrayList<>();
             List<ItemLinkRole> roleList = itemLinkRoleRepository.findByItemLinkId(bind.getId());
@@ -159,6 +159,24 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
                 item.setCreateTime(sdf.format(new Date()));
                 itemLinkBindRepository.save(item);
             }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        try {
+            List<ItemLinkBind> bindList = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+            for (ItemLinkBind bind : bindList) {
+                ItemLinkBind newBind = new ItemLinkBind();
+                newBind.setItemId(newItemId);
+                newBind.setLinkId(bind.getLinkId());
+                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newBind.setCreateTime(bind.getCreateTime());
+                itemLinkBindRepository.save(newBind);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制链接配置绑定关系失败", e);
         }
     }
 }
