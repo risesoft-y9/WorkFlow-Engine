@@ -1,14 +1,12 @@
 package net.risesoft.service;
 
-import java.util.List;
-import java.util.Map;
+import net.risesoft.entity.WordTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.multipart.MultipartFile;
-
-import net.risesoft.entity.WordTemplate;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -48,6 +46,14 @@ public interface WordTemplateService {
      * @return
      */
     List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId);
+
+    /**
+     * 获取当前委办局下所有的正文模板(可根据正文模板名称查询)
+     * @param bureauId
+     * @param fileName
+     * @return
+     */
+    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,String fileName);
 
     /**
      * Description:
