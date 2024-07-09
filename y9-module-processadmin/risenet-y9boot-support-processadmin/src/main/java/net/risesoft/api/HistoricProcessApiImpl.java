@@ -180,7 +180,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         if (b && (list != null && !list.isEmpty())) {
             for (org.flowable.task.api.Task task : list) {
                 try {
-                    boolean msg1 = rpcTodoTaskManager.recoveryTodoTaskBytaskId(tenantId, task.getId());
+                    boolean msg1 = rpcTodoTaskManager.recoveryTodoTaskByTaskId(tenantId, task.getId());
                     LOGGER.info("##############################统一待办还原：{}#################################", msg1);
                 } catch (Exception e) {
                     e.printStackTrace();
