@@ -85,4 +85,12 @@ public interface PrintTemplateService {
      * @return
      */
     public Map<String, Object> uploadTemplate(MultipartFile file);
+
+    /**
+     * 复制打印模板绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     */
+    void copyBindInfo(String itemId, String newItemId);
 }
