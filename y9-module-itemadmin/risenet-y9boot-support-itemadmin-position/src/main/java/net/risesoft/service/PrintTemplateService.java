@@ -1,15 +1,13 @@
 package net.risesoft.service;
 
-import java.util.List;
-import java.util.Map;
+import net.risesoft.entity.ItemPrintTemplateBind;
+import net.risesoft.entity.PrintTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.multipart.MultipartFile;
-
-import net.risesoft.entity.ItemPrintTemplateBind;
-import net.risesoft.entity.PrintTemplate;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -85,4 +83,12 @@ public interface PrintTemplateService {
      * @return
      */
     public Map<String, Object> uploadTemplate(MultipartFile file);
+
+    /**
+     * 复制打印模板绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     */
+    void copyBindInfo(String itemId, String newItemId);
 }

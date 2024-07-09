@@ -1,24 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPrintTemplateBind;
 import net.risesoft.entity.PrintTemplate;
@@ -32,6 +15,17 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author qinman
@@ -40,6 +34,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class PrintTemplateServiceImpl implements PrintTemplateService {
 
@@ -63,7 +58,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");
-            e.printStackTrace();
+            LOGGER.error("删除绑定信息失败", e);
         }
         return map;
     }
@@ -87,7 +82,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");
-            e.printStackTrace();
+            LOGGER.error("删除模板失败", e);
         }
         return map;
     }
@@ -112,7 +107,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             IOUtils.write(b, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("下载模板失败", e);
         }
     }
 
@@ -130,7 +125,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
                 list.add(itemPrintTemplateBind);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取打印绑定信息失败", e);
         }
         return list;
     }
@@ -165,7 +160,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "保存失败");
-            e.printStackTrace();
+            LOGGER.error("保存绑定信息失败", e);
         }
         return map;
     }
@@ -240,10 +235,31 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
                 map.put("msg", "上传成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("上传模板失败", e);
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "上传失败");
         }
         return map;
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        try {
+            ItemPrintTemplateBind printTemplateItemBind = printTemplateItemBindRepository.findByItemId(itemId);
+            if (null != printTemplateItemBind) {
+                ItemPrintTemplateBind newPrintTemplateItemBind = new ItemPrintTemplateBind();
+                newPrintTemplateItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newPrintTemplateItemBind.setItemId(newItemId);
+                newPrintTemplateItemBind.setTenantId(Y9LoginUserHolder.getTenantId());
+                newPrintTemplateItemBind.setTemplateId(printTemplateItemBind.getTemplateId());
+                newPrintTemplateItemBind.setTemplateName(printTemplateItemBind.getTemplateName());
+                newPrintTemplateItemBind.setTemplateUrl(printTemplateItemBind.getTemplateUrl());
+                newPrintTemplateItemBind.setTemplateType(printTemplateItemBind.getTemplateType());
+                printTemplateItemBindRepository.save(newPrintTemplateItemBind);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制绑定信息失败", e);
+        }
     }
 }
