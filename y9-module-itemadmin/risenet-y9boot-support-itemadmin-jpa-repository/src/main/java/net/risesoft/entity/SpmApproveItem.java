@@ -1,26 +1,16 @@
 package net.risesoft.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author qinman
@@ -159,4 +149,8 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "SHOWSUBMITBUTTON", nullable = false)
     @ColumnDefault("0")
     private boolean showSubmitButton = false;
+
+    @Comment("排序")
+    @Column(name = "TABINDEX")
+    private Integer tabIndex;
 }

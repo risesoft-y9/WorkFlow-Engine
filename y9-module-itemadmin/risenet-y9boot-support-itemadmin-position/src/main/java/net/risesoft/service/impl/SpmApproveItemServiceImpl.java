@@ -1,10 +1,29 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.platform.resource.AppApi;
+import net.risesoft.api.platform.resource.SystemApi;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.ItemMappingConf;
+import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.platform.App;
+import net.risesoft.model.platform.System;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.repository.jpa.ItemMappingConfRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.service.*;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,24 +31,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
-
-import net.risesoft.api.platform.resource.AppApi;
-import net.risesoft.api.platform.resource.SystemApi;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.ItemMappingConf;
-import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.platform.App;
-import net.risesoft.model.platform.System;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.ItemMappingConfRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
-import net.risesoft.service.SpmApproveItemService;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9BeanUtil;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -38,16 +43,29 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     private final SpmApproveItemRepository spmApproveItemRepository;
-
     private final SystemApi systemEntityManager;
-
     private final AppApi appManager;
-
     private final ItemMappingConfRepository itemMappingConfRepository;
+    private final RepositoryApi repositoryApi;
+    private final ProcessDefinitionApi processDefinitionApi;
+    private final Y9FormItemBindService y9FormItemBindService;
+    private final RelatedProcessService relatedProcessService;
+    private final ItemLinkBindService itemLinkBindService;
+    private final ItemInterfaceBindService itemInterfaceBindService;
+    private final ItemOpinionFrameBindService itemOpinionFrameBindService;
+    private final Y9PreFormItemBindService y9PreFormItemBindService;
+    private final ItemOrganWordBindService itemOrganWordBindService;
+    private final ItemWordTemplateBindService itemWordTemplateBindService;
+    private final PrintTemplateService printTemplateService;
+    private final ItemTaskConfService itemTaskConfService;
+    private final ItemButtonBindService itemButtonBindService;
+    private final ItemViewConfService itemViewConfService;
+
 
     @Override
     @Transactional
@@ -65,7 +83,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");
-            e.printStackTrace();
+            LOGGER.error("删除事项异常", e);
         }
         return map;
     }
@@ -103,6 +121,11 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
+    public List<SpmApproveItem> findByIdNotAndNameLike(String id, String name) {
+        return spmApproveItemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
+    }
+
+    @Override
     public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
         boolean hasKey = false;
         try {
@@ -111,7 +134,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 hasKey = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("判断流程定义Key是否存在异常", e);
         }
         return hasKey;
     }
@@ -123,7 +146,74 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
             map.put("rows", itemList);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取事项列表异常", e);
+        }
+        return map;
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> copyItem(String id) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("success", false);
+        map.put("msg", "复制失败");
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            SpmApproveItem item = this.findById(id);
+            if(null != item){
+                //复制事项信息
+                SpmApproveItem newItem = new SpmApproveItem();
+                Y9BeanUtil.copyProperties(item,newItem);
+                String newItemId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                newItem.setId(newItemId);
+                newItem.setCreateDate(new Date());
+                Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
+                newItem.setTabIndex(null != tabIndex ? tabIndex +1 : 1);
+                spmApproveItemRepository.save(newItem);
+                String proDefKey = item.getWorkflowGuid();
+                ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+                String latestpdId = latestpd.getId();
+                List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
+                //复制表单绑定信息
+                y9FormItemBindService.copyBindInfo(id,newItemId,latestpdId);
+
+                //复制意见框绑定信息
+                itemOpinionFrameBindService.copyBindInfo(id,newItemId,latestpdId);
+
+                //复制前置表单绑定信息
+                y9PreFormItemBindService.copyBindInfo(id,newItemId);
+
+                //复制编号绑定信息
+                itemOrganWordBindService.copyBindInfo(id,newItemId,latestpdId);
+
+                //复制关联事项绑定信息
+                relatedProcessService.copyBindInfo(id,newItemId);
+
+                //复制链接配置信息
+                itemLinkBindService.copyBindInfo(id,newItemId);
+
+                //复制接口配置信息
+                itemInterfaceBindService.copyBindInfo(id,newItemId);
+
+                //复制正文模板绑定信息
+                itemWordTemplateBindService.copyBindInfo(id,newItemId,latestpdId);
+
+                //复制打印模板绑定信息
+                printTemplateService.copyBindInfo(id,newItemId);
+
+                //复制签收配置绑定信息
+                itemTaskConfService.copyBindInfo(id,newItemId,latestpdId);
+
+                //复制按钮配置的绑定信息
+                itemButtonBindService.copyBindInfo(id,newItemId,latestpdId);
+
+                //复制视图配置绑定信息
+                itemViewConfService.copyBindInfo(id,newItemId);
+                map.put("success", true);
+                map.put("msg", "复制成功");
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制事项异常", e);
         }
         return map;
     }
@@ -139,7 +229,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             map.put("totalpages", itemPage.getTotalPages());
             map.put("total", itemPage.getTotalElements());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取事项列表异常", e);
         }
         return map;
     }
@@ -185,7 +275,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
             map.put("msg", "发布为系统应用异常");
-            e.printStackTrace();
+            LOGGER.error("发布为系统应用异常", e);
         }
         return map;
     }
@@ -227,8 +317,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "保存成功");
         } catch (Exception e) {
-
-            e.printStackTrace();
+            LOGGER.error("保存事项异常", e);
         }
         return map;
     }

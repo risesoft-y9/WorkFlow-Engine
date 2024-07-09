@@ -25,6 +25,8 @@ public interface SpmApproveItemRepository extends PagingAndSortingRepository<Spm
     @Query("from SpmApproveItem s where s.systemName=?1 order by s.createDate desc")
     List<SpmApproveItem> findAll(String systemName);
 
+    List<SpmApproveItem> findByIdNotAndNameLike(String id, String name);
+
     @Query("from SpmApproveItem s where s.workflowGuid=?1")
     SpmApproveItem findItemByKey(String processDefinitionKey);
 
@@ -33,4 +35,7 @@ public interface SpmApproveItemRepository extends PagingAndSortingRepository<Spm
 
     @Query("select distinct t.systemName as systemName, t.sysLevel as sysLevel from SpmApproveItem t ")
     List<Map<String, Object>> getItemSystem();
+
+    @Query("select max(s.tabIndex) from SpmApproveItem s")
+    Integer getMaxTabIndex();
 }
