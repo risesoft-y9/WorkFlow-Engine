@@ -1,19 +1,18 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Y9PreFormItemBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.Y9PreFormItemBindRepository;
 import net.risesoft.service.Y9PreFormItemBindService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -22,6 +21,7 @@ import net.risesoft.service.Y9PreFormItemBindService;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
 
@@ -73,6 +73,24 @@ public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
             e.printStackTrace();
         }
         return map;
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        try {
+            Y9PreFormItemBind item = y9PreFormItemBindRepository.findByItemId(itemId);
+            if (null != item) {
+                Y9PreFormItemBind newItem = new Y9PreFormItemBind();
+                newItem.setItemId(newItemId);
+                newItem.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newItem.setFormId(item.getFormId());
+                newItem.setFormName(item.getFormName());
+                y9PreFormItemBindRepository.saveAndFlush(newItem);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制前置表单项绑定信息失败", e);
+        }
     }
 
 }

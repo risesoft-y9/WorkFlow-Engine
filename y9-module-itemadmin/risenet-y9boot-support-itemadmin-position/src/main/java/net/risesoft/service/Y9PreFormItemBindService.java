@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import net.risesoft.entity.Y9PreFormItemBind;
+
+import java.util.Map;
 
 /**
  * @author qinman
@@ -37,4 +37,10 @@ public interface Y9PreFormItemBindService {
      */
     Map<String, Object> saveBindForm(String itemId, String formId, String formName);
 
+    /**
+     * 复制前置表单绑定信息
+     * @param itemId
+     * @param newItemId
+     */
+    void copyBindInfo(String itemId,String newItemId);
 }
