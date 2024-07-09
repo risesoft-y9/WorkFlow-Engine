@@ -2,13 +2,13 @@ package net.risesoft.api;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -27,10 +27,9 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2022/12/30
  */
-@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/specialOperation")
+@RequestMapping(value = "/services/rest/specialOperation", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SpecialOperationApiImpl implements SpecialOperationApi {
 
     private final OperationService operationService;
@@ -49,7 +48,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param users 人员id集合
      * @param reason 重定向原因
      * @param sponsorGuid 主办人id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> reposition(@RequestParam String tenantId, @RequestParam String userId,
@@ -73,13 +73,13 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param userChoice 岗位id集合
      * @param reason 重定向原因
      * @param sponsorGuid 主办人id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> reposition4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, @RequestParam String repositionToTaskId,
-        @RequestParam("userChoice") List<String> userChoice, @RequestParam String reason,
-        @RequestParam String sponsorGuid) {
+        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -95,11 +95,12 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param reason 退回的原因
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> rollBack(@RequestParam String tenantId, @RequestParam String userId, String taskId,
-        @RequestParam String reason) {
+    public Y9Result<Object> rollBack(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -115,11 +116,12 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 退回的原因
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> rollBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String taskId, @RequestParam String reason) {
+        @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -134,7 +136,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> rollbackToSender4Position(@RequestParam String tenantId, @RequestParam String positionId,
@@ -154,11 +157,12 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> rollbackToStartor4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String taskId, @RequestParam String reason) {
+        @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -174,11 +178,12 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> specialComplete4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String taskId, @RequestParam String reason) {
+        @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -194,11 +199,12 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param reason 收回的原因
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> takeBack(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String taskId, @RequestParam String reason) {
+        @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -214,11 +220,12 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 收回的原因
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> takeBack4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String taskId, @RequestParam String reason) {
+        @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();

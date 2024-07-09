@@ -50,7 +50,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteProcessInstance(@RequestParam String tenantId,
@@ -91,7 +92,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<HistoricProcessInstanceModel>
+     * @return {@code Y9Result<HistoricProcessInstanceModel>} 通用请求返回对象 - data 历史流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<HistoricProcessInstanceModel> getById(@RequestParam String tenantId,
@@ -108,7 +110,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<HistoricProcessInstanceModel>
+     * @return {@code Y9Result<HistoricProcessInstanceModel>} 通用请求返回对象 - data 历史流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<HistoricProcessInstanceModel> getByIdAndYear(@RequestParam String tenantId,
@@ -128,7 +131,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      *
      * @param tenantId 租户id
      * @param superProcessInstanceId 父流程实例id
-     * @return Y9Result<List<HistoricProcessInstanceModel>>
+     * @return {@code Y9Result<List<HistoricProcessInstanceModel>>} 通用请求返回对象 - data 历史流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricProcessInstanceModel>> getBySuperProcessInstanceId(@RequestParam String tenantId,
@@ -145,7 +149,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 父流程实例id
-     * @return Y9Result<HistoricProcessInstanceModel>
+     * @return {@code Y9Result<HistoricProcessInstanceModel>} 通用请求返回对象 - data 历史流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<HistoricProcessInstanceModel> getSuperProcessInstanceById(@RequestParam String tenantId,
@@ -162,7 +167,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> recoveryProcess(@RequestParam String tenantId, @RequestParam String userId,
@@ -171,15 +177,13 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         boolean b = customHistoricProcessService.recoveryProcessInstance(processInstanceId);
         List<org.flowable.task.api.Task> list = customTaskService.findByProcessInstanceId(processInstanceId);
-        if (b) {
-            if (list != null && !list.isEmpty()) {
-                for (org.flowable.task.api.Task task : list) {
-                    try {
-                        boolean msg1 = rpcTodoTaskManager.recoveryTodoTaskBytaskId(tenantId, task.getId());
-                        LOGGER.info("##############################统一待办还原：{}#################################", msg1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        if (b && (list != null && !list.isEmpty())) {
+            for (org.flowable.task.api.Task task : list) {
+                try {
+                    boolean msg1 = rpcTodoTaskManager.recoveryTodoTaskBytaskId(tenantId, task.getId());
+                    LOGGER.info("##############################统一待办还原：{}#################################", msg1);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -191,7 +195,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> removeProcess(@RequestParam String tenantId, @RequestParam String processInstanceId) {
@@ -201,11 +206,12 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     }
 
     /**
-     * 彻底删除流程实例,岗位
+     * 彻底删除流程实例，岗位
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> removeProcess4Position(@RequestParam String tenantId,
@@ -221,8 +227,9 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param priority 优先级
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @throws Exception Exception
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setPriority(@RequestParam String tenantId, @RequestParam String processInstanceId,

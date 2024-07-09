@@ -39,7 +39,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<Y9FlowableCountModel>
+     * @return {@code Y9Result<Y9FlowableCountModel>} 通用请求返回对象 - data 是办件统计
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Y9FlowableCountModel> getCountByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
@@ -58,7 +59,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统名称
-     * @return Y9Result<Y9FlowableCountModel>
+     * @return {@code Y9Result<Y9FlowableCountModel>} 通用请求返回对象 - data 是办件统计
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Y9FlowableCountModel> getCountByUserIdAndSystemName(@RequestParam String tenantId,
@@ -79,7 +81,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<TaskModel>
+     * @return {@code Y9Page<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
+     * @since 9.6.6
      */
     @Override
     public Y9Page<TaskModel> getListByUserIdAndProcessDefinitionKey(@RequestParam @NotBlank String tenantId,
@@ -97,7 +100,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param systemName 系统名称
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<TaskModel>
+     * @return {@code Y9Page<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
+     * @since 9.6.6
      */
     @Override
     public Y9Page<TaskModel> getListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId,
@@ -113,7 +117,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processDefinitionKey 流程定义key
-     * @return Y9Result<Long>
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是待办数量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Long> getTodoCountByPositionIdAndProcessDefinitionKey(@RequestParam String tenantId,
@@ -129,7 +134,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统名称
-     * @return Y9Result<Long>
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是待办数量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Long> getTodoCountByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
@@ -147,11 +153,12 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<TaskModel>
+     * @return {@code Y9Page<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
+     * @since 9.6.6
      */
     @Override
     public Y9Page<TaskModel> searchListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam String searchTerm,
+        @RequestParam String userId, @RequestParam String processDefinitionKey, String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customTodoService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm,
@@ -167,12 +174,13 @@ public class TodoApiImpl implements ProcessTodoApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<TaskModel>
+     * @return {@code Y9Page<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
+     * @since 9.6.6
      */
     @Override
     public Y9Page<TaskModel> searchListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName,
-        @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, String searchTerm,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customTodoService.searchListByUserIdAndSystemName(userId, systemName, searchTerm, page, rows);
     }

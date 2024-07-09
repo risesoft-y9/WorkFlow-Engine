@@ -10,7 +10,6 @@ import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,7 +38,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/task")
+@RequestMapping(value = "/services/rest/task", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TaskApiImpl implements TaskApi {
 
     private final CustomTaskService customTaskService;
@@ -54,7 +53,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> claim(@RequestParam String tenantId, @RequestParam String userId,
@@ -69,7 +69,8 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> complete(@RequestParam String tenantId, @RequestParam String taskId) {
@@ -84,7 +85,8 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> completeTask(@RequestParam String tenantId, @RequestParam String taskId) {
@@ -104,7 +106,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param positionId 岗位Id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> completeTaskWithoutAssignee(@RequestParam String tenantId, @RequestParam String positionId,
@@ -123,7 +126,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> completeWithVariables(@RequestParam String tenantId, @RequestParam String taskId,
@@ -142,7 +146,8 @@ public class TaskApiImpl implements TaskApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param vars 变量map
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> completeWithVariables4Position(@RequestParam String tenantId, @RequestParam String userId,
@@ -163,19 +168,18 @@ public class TaskApiImpl implements TaskApi {
      * @param personId 人员id
      * @param routeToTaskId 任务id
      * @param vars 变量map
-     * @param positionIdList 岗位ids
-     * @return Y9Result<Object>
+     * @param userIdList 人员ids
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    @PostMapping(value = "/createWithVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> createWithVariables(@RequestParam String tenantId, @RequestParam String personId,
         @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
-        @RequestBody List<String> positionIdList) {
+        @RequestBody List<String> userIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(personManager.get(tenantId, personId).getData());
-        customTaskService.createWithVariables(vars, routeToTaskId, positionIdList);
+        customTaskService.createWithVariables(vars, routeToTaskId, userIdList);
         return Y9Result.success();
     }
 
@@ -188,12 +192,11 @@ public class TaskApiImpl implements TaskApi {
      * @param routeToTaskId 任务id
      * @param vars 变量map
      * @param positionIdList 岗位ids
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    @PostMapping(value = "/createWithVariables1", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> createWithVariables(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> createWithVariables4Position(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String personId, @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
         @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -211,7 +214,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> delegateTask(@RequestParam String tenantId, @RequestParam String taskId,
@@ -227,7 +231,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteCandidateUser(@RequestParam String tenantId, @RequestParam String taskId,
@@ -241,7 +246,8 @@ public class TaskApiImpl implements TaskApi {
      * 查找所有的任务实例
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<TaskModel>>
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<TaskModel>> findAll(@RequestParam String tenantId) {
@@ -255,7 +261,8 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<TaskModel>
+     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - data 任务信息
+     * @since 9.6.6
      */
     @Override
     public Y9Result<TaskModel> findById(@RequestParam String tenantId, @RequestParam String taskId) {
@@ -269,7 +276,8 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<TaskModel>>
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam String tenantId,
@@ -285,7 +293,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例Id
      * @param active 是否存活
-     * @return Y9Result<List<TaskModel>>
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam String tenantId,
@@ -296,13 +305,14 @@ public class TaskApiImpl implements TaskApi {
     }
 
     /**
-     * 根据人员Id，流程实例id获取用户的待办任务(分页)
+     * 根据流程实例id获取用户的待办任务(分页)
      *
      * @param tenantId 租户Id
      * @param processInstanceId 流程实例Id
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<TaskModel>
+     * @return {@code Y9Page<TaskModel>} 通用分页请求返回对象 - rows 是待办任务
+     * @since 9.6.6
      */
     @Override
     public Y9Page<TaskModel> findListByProcessInstanceId(@RequestParam String tenantId,
@@ -316,7 +326,8 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskModel 任务实体
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> saveTask(@RequestParam String tenantId, @RequestBody TaskModel taskModel) {
@@ -333,7 +344,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setAssignee(@RequestParam String tenantId, @RequestParam String taskId,
@@ -349,7 +361,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param date 日期
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setDueDate(@RequestParam String tenantId, @RequestParam String taskId,
@@ -365,7 +378,8 @@ public class TaskApiImpl implements TaskApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param priority 优先级
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setPriority(@RequestParam String tenantId, @RequestParam String taskId,
@@ -380,7 +394,8 @@ public class TaskApiImpl implements TaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> unClaim(@RequestParam String tenantId, @RequestParam String taskId) {

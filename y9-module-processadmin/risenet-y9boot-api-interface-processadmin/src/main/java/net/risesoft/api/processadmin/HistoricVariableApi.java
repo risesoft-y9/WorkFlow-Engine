@@ -14,7 +14,7 @@ import net.risesoft.pojo.Y9Result;
 
 /**
  * 历史变量相关接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -27,6 +27,7 @@ public interface HistoricVariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<HistoricVariableInstanceModel>>} 通用请求返回对象 - data 历史任务变量的值列表
+     * @since 9.6.6
      */
     @GetMapping("/getByProcessInstanceId")
     Y9Result<List<HistoricVariableInstanceModel>> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -40,6 +41,7 @@ public interface HistoricVariableApi {
      * @param variableName 变量名
      * @param year 年份
      * @return {@code Y9Result<HistoricVariableInstanceModel>} 通用请求返回对象 - data 历史任务变量的值
+     * @since 9.6.6
      */
     @GetMapping("/getByProcessInstanceIdAndVariableName")
     Y9Result<HistoricVariableInstanceModel> getByProcessInstanceIdAndVariableName(
@@ -52,6 +54,7 @@ public interface HistoricVariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @return {@code Y9Result<List<HistoricVariableInstanceModel>>} 通用请求返回对象 - data 历史任务变量的值列表
+     * @since 9.6.6
      */
     @GetMapping("/getByTaskId")
     Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam("tenantId") String tenantId,
@@ -65,6 +68,7 @@ public interface HistoricVariableApi {
      * @param variableName 变量名
      * @param year 年份
      * @return {@code Y9Result<HistoricVariableInstanceModel>} 通用请求返回对象 - data 历史任务变量的值
+     * @since 9.6.6
      */
     @GetMapping("/getByTaskIdAndVariableName")
     Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(@RequestParam("tenantId") String tenantId,
@@ -78,6 +82,7 @@ public interface HistoricVariableApi {
      * @param processInstanceId 流程实例id
      * @param keys 变量集合
      * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 流程变量
+     * @since 9.6.6
      */
     @GetMapping(value = "/getVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Map<String, Object>> getVariables(@RequestParam("tenantId") String tenantId,

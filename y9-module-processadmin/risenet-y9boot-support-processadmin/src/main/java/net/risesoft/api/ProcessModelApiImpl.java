@@ -27,8 +27,6 @@ import org.flowable.validation.ProcessValidator;
 import org.flowable.validation.ProcessValidatorFactory;
 import org.flowable.validation.ValidationError;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,7 +55,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/processModel")
+@RequestMapping(value = "/services/rest/processModel", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessModelApiImpl implements ProcessModelApi {
 
     private final ModelService modelService;
@@ -73,10 +71,10 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    @PostMapping(value = "/deleteModel", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         modelService.deleteModel(modelId);
@@ -88,10 +86,10 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    @PostMapping(value = "/deployModel", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Model modelData = modelService.getModel(modelId);
@@ -109,9 +107,9 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * 获取模型列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return {@code Y9Result<List<FlowableBpmnModel>>} 通用请求返回对象 - data 模型列表
+     * @since 9.6.6
      */
-    @GetMapping(value = "/getModelList", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -143,10 +141,10 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 模型xml
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         byte[] bpmnBytes;
@@ -162,8 +160,8 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * @param userId 用户id
      * @param file 文件
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
-    @PostMapping(value = "/saveModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public Y9Result<Object> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
         MultipartFile file) {

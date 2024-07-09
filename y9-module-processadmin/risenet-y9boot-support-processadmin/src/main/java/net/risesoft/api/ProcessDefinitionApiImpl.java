@@ -1,10 +1,8 @@
 package net.risesoft.api;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +26,7 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/processDefinition")
+@RequestMapping(value = "/services/rest/processDefinition", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
 
     private final CustomProcessDefinitionService customProcessDefinitionService;
@@ -38,10 +36,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @return List<Map<String, String>>
+     * @return {@code Y9Result<List<TargetModel>>} 通用请求返回对象 - data 有办结权限的UserTask
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getContainEndEvent4UserTask", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam String tenantId,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -53,10 +51,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 目标节点Key
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getEndNodeKeyByTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getEndNodeKeyByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customProcessDefinitionService.getEndNodeKeyByTaskId(taskId));
@@ -68,10 +66,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return List<Map<String, Object>>
+     * @return {@code List<FlowElementModel>>} 通用请求返回对象 - data 节点集合
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getFlowElement", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<FlowElementModel>> getFlowElement(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -84,10 +82,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getNodes", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TargetModel>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -100,10 +98,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return String
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 节点类型
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getNodeType", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getNodeType(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -115,10 +113,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @return Y9Result<Integer>
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 输出线路的个数
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getOutPutNodeCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> getOutPutNodeCount(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customProcessDefinitionService.getOutPutNodeCount(taskId));
@@ -131,9 +129,9 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
      * @return {@code Y9Result<List<GatewayModel>} 通用请求返回对象 - data 并行网关节点集合
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getParallelGatewayList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<GatewayModel>> getParallelGatewayList(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -145,10 +143,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @return String
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 开始节点
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getStartNodeKeyByProcessDefinitionId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getStartNodeKeyByProcessDefinitionId(@RequestParam String tenantId,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -161,10 +159,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data taskDefineKey
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getStartNodeKeyByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getStartNodeKeyByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -178,10 +176,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code Y9Result<List<TargetModel>>} 通用请求返回对象 - data 任务节点集合
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getTargetNodes", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TargetModel>> getTargetNodes(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -194,10 +192,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List<Map<String, String>>
+     * @return {@code Y9Result<List<TargetModel>> } 通用请求返回对象 - data 任务节点集合
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getTargetNodes1", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TargetModel>> getTargetNodes1(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -210,10 +208,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List<Map<String, String>>
+     * @return {@code  Y9Result<List<GatewayModel>>} 通用请求返回对象 - data 任务节点集合
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getTargetNodes4ParallelGateway", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -227,10 +225,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
      * @param isContainEndNode 是否包含结束节点
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code Y9Result<List<TargetModel>} 通用请求返回对象 - data 任务节点集合
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getTargetNodes4UserTask", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<TargetModel>> getTargetNodes4UserTask(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
         @RequestParam Boolean isContainEndNode) {
@@ -245,10 +243,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/isCallActivity", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Boolean> isCallActivity(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -261,10 +259,10 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param taskId 任务id
      * @param nodeType 节点类型
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/isContainNodeType", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Boolean> isContainNodeType(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam String nodeType) {
         FlowableTenantInfoHolder.setTenantId(tenantId);

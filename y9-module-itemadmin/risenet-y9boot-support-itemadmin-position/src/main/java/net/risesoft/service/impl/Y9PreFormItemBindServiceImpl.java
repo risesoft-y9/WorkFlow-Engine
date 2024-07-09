@@ -13,7 +13,6 @@ import net.risesoft.entity.Y9PreFormItemBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.Y9PreFormItemBindRepository;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.Y9PreFormItemBindService;
 
 /**
@@ -27,8 +26,6 @@ import net.risesoft.service.Y9PreFormItemBindService;
 public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
 
     private final Y9PreFormItemBindRepository y9PreFormItemBindRepository;
-
-    private final SpmApproveItemService spmApproveItemService;
 
     @Override
     @Transactional

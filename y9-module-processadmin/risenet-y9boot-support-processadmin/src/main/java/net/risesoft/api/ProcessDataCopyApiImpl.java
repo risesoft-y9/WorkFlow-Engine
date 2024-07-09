@@ -42,7 +42,8 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
      * @param sourceTenantId 源租户id
      * @param targetTenantId 目标租户id
      * @param modelKey 定义key
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId,

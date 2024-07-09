@@ -37,7 +37,8 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricTaskInstanceModel>> findTaskByProcessInstanceIdOrByEndTimeAsc(
@@ -55,11 +56,13 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricTaskInstanceModel>> findTaskByProcessInstanceIdOrderByStartTimeAsc(
-        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
+        @RequestParam String tenantId, @RequestParam String processInstanceId,
+        @RequestParam(required = false) String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list =
@@ -72,7 +75,8 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<HistoricTaskInstanceModel>
+     * @return {@code Y9Result<HistoricTaskInstanceModel>} 通用请求返回对象 - data 任务实例列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<HistoricTaskInstanceModel> getById(@RequestParam String tenantId, @RequestParam String taskId) {
@@ -87,11 +91,12 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricTaskInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
-        @RequestParam String processInstanceId, @RequestParam String year) {
+        @RequestParam String processInstanceId, @RequestParam(required = false) String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceId(processInstanceId, year);
         return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
@@ -103,11 +108,12 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>>} 通用请求返回对象 - data 任务实例列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricTaskInstanceModel>> getByProcessInstanceIdOrderByEndTimeDesc(
-        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
+        @RequestParam String tenantId, @RequestParam String processInstanceId, String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list =
             customHistoricTaskService.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year);
@@ -119,7 +125,8 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return Y9Result<Long>
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 任务数量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Long> getFinishedCountByExecutionId(@RequestParam String tenantId,
@@ -134,7 +141,8 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<HistoricTaskInstanceModel>
+     * @return {@code Y9Result<HistoricTaskInstanceModel>} 通用请求返回对象 - data 任务实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<HistoricTaskInstanceModel> getThePreviousTask(@RequestParam String tenantId,
@@ -149,7 +157,8 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<List<HistoricTaskInstanceModel>>
+     * @return {@code Y9Result<List<HistoricTaskInstanceModel>> } 通用请求返回对象 - data 任务实例列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricTaskInstanceModel>> getThePreviousTasks(@RequestParam String tenantId,
@@ -164,7 +173,8 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setTenantId(@RequestParam String tenantId, @RequestParam String taskId) {

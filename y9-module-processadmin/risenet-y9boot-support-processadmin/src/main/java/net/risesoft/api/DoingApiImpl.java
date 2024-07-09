@@ -7,7 +7,6 @@ import org.flowable.engine.HistoryService;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +30,7 @@ import net.risesoft.service.FlowableTenantInfoHolder;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/doing")
+@RequestMapping(value = "/services/rest/doing", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DoingApiImpl implements DoingApi {
 
     private final CustomDoingService customDoingService;
@@ -44,9 +43,9 @@ public class DoingApiImpl implements DoingApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件统计
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getCountByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getCountByUserId(@RequestParam String tenantId, @RequestParam String userId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customDoingService.getCountByUserId(userId));
@@ -60,9 +59,9 @@ public class DoingApiImpl implements DoingApi {
      * @param page 页码
      * @param rows 行数
      * @return {@code Y9Page<ProcessInstanceModel> } 通用请求返回对象 - data 在办任务
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> getListByUserId(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -77,10 +76,10 @@ public class DoingApiImpl implements DoingApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -96,11 +95,10 @@ public class DoingApiImpl implements DoingApi {
      * @param processDefinitionKey 流程定义key
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getListByUserIdAndProcessDefinitionKeyOrderBySendTime",
-        produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -143,10 +141,10 @@ public class DoingApiImpl implements DoingApi {
      * @param systemName 英文系统名称
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> getListByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -162,10 +160,10 @@ public class DoingApiImpl implements DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> searchListByUserId(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -181,10 +179,10 @@ public class DoingApiImpl implements DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processDefinitionKey,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
@@ -202,10 +200,10 @@ public class DoingApiImpl implements DoingApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Map<String, Object>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用请求返回对象 - data 在办列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {

@@ -359,7 +359,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Transactional
     public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap,
         List<String> ids) {
-        List<DbColumn> dbcs = new ArrayList<DbColumn>();
+        List<DbColumn> dbcs = new ArrayList<>();
         int order = 1;
         Y9TableField fieldTemp = null;
         for (Map<String, Object> m : listMap) {
@@ -456,10 +456,10 @@ public class Y9TableServiceImpl implements Y9TableService {
             if (savetable != null && savetable.getId() != null) {
                 String tableId = savetable.getId();
                 String tableName = savetable.getTableName();
-                if (listMap.size() > 0) {
+                if (!listMap.isEmpty()) {
                     List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                    List<DbColumn> dbcs = new ArrayList<DbColumn>();
+                    List<DbColumn> dbcs = new ArrayList<>();
                     dbcs = saveField(tableId, tableName, listMap, ids);
                     /**
                      * 删除页面上已删除的字段

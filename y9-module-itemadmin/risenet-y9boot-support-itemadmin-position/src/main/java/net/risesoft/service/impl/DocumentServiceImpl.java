@@ -1358,7 +1358,8 @@ public class DocumentServiceImpl implements DocumentService {
             } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put("parentTaskId", taskId);
-                taskManager.createWithVariables(tenantId, position.getId(), routeToTaskId, vars, userList);
+                taskManager.createWithVariables4Position(tenantId, position.getId(), Y9LoginUserHolder.getPersonId(),
+                    routeToTaskId, vars, userList);
             } else {
                 assert processParam != null;
                 asyncHandleService.forwarding4Task(processInstanceId, processParam, "", sponsorGuid, taskId,

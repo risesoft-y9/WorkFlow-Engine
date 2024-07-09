@@ -16,7 +16,7 @@ import net.risesoft.pojo.Y9Result;
 
 /**
  * 正在运行流程实例操作接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -24,14 +24,14 @@ import net.risesoft.pojo.Y9Result;
 public interface RuntimeApi {
 
     /**
-     *
-     * Description: 加签
+     * 加签
      *
      * @param tenantId 租户id
-     * @param activityId 执行实例id
+     * @param activityId 活动节点id
      * @param parentExecutionId 父执行实例id
      * @param map 参数
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping(value = "/addMultiInstanceExecution", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> addMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
@@ -39,13 +39,14 @@ public interface RuntimeApi {
         @RequestBody Map<String, Object> map);
 
     /**
-     * 办结/岗位
+     * 真办结/岗位
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping("/complete4Position")
     Y9Result<Object> complete4Position(@RequestParam("tenantId") String tenantId,
@@ -53,14 +54,14 @@ public interface RuntimeApi {
         @RequestParam("taskId") String taskId);
 
     /**
-     *
-     * Description: 真办结
+     * 真办结
      *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping("/completed")
     Y9Result<Object> completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
@@ -72,6 +73,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param executionId 执行实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping("/deleteMultiInstanceExecution")
     Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
@@ -83,6 +85,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param executionId 执行实例id
      * @return {@code Y9Result<List<String>>} 通用请求返回对象 - data 是当前活跃的节点信息
+     * @since 9.6.6
      */
     @GetMapping("/getActiveActivityIds")
     Y9Result<List<String>> getActiveActivityIds(@RequestParam("tenantId") String tenantId,
@@ -94,6 +97,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param executionId 执行实例id
      * @return {@code Y9Result<ExecutionModel>} 通用请求返回对象 - data 是执行实例
+     * @since 9.6.6
      */
     @GetMapping("/getExecutionById")
     Y9Result<ExecutionModel> getExecutionById(@RequestParam("tenantId") String tenantId,
@@ -105,6 +109,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param superProcessInstanceId 父流程实例id
      * @return {@code Y9Result<List<ProcessInstanceModel>>} 通用请求返回对象 - data 是子流程实例列表
+     * @since 9.6.6
      */
     @GetMapping("/getListBySuperProcessInstanceId")
     Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -116,6 +121,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<ProcessInstanceModel>} 通用请求返回对象 - data 是流程实例
+     * @since 9.6.6
      */
     @GetMapping("/getProcessInstance")
     Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam("tenantId") String tenantId,
@@ -129,6 +135,7 @@ public interface RuntimeApi {
      * @param page 页码
      * @param rows 行数
      * @return {@code Y9Page<ProcessInstanceModel>} 通用分页请求返回对象 - rows 是流程实例
+     * @since 9.6.6
      */
     @GetMapping("/getProcessInstancesByDefId")
     Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam("tenantId") String tenantId,
@@ -141,20 +148,21 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
      * @return {@code Y9Result<List<ProcessInstanceModel>>} 通用请求返回对象 - data 是流程实例
+     * @since 9.6.6
      */
     @GetMapping("/getProcessInstancesByKey")
     Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
-     *
-     * Description: 真办结后恢复流程实例为待办状态
+     * 真办结后恢复流程实例为待办状态
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 用户id
      * @param processInstanceId 流程实例id
      * @param year 年份
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping("/recovery4Completed")
     Y9Result<Object> recovery4Completed(@RequestParam("tenantId") String tenantId,
@@ -167,6 +175,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping("/recovery4SetUpCompleted")
     Y9Result<Object> recovery4SetUpCompleted(@RequestParam("tenantId") String tenantId,
@@ -180,6 +189,7 @@ public interface RuntimeApi {
      * @param page 页吗
      * @param rows 条数
      * @return {@code Y9Page<Map<String, Object>>} 通用分页请求返回对象 - rows 是流程实例
+     * @since 9.6.6
      */
     @GetMapping(value = "/runningList")
     Y9Page<ProcessInstanceModel> runningList(@RequestParam("tenantId") String tenantId,
@@ -192,6 +202,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping("/setUpCompleted")
     Y9Result<Object> setUpCompleted(@RequestParam("tenantId") String tenantId,
@@ -203,8 +214,9 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param key 变量key
-     * @param map 变量值
+     * @param map 变量map
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping(value = "/setVariable", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> setVariable(@RequestParam("tenantId") String tenantId,
@@ -218,6 +230,7 @@ public interface RuntimeApi {
      * @param executionId 执行实例id
      * @param map 变量map
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping(value = "/setVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> setVariables(@RequestParam("tenantId") String tenantId,
@@ -232,6 +245,7 @@ public interface RuntimeApi {
      * @param systemName 系统名称
      * @param map 变量map
      * @return {@code Y9Result<ProcessInstanceModel>} 通用请求返回对象 - data 是流程实例
+     * @since 9.6.6
      */
     @PostMapping(value = "/startProcessInstanceByKey", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam("tenantId") String tenantId,
@@ -244,6 +258,7 @@ public interface RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 属性判断流程是否挂起
+     * @since 9.6.6
      */
     @GetMapping("/suspendedByProcessInstanceId")
     Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -256,6 +271,7 @@ public interface RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param state 状态
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @PostMapping("/switchSuspendOrActive")
     Y9Result<Object> switchSuspendOrActive(@RequestParam("tenantId") String tenantId,

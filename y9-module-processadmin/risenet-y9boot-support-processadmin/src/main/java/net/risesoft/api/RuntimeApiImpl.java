@@ -9,6 +9,7 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,7 +45,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/runtime")
+@RequestMapping(value = "/services/rest/runtime", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RuntimeApiImpl implements RuntimeApi {
 
     private final CustomRuntimeService customRuntimeService;
@@ -67,7 +68,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param activityId 活动节点id
      * @param parentExecutionId 父执行实例id
-     * @return Y9Result<Object>
+     * @param map 参数
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> addMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String activityId,
@@ -84,7 +87,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> complete4Position(@RequestParam String tenantId, @RequestParam String positionId,
@@ -108,7 +112,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> completed(@RequestParam String tenantId, @RequestParam String userId,
@@ -131,7 +136,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteMultiInstanceExecution(@RequestParam String tenantId,
@@ -146,7 +152,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return Y9Result<List<String>>
+     * @return {@code Y9Result<List<String>>} 通用请求返回对象 - data 是当前活跃的节点信息
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<String>> getActiveActivityIds(@RequestParam String tenantId,
@@ -160,7 +167,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return Y9Result<ExecutionModel>
+     * @return {@code Y9Result<ExecutionModel>} 通用请求返回对象 - data 是执行实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<ExecutionModel> getExecutionById(@RequestParam String tenantId, @RequestParam String executionId) {
@@ -177,7 +185,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param superProcessInstanceId 父流程实例id
-     * @return Y9Result<List<ProcessInstanceModel>>
+     * @return {@code Y9Result<List<ProcessInstanceModel>>} 通用请求返回对象 - data 是子流程实例列表
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam String tenantId,
@@ -192,7 +201,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<ProcessInstanceModel>
+     * @return {@code Y9Result<ProcessInstanceModel>} 通用请求返回对象 - data 是流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam String tenantId,
@@ -212,7 +222,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param processDefinitionId 流程定义id
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<ProcessInstanceModel>
+     * @return {@code Y9Page<ProcessInstanceModel>} 通用分页请求返回对象 - rows 是流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam String tenantId,
@@ -231,7 +242,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return Y9Result<List<ProcessInstanceModel>>
+     * @return {@code Y9Result<List<ProcessInstanceModel>>} 通用请求返回对象 - data 是流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam String tenantId,
@@ -248,7 +260,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param userId 用户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> recovery4Completed(@RequestParam String tenantId, @RequestParam String userId,
@@ -281,7 +294,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> recovery4SetUpCompleted(@RequestParam String tenantId,
@@ -298,7 +312,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param page 页吗
      * @param rows 条数
-     * @return Y9Page<Map<String, Object>>
+     * @return {@code Y9Page<Map<String, Object>>} 通用分页请求返回对象 - rows 是流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Page<ProcessInstanceModel> runningList(@RequestParam String tenantId,
@@ -364,7 +379,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId) {
@@ -380,7 +396,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param processInstanceId 流程实例id
      * @param key 变量key
      * @param map 变量map
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setVariable(@RequestParam String tenantId, @RequestParam String processInstanceId,
@@ -397,7 +414,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param executionId 执行实例id
      * @param map 变量map
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setVariables(@RequestParam String tenantId, @RequestParam String executionId,
@@ -416,7 +434,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param processDefinitionKey 流程定义key
      * @param systemName 系统名称
      * @param map 变量map
-     * @return Y9Result<ProcessInstanceModel>
+     * @return {@code Y9Result<ProcessInstanceModel>} 通用请求返回对象 - data 是流程实例
+     * @since 9.6.6
      */
     @Override
     public Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam String tenantId,
@@ -442,7 +461,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 属性判断流程是否挂起
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam String tenantId,
@@ -458,7 +478,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param state 状态
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String processInstanceId,

@@ -137,7 +137,7 @@ public class TableManagerService {
 
     /**
      * 创建表结构
-     * 
+     *
      * @param td
      * @param dbcs
      * @return
@@ -146,7 +146,7 @@ public class TableManagerService {
         Map<String, Object> map = new HashMap<>(16);
         map.put("msg", "操作成功");
         map.put(UtilConsts.SUCCESS, true);
-        StringBuffer createSql = new StringBuffer();
+        StringBuilder createSql = new StringBuilder();
         try {
             // 创建表
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
@@ -220,7 +220,7 @@ public class TableManagerService {
         for (Y9TableField y9TableField : list1) {
             list.add(y9TableField.getFieldName());
         }
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             allFieldName = new String[list.size()];
             allFieldName = list.toArray(allFieldName);
         }
@@ -234,7 +234,7 @@ public class TableManagerService {
      * @throws Exception
      */
     protected String getAllPrimaryKeyFields(String tableId) throws Exception {
-        StringBuffer primaryKey = new StringBuffer();
+        StringBuilder primaryKey = new StringBuilder();
         try {
             List<Y9TableField> list =
                 y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
@@ -395,11 +395,11 @@ public class TableManagerService {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         Connection connection = null;
         boolean isHaveField = false;
-        StringBuffer sqlStr = new StringBuffer("");
+        StringBuilder sqlStr = new StringBuilder("");
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             List<DbColumn> list = dbMetaDataUtil.listAllColumns(connection, tableName, "");
-            StringBuffer sqlStr1 = new StringBuffer(") values(");
+            StringBuilder sqlStr1 = new StringBuilder(") values(");
             sqlStr.append("insert into " + tableName + " (");
             for (DbColumn column : list) {
                 fieldList.add(column.getColumnName());
@@ -467,12 +467,12 @@ public class TableManagerService {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         Connection connection = null;
         boolean isHaveField = false;
-        StringBuffer sqlStr = new StringBuffer("");
+        StringBuilder sqlStr = new StringBuilder("");
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             List<DbColumn> list = dbMetaDataUtil.listAllColumns(connection, tableName, "");
             sqlStr.append("update " + tableName + " set ");
-            StringBuffer sqlStr1 = new StringBuffer("");
+            StringBuilder sqlStr1 = new StringBuilder("");
             for (DbColumn column : list) {
                 if (column.getPrimaryKey()) {
                     sqlStr1.append(" where " + column.getColumnName() + "=?");

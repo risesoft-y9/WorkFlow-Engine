@@ -8,8 +8,6 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +33,7 @@ import net.risesoft.util.FlowableModelConvertUtil;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/repository")
+@RequestMapping(value = "/services/rest/repository", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RepositoryApiImpl implements RepositoryApi {
 
     private final CustomRepositoryService customRepositoryService;
@@ -45,10 +43,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      *
      * @param tenantId 租户id
      * @param deploymentId 部署id
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> delete(@RequestParam String tenantId, @RequestParam String deploymentId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRepositoryService.delete(deploymentId);
@@ -59,10 +57,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      *
      * @param tenantId 租户id
      * @param file 流程文件
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    @PostMapping(value = "/deploy", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deploy(@RequestParam String tenantId, MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRepositoryService.deploy(file);
@@ -73,10 +71,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return ProcessDefinitionModel
+     * @return {@code Y9Result<ProcessDefinitionModel>} 通用请求返回对象 - data 是最新部署的流程定义
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getLatestProcessDefinitionByKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ProcessDefinitionModel> getLatestProcessDefinitionByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -88,10 +86,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      * 获取所有流程定义最新版本的集合
      *
      * @param tenantId 租户id
-     * @return List<ProcessDefinitionModel>
+     * @return {@code Y9Result<List<ProcessDefinitionModel>>} 通用请求返回对象 - data 是最新部署的流程定义列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getLatestProcessDefinitionList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ProcessDefinitionModel>> getLatestProcessDefinitionList(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessDefinition> pdList = customRepositoryService.getLatestProcessDefinitionList();
@@ -103,10 +101,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义Id
-     * @return Y9Result<ProcessDefinitionModel>
+     * @return {@code Y9Result<ProcessDefinitionModel>} 通用请求返回对象 - data 是流程定义信息
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getPreviousProcessDefinitionById", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ProcessDefinitionModel> getPreviousProcessDefinitionById(@RequestParam String tenantId,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -119,10 +117,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义Id
-     * @return Y9Result<ProcessDefinitionModel>
+     * @return {@code Y9Result<ProcessDefinitionModel>} 通用请求返回对象 - data 是流程定义信息
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getProcessDefinitionById", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ProcessDefinitionModel> getProcessDefinitionById(@RequestParam String tenantId,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -135,10 +133,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义key
-     * @return List<ProcessDefinitionModel>
+     * @return {@code Y9Result<List<ProcessDefinitionModel>>} 通用请求返回对象 - data 是流程定义信息
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getProcessDefinitionListByKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionListByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -148,15 +146,15 @@ public class RepositoryApiImpl implements RepositoryApi {
 
     /**
      * 获取流程定义xml
-     * 
+     *
      * @param tenantId 租户id
      * @param resourceType xml
      * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是流程定义xml
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getXmlByProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getXmlByProcessInstance(@RequestParam String tenantId, @RequestParam String resourceType,
         @RequestParam String processInstanceId, @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -175,10 +173,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      * 获取已部署流程定义列表
      *
      * @param tenantId 租户id
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是流程定义信息
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ProcessDefinitionModel>> list(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRepositoryService.list("");
@@ -190,10 +188,10 @@ public class RepositoryApiImpl implements RepositoryApi {
      * @param tenantId 租户id
      * @param state 状态
      * @param processDefinitionId 流程定义Id
-     * @return Map<String, Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
-    @PostMapping(value = "/switchSuspendOrActive", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String state,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);

@@ -35,7 +35,8 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<HistoricActivityInstanceModel>>
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>}
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
@@ -51,7 +52,8 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年度
-     * @return Y9Result<List<HistoricActivityInstanceModel>>
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>}
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(@RequestParam String tenantId,
