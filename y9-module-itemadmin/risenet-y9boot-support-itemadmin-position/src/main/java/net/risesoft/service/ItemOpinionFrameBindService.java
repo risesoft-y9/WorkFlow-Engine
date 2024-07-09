@@ -1,10 +1,9 @@
 package net.risesoft.service;
 
-import java.util.List;
-
+import net.risesoft.entity.ItemOpinionFrameBind;
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.ItemOpinionFrameBind;
+import java.util.List;
 
 /**
  * @author qinman
@@ -146,4 +145,12 @@ public interface ItemOpinionFrameBindService {
      * @param taskDefKey
      */
     void save(String opinionFrameNameAndMarks, String itemId, String processDefinitionId, String taskDefKey);
+
+    /**
+     * Description: 复制意见框绑定信息
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
 }
