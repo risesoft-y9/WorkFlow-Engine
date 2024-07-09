@@ -1,10 +1,10 @@
 package net.risesoft.service;
 
-import java.util.List;
-import java.util.Map;
-
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -120,5 +120,13 @@ public interface Y9FormItemBindService {
      * @return
      */
     Map<String, Object> save(Y9FormItemMobileBind eformItem);
+
+    /**
+     * Description:复制表单绑定信息
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    void copyBindInfo(String itemId,String newItemId,String lastVersionPid);
 
 }
