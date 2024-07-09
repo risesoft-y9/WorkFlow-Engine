@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.List;
-
 import net.risesoft.entity.ItemViewConf;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -79,4 +79,12 @@ public interface ItemViewConfService {
      * @param idAndTabIndexs "id:tabIndex"形式的数组
      */
     public void update4Order(String[] idAndTabIndexs);
+
+    /**
+     * 复制视图配置绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     */
+    void copyBindInfo(String itemId, String newItemId);
 }
