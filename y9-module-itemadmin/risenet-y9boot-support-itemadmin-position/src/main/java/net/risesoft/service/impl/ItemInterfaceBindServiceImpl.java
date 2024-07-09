@@ -1,25 +1,20 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.InterfaceInfoRepository;
-import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
-import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
-import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
+import net.risesoft.repository.jpa.*;
 import net.risesoft.service.ItemInterfaceBindService;
-import net.risesoft.service.SpmApproveItemService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -28,6 +23,7 @@ import net.risesoft.service.SpmApproveItemService;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
 
@@ -35,7 +31,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
 
     private final InterfaceInfoRepository interfaceInfoRepository;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
 
@@ -45,7 +41,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     public List<ItemInterfaceBind> findByInterfaceId(String interfaceId) {
         List<ItemInterfaceBind> list = itemInterfaceBindRepository.findByInterfaceIdOrderByCreateTimeDesc(interfaceId);
         for (ItemInterfaceBind bind : list) {
-            SpmApproveItem item = spmApproveItemService.findById(bind.getItemId());
+            SpmApproveItem item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
             bind.setItemName(item != null ? item.getName() : "事项不存在");
         }
         return list;
@@ -87,6 +83,24 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
                 item.setCreateTime(sdf.format(new Date()));
                 itemInterfaceBindRepository.save(item);
             }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        try {
+            List<ItemInterfaceBind> bindList = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+            for (ItemInterfaceBind bind : bindList) {
+                ItemInterfaceBind newBind = new ItemInterfaceBind();
+                newBind.setItemId(newItemId);
+                newBind.setInterfaceId(bind.getInterfaceId());
+                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newBind.setCreateTime(bind.getCreateTime());
+                itemInterfaceBindRepository.save(newBind);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制事项接口绑定关系失败", e);
         }
     }
 }
