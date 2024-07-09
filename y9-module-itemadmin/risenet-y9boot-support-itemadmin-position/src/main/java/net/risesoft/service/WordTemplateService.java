@@ -50,6 +50,14 @@ public interface WordTemplateService {
     List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId);
 
     /**
+     * 获取当前委办局下所有的正文模板(可根据正文模板名称查询)
+     * @param bureauId
+     * @param fileName
+     * @return
+     */
+    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,String fileName);
+
+    /**
      * Description:
      * 
      * @param id

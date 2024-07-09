@@ -117,6 +117,11 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
+    public List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName) {
+        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
+    }
+
+    @Override
     public WordTemplate findById(String id) {
         return wordTemplateRepository.findById(id).orElse(null);
     }
