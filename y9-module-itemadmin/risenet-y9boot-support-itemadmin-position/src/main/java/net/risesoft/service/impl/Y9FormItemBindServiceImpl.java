@@ -1,16 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
@@ -21,12 +12,20 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.repository.jpa.Y9FormItemBindRepository;
 import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -35,6 +34,7 @@ import net.risesoft.y9.util.Y9Util;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
@@ -44,7 +44,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     private final ProcessDefinitionApi processDefinitionManager;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     private final RepositoryApi repositoryManager;
 
@@ -52,7 +52,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Transactional
     public void copyEform(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -317,4 +317,58 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         }
         return map;
     }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try{
+            //复制PC端表单的绑定
+            List<Y9FormItemBind> previouseibList = y9FormItemBindRepository.findByItemIdAndProcDefId(itemId, lastVersionPid);
+            for (Y9FormItemBind eib : previouseibList) {
+                String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
+                Y9FormItemBind eibTemp = new Y9FormItemBind();
+                if (StringUtils.isNotBlank(taskDefKey)) {
+                    eibTemp.setTaskDefKey(taskDefKey);
+                }
+                eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                eibTemp.setProcessDefinitionId(lastVersionPid);
+                eibTemp.setFormName(eib.getFormName());
+                eibTemp.setFormId(formId);
+                eibTemp.setItemId(newItemId);
+                eibTemp.setShowDocumentTab(eib.isShowDocumentTab());
+                eibTemp.setShowFileTab(eib.isShowFileTab());
+                eibTemp.setShowHistoryTab(eib.isShowHistoryTab());
+                eibTemp.setTabIndex(eib.getTabIndex());
+                eibTemp.setTaskDefKey(taskDefKey);
+                eibTemp.setTenantId(tenantId);
+                y9FormItemBindRepository.save(eibTemp);
+            }
+
+            //复制手机端表单绑定信息
+            List<Y9FormItemMobileBind> mobileBindList = y9FormItemMobileBindRepository.findByItemIdAndProcDefId(itemId, lastVersionPid);
+            /**
+             * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
+             */
+            for (Y9FormItemMobileBind eib : mobileBindList) {
+                String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
+                Y9FormItemMobileBind eibTemp = new Y9FormItemMobileBind();
+                if (StringUtils.isNotBlank(taskDefKey)) {
+                    eibTemp.setTaskDefKey(taskDefKey);
+                }
+                eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                eibTemp.setProcessDefinitionId(lastVersionPid);
+                eibTemp.setFormName(eib.getFormName());
+                eibTemp.setFormId(formId);
+                eibTemp.setItemId(newItemId);
+                eibTemp.setTaskDefKey(taskDefKey);
+                eibTemp.setTenantId(tenantId);
+                y9FormItemMobileBindRepository.save(eibTemp);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制表单绑定信息失败", e);
+        }
+    }
+
+
 }

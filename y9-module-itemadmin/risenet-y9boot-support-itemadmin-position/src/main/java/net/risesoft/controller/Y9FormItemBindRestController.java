@@ -1,20 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
-
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
@@ -35,6 +21,14 @@ import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -74,6 +68,27 @@ public class Y9FormItemBindRestController {
         List<Y9FormItemBind> eformItemList =
             y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, procDefId, taskDefKey);
         for (Y9FormItemBind bind : eformItemList) {
+            Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
+            bind.setFormName(form != null ? form.getFormName() : "表单不存在");
+        }
+
+        return Y9Result.success(eformItemList, "获取成功");
+    }
+
+    /**
+     * 获取绑定的手机端表单列表
+     *
+     * @param itemId 事项id
+     * @param procDefId 流程定义id
+     * @param taskDefKey 任务key
+     * @return
+     */
+    @GetMapping(value = "/mobileBindList")
+    public Y9Result<List<Y9FormItemMobileBind>> mobileBindList(@RequestParam String itemId, @RequestParam String procDefId,
+                                                   @RequestParam(required = false) String taskDefKey) {
+        List<Y9FormItemMobileBind> eformItemList =
+                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId, procDefId, taskDefKey);
+        for (Y9FormItemMobileBind bind : eformItemList) {
             Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
             bind.setFormName(form != null ? form.getFormName() : "表单不存在");
         }
