@@ -1,10 +1,10 @@
 package net.risesoft.service;
 
-import java.util.List;
-import java.util.Map;
-
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.model.itemadmin.ItemModel;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -56,10 +56,17 @@ public interface SpmApproveItemService {
     List<SpmApproveItem> findBySystemName(String systemName);
 
     /**
+     * Description: 查询不包含当前事项id和事项name模糊匹配的事项列表
+     *
+     * @param id
+     * @param name
+     * @return
+     */
+    List<SpmApproveItem> findByIdNotAndNameLike(String id,String name);
+
+    /**
      * 根据流程定义key和租户Id判断当前租户是否存在事项
      *
-     * @param tenantId
-     * @param userId
      * @param processDefinitionKey
      * @return
      */
@@ -71,6 +78,14 @@ public interface SpmApproveItemService {
      * @return
      */
     Map<String, Object> list();
+
+    /**
+     * Description:复制事项
+     *
+     * @param id
+     * @return
+     */
+    Map<String, Object> copyItem(String id);
 
     /**
      * 分页获取事项列表

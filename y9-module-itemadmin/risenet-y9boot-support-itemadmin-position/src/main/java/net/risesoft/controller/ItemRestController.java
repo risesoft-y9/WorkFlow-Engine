@@ -1,21 +1,8 @@
 package net.risesoft.controller;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import jodd.util.Base64;
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -34,6 +21,17 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -43,6 +41,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/vue/item", produces = MediaType.APPLICATION_JSON_VALUE)
+@Slf4j
 public class ItemRestController {
 
     private final SpmApproveItemService spmApproveItemService;
@@ -162,6 +161,29 @@ public class ItemRestController {
     }
 
     /**
+     * 获取绑定的事项列表(不包含选择的事项)
+     *
+     * @param itemId 事项id
+     * @return
+     */
+    @GetMapping(value = "/getBindItemList")
+    public Y9Result<List<Map<String, Object>>> getBindItemList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String itemName) {
+        List<Map<String, Object>> list_map = new ArrayList<Map<String, Object>>();
+        List<SpmApproveItem> itemList = spmApproveItemService.findByIdNotAndNameLike(itemId,itemName);
+        for (SpmApproveItem item : itemList) {
+            if(!item.getId().equals(itemId)) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("id", item.getId());
+                map.put("itemName", item.getName());
+                map.put("workflowGuid", item.getWorkflowGuid());
+                map.put("systemName", item.getSystemName());
+                list_map.add(map);
+            }
+        }
+        return Y9Result.success(list_map, "获取成功");
+    }
+
+    /**
      * 获取新增或修改数据
      *
      * @param id 事项id
@@ -201,6 +223,21 @@ public class ItemRestController {
     }
 
     /**
+     * 复制事项
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/copyItem")
+    public Y9Result<String> copyItem(@RequestParam(required = true) String id) {
+        Map<String, Object> map = spmApproveItemService.copyItem(id);
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
+        }
+        return Y9Result.failure((String)map.get("msg"));
+    }
+
+
+    /**
      * 发布为应用系统
      *
      * @param itemId 事项id
@@ -237,6 +274,28 @@ public class ItemRestController {
         Map<String, Object> map = new HashMap<>(16);
         map.put("iconList", iconList);
         return Y9Result.success(map, "获取成功");
+    }
+
+    /**
+     * 上传图标
+     * @param files
+     * @return
+     */
+    @PostMapping(value = "/uploadItemIcon")
+    public Y9Result<Map<String, Object>> uploadItemIcon(@RequestParam MultipartFile files) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("iconData", "");
+        byte[] iconData = null;
+        try {
+            if (!files.isEmpty()) {
+                iconData = files.getBytes();
+                map.put("iconData", Base64.encodeToString(iconData));
+            }
+            return Y9Result.success(map, "上传成功");
+        } catch (IOException e1) {
+            LOGGER.warn(e1.getMessage(), e1);
+        }
+        return Y9Result.failure("上传失败");
     }
 
     /**

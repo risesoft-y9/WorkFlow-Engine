@@ -159,4 +159,8 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "SHOWSUBMITBUTTON", nullable = false)
     @ColumnDefault("0")
     private boolean showSubmitButton = false;
+
+    @Comment("排序")
+    @Column(name = "TABINDEX")
+    private Integer tabIndex;
 }
