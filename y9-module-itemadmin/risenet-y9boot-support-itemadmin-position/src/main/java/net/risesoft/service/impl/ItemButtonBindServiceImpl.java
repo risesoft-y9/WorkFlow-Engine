@@ -1,24 +1,10 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.CommonButton;
-import net.risesoft.entity.ItemButtonBind;
-import net.risesoft.entity.ItemButtonRole;
-import net.risesoft.entity.SendButton;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.*;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -26,13 +12,22 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemButtonBindRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.ItemButtonBindService;
 import net.risesoft.service.ItemButtonRoleService;
 import net.risesoft.service.SendButtonService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author qinman
@@ -41,6 +36,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
@@ -52,7 +48,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
     private final ItemButtonRoleService itemButtonRoleService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     private final RepositoryApi repositoryManager;
 
@@ -94,7 +90,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -429,5 +425,36 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             oldtibList.add(oldBib);
         }
         buttonItemBindRepository.saveAll(oldtibList);
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
+        try {
+            List<ItemButtonBind> bindList = buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
+            if(null != bindList && !bindList.isEmpty()) {
+                for (ItemButtonBind bind : bindList) {
+                    ItemButtonBind newbind = new ItemButtonBind();
+                    newbind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    newbind.setButtonId(bind.getButtonId());
+                    newbind.setButtonType(bind.getButtonType());
+                    newbind.setItemId(newItemId);
+                    newbind.setProcessDefinitionId(lastVersionPid);
+                    newbind.setTaskDefKey(bind.getTaskDefKey());
+                    newbind.setTenantId(tenantId);
+                    newbind.setCreateTime(sdf.format(new Date()));
+                    newbind.setUpdateTime(sdf.format(new Date()));
+                    newbind.setUserId(userId);
+                    newbind.setUserName(userName);
+                    newbind.setTabIndex(bind.getTabIndex());
+                    buttonItemBindRepository.save(newbind);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制按钮绑定信息失败", e);
+        }
     }
 }

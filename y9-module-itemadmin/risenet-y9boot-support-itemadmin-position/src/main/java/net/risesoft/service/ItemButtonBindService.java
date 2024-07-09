@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.List;
-
 import net.risesoft.entity.ItemButtonBind;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -127,4 +127,13 @@ public interface ItemButtonBindService {
      * @param idAndTabIndexs
      */
     void saveOrder(String[] idAndTabIndexs);
+
+    /**
+     * Description: 复制按钮配置绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
 }
