@@ -1,13 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemTaskConf;
@@ -18,6 +12,11 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.ItemTaskConfRepository;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -26,6 +25,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemTaskConfServiceImpl implements ItemTaskConfService {
 
@@ -192,5 +192,27 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         entity.setProcessDefinitionId(processDefinitionId);
         entity.setTaskDefKey(taskDefKey);
         return entity;
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        try {
+            List<ItemTaskConf> confList = taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+            for (ItemTaskConf conf : confList) {
+                ItemTaskConf newConf = new ItemTaskConf();
+                newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newConf.setItemId(newItemId);
+                newConf.setProcessDefinitionId(conf.getProcessDefinitionId());
+                newConf.setSignOpinion(conf.getSignOpinion());
+                newConf.setSponsor(conf.getSponsor());
+                newConf.setTaskDefKey(conf.getTaskDefKey());
+                newConf.setTenantId(Y9LoginUserHolder.getTenantId());
+                newConf.setSignTask(conf.getSignTask());
+                taskConfRepository.save(newConf);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制签收配置失败", e);
+        }
     }
 }
