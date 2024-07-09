@@ -1,13 +1,12 @@
 package net.risesoft.repository.jpa;
 
-import java.util.List;
-
+import net.risesoft.entity.ItemButtonBind;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.ItemButtonBind;
+import java.util.List;
 
 /**
  * @author qinman
@@ -31,6 +30,8 @@ public interface ItemButtonBindRepository
         Integer buttonType, String processDefinitionId);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndTaskDefKeyOrderByTabIndexAsc(String itemId, int i, String string);
+
+    List<ItemButtonBind> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId, String processDefinitionId);
 
     ItemButtonBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(String itemId,
         String processDefinitionId, String taskDefKey, String buttonId);
