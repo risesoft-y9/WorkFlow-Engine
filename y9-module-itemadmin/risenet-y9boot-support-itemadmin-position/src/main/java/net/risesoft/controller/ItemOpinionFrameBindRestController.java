@@ -1,32 +1,26 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.ItemOpinionFrameRole;
+import net.risesoft.entity.OpinionFrameOneClickSet;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.ItemOpinionFrameRoleService;
+import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author qinman
@@ -35,6 +29,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
+@Validated
+@Slf4j
 @RequestMapping(value = "/vue/itemOpinionFrameBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemOpinionFrameBindRestController {
 
@@ -47,6 +43,8 @@ public class ItemOpinionFrameBindRestController {
     private final ProcessDefinitionApi processDefinitionManager;
 
     private final SpmApproveItemService spmApproveItemService;
+
+    private final OpinionFrameOneClickSetService opinionFrameOneClickSetService;
 
     /**
      * 绑定意见框
@@ -209,5 +207,55 @@ public class ItemOpinionFrameBindRestController {
         opinionBind.setModifyDate(sdf.format(new Date()));
         itemOpinionFrameBindService.save(opinionBind);
         return Y9Result.successMsg("修改成功");
+    }
+
+    /**
+     * 获取意见框绑定的一键设置列表
+     * @param bindId
+     * @return
+     */
+    @GetMapping(value = "/getOneClickSetBindList")
+    public Y9Result<List<OpinionFrameOneClickSet>> getOneClickSetBindList(@RequestParam(required = true) String bindId) {
+        List<OpinionFrameOneClickSet> bindList = new ArrayList<>();
+        try {
+            bindList = opinionFrameOneClickSetService.findByBindId(bindId);
+        } catch (Exception e) {
+            LOGGER.error("获取意见框绑定的一键设置列表失败", e);
+            Y9Result.failure("获取意见框绑定的一键设置列表失败");
+        }
+        return Y9Result.success(bindList, "获取意见框绑定的一键设置列表成功");
+    }
+
+    /**
+     * 保存一键设置数据
+     * @param opinionFrameOneClickSet
+     * @return
+     */
+    @PostMapping(value = "/saveOneClickSet")
+    public Y9Result<Map<String, Object>> saveOneClickSet1(@Validated OpinionFrameOneClickSet opinionFrameOneClickSet) {
+        Map<String,Object> map = new HashMap<>();
+        try {
+            map = opinionFrameOneClickSetService.save(opinionFrameOneClickSet);
+        } catch (Exception e) {
+            LOGGER.error("一键设置失败", e);
+            Y9Result.failure("一键设置失败");
+        }
+        return Y9Result.success(map, map.get("msg").toString());
+    }
+
+    /**
+     * 删除一键设置及动作
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/delOneClickSet")
+    public Y9Result<String> delOneClickSet(String id) {
+        try {
+            opinionFrameOneClickSetService.delete(id);
+        } catch (Exception e) {
+            LOGGER.error("删除一键设置失败", e);
+            Y9Result.failure("删除一键设置失败");
+        }
+        return Y9Result.successMsg("删除一键设置成功");
     }
 }

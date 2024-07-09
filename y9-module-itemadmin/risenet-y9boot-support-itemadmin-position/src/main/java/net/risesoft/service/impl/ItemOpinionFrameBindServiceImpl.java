@@ -1,25 +1,14 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.ItemOpinionFrameRole;
+import net.risesoft.entity.OpinionFrameOneClickSet;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -28,10 +17,22 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemOpinionFrameBindRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.ItemOpinionFrameRoleService;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
@@ -40,6 +41,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindService {
 
@@ -49,11 +51,13 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
     private final RoleApi roleManager;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     private final RepositoryApi repositoryManager;
 
     private final ProcessDefinitionApi processDefinitionManager;
+
+    private final OpinionFrameOneClickSetService opinionFrameOneClickSetService;
 
     @Override
     @Transactional
@@ -71,7 +75,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -309,6 +313,52 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     resList.add(newoftrb);
                 }
             }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
+        try{
+            List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
+            if(null != bindList && !bindList.isEmpty()) {
+                for (ItemOpinionFrameBind bind : bindList) {
+                    ItemOpinionFrameBind newbind = new ItemOpinionFrameBind();
+                    String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                    newbind.setId(newbindId);
+                    newbind.setItemId(newItemId);
+                    newbind.setCreateDate(sdf.format(new Date()));
+                    newbind.setModifyDate(sdf.format(new Date()));
+                    newbind.setOpinionFrameMark(bind.getOpinionFrameMark());
+                    newbind.setOpinionFrameName(bind.getOpinionFrameName());
+                    newbind.setProcessDefinitionId(lastVersionPid);
+                    newbind.setTaskDefKey(bind.getTaskDefKey());
+                    newbind.setTenantId(tenantId);
+                    newbind.setUserId(userId);
+                    newbind.setUserName(userName);
+                    itemOpinionFrameBindRepository.save(newbind);
+
+                    //复制意见框一键设置的配置
+                    List<OpinionFrameOneClickSet> setList = opinionFrameOneClickSetService.findByBindId(bind.getId());
+                    for (OpinionFrameOneClickSet set : setList) {
+                        OpinionFrameOneClickSet newset = new OpinionFrameOneClickSet();
+                        newset.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                        newset.setBindId(newbindId);
+                        newset.setCreateDate(sdf.format(new Date()));
+                        newset.setOneSetType(set.getOneSetType());
+                        newset.setOneSetTypeName(set.getOneSetTypeName());
+                        newset.setExecuteAction(set.getExecuteAction());
+                        newset.setExecuteActionName(set.getExecuteActionName());
+                        newset.setUserId(userId);
+                        opinionFrameOneClickSetService.save(newset);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制意见框绑定信息失败", e);
         }
     }
 }
