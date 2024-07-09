@@ -51,8 +51,8 @@ public interface TaskApiClient extends TaskApi {
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @Override
-    @PostMapping(value = "/createWithVariables1", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createWithVariables(@RequestParam("tenantId") String tenantId,
+    @PostMapping(value = "/createWithVariables4Position", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> createWithVariables4Position(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("personId") String personId,
         @RequestParam("routeToTaskId") String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
         @RequestBody List<String> positionIdList);

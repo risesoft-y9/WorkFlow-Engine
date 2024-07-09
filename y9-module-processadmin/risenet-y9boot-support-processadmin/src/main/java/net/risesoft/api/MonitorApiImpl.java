@@ -25,7 +25,7 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/monitor")
+@RequestMapping(value = "/services/rest/monitor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MonitorApiImpl implements MonitorApi {
 
     private final CustomMonitorService customMonitorService;
@@ -37,10 +37,10 @@ public class MonitorApiImpl implements MonitorApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Y9Result<Long>
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件数量
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getDoingCountByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getDoingCountByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -52,10 +52,10 @@ public class MonitorApiImpl implements MonitorApi {
      *
      * @param tenantId 租户Id
      * @param systemName 系统英文名称
-     * @return Y9Result<Long>
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件数量
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getDoingCountBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getDoingCountBySystemName(@RequestParam String tenantId, @RequestParam String systemName) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customMonitorService.getDoingCountBySystemName(systemName));
@@ -68,10 +68,11 @@ public class MonitorApiImpl implements MonitorApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getDoingListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getDoingListByProcessDefinitionKey")
     public Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -85,10 +86,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param systemName 系统英文名称
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getDoingListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(@RequestParam String tenantId,
         @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -100,10 +101,10 @@ public class MonitorApiImpl implements MonitorApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Integer
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 办结件统计
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getDoneCountByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getDoneCountByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -115,10 +116,10 @@ public class MonitorApiImpl implements MonitorApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Integer
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleCountByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getRecycleCountByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -130,10 +131,10 @@ public class MonitorApiImpl implements MonitorApi {
      *
      * @param tenantId 租户Id
      * @param systemName 系统英文名称
-     * @return Integer
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleCountBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getRecycleCountBySystemName(@RequestParam String tenantId, @RequestParam String systemName) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customRecycleService.getRecycleCountBySystemName(systemName));
@@ -145,10 +146,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param processDefinitionKey 流程定义Key
-     * @return Integer
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleCountByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getRecycleCountByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -162,10 +163,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统英文名称
-     * @return Integer
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleCountByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> getRecycleCountByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -179,10 +180,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 回收站列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> getRecycleListByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -196,10 +197,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param systemName 系统英文名称
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 回收站列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> getRecycleListBySystemName(@RequestParam String tenantId,
         @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -214,10 +215,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 回收站列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndProcessDefinitionKey(
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -234,10 +235,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param systemName 系统英文名称
      * @param page 当前页
      * @param rows 总条数
-     * @return Y9Page<HistoricProcessInstanceModel>
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 回收站列表
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/getRecycleListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -253,11 +254,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
-     * 
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchDoingListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> searchDoingListByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey, @RequestParam String searchTerm, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -273,11 +273,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
-     * 
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchDoingListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> searchDoingListBySystemName(@RequestParam String tenantId,
         @RequestParam String systemName, @RequestParam String searchTerm, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -293,11 +292,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
-     * 
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchRecycleListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey, @RequestParam String searchTerm, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -314,11 +312,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
-     * 
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchRecycleListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListBySystemName(@RequestParam String tenantId,
         @RequestParam String systemName, @RequestParam String searchTerm, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -335,12 +332,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
-     * 
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchRecycleListByUserIdAndProcessDefinitionKey",
-        produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListByUserIdAndProcessDefinitionKey(
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey,
         @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
@@ -358,11 +353,10 @@ public class MonitorApiImpl implements MonitorApi {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 行数
-     * @return Y9Page<HistoricProcessInstanceModel>
-     * 
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件
+     * @since 9.6.6
      */
     @Override
-    @GetMapping(value = "/searchRecycleListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {

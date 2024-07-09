@@ -23,6 +23,7 @@ public interface ConditionParserApi {
      * @param conditionExpression 网关上的表达式
      * @param variables 流程变量
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @GetMapping("/parser")
     Y9Result<Boolean> parser(@RequestParam("tenantId") String tenantId,

@@ -33,7 +33,8 @@ public class ConditionParserApiImpl implements ConditionParserApi {
      * @param tenantId 租户id
      * @param conditionExpression 网关上的表达式
      * @param variables 流程变量
-     * @return Y9Result<Boolean>
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Boolean> parser(@RequestParam String tenantId, @RequestParam String conditionExpression,

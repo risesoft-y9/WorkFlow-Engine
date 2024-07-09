@@ -43,7 +43,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteVariable(@RequestParam String tenantId, @RequestParam String taskId,
@@ -59,7 +60,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
@@ -75,7 +77,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是流程变量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<String> getVariable(@RequestParam String tenantId, @RequestParam String taskId,
@@ -91,7 +94,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程id
      * @param key 变量key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是流程变量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<String> getVariableByProcessInstanceId(@RequestParam String tenantId,
@@ -107,7 +111,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @return Y9Result<String>
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是任务变量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<String> getVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
@@ -122,7 +127,8 @@ public class VariableApiImpl implements VariableApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<Map<String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是流程变量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Map<String, Object>> getVariables(@RequestParam String tenantId, @RequestParam String taskId) {
@@ -136,7 +142,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param keys 变量keys
-     * @return Y9Result<Map<String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是指定的流程变量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Map<String, Object>> getVariablesByProcessInstanceId(@RequestParam String tenantId,
@@ -151,7 +158,8 @@ public class VariableApiImpl implements VariableApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return Y9Result<Map<String, Object>>
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是任务变量
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Map<String, Object>> getVariablesLocal(@RequestParam String tenantId, @RequestParam String taskId) {
@@ -166,7 +174,8 @@ public class VariableApiImpl implements VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      * @param map 变量值
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setVariable(@RequestParam String tenantId, @RequestParam String taskId,
@@ -183,7 +192,8 @@ public class VariableApiImpl implements VariableApi {
      * @param processInstanceId 流程实例id
      * @param key 变量key
      * @param map 变量值
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setVariableByProcessInstanceId(@RequestParam String tenantId,
@@ -200,7 +210,8 @@ public class VariableApiImpl implements VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      * @param map 变量值
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
@@ -216,7 +227,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setVariables(@RequestParam String tenantId, @RequestParam String taskId,
@@ -232,7 +244,8 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param map 变量map
-     * @return Y9Result<Object>
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
      */
     @Override
     public Y9Result<Object> setVariablesLocal(@RequestParam String tenantId, @RequestParam String taskId,

@@ -34,7 +34,8 @@ public class WorkflowApiImpl implements WorkflowApi {
      * @param tenantId 租户id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return Y9Result<List<TargetModel>>
+     * @return {@code Y9Result<List<TargetModel>>} 通用请求返回对象 - data 是目标节点信息
+     * @since 9.6.6
      */
     @Override
     public Y9Result<List<TargetModel>> getCurrentTaskTargets(@RequestParam String tenantId,
