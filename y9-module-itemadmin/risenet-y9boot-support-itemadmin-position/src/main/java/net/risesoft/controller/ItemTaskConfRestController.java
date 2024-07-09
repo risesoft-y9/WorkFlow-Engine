@@ -66,6 +66,8 @@ public class ItemTaskConfRestController {
         Map<String, Object> map;
         for (TargetModel targetModel : list) {
             map = new HashMap<>(16);
+            map.put("taskDefName", targetModel.getTaskDefName());
+            map.put("taskDefKey", targetModel.getTaskDefKey());
             if (targetModel.getMultiInstance() != null
                 && !targetModel.getMultiInstance().equals(SysVariables.SEQUENTIAL)) {
                 map.put("id", "");
