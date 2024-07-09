@@ -222,6 +222,7 @@ public class Y9FormItemBindRestController {
                 mobileFormId = eibList1.get(0).getFormId();
                 mobileBindId = eibList1.get(0).getId();
             }
+            map.put("taskDefName", targetModel.getTaskDefName());
             map.put("eformNames", eformNames);
             map.put("mobileFormName", mobileFormName);
             map.put("mobileFormId", mobileFormId);
@@ -231,25 +232,6 @@ public class Y9FormItemBindRestController {
         }
         resMap.put("rows", list);
         return Y9Result.success(resMap, "获取成功");
-    }
-
-    /**
-     * 获取y9表单列表
-     *
-     * @param systemName 系统名称
-     * @return
-     */
-    @GetMapping(value = "/getformList")
-    public Y9Result<List<Map<String, Object>>> getformList(@RequestParam String systemName) {
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%%");
-        for (Y9Form y9Form : list) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("formName", y9Form.getFormName());
-            map.put("formId", y9Form.getId());
-            listMap.add(map);
-        }
-        return Y9Result.success(listMap, "获取成功");
     }
 
     /**
@@ -279,6 +261,25 @@ public class Y9FormItemBindRestController {
             }
         }
         return Y9Result.success(listmap, "获取成功");
+    }
+
+    /**
+     * 获取y9表单列表
+     *
+     * @param systemName 系统名称
+     * @return
+     */
+    @GetMapping(value = "/getformList")
+    public Y9Result<List<Map<String, Object>>> getformList(@RequestParam String systemName) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%%");
+        for (Y9Form y9Form : list) {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("formName", y9Form.getFormName());
+            map.put("formId", y9Form.getId());
+            listMap.add(map);
+        }
+        return Y9Result.success(listMap, "获取成功");
     }
 
     /**
