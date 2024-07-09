@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.List;
-
 import net.risesoft.entity.ItemOrganWordBind;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -106,4 +106,13 @@ public interface ItemOrganWordBindService {
      * @param taskDefKey
      */
     public void save(String custom, String itemId, String processDefinitionId, String taskDefKey);
+
+    /**
+     * Description: 复制编号绑定信息
+
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    public void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
 }

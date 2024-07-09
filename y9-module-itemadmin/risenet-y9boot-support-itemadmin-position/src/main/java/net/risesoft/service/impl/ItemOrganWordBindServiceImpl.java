@@ -1,16 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -26,10 +17,18 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemOrganWordBindRepository;
 import net.risesoft.repository.jpa.OrganWordRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemOrganWordBindService;
 import net.risesoft.service.ItemOrganWordRoleService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
@@ -38,6 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
 
@@ -47,7 +47,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
 
     private final OrganWordRepository organWordRepository;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     private final RepositoryApi repositoryManager;
 
@@ -61,7 +61,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -255,6 +255,34 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             bind.setUserName(Y9LoginUserHolder.getUserInfo().getName());
             bind.setModifyDate(sdf.format(new Date()));
             itemOrganWordBindRepository.save(bind);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), userName = person.getName();
+        try {
+            List<ItemOrganWordBind> bindList = itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+            if (null != bindList && !bindList.isEmpty()) {
+                for (ItemOrganWordBind bind : bindList) {
+                    ItemOrganWordBind newbind = new ItemOrganWordBind();
+                    newbind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    newbind.setItemId(newItemId);
+                    newbind.setCreateDate(sdf.format(new Date()));
+                    newbind.setModifyDate(sdf.format(new Date()));
+                    newbind.setOrganWordCustom(bind.getOrganWordCustom());
+                    newbind.setProcessDefinitionId(lastVersionPid);
+                    newbind.setTaskDefKey(bind.getTaskDefKey());
+                    newbind.setUserId(userId);
+                    newbind.setUserName(userName);
+                    itemOrganWordBindRepository.save(newbind);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制编号绑定关系失败", e);
         }
     }
 }
