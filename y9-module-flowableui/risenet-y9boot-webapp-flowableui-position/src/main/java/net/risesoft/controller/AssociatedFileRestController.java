@@ -1,25 +1,22 @@
 package net.risesoft.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SearchService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 关联流程
@@ -85,7 +82,7 @@ public class AssociatedFileRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestParam @NotBlank String itemId,
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String itemId,
         @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getSearchList(title, itemId, "", "", "", "", "", page, rows);
     }
