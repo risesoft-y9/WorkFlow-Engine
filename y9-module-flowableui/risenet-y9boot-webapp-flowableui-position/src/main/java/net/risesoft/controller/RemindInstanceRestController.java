@@ -136,27 +136,27 @@ public class RemindInstanceRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/taskList")
-    public Y9Result<List<TaskModel>> taskList(@RequestParam @NotBlank String processInstanceId) {
+    public Y9Result<Map<String, Object>> taskList(@RequestParam @NotBlank String processInstanceId) {
+        Map<String, Object> retMap = new HashMap<>(16);
         Y9Page<TaskModel> taskPage;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             taskPage = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, 1, 500);
             List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {});
-            List<Map<String, Object>> items = new ArrayList<>();
+            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
+            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             int serialNumber = 0;
-            Map<String, Object> mapTemp;
+            Map<String, Object> mapTemp = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentTime = new Date();
             RemindInstanceModel remindInstance = remindInstanceApi
                 .getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
-            // TODO
-            // retMap.put("remindType", "");
-            // retMap.put("taskIds", "");
+            retMap.put("remindType", "");
+            retMap.put("taskIds", "");
             if (remindInstance != null) {
-                // retMap.put("remindType", remindInstance.getRemindType());
-                // retMap.put("taskIds", remindInstance.getTaskId());
+                retMap.put("remindType", remindInstance.getRemindType());
+                retMap.put("taskIds", remindInstance.getTaskId());
             }
             for (TaskModel task : taskList) {
                 mapTemp = new HashMap<>(16);
@@ -172,8 +172,8 @@ public class RemindInstanceRestController {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            // retMap.put("rows", items);
-            return Y9Result.success(taskPage.getRows(), "保存成功");
+            retMap.put("rows", items);
+            return Y9Result.success(retMap, "保存成功");
         } catch (Exception e) {
             LOGGER.error("获取未办理任务失败", e);
         }
