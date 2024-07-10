@@ -2204,25 +2204,5 @@
             <column name="PROCESSSERIALNUMBER"/>
         </createIndex>
     </changeSet>
-    <changeSet id="1704700547152-106" author="mengjuhua">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="ff_item_y9preformbind"/>
-            </not>
-        </preConditions>
-        <createTable remarks="Y9前置表单与事项流程任务绑定表" tableName="ff_item_y9preformbind">
-            <column name="ID" remarks="主键" type="VARCHAR(38)">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="FORMID" remarks="表单ID" type="VARCHAR(38)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="FORMNAME" remarks="表单名称" type="VARCHAR(55)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
+    
 </databaseChangeLog>
