@@ -183,6 +183,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 newItem.setId(newItemId);
                 newItem.setCreateDate(new Date());
                 Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
+                newItem.setName(item.getName() + "副本");
                 newItem.setTabIndex(null != tabIndex ? tabIndex + 1 : 1);
                 spmApproveItemRepository.save(newItem);
                 String proDefKey = item.getWorkflowGuid();
@@ -310,7 +311,12 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             if (StringUtils.isNotEmpty(item.getAppUrl())) {
                 item.setTodoTaskUrlPrefix(item.getAppUrl().split("\\?")[0]);
             }
-            item.setTabIndex(item.getTabIndex() == null ? 1 : spmApproveItemRepository.getMaxTabIndex() + 1);
+            Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
+            if (tabIndex == null) {
+                item.setTabIndex(1);
+            } else {
+                item.setTabIndex(tabIndex + 1);
+            }
             spmApproveItemRepository.save(item);
             ItemMappingConf itemMappingConf =
                 itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "1");
