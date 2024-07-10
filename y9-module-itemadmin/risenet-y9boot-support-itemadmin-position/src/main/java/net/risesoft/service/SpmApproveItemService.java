@@ -1,10 +1,10 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.itemadmin.ItemModel;
-
 import java.util.List;
 import java.util.Map;
+
+import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.model.itemadmin.ItemModel;
 
 /**
  * @author qinman
@@ -62,7 +62,7 @@ public interface SpmApproveItemService {
      * @param name
      * @return
      */
-    List<SpmApproveItem> findByIdNotAndNameLike(String id,String name);
+    List<SpmApproveItem> findByIdNotAndNameLike(String id, String name);
 
     /**
      * 根据流程定义key和租户Id判断当前租户是否存在事项
@@ -111,4 +111,11 @@ public interface SpmApproveItemService {
      * @return
      */
     Map<String, Object> save(SpmApproveItem item);
+
+    /**
+     * 更新事项排序
+     *
+     * @param idAndTabIndexs
+     */
+    void updateOrder(String[] idAndTabIndexs);
 }
