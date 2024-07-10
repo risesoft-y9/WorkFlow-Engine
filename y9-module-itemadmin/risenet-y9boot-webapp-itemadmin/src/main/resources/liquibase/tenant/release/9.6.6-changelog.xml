@@ -33,4 +33,60 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="1702001405829-1-3"
+               author="yihong">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ITEM_RELATEDPROCESS"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项配置关联流程表"
+                     tableName="FF_ITEM_RELATEDPROCESS">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="TENANT_ID" remarks="租户Id" type="VARCHAR(50)">
+            </column>
+            <column name="PARENT_ITEMID" remarks="主事项Id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEM_ID" remarks="被关联的流程的事项ID" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEM_NAME" remarks="被关联的流程的事项名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATE_DATE"
+                    remarks="创建时间"
+                    type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1702001405829-1-4"
+               author="yihong">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_OPINIONFRAME_ONECLICKSET"/>
+            </not>
+        </preConditions>
+        <createTable remarks="意见框一键设置表"
+                     tableName="FF_OPINIONFRAME_ONECLICKSET">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ONESET_TYPE" remarks="一键设置类型" type="VARCHAR(100)">
+            </column>
+            <column name="EXECUTEACTION" remarks="对应执行动作" type="VARCHAR(100)">
+            </column>
+            <column name="ONESETTYPE_NAME" remarks="一键设置类型名称" type="VARCHAR(100)">
+            </column>
+            <column name="EXECUTEACTION_NAME" remarks="对应执行动作名称" type="VARCHAR(100)">
+            </column>
+            <column name="BIND_ID" remarks="绑定id" type="VARCHAR(50)">
+            </column>
+            <column name="USER_ID" remarks="操作人员id" type="VARCHAR(50)">
+            </column>
+            <column name="CREATE_DATE" remarks="创建时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
