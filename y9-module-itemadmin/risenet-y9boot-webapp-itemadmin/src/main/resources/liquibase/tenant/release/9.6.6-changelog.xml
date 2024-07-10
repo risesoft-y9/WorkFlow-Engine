@@ -27,8 +27,8 @@
             </not>
         </preConditions>
 
-        <addColumn tableName="ff_item_wordtemplate_bind">
-            <column name="TABINDEX" remarks="绑定状态" type="INT">
+        <addColumn tableName="FF_APPROVEITEM">
+            <column name="TABINDEX" remarks="排列序号" type="INT">
             </column>
         </addColumn>
     </changeSet>
@@ -87,6 +87,28 @@
             <column name="USER_ID" remarks="操作人员id" type="VARCHAR(50)">
             </column>
             <column name="CREATE_DATE" remarks="创建时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1702001405829-1-5" author="yihong">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_y9preformbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="Y9前置表单与事项流程任务绑定表" tableName="ff_item_y9preformbind">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FORMID" remarks="表单ID" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FORMNAME" remarks="表单名称" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>
