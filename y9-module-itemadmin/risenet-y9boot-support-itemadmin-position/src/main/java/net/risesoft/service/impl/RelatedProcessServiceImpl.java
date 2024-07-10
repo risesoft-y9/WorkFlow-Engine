@@ -30,7 +30,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     public Page<RelatedProcess> findAll(String parentItemId, int page, int rows) {
         Sort sort = Sort.by(Sort.Direction.ASC, "creatDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return relatedProcessRepository.findByParentItemId(parentItemId,pageable);
+        return relatedProcessRepository.findByParentItemId(parentItemId, pageable);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
                     RelatedProcess item = new RelatedProcess();
                     item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     item.setParentItemId(newItemId);
-                    item.setCreatDate(sdf.format(new Date()));
+                    item.setCreateDate(sdf.format(new Date()));
                     item.setItemId(associated.getItemId());
                     item.setItemName(associated.getItemName());
                     item.setTenantId(associated.getTenantId());
@@ -66,8 +66,8 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (String itemId : itemIdList) {
-            RelatedProcess oldItem = relatedProcessRepository.findByParentItemIdAndItemId(parentItemId,itemId);
-            if(null == oldItem) {
+            RelatedProcess oldItem = relatedProcessRepository.findByParentItemIdAndItemId(parentItemId, itemId);
+            if (null == oldItem) {
                 String[] array = itemId.split(":");
                 RelatedProcess item = new RelatedProcess();
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -75,7 +75,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
                 item.setItemName(array[1]);
                 item.setParentItemId(parentItemId);
                 item.setTenantId(tenantId);
-                item.setCreatDate(sdf.format(new Date()));
+                item.setCreateDate(sdf.format(new Date()));
                 relatedProcessRepository.save(item);
             }
         }
