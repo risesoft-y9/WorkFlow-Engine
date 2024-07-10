@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +29,8 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
 
     @Override
     public Page<RelatedProcess> findAll(String parentItemId, int page, int rows) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return relatedProcessRepository.findByParentItemId(parentItemId, pageable);
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows);
+        return relatedProcessRepository.findByParentItemIdOrderByCreateDateAsc(parentItemId, pageable);
     }
 
     @Override
