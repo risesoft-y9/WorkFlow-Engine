@@ -1,8 +1,24 @@
 package net.risesoft.controller;
 
-import jodd.util.Base64;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -21,17 +37,8 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import jodd.util.Base64;
 
 /**
  * @author qinman
@@ -167,11 +174,12 @@ public class ItemRestController {
      * @return
      */
     @GetMapping(value = "/getBindItemList")
-    public Y9Result<List<Map<String, Object>>> getBindItemList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String itemName) {
+    public Y9Result<List<Map<String, Object>>> getBindItemList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String itemName) {
         List<Map<String, Object>> list_map = new ArrayList<Map<String, Object>>();
-        List<SpmApproveItem> itemList = spmApproveItemService.findByIdNotAndNameLike(itemId,itemName);
+        List<SpmApproveItem> itemList = spmApproveItemService.findByIdNotAndNameLike(itemId, itemName);
         for (SpmApproveItem item : itemList) {
-            if(!item.getId().equals(itemId)) {
+            if (!item.getId().equals(itemId)) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("id", item.getId());
                 map.put("itemName", item.getName());
@@ -224,6 +232,7 @@ public class ItemRestController {
 
     /**
      * 复制事项
+     * 
      * @param id
      * @return
      */
@@ -235,7 +244,6 @@ public class ItemRestController {
         }
         return Y9Result.failure((String)map.get("msg"));
     }
-
 
     /**
      * 发布为应用系统
@@ -278,6 +286,7 @@ public class ItemRestController {
 
     /**
      * 上传图标
+     * 
      * @param files
      * @return
      */
@@ -312,6 +321,18 @@ public class ItemRestController {
             return Y9Result.successMsg((String)map.get("msg"));
         }
         return Y9Result.failure((String)map.get("msg"));
+    }
+
+    /**
+     * 保存事项排序
+     *
+     * @param idAndTabIndexs 事项id和排序索引json
+     * @return
+     */
+    @PostMapping(value = "/saveOrder")
+    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
+        spmApproveItemService.updateOrder(idAndTabIndexs);
+        return Y9Result.successMsg("保存成功");
     }
 
     /**
