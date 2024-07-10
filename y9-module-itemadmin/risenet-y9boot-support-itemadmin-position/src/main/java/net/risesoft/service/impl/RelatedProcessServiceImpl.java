@@ -1,22 +1,24 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.entity.RelatedProcess;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.RelatedProcessRepository;
-import net.risesoft.service.RelatedProcessService;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.entity.RelatedProcess;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.jpa.RelatedProcessRepository;
+import net.risesoft.service.RelatedProcessService;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
 
     @Override
     public Page<RelatedProcess> findAll(String parentItemId, int page, int rows) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "creatDate");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return relatedProcessRepository.findByParentItemId(parentItemId, pageable);
     }
