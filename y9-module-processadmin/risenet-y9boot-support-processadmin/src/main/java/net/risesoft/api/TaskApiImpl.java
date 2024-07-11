@@ -115,7 +115,7 @@ public class TaskApiImpl implements TaskApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPositionId(position.getId());
+        Y9LoginUserHolder.setPosition(position);
         customTaskService.completeTaskWithoutAssignee(processInstanceId);
         return Y9Result.success();
     }
@@ -142,7 +142,6 @@ public class TaskApiImpl implements TaskApi {
      * 完成任务（设置流程变量）岗位
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param vars 变量map
@@ -150,13 +149,12 @@ public class TaskApiImpl implements TaskApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> completeWithVariables4Position(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String positionId, @RequestParam String taskId, @RequestBody Map<String, Object> vars) {
+    public Y9Result<Object> completeWithVariables4Position(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestParam String positionId, @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPositionId(position.getId());
-        Y9LoginUserHolder.setPerson(personManager.get(tenantId, userId).getData());
+        Y9LoginUserHolder.setPosition(position);
         customTaskService.completeWithVariables(taskId, vars);
         return Y9Result.success();
     }
@@ -202,7 +200,7 @@ public class TaskApiImpl implements TaskApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPositionId(position.getId());
+        Y9LoginUserHolder.setPosition(position);
         Y9LoginUserHolder.setPerson(personManager.get(tenantId, personId).getData());
         customTaskService.createWithVariables(positionId, vars, routeToTaskId, positionIdList);
         return Y9Result.success();

@@ -156,7 +156,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSECLAIMROLLBACK);
             variableManager.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
-            taskManager.completeWithVariables(tenantId, taskId, variables);
+            taskManager.completeWithVariables4Position(tenantId, taskId, positionId, variables);
             /*
              * 如果上一任务是并行，则回退时设置主办人
              */

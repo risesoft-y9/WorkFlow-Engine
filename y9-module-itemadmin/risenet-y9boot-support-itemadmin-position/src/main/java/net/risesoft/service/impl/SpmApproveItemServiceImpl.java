@@ -84,90 +84,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     @Transactional
-    public Map<String, Object> delete(String ids) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "删除成功");
-        try {
-            if (StringUtils.isNotBlank(ids)) {
-                String[] id = ids.split(SysVariables.COMMA);
-                for (String s : id) {
-                    spmApproveItemRepository.deleteById(s);
-                }
-            }
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
-            LOGGER.error("删除事项异常", e);
-        }
-        return map;
-    }
-
-    @Override
-    public SpmApproveItem findById(String id) {
-        return spmApproveItemRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public Map<String, Object> findById(String itemId, Map<String, Object> map) {
-        SpmApproveItem spmApproveitem = spmApproveItemRepository.findById(itemId).orElse(null);
-        if (spmApproveitem != null) {
-            map.put("processDefinitionKey", spmApproveitem.getWorkflowGuid());
-            map.put("itemId", spmApproveitem.getId());
-            map.put("type", spmApproveitem.getType() == null ? "" : spmApproveitem.getType());
-        }
-        return map;
-    }
-
-    @Override
-    public ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
-        ItemModel itemModel = new ItemModel();
-        SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
-        if (null == sa) {
-            return null;
-        }
-        Y9BeanUtil.copyProperties(sa, itemModel);
-        return itemModel;
-    }
-
-    @Override
-    public List<SpmApproveItem> findBySystemName(String systemName) {
-        return spmApproveItemRepository.findAll(systemName);
-    }
-
-    @Override
-    public List<SpmApproveItem> findByIdNotAndNameLike(String id, String name) {
-        return spmApproveItemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
-    }
-
-    @Override
-    public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
-        boolean hasKey = false;
-        try {
-            SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
-            if (null != sa) {
-                hasKey = true;
-            }
-        } catch (Exception e) {
-            LOGGER.error("判断流程定义Key是否存在异常", e);
-        }
-        return hasKey;
-    }
-
-    @Override
-    public Map<String, Object> list() {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
-            map.put("rows", itemList);
-        } catch (Exception e) {
-            LOGGER.error("获取事项列表异常", e);
-        }
-        return map;
-    }
-
-    @Override
-    @Transactional
     public Map<String, Object> copyItem(String id) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("success", false);
@@ -232,6 +148,86 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
         } catch (Exception e) {
             LOGGER.error("复制事项异常", e);
         }
+        return map;
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> delete(String ids) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put(UtilConsts.SUCCESS, true);
+        map.put("msg", "删除成功");
+        try {
+            if (StringUtils.isNotBlank(ids)) {
+                String[] id = ids.split(SysVariables.COMMA);
+                for (String s : id) {
+                    spmApproveItemRepository.deleteById(s);
+                }
+            }
+        } catch (Exception e) {
+            map.put(UtilConsts.SUCCESS, false);
+            map.put("msg", "删除失败");
+            LOGGER.error("删除事项异常", e);
+        }
+        return map;
+    }
+
+    @Override
+    public SpmApproveItem findById(String id) {
+        return spmApproveItemRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Map<String, Object> findById(String itemId, Map<String, Object> map) {
+        SpmApproveItem spmApproveitem = spmApproveItemRepository.findById(itemId).orElse(null);
+        if (spmApproveitem != null) {
+            map.put("processDefinitionKey", spmApproveitem.getWorkflowGuid());
+            map.put("itemId", spmApproveitem.getId());
+            map.put("type", spmApproveitem.getType() == null ? "" : spmApproveitem.getType());
+        }
+        return map;
+    }
+
+    @Override
+    public List<SpmApproveItem> findByIdNotAndNameLike(String id, String name) {
+        return spmApproveItemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
+    }
+
+    @Override
+    public ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
+        ItemModel itemModel = new ItemModel();
+        SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
+        if (null == sa) {
+            return null;
+        }
+        Y9BeanUtil.copyProperties(sa, itemModel);
+        return itemModel;
+    }
+
+    @Override
+    public List<SpmApproveItem> findBySystemName(String systemName) {
+        return spmApproveItemRepository.findAll(systemName);
+    }
+
+    @Override
+    public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
+        boolean hasKey = false;
+        try {
+            SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
+            if (null != sa) {
+                hasKey = true;
+            }
+        } catch (Exception e) {
+            LOGGER.error("判断流程定义Key是否存在异常", e);
+        }
+        return hasKey;
+    }
+
+    @Override
+    public Map<String, Object> list() {
+        Map<String, Object> map = new HashMap<>(16);
+        List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
+        map.put("rows", itemList);
         return map;
     }
 

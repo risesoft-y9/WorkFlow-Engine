@@ -257,7 +257,7 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
-            taskApi.completeWithVariables(tenantId, task.getId(), vars);
+            taskApi.completeWithVariables4Position(tenantId, task.getId(), positionId, vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "办理成功!");

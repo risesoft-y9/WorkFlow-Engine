@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.flowable.engine.RuntimeService;
@@ -57,6 +58,11 @@ public class CustomIdentityServiceImpl implements CustomIdentityService {
 
     @Override
     public List<IdentityLink> getIdentityLinksForTask(String taskId) {
-        return taskService.getIdentityLinksForTask(taskId);
+        try {
+            return taskService.getIdentityLinksForTask(taskId);
+        } catch (Exception e) {
+            LOGGER.error("getIdentityLinksForTask发生异常", e);
+        }
+        return new ArrayList<>();
     }
 }

@@ -3,6 +3,7 @@ package net.risesoft.service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -183,7 +184,7 @@ public class AsyncHandleService {
                 errorLog.setCreateTime(time);
                 errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_FORWRDING);
                 errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
-                errorLog.setExtendField("发送多人失败：" + String.valueOf(num));
+                errorLog.setExtendField("发送多人失败：" + num);
                 errorLog.setProcessInstanceId(processInstanceId);
                 errorLog.setTaskId(taskId);
                 errorLog.setText(msg);
@@ -192,7 +193,7 @@ public class AsyncHandleService {
 
                 TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
                 taskVariable.setUpdateTime(time);
-                taskVariable.setText("false:" + String.valueOf(num));
+                taskVariable.setText("false:" + num);
                 taskVariableRepository.save(taskVariable);
             } catch (Exception e2) {
                 e2.printStackTrace();
@@ -250,7 +251,7 @@ public class AsyncHandleService {
         processParam.setSended("true");
         processParam.setSponsorGuid(sponsorGuid);
         processParamService.saveOrUpdate(processParam);
-        taskManager.completeWithVariables(tenantId, taskId, variables);
+        taskManager.completeWithVariables4Position(tenantId, taskId, positionId, variables);
 
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
@@ -593,7 +594,8 @@ public class AsyncHandleService {
                 int code = client.executeMethod(method);
                 LOGGER.info("##########################微信接口状态：" + code + "##########################");
                 if (code == HttpStatus.SC_OK) {
-                    String response = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
+                    String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
+                        StandardCharsets.UTF_8);
                     LOGGER.info("##########################返回状态：" + response + "##########################");
                 }
             }
@@ -647,7 +649,8 @@ public class AsyncHandleService {
                 int code = client.executeMethod(method);
                 LOGGER.info("##########################微信接口状态：" + code + "##########################");
                 if (code == HttpStatus.SC_OK) {
-                    String response = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
+                    String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
+                        StandardCharsets.UTF_8);
                     LOGGER.info("##########################返回状态：" + response + "##########################");
                 }
             }
