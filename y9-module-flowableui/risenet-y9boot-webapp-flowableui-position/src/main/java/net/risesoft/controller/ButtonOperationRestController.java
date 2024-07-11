@@ -224,7 +224,7 @@ public class ButtonOperationRestController {
                     Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
                     vars.put(SysVariables.TASKSENDER, position.getName());
                     vars.put(SysVariables.TASKSENDERID, position.getId());
-                    taskApi.completeWithVariables(tenantId, taskId, vars);
+                    taskApi.completeWithVariables4Position(tenantId, taskId, positionId, vars);
                     List<TaskModel> taskNextList =
                         taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
                     for (TaskModel taskNext : taskNextList) {
@@ -376,8 +376,8 @@ public class ButtonOperationRestController {
             Map<String, Object> variables = variableApi.getVariables(tenantId, taskId).getData();
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
-            String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
-                taskModel.getTaskDefinitionKey()).getData();
+            String multiInstance = processDefinitionApi
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey()).getData();
             List<String> users = (List<String>)variables.get("users");
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (String user : users) {
@@ -531,7 +531,7 @@ public class ButtonOperationRestController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
-            taskApi.completeWithVariables(tenantId, taskId, vars);
+            taskApi.completeWithVariables4Position(tenantId, taskId, Y9LoginUserHolder.getPositionId(), vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
@@ -678,8 +678,8 @@ public class ButtonOperationRestController {
         try {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
-            String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            String type = processDefinitionApi
+                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
                     reason = "未填写。";
