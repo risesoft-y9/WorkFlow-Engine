@@ -28,10 +28,10 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.api.processadmin.ProcessDoingApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
@@ -60,7 +60,7 @@ import net.risesoft.y9.util.Y9Util;
 @Transactional(readOnly = true)
 public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
-    private final DoingApi doingApi;
+    private final ProcessDoingApi processDoingApi;
 
     private final TaskApi taskApi;
 
@@ -87,7 +87,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     private final TaskVariableApi taskvariableApi;
 
     private final FormDataApi formDataApi;
+
     private final ChaoSong4PositionApi chaoSong4PositionApi;
+
     @Value("${y9.common.flowableBaseUrl}")
     private String flowableBaseUrl;
 
@@ -103,11 +105,11 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             if (StringUtils.isBlank(searchTerm)) {
                 if (StringUtils.isNotBlank(searchItemId)) {
                     ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    piPage = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    piPage = processDoingApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), page, rows);
                 } else {
-                    piPage =
-                        doingApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                    piPage = processDoingApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                        page, rows);
                 }
                 List<ProcessInstanceModel> list = piPage.getRows();
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -172,10 +174,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             } else {
                 if (StringUtils.isNotBlank(searchItemId)) {
                     ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    piPage = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    piPage = processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), searchTerm, page, rows);
                 } else {
-                    piPage = doingApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                    piPage = processDoingApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
                         searchTerm, page, rows);
                 }
                 List<ProcessInstanceModel> list = piPage.getRows();
@@ -553,7 +555,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Y9Page<ProcessInstanceModel> piPage = doingApi.getListByUserId(tenantId, positionId, page, rows);
+            Y9Page<ProcessInstanceModel> piPage = processDoingApi.getListByUserId(tenantId, positionId, page, rows);
             if (!piPage.getSuccess()) {
                 return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
             }

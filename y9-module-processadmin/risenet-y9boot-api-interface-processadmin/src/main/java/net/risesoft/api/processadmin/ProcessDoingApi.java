@@ -14,7 +14,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface DoingApi {
+public interface ProcessDoingApi {
 
     /**
      * 根据人员id获取在办件统计

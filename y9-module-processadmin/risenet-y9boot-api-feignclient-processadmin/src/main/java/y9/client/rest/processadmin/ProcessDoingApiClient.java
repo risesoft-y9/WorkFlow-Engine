@@ -2,7 +2,7 @@ package y9.client.rest.processadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-import net.risesoft.api.processadmin.DoingApi;
+import net.risesoft.api.processadmin.ProcessDoingApi;
 
 /**
  * @author qinman
@@ -12,6 +12,6 @@ import net.risesoft.api.processadmin.DoingApi;
 @FeignClient(contextId = "DoingApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
     path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/doing")
-public interface DoingApiClient extends DoingApi {
+public interface ProcessDoingApiClient extends ProcessDoingApi {
 
 }

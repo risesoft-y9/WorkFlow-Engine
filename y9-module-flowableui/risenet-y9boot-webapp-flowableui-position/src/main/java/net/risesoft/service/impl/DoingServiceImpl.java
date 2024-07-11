@@ -26,8 +26,8 @@ import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.IdentityApi;
+import net.risesoft.api.processadmin.ProcessDoingApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -50,7 +50,7 @@ import net.risesoft.y9.util.Y9Util;
 @Transactional(readOnly = true)
 public class DoingServiceImpl implements DoingService {
 
-    private final DoingApi doingApi;
+    private final ProcessDoingApi processDoingApi;
 
     private final TaskApi taskApi;
 
@@ -162,7 +162,7 @@ public class DoingServiceImpl implements DoingService {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
-                piPage = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
+                piPage = processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
                     processDefinitionKey, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
@@ -218,8 +218,8 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             } else {
-                piPage = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey,
-                    searchTerm, page, rows);
+                piPage = processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    processDefinitionKey, searchTerm, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
@@ -290,7 +290,7 @@ public class DoingServiceImpl implements DoingService {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
-                piPage = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
+                piPage = processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
                     processDefinitionKey, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
@@ -374,8 +374,8 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             } else {
-                piPage = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey,
-                    searchTerm, page, rows);
+                piPage = processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    processDefinitionKey, searchTerm, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
