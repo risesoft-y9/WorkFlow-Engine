@@ -1,20 +1,12 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.RelatedProcess;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import net.risesoft.entity.RelatedProcess;
 
 public interface RelatedProcessService {
 
-    /**
-     * 获取所有绑定的事项
-     * @param parentItemId
-     * @param page
-     * @param rows
-     * @return
-     */
-    Page<RelatedProcess> findAll(String parentItemId, int page, int rows);
+    void copyBindInfo(String itemId, String newItemId);
 
     /**
      * 根据唯一标示查找
@@ -23,14 +15,23 @@ public interface RelatedProcessService {
      */
     void delete(String id);
 
-    void copyBindInfo(String itemId,String newItemId);
+    /**
+     * 获取所有绑定的事项
+     * 
+     * @param parentItemId
+     * @param page
+     * @param rows
+     * @return
+     */
+    Page<RelatedProcess> findAll(String parentItemId, int page, int rows);
 
     /**
-     *保存绑定的子事项
+     * 保存绑定的子事项
+     * 
      * @param parentItemId
      * @param itemIdList
      * @return
      */
-    void save(String parentItemId, List<String> itemIdList);
+    void save(String parentItemId, String[] itemIdList);
 
 }

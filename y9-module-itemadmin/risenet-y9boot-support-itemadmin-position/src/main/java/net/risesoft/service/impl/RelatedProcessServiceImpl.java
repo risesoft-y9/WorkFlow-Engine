@@ -28,17 +28,6 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     private final RelatedProcessRepository relatedProcessRepository;
 
     @Override
-    public Page<RelatedProcess> findAll(String parentItemId, int page, int rows) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows);
-        return relatedProcessRepository.findByParentItemIdOrderByCreateDateAsc(parentItemId, pageable);
-    }
-
-    @Override
-    public void delete(String id) {
-        relatedProcessRepository.deleteById(id);
-    }
-
-    @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -62,13 +51,26 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     }
 
     @Override
-    public void save(String parentItemId, List<String> itemIdList) {
+    @Transactional
+    public void delete(String id) {
+        relatedProcessRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<RelatedProcess> findAll(String parentItemId, int page, int rows) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows);
+        return relatedProcessRepository.findByParentItemIdOrderByCreateDateAsc(parentItemId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void save(String parentItemId, String[] itemIdList) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (String itemId : itemIdList) {
-            RelatedProcess oldItem = relatedProcessRepository.findByParentItemIdAndItemId(parentItemId, itemId);
+            String[] array = itemId.split(":");
+            RelatedProcess oldItem = relatedProcessRepository.findByParentItemIdAndItemId(parentItemId, array[0]);
             if (null == oldItem) {
-                String[] array = itemId.split(":");
                 RelatedProcess item = new RelatedProcess();
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 item.setItemId(array[0]);
