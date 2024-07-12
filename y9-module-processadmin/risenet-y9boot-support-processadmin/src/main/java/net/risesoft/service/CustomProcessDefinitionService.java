@@ -37,7 +37,16 @@ public interface CustomProcessDefinitionService {
      * @param isContainStartNode
      * @return Y9Result<List<FlowElementModel>>
      */
-    Y9Result<List<FlowElementModel>> getFlowElement(String processDefinitionId, boolean isContainStartNode);
+    Y9Result<List<FlowElementModel>> getFlowElement(String processDefinitionId, Boolean isContainStartNode);
+
+    /**
+     * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
+     *
+     * @param processDefinitionId
+     * @param isContainStartNode
+     * @return Y9Result<List<TargetModel>>
+     */
+    Y9Result<List<TargetModel>> getNodes(String processDefinitionId, Boolean isContainStartNode);
 
     /**
      * 获取具体流程的某个节点类型
@@ -47,15 +56,6 @@ public interface CustomProcessDefinitionService {
      * @return
      */
     String getNodeType(String processDefinitionId, String taskDefKey);
-
-    /**
-     * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
-     *
-     * @param processDefinitionId
-     * @param isContainStartNode
-     * @return Y9Result<List<TargetModel>>
-     */
-    Y9Result<List<TargetModel>> getNodes(String processDefinitionId, boolean isContainStartNode);
 
     /**
      * 根据taskId获取某个节点除去end节点和默认路由节点的所有的输出线路的个数
