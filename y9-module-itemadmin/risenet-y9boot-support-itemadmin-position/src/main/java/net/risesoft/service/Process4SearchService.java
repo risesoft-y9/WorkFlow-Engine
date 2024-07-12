@@ -3,7 +3,6 @@ package net.risesoft.service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -74,15 +73,13 @@ public class Process4SearchService {
         Y9LoginUserHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = processParam.getProcessInstanceId();
-        Connection connection = null;
         try {
             String sql0 = "SELECT" + "	P .PROC_INST_ID_,"
                 + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "	P .PROC_DEF_ID_" + " FROM"
                 + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            connection = dataSource.getConnection();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_"
                     + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
@@ -154,14 +151,6 @@ public class Process4SearchService {
             } catch (Exception e1) {
             }
             LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                LOGGER.warn("关闭数据库连接异常", e);
-            }
         }
     }
 
@@ -177,7 +166,6 @@ public class Process4SearchService {
         Y9LoginUserHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = processParam.getProcessInstanceId();
-        Connection connection = null;
         try {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
@@ -186,8 +174,7 @@ public class Process4SearchService {
                     + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
                 DataSource dataSource = jdbcTemplate.getDataSource();
                 DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-                connection = dataSource.getConnection();
-                String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
+                String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                     sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_"
                         + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId
@@ -287,14 +274,6 @@ public class Process4SearchService {
             } catch (Exception e1) {
             }
             LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                LOGGER.warn("关闭数据库连接异常", e);
-            }
         }
     }
 

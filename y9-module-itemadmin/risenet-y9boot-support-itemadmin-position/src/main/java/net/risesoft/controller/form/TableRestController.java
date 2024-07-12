@@ -1,7 +1,5 @@
 package net.risesoft.controller.form;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,21 +90,12 @@ public class TableRestController {
     @GetMapping(value = "/checkTableExist")
     public Y9Result<String> checkTableExist(@RequestParam String tableName) {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        Connection connection = null;
         try {
-            connection = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()).getConnection();
-            boolean msg = dbMetaDataUtil.checkTableExist(connection, tableName);
+            boolean msg =
+                dbMetaDataUtil.checkTableExist(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName);
             return Y9Result.success(msg ? "exist" : "isNotExist", "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取数据库表失败", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOGGER.error("关闭数据库连接失败", e);
-            }
         }
         return Y9Result.failure("获取失败");
     }
@@ -163,11 +152,10 @@ public class TableRestController {
     @GetMapping(value = "/newOrModifyTable")
     public Y9Result<Map<String, Object>> newOrModifyTable(@RequestParam(required = false) String id) {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        Connection connection = null;
         Map<String, Object> map = new HashMap<>(16);
         try {
-            connection = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()).getConnection();
-            String databaseName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String databaseName =
+                dbMetaDataUtil.getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
             map.put("databaseName", databaseName);
             if (StringUtils.isNotBlank(id) && !UtilConsts.NULL.equals(id)) {
                 Y9Table y9Table = y9TableService.findById(id);
@@ -178,14 +166,6 @@ public class TableRestController {
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取数据库表失败", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOGGER.error("关闭数据库连接失败", e);
-                }
-            }
         }
         return Y9Result.failure("获取失败");
     }

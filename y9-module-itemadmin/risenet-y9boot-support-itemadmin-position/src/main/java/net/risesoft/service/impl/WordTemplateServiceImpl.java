@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.WordTemplate;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.WordTemplateRepository;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.service.WordTemplateService;
@@ -60,26 +61,17 @@ public class WordTemplateServiceImpl implements WordTemplateService {
 
     @Override
     @Transactional
-    public Map<String, Object> deleteWordTemplate(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "删除成功");
-            WordTemplate wordTemplate = wordTemplateRepository.findById(id).orElse(null);
-            if (wordTemplate != null && wordTemplate.getId() != null) {
-                wordTemplateRepository.deleteById(wordTemplate.getId());
-                try {
-                    y9FileStoreService.deleteFile(wordTemplate.getFilePath());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    public Y9Result<String> deleteWordTemplate(String id) {
+        WordTemplate wordTemplate = wordTemplateRepository.findById(id).orElse(null);
+        if (wordTemplate != null && wordTemplate.getId() != null) {
+            wordTemplateRepository.deleteById(wordTemplate.getId());
+            try {
+                y9FileStoreService.deleteFile(wordTemplate.getFilePath());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
-            e.printStackTrace();
         }
-        return map;
+        return Y9Result.successMsg("删除成功");
     }
 
     @Override
@@ -129,11 +121,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    public Map<String, Object> getBookMarkList(String wordTemplateId, String wordTemplateType) {
-        Map<String, Object> map = new HashMap<>(16);
+    public List<Map<String, Object>> getBookMarkList(String wordTemplateId, String wordTemplateType) {
         try {
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "获取成功");
             WordTemplate wordTemplate = wordTemplateRepository.findById(wordTemplateId).orElse(null);
             byte[] b = y9FileStoreService.downloadFileToBytes(wordTemplate.getFilePath());
             InputStream is = new ByteArrayInputStream(b);
@@ -158,13 +147,11 @@ public class WordTemplateServiceImpl implements WordTemplateService {
                 }
                 items.add(mapTemp);
             }
-            map.put("rows", items);
+            return items;
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "获取失败");
             e.printStackTrace();
         }
-        return map;
+        return Collections.emptyList();
     }
 
     @Override
@@ -209,15 +196,12 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> upload(MultipartFile file) {
+    @Transactional(readOnly = false)
+    public Y9Result<String> upload(MultipartFile file) {
         String[] fileNames = Objects.requireNonNull(file.getOriginalFilename()).split("\\\\");
         String fileName = "";
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "上传成功");
         try {
             WordTemplate wordTemplate = new WordTemplate();
             wordTemplate.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -228,7 +212,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             }
             wordTemplate.setFileName(fileName);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String fullPath = "/" + Y9Context.getSystemName() + "/wordTemplate/" + sdf.format(new Date());
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "wordTemplate", sdf.format(new Date()));
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             wordTemplate.setPersonId(person.getPersonId());
             wordTemplate.setPersonName(person.getName());
@@ -238,11 +222,10 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             wordTemplate.setFilePath(y9FileStore.getId());
             wordTemplate.setFileSize(y9FileStore.getDisplayFileSize());
             wordTemplateRepository.save(wordTemplate);
+            return Y9Result.successMsg("上传成功");
         } catch (Exception e) {
             e.printStackTrace();
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "上传失败");
         }
-        return map;
+        return Y9Result.failure("上传失败");
     }
 }

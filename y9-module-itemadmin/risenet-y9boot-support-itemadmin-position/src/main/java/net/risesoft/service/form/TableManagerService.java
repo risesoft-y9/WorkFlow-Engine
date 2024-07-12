@@ -3,7 +3,6 @@ package net.risesoft.service.form;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,51 +77,47 @@ public class TableManagerService {
             // 修改表
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
-            Connection connection = dataSource.getConnection();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 DdlMysql ddLmysql = new DdlMysql();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLmysql.renameTable(connection, td.getOldTableName(), tableName);
+                    ddLmysql.renameTable(dataSource, td.getOldTableName(), tableName);
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常");
                 }
-                ddLmysql.addTableColumn(connection, tableName, dbcs);
+                ddLmysql.addTableColumn(dataSource, tableName, dbcs);
             } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 DdlOracle ddLoracle = new DdlOracle();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLoracle.renameTable(connection, td.getOldTableName(), tableName);
+                    ddLoracle.renameTable(dataSource, td.getOldTableName(), tableName);
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常");
                 }
-                ddLoracle.addTableColumn(connection, tableName, dbcs);
+                ddLoracle.addTableColumn(dataSource, tableName, dbcs);
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
                 DdlOracle ddLoracle = new DdlOracle();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLoracle.renameTable(connection, td.getOldTableName(), tableName);
+                    ddLoracle.renameTable(dataSource, td.getOldTableName(), tableName);
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常");
                 }
-                ddLoracle.addTableColumn(connection, tableName, dbcs);
+                ddLoracle.addTableColumn(dataSource, tableName, dbcs);
             } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
                 DdlKingbase ddLkingbase = new DdlKingbase();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLkingbase.renameTable(connection, td.getOldTableName(), tableName);
+                    ddLkingbase.renameTable(dataSource, td.getOldTableName(), tableName);
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常");
                 }
-                ddLkingbase.addTableColumn(connection, tableName, dbcs);
-            }
-            if (connection != null) {
-                connection.close();
+                ddLkingbase.addTableColumn(dataSource, tableName, dbcs);
             }
             // 修改状态
             y9TableFieldRepository.updateState(tableId);
@@ -151,40 +146,36 @@ public class TableManagerService {
             // 创建表
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
-            Connection connection = dataSource.getConnection();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             String jsonDbColumns = Y9JsonUtil.writeValueAsString(dbcs);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 DdlMysql ddLmysql = new DdlMysql();
                 if (StringUtils.isNotBlank(td.getOldTableName())) {
-                    ddLmysql.dropTable(connection, td.getOldTableName());
+                    ddLmysql.dropTable(dataSource, td.getOldTableName());
                 }
-                ddLmysql.dropTable(connection, td.getTableName());
-                ddLmysql.createTable(connection, td.getTableName(), jsonDbColumns);
+                ddLmysql.dropTable(dataSource, td.getTableName());
+                ddLmysql.createTable(dataSource, td.getTableName(), jsonDbColumns);
             } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 DdlOracle ddLoracle = new DdlOracle();
                 if (StringUtils.isNotBlank(td.getOldTableName())) {
-                    ddLoracle.dropTable(connection, td.getOldTableName());
+                    ddLoracle.dropTable(dataSource, td.getOldTableName());
                 }
-                ddLoracle.dropTable(connection, td.getTableName());
-                ddLoracle.createTable(connection, td.getTableName(), jsonDbColumns);
+                ddLoracle.dropTable(dataSource, td.getTableName());
+                ddLoracle.createTable(dataSource, td.getTableName(), jsonDbColumns);
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
                 DdlOracle ddLoracle = new DdlOracle();
                 if (StringUtils.isNotBlank(td.getOldTableName())) {
-                    ddLoracle.dropTable(connection, td.getOldTableName());
+                    ddLoracle.dropTable(dataSource, td.getOldTableName());
                 }
-                ddLoracle.dropTable(connection, td.getTableName());
-                ddLoracle.createTable(connection, td.getTableName(), jsonDbColumns);
+                ddLoracle.dropTable(dataSource, td.getTableName());
+                ddLoracle.createTable(dataSource, td.getTableName(), jsonDbColumns);
             } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
                 DdlKingbase ddLkingbase = new DdlKingbase();
                 if (StringUtils.isNotBlank(td.getOldTableName())) {
-                    ddLkingbase.dropTable(connection, td.getOldTableName());
+                    ddLkingbase.dropTable(dataSource, td.getOldTableName());
                 }
-                ddLkingbase.dropTable(connection, td.getTableName());
-                ddLkingbase.createTable(connection, td.getTableName(), jsonDbColumns);
-            }
-            if (connection != null) {
-                connection.close();
+                ddLkingbase.dropTable(dataSource, td.getTableName());
+                ddLkingbase.createTable(dataSource, td.getTableName(), jsonDbColumns);
             }
             LOGGER.info("创建表正常");
             // 修改老表值
@@ -258,48 +249,14 @@ public class TableManagerService {
      * 返回所有的业务表
      */
     public Map<String, Object> getDataSourceTableNames() {
-        Map<String, Object> al = new HashMap<>(16);
-        Statement stmt = null;
-        ResultSet rs = null;
-        Connection conn = null;
-        String sql = "show tables";
+        Map<String, Object> allNames = new HashMap<>(16);
         try {
-            conn = jdbcTemplate4Tenant.getDataSource().getConnection();
-
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(conn);
-            if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                sql = "SELECT table_name FROM all_tables";
-            } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                sql = "SELECT table_name FROM all_tables";
-            } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                sql = "SELECT table_name FROM all_tables";
-            }
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                String tableName = rs.getString(1);
-                // mysql中不处理视图
-                al.put(tableName.toLowerCase(), tableName);
-            }
+            allNames = dbMetaDataUtil.listAllTableNames(jdbcTemplate4Tenant.getDataSource());
         } catch (Exception ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
-        return al;
+        return allNames;
     }
 
     /**
@@ -326,7 +283,7 @@ public class TableManagerService {
             String sql = "show tables like '" + tableName + "'";
 
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(conn);
+            String dialect = dbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
@@ -393,12 +350,10 @@ public class TableManagerService {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public String getInsertSqlStatement(String tableName, ArrayList fieldList) {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        Connection connection = null;
         boolean isHaveField = false;
-        StringBuilder sqlStr = new StringBuilder("");
+        StringBuilder sqlStr = new StringBuilder();
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
-            List<DbColumn> list = dbMetaDataUtil.listAllColumns(connection, tableName, "");
+            List<DbColumn> list = dbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
             StringBuilder sqlStr1 = new StringBuilder(") values(");
             sqlStr.append("insert into " + tableName + " (");
             for (DbColumn column : list) {
@@ -417,17 +372,9 @@ public class TableManagerService {
             }
             sqlStr1.append(")");
             sqlStr.append(sqlStr1);
-            LOGGER.info("表" + tableName + "的insert语句：" + sqlStr.toString());
+            LOGGER.info("表" + tableName + "的insert语句：" + sqlStr);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return sqlStr.toString();
     }
@@ -465,14 +412,12 @@ public class TableManagerService {
      */
     public String getUpdateSqlStatement(String tableName) {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        Connection connection = null;
         boolean isHaveField = false;
-        StringBuilder sqlStr = new StringBuilder("");
+        StringBuilder sqlStr = new StringBuilder();
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
-            List<DbColumn> list = dbMetaDataUtil.listAllColumns(connection, tableName, "");
+            List<DbColumn> list = dbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
             sqlStr.append("update " + tableName + " set ");
-            StringBuilder sqlStr1 = new StringBuilder("");
+            StringBuilder sqlStr1 = new StringBuilder();
             for (DbColumn column : list) {
                 if (column.getPrimaryKey()) {
                     sqlStr1.append(" where " + column.getColumnName() + "=?");
@@ -485,31 +430,21 @@ public class TableManagerService {
                 isHaveField = true;
             }
             sqlStr.append(sqlStr1);
-            LOGGER.info("表" + tableName + "的update语句：" + sqlStr.toString());
+            LOGGER.info("表" + tableName + "的update语句：" + sqlStr);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return sqlStr.toString();
     }
 
     public void saveOrUpdate(Y9Table table) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Connection connection = null;
         try {
             if (StringUtils.isBlank(table.getId())) {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
@@ -518,14 +453,6 @@ public class TableManagerService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Y9TableServiceImpl saveOrUpdate error");
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

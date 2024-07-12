@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -130,8 +131,7 @@ public class SyncYearTableService {
             }
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            connection = dataSource.getConnection();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             String filePath = Y9Context.getWebRootRealPath() + "static" + File.separator + "yearTableSql"
                 + File.separator + dialectName + File.separator + "yearTable.sql";
             File file = new File(filePath);
@@ -167,17 +167,17 @@ public class SyncYearTableService {
                     bos.write(b, 0, n);
                 }
                 buffer = bos.toByteArray();
-                String s = new String(buffer, "UTF-8");
+                String s = new String(buffer, StandardCharsets.UTF_8);
                 s = s.replace("Year4Table", year);
                 List<String> sqlList = Y9FileUtil.loadSql(s);
                 if (DialectEnum.KINGBASE.getValue().equals(dialectName)) {
-                    dbMetaDataUtil.batchexecuteDdl4Kingbase(connection, sqlList);
+                    dbMetaDataUtil.batchexecuteDdl4Kingbase(dataSource, sqlList);
                 } else if (DialectEnum.ORACLE.getValue().equals(dialectName)) {
-                    dbMetaDataUtil.batchexecuteDdl4Kingbase(connection, sqlList);
+                    dbMetaDataUtil.batchexecuteDdl4Kingbase(dataSource, sqlList);
                 } else if (DialectEnum.DM.getValue().equals(dialectName)) {
-                    dbMetaDataUtil.batchexecuteDdl4Kingbase(connection, sqlList);
+                    dbMetaDataUtil.batchexecuteDdl4Kingbase(dataSource, sqlList);
                 } else {
-                    dbMetaDataUtil.batchexecuteDdl(connection, sqlList);
+                    dbMetaDataUtil.batchexecuteDdl(dataSource, sqlList);
                 }
                 LOGGER.info("************************年度表生成成功****************************");
             } else {
