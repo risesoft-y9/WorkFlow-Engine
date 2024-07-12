@@ -52,80 +52,65 @@ import net.risesoft.y9.sqlddl.DbColumn;
 public class InitTableDataService {
 
     /**
+     * 动态角色id
+     */
+    public static final String DYNAMIC_ROLE_ID = "11111111-1111-1111-1111-111111111113";
+    /**
      * 事项id
      */
     public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
-
     /**
      * 意见框id
      */
     public static final String OPINION_FRAME_ID = "11111111-1111-1111-1111-111111111112";
-
     /**
      * 意见框标识
      */
     public static final String OPINION_FRAME_MARK = "personalComment";
-
     /**
      * 意见框名称
      */
     public static final String OPINION_FRAME_NAME = "个人意见";
-
-    /**
-     * 动态角色id
-     */
-    public static final String DYNAMIC_ROLE_ID = "11111111-1111-1111-1111-111111111113";
-
-    /**
-     * 业务表id
-     */
-    public static final String Y9_TABLE_ID = "11111111-1111-1111-1111-111111111114";
-
-    /**
-     * 业务表中文名称
-     */
-    public static final String Y9_TABLE_CNNAME = "办件信息表";
-
-    /**
-     * 业务表名称
-     */
-    public static final String Y9_TABLE_NAME = "y9_form_ziyoubanjian";
-
-    /**
-     * 表单id
-     */
-    public static final String Y9_FORM_ID = "11111111-1111-1111-1111-111111111115";
-
-    /**
-     * 表单名称
-     */
-    public static final String Y9_FORM_NAME = "表单信息";
-
     /**
      * 打印表单id
      */
     public static final String PRINT_FORM_ID = "11111111-1111-1111-1111-111111111116";
-
     /**
      * 打印表单名称
      */
     public static final String PRINT_FORM_NAME = "表单信息(打印)";
-
     /**
      * 流程定义key
      */
     public static final String PROCESSDEFINITIONKEY = "ziyouliucheng";
-
     /**
      * 系统中文名，事项名称
      */
     public static final String SYSTEMCNNAME = "办件";
-
     /**
      * 系统英文名
      */
     public static final String SYSTEMNAME = "banjian";
-
+    /**
+     * 表单id
+     */
+    public static final String Y9_FORM_ID = "11111111-1111-1111-1111-111111111115";
+    /**
+     * 表单名称
+     */
+    public static final String Y9_FORM_NAME = "表单信息";
+    /**
+     * 业务表中文名称
+     */
+    public static final String Y9_TABLE_CNNAME = "办件信息表";
+    /**
+     * 业务表id
+     */
+    public static final String Y9_TABLE_ID = "11111111-1111-1111-1111-111111111114";
+    /**
+     * 业务表名称
+     */
+    public static final String Y9_TABLE_NAME = "y9_form_ziyoubanjian";
     private final JdbcTemplate jdbcTemplate4Tenant;
 
     private final SyncYearTableService syncYearTableService;
@@ -486,11 +471,6 @@ public class InitTableDataService {
                 .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("流程编号")
-                .setFieldName("processInstanceId").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
-            list.add(newField);
-            newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件编号").setFieldName("number")
                 .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -588,11 +568,6 @@ public class InitTableDataService {
                 .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("流程编号")
-                .setFieldName("processInstanceId").setFieldType("varchar(50)").setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
-            list.add(newField);
-            newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件编号").setFieldName("number")
                 .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
@@ -678,12 +653,6 @@ public class InitTableDataService {
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("guid").setFieldCnName("主键")
                 .setFieldType("varchar(50)").setFieldLength(50).setIsMayNull(0).setIsSystemField(1).setDisplayOrder(i++)
                 .setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
-            list.add(field);
-            dbcs.add(tableField2DbColumn(field));
-            field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("processInstanceId").setFieldCnName("流程编号")
-                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();

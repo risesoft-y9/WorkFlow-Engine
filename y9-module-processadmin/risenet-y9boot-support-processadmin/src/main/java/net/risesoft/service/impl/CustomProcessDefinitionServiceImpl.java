@@ -149,7 +149,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     public Y9Result<List<FlowElementModel>> getFlowElement(String processDefinitionId, Boolean isContainStartNode) {
         List<FlowElementModel> list = new ArrayList<>();
         List<FlowElement> activitieList = new ArrayList<>();
-        if (!isContainStartNode) {
+        if (!Boolean.TRUE.equals(isContainStartNode)) {
             List<FlowElement> listTemp;
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -199,7 +199,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     public Y9Result<List<TargetModel>> getNodes(String processDefinitionId, Boolean isContainStartNode) {
         List<TargetModel> list = new ArrayList<>();
         List<FlowElement> activitieList = new ArrayList<>();
-        if (!isContainStartNode) {
+        if (!Boolean.TRUE.equals(isContainStartNode)) {
             List<FlowElement> listTemp;
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -214,7 +214,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             activitieList = getFilteredActivityImpls(processDefinitionId);
         }
         for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMapA = new LinkedHashMap<>();
             TargetModel targetModel = new TargetModel();
             targetModel.setTaskDefKey(activity.getId());
             targetModel.setTaskDefName(activity.getName());
@@ -492,7 +491,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                 targetModel.setTaskDefName(name);
                             } else {
                                 // 如果输出线上没有名称，则使用目标节点名称作为路由名称
-                                targetModel.setRealTaskDefName(tr.getTargetFlowElement().getName());
+                                targetModel.setTaskDefName(tr.getTargetFlowElement().getName());
                             }
                             if (fe instanceof SubProcess) {
                                 targetModel.setMultiInstance(SysVariables.PARALLEL);

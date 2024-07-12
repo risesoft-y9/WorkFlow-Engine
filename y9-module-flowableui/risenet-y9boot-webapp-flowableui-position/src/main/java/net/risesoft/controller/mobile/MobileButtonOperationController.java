@@ -257,7 +257,7 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
-            taskApi.completeWithVariables(tenantId, task.getId(), vars);
+            taskApi.completeWithVariables4Position(tenantId, task.getId(), positionId, vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "办理成功!");
@@ -440,8 +440,8 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
-            String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            String type = processDefinitionApi
+                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             String reason = "";
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {

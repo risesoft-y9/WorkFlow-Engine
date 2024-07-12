@@ -88,7 +88,6 @@ public interface TaskApi {
      * 完成任务（设置流程变量）岗位
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param vars 变量map
@@ -97,8 +96,8 @@ public interface TaskApi {
      */
     @PostMapping(value = "/completeWithVariables4Position", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> completeWithVariables4Position(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
-        @RequestParam("taskId") String taskId, @RequestBody Map<String, Object> vars);
+        @RequestParam("taskId") String taskId, @RequestParam("positionId") String positionId,
+        @RequestBody Map<String, Object> vars);
 
     /**
      * 创建变量

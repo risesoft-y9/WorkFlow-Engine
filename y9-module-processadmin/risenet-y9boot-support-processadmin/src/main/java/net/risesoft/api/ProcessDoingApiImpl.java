@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.processadmin.DoingApi;
+import net.risesoft.api.processadmin.ProcessDoingApi;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -31,7 +31,7 @@ import net.risesoft.service.FlowableTenantInfoHolder;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/doing", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DoingApiImpl implements DoingApi {
+public class ProcessDoingApiImpl implements ProcessDoingApi {
 
     private final CustomDoingService customDoingService;
 
