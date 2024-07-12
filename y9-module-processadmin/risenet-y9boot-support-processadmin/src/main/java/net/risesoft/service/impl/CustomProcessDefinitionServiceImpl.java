@@ -146,10 +146,10 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public Y9Result<List<FlowElementModel>> getFlowElement(String processDefinitionId, boolean isContainStartNode) {
+    public Y9Result<List<FlowElementModel>> getFlowElement(String processDefinitionId, Boolean isContainStartNode) {
         List<FlowElementModel> list = new ArrayList<>();
         List<FlowElement> activitieList = new ArrayList<>();
-        if (!isContainStartNode) {
+        if (!Boolean.TRUE.equals(isContainStartNode)) {
             List<FlowElement> listTemp;
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -196,6 +196,47 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public Y9Result<List<TargetModel>> getNodes(String processDefinitionId, Boolean isContainStartNode) {
+        List<TargetModel> list = new ArrayList<>();
+        List<FlowElement> activitieList = new ArrayList<>();
+        if (!Boolean.TRUE.equals(isContainStartNode)) {
+            List<FlowElement> listTemp;
+            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+            org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+            listTemp = (List<FlowElement>)process.getFlowElements();
+            if (!listTemp.isEmpty()) {
+                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
+                activitieList.addAll(listTemp);
+            }
+            activitieList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
+                || e instanceof SequenceFlow);
+        } else {
+            activitieList = getFilteredActivityImpls(processDefinitionId);
+        }
+        for (FlowElement activity : activitieList) {
+            TargetModel targetModel = new TargetModel();
+            targetModel.setTaskDefKey(activity.getId());
+            targetModel.setTaskDefName(activity.getName());
+            if (activity instanceof UserTask) {
+                UserTask userTask = (UserTask)activity;
+                if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.PARALLEL);
+                } else {
+                    targetModel.setMultiInstance(SysVariables.COMMON);
+                }
+            }
+            list.add(targetModel);
+        }
+        TargetModel targetModel = new TargetModel();
+        targetModel.setTaskDefKey("");
+        targetModel.setTaskDefName("流程");
+        list.add(0, targetModel);
+        return Y9Result.success(list);
+    }
+
+    @Override
     public String getNodeType(String processDefinitionId, String taskDefKey) {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -220,48 +261,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             }
         }
         return SysVariables.COMMON;
-    }
-
-    @Override
-    public Y9Result<List<TargetModel>> getNodes(String processDefinitionId, boolean isContainStartNode) {
-        List<TargetModel> list = new ArrayList<>();
-        List<FlowElement> activitieList = new ArrayList<>();
-        if (!isContainStartNode) {
-            List<FlowElement> listTemp;
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-            org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-            listTemp = (List<FlowElement>)process.getFlowElements();
-            if (!listTemp.isEmpty()) {
-                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-                activitieList.addAll(listTemp);
-            }
-            activitieList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
-                || e instanceof SequenceFlow);
-        } else {
-            activitieList = getFilteredActivityImpls(processDefinitionId);
-        }
-        for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMapA = new LinkedHashMap<>();
-            TargetModel targetModel = new TargetModel();
-            targetModel.setTaskDefKey(activity.getId());
-            targetModel.setTaskDefName(activity.getName());
-            if (activity instanceof UserTask) {
-                UserTask userTask = (UserTask)activity;
-                if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
-                } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                    targetModel.setMultiInstance(SysVariables.PARALLEL);
-                } else {
-                    targetModel.setMultiInstance(SysVariables.COMMON);
-                }
-            }
-            list.add(targetModel);
-        }
-        TargetModel targetModel = new TargetModel();
-        targetModel.setTaskDefKey("");
-        targetModel.setTaskDefName("流程");
-        list.add(0, targetModel);
-        return Y9Result.success(list);
     }
 
     @Override
