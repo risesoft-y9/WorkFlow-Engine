@@ -1,9 +1,7 @@
 package net.risesoft.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.consts.UtilConsts;
+import net.risesoft.controller.vo.Y9FormVO;
 import net.risesoft.entity.Y9PreFormItemBind;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.pojo.Y9Result;
@@ -43,11 +41,7 @@ public class Y9PreFormItemBindRestController {
      */
     @PostMapping(value = "/deleteBind")
     public Y9Result<String> deleteBind(@RequestParam String id) {
-        Map<String, Object> map = y9PreFormItemBindService.delete(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9PreFormItemBindService.delete(id);
     }
 
     /**
@@ -75,18 +69,18 @@ public class Y9PreFormItemBindRestController {
      * @return
      */
     @GetMapping(value = "/getFormList")
-    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId, @RequestParam String systemName,
+    public Y9Result<List<Y9FormVO>> getFormList(@RequestParam String itemId, @RequestParam String systemName,
         @RequestParam(required = false) String formName) {
-        List<Map<String, Object>> listmap = new ArrayList<>();
+        List<Y9FormVO> listmap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%" + formName + "%");
         Y9PreFormItemBind bind = y9PreFormItemBindService.findByItemId(itemId);
         for (Y9Form y9Form : list) {
-            Map<String, Object> map = new HashMap<>(16);
             boolean isBind = bind != null && bind.getFormId().equals(y9Form.getId());
             if (!isBind) {
-                map.put("formName", y9Form.getFormName());
-                map.put("formId", y9Form.getId());
-                listmap.add(map);
+                Y9FormVO form = new Y9FormVO();
+                form.setFormId(y9Form.getId());
+                form.setFormName(y9Form.getFormName());
+                listmap.add(form);
             }
         }
         return Y9Result.success(listmap, "获取成功");
@@ -102,11 +96,7 @@ public class Y9PreFormItemBindRestController {
      */
     @PostMapping(value = "/saveBindForm")
     public Y9Result<String> saveBindForm(String itemId, String formId, String formName) {
-        Map<String, Object> map = y9PreFormItemBindService.saveBindForm(itemId, formId, formName);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9PreFormItemBindService.saveBindForm(itemId, formId, formName);
     }
 
 }

@@ -1,8 +1,7 @@
 package net.risesoft.service;
 
 import net.risesoft.entity.Y9PreFormItemBind;
-
-import java.util.Map;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -12,12 +11,20 @@ import java.util.Map;
 public interface Y9PreFormItemBindService {
 
     /**
+     * 复制前置表单绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     */
+    void copyBindInfo(String itemId, String newItemId);
+
+    /**
      * Description: 删除绑定
      *
      * @param id 主键id
      * @return
      */
-    Map<String, Object> delete(String id);
+    Y9Result<String> delete(String id);
 
     /**
      * 获取绑定的表单
@@ -35,12 +42,5 @@ public interface Y9PreFormItemBindService {
      * @param formName 表单名称
      * @return
      */
-    Map<String, Object> saveBindForm(String itemId, String formId, String formName);
-
-    /**
-     * 复制前置表单绑定信息
-     * @param itemId
-     * @param newItemId
-     */
-    void copyBindInfo(String itemId,String newItemId);
+    Y9Result<String> saveBindForm(String itemId, String formId, String formName);
 }

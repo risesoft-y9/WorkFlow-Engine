@@ -1,6 +1,28 @@
 package net.risesoft.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
@@ -17,19 +39,6 @@ import net.risesoft.y9.util.word.Y9WordTool4Doc;
 import net.risesoft.y9.util.word.Y9WordTool4Docx;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @author qinman
@@ -82,7 +91,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             int length = b.length;
             String filename = "", userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
             if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
-                filename = new String(wordTemplate.getFileName().getBytes("UTF-8"), "ISO8859-1");
+                filename = new String(wordTemplate.getFileName().getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
                 filename = URLEncoder.encode(wordTemplate.getFileName(), "UTF-8");
             } else {
@@ -104,13 +113,14 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    public List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId) {
-        return wordTemplateRepository.findByBureauIdOrderByUploadTimeDesc(bureauId);
+    public List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,
+        String fileName) {
+        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
     }
 
     @Override
-    public List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName) {
-        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
+    public List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId) {
+        return wordTemplateRepository.findByBureauIdOrderByUploadTimeDesc(bureauId);
     }
 
     @Override
@@ -196,7 +206,6 @@ public class WordTemplateServiceImpl implements WordTemplateService {
         newWord.setUploadTime(new Date());
 
         wordTemplateRepository.save(newWord);
-        return;
     }
 
     @Override
