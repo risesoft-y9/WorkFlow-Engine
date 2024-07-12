@@ -1,10 +1,10 @@
 package net.risesoft.service;
 
+import java.util.List;
+
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
-
-import java.util.List;
-import java.util.Map;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -14,8 +14,17 @@ import java.util.Map;
 public interface Y9FormItemBindService {
 
     /**
+     * Description:复制表单绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
+
+    /**
      * Description: 复制该事项上一个版本的表单到最新版本，最新版本存在的就不复制
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      */
@@ -23,11 +32,11 @@ public interface Y9FormItemBindService {
 
     /**
      * Description: 删除绑定
-     * 
+     *
      * @param id
      * @return
      */
-    Map<String, Object> delete(String id);
+    Y9Result<String> delete(String id);
 
     /**
      * 查找指定事项id和流程定义Id绑定的表单
@@ -50,7 +59,7 @@ public interface Y9FormItemBindService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefinitionKey
@@ -71,7 +80,7 @@ public interface Y9FormItemBindService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param procDefId
      * @param taskDefKey
@@ -107,26 +116,18 @@ public interface Y9FormItemBindService {
 
     /**
      * Description:
-     * 
+     *
      * @param eformItem
      * @return
      */
-    Map<String, Object> save(Y9FormItemBind eformItem);
+    Y9Result<String> save(Y9FormItemBind eformItem);
 
     /**
      * Description:
-     * 
+     *
      * @param eformItem
      * @return
      */
-    Map<String, Object> save(Y9FormItemMobileBind eformItem);
-
-    /**
-     * Description:复制表单绑定信息
-     * @param itemId
-     * @param newItemId
-     * @param lastVersionPid
-     */
-    void copyBindInfo(String itemId,String newItemId,String lastVersionPid);
+    Y9Result<String> save(Y9FormItemMobileBind eformItem);
 
 }

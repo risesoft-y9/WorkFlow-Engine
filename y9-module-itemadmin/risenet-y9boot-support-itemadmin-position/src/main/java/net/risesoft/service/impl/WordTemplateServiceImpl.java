@@ -3,6 +3,7 @@ package net.risesoft.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -90,7 +91,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             int length = b.length;
             String filename = "", userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
             if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
-                filename = new String(wordTemplate.getFileName().getBytes("UTF-8"), "ISO8859-1");
+                filename = new String(wordTemplate.getFileName().getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
                 filename = URLEncoder.encode(wordTemplate.getFileName(), "UTF-8");
             } else {
@@ -112,13 +113,14 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    public List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId) {
-        return wordTemplateRepository.findByBureauIdOrderByUploadTimeDesc(bureauId);
+    public List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,
+        String fileName) {
+        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
     }
 
     @Override
-    public List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName) {
-        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
+    public List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId) {
+        return wordTemplateRepository.findByBureauIdOrderByUploadTimeDesc(bureauId);
     }
 
     @Override
@@ -204,7 +206,6 @@ public class WordTemplateServiceImpl implements WordTemplateService {
         newWord.setUploadTime(new Date());
 
         wordTemplateRepository.save(newWord);
-        return;
     }
 
     @Override

@@ -1,18 +1,17 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.Y9PreFormItemBind;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.Y9PreFormItemBindRepository;
-import net.risesoft.service.Y9PreFormItemBindService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.entity.Y9PreFormItemBind;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.repository.jpa.Y9PreFormItemBindRepository;
+import net.risesoft.service.Y9PreFormItemBindService;
 
 /**
  * @author qinman
@@ -28,55 +27,7 @@ public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
     private final Y9PreFormItemBindRepository y9PreFormItemBindRepository;
 
     @Override
-    @Transactional
-    public Map<String, Object> delete(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "删除成功");
-        try {
-            y9PreFormItemBindRepository.deleteById(id);
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    @Override
-    public Y9PreFormItemBind findByItemId(String itemId) {
-        return y9PreFormItemBindRepository.findByItemId(itemId);
-    }
-
-    @Override
-    @Transactional
-    public Map<String, Object> saveBindForm(String itemId, String formId, String formName) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "保存失败");
-        try {
-            Y9PreFormItemBind item = y9PreFormItemBindRepository.findByItemId(itemId);
-            if (item != null) {
-                item.setFormId(formId);
-                item.setFormName(formName);
-            } else {
-                item = new Y9PreFormItemBind();
-                item.setItemId(itemId);
-                item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                item.setFormId(formId);
-                item.setFormName(formName);
-            }
-            y9PreFormItemBindRepository.saveAndFlush(item);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void copyBindInfo(String itemId, String newItemId) {
         try {
             Y9PreFormItemBind item = y9PreFormItemBindRepository.findByItemId(itemId);
@@ -90,6 +41,46 @@ public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
             }
         } catch (Exception e) {
             LOGGER.error("复制前置表单项绑定信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Y9Result<String> delete(String id) {
+        try {
+            y9PreFormItemBindRepository.deleteById(id);
+            return Y9Result.successMsg("删除成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Y9Result.failure("删除失败!");
+        }
+    }
+
+    @Override
+    public Y9PreFormItemBind findByItemId(String itemId) {
+        return y9PreFormItemBindRepository.findByItemId(itemId);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Y9Result<String> saveBindForm(String itemId, String formId, String formName) {
+        try {
+            Y9PreFormItemBind item = y9PreFormItemBindRepository.findByItemId(itemId);
+            if (item != null) {
+                item.setFormId(formId);
+                item.setFormName(formName);
+            } else {
+                item = new Y9PreFormItemBind();
+                item.setItemId(itemId);
+                item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                item.setFormId(formId);
+                item.setFormName(formName);
+            }
+            y9PreFormItemBindRepository.saveAndFlush(item);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
     }
 

@@ -1,10 +1,17 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
@@ -12,20 +19,13 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.repository.jpa.Y9FormItemBindRepository;
 import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -42,14 +42,68 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     private final Y9FormItemMobileBindRepository y9FormItemMobileBindRepository;
 
-    private final ProcessDefinitionApi processDefinitionManager;
-
     private final SpmApproveItemRepository spmApproveItemRepository;
+
+    private final ProcessDefinitionApi processDefinitionManager;
 
     private final RepositoryApi repositoryManager;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            // 复制PC端表单的绑定
+            List<Y9FormItemBind> previouseibList =
+                y9FormItemBindRepository.findByItemIdAndProcDefId(itemId, lastVersionPid);
+            for (Y9FormItemBind eib : previouseibList) {
+                String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
+                Y9FormItemBind eibTemp = new Y9FormItemBind();
+                if (StringUtils.isNotBlank(taskDefKey)) {
+                    eibTemp.setTaskDefKey(taskDefKey);
+                }
+                eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                eibTemp.setProcessDefinitionId(lastVersionPid);
+                eibTemp.setFormName(eib.getFormName());
+                eibTemp.setFormId(formId);
+                eibTemp.setItemId(newItemId);
+                eibTemp.setShowDocumentTab(eib.isShowDocumentTab());
+                eibTemp.setShowFileTab(eib.isShowFileTab());
+                eibTemp.setShowHistoryTab(eib.isShowHistoryTab());
+                eibTemp.setTabIndex(eib.getTabIndex());
+                eibTemp.setTaskDefKey(taskDefKey);
+                eibTemp.setTenantId(tenantId);
+                y9FormItemBindRepository.save(eibTemp);
+            }
+
+            // 复制手机端表单绑定信息
+            List<Y9FormItemMobileBind> mobileBindList =
+                y9FormItemMobileBindRepository.findByItemIdAndProcDefId(itemId, lastVersionPid);
+            /**
+             * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
+             */
+            for (Y9FormItemMobileBind eib : mobileBindList) {
+                String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
+                Y9FormItemMobileBind eibTemp = new Y9FormItemMobileBind();
+                if (StringUtils.isNotBlank(taskDefKey)) {
+                    eibTemp.setTaskDefKey(taskDefKey);
+                }
+                eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                eibTemp.setProcessDefinitionId(lastVersionPid);
+                eibTemp.setFormName(eib.getFormName());
+                eibTemp.setFormId(formId);
+                eibTemp.setItemId(newItemId);
+                eibTemp.setTaskDefKey(taskDefKey);
+                eibTemp.setTenantId(tenantId);
+                y9FormItemMobileBindRepository.save(eibTemp);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制表单绑定信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
     public void copyEform(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
@@ -95,19 +149,15 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> delete(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "删除成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> delete(String id) {
         try {
             y9FormItemBindRepository.deleteById(id);
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
             e.printStackTrace();
+            return Y9Result.failure("删除失败");
         }
-        return map;
+        return Y9Result.successMsg("删除成功");
     }
 
     @Override
@@ -263,24 +313,21 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> save(Y9FormItemBind eformItem) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "保存失败");
+    @Transactional(readOnly = false)
+    public Y9Result<String> save(Y9FormItemBind eformItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             eformItem.setTenantId(tenantId);
             y9FormItemBindRepository.saveAndFlush(eformItem);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功");
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return map;
+        return Y9Result.failure("保存失败");
     }
 
-    private void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
+    @Transactional(readOnly = false)
+    public void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
         String tenantId) {
         Y9FormItemBind eibTemp = new Y9FormItemBind();
         eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -298,11 +345,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> save(Y9FormItemMobileBind eformItem) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "保存失败");
+    @Transactional(readOnly = false)
+    public Y9Result<String> save(Y9FormItemMobileBind eformItem) {
         try {
             if (StringUtils.isBlank(eformItem.getId())) {
                 eformItem.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -310,65 +354,11 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             eformItem.setTenantId(tenantId);
             y9FormItemMobileBindRepository.saveAndFlush(eformItem);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功");
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return map;
+        return Y9Result.failure("保存失败");
     }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try{
-            //复制PC端表单的绑定
-            List<Y9FormItemBind> previouseibList = y9FormItemBindRepository.findByItemIdAndProcDefId(itemId, lastVersionPid);
-            for (Y9FormItemBind eib : previouseibList) {
-                String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
-                Y9FormItemBind eibTemp = new Y9FormItemBind();
-                if (StringUtils.isNotBlank(taskDefKey)) {
-                    eibTemp.setTaskDefKey(taskDefKey);
-                }
-                eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                eibTemp.setProcessDefinitionId(lastVersionPid);
-                eibTemp.setFormName(eib.getFormName());
-                eibTemp.setFormId(formId);
-                eibTemp.setItemId(newItemId);
-                eibTemp.setShowDocumentTab(eib.isShowDocumentTab());
-                eibTemp.setShowFileTab(eib.isShowFileTab());
-                eibTemp.setShowHistoryTab(eib.isShowHistoryTab());
-                eibTemp.setTabIndex(eib.getTabIndex());
-                eibTemp.setTaskDefKey(taskDefKey);
-                eibTemp.setTenantId(tenantId);
-                y9FormItemBindRepository.save(eibTemp);
-            }
-
-            //复制手机端表单绑定信息
-            List<Y9FormItemMobileBind> mobileBindList = y9FormItemMobileBindRepository.findByItemIdAndProcDefId(itemId, lastVersionPid);
-            /**
-             * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
-             */
-            for (Y9FormItemMobileBind eib : mobileBindList) {
-                String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
-                Y9FormItemMobileBind eibTemp = new Y9FormItemMobileBind();
-                if (StringUtils.isNotBlank(taskDefKey)) {
-                    eibTemp.setTaskDefKey(taskDefKey);
-                }
-                eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                eibTemp.setProcessDefinitionId(lastVersionPid);
-                eibTemp.setFormName(eib.getFormName());
-                eibTemp.setFormId(formId);
-                eibTemp.setItemId(newItemId);
-                eibTemp.setTaskDefKey(taskDefKey);
-                eibTemp.setTenantId(tenantId);
-                y9FormItemMobileBindRepository.save(eibTemp);
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制表单绑定信息失败", e);
-        }
-    }
-
 
 }
