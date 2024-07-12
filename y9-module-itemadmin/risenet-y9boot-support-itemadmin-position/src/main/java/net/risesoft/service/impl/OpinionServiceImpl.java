@@ -152,13 +152,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<Opinion> findByProcessSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
+    public int findByProcSerialNumber(String processSerialNumber) {
+        return opinionRepository.findByProcSerialNumber(processSerialNumber);
     }
 
     @Override
-    public int findByProcSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcSerialNumber(processSerialNumber);
+    public List<Opinion> findByProcessSerialNumber(String processSerialNumber) {
+        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
@@ -607,7 +607,7 @@ public class OpinionServiceImpl implements OpinionService {
                     if (null != bind) {
                         List<String> roleIds = bind.getRoleIds();
                         if (roleIds.isEmpty()) {
-                            model.setAddable(false);
+                            model.setAddable(true);
                         } else {
                             for (String roleId : roleIds) {
                                 Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
