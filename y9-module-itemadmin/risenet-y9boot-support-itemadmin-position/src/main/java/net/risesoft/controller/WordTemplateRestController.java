@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.consts.UtilConsts;
+import net.risesoft.controller.vo.WordTemplateVO;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.WordTemplate;
 import net.risesoft.entity.form.Y9Table;
@@ -60,15 +59,11 @@ public class WordTemplateRestController {
      * @param wordTemplateType 模板类型
      * @return
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/bookMarKList")
     public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId,
         @RequestParam String wordTemplateType) {
-        Map<String, Object> map = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.success((List<Map<String, Object>>)map.get("rows"), (String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        List<Map<String, Object>> list = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
+        return Y9Result.success(list);
     }
 
     /**
@@ -79,11 +74,7 @@ public class WordTemplateRestController {
      */
     @PostMapping(value = "/deleteWordTemplate")
     public Y9Result<String> deleteWordTemplate(@RequestParam String id) {
-        Map<String, Object> map = wordTemplateService.deleteWordTemplate(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return wordTemplateService.deleteWordTemplate(id);
     }
 
     /**
@@ -105,7 +96,6 @@ public class WordTemplateRestController {
      * @param wordTemplateId 模板id
      * @return
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/getBookMarkBind")
     public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName,
         @RequestParam String wordTemplateId) {
@@ -122,8 +112,7 @@ public class WordTemplateRestController {
                 }
             }
             if (!tableId.isEmpty()) {
-                Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
-                List<Y9TableField> fieldList = (List<Y9TableField>)map.get("rows");
+                List<Y9TableField> fieldList = y9TableFieldService.getFieldList(tableId);
                 for (Y9TableField field : fieldList) {
                     columnList.add(field.getFieldName());
                 }
@@ -141,12 +130,10 @@ public class WordTemplateRestController {
      * @param tableId 表id
      * @return
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/getColumns")
     public Y9Result<List<String>> getColumns(@RequestParam String tableId) {
         List<String> columnList = new ArrayList<>();
-        Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
-        List<Y9TableField> fieldList = (List<Y9TableField>)map.get("rows");
+        List<Y9TableField> fieldList = y9TableFieldService.getFieldList(tableId);
         for (Y9TableField field : fieldList) {
             columnList.add(field.getFieldName());
         }
@@ -161,11 +148,7 @@ public class WordTemplateRestController {
      */
     @PostMapping(value = "/upload")
     public Y9Result<String> upload(MultipartFile file) {
-        Map<String, Object> map = wordTemplateService.upload(file);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return wordTemplateService.upload(file);
     }
 
     /**
@@ -174,10 +157,9 @@ public class WordTemplateRestController {
      * @return
      */
     @GetMapping(value = "/wordTemplateList")
-    public Y9Result<List<Map<String, Object>>> wordTemplateList() {
+    public Y9Result<List<WordTemplateVO>> wordTemplateList() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<WordTemplate> list;
         if (person.isGlobalManager()) {
             list = wordTemplateService.findAll();
@@ -185,15 +167,16 @@ public class WordTemplateRestController {
             list = wordTemplateService
                 .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
-        List<Map<String, Object>> items = new ArrayList<>();
+        List<WordTemplateVO> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", wordTemplate.getId());
-            map.put("fileName", wordTemplate.getFileName());
-            map.put("fileSize", wordTemplate.getFileSize());
-            map.put("personName", wordTemplate.getPersonName());
-            map.put("uploadTime", sdf.format(wordTemplate.getUploadTime()));
-            map.put("wordTemplateType", wordTemplate.getFileName().endsWith("doc") ? "doc" : "docx");
+            WordTemplateVO map = new WordTemplateVO();
+            map.setId(wordTemplate.getId());
+            map.setFileName(wordTemplate.getFileName());
+            map.setFileSize(wordTemplate.getFileSize());
+            map.setPersonName(wordTemplate.getPersonName());
+            map.setUploadTime(wordTemplate.getUploadTime());
+            map.setWordTemplateType(wordTemplate.getFileName().endsWith("doc") ? "doc" : "docx");
+            map.setFilePath(wordTemplate.getFilePath());
             items.add(map);
         }
         return Y9Result.success(items, "获取成功");

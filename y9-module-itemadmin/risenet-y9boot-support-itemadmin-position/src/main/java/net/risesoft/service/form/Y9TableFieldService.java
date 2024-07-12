@@ -1,7 +1,6 @@
 package net.risesoft.service.form;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.form.Y9TableField;
 
@@ -18,7 +17,7 @@ public interface Y9TableFieldService {
      * @param id
      * @return
      */
-    Map<String, Object> delete(String id);
+    void delete(String id);
 
     /**
      * 根据id获取表字段定义
@@ -42,7 +41,7 @@ public interface Y9TableFieldService {
      * @param tableId
      * @return
      */
-    Map<String, Object> getFieldList(String tableId);
+    List<Y9TableField> getFieldList(String tableId);
 
     /**
      * 保存表字段信息
@@ -50,7 +49,7 @@ public interface Y9TableFieldService {
      * @param field
      * @return
      */
-    Map<String, Object> saveOrUpdate(Y9TableField field);
+    Y9TableField saveOrUpdate(Y9TableField field);
 
     /**
      * 取出当前表定义字段

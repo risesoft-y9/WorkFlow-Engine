@@ -1,12 +1,15 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.WordTemplate;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import net.risesoft.entity.WordTemplate;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -21,7 +24,7 @@ public interface WordTemplateService {
      * @param id
      * @return
      */
-    Map<String, Object> deleteWordTemplate(String id);
+    Y9Result<String> deleteWordTemplate(String id);
 
     /**
      * 下载模板
@@ -34,30 +37,31 @@ public interface WordTemplateService {
 
     /**
      * Description:
-     * 
+     *
      * @return
      */
     List<WordTemplate> findAll();
 
     /**
+     * 获取当前委办局下所有的正文模板(可根据正文模板名称查询)
+     *
+     * @param bureauId
+     * @param fileName
+     * @return
+     */
+    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName);
+
+    /**
      * Description:
-     * 
+     *
      * @param bureauId
      * @return
      */
     List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId);
 
     /**
-     * 获取当前委办局下所有的正文模板(可根据正文模板名称查询)
-     * @param bureauId
-     * @param fileName
-     * @return
-     */
-    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,String fileName);
-
-    /**
      * Description:
-     * 
+     *
      * @param id
      * @return
      */
@@ -71,16 +75,16 @@ public interface WordTemplateService {
      */
     /**
      * Description:
-     * 
+     *
      * @param wordTemplateId
      * @param wordTemplateType
      * @return
      */
-    Map<String, Object> getBookMarkList(String wordTemplateId, String wordTemplateType);
+    List<Map<String, Object>> getBookMarkList(String wordTemplateId, String wordTemplateType);
 
     /**
      * Description: 保存正文模板
-     * 
+     *
      * @param wordTemplate
      */
     void saveOrUpdate(WordTemplate wordTemplate);
@@ -91,5 +95,5 @@ public interface WordTemplateService {
      * @param file
      * @return
      */
-    Map<String, Object> upload(MultipartFile file);
+    Y9Result<String> upload(MultipartFile file);
 }

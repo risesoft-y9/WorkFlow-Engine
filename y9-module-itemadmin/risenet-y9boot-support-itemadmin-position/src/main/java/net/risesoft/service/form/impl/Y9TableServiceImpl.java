@@ -1,7 +1,5 @@
 package net.risesoft.service.form.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -79,9 +79,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         map.put("msg", "操作成功");
         map.put(UtilConsts.SUCCESS, true);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Connection connection = null;
         try {
-            connection = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()).getConnection();
             Y9Table y9Table = new Y9Table();
             y9Table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             y9Table.setCreateTime(sdf.format(new Date()));
@@ -92,7 +90,8 @@ public class Y9TableServiceImpl implements Y9TableService {
             y9Table.setTableName(tableName);
             y9TableRepository.save(y9Table);
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            List<DbColumn> list = dbMetaDataUtil.listAllColumns(connection, tableName, "%");
+            List<DbColumn> list = dbMetaDataUtil
+                .listAllColumns(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName, "%");
             int order = 1;
             for (DbColumn dbColumn : list) {
                 Y9TableField y9TableField = new Y9TableField();
@@ -115,14 +114,6 @@ public class Y9TableServiceImpl implements Y9TableService {
             map.put("msg", "操作失败");
             map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("添加数据表失败", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOGGER.error("关闭数据库连接失败", e);
-                }
-            }
         }
         return map;
     }
@@ -235,39 +226,30 @@ public class Y9TableServiceImpl implements Y9TableService {
     public Map<String, Object> getAllTables(String name) {
         Map<String, Object> map = new HashMap<>(16);
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        Connection connection = null;
         try {
-            connection = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()).getConnection();
+            DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, String>> list = new ArrayList<>();
             if (StringUtils.isNotBlank(name)) {
-                List<Map<String, String>> list1 = dbMetaDataUtil.listAllTables(connection, "%" + name + "%");
+                List<Map<String, String>> list1 = dbMetaDataUtil.listAllTables(dataSource, "%" + name + "%");
                 for (Map<String, String> m : list1) {
                     if (m.get("name").startsWith("y9_form_") || m.get("name").startsWith("Y9_FORM_")) {
                         list.add(m);
                     }
                 }
             } else {
-                list = dbMetaDataUtil.listAllTables(connection, "y9_form_%");
-                String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+                list = dbMetaDataUtil.listAllTables(dataSource, "y9_form_%");
+                String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = dbMetaDataUtil.listAllTables(connection, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = dbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = dbMetaDataUtil.listAllTables(connection, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = dbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 }
             }
             map.put("rows", list);
         } catch (Exception e) {
             LOGGER.error("获取所有表失败", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOGGER.error("关闭数据库连接失败", e);
-                }
-            }
         }
         return map;
     }
@@ -397,8 +379,8 @@ public class Y9TableServiceImpl implements Y9TableService {
             DbColumn dbColumn = new DbColumn();
             dbColumn.setColumnName(fieldTemp.getFieldName());
             dbColumn.setIsPrimaryKey(fieldTemp.getIsSystemField());
-            dbColumn.setPrimaryKey(fieldTemp.getIsSystemField() == 1 ? true : false);
-            dbColumn.setNullable(fieldTemp.getIsMayNull() == 1 ? true : false);
+            dbColumn.setPrimaryKey(fieldTemp.getIsSystemField() == 1);
+            dbColumn.setNullable(fieldTemp.getIsMayNull() == 1);
             dbColumn.setTypeName(getFieldType(fieldTemp.getFieldType()));
             dbColumn.setDataLength(fieldTemp.getFieldLength());
             dbColumn.setComment(fieldTemp.getFieldCnName());
@@ -418,14 +400,13 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Transactional
     public Y9Table saveOrUpdate(Y9Table table) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Connection connection = null;
         try {
             if (StringUtils.isBlank(table.getId())) {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
@@ -434,14 +415,6 @@ public class Y9TableServiceImpl implements Y9TableService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Y9TableServiceImpl saveOrUpdate error");
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

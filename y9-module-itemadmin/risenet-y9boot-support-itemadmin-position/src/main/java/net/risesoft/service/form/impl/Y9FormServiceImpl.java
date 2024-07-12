@@ -1,7 +1,5 @@
 package net.risesoft.service.form.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,13 +70,11 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Override
     @Transactional
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
-        Connection connection = null;
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
             StringBuilder sqlStr = new StringBuilder();
@@ -95,14 +91,6 @@ public class Y9FormServiceImpl implements Y9FormService {
         } catch (Exception e) {
             e.printStackTrace();
             map.put(UtilConsts.SUCCESS, false);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return map;
     }
@@ -145,13 +133,11 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Override
     @Transactional
     public Map<String, Object> delPreFormData(String formId, String guid) {
-        Connection connection = null;
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {
                 StringBuilder sqlStr = new StringBuilder();
@@ -169,14 +155,6 @@ public class Y9FormServiceImpl implements Y9FormService {
         } catch (Exception e) {
             e.printStackTrace();
             map.put(UtilConsts.SUCCESS, false);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return map;
     }
@@ -196,12 +174,10 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Override
     public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
         throws Exception {
-        Connection connection = null;
         List<Map<String, Object>> datamap = new ArrayList<>();
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
             StringBuilder sqlStr = new StringBuilder();
@@ -219,14 +195,6 @@ public class Y9FormServiceImpl implements Y9FormService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Y9FormServiceImpl getChildTableData error");
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -234,14 +202,12 @@ public class Y9FormServiceImpl implements Y9FormService {
     public Map<String, Object> getData(String guid, String tableName) {
         Map<String, Object> map = new HashMap<>(16);
         map.put("edittype", "0");
-        Connection connection = null;
         try {
             if (StringUtils.isBlank(guid)) {
                 return map;
             }
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             String dataSql = "";
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 dataSql = "select * from \"" + tableName + "\" t where t.guid=?";
@@ -262,14 +228,6 @@ public class Y9FormServiceImpl implements Y9FormService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return map;
     }
@@ -278,11 +236,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     public Map<String, Object> getFormData(String formId, String guid) {
         Map<String, Object> map = new HashMap<>(16);
         Map<String, Object> resMap = new HashMap<>(16);
-        Connection connection = null;
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
@@ -315,14 +271,6 @@ public class Y9FormServiceImpl implements Y9FormService {
             map.put("formData", resMap);
             map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return map;
     }
@@ -330,11 +278,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Override
     public Map<String, Object> getFormData4Var(String formId, String guid) {
         Map<String, Object> map = new HashMap<>(16);
-        Connection connection = null;
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
@@ -365,14 +311,6 @@ public class Y9FormServiceImpl implements Y9FormService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return map;
     }
@@ -380,11 +318,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Override
     public List<Map<String, Object>> getFormDataList(String formId) {
         List<Map<String, Object>> resList = new ArrayList<>();
-        Connection connection = null;
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
@@ -414,14 +350,6 @@ public class Y9FormServiceImpl implements Y9FormService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return resList;
     }
@@ -496,11 +424,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
         String jsonData) {
         Map<String, Object> map = new HashMap<>(16);
-        Connection connection = null;
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
@@ -704,14 +630,6 @@ public class Y9FormServiceImpl implements Y9FormService {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "保存失败");
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return map;
     }
@@ -721,11 +639,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Transactional
     public Map<String, Object> saveFormData(String formdata) {
         Map<String, Object> map = new HashMap<>(16);
-        Connection connection = null;
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formdata, List.class);
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
             String formId = (String)keyValue.get("form_Id");
@@ -925,14 +841,6 @@ public class Y9FormServiceImpl implements Y9FormService {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "保存失败");
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return map;
     }

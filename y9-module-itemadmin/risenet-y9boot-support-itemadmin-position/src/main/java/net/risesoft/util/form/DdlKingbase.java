@@ -5,6 +5,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -29,10 +31,10 @@ public class DdlKingbase {
         this.y9TableFieldRepository = Y9Context.getBean(Y9TableFieldRepository.class);
     }
 
-    public void addTableColumn(Connection connection, String tableName, List<DbColumn> dbcs) throws Exception {
+    public void addTableColumn(DataSource dataSource, String tableName, List<DbColumn> dbcs) throws Exception {
         StringBuilder sb = new StringBuilder();
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        if (dbMetaDataUtil.checkTableExist(connection, tableName)) {
+        if (dbMetaDataUtil.checkTableExist(dataSource, tableName)) {
             for (DbColumn dbc : dbcs) {
                 String columnName = dbc.getColumnName();
                 if ("GUID".equalsIgnoreCase(columnName) || "PROCESSINSTANCEID".equalsIgnoreCase(columnName)) {
@@ -40,16 +42,26 @@ public class DdlKingbase {
                 }
                 sb = new StringBuilder();
                 sb.append("ALTER TABLE \"" + tableName + "\"");
-                DatabaseMetaData dbmd = connection.getMetaData();
-                String tableSchema = dbmd.getUserName().toUpperCase();
-                ResultSet rs = dbmd.getColumns(null, tableSchema, tableName, dbc.getColumnName().toUpperCase());
                 String nullable = "";
                 String dbColumnName = "";
-                while (rs.next()) {
-                    nullable = rs.getString("is_nullable");
-                    // 当前列目前是否可为空
-                    dbColumnName = rs.getString("column_name".toLowerCase());
+                ResultSet rs = null;
+                try (Connection connection = dataSource.getConnection()) {
+                    DatabaseMetaData dbmd = connection.getMetaData();
+                    String tableSchema = dbmd.getUserName().toUpperCase();
+                    rs = dbmd.getColumns(null, tableSchema, tableName, dbc.getColumnName().toUpperCase());
+                    while (rs.next()) {
+                        nullable = rs.getString("is_nullable");
+                        // 当前列目前是否可为空
+                        dbColumnName = rs.getString("column_name".toLowerCase());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (rs != null) {
+                        rs.close();
+                    }
                 }
+
                 boolean add = false;
                 // 不存在旧字段则新增
                 if ("".equals(dbColumnName) && org.apache.commons.lang3.StringUtils.isBlank(dbc.getColumnNameOld())) {
@@ -64,7 +76,7 @@ public class DdlKingbase {
                         try {
                             StringBuilder sb1 = new StringBuilder();
                             sb1.append("ALTER TABLE \"" + tableName + "\"");
-                            dbMetaDataUtil.executeDdl(connection,
+                            dbMetaDataUtil.executeDdl(dataSource,
                                 sb1.append(" RENAME COLUMN " + dbc.getColumnNameOld() + " TO " + dbc.getColumnName())
                                     .toString());
                         } catch (Exception e) {
@@ -88,7 +100,7 @@ public class DdlKingbase {
                     sb.append(sType);
                 }
 
-                dbMetaDataUtil.executeDdl(connection, sb.toString());
+                dbMetaDataUtil.executeDdl(dataSource, sb.toString());
                 // 新增字段
                 if ("".equals(nullable) && add) {
                     if (dbc.getNullable()) {
@@ -96,25 +108,25 @@ public class DdlKingbase {
                         sb = new StringBuilder();
                         sb.append("ALTER TABLE \"" + tableName + "\"");
                         sb.append(" ALTER COLUMN " + dbc.getColumnName() + " SET NOT NULL");
-                        dbMetaDataUtil.executeDdl(connection, sb.toString());
+                        dbMetaDataUtil.executeDdl(dataSource, sb.toString());
                     }
                 } else {// 修改字段
                     if (dbc.getNullable() && "NO".equals(nullable)) {
                         sb = new StringBuilder();
                         sb.append("ALTER TABLE \"" + tableName + "\"");
                         sb.append(" ALTER COLUMN " + dbc.getColumnName() + " DROP NOT NULL");
-                        dbMetaDataUtil.executeDdl(connection, sb.toString());
+                        dbMetaDataUtil.executeDdl(dataSource, sb.toString());
                     }
                     if (!dbc.getNullable() && "YES".equals(nullable)) {
                         sb = new StringBuilder();
                         sb.append("ALTER TABLE \"" + tableName + "\"");
                         sb.append(" ALTER COLUMN " + dbc.getColumnName() + " SET NOT NULL");
-                        dbMetaDataUtil.executeDdl(connection, sb.toString());
+                        dbMetaDataUtil.executeDdl(dataSource, sb.toString());
                     }
                 }
 
                 if (StringUtils.hasText(dbc.getComment())) {
-                    dbMetaDataUtil.executeDdl(connection, "COMMENT ON COLUMN \"" + tableName + "\"."
+                    dbMetaDataUtil.executeDdl(dataSource, "COMMENT ON COLUMN \"" + tableName + "\"."
                         + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
                 }
                 y9TableFieldRepository.updateOldFieldName(dbc.getTableName(), dbc.getColumnName());
@@ -122,9 +134,9 @@ public class DdlKingbase {
         }
     }
 
-    public void alterTableColumn(Connection connection, String tableName, String jsonDbColumns) throws Exception {
+    public void alterTableColumn(DataSource dataSource, String tableName, String jsonDbColumns) throws Exception {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        if (!dbMetaDataUtil.checkTableExist(connection, tableName)) {
+        if (!dbMetaDataUtil.checkTableExist(dataSource, tableName)) {
             throw new Exception("数据库中不存在这个表：" + tableName);
         }
 
@@ -137,7 +149,7 @@ public class DdlKingbase {
                 // 字段名称有改变
                 if (!dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())) {
                     try {
-                        dbMetaDataUtil.executeDdl(connection,
+                        dbMetaDataUtil.executeDdl(dataSource,
                             sb.append(" RENAME COLUMN " + dbc.getColumnNameOld() + " TO " + dbc.getColumnName())
                                 .toString());
                     } catch (Exception e) {
@@ -160,7 +172,7 @@ public class DdlKingbase {
                     sb.append(sType);
                 }
 
-                List<DbColumn> list = dbMetaDataUtil.listAllColumns(connection, tableName, dbc.getColumnNameOld());
+                List<DbColumn> list = dbMetaDataUtil.listAllColumns(dataSource, tableName, dbc.getColumnNameOld());
                 if (dbc.getNullable()) {
                     if (!list.get(0).getNullable()) {
                         sb.append(" NULL");
@@ -170,10 +182,10 @@ public class DdlKingbase {
                         sb.append(" NOT NULL");
                     }
                 }
-                dbMetaDataUtil.executeDdl(connection, sb.toString());
+                dbMetaDataUtil.executeDdl(dataSource, sb.toString());
                 if (StringUtils.hasText(dbc.getComment())) {
                     if (!list.get(0).getComment().equals(dbc.getComment())) {
-                        dbMetaDataUtil.executeDdl(connection, "COMMENT ON COLUMN \"" + tableName + "\"."
+                        dbMetaDataUtil.executeDdl(dataSource, "COMMENT ON COLUMN \"" + tableName + "\"."
                             + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
                     }
                 }
@@ -181,7 +193,7 @@ public class DdlKingbase {
         }
     }
 
-    public void createTable(Connection connection, String tableName, String jsonDbColumns) throws Exception {
+    public void createTable(DataSource dataSource, String tableName, String jsonDbColumns) throws Exception {
         StringBuilder sb = new StringBuilder();
         DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
             TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
@@ -208,35 +220,35 @@ public class DdlKingbase {
 				sb.append(sType);
 			}
 
-			if (dbc.getNullable() == false) {
+			if (!dbc.getNullable()) {
 				sb.append(" NOT NULL");
 			}
 			sb.append(",\r\n");
 		}
 		sb.append("PRIMARY KEY (GUID) \r\n").append(")");
-		dbMetaDataUtil.executeDdl(connection, sb.toString());
+		dbMetaDataUtil.executeDdl(dataSource, sb.toString());
 
 		for (DbColumn dbc : dbcs) {
 			if (StringUtils.hasText(dbc.getComment())) {
-				dbMetaDataUtil.executeDdl(connection, "COMMENT ON COLUMN \"" + tableName + "\"." + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
+				dbMetaDataUtil.executeDdl(dataSource, "COMMENT ON COLUMN \"" + tableName + "\"." + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
 			}
 		}
 	}
 
-	public void dropTable(Connection connection, String tableName) throws Exception {
+	public void dropTable(DataSource dataSource, String tableName) throws Exception {
 		DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-		if (dbMetaDataUtil.checkTableExist(connection, tableName)) {
-			dbMetaDataUtil.executeDdl(connection, "DROP TABLE \"" + tableName + "\"");
+		if (dbMetaDataUtil.checkTableExist(dataSource, tableName)) {
+			dbMetaDataUtil.executeDdl(dataSource, "DROP TABLE \"" + tableName + "\"");
 		}
 	}
 
-	public void dropTableColumn(Connection connection, String tableName, String columnName) throws Exception {
+	public void dropTableColumn(DataSource dataSource, String tableName, String columnName) throws Exception {
 		DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-		dbMetaDataUtil.executeDdl(connection, "ALTER TABLE \"" + tableName + "\" DROP COLUMN " + columnName);
+		dbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE \"" + tableName + "\" DROP COLUMN " + columnName);
 	}
 
-	public void renameTable(Connection connection, String tableNameOld, String tableNameNew) throws Exception {
+	public void renameTable(DataSource dataSource, String tableNameOld, String tableNameNew) throws Exception {
 		DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-		dbMetaDataUtil.executeDdl(connection, "RENAME \"" + tableNameOld + "\" TO \"" + tableNameNew + "\"");
+		dbMetaDataUtil.executeDdl(dataSource, "RENAME \"" + tableNameOld + "\" TO \"" + tableNameNew + "\"");
 	}
 }

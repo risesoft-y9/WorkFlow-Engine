@@ -1,6 +1,5 @@
 package net.risesoft.service.form.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.id.IdType;
@@ -26,7 +23,6 @@ import net.risesoft.service.form.Y9TableFieldService;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -39,19 +35,9 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
     private final TableManagerService tableManagerService;
 
     @Override
-    @Transactional
-    public Map<String, Object> delete(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            y9TableFieldRepository.deleteById(id);
-            map.put("msg", "删除成功");
-            map.put(UtilConsts.SUCCESS, true);
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
-            LOGGER.error("删除失败", e);
-        }
-        return map;
+    @Transactional(readOnly = false)
+    public void delete(String id) {
+        y9TableFieldRepository.deleteById(id);
     }
 
     @Override
@@ -65,8 +51,7 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
     }
 
     @Override
-    public Map<String, Object> getFieldList(String tableId) {
-        Map<String, Object> resMap = new HashMap<>(16);
+    public List<Y9TableField> getFieldList(String tableId) {
         List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
         Map<String, Object> map = tableManagerService.getExistTableFields(tableId);
         for (Y9TableField field : list) {
@@ -80,39 +65,27 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
                 }
             }
         }
-        resMap.put("rows", list);
-        resMap.put(UtilConsts.SUCCESS, true);
-        return resMap;
+        return list;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> saveOrUpdate(Y9TableField field) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            if (StringUtils.isBlank(field.getId())) {
-                field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            }
-            if (field.getDisplayOrder() == null) {
-                Integer order = y9TableFieldRepository.getMaxDisplayOrder(field.getTableId());
-                field.setDisplayOrder(order == null ? 1 : order + 1);
-            }
-            Y9Table y9Table = y9TableRepository.findById(field.getTableId()).orElse(null);
-            assert y9Table != null;
-            field.setTableName(y9Table.getTableName());
-            boolean b = field.getFieldType().contains("(");
-            if (!b) {
-                field.setFieldType(field.getFieldType() + "(" + field.getFieldLength() + ")");
-            }
-            y9TableFieldRepository.save(field);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功");
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "保存失败");
-            LOGGER.error("保存失败", e);
+    @Transactional(readOnly = false)
+    public Y9TableField saveOrUpdate(Y9TableField field) {
+        if (StringUtils.isBlank(field.getId())) {
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         }
-        return map;
+        if (field.getDisplayOrder() == null) {
+            Integer order = y9TableFieldRepository.getMaxDisplayOrder(field.getTableId());
+            field.setDisplayOrder(order == null ? 1 : order + 1);
+        }
+        Y9Table y9Table = y9TableRepository.findById(field.getTableId()).orElse(null);
+        assert y9Table != null;
+        field.setTableName(y9Table.getTableName());
+        boolean b = field.getFieldType().contains("(");
+        if (!b) {
+            field.setFieldType(field.getFieldType() + "(" + field.getFieldLength() + ")");
+        }
+        return y9TableFieldRepository.save(field);
     }
 
     @Override

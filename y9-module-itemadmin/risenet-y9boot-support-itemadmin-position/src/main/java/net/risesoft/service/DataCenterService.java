@@ -1,13 +1,14 @@
 package net.risesoft.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -118,7 +119,6 @@ public class DataCenterService {
      */
     public List<EformInfo> getEformInfo(String processInstanceId, String processDefinitionKey,
         String processDefinitionId) {
-        Connection connection = null;
         List<EformInfo> elist = new ArrayList<>();
         try {
             LOGGER.info(
@@ -132,9 +132,9 @@ public class DataCenterService {
                 EformInfo eformInfo = new EformInfo();
                 String fieldNames = "";
                 String fieldValues = "";
-                connection = jdbcTemplate4Tenant.getDataSource().getConnection();
+                DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
                 DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-                String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+                String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
                 List<String> list = y9FormRepository.findBindTableName(y9Form.getFormId());
                 for (String tableName : list) {
                     StringBuilder sqlStr = new StringBuilder();
@@ -171,14 +171,6 @@ public class DataCenterService {
             }
         } catch (Exception e) {
             LOGGER.warn("保存表单数据到数据中心发生异常", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOGGER.warn("数据库连接关闭异常", e);
-                }
-            }
         }
         return elist;
     }

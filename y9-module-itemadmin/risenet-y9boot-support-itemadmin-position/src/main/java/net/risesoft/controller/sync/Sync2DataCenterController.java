@@ -3,7 +3,6 @@ package net.risesoft.controller.sync;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -93,7 +92,6 @@ public class Sync2DataCenterController {
     @RequestMapping(value = "/tongbu2DataCenter")
     public void tongbu2DataCenter(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
-        Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -104,8 +102,7 @@ public class Sync2DataCenterController {
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
-            connection = dataSource.getConnection();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
                     + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE"
@@ -151,14 +148,6 @@ public class Sync2DataCenterController {
             resMap.put("同步失败", i);
         } catch (Exception e) {
             LOGGER.error("同步数据到数据中心失败", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                LOGGER.error("关闭数据库连接失败", e);
-            }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
     }
@@ -173,7 +162,6 @@ public class Sync2DataCenterController {
     @RequestMapping(value = "/tongbuActRuDetail")
     public void tongbuActRuDetail(String tenantId, String year, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
-        Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -184,8 +172,7 @@ public class Sync2DataCenterController {
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
-            connection = dataSource.getConnection();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql =
                     "SELECT  P .PROC_INST_ID_, SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST_"
@@ -296,14 +283,6 @@ public class Sync2DataCenterController {
             resMap.put("同步失败", i);
         } catch (Exception e) {
             LOGGER.error("同步办结数据到数据中心失败", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                LOGGER.error("关闭数据库连接失败", e);
-            }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
     }
@@ -317,7 +296,6 @@ public class Sync2DataCenterController {
     @RequestMapping(value = "/tongbuActRuDetail1")
     public void tongbuActRuDetail1(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
-        Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -328,8 +306,7 @@ public class Sync2DataCenterController {
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
-            connection = dataSource.getConnection();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql =
                     "SELECT P .PROC_INST_ID_,  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST P WHERE P .DELETE_REASON_ IS NULL ORDER BY  P .START_TIME_ DESC";
@@ -438,14 +415,6 @@ public class Sync2DataCenterController {
             resMap.put("同步失败", i);
         } catch (Exception e) {
             LOGGER.error("同步办结数据到数据中心失败", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                LOGGER.error("关闭数据库连接失败", e);
-            }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
     }

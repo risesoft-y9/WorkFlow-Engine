@@ -1,7 +1,5 @@
 package net.risesoft.controller.form;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +51,8 @@ public class TableFieldRestController {
      */
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String id) {
-        Map<String, Object> map = y9TableFieldService.delete(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        y9TableFieldService.delete(id);
+        return Y9Result.successMsg("删除成功");
     }
 
     /**
@@ -67,8 +62,8 @@ public class TableFieldRestController {
      * @return Y9Result<Map<String, Object>>
      */
     @GetMapping(value = "/getTableFieldList")
-    public Y9Result<Map<String, Object>> getTableFieldList(@RequestParam String tableId) {
-        Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
+    public Y9Result<List<Y9TableField>> getTableFieldList(@RequestParam String tableId) {
+        List<Y9TableField> map = y9TableFieldService.getFieldList(tableId);
         return Y9Result.success(map, "获取成功");
     }
 
@@ -95,24 +90,16 @@ public class TableFieldRestController {
             map.put("field", field);
         }
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-        Connection connection = null;
         try {
-            connection = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()).getConnection();
-            List<Map<String, Object>> list = dbMetaDataUtil.listTypes(connection);
+            List<Map<String, Object>> list =
+                dbMetaDataUtil.listTypes(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
             map.put("typeList", list);
-            String databaseName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String databaseName =
+                dbMetaDataUtil.getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
             map.put("databaseName", databaseName);
         } catch (Exception e) {
             LOGGER.error("获取数据库类型失败", e);
             return Y9Result.failure("获取失败");
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOGGER.error("关闭数据库连接失败", e);
-            }
         }
         return Y9Result.success(map, "获取成功");
     }
@@ -125,11 +112,13 @@ public class TableFieldRestController {
      */
     @PostMapping(value = "/saveField")
     public Y9Result<String> saveField(Y9TableField field) {
-        Map<String, Object> map = y9TableFieldService.saveOrUpdate(field);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        try {
+            y9TableFieldService.saveOrUpdate(field);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            LOGGER.error("保存失败", e);
+            return Y9Result.failure("保存失败");
         }
-        return Y9Result.failure((String)map.get("msg"));
     }
 
 }

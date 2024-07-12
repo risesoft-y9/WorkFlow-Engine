@@ -10,13 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.RowSetDynaClass;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.y9.sqlddl.DbColumn;
@@ -31,29 +33,43 @@ import net.risesoft.y9.sqlddl.DbColumn;
  * @author zhangchongjie
  * @date 2022/12/21
  */
+@Slf4j
 public class DbMetaDataUtil {
 
-    private static Logger log = LoggerFactory.getLogger(DbMetaDataUtil.class);
+    private static final String MICROSOFT = "microsoft";
 
-    private static String MICROSOFT = "microsoft";
-
-    public static String getDatabaseProductName(Connection connection) throws SQLException {
+    public static String getDatabaseProductName(DataSource dataSource) throws SQLException {
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
-            String s = dbmd.getDatabaseProductName();
-            return s;
+            return dbmd.getDatabaseProductName();
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            // connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
-    public static List<DynaBean> listAllExportedKeys(Connection connection, String tableName) throws Exception {
-        ResultSet rs = null;
-        List<DynaBean> rList = new ArrayList<DynaBean>();
+    public static String getDatabaseProductNameByConnection(Connection connection) throws SQLException {
         try {
+            DatabaseMetaData dbmd = connection.getMetaData();
+            return dbmd.getDatabaseProductName();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            throw e;
+        }
+    }
+
+    public static List<DynaBean> listAllExportedKeys(DataSource dataSource, String tableName) throws Exception {
+        ResultSet rs = null;
+        List<DynaBean> rList = new ArrayList<>();
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             rs = dbmd.getExportedKeys(null, null, tableName);
             RowSetDynaClass rsdc = new RowSetDynaClass(rs, true);
@@ -62,20 +78,24 @@ public class DbMetaDataUtil {
             rList.addAll(rsdc.getRows());
             return rList;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            try {
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
                 rs.close();
-            } catch (Exception e2) {
             }
         }
     }
 
-    public static List<DynaBean> listAllImportedKeys(Connection connection, String tableName) throws Exception {
+    public static List<DynaBean> listAllImportedKeys(DataSource dataSource, String tableName) throws Exception {
         ResultSet rs = null;
-        List<DynaBean> rList = new ArrayList<DynaBean>();
+        List<DynaBean> rList = new ArrayList<>();
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             rs = dbmd.getImportedKeys(null, null, tableName);
             RowSetDynaClass rsdc = new RowSetDynaClass(rs, true);
@@ -85,33 +105,46 @@ public class DbMetaDataUtil {
 
             return rList;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            rs.close();
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
-    public static List<DynaBean> listAllIndexs(Connection connection, String tableName) throws Exception {
+    public static List<DynaBean> listAllIndexs(DataSource dataSource, String tableName) throws Exception {
         ResultSet rs = null;
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             rs = dbmd.getIndexInfo(null, null, tableName, false, false);
             RowSetDynaClass rsdc = new RowSetDynaClass(rs, true);
             return rsdc.getRows();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            rs.close();
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
-    public static List<DynaBean> listAllRelations(Connection connection, String tableName) throws Exception {
+    public static List<DynaBean> listAllRelations(DataSource dataSource, String tableName) throws Exception {
         ResultSet rs = null;
-        List<DynaBean> rList = new ArrayList<DynaBean>();
-
+        List<DynaBean> rList = new ArrayList<>();
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             rs = dbmd.getImportedKeys(null, null, tableName);
             RowSetDynaClass rsdc = new RowSetDynaClass(rs, true);
@@ -126,33 +159,47 @@ public class DbMetaDataUtil {
 
             return rList;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            rs.close();
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
-    public static List<DynaBean> listAllTables(Connection connection, String catalog, String schemaPattern,
-        String tableNamePattern, String types[]) throws Exception {
+    public static List<DynaBean> listAllTables(DataSource dataSource, String catalog, String schemaPattern,
+        String tableNamePattern, String[] types) throws Exception {
         ResultSet rs = null;
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             rs = dbmd.getTables(catalog, schemaPattern, tableNamePattern, types);
             RowSetDynaClass rsdc = new RowSetDynaClass(rs, true);
             return rsdc.getRows();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            rs.close();
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
-    public static List<Map<String, Object>> listAllTypes(Connection connection) throws Exception {
+    public static List<Map<String, Object>> listAllTypes(DataSource dataSource) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         ResultSet rs = null;
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             connection.getTypeMap();
             rs = dbmd.getTypeInfo();
@@ -164,16 +211,23 @@ public class DbMetaDataUtil {
             }
             return list;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            rs.close();
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
-    public int[] batchexecuteDdl(Connection connection, List<String> sqlList) throws SQLException {
+    public int[] batchexecuteDdl(DataSource dataSource, List<String> sqlList) throws SQLException {
         java.sql.Statement stmt = null;
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             stmt = connection.createStatement();
             stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
             for (String sql : sqlList) {
@@ -182,42 +236,57 @@ public class DbMetaDataUtil {
             stmt.addBatch("SET FOREIGN_KEY_CHECKS=1");
             return stmt.executeBatch();
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            stmt.execute("SET FOREIGN_KEY_CHECKS=1");
-            stmt.close();
+
+            if (stmt != null) {
+                stmt.execute("SET FOREIGN_KEY_CHECKS=1");
+                stmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
-    public int[] batchexecuteDdl4Kingbase(Connection connection, List<String> sqlList) throws SQLException {
+    public int[] batchexecuteDdl4Kingbase(DataSource dataSource, List<String> sqlList) throws SQLException {
         java.sql.Statement stmt = null;
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             stmt = connection.createStatement();
             for (String sql : sqlList) {
                 stmt.addBatch(sql);
             }
             return stmt.executeBatch();
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            stmt.close();
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
-    public boolean checkTableExist(Connection connection, String tableName) throws Exception {
+    public boolean checkTableExist(DataSource dataSource, String tableName) throws Exception {
         String databaseName = null;
         String tableSchema = null;
         ResultSet rs = null;
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             try {
                 databaseName = connection.getCatalog();
             } catch (Exception e) {
             }
 
             DatabaseMetaData dbmd = connection.getMetaData();
-            String dialect = getDatabaseDialectName(connection);
+            String dialect = getDatabaseDialectNameByConnection(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 rs = dbmd.getTables(null, databaseName, tableName, new String[] {"TABLE"});
             } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
@@ -232,40 +301,61 @@ public class DbMetaDataUtil {
                 tableSchema = connection.getSchema();
                 rs = dbmd.getTables(null, tableSchema, tableName, new String[] {"TABLE"});
             }
-
-            if (rs.next()) {
-                return true;
-            } else {
-                return false;
-            }
+            return rs != null && rs.next();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
+            if (connection != null) {
+                connection.close();
+            }
             if (rs != null) {
                 rs.close();
             }
         }
     }
 
-    public Boolean executeDdl(Connection connection, String ddl) throws SQLException {
+    public Boolean executeDdl(DataSource dataSource, String ddl) throws SQLException {
         java.sql.Statement stmt = null;
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             stmt = connection.createStatement();
-            Boolean b = stmt.execute(ddl);
-            return b;
+            return stmt.execute(ddl);
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            stmt.close();
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
-    public String getDatabaseDialectName(Connection connection) {
+    private ResultSet getColumns(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName,
+        String tableSchema, String columnNamePatten) throws SQLException {
+        ResultSet rs = null;
+        if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+            rs = dbmd.getColumns(null, databaseName, tableName, columnNamePatten);
+        } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
+            rs = dbmd.getColumns(databaseName, null, tableName, columnNamePatten);
+        } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+            rs = dbmd.getColumns(null, tableSchema, tableName, columnNamePatten);
+        } else if (DialectEnum.DM.getValue().equals(dialect)) {
+            rs = dbmd.getColumns(null, tableSchema, tableName, columnNamePatten);
+        } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            rs = dbmd.getColumns(null, tableSchema, tableName, columnNamePatten);
+        }
+        return rs;
+    }
+
+    public String getDatabaseDialectName(DataSource dataSource) {
         String databaseName = "";
         try {
-            databaseName = getDatabaseProductName(connection).toLowerCase();
+            databaseName = getDatabaseProductName(dataSource).toLowerCase();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -285,61 +375,119 @@ public class DbMetaDataUtil {
         return "";
     }
 
-    public int getDatabaseMajorVersion(Connection connection) throws SQLException {
+    public String getDatabaseDialectNameByConnection(Connection connection) {
+        String databaseName = "";
         try {
+            databaseName = getDatabaseProductNameByConnection(connection).toLowerCase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (databaseName.indexOf(DialectEnum.MYSQL.getValue()) > -1) {
+            return "mysql";
+        } else if (databaseName.indexOf(DialectEnum.ORACLE.getValue()) > -1) {
+            return "oracle";
+        } else if (databaseName.indexOf(DialectEnum.DM.getValue()) > -1) {
+            return "dm";
+        } else if (databaseName.indexOf(MICROSOFT) > -1) {
+            return "mssql";
+        } else if (databaseName.indexOf(DialectEnum.KINGBASE.getValue()) > -1) {
+            return "kingbase";
+        }
+
+        return "";
+    }
+
+    public int getDatabaseMajorVersion(DataSource dataSource) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             return dbmd.getDatabaseMajorVersion();
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
-    public int getDatabaseMinorVersion(Connection connection) throws SQLException {
+    public int getDatabaseMinorVersion(DataSource dataSource) throws SQLException {
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             return dbmd.getDatabaseMinorVersion();
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
-    public String getDatabaseProductVersion(Connection connection) throws SQLException {
+    public String getDatabaseProductVersion(DataSource dataSource) throws SQLException {
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             return dbmd.getDatabaseProductVersion();
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
+    private ResultSet getPrimaryKeys(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName,
+        String tableSchema) throws SQLException {
+        ResultSet rs = null;
+        if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+            rs = dbmd.getPrimaryKeys(null, databaseName, tableName);
+        } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
+            rs = dbmd.getPrimaryKeys(databaseName, null, tableName);
+        } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+            rs = dbmd.getPrimaryKeys(null, tableSchema, tableName);
+        } else if (DialectEnum.DM.getValue().equals(dialect)) {
+            rs = dbmd.getPrimaryKeys(null, tableSchema, tableName);
+        } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            rs = dbmd.getPrimaryKeys(null, tableSchema, tableName);
+        }
+        return rs;
+    }
+
     @SuppressWarnings({"resource"})
-    public List<DbColumn> listAllColumns(Connection connection, String tableName, String columnNamePatten)
+    public List<DbColumn> listAllColumns(DataSource dataSource, String tableName, String columnNamePatten)
         throws Exception {
         String tableSchema = null, databaseName = null;
         Statement stmt = null;
         ResultSet rs = null;
-        List<DbColumn> dbColumnList = new ArrayList<DbColumn>();
-        if (checkTableExist(connection, tableName)) {
+        List<DbColumn> dbColumnList = new ArrayList<>();
+
+        if (checkTableExist(dataSource, tableName)) {
+            Connection connection = null;
             try {
+                connection = dataSource.getConnection();
                 try {
                     databaseName = connection.getCatalog();
                 } catch (Exception e) {
                 }
                 DatabaseMetaData dbmd = connection.getMetaData();
                 tableSchema = dbmd.getUserName().toUpperCase();
-                String dialect = getDatabaseDialectName(connection);
+                String dialect = getDatabaseDialectNameByConnection(connection);
                 rs = getPrimaryKeys(dialect, dbmd, databaseName, tableName, tableSchema);
                 List<String> pkList = new ArrayList<>();
                 while (rs.next()) {
                     pkList.add(rs.getString("COLUMN_NAME"));
                 }
-                if (pkList.size() == 0) {
+                if (pkList.isEmpty()) {
                     // throw new Exception("***********没有主键？*************");
                 }
                 rs = getColumns(dialect, dbmd, databaseName, tableName, tableSchema, columnNamePatten);
@@ -349,11 +497,7 @@ public class DbMetaDataUtil {
                     String columnName = rs.getString("column_name".toLowerCase());
                     dbColumn.setColumnName(columnName);
                     dbColumn.setColumnNameOld(columnName);
-                    if (pkList.contains(columnName)) {
-                        dbColumn.setPrimaryKey(true);
-                    } else {
-                        dbColumn.setPrimaryKey(false);
-                    }
+                    dbColumn.setPrimaryKey(pkList.contains(columnName));
                     String remarks = rs.getString("remarks");
                     if (StringUtils.isBlank(remarks)) {
                         dbColumn.setComment(columnName.toUpperCase());
@@ -385,9 +529,12 @@ public class DbMetaDataUtil {
                     }
                 }
             } catch (Exception e) {
-                log.error(e.getMessage());
+                LOGGER.error(e.getMessage());
                 throw e;
             } finally {
+                if (connection != null) {
+                    connection.close();
+                }
                 if (rs != null) {
                     rs.close();
                 }
@@ -399,47 +546,61 @@ public class DbMetaDataUtil {
         return dbColumnList;
     }
 
-    private ResultSet getPrimaryKeys(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName,
-        String tableSchema) throws SQLException {
+    /**
+     * 返回所有的业务表
+     */
+    public Map<String, Object> listAllTableNames(DataSource dataSource) throws Exception {
+        Map<String, Object> al = new HashMap<>(16);
+        Statement stmt = null;
         ResultSet rs = null;
-        if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-            rs = dbmd.getPrimaryKeys(null, databaseName, tableName);
-        } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
-            rs = dbmd.getPrimaryKeys(databaseName, null, tableName);
-        } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-            rs = dbmd.getPrimaryKeys(null, tableSchema, tableName);
-        } else if (DialectEnum.DM.getValue().equals(dialect)) {
-            rs = dbmd.getPrimaryKeys(null, tableSchema, tableName);
-        } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-            rs = dbmd.getPrimaryKeys(null, tableSchema, tableName);
-        }
-        return rs;
-    }
-
-    private ResultSet getColumns(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName,
-        String tableSchema, String columnNamePatten) throws SQLException {
-        ResultSet rs = null;
-        if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-            rs = dbmd.getColumns(null, databaseName, tableName, columnNamePatten);
-        } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
-            rs = dbmd.getColumns(databaseName, null, tableName, columnNamePatten);
-        } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-            rs = dbmd.getColumns(null, tableSchema, tableName, columnNamePatten);
-        } else if (DialectEnum.DM.getValue().equals(dialect)) {
-            rs = dbmd.getColumns(null, tableSchema, tableName, columnNamePatten);
-        } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-            rs = dbmd.getColumns(null, tableSchema, tableName, columnNamePatten);
-        }
-        return rs;
-    }
-
-    public List<Map<String, String>> listAllTables(Connection connection, String tableNamePattern) throws Exception {
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-        ResultSet rs = null;
+        Connection connection = null;
+        String sql = "show tables";
         try {
+            connection = dataSource.getConnection();
+            String dialect = getDatabaseDialectNameByConnection(connection);
+            if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+                sql = "SELECT table_name FROM all_tables";
+            } else if (DialectEnum.DM.getValue().equals(dialect)) {
+                sql = "SELECT table_name FROM all_tables";
+            } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+                sql = "SELECT table_name FROM all_tables";
+            }
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                String tableName = rs.getString(1);
+                // mysql中不处理视图
+                al.put(tableName.toLowerCase(), tableName);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return al;
+    }
+
+    public List<Map<String, String>> listAllTables(DataSource dataSource, String tableNamePattern) throws Exception {
+        List<Map<String, String>> list = new ArrayList<>();
+        ResultSet rs = null;
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
             String username = dbmd.getUserName().toUpperCase();
-            String dialect = getDatabaseDialectName(connection);
+            String dialect = getDatabaseDialectNameByConnection(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 rs = dbmd.getTables(null, connection.getCatalog(), tableNamePattern, new String[] {"TABLE"});
             } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
@@ -454,7 +615,7 @@ public class DbMetaDataUtil {
 
             while (rs.next()) {
                 if (!rs.getString("TABLE_NAME").contains("$")) {
-                    HashMap<String, String> map = new HashMap<String, String>(16);
+                    HashMap<String, String> map = new HashMap<>(16);
                     map.put("catalog", rs.getString("TABLE_CAT"));
                     map.put("schema", rs.getString("TABLE_SCHEM"));
                     map.put("name", rs.getString("TABLE_NAME"));
@@ -463,10 +624,19 @@ public class DbMetaDataUtil {
             }
             return list;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            rs.close();
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception e) {
+                    LOGGER.error("关闭数据库连接失败", e);
+                }
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
@@ -474,16 +644,18 @@ public class DbMetaDataUtil {
      * 供应商 Catalog支持 Schema支持 Oracle 不支持 Oracle User ID MySQL 不支持 数据库名 MSSQL 数据库名 对象属主名 Sybase 数据库名 数据库属主名 Informix 不支持
      * 不需要 PointBase 不支持 数据库名
      ***********/
-    public String listAllTablesTree(Connection connection, String tableNamePattern) throws Exception {
+    public String listAllTablesTree(DataSource dataSource, String tableNamePattern) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         ResultSet rs = null;
         ObjectMapper mapper = new ObjectMapper();
         String json = "[]";
+        Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             DatabaseMetaData dbmd = connection.getMetaData();
 
             String username = dbmd.getUserName().toUpperCase();
-            String dialect = getDatabaseDialectName(connection);
+            String dialect = getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 rs = dbmd.getTables(null, connection.getCatalog(), tableNamePattern, new String[] {"TABLE"});
             } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
@@ -527,17 +699,22 @@ public class DbMetaDataUtil {
 
             return json;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         } finally {
-            rs.close();
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
-    public List<Map<String, Object>> listTypes(Connection connection) throws Exception {
+    public List<Map<String, Object>> listTypes(DataSource dataSource) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         try {
-            String dialect = getDatabaseDialectName(connection);
+            String dialect = getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 list = listTypes4Mysql();
             } else if (DialectEnum.MSSQL.getValue().equals(dialect)) {
@@ -549,11 +726,67 @@ public class DbMetaDataUtil {
                 list = listTypes4Kingbase();
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
-        } finally {
-
         }
+        return list;
+    }
+
+    private List<Map<String, Object>> listTypes4Dm() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("typeName", "VARCHAR2");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "NUMBER");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "LONG");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "TIMESTAMP");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "BLOB");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "DATE");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "INTEGER");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "CLOB");
+        list.add(map);
+        return list;
+    }
+
+    private List<Map<String, Object>> listTypes4Kingbase() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("typeName", "VARCHAR2");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "NUMBER");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "LONG");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "TIMESTAMP");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "BLOB");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "DATE");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "INTEGER");
+        list.add(map);
+        map = new HashMap<>(16);
+        map.put("typeName", "CLOB");
+        list.add(map);
         return list;
     }
 
@@ -589,64 +822,6 @@ public class DbMetaDataUtil {
     }
 
     private List<Map<String, Object>> listTypes4Oracle() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("typeName", "VARCHAR2");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "NUMBER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "LONG");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "TIMESTAMP");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BLOB");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "DATE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "INTEGER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "CLOB");
-        list.add(map);
-        return list;
-    }
-
-    private List<Map<String, Object>> listTypes4Dm() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("typeName", "VARCHAR2");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "NUMBER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "LONG");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "TIMESTAMP");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BLOB");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "DATE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "INTEGER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "CLOB");
-        list.add(map);
-        return list;
-    }
-
-    private List<Map<String, Object>> listTypes4Kingbase() {
         List<Map<String, Object>> list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>(16);
         map.put("typeName", "VARCHAR2");
