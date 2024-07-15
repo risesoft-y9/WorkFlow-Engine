@@ -1,8 +1,10 @@
 package net.risesoft.service;
 
+import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.ReceiveDepartment;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -25,7 +27,7 @@ public interface ReceiveDeptAndPersonService {
      * @param id
      * @return
      */
-    Map<String, Object> delDepartment(String id);
+    Y9Result<String> delDepartment(String id);
 
     /**
      * 删除人员
@@ -33,7 +35,7 @@ public interface ReceiveDeptAndPersonService {
      * @param id
      * @return
      */
-    Map<String, Object> delPerson(String id);
+    Y9Result<String> delPerson(String id);
 
     /**
      * 根据部门id获取信息
@@ -49,11 +51,11 @@ public interface ReceiveDeptAndPersonService {
      * @param deptId
      * @return
      */
-    Map<String, Object> personList(String deptId);
+    List<Map<String, Object>> personList(String deptId);
 
     /**
      * Description:
-     * 
+     *
      * @param receiveDeptAndPerson
      * @return
      */
@@ -65,7 +67,7 @@ public interface ReceiveDeptAndPersonService {
      * @param id
      * @return
      */
-    Map<String, Object> saveDepartment(String id);
+    Y9Result<String> saveDepartment(String id);
 
     /**
      * 保存排序
@@ -73,7 +75,7 @@ public interface ReceiveDeptAndPersonService {
      * @param ids
      * @return
      */
-    Map<String, Object> saveOrder(String ids);
+    Y9Result<String> saveOrder(String ids);
 
     /**
      * 保存收发岗位
@@ -82,26 +84,26 @@ public interface ReceiveDeptAndPersonService {
      * @param ids
      * @return
      */
-    Map<String, Object> savePosition(String deptId, String ids);
+    Y9Result<String> savePosition(String deptId, String ids);
 
     /**
-     * 
+     *
      * Description: 保存是否可发送
-     * 
+     *
      * @param receive
      * @param ids
      * @return
      */
-    Map<String, Object> setReceive(boolean receive, String ids);
+    Y9Result<String> setReceive(boolean receive, String ids);
 
     /**
-     * 
+     *
      * Description: 保存是否可发送
-     * 
+     *
      * @param send
      * @param ids
      * @return
      */
-    Map<String, Object> setSend(boolean send, String ids);
+    Y9Result<String> setSend(boolean send, String ids);
 
 }

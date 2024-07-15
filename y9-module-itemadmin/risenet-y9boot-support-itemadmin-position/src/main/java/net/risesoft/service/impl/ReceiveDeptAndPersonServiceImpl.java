@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.entity.ReceivePerson;
 import net.risesoft.id.IdType;
@@ -23,6 +23,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.repository.jpa.ReceivePersonRepository;
 import net.risesoft.service.ReceiveDeptAndPersonService;
@@ -55,39 +56,32 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> delDepartment(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "取消成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> delDepartment(String id) {
         try {
             ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findByDeptId(id);
             setParentId(id, receiveDeptAndPerson.getParentId());
             receiveDepartmentRepository.delete(receiveDeptAndPerson);
             List<ReceivePerson> personList = receivePersonRepository.findByDeptId(id);
             receivePersonRepository.deleteAll(personList);
+
+            return Y9Result.successMsg("取消成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "取消失败");
             e.printStackTrace();
+            return Y9Result.failure("取消失败");
         }
-        return map;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> delPerson(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "删除成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> delPerson(String id) {
         try {
             receivePersonRepository.deleteById(id);
+            return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
             e.printStackTrace();
+            return Y9Result.failure("删除失败");
         }
-        return map;
     }
 
     @Override
@@ -112,7 +106,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                 return list;
             }
         } else {
-            list = new ArrayList<Object>();
+            list = new ArrayList<>();
             list.add(true);
             list.add(deptId);
             return list;
@@ -121,49 +115,38 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    public Map<String, Object> personList(String deptId) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        try {
-            List<Map<String, Object>> list = new ArrayList<>();
-            List<ReceivePerson> personList = receivePersonRepository.findByDeptId(deptId);
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            for (ReceivePerson receivePerson : personList) {
-                Map<String, Object> m = new HashMap<>(16);
-                Position person = positionApi.get(tenantId, receivePerson.getPersonId()).getData();
-                if (person == null || person.getId() == null || person.getDisabled()) {
-                    receivePersonRepository.delete(receivePerson);
-                    continue;
-                }
-                m.put("id", receivePerson.getId());
-                m.put("userId", person.getId());
-                m.put("parentId", receivePerson.getPersonDeptId());
-                m.put("name", person.getName());
-                m.put("duty", StringUtils.isBlank(person.getJobName()) ? "" : person.getJobName());
-                m.put("send", receivePerson.isSend() ? "是" : "否");
-                m.put("receive", receivePerson.isReceive() ? "是" : "否");
-                list.add(m);
+    public List<Map<String, Object>> personList(String deptId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<ReceivePerson> personList = receivePersonRepository.findByDeptId(deptId);
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        for (ReceivePerson receivePerson : personList) {
+            Map<String, Object> m = new HashMap<>(16);
+            Position person = positionApi.get(tenantId, receivePerson.getPersonId()).getData();
+            if (person == null || person.getId() == null || Boolean.TRUE.equals(person.getDisabled())) {
+                receivePersonRepository.delete(receivePerson);
+                continue;
             }
-            map.put("rows", list);
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            m.put("id", receivePerson.getId());
+            m.put("userId", person.getId());
+            m.put("parentId", receivePerson.getPersonDeptId());
+            m.put("name", person.getName());
+            m.put("duty", StringUtils.isBlank(person.getJobName()) ? "" : person.getJobName());
+            m.put("send", receivePerson.isSend() ? "是" : "否");
+            m.put("receive", receivePerson.isReceive() ? "是" : "否");
+            list.add(m);
         }
-        return map;
+        return list;
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public ReceiveDepartment save(ReceiveDepartment receiveDepartment) {
         return receiveDepartmentRepository.save(receiveDepartment);
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> saveDepartment(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "设置成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> saveDepartment(String id) {
         try {
             ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findByDeptId(id);
             if (receiveDeptAndPerson == null || receiveDeptAndPerson.getId() == null) {
@@ -181,55 +164,55 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             receiveDeptAndPerson.setParentId(dept.getParentId());
             receiveDeptAndPerson.setCreateDate(new Date());
             receiveDepartmentRepository.save(receiveDeptAndPerson);
+
+            return Y9Result.successMsg("设置成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "设置失败");
             e.printStackTrace();
+            return Y9Result.failure("设置失败");
         }
-        return map;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> saveOrder(String ids) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
+    @Transactional(readOnly = false)
+    public Y9Result<String> saveOrder(String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {
                 String[] idArr = ids.split(",");
                 Integer tabIndex = 0;
                 for (String guid : idArr) {
-                    ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findById(guid).orElse(null);
-                    Department dept = departmentManager
-                        .get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
-                    receiveDeptAndPerson.setDeptName(dept.getName());
-                    receiveDeptAndPerson.setTabIndex(tabIndex);
-                    tabIndex += 1;
-                    receiveDepartmentRepository.save(receiveDeptAndPerson);
+                    Optional<ReceiveDepartment> receiveDeptAndPersonOpt = receiveDepartmentRepository.findById(guid);
+                    if (receiveDeptAndPersonOpt.isPresent()) {
+                        ReceiveDepartment receiveDeptAndPerson = receiveDeptAndPersonOpt.get();
+                        Department dept = departmentManager
+                            .get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
+                        receiveDeptAndPerson.setDeptName(dept.getName());
+                        receiveDeptAndPerson.setTabIndex(tabIndex);
+                        tabIndex += 1;
+                        receiveDepartmentRepository.save(receiveDeptAndPerson);
+                    }
                 }
             }
+            return Y9Result.successMsg("保存排序成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
+            return Y9Result.failure("保存排序失败");
         }
-        return map;
     }
 
     @Override
-    public Map<String, Object> savePosition(String deptId, String ids) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "保存成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> savePosition(String deptId, String ids) {
         try {
             String[] id = ids.split(",");
-            String msg = "";
+            StringBuilder msg = new StringBuilder();
+
             String idsTemp = "";
             String tenantId = Y9LoginUserHolder.getTenantId();
             Department dept = departmentManager.get(tenantId, deptId).getData();
             for (String userId : id) {
                 Position user = positionApi.get(tenantId, userId).getData();
                 List<ReceivePerson> list = receivePersonRepository.findByPersonId(userId);
-                if (list != null && list.size() > 0) {
+                if (list != null && !list.isEmpty()) {
                     boolean isAdd = true;
                     for (ReceivePerson receivePerson : list) {
                         OrgUnit orgUnit =
@@ -240,7 +223,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                             isAdd = false;
                             // 同一个委办局，不能设置一个人为两个单位的收文员
                             Position person = positionApi.get(Y9LoginUserHolder.getTenantId(), userId).getData();
-                            msg += "[" + person.getName() + "已是" + receivePerson.getDeptName() + "部门的收发员]<br>";
+                            msg.append("[" + person.getName() + "已是" + receivePerson.getDeptName() + "部门的收发员]<br>");
                         }
                     }
                     if (isAdd) {
@@ -276,9 +259,6 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                     receivePersonRepository.save(receivePerson);
                 }
             }
-            if (!msg.equals("")) {
-                map.put("msg", msg);
-            }
             ReceiveDepartment receiveDepartment = receiveDepartmentRepository.findByDeptId(deptId);
             if (receiveDepartment != null && receiveDepartment.getId() != null) {
                 // 修改部门父节点
@@ -288,7 +268,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                     setParentId(deptId, receiveDepartment.getParentId());
                 }
                 receiveDepartment.setParentId("");
-                List<Object> list = new ArrayList<Object>();
+                List<Object> list = new ArrayList<>();
                 list.add(false);
                 list = getParentId(dept.getParentId(), list);
                 if ((boolean)list.get(0)) {
@@ -309,7 +289,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                     setParentId(deptId, receiveDepartment.getParentId());
                 }
                 receiveDepartment.setParentId("");
-                List<Object> list = new ArrayList<Object>();
+                List<Object> list = new ArrayList<>();
                 list.add(false);
                 list = getParentId(dept.getParentId(), list);
                 if ((boolean)list.get(0)) {
@@ -317,12 +297,13 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                 }
             }
             receiveDepartmentRepository.save(receiveDepartment);
+
+            return Y9Result
+                .successMsg((msg.length() > 0 && StringUtils.isNotBlank(msg.toString())) ? msg.toString() : "保存成功");
         } catch (Exception e) {
-            map.put("msg", "保存失败");
-            map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
     }
 
     /**
@@ -331,6 +312,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
      * @param deptId
      * @param parentId
      */
+    @Transactional(readOnly = false)
     public void setParentId(String deptId, String parentId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Department> list = departmentManager.listByParentId(tenantId, deptId).getData();
@@ -346,10 +328,8 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> setReceive(boolean receive, String ids) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
+    @Transactional(readOnly = false)
+    public Y9Result<String> setReceive(boolean receive, String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {
                 String[] idArr = ids.split(",");
@@ -361,18 +341,16 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                     }
                 }
             }
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> setSend(boolean send, String ids) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
+    @Transactional(readOnly = false)
+    public Y9Result<String> setSend(boolean send, String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {
                 String[] idArr = ids.split(",");
@@ -384,11 +362,11 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                     }
                 }
             }
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
     }
 
 }
