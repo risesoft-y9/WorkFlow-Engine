@@ -26,10 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.ManagerApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.TaoHongTemplate;
 import net.risesoft.entity.TaoHongTemplateType;
+import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Manager;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
@@ -58,14 +60,17 @@ public class TaoHongTemplateRestContronller {
 
     private final ManagerApi managerApi;
 
+    private final DepartmentApi departmentApi;
+
     public TaoHongTemplateRestContronller(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         TaoHongTemplateService taoHongTemplateService, TaoHongTemplateTypeService taoHongTemplateTypeService,
-        OrgUnitApi orgUnitApi, ManagerApi managerApi) {
+        OrgUnitApi orgUnitApi, ManagerApi managerApi, DepartmentApi departmentApi) {
         this.jdbcTemplate = jdbcTemplate;
         this.taoHongTemplateService = taoHongTemplateService;
         this.taoHongTemplateTypeService = taoHongTemplateTypeService;
         this.orgUnitApi = orgUnitApi;
         this.managerApi = managerApi;
+        this.departmentApi = departmentApi;
     }
 
     /**
@@ -75,9 +80,11 @@ public class TaoHongTemplateRestContronller {
      * @return
      */
     @GetMapping(value = "/bureauTree")
-    public Y9Result<List<Map<String, Object>>> bureauTree(@RequestParam(required = false) String name) {
+    public Y9Result<List<Department>> bureauTree(@RequestParam(required = false) String name) {
         List<Map<String, Object>> listMap = new ArrayList<>();
         name = StringUtils.isBlank(name) ? "" : name;
+        List<Department> bureauList =
+            departmentApi.listBureauByNameLike(Y9LoginUserHolder.getTenantId(), name).getData();
         List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(
             " SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name
                 + "%' and disabled = 0 order by GUID_PATH asc");
@@ -88,7 +95,7 @@ public class TaoHongTemplateRestContronller {
             map.put("parentId", dept.get("PARENT_ID").toString());
             listMap.add(map);
         }
-        return Y9Result.success(listMap, "获取成功");
+        return departmentApi.listBureauByNameLike(Y9LoginUserHolder.getTenantId(), name);
     }
 
     /**
