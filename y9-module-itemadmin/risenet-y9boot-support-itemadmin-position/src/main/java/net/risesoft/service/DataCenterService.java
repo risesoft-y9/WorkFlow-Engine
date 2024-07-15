@@ -312,7 +312,7 @@ public class DataCenterService {
         officeInfo.setUndertaker(userId);
         officeInfo.setUrgency(level);
         officeInfo.setAssociatedId(associatedId);
-        officeInfo.setDisabled(infoOvert.equals("0") ? "0" : "1");
+        officeInfo.setDisabled(infoOvert.equals("1") ? "1" : "0");
 
         officeInfo.setHistorys(hisList);
         officeInfo.setAttachments(aList);
@@ -414,7 +414,7 @@ public class DataCenterService {
             officeInfo.setUndertaker(userId);
             officeInfo.setUrgency(level);
             officeInfo.setAssociatedId(associatedId);
-            officeInfo.setDisabled(infoOvert.equals("0") ? "0" : "1");
+            officeInfo.setDisabled(infoOvert.equals("1") ? "1" : "0");
 
             officeInfo.setHistorys(hisList);
             officeInfo.setAttachments(aList);

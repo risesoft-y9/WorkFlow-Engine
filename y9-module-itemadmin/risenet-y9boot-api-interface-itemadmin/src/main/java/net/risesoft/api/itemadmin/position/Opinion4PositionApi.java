@@ -155,4 +155,15 @@ public interface Opinion4PositionApi {
         @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
         @RequestBody OpinionModel opinionModel) throws Exception;
 
+    /**
+     * 更新意见
+     *
+     * @param tenantId 租户id
+     * @param id 唯一标识
+     * @param content 意见内容
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/updateOpinion")
+    Y9Result<Object> updateOpinion(String tenantId, String id, String content);
 }

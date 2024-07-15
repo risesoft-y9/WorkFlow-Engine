@@ -750,4 +750,14 @@ public class OpinionServiceImpl implements OpinionService {
         opinionRepository.update(processInstanceId, taskId, processSerialNumber);
     }
 
+    @Override
+    @Transactional
+    public void updateOpinion(String id, String content) {
+        Opinion opinion = opinionRepository.findById(id).orElse(null);
+        if (opinion != null) {
+            opinion.setContent(content);
+            opinionRepository.save(opinion);
+        }
+    }
+
 }
