@@ -232,8 +232,18 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         return Y9Result.success(opinionModel);
     }
 
+    /**
+     * 更新意见
+     *
+     * @param tenantId 租户id
+     * @param id 意见id
+     * @param content 意见内容
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
     @Override
-    public Y9Result<Object> updateOpinion(String tenantId, String id, String content) {
+    public Y9Result<Object> updateOpinion(@RequestParam String tenantId, @RequestParam String id,
+        @RequestParam String content) {
         Y9LoginUserHolder.setTenantId(tenantId);
         opinionService.updateOpinion(id, content);
         return Y9Result.success();
