@@ -1,9 +1,7 @@
 package net.risesoft.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -17,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
+import net.risesoft.controller.vo.RoleTreeVO;
 import net.risesoft.enums.platform.RoleTypeEnum;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.Role;
@@ -47,32 +46,32 @@ public class RoleRestController {
      * @return
      */
     @GetMapping(value = "/findRole")
-    public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> listMap = new ArrayList<>();
+    public Y9Result<List<RoleTreeVO>> findAll(@RequestParam(required = false) String id) {
+        List<RoleTreeVO> listMap = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
             List<App> appList = appApi.listBySystemId(system.getId()).getData();
             for (App app : appList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", app.getId());
-                map.put("name", app.getName());
-                map.put("parentId", app.getId());
-                map.put("isParent", true);
-                map.put("orgType", "App");
+                RoleTreeVO map = new RoleTreeVO();
+                map.setId(app.getId());
+                map.setName(app.getName());
+                map.setParentId(app.getId());
+                map.setIsParent(true);
+                map.setOrgType("App");
                 listMap.add(map);
             }
         } else {
             List<Role> listRole = roleManager.listRoleByParentId(id).getData();
             if (listRole != null) {
                 for (Role role : listRole) {
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", role.getId());
-                    map.put("name", role.getName());
-                    map.put("parentId", id);
-                    map.put("guidPath", role.getGuidPath());
+                    RoleTreeVO map = new RoleTreeVO();
+                    map.setId(role.getId());
+                    map.setName(role.getName());
+                    map.setParentId(id);
+                    map.setGuidPath(role.getGuidPath());
                     if (RoleTypeEnum.ROLE.equals(role.getType())) {
-                        map.put("isParent", false);
-                        map.put("orgType", "role");
+                        map.setIsParent(false);
+                        map.setOrgType("role");
                     } else {
                         List<Role> list = roleManager.listRoleByParentId(role.getId()).getData();
                         boolean isP = false;
@@ -80,10 +79,10 @@ public class RoleRestController {
                             isP = !list.isEmpty();
                         }
                         if (isP) {
-                            map.put("chkDisabled", true);
+                            map.setChkDisabled(true);
                         }
-                        map.put("isParent", isP);
-                        map.put("orgType", "folder");
+                        map.setIsParent(isP);
+                        map.setOrgType("folder");
                     }
                     listMap.add(map);
                 }

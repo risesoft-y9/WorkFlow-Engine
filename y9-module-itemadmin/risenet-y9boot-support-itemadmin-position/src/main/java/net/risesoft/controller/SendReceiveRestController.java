@@ -19,7 +19,6 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -78,11 +77,7 @@ public class SendReceiveRestController {
      */
     @PostMapping(value = "/delPerson")
     public Y9Result<String> delPerson(@RequestParam String id) {
-        Map<String, Object> map = receiveDeptAndPersonService.delPerson(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return receiveDeptAndPersonService.delPerson(id);
     }
 
     /**
@@ -330,14 +325,10 @@ public class SendReceiveRestController {
      * @param deptId 部门id
      * @return
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/personList")
     public Y9Result<List<Map<String, Object>>> personList(@RequestParam String deptId) {
-        Map<String, Object> map = receiveDeptAndPersonService.personList(deptId);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
-        }
-        return Y9Result.failure("获取失败");
+        List<Map<String, Object>> personList = receiveDeptAndPersonService.personList(deptId);
+        return Y9Result.success(personList, "获取成功");
     }
 
     public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
@@ -377,17 +368,12 @@ public class SendReceiveRestController {
      */
     @PostMapping(value = "/saveOrCancelDept")
     public Y9Result<String> saveOrCancelDept(@RequestParam String id, @RequestParam String type) {
-        Map<String, Object> map;
         String save = "save";
         if (type.equals(save)) {
-            map = receiveDeptAndPersonService.saveDepartment(id);
+            return receiveDeptAndPersonService.saveDepartment(id);
         } else {
-            map = receiveDeptAndPersonService.delDepartment(id);
+            return receiveDeptAndPersonService.delDepartment(id);
         }
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
@@ -397,7 +383,7 @@ public class SendReceiveRestController {
      * @return
      */
     @RequestMapping(value = "/saveOrder")
-    public Map<String, Object> saveOrder(String ids) {
+    public Y9Result<String> saveOrder(String ids) {
         return receiveDeptAndPersonService.saveOrder(ids);
     }
 
@@ -410,11 +396,7 @@ public class SendReceiveRestController {
      */
     @PostMapping(value = "/savePerson")
     public Y9Result<String> savePerson(@RequestParam String deptId, @RequestParam String ids) {
-        Map<String, Object> map = receiveDeptAndPersonService.savePosition(deptId, ids);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return receiveDeptAndPersonService.savePosition(deptId, ids);
     }
 
     /**
@@ -440,11 +422,7 @@ public class SendReceiveRestController {
      */
     @PostMapping(value = "/setReceive")
     public Y9Result<String> setReceive(@RequestParam boolean receive, @RequestParam String ids) {
-        Map<String, Object> map = receiveDeptAndPersonService.setReceive(receive, ids);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg("保存成功");
-        }
-        return Y9Result.failure("保存失败");
+        return receiveDeptAndPersonService.setReceive(receive, ids);
     }
 
     /**
@@ -456,10 +434,6 @@ public class SendReceiveRestController {
      */
     @PostMapping(value = "/setSend")
     public Y9Result<String> setSend(@RequestParam boolean send, @RequestParam String ids) {
-        Map<String, Object> map = receiveDeptAndPersonService.setSend(send, ids);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg("保存成功");
-        }
-        return Y9Result.failure("保存失败");
+        return receiveDeptAndPersonService.setSend(send, ids);
     }
 }

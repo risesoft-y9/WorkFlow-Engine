@@ -14,9 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
@@ -46,11 +45,10 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/taoHongTemplate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TaoHongTemplateRestContronller {
-
-    private final JdbcTemplate jdbcTemplate;
 
     private final TaoHongTemplateService taoHongTemplateService;
 
@@ -62,17 +60,6 @@ public class TaoHongTemplateRestContronller {
 
     private final DepartmentApi departmentApi;
 
-    public TaoHongTemplateRestContronller(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        TaoHongTemplateService taoHongTemplateService, TaoHongTemplateTypeService taoHongTemplateTypeService,
-        OrgUnitApi orgUnitApi, ManagerApi managerApi, DepartmentApi departmentApi) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.taoHongTemplateService = taoHongTemplateService;
-        this.taoHongTemplateTypeService = taoHongTemplateTypeService;
-        this.orgUnitApi = orgUnitApi;
-        this.managerApi = managerApi;
-        this.departmentApi = departmentApi;
-    }
-
     /**
      * 获取委办局树
      *
@@ -81,20 +68,7 @@ public class TaoHongTemplateRestContronller {
      */
     @GetMapping(value = "/bureauTree")
     public Y9Result<List<Department>> bureauTree(@RequestParam(required = false) String name) {
-        List<Map<String, Object>> listMap = new ArrayList<>();
         name = StringUtils.isBlank(name) ? "" : name;
-        List<Department> bureauList =
-            departmentApi.listBureauByNameLike(Y9LoginUserHolder.getTenantId(), name).getData();
-        List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(
-            " SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name
-                + "%' and disabled = 0 order by GUID_PATH asc");
-        for (Map<String, Object> dept : orgUnitList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", dept.get("ID").toString());
-            map.put("name", dept.get("NAME").toString());
-            map.put("parentId", dept.get("PARENT_ID").toString());
-            listMap.add(map);
-        }
         return departmentApi.listBureauByNameLike(Y9LoginUserHolder.getTenantId(), name);
     }
 
