@@ -200,4 +200,12 @@ public interface OpinionService {
      * @param taskId
      */
     void update(String processSerialNumber, String processInstanceId, String taskId);
+
+    /**
+     * Description:更新意见
+     *
+     * @param id 意见id
+     * @param content 意见内容
+     */
+    void updateOpinion(String id, String content);
 }

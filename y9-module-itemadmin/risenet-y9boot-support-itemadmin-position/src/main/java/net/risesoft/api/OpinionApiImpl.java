@@ -231,4 +231,11 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         Y9BeanUtil.copyProperties(opinion, opinionModel);
         return Y9Result.success(opinionModel);
     }
+
+    @Override
+    public Y9Result<Object> updateOpinion(String tenantId, String id, String content) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        opinionService.updateOpinion(id, content);
+        return Y9Result.success();
+    }
 }

@@ -288,4 +288,17 @@ public class OpinionRestController {
         }
         return Y9Result.failure("保存失败");
     }
+
+    /**
+     * 更新意见
+     *
+     * @param content 意见内容
+     * @param id 意见id
+     * @return Y9Result<Object>
+     */
+    @RequestMapping(value = "/updateOpinion", method = RequestMethod.POST, produces = "application/json")
+    public Y9Result<Object> updateOpinion(@RequestParam @NotBlank String content, @RequestParam @NotBlank String id) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return opinion4PositionApi.updateOpinion(tenantId, id, content);
+    }
 }
