@@ -165,5 +165,6 @@ public interface Opinion4PositionApi {
      * @since 9.6.6
      */
     @PostMapping("/updateOpinion")
-    Y9Result<Object> updateOpinion(String tenantId, String id, String content);
+    Y9Result<Object> updateOpinion(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
+        @RequestParam("content") String content);
 }
