@@ -265,7 +265,7 @@
 		formListTableConfig.value.tableData = [];
 		let res = await	getBpmList(props.currTreeNodeInfo.processDefinitionId,props.currTreeNodeInfo.id);
 		if(res.success){
-			formListTableConfig.value.tableData = res.data.rows;
+			formListTableConfig.value.tableData = res.data;
 		}
 	}
 
