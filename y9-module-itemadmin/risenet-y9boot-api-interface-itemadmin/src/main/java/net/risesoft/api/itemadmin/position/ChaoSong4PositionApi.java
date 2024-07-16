@@ -122,7 +122,8 @@ public interface ChaoSong4PositionApi {
     Y9Result<OpenDataModel> detail(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("id") String id,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") Integer status,
-        @RequestParam("openNotRead") Boolean openNotRead, @RequestParam("mobile") boolean mobile);
+        @RequestParam(value = "openNotRead", required = false) Boolean openNotRead,
+        @RequestParam("mobile") boolean mobile);
 
     /**
      * 获取批阅件计数

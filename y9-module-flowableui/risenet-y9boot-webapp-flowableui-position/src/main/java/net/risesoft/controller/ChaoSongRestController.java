@@ -130,7 +130,7 @@ public class ChaoSongRestController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
-        @RequestParam @NotBlank String processInstanceId, @RequestParam Boolean openNotRead,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) Boolean openNotRead,
         @RequestParam Integer status) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
