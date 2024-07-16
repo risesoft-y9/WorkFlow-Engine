@@ -84,4 +84,14 @@ public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            y9PreFormItemBindRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除前置表单项绑定信息失败", e);
+        }
+    }
+
 }

@@ -22,4 +22,7 @@ public interface PrintTemplateItemBindRepository
     @Query(" from ItemPrintTemplateBind p where p.itemId=?1 and p.templateId=?2")
     ItemPrintTemplateBind findByItemIdAndTemplateId(String itemId, String templateId);
 
+    @Transactional
+    void deleteByItemId(String itemId);
+
 }

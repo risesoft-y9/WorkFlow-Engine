@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.ItemInterfaceBind;
-
 import java.util.List;
+
+import net.risesoft.entity.ItemInterfaceBind;
 
 /**
  * @author qinman
@@ -50,4 +50,11 @@ public interface ItemInterfaceBindService {
      * @param newItemId
      */
     void copyBindInfo(String itemId, String newItemId);
+
+    /**
+     * 删除事项接口配置绑定信息
+     * 
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

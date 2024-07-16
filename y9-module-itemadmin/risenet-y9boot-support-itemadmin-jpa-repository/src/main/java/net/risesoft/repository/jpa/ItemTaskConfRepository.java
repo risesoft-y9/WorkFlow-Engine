@@ -17,11 +17,13 @@ import net.risesoft.entity.ItemTaskConf;
 public interface ItemTaskConfRepository
     extends JpaRepository<ItemTaskConf, String>, JpaSpecificationExecutor<ItemTaskConf> {
 
-    public List<ItemTaskConf> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
+    List<ItemTaskConf> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
-    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+    ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
         String taskDefKey);
 
-    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(String itemId,
-        String processDefinitionId);
+    ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(String itemId, String processDefinitionId);
+
+    @Transactional
+    void deleteByItemId(String itemId);
 }

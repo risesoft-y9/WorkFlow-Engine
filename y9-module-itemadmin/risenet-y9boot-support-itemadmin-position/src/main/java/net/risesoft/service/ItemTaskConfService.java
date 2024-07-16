@@ -88,5 +88,12 @@ public interface ItemTaskConfService {
      * @param newItemId
      * @param lastVersionPid
      */
-    void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
+
+    /**
+     * Description:删除任务签收绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

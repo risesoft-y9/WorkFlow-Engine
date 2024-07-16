@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
@@ -24,8 +25,8 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemStartNodeRoleRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemStartNodeRoleService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -36,6 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
@@ -45,20 +47,18 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
     private final PositionRoleApi positionRoleApi;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     private final RepositoryApi repositoryManager;
 
     private final ProcessDefinitionApi processDefinitionManager;
-
-    private final SpmApproveItemService spmApproveitemService;
 
     @Override
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -168,7 +168,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public String getStartTaskDefKey(String itemId) {
         String startTaskDefKey = "", tenantId = Y9LoginUserHolder.getTenantId(),
             positionId = Y9LoginUserHolder.getPositionId();
-        SpmApproveItem item = spmApproveitemService.findById(itemId);
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
@@ -266,7 +266,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             isnr.setRoleIds(newRoleIds);
             isnr.setUserName(userName);
             itemStartNodeRoleRepository.save(isnr);
-            return;
         }
     }
 
@@ -328,5 +327,15 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             isnr.setTabIndex(index + 1);
         }
         itemStartNodeRoleRepository.save(isnr);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            itemStartNodeRoleRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除路由配置信息失败", e.getMessage());
+        }
     }
 }

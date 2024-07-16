@@ -1,12 +1,12 @@
 package net.risesoft.repository.jpa;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.entity.ItemWordTemplateBind;
-
-import java.util.List;
 
 /**
  * @author qinman
@@ -19,9 +19,16 @@ public interface ItemWordTemplateBindRepository
 
     ItemWordTemplateBind findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
+    ItemWordTemplateBind findByItemIdAndProcessDefinitionIdAndBindValue(String itemId, String processDefinitionId,
+        String bindValue);
+
     ItemWordTemplateBind findByItemIdAndTemplateId(String itemId, String templateId);
 
     List<ItemWordTemplateBind> findByItemIdOrderByBindValueAsc(String ItemId);
 
-    List<ItemWordTemplateBind> findByItemIdAndProcessDefinitionIdOrderByBindStatus(String itemId, String processDefinitionId);
+    List<ItemWordTemplateBind> findByItemIdAndProcessDefinitionIdOrderByBindStatus(String itemId,
+        String processDefinitionId);
+
+    @Transactional
+    void deleteByItemId(String itemId);
 }

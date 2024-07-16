@@ -2,6 +2,8 @@ package net.risesoft.repository.jpa;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +45,7 @@ public interface Y9FormItemBindRepository
 
     @Query("select count(*) from Y9FormItemBind t where t.processDefinitionId like ?1")
     int getCountByProcessDefinitionIdLike(String procDefId);
+
+    @Transactional
+    void deleteByItemId(String itemId);
 }

@@ -107,4 +107,11 @@ public interface ItemStartNodeRoleService {
      * @param roleIds
      */
     void saveRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds);
+
+    /**
+     * Description: 删除绑定路由节点角色信息
+     * 
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

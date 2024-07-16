@@ -43,4 +43,11 @@ public interface Y9PreFormItemBindService {
      * @return
      */
     Y9Result<String> saveBindForm(String itemId, String formId, String formName);
+
+    /**
+     * 删除前置表单绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

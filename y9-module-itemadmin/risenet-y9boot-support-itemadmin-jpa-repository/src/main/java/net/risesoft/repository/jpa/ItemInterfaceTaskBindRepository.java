@@ -28,4 +28,7 @@ public interface ItemInterfaceTaskBindRepository
     ItemInterfaceTaskBind findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(String elementKey,
         String itemId, String processDefinitionId, String interfaceId);
 
+    @Transactional
+    void deleteByItemId(String itemId);
+
 }

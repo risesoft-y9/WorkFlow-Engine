@@ -1,12 +1,13 @@
 package net.risesoft.repository.jpa;
 
-import net.risesoft.entity.ItemButtonBind;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import net.risesoft.entity.ItemButtonBind;
 
 /**
  * @author qinman
@@ -31,7 +32,8 @@ public interface ItemButtonBindRepository
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndTaskDefKeyOrderByTabIndexAsc(String itemId, int i, String string);
 
-    List<ItemButtonBind> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId, String processDefinitionId);
+    List<ItemButtonBind> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId,
+        String processDefinitionId);
 
     ItemButtonBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(String itemId,
         String processDefinitionId, String taskDefKey, String buttonId);
@@ -46,6 +48,8 @@ public interface ItemButtonBindRepository
 
     List<ItemButtonBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(String itemId,
         String processDefinitionId, String taskDefKey);
+
+    List<ItemButtonBind> findByItemId(String itemId);
 
     @Query("select max(tabIndex) from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 and t.buttonType=?4")
     Integer getMaxTabIndex(String itemId, String processDefinitionId, String taskDefKey, Integer buttonType);

@@ -1,7 +1,15 @@
 package net.risesoft.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemWordTemplateBind;
 import net.risesoft.id.IdType;
@@ -9,12 +17,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemWordTemplateBindRepository;
 import net.risesoft.service.ItemWordTemplateBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -125,7 +127,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
         try {
             List<ItemWordTemplateBind> list = wordTemplateBindRepository.findByItemIdOrderByBindValueAsc(id);
             for (ItemWordTemplateBind itemWordTemplateBind : list) {
-                if(bindValue.equals(itemWordTemplateBind.getBindValue())) {
+                if (bindValue.equals(itemWordTemplateBind.getBindValue())) {
                     map.put("success", false);
                     map.put("msg", "模板绑定值已经存在！请不要设置相同的值");
                     return map;
@@ -152,10 +154,10 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
             if (null != bind) {
                 List<ItemWordTemplateBind> list = wordTemplateBindRepository.findByItemIdOrderByBindValueAsc(itemId);
                 for (ItemWordTemplateBind itemWordTemplateBind : list) {
-                    if(itemWordTemplateBind.getId().equals(id)) {
+                    if (itemWordTemplateBind.getId().equals(id)) {
                         itemWordTemplateBind.setBindStatus(1);
                         wordTemplateBindRepository.save(itemWordTemplateBind);
-                    }else {
+                    } else {
                         itemWordTemplateBind.setBindStatus(0);
                         wordTemplateBindRepository.save(itemWordTemplateBind);
                     }
@@ -179,9 +181,10 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        try{
-            List<ItemWordTemplateBind> list = wordTemplateBindRepository.findByItemIdAndProcessDefinitionIdOrderByBindStatus(itemId,lastVersionPid);
-            if(null != list && !list.isEmpty()) {
+        try {
+            List<ItemWordTemplateBind> list =
+                wordTemplateBindRepository.findByItemIdAndProcessDefinitionIdOrderByBindStatus(itemId, lastVersionPid);
+            if (null != list && !list.isEmpty()) {
                 for (ItemWordTemplateBind templateBind : list) {
                     ItemWordTemplateBind bind = new ItemWordTemplateBind();
                     bind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -195,6 +198,16 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
             }
         } catch (Exception e) {
             LOGGER.error("复制正文模板绑定信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            wordTemplateBindRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除正文模板绑定信息失败", e);
         }
     }
 }

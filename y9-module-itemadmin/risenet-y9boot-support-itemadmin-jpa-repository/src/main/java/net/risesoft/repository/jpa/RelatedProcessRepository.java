@@ -16,9 +16,10 @@ public interface RelatedProcessRepository
 
     Page<RelatedProcess> findByParentItemIdOrderByCreateDateAsc(String itemId, Pageable pageable);
 
-    List<RelatedProcess> findByParentItemIdAndItemNameLike(String parentItemId, String itemName);
-
     List<RelatedProcess> findByParentItemId(String parentItemId);
 
     RelatedProcess findByParentItemIdAndItemId(String parentItemId, String itemId);
+
+    @Transactional
+    void deleteByParentItemId(String parentItemId);
 }

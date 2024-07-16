@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.ItemButtonBind;
-
 import java.util.List;
+
+import net.risesoft.entity.ItemButtonBind;
 
 /**
  * @author qinman
@@ -135,5 +135,12 @@ public interface ItemButtonBindService {
      * @param newItemId
      * @param lastVersionPid
      */
-    void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
+
+    /**
+     * Description: 删除按钮配置绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -102,7 +103,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             int length = b.length;
             String filename = "", userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
             if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
-                filename = new String(printTemplate.getFileName().getBytes("UTF-8"), "ISO8859-1");
+                filename = new String(printTemplate.getFileName().getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
                 filename = URLEncoder.encode(printTemplate.getFileName(), "UTF-8");
             } else {
@@ -267,6 +268,16 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             }
         } catch (Exception e) {
             LOGGER.error("复制绑定信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            printTemplateItemBindRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除绑定信息失败", e);
         }
     }
 }

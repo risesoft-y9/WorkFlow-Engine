@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.ItemOrganWordBind;
-
 import java.util.List;
+
+import net.risesoft.entity.ItemOrganWordBind;
 
 /**
  * @author qinman
@@ -17,7 +17,7 @@ public interface ItemOrganWordBindService {
      * @param itemId
      * @param processDefinitionId
      */
-    public void copyBind(String itemId, String processDefinitionId);
+    void copyBind(String itemId, String processDefinitionId);
 
     /**
      * 根据id查询一条数据
@@ -25,7 +25,7 @@ public interface ItemOrganWordBindService {
      * @param id
      * @return
      */
-    public ItemOrganWordBind findById(String id);
+    ItemOrganWordBind findById(String id);
 
     /**
      * Description:
@@ -33,7 +33,7 @@ public interface ItemOrganWordBindService {
      * @param itemId
      * @return
      */
-    public List<ItemOrganWordBind> findByItemId(String itemId);
+    List<ItemOrganWordBind> findByItemId(String itemId);
 
     /**
      * Description: 根据事项Id、流程定义Id查找
@@ -42,7 +42,7 @@ public interface ItemOrganWordBindService {
      * @param processDefinitionId
      * @return
      */
-    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
+    List<ItemOrganWordBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
     /**
      * Description: 根据事项Id、流程定义Id、任务定义key查找
@@ -52,7 +52,7 @@ public interface ItemOrganWordBindService {
      * @param taskDefKey
      * @return
      */
-    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+    List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
         String processDefinitionId, String taskDefKey);
 
     /**
@@ -64,7 +64,7 @@ public interface ItemOrganWordBindService {
      * @param custom
      * @return
      */
-    public ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
+    ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
         String processDefinitionId, String taskDefKey, String custom);
 
     /**
@@ -72,21 +72,21 @@ public interface ItemOrganWordBindService {
      *
      * @param id
      */
-    public void remove(String id);
+    void remove(String id);
 
     /**
      * 批量移除
      *
      * @param ids
      */
-    public void remove(String[] ids);
+    void remove(String[] ids);
 
     /**
      * 保存一条数据
      *
      * @param taskRoleBind
      */
-    public void save(ItemOrganWordBind taskRoleBind);
+    void save(ItemOrganWordBind taskRoleBind);
 
     /**
      * Description: 保存
@@ -95,7 +95,7 @@ public interface ItemOrganWordBindService {
      * @param name
      * @param custom
      */
-    public void save(String id, String name, String custom);
+    void save(String id, String name, String custom);
 
     /**
      * Description: 保存数据
@@ -105,14 +105,21 @@ public interface ItemOrganWordBindService {
      * @param processDefinitionId
      * @param taskDefKey
      */
-    public void save(String custom, String itemId, String processDefinitionId, String taskDefKey);
+    void save(String custom, String itemId, String processDefinitionId, String taskDefKey);
 
     /**
      * Description: 复制编号绑定信息
-
+     * 
      * @param itemId
      * @param newItemId
      * @param lastVersionPid
      */
-    public void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
+
+    /**
+     * Description: 删除编号绑定信息
+     * 
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

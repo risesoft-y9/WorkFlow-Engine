@@ -130,4 +130,11 @@ public interface Y9FormItemBindService {
      */
     Y9Result<String> save(Y9FormItemMobileBind eformItem);
 
+    /**
+     * Description:删除表单绑定信息
+     * 
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
+
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
@@ -28,10 +29,10 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.ItemPermissionRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.ItemPermissionService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -41,6 +42,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemPermissionServiceImpl implements ItemPermissionService {
 
@@ -56,7 +58,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
 
     private final ProcessDefinitionApi processDefinitionManager;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
     private final OrgUnitApi orgUnitManager;
 
@@ -64,7 +66,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     @Transactional
     public void copyPerm(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -105,6 +107,16 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     @Transactional
     public void delete(String id) {
         itemPermissionRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            itemPermissionRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除绑定信息失败", e);
+        }
     }
 
     @Override
