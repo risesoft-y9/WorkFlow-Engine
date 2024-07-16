@@ -169,14 +169,14 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
     @Override
     public Y9Result<OpenDataModel> detail(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String id, @RequestParam String processInstanceId, @RequestParam Integer status,
-        @RequestParam Boolean openNotRead, @RequestParam boolean mobile) {
+        Boolean openNotRead, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         OpenDataModel model = chaoSongInfoService.detail(processInstanceId, status, mobile);
         model.setId(id);
         model.setStatus(status);
         ChaoSongInfo chaoSong = chaoSongInfoService.findOne(id);
-        if (null != chaoSong && chaoSong.getStatus() != 1 && Boolean.TRUE.equals(openNotRead)) {
+        if (null != chaoSong && chaoSong.getStatus() != 1 && !Boolean.TRUE.equals(openNotRead)) {
             chaoSongInfoService.changeStatus(id);
         }
         return Y9Result.success(model);
