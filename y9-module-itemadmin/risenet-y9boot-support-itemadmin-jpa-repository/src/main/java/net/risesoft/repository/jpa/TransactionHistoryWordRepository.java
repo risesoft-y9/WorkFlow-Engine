@@ -96,13 +96,15 @@ public interface TransactionHistoryWordRepository
      * 
      * @param fileStoreId
      * @param fileSize
+     * @param isTaoHong
+     * @param docCategory
      * @param saveDate
      * @param userId
      * @param id
      */
     @Transactional(readOnly = false)
     @Modifying
-    @Query("update TransactionHistoryWord t set t.fileStoreId=?1,t.fileSize=?2,t.istaohong=?3,t.saveDate=?4,t.userId=?5 where t.id=?6")
-    void updateTransactionHistoryWordById(String fileStoreId, String fileSize, String isTaoHong, String saveDate,
-        String userId, String id);
+    @Query("update TransactionHistoryWord t set t.fileStoreId=?1,t.fileSize=?2,t.istaohong=?3,t.docCategory=?4,t.saveDate=?5,t.userId=?6 where t.id=?7")
+    void updateTransactionHistoryWordById(String fileStoreId, String fileSize, String isTaoHong, String docCategory,
+        String saveDate, String userId, String id);
 }

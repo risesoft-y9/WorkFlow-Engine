@@ -32,4 +32,7 @@ public interface ItemPermissionRepository
 
     @Query("select max(t.tabIndex) from ItemPermission t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3")
     Integer getMaxTabIndex(String itemId, String processDefinitionId, String taskDefKey);
+
+    @Transactional
+    void deleteByItemId(String itemId);
 }

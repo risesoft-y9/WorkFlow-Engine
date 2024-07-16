@@ -1,7 +1,14 @@
 package net.risesoft.service.impl;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemTaskConf;
@@ -12,11 +19,6 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.ItemTaskConfRepository;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @author qinman
@@ -213,6 +215,16 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
             }
         } catch (Exception e) {
             LOGGER.error("复制签收配置失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            taskConfRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除签收配置失败", e);
         }
     }
 }

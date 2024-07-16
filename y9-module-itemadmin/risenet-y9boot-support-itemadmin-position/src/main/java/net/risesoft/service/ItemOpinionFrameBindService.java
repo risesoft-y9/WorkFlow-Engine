@@ -1,9 +1,10 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.ItemOpinionFrameBind;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import net.risesoft.entity.ItemOpinionFrameBind;
 
 /**
  * @author qinman
@@ -30,11 +31,18 @@ public interface ItemOpinionFrameBindService {
     void copyBind(String itemId, String processDefinitionId);
 
     /**
-     * Description:
+     * Description: 删除意见框绑定信息
      * 
      * @param id
      */
     void delete(String id);
+
+    /**
+     * Description:删除意见框绑定和角色绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 
     /**
      * Description:
@@ -148,9 +156,10 @@ public interface ItemOpinionFrameBindService {
 
     /**
      * Description: 复制意见框绑定信息
+     * 
      * @param itemId
      * @param newItemId
      * @param lastVersionPid
      */
-    void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
 }

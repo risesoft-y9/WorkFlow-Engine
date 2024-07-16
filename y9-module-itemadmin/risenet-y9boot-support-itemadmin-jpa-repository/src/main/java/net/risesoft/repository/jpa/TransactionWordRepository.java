@@ -30,6 +30,8 @@ public interface TransactionWordRepository
     @Query("From TransactionWord d where d.processSerialNumber=?1 order by d.saveDate desc")
     List<TransactionWord> findByProcessSerialNumber(String processSerialNumber);
 
+    List<TransactionWord> findByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory);
+
     /**
      * 根据processSerialNumber和taohong获取正文
      * 

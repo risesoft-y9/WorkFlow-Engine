@@ -1,7 +1,17 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -21,14 +31,6 @@ import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemOrganWordBindService;
 import net.risesoft.service.ItemOrganWordRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author qinman
@@ -265,7 +267,8 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
         try {
-            List<ItemOrganWordBind> bindList = itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+            List<ItemOrganWordBind> bindList =
+                itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
             if (null != bindList && !bindList.isEmpty()) {
                 for (ItemOrganWordBind bind : bindList) {
                     ItemOrganWordBind newbind = new ItemOrganWordBind();
@@ -283,6 +286,22 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             }
         } catch (Exception e) {
             LOGGER.error("复制编号绑定关系失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            List<ItemOrganWordBind> bindList = itemOrganWordBindRepository.findByItemId(itemId);
+            if (null != bindList && !bindList.isEmpty()) {
+                for (ItemOrganWordBind bind : bindList) {
+                    itemOrganWordRoleService.removeByItemOrganWordBindId(bind.getId());
+                    itemOrganWordBindRepository.deleteById(bind.getId());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("删除编号绑定关系失败", e);
         }
     }
 }

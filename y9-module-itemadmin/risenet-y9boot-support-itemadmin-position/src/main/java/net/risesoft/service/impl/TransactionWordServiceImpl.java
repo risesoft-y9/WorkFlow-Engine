@@ -55,6 +55,12 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @Override
+    public List<TransactionWord> findByProcessSerialNumberAndDocCategory(String processSerialNumber,
+        String docCategory) {
+        return transactionWordRepository.findByProcessSerialNumberAndDocCategory(processSerialNumber, docCategory);
+    }
+
+    @Override
     public List<TransactionWord> findByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong) {
         List<TransactionWord> list =
             transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
@@ -82,7 +88,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     @Transactional
     @Override
     public void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
-        String processSerialNumber, String istaohong) {
+        String processSerialNumber, String istaohong, String docCategory) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
@@ -100,6 +106,9 @@ public class TransactionWordServiceImpl implements TransactionWordService {
         transactionWord.setFileSize(fileSize);
         transactionWord.setUserId(userId);
         transactionWord.setProcessSerialNumber(processSerialNumber);
+        if (StringUtils.isNotBlank(docCategory)) {
+            transactionWord.setDocCategory(docCategory);
+        }
         transactionWordRepository.save(transactionWord);
     }
 

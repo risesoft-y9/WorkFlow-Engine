@@ -1,7 +1,20 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -22,17 +35,6 @@ import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.ItemOpinionFrameRoleService;
 import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author qinman
@@ -136,6 +138,16 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     public void delete(String id) {
         itemOpinionFrameRoleService.removeByItemOpinionFrameId(id);
         itemOpinionFrameBindRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        List<ItemOpinionFrameBind> list = itemOpinionFrameBindRepository.findByItemId(itemId);
+        for (ItemOpinionFrameBind bind : list) {
+            itemOpinionFrameRoleService.removeByItemOpinionFrameId(bind.getId());
+            itemOpinionFrameBindRepository.deleteById(bind.getId());
+        }
     }
 
     @Override
@@ -322,9 +334,10 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        try{
-            List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
-            if(null != bindList && !bindList.isEmpty()) {
+        try {
+            List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
+                .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
+            if (null != bindList && !bindList.isEmpty()) {
                 for (ItemOpinionFrameBind bind : bindList) {
                     ItemOpinionFrameBind newbind = new ItemOpinionFrameBind();
                     String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
@@ -341,7 +354,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     newbind.setUserName(userName);
                     itemOpinionFrameBindRepository.save(newbind);
 
-                    //复制意见框一键设置的配置
+                    // 复制意见框一键设置的配置
                     List<OpinionFrameOneClickSet> setList = opinionFrameOneClickSetService.findByBindId(bind.getId());
                     for (OpinionFrameOneClickSet set : setList) {
                         OpinionFrameOneClickSet newset = new OpinionFrameOneClickSet();

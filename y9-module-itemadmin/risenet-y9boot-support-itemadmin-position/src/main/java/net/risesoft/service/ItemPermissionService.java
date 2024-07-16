@@ -28,6 +28,13 @@ public interface ItemPermissionService {
     void delete(String id);
 
     /**
+     * 根据事项Id删除所有授权
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
+
+    /**
      * 根据事项Id，流程定义Id,和任务节点Key查找授权
      *
      * @param itemId

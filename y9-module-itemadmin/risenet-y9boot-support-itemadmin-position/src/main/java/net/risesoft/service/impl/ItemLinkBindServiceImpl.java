@@ -1,7 +1,17 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.ItemLinkRole;
@@ -15,14 +25,6 @@ import net.risesoft.repository.jpa.ItemLinkRoleRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemLinkBindService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author qinman
@@ -177,6 +179,20 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
             }
         } catch (Exception e) {
             LOGGER.error("复制链接配置绑定关系失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            List<ItemLinkBind> bindList = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+            for (ItemLinkBind bind : bindList) {
+                itemLinkRoleRepository.deleteByItemLinkId(bind.getId());
+                itemLinkBindRepository.deleteById(bind.getId());
+            }
+        } catch (Exception e) {
+            LOGGER.error("删除链接配置绑定关系失败", e);
         }
     }
 }

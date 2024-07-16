@@ -1,20 +1,26 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.*;
+import net.risesoft.repository.jpa.InterfaceInfoRepository;
+import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
+import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
+import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemInterfaceBindService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -101,6 +107,18 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
             }
         } catch (Exception e) {
             LOGGER.error("复制事项接口绑定关系失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            itemInterfaceBindRepository.deleteByItemId(itemId);
+            itemInterfaceTaskBindRepository.deleteByItemId(itemId);
+            itemInterfaceParamsBindRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除事项接口绑定关系失败", e);
         }
     }
 }

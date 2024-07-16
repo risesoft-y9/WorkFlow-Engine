@@ -1,10 +1,25 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.*;
+import net.risesoft.entity.CommonButton;
+import net.risesoft.entity.ItemButtonBind;
+import net.risesoft.entity.ItemButtonRole;
+import net.risesoft.entity.SendButton;
+import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -19,15 +34,6 @@ import net.risesoft.service.ItemButtonRoleService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * @author qinman
@@ -434,8 +440,9 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         try {
-            List<ItemButtonBind> bindList = buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
-            if(null != bindList && !bindList.isEmpty()) {
+            List<ItemButtonBind> bindList =
+                buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
+            if (null != bindList && !bindList.isEmpty()) {
                 for (ItemButtonBind bind : bindList) {
                     ItemButtonBind newbind = new ItemButtonBind();
                     newbind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -455,6 +462,22 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             }
         } catch (Exception e) {
             LOGGER.error("复制按钮绑定信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            List<ItemButtonBind> bindList = buttonItemBindRepository.findByItemId(itemId);
+            if (null != bindList && !bindList.isEmpty()) {
+                for (ItemButtonBind bind : bindList) {
+                    itemButtonRoleService.deleteByItemButtonId(bind.getId());
+                    buttonItemBindRepository.deleteById(bind.getId());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("删除按钮绑定信息失败", e);
         }
     }
 }

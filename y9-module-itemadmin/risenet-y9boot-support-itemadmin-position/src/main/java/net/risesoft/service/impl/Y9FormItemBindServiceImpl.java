@@ -361,4 +361,17 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         return Y9Result.failure("保存失败");
     }
 
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            // 删除PC端表单的绑定
+            y9FormItemBindRepository.deleteByItemId(itemId);
+            // 删除手机端表单的绑定
+            y9FormItemMobileBindRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除表单绑定信息失败", e);
+        }
+    }
+
 }

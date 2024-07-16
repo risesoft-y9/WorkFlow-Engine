@@ -634,6 +634,8 @@ public class OrganWordServiceImpl implements OrganWordService {
                     oldow.setCustom(organWord.getCustom());
                     oldow.setUserName(personName);
                     oldow.setName(organWord.getName());
+                    oldow.setNumberType(organWord.getNumberType());
+                    oldow.setNumberLength(organWord.getNumberLength());
                     organWordRepository.save(oldow);
                 } else {
                     organWordRepository.save(organWord);
@@ -648,6 +650,8 @@ public class OrganWordServiceImpl implements OrganWordService {
                 newOw.setUserName(person.getName());
                 newOw.setCustom(organWord.getCustom());
                 newOw.setName(organWord.getName());
+                newOw.setNumberType(organWord.getNumberType());
+                newOw.setNumberLength(organWord.getNumberLength());
                 organWordRepository.save(newOw);
 
                 map.put(UtilConsts.SUCCESS, true);

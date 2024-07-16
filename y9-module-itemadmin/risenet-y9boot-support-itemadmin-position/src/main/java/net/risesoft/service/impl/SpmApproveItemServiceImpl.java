@@ -39,6 +39,8 @@ import net.risesoft.service.ItemInterfaceBindService;
 import net.risesoft.service.ItemLinkBindService;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.ItemOrganWordBindService;
+import net.risesoft.service.ItemPermissionService;
+import net.risesoft.service.ItemStartNodeRoleService;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.service.ItemViewConfService;
 import net.risesoft.service.ItemWordTemplateBindService;
@@ -70,6 +72,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final RepositoryApi repositoryApi;
     private final ProcessDefinitionApi processDefinitionApi;
     private final Y9FormItemBindService y9FormItemBindService;
+    private final ItemPermissionService itemPermissionService;
     private final RelatedProcessService relatedProcessService;
     private final ItemLinkBindService itemLinkBindService;
     private final ItemInterfaceBindService itemInterfaceBindService;
@@ -79,6 +82,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final ItemWordTemplateBindService itemWordTemplateBindService;
     private final PrintTemplateService printTemplateService;
     private final ItemTaskConfService itemTaskConfService;
+    private final ItemStartNodeRoleService itemStartNodeRoleService;
     private final ItemButtonBindService itemButtonBindService;
     private final ItemViewConfService itemViewConfService;
 
@@ -162,6 +166,34 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 String[] id = ids.split(SysVariables.COMMA);
                 for (String s : id) {
                     spmApproveItemRepository.deleteById(s);
+                    // 删除表单绑定信息
+                    y9FormItemBindService.deleteBindInfo(s);
+                    // 删除权限绑定信息
+                    itemPermissionService.deleteBindInfo(s);
+                    // 删除意见框绑定信息
+                    itemOpinionFrameBindService.deleteBindInfo(s);
+                    // 删除前置表单绑定信息
+                    y9PreFormItemBindService.deleteBindInfo(s);
+                    // 删除编号绑定信息
+                    itemOrganWordBindService.deleteBindInfo(s);
+                    // 删除关联事项绑定信息
+                    relatedProcessService.deleteBindInfo(s);
+                    // 删除链接配置信息
+                    itemLinkBindService.deleteBindInfo(s);
+                    // 删除接口配置信息
+                    itemInterfaceBindService.deleteBindInfo(s);
+                    // 删除正文模板绑定信息
+                    itemWordTemplateBindService.deleteBindInfo(s);
+                    // 删除打印模板绑定信息
+                    printTemplateService.deleteBindInfo(s);
+                    // 删除签收配置绑定信息
+                    itemTaskConfService.deleteBindInfo(s);
+                    // 删除路由配置的绑定信息
+                    itemStartNodeRoleService.deleteBindInfo(s);
+                    // 删除按钮配置的绑定信息
+                    itemButtonBindService.deleteBindInfo(s);
+                    // 删除视图配置绑定信息
+                    itemViewConfService.deleteBindInfo(s);
                 }
             }
         } catch (Exception e) {

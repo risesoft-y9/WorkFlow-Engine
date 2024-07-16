@@ -31,4 +31,7 @@ public interface ItemStartNodeRoleRepository
 
     @Query("select max(tabIndex) from ItemStartNodeRole t where t.itemId=?1 and t.processDefinitionId=?2")
     Integer getMaxTabIndex(String itemId, String processDefinitionId);
+
+    @Transactional
+    void deleteByItemId(String itemId);
 }

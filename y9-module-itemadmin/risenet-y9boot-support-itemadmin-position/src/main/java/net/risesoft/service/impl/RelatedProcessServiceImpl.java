@@ -52,6 +52,16 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
 
     @Override
     @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            relatedProcessRepository.deleteByParentItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除关联流程绑定信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
     public void delete(String id) {
         relatedProcessRepository.deleteById(id);
     }

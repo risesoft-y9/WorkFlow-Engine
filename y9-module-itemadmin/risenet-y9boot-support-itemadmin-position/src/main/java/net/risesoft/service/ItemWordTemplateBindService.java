@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.ItemWordTemplateBind;
-
 import java.util.List;
 import java.util.Map;
+
+import net.risesoft.entity.ItemWordTemplateBind;
 
 /**
  * @author qinman
@@ -31,6 +31,7 @@ public interface ItemWordTemplateBindService {
 
     /**
      * 根据事项Id获取绑定的正文模板
+     * 
      * @param ItemId
      * @return
      */
@@ -63,29 +64,39 @@ public interface ItemWordTemplateBindService {
      * @param bindValue
      * @return
      */
-    Map<String, Object> saveTemplateValue(String id,String bindValue);
+    Map<String, Object> saveTemplateValue(String id, String bindValue);
 
     /**
      * 更新绑定状态
+     * 
      * @param id
      * @param itemId
      * @param processDefinitionId
      * @return
      */
-    void updateBindStatus(String id, String itemId,String processDefinitionId);
+    void updateBindStatus(String id, String itemId, String processDefinitionId);
 
     /**
      * 清空绑定状态
+     * 
      * @param itemId
      * @param processDefinitionId
      */
-    void clearBindStatus(String itemId,String processDefinitionId);
+    void clearBindStatus(String itemId, String processDefinitionId);
 
     /**
      * 复制正文模板绑定信息
+     * 
      * @param itemId
      * @param newItemId
      * @param lastVersionPid
      */
-    public void copyBindInfo(String itemId,String newItemId, String lastVersionPid);
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
+
+    /**
+     * 删除正文模板绑定信息
+     * 
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

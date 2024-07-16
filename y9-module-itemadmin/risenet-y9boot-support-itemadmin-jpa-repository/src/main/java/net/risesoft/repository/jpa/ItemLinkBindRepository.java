@@ -23,4 +23,6 @@ public interface ItemLinkBindRepository
 
     List<ItemLinkBind> findByLinkIdOrderByCreateTimeDesc(String linkId);
 
+    void deleteByItemId(String itemId);
+
 }

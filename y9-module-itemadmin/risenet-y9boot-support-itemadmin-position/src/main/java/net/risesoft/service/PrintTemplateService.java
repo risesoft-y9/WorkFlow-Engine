@@ -1,13 +1,15 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.ItemPrintTemplateBind;
-import net.risesoft.entity.PrintTemplate;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import net.risesoft.entity.ItemPrintTemplateBind;
+import net.risesoft.entity.PrintTemplate;
 
 /**
  * @author qinman
@@ -22,7 +24,7 @@ public interface PrintTemplateService {
      * @param id
      * @return
      */
-    public Map<String, Object> deleteBindPrintTemplate(String id);
+    Map<String, Object> deleteBindPrintTemplate(String id);
 
     /**
      * 删除打印模板
@@ -30,7 +32,7 @@ public interface PrintTemplateService {
      * @param id
      * @return
      */
-    public Map<String, Object> deletePrintTemplate(String id);
+    Map<String, Object> deletePrintTemplate(String id);
 
     /**
      * 下载模板
@@ -39,7 +41,7 @@ public interface PrintTemplateService {
      * @param response
      * @param request
      */
-    public void download(String id, HttpServletResponse response, HttpServletRequest request);
+    void download(String id, HttpServletResponse response, HttpServletRequest request);
 
     /**
      * Description:
@@ -54,7 +56,7 @@ public interface PrintTemplateService {
      * @param itemId
      * @return
      */
-    public List<ItemPrintTemplateBind> getTemplateBindList(String itemId);
+    List<ItemPrintTemplateBind> getTemplateBindList(String itemId);
 
     /**
      * Description: 保存绑定的模板
@@ -66,7 +68,7 @@ public interface PrintTemplateService {
      * @param templateType
      * @return
      */
-    public Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName,
+    Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName,
         String templateUrl, String templateType);
 
     /**
@@ -82,7 +84,7 @@ public interface PrintTemplateService {
      * @param file
      * @return
      */
-    public Map<String, Object> uploadTemplate(MultipartFile file);
+    Map<String, Object> uploadTemplate(MultipartFile file);
 
     /**
      * 复制打印模板绑定信息
@@ -91,4 +93,11 @@ public interface PrintTemplateService {
      * @param newItemId
      */
     void copyBindInfo(String itemId, String newItemId);
+
+    /**
+     * 删除打印模板绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 }

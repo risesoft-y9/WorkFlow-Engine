@@ -104,7 +104,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     @Transactional
     @Override
     public void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
-        String processSerialNumber, String isTaoHong, String taskId) {
+        String processSerialNumber, String isTaoHong, String taskId, String docCategory) {
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
@@ -126,6 +126,9 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         transactionHistoryWord.setFileSize(fileSize);
         transactionHistoryWord.setUserId(userId);
         transactionHistoryWord.setProcessSerialNumber(processSerialNumber);
+        if (StringUtils.isNotBlank(docCategory)) {
+            transactionHistoryWord.setDocCategory(docCategory);
+        }
         transactionHistoryWordRepository.save(transactionHistoryWord);
     }
 
@@ -153,11 +156,11 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     @Transactional
     @Override
     public void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize,
-        String isTaoHong, String userId, String id) {
+        String isTaoHong, String docCategory, String userId, String id) {
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             transactionHistoryWordRepository.updateTransactionHistoryWordById(fileStoreId, fileSize, isTaoHong,
-                sdfymdhms.format(new Date()), userId, id);
+                docCategory, sdfymdhms.format(new Date()), userId, id);
         }
     }
 

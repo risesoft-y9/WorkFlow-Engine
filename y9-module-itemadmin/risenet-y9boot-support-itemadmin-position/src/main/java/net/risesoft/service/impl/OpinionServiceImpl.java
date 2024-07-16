@@ -34,6 +34,7 @@ import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
@@ -49,6 +50,7 @@ import net.risesoft.repository.jpa.OpinionHistoryRepository;
 import net.risesoft.repository.jpa.OpinionRepository;
 import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.ItemOpinionFrameBindService;
+import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.service.OpinionService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.ProcessTrackService;
@@ -71,6 +73,8 @@ public class OpinionServiceImpl implements OpinionService {
     private final OpinionRepository opinionRepository;
 
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
+
+    private final OpinionFrameOneClickSetService opinionFrameOneClickSetService;
 
     private final ProcessTrackService processTrackService;
 
@@ -290,10 +294,12 @@ public class OpinionServiceImpl implements OpinionService {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
             OpinionListModel model = new OpinionListModel();
+            List<OpinionFrameOneClickSetModel> oneClickSetList = new ArrayList<>();
             // 代录意见权限
             model.setAddable(true);
             model.setAddAgent(false);
             model.setOpinionFrameMark(opinionFrameMark);
+            model.setOneClickSetList(oneClickSetList);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             List<Opinion> list =
@@ -459,19 +465,28 @@ public class OpinionServiceImpl implements OpinionService {
                     }
                     resList.add(model0);
                 }
+                ItemOpinionFrameBind setBind =
+                    itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
+                        itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
+                if (null != setBind) {
+                    oneClickSetList = opinionFrameOneClickSetService.findByBindIdModel(setBind.getId());
+                    if (null != oneClickSetList && !oneClickSetList.isEmpty()) {
+                        model.setOneClickSetList(oneClickSetList);
+                    }
+                }
                 /**
                  * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
                  */
                 Boolean addableTemp = model.getAddable();
                 if (addableTemp) {
                     model.setAddable(false);
-                    ItemOpinionFrameBind bind =
-                        itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
-                            itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
-                    if (null != bind) {
+                    // ItemOpinionFrameBind bind =
+                    // itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
+                    // itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
+                    if (null != setBind) {
                         // 是否必填意见，与addable一起判定，都为true时提示必填。
-                        model.setSignOpinion(bind.isSignOpinion());
-                        List<String> roleIds = bind.getRoleIds();
+                        model.setSignOpinion(setBind.isSignOpinion());
+                        List<String> roleIds = setBind.getRoleIds();
                         if (roleIds.isEmpty()) {
                             model.setAddable(true);
                         } else {

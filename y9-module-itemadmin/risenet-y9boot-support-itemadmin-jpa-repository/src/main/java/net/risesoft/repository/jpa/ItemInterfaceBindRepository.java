@@ -23,4 +23,7 @@ public interface ItemInterfaceBindRepository
 
     List<ItemInterfaceBind> findByItemIdOrderByCreateTimeDesc(String itemId);
 
+    @Transactional
+    void deleteByItemId(String itemId);
+
 }
