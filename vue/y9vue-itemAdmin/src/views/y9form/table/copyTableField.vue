@@ -68,7 +68,7 @@
   async function tableChange(val){
 	let result = await getTableFieldList(val);
     if(result.success){
-		tableConfig.value.tableData = result.data.rows;
+		tableConfig.value.tableData = result.data;
     }
   }
 
