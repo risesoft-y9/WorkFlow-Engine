@@ -1,7 +1,6 @@
 package net.risesoft.controller.form;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormOptionClass;
 import net.risesoft.entity.form.Y9FormOptionValue;
 import net.risesoft.pojo.Y9Result;
@@ -37,11 +35,7 @@ public class OptionClassRestController {
      */
     @PostMapping(value = "/delOptionClass")
     public Y9Result<String> delOptionClass(String type) {
-        Map<String, Object> map = y9FormOptionClassService.delOptionClass(type);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9FormOptionClassService.delOptionClass(type);
     }
 
     /**
@@ -52,11 +46,7 @@ public class OptionClassRestController {
      */
     @PostMapping(value = "/delOptionValue")
     public Y9Result<String> delOptionValue(String id) {
-        Map<String, Object> map = y9FormOptionClassService.delOptionValue(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9FormOptionClassService.delOptionValue(id);
     }
 
     /**
@@ -77,7 +67,7 @@ public class OptionClassRestController {
      */
     @GetMapping(value = "/getOptionClassList")
     public Y9Result<List<Y9FormOptionClass>> getOptionClassList(@RequestParam(required = false) String name) {
-        List<Y9FormOptionClass> list = y9FormOptionClassService.findByName(name);
+        List<Y9FormOptionClass> list = y9FormOptionClassService.listByName(name);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -101,7 +91,7 @@ public class OptionClassRestController {
      */
     @GetMapping(value = "/getOptionValueList")
     public Y9Result<List<Y9FormOptionValue>> getOptionValueList(String type) {
-        List<Y9FormOptionValue> list = y9FormOptionClassService.findByTypeOrderByTabIndexAsc(type);
+        List<Y9FormOptionValue> list = y9FormOptionClassService.listByTypeOrderByTabIndexAsc(type);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -112,12 +102,8 @@ public class OptionClassRestController {
      * @return
      */
     @PostMapping(value = "/saveOptionClass")
-    public Y9Result<String> saveOptionClass(Y9FormOptionClass optionClass) {
-        Map<String, Object> map = y9FormOptionClassService.saveOptionClass(optionClass);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+    public Y9Result<Y9FormOptionClass> saveOptionClass(Y9FormOptionClass optionClass) {
+        return y9FormOptionClassService.saveOptionClass(optionClass);
     }
 
     /**
@@ -127,12 +113,8 @@ public class OptionClassRestController {
      * @return
      */
     @PostMapping(value = "/saveOptionValue")
-    public Y9Result<String> saveOptionValue(Y9FormOptionValue optionValue) {
-        Map<String, Object> map = y9FormOptionClassService.saveOptionValue(optionValue);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+    public Y9Result<Y9FormOptionValue> saveOptionValue(Y9FormOptionValue optionValue) {
+        return y9FormOptionClassService.saveOptionValue(optionValue);
     }
 
     /**
@@ -143,11 +125,7 @@ public class OptionClassRestController {
      */
     @PostMapping(value = "/saveOrder")
     public Y9Result<String> saveOrder(String ids) {
-        Map<String, Object> map = y9FormOptionClassService.saveOrder(ids);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9FormOptionClassService.saveOrder(ids);
     }
 
     /**
@@ -158,11 +136,7 @@ public class OptionClassRestController {
      */
     @PostMapping(value = "/updateOptionValue")
     public Y9Result<String> updateOptionValue(String id) {
-        Map<String, Object> map = y9FormOptionClassService.updateOptionValue(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9FormOptionClassService.updateOptionValue(id);
     }
 
 }

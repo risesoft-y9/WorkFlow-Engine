@@ -2,9 +2,7 @@ package net.risesoft.service.form.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -13,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormOptionClass;
 import net.risesoft.entity.form.Y9FormOptionValue;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormOptionClassRepository;
 import net.risesoft.repository.form.Y9FormOptionValueRepository;
 import net.risesoft.service.form.Y9FormOptionClassService;
@@ -38,50 +36,32 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
     private final Y9FormOptionValueRepository y9FormOptionValueRepository;
 
     @Override
-    @Transactional
-    public Map<String, Object> delOptionClass(String type) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put(UtilConsts.SUCCESS, true);
-        retMap.put("msg", "删除成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> delOptionClass(String type) {
         try {
             if (StringUtils.isNotBlank(type)) {
                 y9FormOptionClassRepository.deleteById(type);
                 y9FormOptionValueRepository.deleteByType(type);
             }
+            return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
-            retMap.put("msg", "删除失败");
-            LOGGER.error("删除失败", e);
+            LOGGER.error("删除失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("删除失败");
         }
-        return retMap;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> delOptionValue(String id) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put(UtilConsts.SUCCESS, true);
-        retMap.put("msg", "删除成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> delOptionValue(String id) {
         try {
             if (StringUtils.isNotBlank(id)) {
                 y9FormOptionValueRepository.deleteById(id);
             }
+            return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
-            retMap.put("msg", "删除失败");
-            LOGGER.error("删除失败", e);
+            LOGGER.error("删除字典数据失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("删除失败");
         }
-        return retMap;
-    }
-
-    @Override
-    public List<Y9FormOptionClass> findAllOptionClass() {
-        return y9FormOptionClassRepository.findAll();
-    }
-
-    @Override
-    public List<Y9FormOptionValue> findAllOptionValue() {
-        return y9FormOptionValueRepository.findAll();
     }
 
     @Override
@@ -90,26 +70,33 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
     }
 
     @Override
-    public List<Y9FormOptionClass> findByName(String name) {
-        return y9FormOptionClassRepository.findByNameContaining(StringUtils.isBlank(name) ? "" : name);
-    }
-
-    @Override
     public Y9FormOptionClass findByType(String type) {
         return y9FormOptionClassRepository.findByType(type);
     }
 
     @Override
-    public List<Y9FormOptionValue> findByTypeOrderByTabIndexAsc(String type) {
+    public List<Y9FormOptionClass> listAllOptionClass() {
+        return y9FormOptionClassRepository.findAll();
+    }
+
+    @Override
+    public List<Y9FormOptionValue> listAllOptionValue() {
+        return y9FormOptionValueRepository.findAll();
+    }
+
+    @Override
+    public List<Y9FormOptionClass> listByName(String name) {
+        return y9FormOptionClassRepository.findByNameContaining(StringUtils.isBlank(name) ? "" : name);
+    }
+
+    @Override
+    public List<Y9FormOptionValue> listByTypeOrderByTabIndexAsc(String type) {
         return y9FormOptionValueRepository.findByTypeOrderByTabIndexAsc(type);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     @Override
-    public Map<String, Object> saveOptionClass(Y9FormOptionClass optionClass) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put(UtilConsts.SUCCESS, true);
-        retMap.put("msg", "保存成功");
+    public Y9Result<Y9FormOptionClass> saveOptionClass(Y9FormOptionClass optionClass) {
         try {
             Y9FormOptionClass y9FormOptionClass = y9FormOptionClassRepository.findByType(optionClass.getType());
             if (y9FormOptionClass == null) {
@@ -117,21 +104,18 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
                 y9FormOptionClass.setType(optionClass.getType());
             }
             y9FormOptionClass.setName(optionClass.getName());
-            y9FormOptionClassRepository.save(y9FormOptionClass);
+            y9FormOptionClass = y9FormOptionClassRepository.save(y9FormOptionClass);
+
+            return Y9Result.success(y9FormOptionClass, "保存成功");
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
-            retMap.put("msg", "保存失败");
-            LOGGER.error("保存失败", e);
+            LOGGER.error("保存字典类型失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("保存失败");
         }
-        return retMap;
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     @Override
-    public Map<String, Object> saveOptionValue(Y9FormOptionValue optionValue) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put(UtilConsts.SUCCESS, true);
-        retMap.put("msg", "保存成功");
+    public Y9Result<Y9FormOptionValue> saveOptionValue(Y9FormOptionValue optionValue) {
         try {
             Y9FormOptionValue y9FormOptionValue = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -154,21 +138,18 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
             y9FormOptionValue.setName(optionValue.getName());
             y9FormOptionValue.setType(optionValue.getType());
             y9FormOptionValue.setUpdateTime(sdf.format(new Date()));
-            y9FormOptionValueRepository.save(y9FormOptionValue);
+            y9FormOptionValue = y9FormOptionValueRepository.save(y9FormOptionValue);
+
+            return Y9Result.success(y9FormOptionValue, "保存成功");
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
-            retMap.put("msg", "保存失败");
-            LOGGER.error("保存失败", e);
+            LOGGER.error("保存字典数据失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("保存失败");
         }
-        return retMap;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> saveOrder(String ids) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put(UtilConsts.SUCCESS, true);
-        retMap.put("msg", "保存成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> saveOrder(String ids) {
         try {
             String[] id = ids.split(",");
             for (String idTemp : id) {
@@ -180,20 +161,16 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
                     y9FormOptionValueRepository.save(y9FormOptionValue);
                 }
             }
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
-            retMap.put("msg", "保存失败");
-            LOGGER.error("保存失败", e);
+            LOGGER.error("保存失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("保存失败");
         }
-        return retMap;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> updateOptionValue(String id) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put(UtilConsts.SUCCESS, true);
-        retMap.put("msg", "设置成功");
+    @Transactional(readOnly = false)
+    public Y9Result<String> updateOptionValue(String id) {
         try {
             Y9FormOptionValue y9FormOptionValue = y9FormOptionValueRepository.findById(id).orElse(null);
             if (y9FormOptionValue != null) {
@@ -209,12 +186,11 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
                     }
                 }
             }
+            return Y9Result.successMsg("设置成功");
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
-            retMap.put("msg", "设置失败");
-            LOGGER.error("设置失败", e);
+            LOGGER.error("设置失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("设置失败");
         }
-        return retMap;
     }
 
 }

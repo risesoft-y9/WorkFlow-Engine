@@ -46,14 +46,24 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
     @Override
-    public List<OpinionFrame> findAll() {
+    public OpinionFrame getById(String id) {
+        return opinionFrameRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public OpinionFrame getByMark(String mark) {
+        return opinionFrameRepository.findByMark(mark);
+    }
+
+    @Override
+    public List<OpinionFrame> listAll() {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         return opinionFrameRepository.findAll(sort);
     }
 
     @SuppressWarnings("serial")
     @Override
-    public Page<OpinionFrame> findAll(int page, int rows) {
+    public Page<OpinionFrame> pageAll(int page, int rows) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return opinionFrameRepository.findAll(new Specification<OpinionFrame>() {
@@ -69,7 +79,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    public Page<OpinionFrame> findAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page,
+    public Page<OpinionFrame> pageAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page,
         int rows) {
         List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
@@ -87,19 +97,9 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    public OpinionFrame findByMark(String mark) {
-        return opinionFrameRepository.findByMark(mark);
-    }
-
-    @Override
-    public OpinionFrame findOne(String id) {
-        return opinionFrameRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void remove(String id) {
-        OpinionFrame opinionFrame = this.findOne(id);
+        OpinionFrame opinionFrame = this.getById(id);
         if (opinionFrame != null) {
             List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByMark(opinionFrame.getMark());
             for (ItemOpinionFrameBind bind : list) {
@@ -109,7 +109,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void remove(String[] ids) {
         for (String id : ids) {
             this.remove(id);
@@ -118,20 +118,20 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public OpinionFrame save(OpinionFrame opinionFrame) {
         return opinionFrameRepository.save(opinionFrame);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public OpinionFrame saveOrUpdate(OpinionFrame opinionFrame) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String id = opinionFrame.getId();
             if (StringUtils.isNotEmpty(id)) {
-                OpinionFrame oldof = this.findOne(id);
+                OpinionFrame oldof = this.getById(id);
                 if (null != oldof) {
                     oldof.setModifyDate(sdf.format(new Date()));
                     oldof.setName(opinionFrame.getName());

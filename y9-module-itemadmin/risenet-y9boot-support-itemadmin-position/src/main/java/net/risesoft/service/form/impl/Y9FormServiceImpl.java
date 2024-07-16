@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,8 @@ import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
@@ -68,10 +71,8 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> delChildTableRow(String formId, String tableId, String guid) {
         try {
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
@@ -90,33 +91,29 @@ public class Y9FormServiceImpl implements Y9FormService {
             jdbcTemplate4Tenant.execute(sqlStr.toString());
         } catch (Exception e) {
             e.printStackTrace();
-            map.put(UtilConsts.SUCCESS, false);
+            return Y9Result.failure("删除失败");
         }
-        return map;
+        return Y9Result.successMsg("删除成功");
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> delete(String ids) {
-        Map<String, Object> map = new HashMap<>(16);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> delete(String ids) {
         try {
             String[] id = ids.split(",");
             for (String idTemp : id) {
                 y9FormRepository.deleteById(idTemp);
                 y9FormFieldRepository.deleteByFormId(idTemp);
             }
-            map.put("msg", "删除成功");
-            map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
             e.printStackTrace();
+            return Y9Result.failure("删除失败");
         }
-        return map;
+        return Y9Result.successMsg("删除成功");
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public boolean deleteByGuid(String y9TableId, String guid) {
         try {
             Y9Table y9Table = y9TableService.findById(y9TableId);
@@ -131,10 +128,8 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> delPreFormData(String formId, String guid) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> delPreFormData(String formId, String guid) {
         try {
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
@@ -152,50 +147,17 @@ public class Y9FormServiceImpl implements Y9FormService {
                 }
                 jdbcTemplate4Tenant.execute(sqlStr.toString());
             }
+            return Y9Result.success(true, "删除成功");
         } catch (Exception e) {
             e.printStackTrace();
-            map.put(UtilConsts.SUCCESS, false);
+            return Y9Result.failure("删除失败");
         }
-        return map;
-    }
-
-    @Override
-    public List<Y9Form> findAll() {
-        Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
-        return y9FormRepository.findAll(sort);
     }
 
     @Override
     public Y9Form findById(String id) {
         Y9Form c = y9FormRepository.findById(id).orElse(null);
         return c;
-    }
-
-    @Override
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
-        throws Exception {
-        List<Map<String, Object>> datamap = new ArrayList<>();
-        try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
-            Y9Table y9Table = y9TableService.findById(tableId);
-            String tableName = y9Table.getTableName();
-            StringBuilder sqlStr = new StringBuilder();
-            if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
-            } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
-            } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
-            } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where parentProcessSerialNumber =?");
-            }
-            datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
-            return datamap;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Y9FormServiceImpl getChildTableData error");
-        }
     }
 
     @Override
@@ -316,7 +278,46 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    public List<Map<String, Object>> getFormDataList(String formId) {
+    public String getFormField(String id) {
+        List<Y9FormField> list = y9FormFieldRepository.findByFormId(id);
+        return Y9JsonUtil.writeValueAsString(list);
+    }
+
+    @Override
+    public List<Y9Form> listAll() {
+        Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
+        return y9FormRepository.findAll(sort);
+    }
+
+    @Override
+    public List<Map<String, Object>> listChildTableData(String formId, String tableId, String processSerialNumber)
+        throws Exception {
+        List<Map<String, Object>> datamap = new ArrayList<>();
+        try {
+            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            Y9Table y9Table = y9TableService.findById(tableId);
+            String tableName = y9Table.getTableName();
+            StringBuilder sqlStr = new StringBuilder();
+            if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
+            } else if (DialectEnum.DM.getValue().equals(dialect)) {
+                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
+            } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
+            } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+                sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where parentProcessSerialNumber =?");
+            }
+            datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
+            return datamap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Y9FormServiceImpl getChildTableData error");
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> listFormData(String formId) {
         List<Map<String, Object>> resList = new ArrayList<>();
         try {
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
@@ -354,15 +355,22 @@ public class Y9FormServiceImpl implements Y9FormService {
         return resList;
     }
 
-    @Override
-    public String getFormField(String id) {
-        List<Y9FormField> list = y9FormFieldRepository.findByFormId(id);
-        return Y9JsonUtil.writeValueAsString(list);
+    /**
+     * 将listMap转为map
+     *
+     * @param listMap
+     * @return
+     */
+    private final Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
+        Map<String, Object> map = new CaseInsensitiveMap<>(16);
+        for (Map<String, Object> m : listMap) {
+            map.put((String)m.get("name"), m.get("value"));
+        }
+        return map;
     }
 
     @Override
-    public Map<String, Object> getFormList(String systemName, int page, int rows) {
-        Map<String, Object> resMap = new HashMap<>(16);
+    public Y9Page<Map<String, Object>> pageFormList(String systemName, int page, int rows) {
         if (page < 1) {
             page = 1;
         }
@@ -396,34 +404,14 @@ public class Y9FormServiceImpl implements Y9FormService {
             map.put("updateTime", sdf.format(y9Form.getUpdateTime()));
             listMap.add(map);
         }
-        resMap.put("rows", listMap);
-        resMap.put("currpage", page);
-        resMap.put("totalpages", pageList.getTotalPages());
-        resMap.put("total", pageList.getTotalElements());
-        resMap.put(UtilConsts.SUCCESS, true);
-        return resMap;
-    }
-
-    /**
-     * 将listMap转为map
-     *
-     * @param listMap
-     * @return
-     */
-    private final Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
-        Map<String, Object> map = new CaseInsensitiveMap<>(16);
-        for (Map<String, Object> m : listMap) {
-            map.put((String)m.get("name"), m.get("value"));
-        }
-        return map;
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional
-    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
+    @Transactional(readOnly = false)
+    public Y9Result<Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
         String jsonData) {
-        Map<String, Object> map = new HashMap<>(16);
         try {
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
@@ -624,21 +612,17 @@ public class Y9FormServiceImpl implements Y9FormService {
                     jdbcTemplate4Tenant.execute(sql);
                 }
             }
-            map.put("msg", "保存成功");
-            map.put(UtilConsts.SUCCESS, true);
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "保存失败");
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
     }
 
     @SuppressWarnings({"unchecked"})
     @Override
     @Transactional
-    public Map<String, Object> saveFormData(String formdata) {
-        Map<String, Object> map = new HashMap<>(16);
+    public Y9Result<Object> saveFormData(String formdata) {
         try {
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
@@ -835,20 +819,16 @@ public class Y9FormServiceImpl implements Y9FormService {
                     jdbcTemplate4Tenant.execute(sql);
                 }
             }
-            map.put("msg", "保存成功");
-            map.put(UtilConsts.SUCCESS, true);
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "保存失败");
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> saveFormField(String formId, String fieldJson) {
-        Map<String, Object> resMap = new HashMap<>(16);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> saveFormField(String formId, String fieldJson) {
         try {
             List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fieldJson, String.class, Object.class);
             y9FormFieldRepository.deleteByFormId(formId);
@@ -866,40 +846,35 @@ public class Y9FormServiceImpl implements Y9FormService {
                 formField.setOptionValue((String)map.get("optionValue"));
                 y9FormFieldRepository.save(formField);
             }
-            resMap.put(UtilConsts.SUCCESS, true);
-            resMap.put("msg", "保存字段成功");
+            return Y9Result.successMsg("保存字段成功");
         } catch (Exception e) {
-            resMap.put(UtilConsts.SUCCESS, false);
-            resMap.put("msg", "保存字段失败");
             e.printStackTrace();
+            return Y9Result.failure("保存字段失败");
         }
-        return resMap;
 
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> saveFormJson(String id, String formJson) {
-        Map<String, Object> map = new HashMap<>(16);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> saveFormJson(String id, String formJson) {
         try {
-            Y9Form form = y9FormRepository.findById(id).orElse(null);
-            form.setFormJson(formJson);
-            y9FormRepository.save(form);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功");
+            Optional<Y9Form> formOpt = y9FormRepository.findById(id);
+            if (formOpt.isPresent()) {
+                Y9Form form = formOpt.get();
+                form.setFormJson(formJson);
+                y9FormRepository.save(form);
+            }
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "保存失败");
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
 
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> saveOrUpdate(Y9Form form) {
-        Map<String, Object> map = new HashMap<>(16);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> saveOrUpdate(Y9Form form) {
         try {
             if (StringUtils.isBlank(form.getId())) {
                 Y9Form newForm = new Y9Form();
@@ -937,13 +912,10 @@ public class Y9FormServiceImpl implements Y9FormService {
                     y9FormRepository.save(oldForm);
                 }
             }
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功");
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "保存失败");
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
     }
 }

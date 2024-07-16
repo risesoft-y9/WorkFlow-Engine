@@ -1,8 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -12,7 +10,6 @@ import com.google.common.collect.Lists;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OrganWordProperty;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -33,18 +30,8 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     private final OrganWordPropertyRepository organWordPropertyRepository;
 
     @Override
-    public List<OrganWordProperty> findAll() {
-        return organWordPropertyRepository.findAll();
-    }
-
-    @Override
     public OrganWordProperty findById(String id) {
         return organWordPropertyRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public List<OrganWordProperty> findByOrganWordId(String organWordId) {
-        return organWordPropertyRepository.findByOrganWordIdOrderByTabIndexAsc(organWordId);
     }
 
     @Override
@@ -53,7 +40,17 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional
+    public List<OrganWordProperty> listAll() {
+        return organWordPropertyRepository.findAll();
+    }
+
+    @Override
+    public List<OrganWordProperty> listByOrganWordId(String organWordId) {
+        return organWordPropertyRepository.findByOrganWordIdOrderByTabIndexAsc(organWordId);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
     public void removeOrganWordPropertys(String[] organWordPropertyIds) {
         for (String id : organWordPropertyIds) {
             organWordPropertyRepository.deleteById(id);
@@ -61,11 +58,8 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> save(OrganWordProperty organWordProperty) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "保存失败!");
+    @Transactional(readOnly = false)
+    public OrganWordProperty save(OrganWordProperty organWordProperty) {
         String id = organWordProperty.getId();
         if (StringUtils.isNotEmpty(id)) {
             OrganWordProperty oldop = this.findById(id);
@@ -77,10 +71,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
                 oldop = organWordPropertyRepository.save(organWordProperty);
             }
 
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功!");
-            map.put("property", oldop);
-            return map;
+            return oldop;
         }
         OrganWordProperty newop = new OrganWordProperty();
         newop.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -94,15 +85,11 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
             newop.setTabIndex(index + 1);
         }
 
-        organWordPropertyRepository.save(newop);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "保存成功!");
-        map.put("property", newop);
-        return map;
+        return organWordPropertyRepository.save(newop);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void update4Order(String[] idAndTabIndexs) {
         List<String> list = Lists.newArrayList(idAndTabIndexs);
         try {

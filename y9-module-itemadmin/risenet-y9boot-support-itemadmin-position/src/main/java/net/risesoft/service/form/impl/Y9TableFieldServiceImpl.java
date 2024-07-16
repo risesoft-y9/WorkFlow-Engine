@@ -46,12 +46,7 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
     }
 
     @Override
-    public List<Y9TableField> findSystemField(String tableId) {
-        return y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
-    }
-
-    @Override
-    public List<Y9TableField> getFieldList(String tableId) {
+    public List<Y9TableField> listByTableId(String tableId) {
         List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
         Map<String, Object> map = tableManagerService.getExistTableFields(tableId);
         for (Y9TableField field : list) {
@@ -66,6 +61,21 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
             }
         }
         return list;
+    }
+
+    @Override
+    public List<Y9TableField> listByTableIdAndState(String tableId, Integer state) {
+        return y9TableFieldRepository.findByTableIdAndStateOrderByDisplayOrderAsc(tableId, state);
+    }
+
+    @Override
+    public List<Y9TableField> listByTableIdOrderByDisplay(String tableId) {
+        return y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
+    }
+
+    @Override
+    public List<Y9TableField> listSystemFieldByTableId(String tableId) {
+        return y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
     }
 
     @Override
@@ -86,16 +96,6 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
             field.setFieldType(field.getFieldType() + "(" + field.getFieldLength() + ")");
         }
         return y9TableFieldRepository.save(field);
-    }
-
-    @Override
-    public List<Y9TableField> searchFieldsByTableId(String tableId) {
-        return y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-    }
-
-    @Override
-    public List<Y9TableField> searchFieldsByTableId(String tableId, Integer state) {
-        return y9TableFieldRepository.findByTableIdAndStateOrderByDisplayOrderAsc(tableId, state);
     }
 
     @Override

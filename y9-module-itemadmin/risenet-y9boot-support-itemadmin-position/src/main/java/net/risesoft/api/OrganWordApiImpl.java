@@ -107,7 +107,7 @@ public class OrganWordApiImpl implements OrganWordApi {
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(organWordService.findByCustom(itemId, processDefinitionId, taskDefKey, custom));
+        return Y9Result.success(organWordService.listByCustom(itemId, processDefinitionId, taskDefKey, custom));
     }
 
     /**

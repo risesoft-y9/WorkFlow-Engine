@@ -258,7 +258,7 @@ public class Y9FormItemBindRestController {
         SpmApproveItem spmApproveItem = spmApproveItemService.findById(itemId);
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(spmApproveItem.getSystemName(),
             StringUtils.isNotBlank(formName) ? "%" + formName + "%" : "%%");
-        List<ItemPrintTemplateBind> bindList = printTemplateService.getTemplateBindList(itemId);
+        List<ItemPrintTemplateBind> bindList = printTemplateService.listTemplateBindByItemId(itemId);
         ItemPrintTemplateBind itemPrintTemplateBind = !bindList.isEmpty() ? bindList.get(0) : null;
         for (Y9Form y9Form : list) {
             Y9FormVO form = new Y9FormVO();

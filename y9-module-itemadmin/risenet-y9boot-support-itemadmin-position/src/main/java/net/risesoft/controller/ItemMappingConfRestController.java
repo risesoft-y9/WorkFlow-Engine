@@ -65,7 +65,7 @@ public class ItemMappingConfRestController {
     public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName) {
         List<Y9FormField> list = new ArrayList<>();
         List<String> fieldNameList = new ArrayList<>();
-        List<Y9FormField> formFieldList = y9FormFieldService.findByTableName(tableName);
+        List<Y9FormField> formFieldList = y9FormFieldService.listByTableName(tableName);
         for (Y9FormField formField : formFieldList) {
             if (!fieldNameList.contains(formField.getFieldName())) {
                 list.add(formField);
@@ -98,7 +98,7 @@ public class ItemMappingConfRestController {
         List<Y9Table> tableList = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
             String formId = bind.getFormId();
-            List<Y9FormField> formFieldList = y9FormFieldService.findByFormId(formId);
+            List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
             for (Y9FormField formField : formFieldList) {
                 if (!tableNameList.contains(formField.getTableName())) {
                     Y9Table y9Table = y9TableService.findById(formField.getTableId());
@@ -118,7 +118,7 @@ public class ItemMappingConfRestController {
             List<Y9Table> tableList1 = new ArrayList<>();
             for (Y9FormItemBind bind : formList1) {
                 String formId = bind.getFormId();
-                List<Y9FormField> formFieldList = y9FormFieldService.findByFormId(formId);
+                List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
                 for (Y9FormField formField : formFieldList) {
                     if (!tableNameList1.contains(formField.getTableName())) {
                         Y9Table y9Table = y9TableService.findById(formField.getTableId());

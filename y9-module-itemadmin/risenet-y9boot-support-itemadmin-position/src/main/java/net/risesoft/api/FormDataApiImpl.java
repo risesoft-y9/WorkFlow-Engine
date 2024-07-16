@@ -61,11 +61,7 @@ public class FormDataApiImpl implements FormDataApi {
     public Y9Result<Object> delChildTableRow(@RequestParam String tenantId, @RequestParam String formId,
         @RequestParam String tableId, @RequestParam String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = formDataService.delChildTableRow(formId, tableId, guid);
-        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg("删除成功");
-        }
-        return Y9Result.failure("删除失败");
+        return formDataService.delChildTableRow(formId, tableId, guid);
     }
 
     /**
@@ -81,11 +77,7 @@ public class FormDataApiImpl implements FormDataApi {
     public Y9Result<Object> delPreFormData(@RequestParam String tenantId, @RequestParam String formId,
         @RequestParam String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = formDataService.delPreFormData(formId, guid);
-        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg("删除成功");
-        }
-        return Y9Result.failure("删除失败");
+        return formDataService.delPreFormData(formId, guid);
     }
 
     /**
@@ -130,7 +122,7 @@ public class FormDataApiImpl implements FormDataApi {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        List<FieldPermModel> list = formDataService.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
+        List<FieldPermModel> list = formDataService.listAllFieldPerm(formId, taskDefKey, processDefinitionId);
         return Y9Result.success(list);
     }
 
@@ -168,7 +160,7 @@ public class FormDataApiImpl implements FormDataApi {
         @RequestParam String formId, @RequestParam String tableId, @RequestParam String processSerialNumber)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> list = formDataService.getChildTableData(formId, tableId, processSerialNumber);
+        List<Map<String, Object>> list = formDataService.listChildTableData(formId, tableId, processSerialNumber);
         return Y9Result.success(list);
     }
 
@@ -223,7 +215,7 @@ public class FormDataApiImpl implements FormDataApi {
     @Override
     public Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Y9FormFieldModel> list = formDataService.getFormField(itemId);
+        List<Y9FormFieldModel> list = formDataService.listFormFieldByItemId(itemId);
         return Y9Result.success(list);
     }
 
@@ -239,7 +231,7 @@ public class FormDataApiImpl implements FormDataApi {
     public Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(@RequestParam String tenantId,
         @RequestParam String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<FormFieldDefineModel> list = formDataService.getFormFieldDefine(formId);
+        List<FormFieldDefineModel> list = formDataService.listFormFieldDefineByFormId(formId);
         return Y9Result.success(list);
     }
 
@@ -291,7 +283,7 @@ public class FormDataApiImpl implements FormDataApi {
     public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam String tenantId,
         @RequestParam String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> list = formDataService.getPreFormDataByFormId(formId);
+        List<Map<String, Object>> list = formDataService.listPreFormDataByFormId(formId);
         return Y9Result.success(list);
     }
 

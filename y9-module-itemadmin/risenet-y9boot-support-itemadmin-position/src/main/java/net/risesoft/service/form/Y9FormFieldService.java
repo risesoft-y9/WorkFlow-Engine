@@ -1,11 +1,11 @@
 package net.risesoft.service.form;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.form.Y9FormField;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -15,12 +15,12 @@ import net.risesoft.entity.form.Y9FormField;
 public interface Y9FormFieldService {
 
     /**
-     * 根据表单id获取表单元素绑定信息
+     * 删除表单绑定字段
      *
-     * @param formId
+     * @param id
      * @return
      */
-    public List<Y9FormField> findByFormId(String formId);
+    Y9Result<String> deleteFormFieldBind(String id);
 
     /**
      * Description:
@@ -28,7 +28,15 @@ public interface Y9FormFieldService {
      * @param id
      * @return
      */
-    public Y9FormField findById(String id);
+    Y9FormField findById(String id);
+
+    /**
+     * 根据表单id获取表单元素绑定信息
+     *
+     * @param formId
+     * @return
+     */
+    List<Y9FormField> listByFormId(String formId);
 
     /**
      * 根据tableName查找绑定信息
@@ -36,7 +44,7 @@ public interface Y9FormFieldService {
      * @param tableName
      * @return
      */
-    public List<Y9FormField> findByTableName(String tableName);
+    List<Y9FormField> listByTableName(String tableName);
 
     /**
      * 根据表名和表单id获取绑定字段
@@ -45,7 +53,17 @@ public interface Y9FormFieldService {
      * @param formId
      * @return
      */
-    public List<Y9FormField> findByTableNameAndFormId(String tableName, String formId);
+    List<Y9FormField> listByTableNameAndFormId(String tableName, String formId);
+
+    /**
+     * 获取表单绑定的业务表字段
+     *
+     * @param formId
+     * @param page
+     * @param rows
+     * @return
+     */
+    Page<Y9FormField> pageByFormId(String formId, Integer page, Integer rows);
 
     /**
      * Description:
@@ -53,24 +71,6 @@ public interface Y9FormFieldService {
      * @param formField
      * @return
      */
-    public Map<String, Object> saveOrUpdate(Y9FormField formField);
-
-    /**
-     * 获取表单绑定的业务表字段
-     * 
-     * @param formId
-     * @param page
-     * @param rows
-     * @return
-     */
-    public Page<Y9FormField> findByFormId(String formId, Integer page, Integer rows);
-
-    /**
-     * 删除表单绑定字段
-     * 
-     * @param id
-     * @return
-     */
-    Map<String, Object> deleteFormFieldBind(String id);
+    Y9Result<Y9FormField> saveOrUpdate(Y9FormField formField);
 
 }

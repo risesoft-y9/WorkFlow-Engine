@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OrganWord;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OrganWordService;
@@ -62,7 +61,7 @@ public class OrganWordController {
      */
     @GetMapping(value = "/organWordList")
     public Y9Result<List<OrganWord>> organWordList() {
-        List<OrganWord> drList = organWordService.findAll();
+        List<OrganWord> drList = organWordService.listAll();
         return Y9Result.success(drList, "获取成功");
     }
 
@@ -86,11 +85,8 @@ public class OrganWordController {
      */
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<Map<String, Object>> saveOrUpdate(@Valid OrganWord organWord) {
-        Map<String, Object> map = organWordService.save(organWord);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg("保存成功");
-        }
-        return Y9Result.failure("保存失败");
+        organWordService.save(organWord);
+        return Y9Result.successMsg("保存成功");
     }
 
 }

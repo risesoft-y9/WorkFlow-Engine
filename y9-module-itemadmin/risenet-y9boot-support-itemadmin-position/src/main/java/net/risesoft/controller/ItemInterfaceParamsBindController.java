@@ -77,7 +77,7 @@ public class ItemInterfaceParamsBindController {
         List<Map<String, Object>> tableField = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
             String formId = bind.getFormId();
-            List<Y9FormField> formFieldList = y9FormFieldService.findByFormId(formId);
+            List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
             for (Y9FormField formField : formFieldList) {
                 if (!tableNameList.contains(formField.getTableName())) {
                     Y9Table y9Table = y9TableService.findById(formField.getTableId());

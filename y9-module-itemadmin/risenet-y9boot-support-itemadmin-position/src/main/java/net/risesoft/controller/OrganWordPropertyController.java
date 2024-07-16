@@ -1,7 +1,6 @@
 package net.risesoft.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OrganWordProperty;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OrganWordPropertyService;
@@ -50,7 +48,7 @@ public class OrganWordPropertyController {
      */
     @GetMapping(value = "/propertyList")
     public Y9Result<List<OrganWordProperty>> organWordList(String organWordId) {
-        List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWordId);
+        List<OrganWordProperty> propertyList = organWordPropertyService.listByOrganWordId(organWordId);
         return Y9Result.success(propertyList, "获取成功");
     }
 
@@ -73,12 +71,9 @@ public class OrganWordPropertyController {
      * @return
      */
     @PostMapping(value = "/save")
-    public Y9Result<Map<String, Object>> save(@Valid OrganWordProperty organWordProperty) {
-        Map<String, Object> map = organWordPropertyService.save(organWordProperty);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg("保存成功");
-        }
-        return Y9Result.failure("保存失败");
+    public Y9Result<OrganWordProperty> save(@Valid OrganWordProperty organWordProperty) {
+        OrganWordProperty property = organWordPropertyService.save(organWordProperty);
+        return Y9Result.success(property, "保存成功");
     }
 
     @PostMapping(value = "/saveOrder")

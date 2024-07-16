@@ -66,31 +66,12 @@ public interface OrganWordService {
     OrganWordModel exist(String custom, String processSerialNumber, String processInstanceId, String itembox);
 
     /**
-     * 根据租户Id获取机关文字列表并按照tabIndex 升序
-     * 
-     * @return
-     */
-    List<OrganWord> findAll();
-
-    /**
      * 根据标识查找未删除的机关代字列表
      *
      * @param custom
      * @return
      */
     OrganWord findByCustom(String custom);
-
-    /**
-     * Description: 查找有权限的机构代字
-     *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @param custom
-     * @return
-     */
-    List<OrganWordPropertyModel> findByCustom(String itemId, String processDefinitionId, String taskDefKey,
-        String custom);
 
     /**
      * 根据Id查找机关代字
@@ -136,13 +117,32 @@ public interface OrganWordService {
     Integer getNumberOnly(String custom, String characterValue, Integer year, Integer common, String itemId);
 
     /**
+     * 根据租户Id获取机关文字列表并按照tabIndex 升序
+     *
+     * @return
+     */
+    List<OrganWord> listAll();
+
+    /**
+     * Description: 查找有权限的机构代字
+     *
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @param custom
+     * @return
+     */
+    List<OrganWordPropertyModel> listByCustom(String itemId, String processDefinitionId, String taskDefKey,
+        String custom);
+
+    /**
      * 获取所有的编号列表
-     * 
+     *
      * @param rows
      * @param page
      * @return
      */
-    Page<OrganWord> list(int rows, int page);
+    Page<OrganWord> pageAll(int rows, int page);
 
     /**
      * Description: 根据传进来的机关代字Id的数组逻辑删除
@@ -157,5 +157,5 @@ public interface OrganWordService {
      * @param organWord
      * @return
      */
-    Map<String, Object> save(OrganWord organWord);
+    OrganWord save(OrganWord organWord);
 }

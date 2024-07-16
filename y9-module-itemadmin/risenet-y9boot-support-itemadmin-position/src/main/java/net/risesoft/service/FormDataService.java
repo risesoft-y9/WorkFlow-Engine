@@ -6,6 +6,7 @@ import java.util.Map;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -22,7 +23,7 @@ public interface FormDataService {
      * @param guid
      * @return
      */
-    Map<String, Object> delChildTableRow(String formId, String tableId, String guid);
+    Y9Result<Object> delChildTableRow(String formId, String tableId, String guid);
 
     /**
      * 删除前置表单数据
@@ -31,17 +32,7 @@ public interface FormDataService {
      * @param guid
      * @return
      */
-    Map<String, Object> delPreFormData(String formId, String guid);
-
-    /**
-     * 获取表单所有字段权限
-     *
-     * @param formId
-     * @param taskDefKey
-     * @param processDefinitionId
-     * @return List<FieldPermModel>
-     */
-    List<FieldPermModel> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId);
+    Y9Result<Object> delPreFormData(String formId, String guid);
 
     /**
      * 根据事项id获取绑定前置表单
@@ -50,18 +41,6 @@ public interface FormDataService {
      * @return
      */
     Map<String, Object> getBindPreFormByItemId(String itemId);
-
-    /**
-     * Description: 获取子表数据
-     *
-     * @param formId
-     * @param tableId
-     * @param processSerialNumber
-     * @return
-     * @throws Exception
-     */
-    List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
-        throws Exception;
 
     /**
      * 根据事项id和流程序列号获取数据
@@ -85,22 +64,6 @@ public interface FormDataService {
     FieldPermModel getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId);
 
     /**
-     * 获取表单绑定字段信息
-     *
-     * @param itemId
-     * @return
-     */
-    List<Y9FormFieldModel> getFormField(String itemId);
-
-    /**
-     * 根据表单id获取绑定字段信息
-     *
-     * @param formId
-     * @return
-     */
-    List<FormFieldDefineModel> getFormFieldDefine(String formId);
-
-    /**
      * 获取表单json数据
      *
      * @param formId
@@ -118,12 +81,50 @@ public interface FormDataService {
     Map<String, Object> getFromData(String formId, String processSerialNumber);
 
     /**
+     * 获取表单所有字段权限
+     *
+     * @param formId
+     * @param taskDefKey
+     * @param processDefinitionId
+     * @return List<FieldPermModel>
+     */
+    List<FieldPermModel> listAllFieldPerm(String formId, String taskDefKey, String processDefinitionId);
+
+    /**
+     * Description: 获取子表数据
+     *
+     * @param formId
+     * @param tableId
+     * @param processSerialNumber
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listChildTableData(String formId, String tableId, String processSerialNumber)
+        throws Exception;
+
+    /**
+     * 获取表单绑定字段信息
+     *
+     * @param itemId
+     * @return
+     */
+    List<Y9FormFieldModel> listFormFieldByItemId(String itemId);
+
+    /**
+     * 根据表单id获取绑定字段信息
+     *
+     * @param formId
+     * @return
+     */
+    List<FormFieldDefineModel> listFormFieldDefineByFormId(String formId);
+
+    /**
      * 根据表单id获取前置表单数据
      *
      * @param formId
      * @return
      */
-    List<Map<String, Object>> getPreFormDataByFormId(String formId);
+    List<Map<String, Object>> listPreFormDataByFormId(String formId);
 
     /**
      * 保存前置表单数据
@@ -151,7 +152,6 @@ public interface FormDataService {
      *
      * @param formdata
      * @param formId
-     * @param actionType
      * @throws Exception
      */
     void saveFormData(String formdata, String formId) throws Exception;

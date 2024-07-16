@@ -63,7 +63,7 @@ public class TableFieldRestController {
      */
     @GetMapping(value = "/getTableFieldList")
     public Y9Result<List<Y9TableField>> getTableFieldList(@RequestParam String tableId) {
-        List<Y9TableField> map = y9TableFieldService.getFieldList(tableId);
+        List<Y9TableField> map = y9TableFieldService.listByTableId(tableId);
         return Y9Result.success(map, "获取成功");
     }
 

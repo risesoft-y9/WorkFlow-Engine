@@ -20,13 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPrintTemplateBind;
 import net.risesoft.entity.PrintTemplate;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
-import net.risesoft.repository.jpa.PrintTemplateRepository;
 import net.risesoft.service.PrintTemplateService;
 
 /**
@@ -38,8 +36,6 @@ import net.risesoft.service.PrintTemplateService;
 @RequiredArgsConstructor
 @RequestMapping(value = "/vue/printTemplate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PrintRestController {
-
-    private final PrintTemplateRepository printTemplateRepository;
 
     private final PrintTemplateService printTemplateService;
 
@@ -53,11 +49,7 @@ public class PrintRestController {
      */
     @PostMapping(value = "/deleteBindPrintTemplate")
     public Y9Result<String> deleteBindPrintTemplate(@RequestParam String id) {
-        Map<String, Object> map = printTemplateService.deleteBindPrintTemplate(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return printTemplateService.deleteBindPrintTemplate(id);
     }
 
     /**
@@ -68,11 +60,7 @@ public class PrintRestController {
      */
     @PostMapping(value = "/deletePrintTemplate")
     public Y9Result<String> deletePrintTemplate(@RequestParam String id) {
-        Map<String, Object> map = printTemplateService.deletePrintTemplate(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return printTemplateService.deletePrintTemplate(id);
     }
 
     /**
@@ -98,9 +86,9 @@ public class PrintRestController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<PrintTemplate> list;
         if (StringUtils.isNotBlank(fileName)) {
-            list = printTemplateRepository.findByFileNameContaining(fileName);
+            list = printTemplateService.listByFileNameLike(fileName);
         } else {
-            list = printTemplateService.findAll();
+            list = printTemplateService.listAll();
         }
         List<Map<String, Object>> items = new ArrayList<>();
         for (PrintTemplate printTemplate : list) {
@@ -124,7 +112,7 @@ public class PrintRestController {
      */
     @GetMapping(value = "/getBindTemplateList")
     public Y9Result<List<ItemPrintTemplateBind>> getTemplateList(@RequestParam String itemId) {
-        List<ItemPrintTemplateBind> list = printTemplateService.getTemplateBindList(itemId);
+        List<ItemPrintTemplateBind> list = printTemplateService.listTemplateBindByItemId(itemId);
         for (ItemPrintTemplateBind bind : list) {
             if (bind.getTemplateType().equals("2")) {
                 Y9Form form = y9FormRepository.findById(bind.getTemplateId()).orElse(null);
@@ -148,12 +136,7 @@ public class PrintRestController {
     public Y9Result<String> saveBindTemplate(@RequestParam String itemId, @RequestParam String templateId,
         @RequestParam String templateName, @RequestParam(required = false) String templateUrl,
         @RequestParam String templateType) {
-        Map<String, Object> map =
-            printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
     }
 
     /**
@@ -164,11 +147,7 @@ public class PrintRestController {
      */
     @PostMapping(value = "/uploadTemplate")
     public Y9Result<String> upload(@RequestParam MultipartFile files) {
-        Map<String, Object> map = printTemplateService.uploadTemplate(files);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return printTemplateService.uploadTemplate(files);
     }
 
 }

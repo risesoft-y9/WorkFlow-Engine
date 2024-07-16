@@ -22,13 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
@@ -73,11 +74,8 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("msg", "操作成功");
-        map.put(UtilConsts.SUCCESS, true);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Y9Table y9Table = new Y9Table();
@@ -100,30 +98,26 @@ public class Y9TableServiceImpl implements Y9TableService {
                     StringUtils.isNotBlank(dbColumn.getComment()) ? dbColumn.getComment() : dbColumn.getColumnName());
                 y9TableField.setFieldLength(dbColumn.getDataLength());
                 y9TableField.setFieldType(dbColumn.getTypeName() + "(" + dbColumn.getDataLength() + ")");
-                y9TableField.setIsMayNull(dbColumn.getNullable() ? 1 : 0);
+                y9TableField.setIsMayNull(Boolean.TRUE.equals(dbColumn.getNullable()) ? 1 : 0);
                 y9TableField.setState(1);
                 y9TableField.setTableId(y9Table.getId());
                 y9TableField.setTableName(tableName);
-                y9TableField.setIsSystemField(dbColumn.getPrimaryKey() ? 1 : 0);
+                y9TableField.setIsSystemField(Boolean.TRUE.equals(dbColumn.getPrimaryKey()) ? 1 : 0);
                 y9TableField.setDisplayOrder(order);
                 y9TableField.setFieldName(dbColumn.getColumnName());
                 order += 1;
                 y9TableFieldRepository.save(y9TableField);
             }
+            return Y9Result.successMsg("添加数据表成功");
         } catch (Exception e) {
-            map.put("msg", "操作失败");
-            map.put(UtilConsts.SUCCESS, false);
-            LOGGER.error("添加数据表失败", e);
+            LOGGER.error("添加数据表失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("添加数据表失败");
         }
-        return map;
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> buildTable(Y9Table table, List<Map<String, Object>> listMap) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("msg", "创建失败");
-        map.put(UtilConsts.SUCCESS, false);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> buildTable(Y9Table table, List<Map<String, Object>> listMap) {
         try {
             boolean tableExist = true;
             if (StringUtils.isEmpty(table.getId())) {
@@ -151,22 +145,19 @@ public class Y9TableServiceImpl implements Y9TableService {
                     } else {
                         dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
                     }
-                    map = tableManagerService.buildTable(tableTemp, dbcs);
+                    return tableManagerService.buildTable(tableTemp, dbcs);
                 }
             }
+            return Y9Result.successMsg("创建数据表成功");
         } catch (Exception e) {
-            LOGGER.error("创建数据表失败", e);
-            map.put("msg", "创建失败");
-            map.put(UtilConsts.SUCCESS, false);
+            LOGGER.error("创建数据表失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("创建数据表失败");
         }
-
-        return map;
     }
 
     @Override
     @Transactional
-    public Map<String, Object> delete(String ids) {
-        Map<String, Object> map = new HashMap<>(16);
+    public Y9Result<Object> delete(String ids) {
         try {
             String[] id = ids.split(",");
             for (String idTemp : id) {
@@ -174,14 +165,11 @@ public class Y9TableServiceImpl implements Y9TableService {
                 y9TableFieldRepository.deleteByTableId(idTemp);
                 y9FormFieldRepository.deleteByTableId(idTemp);
             }
-            map.put("msg", "删除成功");
-            map.put(UtilConsts.SUCCESS, true);
+            return Y9Result.successMsg("删除数据表成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
-            LOGGER.error("删除数据表失败", e);
+            LOGGER.error("删除数据表失败,{}", e.getMessage());
+            return Y9Result.failure("删除数据表失败");
         }
-        return map;
     }
 
     @Override
@@ -192,16 +180,6 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Override
     public Y9Table findByTableName(String tableName) {
         return y9TableRepository.findByTableName(tableName);
-    }
-
-    @Override
-    public List<Y9Table> findByTableType(Integer tableType) {
-        return y9TableRepository.findByTableType(tableType);
-    }
-
-    @Override
-    public List<Y9Table> getAllTable() {
-        return y9TableRepository.findAll();
     }
 
     @Override
@@ -217,7 +195,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("获取所有表名失败", e);
+            LOGGER.error("获取所有表名失败,异常信息：{}", e.getMessage());
         }
         return tableNames.toString();
     }
@@ -249,13 +227,29 @@ public class Y9TableServiceImpl implements Y9TableService {
             }
             map.put("rows", list);
         } catch (Exception e) {
-            LOGGER.error("获取所有表失败", e);
+            LOGGER.error("获取所有表失败,异常信息：{}", e.getMessage());
         }
         return map;
     }
 
+    /**
+     * 解析字段类型，
+     *
+     * @param type
+     * @return
+     */
+    private final String getFieldType(String type) {
+        type = type.substring(0, type.lastIndexOf("("));
+        return type;
+    }
+
     @Override
-    public List<Map<String, Object>> getAppList() {
+    public List<Y9Table> listAllTable() {
+        return y9TableRepository.findAll();
+    }
+
+    @Override
+    public List<Map<String, Object>> listApps() {
         List<Map<String, Object>> tree = new ArrayList<>();
         List<SpmApproveItem> list = approveItemRepository.findAll();
         Map<String, Object> pNode = new HashMap<>(16);
@@ -279,20 +273,13 @@ public class Y9TableServiceImpl implements Y9TableService {
         return tree;
     }
 
-    /**
-     * 解析字段类型，
-     *
-     * @param type
-     * @return
-     */
-    private final String getFieldType(String type) {
-        type = type.substring(0, type.lastIndexOf("("));
-        return type;
+    @Override
+    public List<Y9Table> listByTableType(Integer tableType) {
+        return y9TableRepository.findByTableType(tableType);
     }
 
     @Override
-    public Map<String, Object> getTables(String systemName, int page, int rows) {
-        Map<String, Object> resMap = new HashMap<>(16);
+    public Y9Page<Y9Table> pageTables(String systemName, int page, int rows) {
         if (page < 1) {
             page = 1;
         }
@@ -321,12 +308,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 y9Table.setTableMemo("1");
             }
         }
-        resMap.put("rows", list);
-        resMap.put("currpage", page);
-        resMap.put("totalpages", pageList.getTotalPages());
-        resMap.put("total", pageList.getTotalElements());
-        resMap.put(UtilConsts.SUCCESS, true);
-        return resMap;
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list, "获取列表成功");
     }
 
     /**
@@ -414,16 +396,14 @@ public class Y9TableServiceImpl implements Y9TableService {
             return y9TableRepository.save(table);
         } catch (Exception e) {
             e.printStackTrace();
+            LOGGER.error("保存失败,异常信息：{}", e.getMessage());
             throw new Exception("Y9TableServiceImpl saveOrUpdate error");
         }
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("msg", "操作成功");
-        map.put(UtilConsts.SUCCESS, true);
+    @Transactional(readOnly = false)
+    public Y9Result<Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
         try {
             Y9Table savetable = this.saveOrUpdate(table);
             if (savetable != null && savetable.getId() != null) {
@@ -447,16 +427,15 @@ public class Y9TableServiceImpl implements Y9TableService {
                      */
                     boolean isSave = "save".equals(type);
                     if (!isSave) {
-                        map = tableManagerService.addFieldToTable(savetable, dbcs);
+                        return tableManagerService.addFieldToTable(savetable, dbcs);
                     }
                 }
             }
+            return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
             e.printStackTrace();
-            map.put("msg", "操作失败");
-            map.put(UtilConsts.SUCCESS, false);
+            LOGGER.error("操作失败,异常信息：{}", e.getMessage());
+            return Y9Result.failure("操作失败");
         }
-
-        return map;
     }
 }

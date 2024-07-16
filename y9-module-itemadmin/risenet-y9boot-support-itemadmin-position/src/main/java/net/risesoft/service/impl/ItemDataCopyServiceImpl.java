@@ -97,9 +97,9 @@ import net.risesoft.y9.sqlddl.DbColumn;
 
 /*
  * @author qinman
- * 
+ *
  * @author zhangchongjie
- * 
+ *
  * @date 2022/12/20
  */
 @Service
@@ -316,8 +316,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、源租户的字典类型和字典值，
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<Y9FormOptionClass> targetOptionClassList = y9FormOptionClassService.findAllOptionClass();
-        List<Y9FormOptionValue> targetOptionValueList = y9FormOptionClassService.findAllOptionValue();
+        List<Y9FormOptionClass> targetOptionClassList = y9FormOptionClassService.listAllOptionClass();
+        List<Y9FormOptionValue> targetOptionValueList = y9FormOptionClassService.listAllOptionValue();
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (Y9FormOptionClass y9FormOptionClass : targetOptionClassList) {
             y9FormOptionClassService.saveOptionClass(y9FormOptionClass);
@@ -389,7 +389,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             /*
              * 4.3、表单元素
              */
-            targetY9FormElementList = y9FormFieldService.findByFormId(sourceFormId);
+            targetY9FormElementList = y9FormFieldService.listByFormId(sourceFormId);
             /*
              * 4.4、表单元素权限先不复制，因为牵扯到读写的角色，后面需要再复制
              */
@@ -405,7 +405,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                     targetY9TableIdsb.append(y9TableTemp.getId());
                     /* 表字段 */
                     List<Y9TableField> y9TableFieldListTemp =
-                        y9TableFieldService.searchFieldsByTableId(y9FormElement.getTableId());
+                        y9TableFieldService.listByTableIdOrderByDisplay(y9FormElement.getTableId());
                     for (Y9TableField y9TableField : y9TableFieldListTemp) {
                         if (!targetY9TableFieldIdsb.toString().contains(y9TableField.getId())) {
                             y9TableField.setOldFieldName(null);
@@ -533,7 +533,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、先复制意见框
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<OpinionFrame> ofList = opinionFrameService.findAll();
+        List<OpinionFrame> ofList = opinionFrameService.listAll();
 
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (OpinionFrame of : ofList) {
@@ -621,11 +621,11 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、查找源租户是否存在编号
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<OrganWord> sourceowList = organWordService.findAll();
+        List<OrganWord> sourceowList = organWordService.listAll();
         if (sourceowList.isEmpty()) {
             return;
         }
-        List<OrganWordProperty> sourceowpList = organWordPropertyService.findAll();
+        List<OrganWordProperty> sourceowpList = organWordPropertyService.listAll();
         /*
          * 2、复制源租户的编号和编号配置到目标租户
          */
@@ -760,7 +760,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、查找源租户是否存在打印模板
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<PrintTemplate> printList = printTemplateService.findAll();
+        List<PrintTemplate> printList = printTemplateService.listAll();
         if (printList.isEmpty()) {
             return;
         }
@@ -775,13 +775,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 3、复制该事项源租户的打印模板和事项的绑定关系到目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<ItemPrintTemplateBind> bindList = printTemplateService.getTemplateBindList(itemId);
+        List<ItemPrintTemplateBind> bindList = printTemplateService.listTemplateBindByItemId(itemId);
         if (bindList.isEmpty()) {
             return;
         }
 
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        List<ItemPrintTemplateBind> targetBindList = printTemplateService.getTemplateBindList(itemId);
+        List<ItemPrintTemplateBind> targetBindList = printTemplateService.listTemplateBindByItemId(itemId);
         if (!targetBindList.isEmpty()) {
             return;
         }

@@ -53,7 +53,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
-            OpinionFrame opinionFrame = opinionFrameService.findByMark(o.getOpinionFrameMark());
+            OpinionFrame opinionFrame = opinionFrameService.getByMark(o.getOpinionFrameMark());
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
@@ -79,7 +79,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
-            OpinionFrame opinionFrame = opinionFrameService.findByMark(o.getOpinionFrameMark());
+            OpinionFrame opinionFrame = opinionFrameService.getByMark(o.getOpinionFrameMark());
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
@@ -108,7 +108,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
-            OpinionFrame opinionFrame = opinionFrameService.findByMark(o.getOpinionFrameMark());
+            OpinionFrame opinionFrame = opinionFrameService.getByMark(o.getOpinionFrameMark());
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
@@ -137,7 +137,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
-            OpinionFrame opinionFrame = opinionFrameService.findByMark(o.getOpinionFrameMark());
+            OpinionFrame opinionFrame = opinionFrameService.getByMark(o.getOpinionFrameMark());
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
