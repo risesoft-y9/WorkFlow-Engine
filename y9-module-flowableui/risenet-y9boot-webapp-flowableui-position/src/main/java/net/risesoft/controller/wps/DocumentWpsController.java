@@ -207,7 +207,7 @@ public class DocumentWpsController {
         map.put("y9FileStoreId", "");
         try {
             String y9FileStoreId =
-                transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
+                transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId, "").getData();
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileUrl = y9FileStore.getUrl();
             map.put("y9FileStoreId", y9FileStoreId);

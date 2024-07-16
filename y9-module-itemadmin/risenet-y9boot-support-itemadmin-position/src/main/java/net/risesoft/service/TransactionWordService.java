@@ -27,6 +27,15 @@ public interface TransactionWordService {
     List<TransactionWord> findByProcessSerialNumber(String processSerialNumber);
 
     /**
+     * 根据流程编号和文档类别获取正文
+     *
+     * @param processSerialNumber
+     * @param docCategory
+     * @return
+     */
+    List<TransactionWord> findByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory);
+
+    /**
      * 根据processSerialNumber和taohong获取套红正文
      *
      * @param processSerialNumber
@@ -59,9 +68,10 @@ public interface TransactionWordService {
      * @param fileType
      * @param processSerialNumber
      * @param isTaoHong
+     * @param docCategory 文档类别
      */
     void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
-        String processSerialNumber, String isTaoHong);
+        String processSerialNumber, String isTaoHong, String docCategory);
 
     /**
      * Description: 保存正文信息

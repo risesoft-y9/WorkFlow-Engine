@@ -334,14 +334,17 @@ public class TransactionWordController {
      *
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
+     * @param bindValue 绑定值
+     *
      */
     @RequestMapping(value = "/openDocument")
     public void openDocument(@RequestParam String processSerialNumber, @RequestParam String itemId,
-        HttpServletResponse response, HttpServletRequest request) {
+        @RequestParam(required = false) String bindValue, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
+        String y9FileStoreId =
+            transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
 
         ServletOutputStream out = null;
         try {
@@ -640,7 +643,7 @@ public class TransactionWordController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }
@@ -682,7 +685,7 @@ public class TransactionWordController {
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9WordInfo map =
-            transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId).getData();
+            transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
         model.addAttribute("word", map);
         Object documentTitle;
         if (StringUtils.isBlank(processInstanceId)) {
@@ -782,7 +785,7 @@ public class TransactionWordController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             Boolean result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
             if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType.equals(".pdf") || fileType.equals(".tif")) {
@@ -804,13 +807,15 @@ public class TransactionWordController {
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
+     * @param docCategory 文档类别
+     * @param request 请求
      * @return String
      */
     @PostMapping(value = "/uploadWord")
     public String uploadWord(@RequestParam(required = false) String fileType,
         @RequestParam(required = false) String isTaoHong, @RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
-        HttpServletRequest request) {
+        @RequestParam(required = false) String docCategory, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -834,7 +839,7 @@ public class TransactionWordController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+                isTaoHong, docCategory, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }

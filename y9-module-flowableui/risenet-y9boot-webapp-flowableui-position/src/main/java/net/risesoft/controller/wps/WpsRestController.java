@@ -272,7 +272,7 @@ public class WpsRestController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             Boolean result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
             if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType.equals(".pdf") || fileType.equals(".tif")) {

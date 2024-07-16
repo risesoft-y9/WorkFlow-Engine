@@ -106,12 +106,14 @@ public interface TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
+     * @param bindValue 绑定值
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是正文文件地址
      * @since 9.6.6
      */
     @GetMapping(value = "/openDocument")
     Y9Result<String> openDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId);
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId,
+        @RequestParam("bindValue") String bindValue);
 
     /**
      * 根据流程编号打开正文
@@ -216,6 +218,7 @@ public interface TransactionWordApi {
      * @param itemId 事项id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @param taskId 任务id
+     * @param bindValue 绑定值
      * @return {@code Y9Result<WordInfo>} 通用请求返回对象 - data 是正文详情
      * @since 9.6.6
      */
@@ -223,7 +226,7 @@ public interface TransactionWordApi {
     Y9Result<Y9WordInfo> showWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId,
         @RequestParam(value = "itembox", required = false) String itembox,
-        @RequestParam(value = "taskId", required = false) String taskId);
+        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("bindValue") String bindValue);
 
     /**
      * 获取套红模板列表
@@ -247,6 +250,7 @@ public interface TransactionWordApi {
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
+     * @param docCategory 文档类别
      * @param taskId 任务id
      * @param fileSizeString 文件大小
      * @param fileStoreId 文件id
@@ -258,6 +262,7 @@ public interface TransactionWordApi {
         @RequestParam("documentTitle") String documentTitle, @RequestParam("fileType") String fileType,
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam(value = "isTaoHong", required = false) String isTaoHong,
+        @RequestParam(value = "docCategory", required = false) String docCategory,
         @RequestParam(value = "taskId", required = false) String taskId,
         @RequestParam("fileSizeString") String fileSizeString, @RequestParam("fileStoreId") String fileStoreId);
 
