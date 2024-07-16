@@ -116,4 +116,8 @@ public class TransactionWord implements Serializable {
     @Column(name = "DELETED", length = 10)
     private String deleted = "0";
 
+    @Comment("正文类别")
+    @Column(name = "DOCCATEGORY", length = 100)
+    private String docCategory;
+
 }
