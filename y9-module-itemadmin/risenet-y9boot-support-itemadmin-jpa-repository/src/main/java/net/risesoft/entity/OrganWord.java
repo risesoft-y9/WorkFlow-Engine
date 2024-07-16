@@ -45,6 +45,14 @@ public class OrganWord implements Serializable {
     @Column(name = "NAME", length = 50)
     private String name;
 
+    @Comment("编号类型")
+    @Column(name = "NUMBERTYPE", length = 50)
+    private String numberType;
+
+    @Comment("编号位数")
+    @Column(name = "NUMBERLENGTH")
+    private Integer numberLength;
+
     @Transient
     private List<OrganWordProperty> organWordProperties;
 
