@@ -1,16 +1,18 @@
 package net.risesoft.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.GenericGenerator;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
+
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
@@ -33,7 +35,7 @@ public class OpinionFrameOneClickSet implements Serializable {
 
     @Comment("一键设置类型")
     @Column(name = "ONESET_TYPE", length = 100)
-    private String oneSetType;//oneClickSign-一键签批   oneClickRead- 一键阅知   同意  已阅
+    private String oneSetType;// oneClickSign-一键签批 oneClickRead- 一键阅知 同意 已阅
 
     @Comment("对应执行动作")
     @Column(name = "EXECUTEACTION", length = 100)
@@ -41,11 +43,15 @@ public class OpinionFrameOneClickSet implements Serializable {
 
     @Comment("一键设置类型名称")
     @Column(name = "ONESETTYPE_NAME", length = 100)
-    private String oneSetTypeName; //一键设置类型名称
+    private String oneSetTypeName; // 一键设置类型名称
 
     @Comment("对应执行动作名称")
     @Column(name = "EXECUTEACTION_NAME", length = 100)
-    private String executeActionName;//对应执行动作名称
+    private String executeActionName;// 对应执行动作名称
+
+    @Comment("一键设置描述")
+    @Column(name = "ONESET_DESCRIPTION", length = 300)
+    private String description;
 
     @Comment("绑定id")
     @Column(name = "BIND_ID", length = 50)
@@ -58,6 +64,5 @@ public class OpinionFrameOneClickSet implements Serializable {
     @Comment("创建时间")
     @Column(name = "CREATE_DATE")
     private String createDate;
-
 
 }

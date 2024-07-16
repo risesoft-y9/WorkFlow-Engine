@@ -1,6 +1,7 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.Data;
 
@@ -50,4 +51,9 @@ public class OpinionListModel implements Serializable {
      * 是否必签意见
      */
     private Boolean signOpinion;
+
+    /**
+     * 一键设置列表
+     */
+    private List<OpinionFrameOneClickSetModel> oneClickSetList;
 }
