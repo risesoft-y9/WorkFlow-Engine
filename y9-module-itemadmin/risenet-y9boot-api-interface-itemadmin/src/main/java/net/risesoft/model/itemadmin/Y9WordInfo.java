@@ -53,6 +53,9 @@ public class Y9WordInfo implements Serializable {
     /** 文件类型 */
     private String fileType;
 
+    /** 正文类型 */
+    private String docCategory;
+
     /** 文件仓库Id （uid） */
     private String fileStoreId;
 

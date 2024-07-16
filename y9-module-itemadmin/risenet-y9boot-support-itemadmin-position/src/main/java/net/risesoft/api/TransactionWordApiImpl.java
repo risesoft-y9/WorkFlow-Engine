@@ -300,18 +300,24 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
+     * @param bindValue 绑定值
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是正文文件地址
      * @since 9.6.6
      */
     @Override
     public Y9Result<String> openDocument(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processSerialNumber, @RequestParam String itemId) {
+        @RequestParam String processSerialNumber, @RequestParam String itemId, String bindValue) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<TransactionWord> list = new ArrayList<>();
+
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
+            if (StringUtils.isNotBlank(bindValue)) {
+                list = transactionWordService.findByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
+            } else {
+                list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
+            }
         }
         TransactionWord transactionWord;
         if (!list.isEmpty()) {
@@ -328,15 +334,31 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             ProcessDefinitionModel processDefinition =
                 repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = processDefinition.getId();
-            ItemWordTemplateBind wordTemplateBind =
-                wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-            WordTemplate wordTemplate = wordTemplateRepository
-                .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
-            if (wordTemplate != null && wordTemplate.getId() != null) {
-                return Y9Result.success(wordTemplate.getFilePath());
+
+            if (StringUtils.isNotBlank(bindValue)) {
+                ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository
+                    .findByItemIdAndProcessDefinitionIdAndBindValue(itemId, processDefinitionId, bindValue);
+                WordTemplate wordTemplate = wordTemplateRepository
+                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                if (wordTemplate != null && wordTemplate.getId() != null) {
+                    return Y9Result.success(wordTemplate.getFilePath());
+                } else {
+                    LOGGER.error("数据库没有processSerialNumber=" + processSerialNumber + "和bindVvalue=" + bindValue
+                        + "绑定的正文，请联系管理员");
+                    return Y9Result.failure("数据库没有processSerialNumber=" + processSerialNumber + "和bindVvalue="
+                        + bindValue + "绑定的正文，请联系管理员");
+                }
             } else {
-                LOGGER.error("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
-                return Y9Result.failure("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
+                ItemWordTemplateBind wordTemplateBind =
+                    wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+                WordTemplate wordTemplate = wordTemplateRepository
+                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                if (wordTemplate != null && wordTemplate.getId() != null) {
+                    return Y9Result.success(wordTemplate.getFilePath());
+                } else {
+                    LOGGER.error("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
+                    return Y9Result.failure("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
+                }
             }
         }
     }
@@ -581,12 +603,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param itemId 事项id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @param taskId 任务id
+     * @param bindValue 绑定值
      * @return {@code Y9Result<WordInfo>} 通用请求返回对象 - data 是正文详情
      * @since 9.6.6
      */
     @Override
     public Y9Result<Y9WordInfo> showWord(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processSerialNumber, @RequestParam String itemId, String itembox, String taskId) {
+        @RequestParam String processSerialNumber, @RequestParam String itemId, String itembox, String taskId,
+        String bindValue) {
         Y9WordInfo retMap = new Y9WordInfo();
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
@@ -595,6 +619,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         String wordReadOnly = "";
         String openWordOrPdf = "";
         String isTaoHong = "0";
+        String docCategory = "";
+        String fileType = ".doc";
         if ("".equals(itembox) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())
             || itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())
             || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
@@ -606,7 +632,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         String saveDate = "";
         List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
+            if (StringUtils.isNotBlank(bindValue)) {
+                list = transactionWordService.findByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
+            } else {
+                list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
+            }
         }
         if (list != null && !list.isEmpty()) {
             TransactionWord d = list.get(0);
@@ -643,16 +673,36 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                     repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
                 processDefinitionId = processDefinitionModel.getId();
             }
-            ItemWordTemplateBind wordTemplateBind =
-                wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-            WordTemplate wordTemplate = wordTemplateRepository
-                .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
-            if (wordTemplate != null && wordTemplate.getId() != null) {
-                fileDocumentId = wordTemplate.getId();
-                openWordOrPdf = "openWordTemplate";
+            if (StringUtils.isNotBlank(bindValue)) {
+                ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository
+                    .findByItemIdAndProcessDefinitionIdAndBindValue(itemId, processDefinitionId, bindValue);
+                WordTemplate wordTemplate = wordTemplateRepository
+                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                if (wordTemplate != null && wordTemplate.getId() != null) {
+                    fileDocumentId = wordTemplate.getId();
+                    openWordOrPdf = "openWordTemplate";
+                    String fileName = wordTemplate.getFileName();
+                    fileType = fileName.substring(fileName.lastIndexOf("."));
+                } else {
+                    openWordOrPdf = "openWord";
+                    docCategory = bindValue;
+                }
+            } else {
+                ItemWordTemplateBind wordTemplateBind =
+                    wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+                WordTemplate wordTemplate = wordTemplateRepository
+                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                if (wordTemplate != null && wordTemplate.getId() != null) {
+                    fileDocumentId = wordTemplate.getId();
+                    openWordOrPdf = "openWordTemplate";
+                    String fileName = wordTemplate.getFileName();
+                    fileType = fileName.substring(fileName.lastIndexOf("."));
+                }
             }
         }
         String activitiUser = person.getId();
+        retMap.setFileType(fileType);
+        retMap.setDocCategory(docCategory);
         retMap.setActivitiUser(activitiUser);
         retMap.setFileDocumentId(fileDocumentId);
         retMap.setProcessSerialNumber(processSerialNumber);
@@ -711,6 +761,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
+     * @param docCategory 文档类别
      * @param taskId 任务id
      * @param fileSizeString 文件大小
      * @param fileStoreId 文件id
@@ -721,7 +772,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @PostMapping(value = "/uploadWord")
     public Y9Result<Boolean> uploadWord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String documentTitle, @RequestParam String fileType, @RequestParam String processSerialNumber,
-        String isTaoHong, String taskId, String fileSizeString, @RequestParam String fileStoreId) {
+        String isTaoHong, String docCategory, String taskId, String fileSizeString, @RequestParam String fileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -731,9 +782,9 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                     transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
                 if (list.isEmpty()) {
                     transactionWordService.saveTransactionWord(fileStoreId, fileSizeString, documentTitle, fileType,
-                        processSerialNumber, isTaoHong);
+                        processSerialNumber, isTaoHong, docCategory);
                     transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
-                        fileType, processSerialNumber, isTaoHong, taskId);
+                        fileType, processSerialNumber, isTaoHong, taskId, docCategory);
                 } else {
                     if (StringUtils.isNotEmpty(list.get(0).getTitle())) {
                         documentTitle = list.get(0).getTitle();
@@ -758,10 +809,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                          * 在当前任务还没有保存过正文
                          */
                         transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString,
-                            documentTitle, fileType, processSerialNumber, isTaoHong, taskId);
+                            documentTitle, fileType, processSerialNumber, isTaoHong, taskId, docCategory);
                     } else {
                         transactionHistoryWordService.updateTransactionHistoryWordById(fileStoreId, fileType,
-                            documentTitle + fileType, fileSizeString, isTaoHong, userId, thwlist.get(0).getId());
+                            documentTitle + fileType, fileSizeString, isTaoHong, docCategory, userId,
+                            thwlist.get(0).getId());
                     }
                 }
                 return Y9Result.success(true);

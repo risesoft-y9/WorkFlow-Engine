@@ -422,12 +422,13 @@ public class FormNTKOController {
      */
     @RequestMapping(value = "/openDoc")
     public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId,
-        @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
-        HttpServletRequest request) {
+        @RequestParam(required = false) String bindValue, @RequestParam String tenantId, @RequestParam String userId,
+        HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
+        String y9FileStoreId =
+            transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
 
         ServletOutputStream out = null;
         try {
@@ -765,7 +766,7 @@ public class FormNTKOController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }
@@ -814,7 +815,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String browser, @RequestParam(required = false) String positionId,
         @RequestParam String tenantId, @RequestParam(required = false) String userId, Model model) {
         Y9WordInfo map =
-            transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId).getData();
+            transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
         Object documentTitle;
         if (StringUtils.isBlank(processInstanceId)) {
             DraftModel model1 =
@@ -928,7 +929,7 @@ public class FormNTKOController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             Boolean result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
             if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType != null && (fileType.equals(".pdf") || fileType.equals(".tif"))) {
@@ -947,6 +948,7 @@ public class FormNTKOController {
      *
      * @param fileType 文件类型
      * @param isTaoHong 是否套红
+     * @param docCategory 文档类别
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
@@ -956,9 +958,10 @@ public class FormNTKOController {
      */
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
     public String uploadWord(@RequestParam(required = false) String fileType,
-        @RequestParam(required = false) String isTaoHong, @RequestParam String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
-        @RequestParam String tenantId, @RequestParam String userId, HttpServletRequest request) {
+        @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String docCategory,
+        @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam String tenantId, @RequestParam String userId,
+        HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -982,7 +985,7 @@ public class FormNTKOController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+                isTaoHong, docCategory, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }

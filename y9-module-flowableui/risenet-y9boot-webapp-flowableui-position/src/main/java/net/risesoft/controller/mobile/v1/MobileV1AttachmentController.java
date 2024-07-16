@@ -105,7 +105,7 @@ public class MobileV1AttachmentController {
                 .findWordByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
             String filename = fileDocument.getFileName() != null ? fileDocument.getFileName() : "正文.doc";
             String fileStoreId = transactionWordApi.openDocument(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPersonId(), processSerialNumber, itemId).getData();
+                Y9LoginUserHolder.getPersonId(), processSerialNumber, itemId, "").getData();
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
             } else if (request.getHeader("User-Agent").toUpperCase().indexOf("MSIE") > 0) {
@@ -202,7 +202,7 @@ public class MobileV1AttachmentController {
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, "正文.doc");
             Boolean result = transactionWordApi
                 .uploadWord(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), documentTitle, fileType,
-                    processSerialNumber, "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    processSerialNumber, "0", "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId())
                 .getData();
             if (Boolean.TRUE.equals(result)) {
                 return Y9Result.successMsg("上传成功");

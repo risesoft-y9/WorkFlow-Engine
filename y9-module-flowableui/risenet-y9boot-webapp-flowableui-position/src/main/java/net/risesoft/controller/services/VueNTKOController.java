@@ -118,11 +118,12 @@ public class VueNTKOController {
     public Y9Result<Y9WordInfo> showWord(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam String itemId,
         @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String browser, @RequestParam(required = false) String positionId,
-        @RequestParam String tenantId, @RequestParam String userId, Model model) {
+        @RequestParam(required = false) String browser, @RequestParam(required = false) String bindValue,
+        @RequestParam(required = false) String positionId, @RequestParam String tenantId, @RequestParam String userId,
+        Model model) {
         try {
-            Y9WordInfo map =
-                transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId).getData();
+            Y9WordInfo map = transactionWordApi
+                .showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, bindValue).getData();
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model1 =

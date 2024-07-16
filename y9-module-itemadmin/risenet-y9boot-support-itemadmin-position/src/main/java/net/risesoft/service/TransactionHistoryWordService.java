@@ -68,9 +68,10 @@ public interface TransactionHistoryWordService {
      * @param processSerialNumber
      * @param isTaoHong
      * @param taskId
+     * @param docCategory
      */
     void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
-        String processSerialNumber, String isTaoHong, String taskId);
+        String processSerialNumber, String isTaoHong, String taskId, String docCategory);
 
     /**
      * 如果用户在启动流程之前先保存了正文，这时意见数据表中之前保存的数据的taskId仍为空， 此时需要根据processSerialNumber给历史正文表的taskId赋值
@@ -89,9 +90,10 @@ public interface TransactionHistoryWordService {
      * @param fileName
      * @param fileSize
      * @param isTaoHong
+     * @param docCategory
      * @param userId
      * @param id
      */
     void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize,
-        String isTaoHong, String userId, String id);
+        String isTaoHong, String docCategory, String userId, String id);
 }
