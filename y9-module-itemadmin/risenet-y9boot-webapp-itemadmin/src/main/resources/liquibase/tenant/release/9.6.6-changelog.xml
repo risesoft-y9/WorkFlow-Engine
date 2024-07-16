@@ -111,4 +111,66 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="1702001405829-1-6" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DOCUMENTWORD" columnName="DOCCATEGORY"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="FF_DOCUMENTWORD">
+            <column name="DOCCATEGORY" remarks="正文类别" type="VARCHAR(100)">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1702001405829-1-7" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DOCUMENTWORD_HIS" columnName="DOCCATEGORY"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="FF_DOCUMENTWORD_HIS">
+            <column name="DOCCATEGORY" remarks="正文类别" type="VARCHAR(100)">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1702001405829-1-8" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_OPINIONFRAME_ONECLICKSET" columnName="ONESET_DESCRIPTION"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_OPINIONFRAME_ONECLICKSET">
+            <column name="ONESET_DESCRIPTION" remarks="一键设置描述" type="VARCHAR(300)">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1702001405829-1-9" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ORGANWORD" columnName="NUMBERTYPE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_ORGANWORD">
+            <column name="NUMBERTYPE" remarks="编号类型" type="VARCHAR(50)">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1702001405829-1-10" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ORGANWORD" columnName="NUMBERLENGTH"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_ORGANWORD">
+            <column name="NUMBERLENGTH" remarks="编号位数" type="INT">
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
