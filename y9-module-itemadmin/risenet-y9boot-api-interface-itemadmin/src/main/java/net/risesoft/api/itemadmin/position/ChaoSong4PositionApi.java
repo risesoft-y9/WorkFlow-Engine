@@ -113,6 +113,7 @@ public interface ChaoSong4PositionApi {
      * @param id 抄送id
      * @param processInstanceId 抄送的流程实例id
      * @param status 传阅的状态,0未阅,1已阅,2新件
+     * @param openNotRead 是否为打开不已阅
      * @param mobile 是否为移动端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是送件对象
      * @since 9.6.6
@@ -121,7 +122,7 @@ public interface ChaoSong4PositionApi {
     Y9Result<OpenDataModel> detail(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("id") String id,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") Integer status,
-        @RequestParam("mobile") boolean mobile);
+        @RequestParam("openNotRead") Boolean openNotRead, @RequestParam("mobile") boolean mobile);
 
     /**
      * 获取批阅件计数
