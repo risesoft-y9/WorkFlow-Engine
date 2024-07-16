@@ -78,7 +78,7 @@ public class MobileV1ChaoSongController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             OpenDataModel model =
-                chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true).getData();
+                chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, false, true).getData();
             String processSerialNumber = model.getProcessSerialNumber();
             String activitiUser = model.getActivitiUser();
             String processDefinitionId = model.getProcessDefinitionId();

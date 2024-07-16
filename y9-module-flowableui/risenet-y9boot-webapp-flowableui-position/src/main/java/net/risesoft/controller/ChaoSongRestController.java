@@ -124,18 +124,20 @@ public class ChaoSongRestController {
      *
      * @param id 抄送id
      * @param processInstanceId 流程实例id
+     * @param openNotRead 是否打开不已阅
      * @param status 抄送状态
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/detail", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
-        @RequestParam @NotBlank String processInstanceId, @RequestParam Integer status) {
+        @RequestParam @NotBlank String processInstanceId, @RequestParam Boolean openNotRead,
+        @RequestParam Integer status) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
             OpenDataModel model = chaoSong4PositionApi
-                .detail(person.getTenantId(), positionId, id, processInstanceId, status, false).getData();
+                .detail(person.getTenantId(), positionId, id, processInstanceId, status, openNotRead, false).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
             map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
