@@ -127,4 +127,8 @@ public class TransactionHistoryWord implements Serializable {
     @Column(name = "VERSION", length = 10)
     private Integer version;
 
+    @Comment("正文类别")
+    @Column(name = "DOCCATEGORY", length = 100)
+    private String docCategory;
+
 }
