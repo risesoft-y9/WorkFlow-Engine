@@ -100,7 +100,7 @@ public class MobileChaoSongController {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             OpenDataModel model =
-                chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true).getData();
+                chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, false, true).getData();
             String processSerialNumber = model.getProcessSerialNumber();
             String activitiUser = model.getActivitiUser();
             String processDefinitionId = model.getProcessDefinitionId();

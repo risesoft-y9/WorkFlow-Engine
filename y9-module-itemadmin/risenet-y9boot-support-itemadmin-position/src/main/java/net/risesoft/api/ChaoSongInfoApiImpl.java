@@ -161,6 +161,7 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param id 抄送id
      * @param processInstanceId 抄送的流程实例id
      * @param status 传阅的状态,0未阅,1已阅,2新件
+     * @param openNotRead 是否打开不已阅
      * @param mobile 是否为移动端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是送件对象
      * @since 9.6.6
@@ -168,14 +169,14 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
     @Override
     public Y9Result<OpenDataModel> detail(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String id, @RequestParam String processInstanceId, @RequestParam Integer status,
-        @RequestParam boolean mobile) {
+        Boolean openNotRead, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         OpenDataModel model = chaoSongInfoService.detail(processInstanceId, status, mobile);
         model.setId(id);
         model.setStatus(status);
         ChaoSongInfo chaoSong = chaoSongInfoService.findOne(id);
-        if (null != chaoSong && chaoSong.getStatus() != 1) {
+        if (null != chaoSong && chaoSong.getStatus() != 1 && !Boolean.TRUE.equals(openNotRead)) {
             chaoSongInfoService.changeStatus(id);
         }
         return Y9Result.success(model);
