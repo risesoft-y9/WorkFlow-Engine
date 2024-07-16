@@ -43,14 +43,19 @@ public class LinkInfoServiceImpl implements LinkInfoService {
 
     private final ItemLinkRoleRepository itemLinkRoleRepository;
 
+    @Override
+    public LinkInfo findById(String id) {
+        return linkInfoRepository.findById(id).orElse(null);
+    }
+
     @SuppressWarnings("serial")
     @Override
-    public List<LinkInfo> findAll(String linkName, String linkUrl) {
+    public List<LinkInfo> listAll(String linkName, String linkUrl) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return linkInfoRepository.findAll(new Specification<LinkInfo>() {
             @Override
             public Predicate toPredicate(Root<LinkInfo> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(linkName)) {
                     list.add(builder.like(root.get("linkName"), "%" + linkName + "%"));
                 }
@@ -62,11 +67,6 @@ public class LinkInfoServiceImpl implements LinkInfoService {
                 return builder.and(predicates);
             }
         }, sort);
-    }
-
-    @Override
-    public LinkInfo findById(String id) {
-        return linkInfoRepository.findById(id).orElse(null);
     }
 
     @Override

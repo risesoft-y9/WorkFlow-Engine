@@ -97,7 +97,7 @@ public class ItemOrganWordBindController {
         Map<String, Object> map = new HashMap<>(16);
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        List<OrganWord> owList = organWordService.findAll();
+        List<OrganWord> owList = organWordService.listAll();
         List<OrganWord> owListTemp = new ArrayList<>();
         if (bindList.isEmpty()) {
             owListTemp = owList;

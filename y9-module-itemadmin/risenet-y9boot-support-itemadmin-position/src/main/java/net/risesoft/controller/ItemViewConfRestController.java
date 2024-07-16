@@ -96,7 +96,7 @@ public class ItemViewConfRestController {
         List<Y9FormItemBind> formList =
             y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         for (Y9FormItemBind bind : formList) {
-            List<Y9FormField> formFieldList = y9FormFieldService.findByTableNameAndFormId(tableName, bind.getFormId());
+            List<Y9FormField> formFieldList = y9FormFieldService.listByTableNameAndFormId(tableName, bind.getFormId());
             for (Y9FormField formField : formFieldList) {
                 if (!fieldNameList.contains(formField.getFieldName())
                     && !formField.getFieldName().equalsIgnoreCase("guid")
@@ -132,7 +132,7 @@ public class ItemViewConfRestController {
         List<Map<String, Object>> tableField = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
             String formId = bind.getFormId();
-            List<Y9FormField> formFieldList = y9FormFieldService.findByFormId(formId);
+            List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
             for (Y9FormField formField : formFieldList) {
                 if (!tableNameList.contains(formField.getTableName())) {
                     Y9Table y9Table = y9TableService.findById(formField.getTableId());

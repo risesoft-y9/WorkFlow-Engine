@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.form.Y9Form;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -20,7 +22,7 @@ public interface Y9FormService {
      * @param guid
      * @return
      */
-    public Map<String, Object> delChildTableRow(String formId, String tableId, String guid);
+    Y9Result<Object> delChildTableRow(String formId, String tableId, String guid);
 
     /**
      * 根据id删除表单
@@ -28,7 +30,7 @@ public interface Y9FormService {
      * @param id
      * @return
      */
-    public Map<String, Object> delete(String id);
+    Y9Result<Object> delete(String id);
 
     /**
      * Description:
@@ -46,15 +48,7 @@ public interface Y9FormService {
      * @param guid
      * @return
      */
-    public Map<String, Object> delPreFormData(String formId, String guid);
-
-    /**
-     * 获取所有表单信息
-     *
-     * @param id
-     * @return
-     */
-    public List<Y9Form> findAll();
+    Y9Result<Object> delPreFormData(String formId, String guid);
 
     /**
      * 根据id获取表单信息
@@ -62,7 +56,49 @@ public interface Y9FormService {
      * @param id
      * @return
      */
-    public Y9Form findById(String id);
+    Y9Form findById(String id);
+
+    /**
+     * 获取表单是否有数据
+     *
+     * @param guid
+     * @param formId
+     * @return
+     */
+    Map<String, Object> getData(String guid, String formId);
+
+    /**
+     * 获取表单数据
+     *
+     * @param formId
+     * @param guid
+     * @return
+     */
+    Map<String, Object> getFormData(String formId, String guid);
+
+    /**
+     * 获取表单数据
+     *
+     * @param formId
+     * @param guid
+     * @return
+     */
+    Map<String, Object> getFormData4Var(String formId, String guid);
+
+    /**
+     * 获取表单绑定字段信息
+     *
+     * @param id
+     * @return
+     */
+    String getFormField(String id);
+
+    /**
+     * 获取所有表单信息
+     *
+     * @return
+     */
+    List<Y9Form> listAll();
 
     /**
      * Description: 获取子表数据
@@ -73,35 +109,8 @@ public interface Y9FormService {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
+    List<Map<String, Object>> listChildTableData(String formId, String tableId, String processSerialNumber)
         throws Exception;
-
-    /**
-     * 获取表单是否有数据
-     *
-     * @param guid
-     * @param formId
-     * @return
-     */
-    public Map<String, Object> getData(String guid, String formId);
-
-    /**
-     * 获取表单数据
-     *
-     * @param formId
-     * @param guid
-     * @return
-     */
-    public Map<String, Object> getFormData(String formId, String guid);
-
-    /**
-     * 获取表单数据
-     *
-     * @param formId
-     * @param guid
-     * @return
-     */
-    public Map<String, Object> getFormData4Var(String formId, String guid);
 
     /**
      * 获取表单数据列表
@@ -109,15 +118,7 @@ public interface Y9FormService {
      * @param formId
      * @return
      */
-    public List<Map<String, Object>> getFormDataList(String formId);
-
-    /**
-     * 获取表单绑定字段信息
-     *
-     * @param id
-     * @return
-     */
-    public String getFormField(String id);
+    List<Map<String, Object>> listFormData(String formId);
 
     /**
      *
@@ -128,7 +129,7 @@ public interface Y9FormService {
      * @param rows
      * @return
      */
-    public Map<String, Object> getFormList(String systemName, int page, int rows);
+    Y9Page<Map<String, Object>> pageFormList(String systemName, int page, int rows);
 
     /**
      * 保存子表数据
@@ -139,8 +140,7 @@ public interface Y9FormService {
      * @param jsonData
      * @return
      */
-    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
-        String jsonData);
+    Y9Result<Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData);
 
     /**
      * 保存表单数据
@@ -148,7 +148,7 @@ public interface Y9FormService {
      * @param formdata
      * @return
      */
-    public Map<String, Object> saveFormData(String formdata);
+    Y9Result<Object> saveFormData(String formdata);
 
     /**
      * 保存绑定表单字段信息
@@ -157,7 +157,7 @@ public interface Y9FormService {
      * @param fieldJson
      * @return
      */
-    public Map<String, Object> saveFormField(String formId, String fieldJson);
+    Y9Result<Object> saveFormField(String formId, String fieldJson);
 
     /**
      * 保存表单json
@@ -166,7 +166,7 @@ public interface Y9FormService {
      * @param formJson
      * @return
      */
-    public Map<String, Object> saveFormJson(String id, String formJson);
+    Y9Result<Object> saveFormJson(String id, String formJson);
 
     /**
      * 保存表单信息
@@ -174,6 +174,6 @@ public interface Y9FormService {
      * @param form
      * @return
      */
-    public Map<String, Object> saveOrUpdate(Y9Form form);
+    Y9Result<Object> saveOrUpdate(Y9Form form);
 
 }

@@ -15,23 +15,39 @@ public interface OpinionFrameService {
 
     /**
      * Description:
-     * 
+     *
+     * @param id
      * @return
      */
-    List<OpinionFrame> findAll();
+    OpinionFrame getById(String id);
 
     /**
      * Description:
-     * 
+     *
+     * @param mark
+     * @return
+     */
+    OpinionFrame getByMark(String mark);
+
+    /**
+     * Description:
+     *
+     * @return
+     */
+    List<OpinionFrame> listAll();
+
+    /**
+     * Description:
+     *
      * @param page
      * @param rows
      * @return
      */
-    Page<OpinionFrame> findAll(int page, int rows);
+    Page<OpinionFrame> pageAll(int page, int rows);
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -39,41 +55,25 @@ public interface OpinionFrameService {
      * @param rows
      * @return
      */
-    Page<OpinionFrame> findAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows);
+    Page<OpinionFrame> pageAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows);
 
     /**
      * Description:
-     * 
-     * @param mark
-     * @return
-     */
-    OpinionFrame findByMark(String mark);
-
-    /**
-     * Description:
-     * 
-     * @param id
-     * @return
-     */
-    OpinionFrame findOne(String id);
-
-    /**
-     * Description:
-     * 
+     *
      * @param id
      */
     void remove(String id);
 
     /**
      * Description:
-     * 
+     *
      * @param ids
      */
     void remove(String[] ids);
 
     /**
      * Description:
-     * 
+     *
      * @param opinionFrame
      * @return
      */
@@ -81,7 +81,7 @@ public interface OpinionFrameService {
 
     /**
      * Description:
-     * 
+     *
      * @param opinionFrame
      * @return
      */
@@ -89,7 +89,7 @@ public interface OpinionFrameService {
 
     /**
      * Description:
-     * 
+     *
      * @param page
      * @param rows
      * @param keyword
@@ -99,7 +99,7 @@ public interface OpinionFrameService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey

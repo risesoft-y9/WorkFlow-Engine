@@ -22,7 +22,6 @@ import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.PunctuationConsts;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemOrganWordBind;
 import net.risesoft.entity.OrganWord;
 import net.risesoft.entity.OrganWordDetail;
@@ -88,7 +87,6 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional
     public Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId,
         Integer common, String processSerialNumber) {
         int status = 3;
@@ -331,7 +329,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             }
             if (hasPermission) {
                 word.setHasPermission(true);
-                List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWord.getId());
+                List<OrganWordProperty> propertyList = organWordPropertyService.listByOrganWordId(organWord.getId());
                 for (OrganWordProperty op : propertyList) {
                     OrganWordPropertyModel proper = new OrganWordPropertyModel();
                     proper.setHasPermission(true);
@@ -346,55 +344,8 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public List<OrganWord> findAll() {
-        return organWordRepository.findAllByOrderByCreateTimeAsc();
-    }
-
-    @Override
     public OrganWord findByCustom(String custom) {
         return organWordRepository.findByCustom(custom);
-    }
-
-    @Override
-    public List<OrganWordPropertyModel> findByCustom(String itemId, String processDefinitionId, String taskDefKey,
-        String custom) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        OrganWord organWord = this.findByCustom(custom);
-        if (organWord != null) {
-            boolean hasPermission = false;
-            ItemOrganWordBind bind =
-                itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
-                    processDefinitionId, taskDefKey, custom);
-            if (null != bind) {
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty()) {
-                    hasPermission = true;
-                } else {
-                    for (String roleId : roleIds) {
-                        hasPermission =
-                            positionRoleApi.hasRole(tenantId, roleId, Y9LoginUserHolder.getPositionId()).getData();
-                        if (hasPermission) {
-                            break;
-                        }
-                    }
-                }
-            }
-            if (!hasPermission) {
-                return Collections.emptyList();
-            } else {
-                List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWord.getId());
-                List<OrganWordPropertyModel> retList = new ArrayList<>();
-                for (OrganWordProperty op : propertyList) {
-                    OrganWordPropertyModel editMap = new OrganWordPropertyModel();
-                    editMap.setHasPermission(true);
-                    editMap.setName(op.getName());
-                    editMap.setInitNumber(op.getInitNumber());
-                    retList.add(editMap);
-                }
-                return retList;
-            }
-        }
-        return Collections.emptyList();
     }
 
     @Override
@@ -403,7 +354,6 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional
     public Integer getNumber(String custom, String characterValue, Integer year, Integer common, String itemId) {
         Integer number = 0;
         OrganWordDetail owd = null;
@@ -484,7 +434,6 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional
     public Map<String, Object> getNumber4DeptName(String custom, Integer year, Integer common, String itemId) {
         Map<String, Object> map = new HashMap<>(16);
         String numberStr = "";
@@ -524,7 +473,6 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional
     public Integer getNumberOnly(String custom, String characterValue, Integer year, Integer common, String itemId) {
         Integer number = 0;
         OrganWordDetail owd = null;
@@ -606,14 +554,61 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public Page<OrganWord> list(int page, int rows) {
+    public List<OrganWord> listAll() {
+        return organWordRepository.findAllByOrderByCreateTimeAsc();
+    }
+
+    @Override
+    public List<OrganWordPropertyModel> listByCustom(String itemId, String processDefinitionId, String taskDefKey,
+        String custom) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        OrganWord organWord = this.findByCustom(custom);
+        if (organWord != null) {
+            boolean hasPermission = false;
+            ItemOrganWordBind bind =
+                itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
+                    processDefinitionId, taskDefKey, custom);
+            if (null != bind) {
+                List<String> roleIds = bind.getRoleIds();
+                if (roleIds.isEmpty()) {
+                    hasPermission = true;
+                } else {
+                    for (String roleId : roleIds) {
+                        hasPermission =
+                            positionRoleApi.hasRole(tenantId, roleId, Y9LoginUserHolder.getPositionId()).getData();
+                        if (hasPermission) {
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!hasPermission) {
+                return Collections.emptyList();
+            } else {
+                List<OrganWordProperty> propertyList = organWordPropertyService.listByOrganWordId(organWord.getId());
+                List<OrganWordPropertyModel> retList = new ArrayList<>();
+                for (OrganWordProperty op : propertyList) {
+                    OrganWordPropertyModel editMap = new OrganWordPropertyModel();
+                    editMap.setHasPermission(true);
+                    editMap.setName(op.getName());
+                    editMap.setInitNumber(op.getInitNumber());
+                    retList.add(editMap);
+                }
+                return retList;
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Page<OrganWord> pageAll(int page, int rows) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return organWordRepository.findAll(pageable);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void removeOrganWords(String[] organWordIds) {
         for (String organWordId : organWordIds) {
             organWordRepository.deleteById(organWordId);
@@ -621,44 +616,33 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Object> save(OrganWord organWord) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String id = organWord.getId(), personName = person.getName();
-            if (StringUtils.isNotEmpty(id)) {
-                OrganWord oldow = this.findOne(id);
-                if (null != oldow) {
-                    oldow.setCustom(organWord.getCustom());
-                    oldow.setUserName(personName);
-                    oldow.setName(organWord.getName());
-                    oldow.setNumberType(organWord.getNumberType());
-                    oldow.setNumberLength(organWord.getNumberLength());
-                    organWordRepository.save(oldow);
-                } else {
-                    organWordRepository.save(organWord);
-                }
-                map.put(UtilConsts.SUCCESS, true);
-                return map;
+    @Transactional(readOnly = false)
+    public OrganWord save(OrganWord organWord) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String id = organWord.getId(), personName = person.getName();
+        if (StringUtils.isNotEmpty(id)) {
+            OrganWord oldow = this.findOne(id);
+            if (null != oldow) {
+                oldow.setCustom(organWord.getCustom());
+                oldow.setUserName(personName);
+                oldow.setName(organWord.getName());
+                oldow.setNumberType(organWord.getNumberType());
+                oldow.setNumberLength(organWord.getNumberLength());
+                return organWordRepository.save(oldow);
             } else {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                OrganWord newOw = new OrganWord();
-                newOw.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newOw.setCreateTime(sdf.format(new Date()));
-                newOw.setUserName(person.getName());
-                newOw.setCustom(organWord.getCustom());
-                newOw.setName(organWord.getName());
-                newOw.setNumberType(organWord.getNumberType());
-                newOw.setNumberLength(organWord.getNumberLength());
-                organWordRepository.save(newOw);
-
-                map.put(UtilConsts.SUCCESS, true);
+                return organWordRepository.save(organWord);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return map;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        OrganWord newOw = new OrganWord();
+        newOw.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newOw.setCreateTime(sdf.format(new Date()));
+        newOw.setUserName(person.getName());
+        newOw.setCustom(organWord.getCustom());
+        newOw.setName(organWord.getName());
+        newOw.setNumberType(organWord.getNumberType());
+        newOw.setNumberLength(organWord.getNumberLength());
+        return organWordRepository.save(newOw);
+
     }
 }

@@ -41,7 +41,7 @@ public class LinkInfoRestController {
     @GetMapping(value = "/findAll")
     public Y9Result<List<LinkInfo>> findAll(@RequestParam(required = false) String linkName,
         @RequestParam(required = false) String linkUrl) {
-        List<LinkInfo> list = linkInfoService.findAll(linkName, linkUrl);
+        List<LinkInfo> list = linkInfoService.listAll(linkName, linkUrl);
         return Y9Result.success(list, "获取列表成功");
     }
 

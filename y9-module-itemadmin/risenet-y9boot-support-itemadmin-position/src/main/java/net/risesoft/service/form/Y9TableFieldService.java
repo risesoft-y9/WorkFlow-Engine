@@ -28,36 +28,12 @@ public interface Y9TableFieldService {
     Y9TableField findById(String id);
 
     /**
-     * 获取字段系统主键
-     *
-     * @param tableId
-     * @return
-     */
-    List<Y9TableField> findSystemField(String tableId);
-
-    /**
      * 根据表id获取表字段定义
      *
      * @param tableId
      * @return
      */
-    List<Y9TableField> getFieldList(String tableId);
-
-    /**
-     * 保存表字段信息
-     *
-     * @param field
-     * @return
-     */
-    Y9TableField saveOrUpdate(Y9TableField field);
-
-    /**
-     * 取出当前表定义字段
-     *
-     * @param tableId
-     * @return
-     */
-    List<Y9TableField> searchFieldsByTableId(String tableId);
+    List<Y9TableField> listByTableId(String tableId);
 
     /**
      * 取出当前表定义字段
@@ -66,7 +42,31 @@ public interface Y9TableFieldService {
      * @param state 字段状态 ：-1未生成表字段，1为已经生成表字段
      * @return
      */
-    List<Y9TableField> searchFieldsByTableId(String tableId, Integer state);
+    List<Y9TableField> listByTableIdAndState(String tableId, Integer state);
+
+    /**
+     * 取出当前表定义字段
+     *
+     * @param tableId
+     * @return
+     */
+    List<Y9TableField> listByTableIdOrderByDisplay(String tableId);
+
+    /**
+     * 获取字段系统主键
+     *
+     * @param tableId
+     * @return
+     */
+    List<Y9TableField> listSystemFieldByTableId(String tableId);
+
+    /**
+     * 保存表字段信息
+     *
+     * @param field
+     * @return
+     */
+    Y9TableField saveOrUpdate(Y9TableField field);
 
     /**
      * 修改字段状态

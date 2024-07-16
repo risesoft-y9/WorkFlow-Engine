@@ -35,7 +35,7 @@ public class OpinionFrameRestController {
      */
     @GetMapping(value = "/getOpinionFrame")
     public Y9Result<OpinionFrame> getOpinionFrame(@RequestParam String id) {
-        OpinionFrame opinionFrame = opinionFrameService.findOne(id);
+        OpinionFrame opinionFrame = opinionFrameService.getById(id);
         return Y9Result.success(opinionFrame, "获取成功");
     }
 
@@ -48,7 +48,7 @@ public class OpinionFrameRestController {
      */
     @GetMapping(value = "/list")
     public Y9Page<OpinionFrame> list(@RequestParam Integer page, @RequestParam Integer rows) {
-        Page<OpinionFrame> pageList = opinionFrameService.findAll(page, rows);
+        Page<OpinionFrame> pageList = opinionFrameService.pageAll(page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
             "获取列表成功");
     }
@@ -67,7 +67,7 @@ public class OpinionFrameRestController {
     public Y9Page<OpinionFrame> list4NotUsed(@RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam int page, @RequestParam int rows) {
         Page<OpinionFrame> pageList =
-            opinionFrameService.findAllNotUsed(itemId, processDefinitionId, taskDefKey, page, rows);
+            opinionFrameService.pageAllNotUsed(itemId, processDefinitionId, taskDefKey, page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
             "获取列表成功");
     }

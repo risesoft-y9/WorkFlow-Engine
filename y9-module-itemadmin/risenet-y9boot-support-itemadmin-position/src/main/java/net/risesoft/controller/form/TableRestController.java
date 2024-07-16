@@ -53,13 +53,9 @@ public class TableRestController {
      * @return
      */
     @PostMapping(value = "/addDataBaseTable")
-    public Y9Result<String> addDataBaseTable(@RequestParam String tableName, @RequestParam String systemName,
+    public Y9Result<Object> addDataBaseTable(@RequestParam String tableName, @RequestParam String systemName,
         @RequestParam String systemCnName) {
-        Map<String, Object> map = y9TableService.addDataBaseTable(tableName, systemName, systemCnName);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9TableService.addDataBaseTable(tableName, systemName, systemCnName);
     }
 
     /**
@@ -70,15 +66,10 @@ public class TableRestController {
      * @return
      */
     @PostMapping(value = "/buildTable")
-    public Y9Result<String> buildTable(@RequestParam String tables, @RequestParam String fields) {
-        Map<String, Object> map;
+    public Y9Result<Object> buildTable(@RequestParam String tables, @RequestParam String fields) {
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
-        map = y9TableService.buildTable(table, listMap);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9TableService.buildTable(table, listMap);
     }
 
     /**
@@ -121,7 +112,7 @@ public class TableRestController {
      */
     @GetMapping(value = "/getAppList")
     public Y9Result<List<Map<String, Object>>> getAppList() {
-        List<Map<String, Object>> list = y9TableService.getAppList();
+        List<Map<String, Object>> list = y9TableService.listApps();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -133,14 +124,10 @@ public class TableRestController {
      * @param rows 条数
      * @return
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/getTables")
     public Y9Page<Y9Table> getTables(@RequestParam(required = false) String systemName, @RequestParam int page,
         @RequestParam int rows) {
-        Map<String, Object> map = y9TableService.getTables(systemName, page, rows);
-        List<Y9Table> list = (List<Y9Table>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
-            Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
+        return y9TableService.pageTables(systemName, page, rows);
     }
 
     /**
@@ -177,12 +164,8 @@ public class TableRestController {
      * @return
      */
     @PostMapping(value = "/removeTable")
-    public Y9Result<String> removeTable(@RequestParam String ids) {
-        Map<String, Object> map = y9TableService.delete(ids);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+    public Y9Result<Object> removeTable(@RequestParam String ids) {
+        return y9TableService.delete(ids);
     }
 
     /**
@@ -193,15 +176,11 @@ public class TableRestController {
      * @return
      */
     @PostMapping(value = "/saveTable")
-    public Y9Result<String> saveTable(@RequestParam(required = false) String tables,
+    public Y9Result<Object> saveTable(@RequestParam(required = false) String tables,
         @RequestParam(required = false) String fields) {
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
-        Map<String, Object> map = y9TableService.updateTable(table, listMap, "save");
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9TableService.updateTable(table, listMap, "save");
     }
 
     /**
@@ -212,14 +191,10 @@ public class TableRestController {
      * @return Y9Result<String>
      */
     @PostMapping(value = "/updateTable")
-    public Y9Result<String> updateTable(@RequestParam String tables, @RequestParam String fields) {
+    public Y9Result<Object> updateTable(@RequestParam String tables, @RequestParam String fields) {
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
-        Map<String, Object> map = y9TableService.updateTable(table, listMap, "");
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return y9TableService.updateTable(table, listMap, "");
     }
 
 }

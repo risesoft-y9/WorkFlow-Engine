@@ -1,7 +1,6 @@
 package net.risesoft.service;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.OrganWordProperty;
 
@@ -14,14 +13,7 @@ public interface OrganWordPropertyService {
 
     /**
      * Description:
-     * 
-     * @return
-     */
-    List<OrganWordProperty> findAll();
-
-    /**
-     * Description:
-     * 
+     *
      * @param id
      * @return
      */
@@ -29,15 +21,7 @@ public interface OrganWordPropertyService {
 
     /**
      * Description:
-     * 
-     * @param organWordId
-     * @return
-     */
-    List<OrganWordProperty> findByOrganWordId(String organWordId);
-
-    /**
-     * Description:
-     * 
+     *
      * @param organWordId
      * @param name
      * @return
@@ -45,24 +29,39 @@ public interface OrganWordPropertyService {
     OrganWordProperty findByOrganWordIdAndName(String organWordId, String name);
 
     /**
+     * Description:
+     *
+     * @return
+     */
+    List<OrganWordProperty> listAll();
+
+    /**
+     * Description:
+     *
+     * @param organWordId
+     * @return
+     */
+    List<OrganWordProperty> listByOrganWordId(String organWordId);
+
+    /**
      * Description: 根据传进来的机关代字Id的数组删除
-     * 
+     *
      * @param organWordPropertyIds
      */
-    public void removeOrganWordPropertys(String[] organWordPropertyIds);
+    void removeOrganWordPropertys(String[] organWordPropertyIds);
 
     /**
      * Description: 保存机关代字
-     * 
+     *
      * @param organWordProperty
      * @return
      */
-    public Map<String, Object> save(OrganWordProperty organWordProperty);
+    OrganWordProperty save(OrganWordProperty organWordProperty);
 
     /**
      * 排序
-     * 
+     *
      * @param idAndTabIndexs "id:tabIndex"形式的数组
      */
-    public void update4Order(String[] idAndTabIndexs);
+    void update4Order(String[] idAndTabIndexs);
 }

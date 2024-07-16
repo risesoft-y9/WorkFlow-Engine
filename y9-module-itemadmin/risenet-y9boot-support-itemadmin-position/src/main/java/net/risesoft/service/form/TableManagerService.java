@@ -20,12 +20,12 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
 import net.risesoft.util.form.DbMetaDataUtil;
@@ -67,10 +67,7 @@ public class TableManagerService {
      * @return
      * @throws Exception
      */
-    public Map<String, Object> addFieldToTable(Y9Table td, List<DbColumn> dbcs) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("msg", "操作成功");
-        map.put(UtilConsts.SUCCESS, true);
+    public Y9Result<Object> addFieldToTable(Y9Table td, List<DbColumn> dbcs) {
         try {
             String tableName = td.getTableName();
             String tableId = td.getId();
@@ -122,12 +119,11 @@ public class TableManagerService {
             // 修改状态
             y9TableFieldRepository.updateState(tableId);
             LOGGER.info("修改字段正常");
+            return Y9Result.successMsg("操作成功");
         } catch (Exception ex) {
-            map.put("msg", "操作失败");
-            map.put(UtilConsts.SUCCESS, false);
-            ex.printStackTrace();
+            LOGGER.warn("操作失败：{}", ex);
+            return Y9Result.failure("操作失败");
         }
-        return map;
     }
 
     /**
@@ -137,10 +133,7 @@ public class TableManagerService {
      * @param dbcs
      * @return
      */
-    public Map<String, Object> buildTable(Y9Table td, List<DbColumn> dbcs) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("msg", "操作成功");
-        map.put(UtilConsts.SUCCESS, true);
+    public Y9Result<Object> buildTable(Y9Table td, List<DbColumn> dbcs) {
         StringBuilder createSql = new StringBuilder();
         try {
             // 创建表
@@ -189,12 +182,11 @@ public class TableManagerService {
                 y9TableFieldRepository.save(y9TableField);
             }
             LOGGER.info("创建表及字段正常");
-        } catch (Exception ex1) {
-            LOGGER.warn("失败操作语句：{}", createSql, ex1);
-            map.put("msg", "操作失败");
-            map.put(UtilConsts.SUCCESS, false);
+            return Y9Result.successMsg("操作成功");
+        } catch (Exception ex) {
+            LOGGER.warn("失败操作语句：{} ,异常信息：{}", createSql, ex);
+            return Y9Result.failure("操作失败");
         }
-        return map;
     }
 
     /**

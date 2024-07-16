@@ -100,7 +100,7 @@ public class WordTemplateRestController {
     public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName,
         @RequestParam String wordTemplateId) {
         Map<String, Object> resMap = new HashMap<>(16);
-        List<Y9Table> tableList = y9TableService.getAllTable();
+        List<Y9Table> tableList = y9TableService.listAllTable();
         List<String> columnList = new ArrayList<>();
         BookMarkBind bookMarkBind =
             bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
@@ -112,7 +112,7 @@ public class WordTemplateRestController {
                 }
             }
             if (!tableId.isEmpty()) {
-                List<Y9TableField> fieldList = y9TableFieldService.getFieldList(tableId);
+                List<Y9TableField> fieldList = y9TableFieldService.listByTableId(tableId);
                 for (Y9TableField field : fieldList) {
                     columnList.add(field.getFieldName());
                 }
@@ -133,7 +133,7 @@ public class WordTemplateRestController {
     @GetMapping(value = "/getColumns")
     public Y9Result<List<String>> getColumns(@RequestParam String tableId) {
         List<String> columnList = new ArrayList<>();
-        List<Y9TableField> fieldList = y9TableFieldService.getFieldList(tableId);
+        List<Y9TableField> fieldList = y9TableFieldService.listByTableId(tableId);
         for (Y9TableField field : fieldList) {
             columnList.add(field.getFieldName());
         }
