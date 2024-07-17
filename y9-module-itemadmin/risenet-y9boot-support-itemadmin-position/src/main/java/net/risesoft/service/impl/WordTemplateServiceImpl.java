@@ -100,28 +100,18 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    public List<WordTemplate> findAll() {
-        return wordTemplateRepository.findAll();
-    }
-
-    @Override
-    public List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,
-        String fileName) {
-        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
-    }
-
-    @Override
-    public List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId) {
-        return wordTemplateRepository.findByBureauIdOrderByUploadTimeDesc(bureauId);
-    }
-
-    @Override
     public WordTemplate findById(String id) {
         return wordTemplateRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<Map<String, Object>> getBookMarkList(String wordTemplateId, String wordTemplateType) {
+    public List<WordTemplate> listAll() {
+        return wordTemplateRepository.findAll();
+    }
+
+    @Override
+    public List<Map<String, Object>> listBookMarkByWordTemplateIdAndWordTemplateType(String wordTemplateId,
+        String wordTemplateType) {
         try {
             WordTemplate wordTemplate = wordTemplateRepository.findById(wordTemplateId).orElse(null);
             byte[] b = y9FileStoreService.downloadFileToBytes(wordTemplate.getFilePath());
@@ -152,6 +142,17 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             e.printStackTrace();
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<WordTemplate> listByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,
+        String fileName) {
+        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
+    }
+
+    @Override
+    public List<WordTemplate> listByBureauIdOrderByUploadTimeDesc(String bureauId) {
+        return wordTemplateRepository.findByBureauIdOrderByUploadTimeDesc(bureauId);
     }
 
     @Override

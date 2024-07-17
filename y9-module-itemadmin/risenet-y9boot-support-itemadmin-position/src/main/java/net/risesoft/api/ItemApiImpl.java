@@ -114,12 +114,10 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
      * @since 9.6.6
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Result<List<ItemModel>> getAllItemList(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = spmApproveItemService.list();
-        List<SpmApproveItem> list = (List<SpmApproveItem>)map.get("rows");
+        List<SpmApproveItem> list = spmApproveItemService.list();
         List<ItemModel> itemList = new ArrayList<>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
@@ -195,7 +193,7 @@ public class ItemApiImpl implements Item4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<ItemListModel> list = documentService.getItemList();
+        List<ItemListModel> list = documentService.listItems();
         return Y9Result.success(list);
     }
 
@@ -257,7 +255,7 @@ public class ItemApiImpl implements Item4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<ItemListModel> list = documentService.getMyItemList();
+        List<ItemListModel> list = documentService.listMyItems();
         return Y9Result.success(list);
     }
 

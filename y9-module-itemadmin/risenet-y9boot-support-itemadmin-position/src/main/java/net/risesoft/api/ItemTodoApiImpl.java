@@ -77,7 +77,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         Page<ActRuDetail> ardPage =
-            actRuDetailService.findBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
+            actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();

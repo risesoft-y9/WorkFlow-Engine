@@ -22,30 +22,6 @@ public interface ProcessTrackService {
     void deleteById(String id);
 
     /**
-     * 根据任务查找历程数据
-     *
-     * @param taskId
-     * @return
-     */
-    List<ProcessTrack> findByTaskId(String taskId);
-
-    /**
-     * 根据任务id获取结束时间为null的自定义历程
-     *
-     * @param taskId
-     * @return
-     */
-    List<ProcessTrack> findByTaskIdAndEndTimeIsNull(String taskId);
-
-    /**
-     * 根据任务查找历程数据
-     *
-     * @param taskId
-     * @return
-     */
-    List<ProcessTrack> findByTaskIdAsc(String taskId);
-
-    /**
      * 根据唯一标示查找历程数据
      *
      * @param id
@@ -54,28 +30,52 @@ public interface ProcessTrackService {
     ProcessTrack findOne(String id);
 
     /**
-     * 获取历程列表(带自定义历程信息)
-     *
-     * @param processInstanceId
-     * @return
-     */
-    List<HistoryProcessModel> getListMap(String processInstanceId);
-
-    /**
-     * 获取历程列表(带自定义历程信息)
-     *
-     * @param processInstanceId
-     * @return
-     */
-    List<HistoryProcessModel> getListMap4Simple(String processInstanceId);
-
-    /**
      * 获取流程图任务节点信息
      *
      * @param processInstanceId
      * @return
      */
     Y9Result<List<HistoricActivityInstanceModel>> getTaskList(String processInstanceId);
+
+    /**
+     * 获取历程列表(带自定义历程信息)
+     *
+     * @param processInstanceId
+     * @return
+     */
+    List<HistoryProcessModel> listByProcessInstanceId(String processInstanceId);
+
+    /**
+     * 获取历程列表(带自定义历程信息)
+     *
+     * @param processInstanceId
+     * @return
+     */
+    List<HistoryProcessModel> listByProcessInstanceId4Simple(String processInstanceId);
+
+    /**
+     * 根据任务查找历程数据
+     *
+     * @param taskId
+     * @return
+     */
+    List<ProcessTrack> listByTaskId(String taskId);
+
+    /**
+     * 根据任务id获取结束时间为null的自定义历程
+     *
+     * @param taskId
+     * @return
+     */
+    List<ProcessTrack> listByTaskIdAndEndTimeIsNull(String taskId);
+
+    /**
+     * 根据任务查找历程数据
+     *
+     * @param taskId
+     * @return
+     */
+    List<ProcessTrack> listByTaskIdAsc(String taskId);
 
     /**
      * Description: 保存或者更新历程数据

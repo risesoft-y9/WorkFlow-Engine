@@ -23,6 +23,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ExtendedContentRepository;
 import net.risesoft.service.ExtendedContentService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -42,7 +43,66 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     private final OrgUnitApi orgUnitManager;
 
     @Override
-    public List<Map<String, Object>> contentList(String processSerialNumber, String taskId, String itembox,
+    public int countByProcessSerialNumberAndUserIdAndCategory(String processSerialNumber, String userid,
+        String category) {
+        return extendedContentRepository.getCountByUserIdAndCategory(processSerialNumber, userid, category);
+    }
+
+    @Override
+    public int countByProcSerialNumberAndCategory(String processSerialNumber, String category) {
+        return extendedContentRepository.findByProcSerialNumberAndCategory(processSerialNumber, category);
+    }
+
+    @Override
+    public int countByTaskIdAndCategory(String taskId, String category) {
+        return extendedContentRepository.getCountByTaskIdAndCategory(taskId, category);
+    }
+
+    @Override
+    @Transactional
+    public Y9Result<Object> delete(String id) {
+        try {
+            if (StringUtils.isNotBlank(id)) {
+                extendedContentRepository.deleteById(id);
+            }
+            return Y9Result.successMsg("删除成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Y9Result.failure("删除失败");
+        }
+    }
+
+    @Override
+    public ExtendedContent findById(String id) {
+        return extendedContentRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Integer getCountPersonal(String processSerialNumber, String category, String personId) {
+        return extendedContentRepository.getCountPersonal(processSerialNumber, category, personId);
+    }
+
+    @Override
+    public Integer getCountPersonal(String processSerialNumber, String taskId, String category, String personId) {
+        return extendedContentRepository.getCountPersonal(processSerialNumber, taskId, category, personId);
+    }
+
+    @Override
+    public ExtendedContent getNewConentByProcessSerialNumber(String processSerialNumber, String category) {
+        List<ExtendedContent> list = extendedContentRepository.findByPsnAndCategory(processSerialNumber, category);
+        if (list != null && list.size() > 0) {
+            return list.get(list.size() - 1);
+        }
+        return null;
+    }
+
+    @Override
+    public ExtendedContent getResultByUserIdAndCategory(String processSerialNumber, String userid, String category) {
+        return extendedContentRepository.getResultByUserIdAndCategory(processSerialNumber, userid, category);
+    }
+
+    @Override
+    public List<Map<String, Object>> listContents(String processSerialNumber, String taskId, String itembox,
         String category) {
         List<Map<String, Object>> resList = new ArrayList<>();
         Map<String, Object> addableMap = new HashMap<>(16);
@@ -89,68 +149,6 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
 
     @Override
     @Transactional
-    public Map<String, Object> delete(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "删除成功");
-        try {
-            if (StringUtils.isNotBlank(id)) {
-                extendedContentRepository.deleteById(id);
-            }
-        } catch (Exception e) {
-            map.put("msg", "删除失败");
-            map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    @Override
-    public ExtendedContent findById(String id) {
-        return extendedContentRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public int findByProcSerialNumberAndCategory(String processSerialNumber, String category) {
-        return extendedContentRepository.findByProcSerialNumberAndCategory(processSerialNumber, category);
-    }
-
-    @Override
-    public int getCountByTaskIdAndCategory(String taskId, String category) {
-        return extendedContentRepository.getCountByTaskIdAndCategory(taskId, category);
-    }
-
-    @Override
-    public int getCountByUserIdAndCategory(String processSerialNumber, String userid, String category) {
-        return extendedContentRepository.getCountByUserIdAndCategory(processSerialNumber, userid, category);
-    }
-
-    @Override
-    public Integer getCountPersonal(String processSerialNumber, String category, String personId) {
-        return extendedContentRepository.getCountPersonal(processSerialNumber, category, personId);
-    }
-
-    @Override
-    public Integer getCountPersonal(String processSerialNumber, String taskId, String category, String personId) {
-        return extendedContentRepository.getCountPersonal(processSerialNumber, taskId, category, personId);
-    }
-
-    @Override
-    public ExtendedContent getNewConentByProcessSerialNumber(String processSerialNumber, String category) {
-        List<ExtendedContent> list = extendedContentRepository.findByPsnAndCategory(processSerialNumber, category);
-        if (list != null && list.size() > 0) {
-            return list.get(list.size() - 1);
-        }
-        return null;
-    }
-
-    @Override
-    public ExtendedContent getResultByUserIdAndCategory(String processSerialNumber, String userid, String category) {
-        return extendedContentRepository.getResultByUserIdAndCategory(processSerialNumber, userid, category);
-    }
-
-    @Override
-    @Transactional
     public Model newOrModifyContent(String processSerialNumber, String taskId, String category, String id,
         Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -185,9 +183,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
 
     @Override
     @Transactional
-    public Map<String, Object> saveOrUpdate(ExtendedContent content) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
+    public Y9Result<Object> saveOrUpdate(ExtendedContent content) {
         try {
             String id = content.getId();
             Date date = new Date();
@@ -215,15 +211,18 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
                 extendedContentRepository.save(extendedContent);
             } else {
                 Optional<ExtendedContent> extendedContent = extendedContentRepository.findById(id);
-                extendedContent.get().setContent(content.getContent());
-                extendedContent.get().setModifyDate(date);
-                extendedContentRepository.save(extendedContent.get());
+                if (extendedContent.isPresent()) {
+                    extendedContent.get().setContent(content.getContent());
+                    extendedContent.get().setModifyDate(date);
+                    extendedContentRepository.save(extendedContent.get());
+                }
             }
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
+            return Y9Result.failure("保存失败");
         }
-        return map;
+
     }
 
     @Override

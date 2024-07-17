@@ -127,7 +127,7 @@ public class DataCenterService {
             String itemId = processParam.getItemId();
             String processSerialNumber = processParam.getProcessSerialNumber();
             List<Y9FormItemBind> formBindData =
-                y9FormItemBindService.findByItemIdAndProcDefId(itemId, processDefinitionId);
+                y9FormItemBindService.listByItemIdAndProcDefId(itemId, processDefinitionId);
             for (Y9FormItemBind y9Form : formBindData) {
                 EformInfo eformInfo = new EformInfo();
                 String fieldNames = "";
@@ -189,7 +189,7 @@ public class DataCenterService {
         retMap.put("userId", userIds);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            List<HistoryProcessModel> listMap = processTrackService.getListMap(processInstanceId);
+            List<HistoryProcessModel> listMap = processTrackService.listByProcessInstanceId(processInstanceId);
             List<HistoryInfo> list = new ArrayList<>();
             for (int i = 0; i < listMap.size(); i++) {
                 HistoryProcessModel map = listMap.get(i);
@@ -271,7 +271,7 @@ public class DataCenterService {
         }
 
         // 获取附件
-        List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
+        List<TransactionFile> fileList = transactionFileService.listByProcessSerialNumber(processSerialNumber);
         List<AttachmentInfo> aList = new ArrayList<>();
         for (TransactionFile file : fileList) {
             AttachmentInfo info = new AttachmentInfo();
@@ -368,7 +368,7 @@ public class DataCenterService {
             }
 
             // 获取附件
-            List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
+            List<TransactionFile> fileList = transactionFileService.listByProcessSerialNumber(processSerialNumber);
             List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
             for (TransactionFile file : fileList) {
                 AttachmentInfo info = new AttachmentInfo();

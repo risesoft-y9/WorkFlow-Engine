@@ -156,8 +156,8 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page,
-        Integer rows) {
+    public Y9Page<Map<String, Object>> pageByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId,
+        Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
         Y9Page<ProcessInstanceModel> piPage =

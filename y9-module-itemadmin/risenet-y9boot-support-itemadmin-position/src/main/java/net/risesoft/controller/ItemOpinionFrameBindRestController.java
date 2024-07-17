@@ -1,7 +1,24 @@
 package net.risesoft.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.ItemOpinionFrameRole;
@@ -14,13 +31,6 @@ import net.risesoft.service.ItemOpinionFrameRoleService;
 import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @author qinman
@@ -88,6 +98,23 @@ public class ItemOpinionFrameBindRestController {
     }
 
     /**
+     * 删除一键设置及动作
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/delOneClickSet")
+    public Y9Result<String> delOneClickSet(String id) {
+        try {
+            opinionFrameOneClickSetService.delete(id);
+        } catch (Exception e) {
+            LOGGER.error("删除一键设置失败", e);
+            Y9Result.failure("删除一键设置失败");
+        }
+        return Y9Result.successMsg("删除一键设置成功");
+    }
+
+    /**
      * 获取意见框与角色绑定的数据集合
      *
      * @param itemId 事项id
@@ -99,14 +126,14 @@ public class ItemOpinionFrameBindRestController {
     public Y9Result<List<ItemOpinionFrameBind>> getBindList(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
         return Y9Result.success(oftrbList, "获取成功");
     }
 
     @GetMapping(value = "/getBindListByMark")
     public Y9Result<List<Map<String, Object>>> getBindListByMark(@RequestParam String mark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.findByMark(mark);
+        List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.listByMark(mark);
         List<Map<String, Object>> bindList = new ArrayList<>();
         Map<String, Object> map;
         SpmApproveItem item;
@@ -118,7 +145,7 @@ public class ItemOpinionFrameBindRestController {
             item = spmApproveItemService.findById(bind.getItemId());
             map.put("itemName", null == item ? "事项不存在" : item.getName());
             map.put("processDefinitionId", bind.getProcessDefinitionId());
-            roleList = itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(bind.getId());
+            roleList = itemOpinionFrameRoleService.listByItemOpinionFrameIdContainRoleName(bind.getId());
             String roleNames = "";
             for (ItemOpinionFrameRole role : roleList) {
                 if (StringUtils.isEmpty(roleNames)) {
@@ -162,7 +189,7 @@ public class ItemOpinionFrameBindRestController {
         for (TargetModel targetModel : list) {
             StringBuilder opinionFrameNames = new StringBuilder();
             List<ItemOpinionFrameBind> bindList =
-                itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
+                itemOpinionFrameBindService.listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
                     targetModel.getTaskDefKey());
             for (ItemOpinionFrameBind bind : bindList) {
                 if (StringUtils.isEmpty(opinionFrameNames)) {
@@ -175,6 +202,25 @@ public class ItemOpinionFrameBindRestController {
         }
         resMap.put("rows", list);
         return Y9Result.success(resMap, "获取成功");
+    }
+
+    /**
+     * 获取意见框绑定的一键设置列表
+     *
+     * @param bindId
+     * @return
+     */
+    @GetMapping(value = "/getOneClickSetBindList")
+    public Y9Result<List<OpinionFrameOneClickSet>>
+        getOneClickSetBindList(@RequestParam(required = true) String bindId) {
+        List<OpinionFrameOneClickSet> bindList = new ArrayList<>();
+        try {
+            bindList = opinionFrameOneClickSetService.findByBindId(bindId);
+        } catch (Exception e) {
+            LOGGER.error("获取意见框绑定的一键设置列表失败", e);
+            Y9Result.failure("获取意见框绑定的一键设置列表失败");
+        }
+        return Y9Result.success(bindList, "获取意见框绑定的一键设置列表成功");
     }
 
     /**
@@ -198,7 +244,7 @@ public class ItemOpinionFrameBindRestController {
      */
     @PostMapping(value = "/saveModify")
     public Y9Result<String> saveModify(@RequestParam String id, @RequestParam String opinionFrameNameAndMarks) {
-        ItemOpinionFrameBind opinionBind = itemOpinionFrameBindService.findOne(id);
+        ItemOpinionFrameBind opinionBind = itemOpinionFrameBindService.getById(id);
         String[] opinionFrameNameAndMark = opinionFrameNameAndMarks.split(":");
         String name = opinionFrameNameAndMark[0];
         String mark = opinionFrameNameAndMark[1];
@@ -210,30 +256,14 @@ public class ItemOpinionFrameBindRestController {
     }
 
     /**
-     * 获取意见框绑定的一键设置列表
-     * @param bindId
-     * @return
-     */
-    @GetMapping(value = "/getOneClickSetBindList")
-    public Y9Result<List<OpinionFrameOneClickSet>> getOneClickSetBindList(@RequestParam(required = true) String bindId) {
-        List<OpinionFrameOneClickSet> bindList = new ArrayList<>();
-        try {
-            bindList = opinionFrameOneClickSetService.findByBindId(bindId);
-        } catch (Exception e) {
-            LOGGER.error("获取意见框绑定的一键设置列表失败", e);
-            Y9Result.failure("获取意见框绑定的一键设置列表失败");
-        }
-        return Y9Result.success(bindList, "获取意见框绑定的一键设置列表成功");
-    }
-
-    /**
      * 保存一键设置数据
+     *
      * @param opinionFrameOneClickSet
      * @return
      */
     @PostMapping(value = "/saveOneClickSet")
     public Y9Result<Map<String, Object>> saveOneClickSet1(@Validated OpinionFrameOneClickSet opinionFrameOneClickSet) {
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         try {
             map = opinionFrameOneClickSetService.save(opinionFrameOneClickSet);
         } catch (Exception e) {
@@ -241,21 +271,5 @@ public class ItemOpinionFrameBindRestController {
             Y9Result.failure("一键设置失败");
         }
         return Y9Result.success(map, map.get("msg").toString());
-    }
-
-    /**
-     * 删除一键设置及动作
-     * @param id
-     * @return
-     */
-    @PostMapping(value = "/delOneClickSet")
-    public Y9Result<String> delOneClickSet(String id) {
-        try {
-            opinionFrameOneClickSetService.delete(id);
-        } catch (Exception e) {
-            LOGGER.error("删除一键设置失败", e);
-            Y9Result.failure("删除一键设置失败");
-        }
-        return Y9Result.successMsg("删除一键设置成功");
     }
 }

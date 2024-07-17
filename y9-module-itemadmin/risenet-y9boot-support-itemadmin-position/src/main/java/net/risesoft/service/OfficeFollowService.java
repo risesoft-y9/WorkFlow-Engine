@@ -20,13 +20,6 @@ public interface OfficeFollowService {
     int countByProcessInstanceId(String processInstanceId);
 
     /**
-     * 取消关注
-     *
-     * @param processInstanceIds
-     */
-    void delOfficeFollow(String processInstanceIds);
-
-    /**
      * 根据流程实例id删除关注
      *
      * @param processInstanceId
@@ -34,11 +27,28 @@ public interface OfficeFollowService {
     void deleteByProcessInstanceId(String processInstanceId);
 
     /**
+     * 取消关注
+     *
+     * @param processInstanceIds
+     */
+    void delOfficeFollow(String processInstanceIds);
+
+    /**
      * 获取我的关注数量
      *
      * @return
      */
     int getFollowCount();
+
+    /**
+     * 获取关注列表
+     *
+     * @param searchName
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<OfficeFollowModel> pageBySearchName(String searchName, int page, int rows);
 
     /**
      * 根据系统名称获取关注列表
@@ -49,17 +59,7 @@ public interface OfficeFollowService {
      * @param rows
      * @return
      */
-    Y9Page<OfficeFollowModel> getFollowListBySystemName(String systemName, String searchName, int page, int rows);
-
-    /**
-     * 获取关注列表
-     *
-     * @param searchName
-     * @param page
-     * @param rows
-     * @return
-     */
-    Y9Page<OfficeFollowModel> getOfficeFollowList(String searchName, int page, int rows);
+    Y9Page<OfficeFollowModel> pageBySystemNameAndSearchName(String systemName, String searchName, int page, int rows);
 
     /**
      * 保存办件关注信息

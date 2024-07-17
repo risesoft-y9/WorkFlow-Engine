@@ -137,7 +137,7 @@ public class FormDataServiceImpl implements FormDataService {
             ProcessDefinitionModel processDefinition =
                 repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
             List<Y9FormItemBind> formList =
-                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+                y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             List<Map<String, Object>> list = null;
             for (Y9FormItemBind bind : formList) {
                 String formId = bind.getFormId();
@@ -262,7 +262,7 @@ public class FormDataServiceImpl implements FormDataService {
             ProcessDefinitionModel processDefinition = repositoryManager
                 .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
             List<Y9FormItemBind> formList =
-                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+                y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             for (Y9FormItemBind form : formList) {
                 List<Y9FormField> formElementList = y9FormFieldService.listByFormId(form.getFormId());
                 for (Y9FormField formElement : formElementList) {
@@ -338,7 +338,7 @@ public class FormDataServiceImpl implements FormDataService {
             ProcessDefinitionModel processDefinition = repositoryManager
                 .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
             List<Y9FormItemBind> list =
-                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+                y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             String bindFormId = "";
             for (Y9FormItemBind form : list) {
                 bindFormId = form.getFormId();

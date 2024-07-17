@@ -45,14 +45,24 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     private final ItemViewConfService itemViewConfService;
 
     @Override
-    public List<ViewType> findAll() {
+    public ViewType findById(String id) {
+        return viewTypeRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public ViewType findByMark(String mark) {
+        return viewTypeRepository.findByMark(mark);
+    }
+
+    @Override
+    public List<ViewType> listAll() {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         return viewTypeRepository.findAll(sort);
     }
 
     @SuppressWarnings("serial")
     @Override
-    public Page<ViewType> findAll(int page, int rows) {
+    public Page<ViewType> pageAll(int page, int rows) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return viewTypeRepository.findAll(new Specification<ViewType>() {
@@ -64,16 +74,6 @@ public class ViewTypeServiceImpl implements ViewTypeService {
                 return builder.and(predicates);
             }
         }, pageable);
-    }
-
-    @Override
-    public ViewType findById(String id) {
-        return viewTypeRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public ViewType findByMark(String mark) {
-        return viewTypeRepository.findByMark(mark);
     }
 
     @Override

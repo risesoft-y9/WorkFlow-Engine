@@ -21,7 +21,6 @@ import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
@@ -32,6 +31,7 @@ import net.risesoft.model.platform.System;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.ItemButtonBindService;
@@ -89,7 +89,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     @Override
     @Transactional
     public Map<String, Object> copyItem(String id) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("success", false);
         map.put("msg", "复制失败");
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -157,10 +157,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     @Transactional
-    public Map<String, Object> delete(String ids) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "删除成功");
+    public Y9Result<String> delete(String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {
                 String[] id = ids.split(SysVariables.COMMA);
@@ -196,12 +193,11 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                     itemViewConfService.deleteBindInfo(s);
                 }
             }
+            return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
             LOGGER.error("删除事项异常", e);
+            return Y9Result.failure("删除失败");
         }
-        return map;
     }
 
     @Override
@@ -221,11 +217,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    public List<SpmApproveItem> findByIdNotAndNameLike(String id, String name) {
-        return spmApproveItemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
-    }
-
-    @Override
     public ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
         ItemModel itemModel = new ItemModel();
         SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
@@ -234,11 +225,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
         }
         Y9BeanUtil.copyProperties(sa, itemModel);
         return itemModel;
-    }
-
-    @Override
-    public List<SpmApproveItem> findBySystemName(String systemName) {
-        return spmApproveItemRepository.findAll(systemName);
     }
 
     @Override
@@ -256,42 +242,35 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    public Map<String, Object> list() {
-        Map<String, Object> map = new HashMap<>(16);
-        List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
-        map.put("rows", itemList);
-        return map;
+    public List<SpmApproveItem> list() {
+        return spmApproveItemRepository.findAll();
     }
 
     @Override
-    public Map<String, Object> list(Integer page, Integer rows) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "createDate"));
-            Page<SpmApproveItem> itemPage = spmApproveItemRepository.findAll(pageable);
-            map.put("rows", itemPage.getContent());
-            map.put("currpage", page);
-            map.put("totalpages", itemPage.getTotalPages());
-            map.put("total", itemPage.getTotalElements());
-        } catch (Exception e) {
-            LOGGER.error("获取事项列表异常", e);
-        }
-        return map;
+    public List<SpmApproveItem> listByIdNotAndNameLike(String id, String name) {
+        return spmApproveItemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
+    }
+
+    @Override
+    public List<SpmApproveItem> listBySystemName(String systemName) {
+        return spmApproveItemRepository.findAll(systemName);
+    }
+
+    @Override
+    public Page<SpmApproveItem> page(Integer page, Integer rows) {
+        PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "createDate"));
+        return spmApproveItemRepository.findAll(pageable);
     }
 
     @Override
     @Transactional
-    public Map<String, Object> publishToSystemApp(String itemId) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
+    public Y9Result<String> publishToSystemApp(String itemId) {
         try {
             SpmApproveItem item = this.findById(itemId);
-            map.put("msg", "发布应用失败");
             System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
             if (null == system) {
-                map.put("msg", "发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为[" + Y9Context.getSystemName()
-                    + "]的系统,请先创建系统后再发布");
-                return map;
+                return Y9Result.failure("发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为["
+                    + Y9Context.getSystemName() + "]的系统,请先创建系统后再发布");
             }
             /**
              * 1、判断应用是否存在，不存在则创建应用，存在则修改应用
@@ -305,32 +284,25 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 app.setCustomId(itemId);
                 app.setEnabled(Boolean.TRUE);
                 app.setSystemId(systemId);
-                // FIXME
                 appManager.saveIsvApp(app);
 
-                map.put("msg", "发布为系统[" + Y9Context.getSystemName() + "]的新应用成功，请联系运维人员进行应用审核");
+                return Y9Result.successMsg("发布为系统[" + Y9Context.getSystemName() + "]的新应用成功，请联系运维人员进行应用审核");
             } else {
                 app.setName(item.getName());
                 app.setUrl(item.getAppUrl());
                 app.setSystemId(systemId);
-                // FIXME
                 appManager.saveIsvApp(app);
-                map.put("msg", "更新系统[" + Y9Context.getSystemName() + "]的应用成功，请联系运维人员进行应用审核");
+                return Y9Result.successMsg("更新系统[" + Y9Context.getSystemName() + "]的应用成功，请联系运维人员进行应用审核");
             }
-            map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            map.put("msg", "发布为系统应用异常");
             LOGGER.error("发布为系统应用异常", e);
+            return Y9Result.failure("发布为系统应用异常");
         }
-        return map;
     }
 
     @Override
     @Transactional
-    public Map<String, Object> save(SpmApproveItem item) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "保存失败");
+    public Y9Result<SpmApproveItem> save(SpmApproveItem item) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             item.setCreateDate(new Date());
@@ -364,13 +336,11 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                     itemMappingConfRepository.deleteByMappingId(itemMappingConf1.getMappingId());
                 }
             }
-            map.put("item", item);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存成功");
+            return Y9Result.success(item, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存事项异常", e);
+            return Y9Result.failure("保存事项异常");
         }
-        return map;
     }
 
     @Override

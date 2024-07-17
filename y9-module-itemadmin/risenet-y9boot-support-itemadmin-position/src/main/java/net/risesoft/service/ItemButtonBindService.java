@@ -26,107 +26,11 @@ public interface ItemButtonBindService {
 
     /**
      * Description: 复制当前事项绑定的流程定义上一个版本的流程定义绑定的按钮
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      */
     void copyBind(String itemId, String processDefinitionId);
-
-    /**
-     * 根据事项Id、按钮类型、流程定义Id查找
-     *
-     * @param itemId
-     * @param buttonType
-     * @param processDefinitionId
-     * @return
-     */
-    List<ItemButtonBind> findList(String itemId, Integer buttonType, String processDefinitionId);
-
-    /**
-     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找
-     * 
-     * @param itemId
-     * @param buttonType
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    List<ItemButtonBind> findList(String itemId, Integer buttonType, String processDefinitionId, String taskDefKey);
-
-    /**
-     * Description:
-     * 
-     * @param buttonId
-     * @return
-     */
-    List<ItemButtonBind> findListByButtonId(String buttonId);
-
-    /**
-     * 
-     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找（包含授权的所有角色Id和角色名称）
-     * 
-     * @param itemId
-     * @param buttonType
-     * @param processDefinitionId
-     * @param taskDefineKey
-     * @return
-     */
-    List<ItemButtonBind> findListContainRole(String itemId, Integer buttonType, String processDefinitionId,
-        String taskDefineKey);
-
-    /**
-     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找（包含授权的所有角色Id）
-     * 
-     * @param itemId
-     * @param buttonType
-     * @param processDefinitionId
-     * @param taskDefineKey
-     * @return
-     */
-    List<ItemButtonBind> findListContainRoleId(String itemId, Integer buttonType, String processDefinitionId,
-        String taskDefineKey);
-
-    /**
-     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找（当前节点没有绑定则查找流程绑定的）
-     * 
-     * @param itemId
-     * @param buttonType
-     * @param processDefinitionId
-     * @param taskDefineKey
-     * @return
-     */
-    List<ItemButtonBind> findListExtra(String itemId, Integer buttonType, String processDefinitionId,
-        String taskDefineKey);
-
-    /**
-     * 根据唯一标示查找
-     *
-     * @param id
-     * @return
-     */
-    ItemButtonBind findOne(String id);
-
-    /**
-     * Description: 删除绑定关系
-     * 
-     * @param buttonItemBindIds
-     */
-    void removeButtonItemBinds(String[] buttonItemBindIds);
-
-    /**
-     * Description: 保存授权角色
-     * 
-     * @param buttonItemBind
-     * @return
-     */
-    ItemButtonBind save(ItemButtonBind buttonItemBind);
-
-    /**
-     * 保存排序
-     *
-     * @param idAndTabIndexs
-     */
-    void saveOrder(String[] idAndTabIndexs);
 
     /**
      * Description: 复制按钮配置绑定信息
@@ -143,4 +47,101 @@ public interface ItemButtonBindService {
      * @param itemId
      */
     void deleteBindInfo(String itemId);
+
+    /**
+     * 根据唯一标示查找
+     *
+     * @param id
+     * @return
+     */
+    ItemButtonBind getById(String id);
+
+    /**
+     * Description:
+     *
+     * @param buttonId
+     * @return
+     */
+    List<ItemButtonBind> listByButtonId(String buttonId);
+
+    /**
+     * 根据事项Id、按钮类型、流程定义Id查找
+     *
+     * @param itemId
+     * @param buttonType
+     * @param processDefinitionId
+     * @return
+     */
+    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId, Integer buttonType,
+        String processDefinitionId);
+
+    /**
+     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找
+     *
+     * @param itemId
+     * @param buttonType
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId, Integer buttonType,
+        String processDefinitionId, String taskDefKey);
+
+    /**
+     *
+     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找（包含授权的所有角色Id和角色名称）
+     *
+     * @param itemId
+     * @param buttonType
+     * @param processDefinitionId
+     * @param taskDefineKey
+     * @return
+     */
+    List<ItemButtonBind> listContainRole(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey);
+
+    /**
+     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找（包含授权的所有角色Id）
+     *
+     * @param itemId
+     * @param buttonType
+     * @param processDefinitionId
+     * @param taskDefineKey
+     * @return
+     */
+    List<ItemButtonBind> listContainRoleId(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey);
+
+    /**
+     * Description: 根据事项Id、按钮类型、流程定义Key、任务节点查找（当前节点没有绑定则查找流程绑定的）
+     *
+     * @param itemId
+     * @param buttonType
+     * @param processDefinitionId
+     * @param taskDefineKey
+     * @return
+     */
+    List<ItemButtonBind> listExtra(String itemId, Integer buttonType, String processDefinitionId, String taskDefineKey);
+
+    /**
+     * Description: 删除绑定关系
+     *
+     * @param buttonItemBindIds
+     */
+    void removeButtonItemBinds(String[] buttonItemBindIds);
+
+    /**
+     * Description: 保存授权角色
+     *
+     * @param buttonItemBind
+     * @return
+     */
+    ItemButtonBind save(ItemButtonBind buttonItemBind);
+
+    /**
+     * 保存排序
+     *
+     * @param idAndTabIndexs
+     */
+    void saveOrder(String[] idAndTabIndexs);
 }

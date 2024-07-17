@@ -173,8 +173,28 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         return list;
     }
 
+    private String getAssociatedId(String delIds, AssociatedFile associatedFile) {
+        String associatedId = associatedFile.getAssociatedId();
+        String newAssociatedId = "";
+        String[] associatedIds = associatedId.split(SysVariables.COMMA);
+        String[] delAssociatedIds = delIds.split(SysVariables.COMMA);
+        for (String id : associatedIds) {
+            boolean isDel = false;
+            for (String delId : delAssociatedIds) {
+                if (id.equals(delId)) {
+                    isDel = true;
+                    break;
+                }
+            }
+            if (!isDel) {
+                newAssociatedId = Y9Util.genCustomStr(newAssociatedId, id);
+            }
+        }
+        return newAssociatedId;
+    }
+
     @Override
-    public List<AssociatedFileModel> getAssociatedFileAllList(String processSerialNumber) {
+    public List<AssociatedFileModel> listAssociatedFileAll(String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<AssociatedFileModel> list = new ArrayList<>();
         AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
@@ -234,26 +254,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             list = list.stream().sorted().collect(Collectors.toList());
         }
         return list;
-    }
-
-    private String getAssociatedId(String delIds, AssociatedFile associatedFile) {
-        String associatedId = associatedFile.getAssociatedId();
-        String newAssociatedId = "";
-        String[] associatedIds = associatedId.split(SysVariables.COMMA);
-        String[] delAssociatedIds = delIds.split(SysVariables.COMMA);
-        for (String id : associatedIds) {
-            boolean isDel = false;
-            for (String delId : delAssociatedIds) {
-                if (id.equals(delId)) {
-                    isDel = true;
-                    break;
-                }
-            }
-            if (!isDel) {
-                newAssociatedId = Y9Util.genCustomStr(newAssociatedId, id);
-            }
-        }
-        return newAssociatedId;
     }
 
     @Transactional

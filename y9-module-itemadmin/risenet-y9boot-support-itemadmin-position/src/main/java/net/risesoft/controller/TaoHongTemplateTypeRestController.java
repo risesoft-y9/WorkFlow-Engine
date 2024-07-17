@@ -44,10 +44,10 @@ public class TaoHongTemplateTypeRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<TaoHongTemplateType> list;
         if (person.isGlobalManager()) {
-            list = taoHongTemplateTypeService.findAll();
+            list = taoHongTemplateTypeService.listAll();
         } else {
             OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, personId).getData();
-            list = taoHongTemplateTypeService.findByBureauId(orgUnit.getId());
+            list = taoHongTemplateTypeService.listByBureauId(orgUnit.getId());
         }
         return Y9Result.success(list, "获取成功");
     }
@@ -60,7 +60,7 @@ public class TaoHongTemplateTypeRestController {
      */
     @GetMapping(value = "/newOrModify")
     public Y9Result<TaoHongTemplateType> newOrModify(@RequestParam String id) {
-        TaoHongTemplateType t = taoHongTemplateTypeService.findOne(id);
+        TaoHongTemplateType t = taoHongTemplateTypeService.getById(id);
         return Y9Result.success(t, "获取成功");
     }
 

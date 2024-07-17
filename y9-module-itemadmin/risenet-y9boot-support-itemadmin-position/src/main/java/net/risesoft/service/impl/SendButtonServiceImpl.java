@@ -41,13 +41,13 @@ public class SendButtonServiceImpl implements SendButtonService {
     }
 
     @Override
-    public List<SendButton> findAll() {
-        return sendButtonRepository.findAll();
+    public SendButton getById(String id) {
+        return sendButtonRepository.findById(id).orElse(null);
     }
 
     @Override
-    public SendButton findOne(String id) {
-        return sendButtonRepository.findById(id).orElse(null);
+    public List<SendButton> listAll() {
+        return sendButtonRepository.findAll();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SendButtonServiceImpl implements SendButtonService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = sendButton.getId();
         if (StringUtils.isNotEmpty(id)) {
-            SendButton oldsb = this.findOne(id);
+            SendButton oldsb = this.getById(id);
             if (null != oldsb) {
                 oldsb.setName(sendButton.getName());
                 oldsb.setUpdateTime(sdf.format(new Date()));

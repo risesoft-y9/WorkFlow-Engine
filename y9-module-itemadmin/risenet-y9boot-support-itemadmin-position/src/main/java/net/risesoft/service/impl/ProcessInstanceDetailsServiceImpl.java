@@ -63,7 +63,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     }
 
     @Override
-    public Y9Page<ProcessCooperationModel> processInstanceList(String userId, String title, int page, int rows) {
+    public Y9Page<ProcessCooperationModel> pageByUserIdAndTitle(String userId, String title, int page, int rows) {
         List<ProcessCooperationModel> listMap = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
@@ -173,7 +173,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             ProcessInstanceDetails details =
                 processInstanceDetailsRepository.findByProcessInstanceIdAndTaskId(processInstanceId, taskId);
             if (details != null && details.getId() != null) {
-                List<Opinion> opinion = opinionService.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId,
+                List<Opinion> opinion = opinionService.listByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId,
                     Y9LoginUserHolder.getPositionId());
                 String opinionStr = !opinion.isEmpty() ? opinion.get(0).getContent() : "";
                 details.setEndTime(endTime);

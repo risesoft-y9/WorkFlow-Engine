@@ -36,12 +36,12 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     }
 
     @Override
-    public List<ItemOpinionFrameRole> findByItemOpinionFrameId(String itemOpinionFrameId) {
+    public List<ItemOpinionFrameRole> listByItemOpinionFrameId(String itemOpinionFrameId) {
         return itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
     }
 
     @Override
-    public List<ItemOpinionFrameRole> findByItemOpinionFrameIdContainRoleName(String itemOpinionFrameId) {
+    public List<ItemOpinionFrameRole> listByItemOpinionFrameIdContainRoleName(String itemOpinionFrameId) {
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
         for (ItemOpinionFrameRole role : roleList) {

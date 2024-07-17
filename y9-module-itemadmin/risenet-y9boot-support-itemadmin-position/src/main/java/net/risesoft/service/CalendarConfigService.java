@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.CalendarConfig;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -18,7 +19,7 @@ public interface CalendarConfigService {
      * @param startDate
      * @return
      */
-    Map<String, Object> delCalendar(String startDate);
+    Y9Result<String> delCalendar(String startDate);
 
     /**
      * 获取年节假期配置信息
@@ -34,7 +35,7 @@ public interface CalendarConfigService {
      * @param month
      * @return
      */
-    List<Map<String, Object>> getCalendar(String month);
+    List<Map<String, Object>> listCalendar(String month);
 
     /**
      * 保存日历配置
@@ -43,7 +44,7 @@ public interface CalendarConfigService {
      * @param type
      * @return
      */
-    Map<String, Object> saveCalendar(String startDate, Integer type);
+    Y9Result<String> saveCalendar(String startDate, Integer type);
 
     /**
      * 保存日历配置

@@ -59,12 +59,12 @@ public class ViewTypeRestController {
      */
     @GetMapping(value = "/list")
     public Y9Page<ViewType> list(@RequestParam Integer page, @RequestParam Integer rows) {
-        Page<ViewType> pageList = viewTypeService.findAll(page, rows);
+        Page<ViewType> pageList = viewTypeService.pageAll(page, rows);
         List<ViewType> list = pageList.getContent();
         for (ViewType viewType : list) {
             StringBuilder itemIds = new StringBuilder();
             StringBuilder itemNames = new StringBuilder();
-            List<ItemViewConf> ivcList = itemViewConfService.findByViewType(viewType.getMark());
+            List<ItemViewConf> ivcList = itemViewConfService.listByViewType(viewType.getMark());
             for (ItemViewConf ivc : ivcList) {
                 String itemId = ivc.getItemId();
                 if (!itemIds.toString().contains(itemId)) {
@@ -86,7 +86,7 @@ public class ViewTypeRestController {
 
     @GetMapping(value = "/listAll")
     public Y9Result<List<ViewType>> listAll() {
-        List<ViewType> list = viewTypeService.findAll();
+        List<ViewType> list = viewTypeService.listAll();
         return Y9Result.success(list, "获取成功");
     }
 

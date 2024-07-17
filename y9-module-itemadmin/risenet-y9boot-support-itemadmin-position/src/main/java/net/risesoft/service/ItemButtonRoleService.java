@@ -13,37 +13,37 @@ public interface ItemButtonRoleService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemButtonId
      */
     void deleteByItemButtonId(String itemButtonId);
 
     /**
      * Description:
-     * 
+     *
      * @param itemButtonId
      * @return
      */
-    List<ItemButtonRole> findByItemButtonId(String itemButtonId);
+    List<ItemButtonRole> listByItemButtonId(String itemButtonId);
 
     /**
      * Description:
-     * 
+     *
      * @param itemButtonId
      * @return
      */
-    List<ItemButtonRole> findByItemButtonIdContainRoleName(String itemButtonId);
+    List<ItemButtonRole> listByItemButtonIdContainRoleName(String itemButtonId);
 
     /**
      * Description: 删除多个
-     * 
+     *
      * @param ids
      */
     void remove(String[] ids);
 
     /**
      * Description:
-     * 
+     *
      * @param itemButtonId
      * @param roleId
      */

@@ -36,7 +36,7 @@ public class ItemButtonRoleRestController {
      */
     @GetMapping(value = "/list")
     public Y9Result<List<ItemButtonRole>> list(@RequestParam String itemButtonId) {
-        List<ItemButtonRole> list = itemButtonRoleService.findByItemButtonIdContainRoleName(itemButtonId);
+        List<ItemButtonRole> list = itemButtonRoleService.listByItemButtonIdContainRoleName(itemButtonId);
         return Y9Result.success(list, "获取成功");
     }
 

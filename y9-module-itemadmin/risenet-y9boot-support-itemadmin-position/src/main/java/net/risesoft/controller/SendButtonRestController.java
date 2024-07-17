@@ -47,7 +47,7 @@ public class SendButtonRestController {
      */
     @GetMapping(value = "/getSendButton")
     public Y9Result<SendButton> getSendButton(@RequestParam String id) {
-        SendButton sendButton = sendButtonService.findOne(id);
+        SendButton sendButton = sendButtonService.getById(id);
         return Y9Result.success(sendButton, "获取成功");
     }
 
@@ -58,7 +58,7 @@ public class SendButtonRestController {
      */
     @GetMapping(value = "/getSendButtonList")
     public Y9Result<List<SendButton>> getSendButtonList() {
-        List<SendButton> sendButtonList = sendButtonService.findAll();
+        List<SendButton> sendButtonList = sendButtonService.listAll();
         return Y9Result.success(sendButtonList, "获取成功");
     }
 

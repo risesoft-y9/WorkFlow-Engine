@@ -10,20 +10,6 @@ import net.risesoft.entity.TaoHongTemplateType;
  * @date 2022/12/20
  */
 public interface TaoHongTemplateTypeService {
-    /**
-     * 查找当前租户的所有模板类型
-     *
-     * @return
-     */
-    List<TaoHongTemplateType> findAll();
-
-    /**
-     * Description: 查找当前委办局的所有模板类型
-     * 
-     * @param bureauId
-     * @return
-     */
-    List<TaoHongTemplateType> findByBureauId(String bureauId);
 
     /**
      * 根据id查抄模板
@@ -31,7 +17,22 @@ public interface TaoHongTemplateTypeService {
      * @param id
      * @return
      */
-    TaoHongTemplateType findOne(String id);
+    TaoHongTemplateType getById(String id);
+
+    /**
+     * 查找当前租户的所有模板类型
+     *
+     * @return
+     */
+    List<TaoHongTemplateType> listAll();
+
+    /**
+     * Description: 查找当前委办局的所有模板类型
+     *
+     * @param bureauId
+     * @return
+     */
+    List<TaoHongTemplateType> listByBureauId(String bureauId);
 
     /**
      * 删除模板类型

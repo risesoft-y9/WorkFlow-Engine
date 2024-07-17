@@ -35,7 +35,7 @@ public class ProcessHistoryRestController {
      */
     @GetMapping(value = "/historyList")
     public Y9Result<List<HistoryProcessModel>> historyList(@RequestParam String processInstanceId) {
-        List<HistoryProcessModel> items = processTrackService.getListMap(processInstanceId);
+        List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId(processInstanceId);
         return Y9Result.success(items, "获取成功");
     }
 

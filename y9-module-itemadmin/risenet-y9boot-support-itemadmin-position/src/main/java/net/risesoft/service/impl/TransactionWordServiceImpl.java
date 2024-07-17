@@ -50,24 +50,6 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @Override
-    public List<TransactionWord> findByProcessSerialNumber(String processSerialNumber) {
-        return transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
-    }
-
-    @Override
-    public List<TransactionWord> findByProcessSerialNumberAndDocCategory(String processSerialNumber,
-        String docCategory) {
-        return transactionWordRepository.findByProcessSerialNumberAndDocCategory(processSerialNumber, docCategory);
-    }
-
-    @Override
-    public List<TransactionWord> findByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong) {
-        List<TransactionWord> list =
-            transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
-        return list;
-    }
-
-    @Override
     public TransactionWord getByProcessSerialNumber(String processSerialNumber) {
         TransactionWord fileDocument = new TransactionWord();
         if (StringUtils.isNotBlank(processSerialNumber)) {
@@ -77,6 +59,24 @@ public class TransactionWordServiceImpl implements TransactionWordService {
             }
         }
         return fileDocument;
+    }
+
+    @Override
+    public List<TransactionWord> listByProcessSerialNumber(String processSerialNumber) {
+        return transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
+    }
+
+    @Override
+    public List<TransactionWord> listByProcessSerialNumberAndDocCategory(String processSerialNumber,
+        String docCategory) {
+        return transactionWordRepository.findByProcessSerialNumberAndDocCategory(processSerialNumber, docCategory);
+    }
+
+    @Override
+    public List<TransactionWord> listByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong) {
+        List<TransactionWord> list =
+            transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
+        return list;
     }
 
     @Override

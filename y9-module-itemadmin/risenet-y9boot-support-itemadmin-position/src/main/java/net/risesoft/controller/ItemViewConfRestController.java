@@ -74,7 +74,7 @@ public class ItemViewConfRestController {
      */
     @GetMapping(value = "/findByItemId")
     public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId, @RequestParam String viewType) {
-        List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
+        List<ItemViewConf> list = itemViewConfService.listByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -94,7 +94,7 @@ public class ItemViewConfRestController {
         ProcessDefinitionModel processDefinition =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         for (Y9FormItemBind bind : formList) {
             List<Y9FormField> formFieldList = y9FormFieldService.listByTableNameAndFormId(tableName, bind.getFormId());
             for (Y9FormField formField : formFieldList) {
@@ -126,7 +126,7 @@ public class ItemViewConfRestController {
         ProcessDefinitionModel processDefinition =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         List<Map<String, Object>> tableField = new ArrayList<>();

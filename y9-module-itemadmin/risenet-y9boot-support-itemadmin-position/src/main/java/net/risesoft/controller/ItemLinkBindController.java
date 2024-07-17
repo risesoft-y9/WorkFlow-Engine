@@ -36,7 +36,7 @@ public class ItemLinkBindController {
      */
     @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemLinkBind>> getBindList(@RequestParam String itemId) {
-        List<ItemLinkBind> list = itemLinkBindService.findByItemId(itemId);
+        List<ItemLinkBind> list = itemLinkBindService.listByItemId(itemId);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -48,7 +48,7 @@ public class ItemLinkBindController {
      */
     @GetMapping(value = "/getBindRoleList")
     public Y9Result<List<ItemLinkRole>> getBindRoleList(@RequestParam String itemLinkId) {
-        List<ItemLinkRole> list = itemLinkBindService.getBindRoleList(itemLinkId);
+        List<ItemLinkRole> list = itemLinkBindService.listWithBindRole(itemLinkId);
         return Y9Result.success(list, "获取成功");
     }
 

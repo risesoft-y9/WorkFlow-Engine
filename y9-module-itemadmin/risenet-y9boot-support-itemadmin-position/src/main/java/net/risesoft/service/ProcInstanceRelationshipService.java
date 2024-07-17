@@ -37,7 +37,7 @@ public class ProcInstanceRelationshipService {
      * @return
      */
     public List<ProcInstanceRelationship> findByParentProcInstanceId(String procInstanceId) {
-        List<ProcInstanceRelationship> list = new ArrayList<ProcInstanceRelationship>();
+        List<ProcInstanceRelationship> list = new ArrayList<>();
         if (StringUtils.isNotBlank(procInstanceId)) {
             list = procInstanceRelationshipRepository.findByParentProcInstanceId(procInstanceId);
         }
@@ -51,7 +51,7 @@ public class ProcInstanceRelationshipService {
      * @return
      */
     public List<ProcInstanceRelationship> findByProcDefKey(String processDefinitionKey) {
-        List<ProcInstanceRelationship> list = new ArrayList<ProcInstanceRelationship>();
+        List<ProcInstanceRelationship> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processDefinitionKey)) {
             list = procInstanceRelationshipRepository.findByProcDefKey(processDefinitionKey);
         }
@@ -79,14 +79,14 @@ public class ProcInstanceRelationshipService {
         List<String> results = new ArrayList<>();
         // 根据当前流程实例查找其子流程实例Id
         List<String> subProcessInstanceIds = getSubProcessInstanceIds(processInstanceId);
-        if (subProcessInstanceIds != null && subProcessInstanceIds.size() > 0) {
+        if (subProcessInstanceIds != null && !subProcessInstanceIds.isEmpty()) {
             results.addAll(getSubProcessInstanceIds(processInstanceId));
         }
         String parentProcessInstanceId = getParentProcInstanceId(processInstanceId);
         if (StringUtils.isNotBlank(parentProcessInstanceId)) {
             results.add(parentProcessInstanceId);
             subProcessInstanceIds = getSubProcessInstanceIds(parentProcessInstanceId);
-            if (subProcessInstanceIds != null && subProcessInstanceIds.size() > 0) {
+            if (subProcessInstanceIds != null && !subProcessInstanceIds.isEmpty()) {
                 results.addAll(subProcessInstanceIds);
             }
         }
@@ -229,9 +229,7 @@ public class ProcInstanceRelationshipService {
 
             if (list != null) {
                 count = list.size();
-                if (count > 0) {
-                    return true;
-                }
+                return count > 0;
             }
         }
         return false;

@@ -38,34 +38,17 @@ public interface WordTemplateService {
     /**
      * Description:
      *
-     * @return
-     */
-    List<WordTemplate> findAll();
-
-    /**
-     * 获取当前委办局下所有的正文模板(可根据正文模板名称查询)
-     *
-     * @param bureauId
-     * @param fileName
-     * @return
-     */
-    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName);
-
-    /**
-     * Description:
-     *
-     * @param bureauId
-     * @return
-     */
-    List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId);
-
-    /**
-     * Description:
-     *
      * @param id
      * @return
      */
     WordTemplate findById(String id);
+
+    /**
+     * Description:
+     *
+     * @return
+     */
+    List<WordTemplate> listAll();
 
     /**
      * 获取书签
@@ -80,7 +63,25 @@ public interface WordTemplateService {
      * @param wordTemplateType
      * @return
      */
-    List<Map<String, Object>> getBookMarkList(String wordTemplateId, String wordTemplateType);
+    List<Map<String, Object>> listBookMarkByWordTemplateIdAndWordTemplateType(String wordTemplateId,
+        String wordTemplateType);
+
+    /**
+     * 获取当前委办局下所有的正文模板(可根据正文模板名称查询)
+     *
+     * @param bureauId
+     * @param fileName
+     * @return
+     */
+    List<WordTemplate> listByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName);
+
+    /**
+     * Description:
+     *
+     * @param bureauId
+     * @return
+     */
+    List<WordTemplate> listByBureauIdOrderByUploadTimeDesc(String bureauId);
 
     /**
      * Description: 保存正文模板

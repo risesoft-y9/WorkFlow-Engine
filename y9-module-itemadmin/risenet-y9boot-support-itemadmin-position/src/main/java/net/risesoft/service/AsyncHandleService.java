@@ -10,20 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
@@ -74,73 +71,50 @@ import net.risesoft.y9.util.Y9Util;
 @Service(value = "asyncHandleService")
 @Transactional(value = "rsTenantTransactionManager", rollbackFor = Exception.class)
 @Slf4j
+@RequiredArgsConstructor
 public class AsyncHandleService {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final TodoTaskApi todoTaskManager;
 
-    @Autowired
-    private TodoTaskApi todoTaskManager;
+    private final TaskVariableRepository taskVariableRepository;
 
-    @Autowired
-    private TaskVariableRepository taskVariableRepository;
+    private final ErrorLogService errorLogService;
 
-    @Autowired
-    private ErrorLogService errorLogService;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final Y9Properties y9Conf;
 
-    @Autowired
-    private Y9Properties y9Conf;
+    private final PersonApi personManager;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final MsgRemindInfoApi msgRemindInfoManager;
 
-    @Autowired
-    private MsgRemindInfoApi msgRemindInfoManager;
+    private final OpinionHistoryRepository opinionHistoryRepository;
 
-    @Autowired
-    private OpinionHistoryRepository opinionHistoryRepository;
+    private final DraftEntityRepository draftEntityRepository;
 
-    @Autowired
-    private DraftEntityRepository draftEntityRepository;
+    private final TransactionHistoryWordService transactionHistoryWordService;
 
-    @Autowired
-    private TransactionHistoryWordService transactionHistoryWordService;
+    private final TransactionFileService transactionFileService;
 
-    @Autowired
-    private TransactionFileService transactionFileService;
+    private final OpinionRepository opinionRepository;
 
-    @Autowired
-    private OpinionRepository opinionRepository;
+    private final VariableApi variableManager;
 
-    @Autowired
-    private VariableApi variableManager;
+    private final ProcessTrackRepository processTrackRepository;
 
-    @Autowired
-    private ProcessTrackRepository processTrackRepository;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final HistoricTaskApi historicTaskManager;
 
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private final Process4SearchService process4SearchService;
 
-    @Autowired
-    private Process4SearchService process4SearchService;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
-
-    @Autowired
-    private ItemTaskConfService itemTaskConfService;
+    private final ItemTaskConfService itemTaskConfService;
 
     /**
      * 异步发送

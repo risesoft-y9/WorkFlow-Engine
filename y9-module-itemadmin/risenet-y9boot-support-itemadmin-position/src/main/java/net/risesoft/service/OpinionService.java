@@ -61,14 +61,6 @@ public interface OpinionService {
     int findByProcSerialNumber(String processSerialNumber);
 
     /**
-     * 根据processSerialNumber查找所有意见
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    List<Opinion> findByProcessSerialNumber(String processSerialNumber);
-
-    /**
      * Description:
      *
      * @param processSerialNumber
@@ -81,40 +73,12 @@ public interface OpinionService {
         String userId);
 
     /**
-     * 根据任务id获取意见
-     *
-     * @param taskId
-     * @return
-     */
-    List<Opinion> findByTaskId(String taskId);
-
-    List<Opinion> findByTaskIdAndPositionIdAndProcessTrackIdIsNull(String taskId, String positionId);
-
-    /**
-     * Description: 获取自定义历程意见
-     *
-     * @param taskId
-     * @param processTrackId
-     * @return
-     */
-    List<Opinion> findByTaskIdAndProcessTrackId(String taskId, String processTrackId);
-
-    /**
-     * 历程时显示的意见,显示的是当前taskId的个人意见和领导意见，暂时不现实部门意见。
-     *
-     * @param taskId
-     * @param userId
-     * @return
-     */
-    List<Opinion> findByTaskIdAndUserIdAndProcessTrackIdIsNull(String taskId, String userId);
-
-    /**
      * Description:
      *
      * @param id
      * @return
      */
-    Opinion findOne(String id);
+    Opinion getById(String id);
 
     /**
      * Description:
@@ -146,13 +110,49 @@ public interface OpinionService {
     int getCountByTaskId(String taskId);
 
     /**
+     * 根据processSerialNumber查找所有意见
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    List<Opinion> listByProcessSerialNumber(String processSerialNumber);
+
+    /**
+     * 根据任务id获取意见
+     *
+     * @param taskId
+     * @return
+     */
+    List<Opinion> listByTaskId(String taskId);
+
+    List<Opinion> listByTaskIdAndPositionIdAndProcessTrackIdIsNull(String taskId, String positionId);
+
+    /**
+     * Description: 获取自定义历程意见
+     *
+     * @param taskId
+     * @param processTrackId
+     * @return
+     */
+    List<Opinion> listByTaskIdAndProcessTrackId(String taskId, String processTrackId);
+
+    /**
+     * 历程时显示的意见,显示的是当前taskId的个人意见和领导意见，暂时不现实部门意见。
+     *
+     * @param taskId
+     * @param userId
+     * @return
+     */
+    List<Opinion> listByTaskIdAndUserIdAndProcessTrackIdIsNull(String taskId, String userId);
+
+    /**
      * 获取意见历史记录
      *
      * @param processSerialNumber
      * @param opinionFrameMark
      * @return
      */
-    List<OpinionHistoryModel> opinionHistoryList(String processSerialNumber, String opinionFrameMark);
+    List<OpinionHistoryModel> listOpinionHistory(String processSerialNumber, String opinionFrameMark);
 
     /**
      * Description:
@@ -166,7 +166,7 @@ public interface OpinionService {
      * @param activitiUser
      * @return
      */
-    List<OpinionListModel> personCommentList(String processSerialNumber, String taskId, String itembox,
+    List<OpinionListModel> listPersonComment(String processSerialNumber, String taskId, String itembox,
         String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser);
 
     /**

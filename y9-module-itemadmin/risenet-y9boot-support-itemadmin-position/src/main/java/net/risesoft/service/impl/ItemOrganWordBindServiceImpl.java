@@ -105,7 +105,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
                     /*
                      * 保存编号的授权
                      */
-                    List<ItemOrganWordRole> roleList = itemOrganWordRoleService.findByItemOrganWordBindId(oldbindId);
+                    List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(oldbindId);
                     for (ItemOrganWordRole role : roleList) {
                         itemOrganWordRoleService.saveOrUpdate(newbindId, role.getRoleId());
                     }
@@ -115,17 +115,79 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), userName = person.getName();
+        try {
+            List<ItemOrganWordBind> bindList =
+                itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+            if (null != bindList && !bindList.isEmpty()) {
+                for (ItemOrganWordBind bind : bindList) {
+                    ItemOrganWordBind newbind = new ItemOrganWordBind();
+                    newbind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    newbind.setItemId(newItemId);
+                    newbind.setCreateDate(sdf.format(new Date()));
+                    newbind.setModifyDate(sdf.format(new Date()));
+                    newbind.setOrganWordCustom(bind.getOrganWordCustom());
+                    newbind.setProcessDefinitionId(lastVersionPid);
+                    newbind.setTaskDefKey(bind.getTaskDefKey());
+                    newbind.setUserId(userId);
+                    newbind.setUserName(userName);
+                    itemOrganWordBindRepository.save(newbind);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制编号绑定关系失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            List<ItemOrganWordBind> bindList = itemOrganWordBindRepository.findByItemId(itemId);
+            if (null != bindList && !bindList.isEmpty()) {
+                for (ItemOrganWordBind bind : bindList) {
+                    itemOrganWordRoleService.removeByItemOrganWordBindId(bind.getId());
+                    itemOrganWordBindRepository.deleteById(bind.getId());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("删除编号绑定关系失败", e);
+        }
+    }
+
+    @Override
     public ItemOrganWordBind findById(String id) {
         return itemOrganWordBindRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<ItemOrganWordBind> findByItemId(String itemId) {
+    public ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
+        String processDefinitionId, String taskDefKey, String custom) {
+        ItemOrganWordBind bind =
+            itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
+                processDefinitionId, taskDefKey, custom);
+        if (null != bind) {
+            List<String> roleIds = new ArrayList<>();
+            List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(bind.getId());
+            for (ItemOrganWordRole role : roleList) {
+                roleIds.add(role.getRoleId());
+            }
+            bind.setRoleIds(roleIds);
+        }
+        return bind;
+    }
+
+    @Override
+    public List<ItemOrganWordBind> listByItemId(String itemId) {
         return itemOrganWordBindRepository.findByItemId(itemId);
     }
 
     @Override
-    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
+    public List<ItemOrganWordBind> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
         List<ItemOrganWordBind> owtrbList =
             itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         OrganWord organWord;
@@ -135,7 +197,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             bind.setOrganWordName(organWord == null ? custom + "对应的编号不存在" : organWord.getName());
 
             List<ItemOrganWordRole> roleList =
-                itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(bind.getId());
+                itemOrganWordRoleService.listByItemOrganWordBindIdContainRoleName(bind.getId());
             List<String> roleIds = new ArrayList<>();
             String roleNames = "";
             for (ItemOrganWordRole role : roleList) {
@@ -154,7 +216,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+    public List<ItemOrganWordBind> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
         String processDefinitionId, String taskDefKey) {
         List<ItemOrganWordBind> owtrbList = itemOrganWordBindRepository
             .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
@@ -163,7 +225,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             String custom = bind.getOrganWordCustom();
             organWord = organWordRepository.findByCustom(custom);
             bind.setOrganWordName(organWord == null ? custom + "对应的编号不存在" : organWord.getName());
-            List<ItemOrganWordRole> roleList = itemOrganWordRoleService.findByItemOrganWordBindId(bind.getId());
+            List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(bind.getId());
             List<String> roleIds = new ArrayList<>();
             String roleNames = "";
             for (ItemOrganWordRole role : roleList) {
@@ -181,23 +243,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
 
         }
         return owtrbList;
-    }
-
-    @Override
-    public ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
-        String processDefinitionId, String taskDefKey, String custom) {
-        ItemOrganWordBind bind =
-            itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
-                processDefinitionId, taskDefKey, custom);
-        if (null != bind) {
-            List<String> roleIds = new ArrayList<>();
-            List<ItemOrganWordRole> roleList = itemOrganWordRoleService.findByItemOrganWordBindId(bind.getId());
-            for (ItemOrganWordRole role : roleList) {
-                roleIds.add(role.getRoleId());
-            }
-            bind.setRoleIds(roleIds);
-        }
-        return bind;
     }
 
     @Override
@@ -257,51 +302,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             bind.setUserName(Y9LoginUserHolder.getUserInfo().getName());
             bind.setModifyDate(sdf.format(new Date()));
             itemOrganWordBindRepository.save(bind);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), userName = person.getName();
-        try {
-            List<ItemOrganWordBind> bindList =
-                itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
-            if (null != bindList && !bindList.isEmpty()) {
-                for (ItemOrganWordBind bind : bindList) {
-                    ItemOrganWordBind newbind = new ItemOrganWordBind();
-                    newbind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newbind.setItemId(newItemId);
-                    newbind.setCreateDate(sdf.format(new Date()));
-                    newbind.setModifyDate(sdf.format(new Date()));
-                    newbind.setOrganWordCustom(bind.getOrganWordCustom());
-                    newbind.setProcessDefinitionId(lastVersionPid);
-                    newbind.setTaskDefKey(bind.getTaskDefKey());
-                    newbind.setUserId(userId);
-                    newbind.setUserName(userName);
-                    itemOrganWordBindRepository.save(newbind);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制编号绑定关系失败", e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteBindInfo(String itemId) {
-        try {
-            List<ItemOrganWordBind> bindList = itemOrganWordBindRepository.findByItemId(itemId);
-            if (null != bindList && !bindList.isEmpty()) {
-                for (ItemOrganWordBind bind : bindList) {
-                    itemOrganWordRoleService.removeByItemOrganWordBindId(bind.getId());
-                    itemOrganWordBindRepository.deleteById(bind.getId());
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("删除编号绑定关系失败", e);
         }
     }
 }

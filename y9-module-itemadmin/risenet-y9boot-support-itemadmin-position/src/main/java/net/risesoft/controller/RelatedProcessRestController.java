@@ -54,7 +54,7 @@ public class RelatedProcessRestController {
      */
     @GetMapping(value = "/getBindItemlist")
     public Y9Page<RelatedProcess> list(@RequestParam String parentItemId, Integer page, Integer rows) {
-        Page<RelatedProcess> pageList = relatedProcessService.findAll(parentItemId, page, rows);
+        Page<RelatedProcess> pageList = relatedProcessService.pageByParentItemId(parentItemId, page, rows);
         return Y9Page.success(page, rows, pageList.getTotalElements(), pageList.getContent(), "获取关联流程列表成功！");
     }
 

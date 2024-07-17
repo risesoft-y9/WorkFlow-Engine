@@ -48,7 +48,39 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     private final SpmApproveItemRepository spmApproveItemRepository;
 
     @Override
-    public List<ItemLinkBind> findByItemId(String itemId) {
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        try {
+            List<ItemLinkBind> bindList = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+            for (ItemLinkBind bind : bindList) {
+                ItemLinkBind newBind = new ItemLinkBind();
+                newBind.setItemId(newItemId);
+                newBind.setLinkId(bind.getLinkId());
+                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newBind.setCreateTime(bind.getCreateTime());
+                itemLinkBindRepository.save(newBind);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制链接配置绑定关系失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            List<ItemLinkBind> bindList = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+            for (ItemLinkBind bind : bindList) {
+                itemLinkRoleRepository.deleteByItemLinkId(bind.getId());
+                itemLinkBindRepository.deleteById(bind.getId());
+            }
+        } catch (Exception e) {
+            LOGGER.error("删除链接配置绑定关系失败", e);
+        }
+    }
+
+    @Override
+    public List<ItemLinkBind> listByItemId(String itemId) {
         List<ItemLinkBind> bindList = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
         for (ItemLinkBind bind : bindList) {
             List<String> roleIds = new ArrayList<>();
@@ -75,12 +107,12 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    public List<ItemLinkRole> findByItemLinkId(String itemLinkId) {
+    public List<ItemLinkRole> listByItemLinkId(String itemLinkId) {
         return itemLinkRoleRepository.findByItemLinkId(itemLinkId);
     }
 
     @Override
-    public List<ItemLinkBind> findByLinkId(String linkId) {
+    public List<ItemLinkBind> listByLinkId(String linkId) {
         List<ItemLinkBind> list = itemLinkBindRepository.findByLinkIdOrderByCreateTimeDesc(linkId);
         for (ItemLinkBind bind : list) {
             SpmApproveItem item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
@@ -105,7 +137,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    public List<ItemLinkRole> getBindRoleList(String itemLinkId) {
+    public List<ItemLinkRole> listWithBindRole(String itemLinkId) {
         List<ItemLinkRole> list = itemLinkRoleRepository.findByItemLinkId(itemLinkId);
         for (ItemLinkRole item : list) {
             Role role = roleManager.getRole(item.getRoleId()).getData();
@@ -161,38 +193,6 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
                 item.setCreateTime(sdf.format(new Date()));
                 itemLinkBindRepository.save(item);
             }
-        }
-    }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId) {
-        try {
-            List<ItemLinkBind> bindList = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
-            for (ItemLinkBind bind : bindList) {
-                ItemLinkBind newBind = new ItemLinkBind();
-                newBind.setItemId(newItemId);
-                newBind.setLinkId(bind.getLinkId());
-                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newBind.setCreateTime(bind.getCreateTime());
-                itemLinkBindRepository.save(newBind);
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制链接配置绑定关系失败", e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteBindInfo(String itemId) {
-        try {
-            List<ItemLinkBind> bindList = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
-            for (ItemLinkBind bind : bindList) {
-                itemLinkRoleRepository.deleteByItemLinkId(bind.getId());
-                itemLinkBindRepository.deleteById(bind.getId());
-            }
-        } catch (Exception e) {
-            LOGGER.error("删除链接配置绑定关系失败", e);
         }
     }
 }

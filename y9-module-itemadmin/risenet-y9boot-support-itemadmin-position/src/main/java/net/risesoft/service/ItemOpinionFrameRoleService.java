@@ -24,7 +24,7 @@ public interface ItemOpinionFrameRoleService {
      * @param itemOpinionFrameId
      * @return
      */
-    List<ItemOpinionFrameRole> findByItemOpinionFrameId(String itemOpinionFrameId);
+    List<ItemOpinionFrameRole> listByItemOpinionFrameId(String itemOpinionFrameId);
 
     /**
      * 根据事项和意见框绑定的唯一标示查找绑定的角色（包含角色名称）
@@ -32,19 +32,19 @@ public interface ItemOpinionFrameRoleService {
      * @param itemOpinionFrameId
      * @return
      */
-    List<ItemOpinionFrameRole> findByItemOpinionFrameIdContainRoleName(String itemOpinionFrameId);
+    List<ItemOpinionFrameRole> listByItemOpinionFrameIdContainRoleName(String itemOpinionFrameId);
 
     /**
      * Description: 删除多个
-     * 
+     *
      * @param ids
      */
     void remove(String[] ids);
 
     /**
-     * 
+     *
      * Description: 删除绑定对应的角色
-     * 
+     *
      * @param itemOpinionFrameId
      */
     void removeByItemOpinionFrameId(String itemOpinionFrameId);

@@ -13,11 +13,27 @@ public interface ItemOrganWordBindService {
 
     /**
      * Description: 复制当前事项绑定的流程定义上一个版本流程定义对应的编号绑定
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      */
     void copyBind(String itemId, String processDefinitionId);
+
+    /**
+     * Description: 复制编号绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
+
+    /**
+     * Description: 删除编号绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
 
     /**
      * 根据id查询一条数据
@@ -28,36 +44,8 @@ public interface ItemOrganWordBindService {
     ItemOrganWordBind findById(String id);
 
     /**
-     * Description:
-     * 
-     * @param itemId
-     * @return
-     */
-    List<ItemOrganWordBind> findByItemId(String itemId);
-
-    /**
-     * Description: 根据事项Id、流程定义Id查找
-     * 
-     * @param itemId
-     * @param processDefinitionId
-     * @return
-     */
-    List<ItemOrganWordBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
-
-    /**
-     * Description: 根据事项Id、流程定义Id、任务定义key查找
-     * 
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
-        String processDefinitionId, String taskDefKey);
-
-    /**
      * Description: 查询一条数据
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -66,6 +54,34 @@ public interface ItemOrganWordBindService {
      */
     ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
         String processDefinitionId, String taskDefKey, String custom);
+
+    /**
+     * Description:
+     *
+     * @param itemId
+     * @return
+     */
+    List<ItemOrganWordBind> listByItemId(String itemId);
+
+    /**
+     * Description: 根据事项Id、流程定义Id查找
+     *
+     * @param itemId
+     * @param processDefinitionId
+     * @return
+     */
+    List<ItemOrganWordBind> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
+
+    /**
+     * Description: 根据事项Id、流程定义Id、任务定义key查找
+     *
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    List<ItemOrganWordBind> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
 
     /**
      * 移除单个
@@ -90,7 +106,7 @@ public interface ItemOrganWordBindService {
 
     /**
      * Description: 保存
-     * 
+     *
      * @param id
      * @param name
      * @param custom
@@ -99,27 +115,11 @@ public interface ItemOrganWordBindService {
 
     /**
      * Description: 保存数据
-     * 
+     *
      * @param custom
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
      */
     void save(String custom, String itemId, String processDefinitionId, String taskDefKey);
-
-    /**
-     * Description: 复制编号绑定信息
-     * 
-     * @param itemId
-     * @param newItemId
-     * @param lastVersionPid
-     */
-    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
-
-    /**
-     * Description: 删除编号绑定信息
-     * 
-     * @param itemId
-     */
-    void deleteBindInfo(String itemId);
 }

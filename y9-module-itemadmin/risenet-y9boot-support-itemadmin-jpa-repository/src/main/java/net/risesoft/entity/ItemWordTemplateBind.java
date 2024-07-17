@@ -1,12 +1,18 @@
 package net.risesoft.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author qinman
@@ -47,7 +53,7 @@ public class ItemWordTemplateBind implements Serializable {
 
     @Comment("绑定状态")
     @Column(name = "BINDSTATUS")
-    private Integer bindStatus = 0;//0未绑定，1已绑定
+    private Integer bindStatus = 0;// 0未绑定，1已绑定
 
     @Comment("绑定值")
     @Column(name = "BINDVALUE", length = 100)

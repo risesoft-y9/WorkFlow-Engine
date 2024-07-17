@@ -52,6 +52,6 @@ public class ItemDataTransferRestController {
     @GetMapping(value = "/getProcessInstanceList")
     public Y9Page<Map<String, Object>> getProcessInstanceList(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
-        return itemDataTransferService.getProcessInstanceList(itemId, processDefinitionId, page, rows);
+        return itemDataTransferService.pageByItemIdAndProcessDefinitionId(itemId, processDefinitionId, page, rows);
     }
 }

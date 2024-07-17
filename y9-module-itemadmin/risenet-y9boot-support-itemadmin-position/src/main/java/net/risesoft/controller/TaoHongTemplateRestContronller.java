@@ -82,7 +82,7 @@ public class TaoHongTemplateRestContronller {
     @RequestMapping(value = "/download")
     public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response) {
         try {
-            TaoHongTemplate taoHongTemplate = taoHongTemplateService.findOne(templateGuid);
+            TaoHongTemplate taoHongTemplate = taoHongTemplateService.getById(templateGuid);
             byte[] b = taoHongTemplate.getTemplateContent();
             int length = b.length;
             String filename = taoHongTemplate.getTemplateFileName();
@@ -116,11 +116,11 @@ public class TaoHongTemplateRestContronller {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<TaoHongTemplate> list;
         if (person.isGlobalManager()) {
-            list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(),
+            list = taoHongTemplateService.listByTenantId(Y9LoginUserHolder.getTenantId(),
                 StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
             OrgUnit orgUnit = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId()).getData();
-            list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
+            list = taoHongTemplateService.listByBureauGuid(orgUnit.getId());
         }
         List<Map<String, Object>> items = new ArrayList<>();
         for (TaoHongTemplate taoHongTemplate : list) {
@@ -154,16 +154,16 @@ public class TaoHongTemplateRestContronller {
         List<TaoHongTemplateType> typeList;
         map.put("tenantManager", person.isGlobalManager());
         if (person.isGlobalManager()) {
-            typeList = taoHongTemplateTypeService.findAll();
+            typeList = taoHongTemplateTypeService.listAll();
         } else {
             OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, personId).getData();
             map.put("bureauGuid", orgUnit.getId());
             map.put("bureauName", orgUnit.getName());
-            typeList = taoHongTemplateTypeService.findByBureauId(orgUnit.getId());
+            typeList = taoHongTemplateTypeService.listByBureauId(orgUnit.getId());
         }
         map.put("typeList", typeList);
         if (StringUtils.isNotEmpty(id)) {
-            TaoHongTemplate taoHongTemplate = taoHongTemplateService.findOne(id);
+            TaoHongTemplate taoHongTemplate = taoHongTemplateService.getById(id);
             map.put("taoHongTemplate", taoHongTemplate);
         }
         return Y9Result.success(map, "获取成功");

@@ -155,7 +155,7 @@ public class EntrustController {
     public Y9Result<Map<String, Object>> getEntrustInfo(String id) {
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotEmpty(id)) {
-            Entrust entrust = entrustService.findOne(id);
+            Entrust entrust = entrustService.getById(id);
             if (entrust.getItemId().equals(Entrust.ITEMID4ALL)) {
                 entrust.setItemName(Entrust.ITEMNAME4ALL);
             } else {

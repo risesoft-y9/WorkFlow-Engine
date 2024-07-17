@@ -44,7 +44,37 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
     @Override
-    public List<ItemInterfaceBind> findByInterfaceId(String interfaceId) {
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        try {
+            List<ItemInterfaceBind> bindList = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+            for (ItemInterfaceBind bind : bindList) {
+                ItemInterfaceBind newBind = new ItemInterfaceBind();
+                newBind.setItemId(newItemId);
+                newBind.setInterfaceId(bind.getInterfaceId());
+                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newBind.setCreateTime(bind.getCreateTime());
+                itemInterfaceBindRepository.save(newBind);
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制事项接口绑定关系失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            itemInterfaceBindRepository.deleteByItemId(itemId);
+            itemInterfaceTaskBindRepository.deleteByItemId(itemId);
+            itemInterfaceParamsBindRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除事项接口绑定关系失败", e);
+        }
+    }
+
+    @Override
+    public List<ItemInterfaceBind> listByInterfaceId(String interfaceId) {
         List<ItemInterfaceBind> list = itemInterfaceBindRepository.findByInterfaceIdOrderByCreateTimeDesc(interfaceId);
         for (ItemInterfaceBind bind : list) {
             SpmApproveItem item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
@@ -54,7 +84,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     }
 
     @Override
-    public List<ItemInterfaceBind> findByItemId(String itemId) {
+    public List<ItemInterfaceBind> listByItemId(String itemId) {
         List<ItemInterfaceBind> bindList = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
         for (ItemInterfaceBind bind : bindList) {
             InterfaceInfo info = interfaceInfoRepository.findById(bind.getInterfaceId()).orElse(null);
@@ -89,36 +119,6 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
                 item.setCreateTime(sdf.format(new Date()));
                 itemInterfaceBindRepository.save(item);
             }
-        }
-    }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId) {
-        try {
-            List<ItemInterfaceBind> bindList = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
-            for (ItemInterfaceBind bind : bindList) {
-                ItemInterfaceBind newBind = new ItemInterfaceBind();
-                newBind.setItemId(newItemId);
-                newBind.setInterfaceId(bind.getInterfaceId());
-                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newBind.setCreateTime(bind.getCreateTime());
-                itemInterfaceBindRepository.save(newBind);
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制事项接口绑定关系失败", e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteBindInfo(String itemId) {
-        try {
-            itemInterfaceBindRepository.deleteByItemId(itemId);
-            itemInterfaceTaskBindRepository.deleteByItemId(itemId);
-            itemInterfaceParamsBindRepository.deleteByItemId(itemId);
-        } catch (Exception e) {
-            LOGGER.error("删除事项接口绑定关系失败", e);
         }
     }
 }

@@ -64,7 +64,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Override
     @Transactional
     public void changeSignOpinion(String id, Boolean signOpinion) {
-        ItemOpinionFrameBind itemOpinionFrameBind = this.findOne(id);
+        ItemOpinionFrameBind itemOpinionFrameBind = this.getById(id);
         if (null != itemOpinionFrameBind) {
             itemOpinionFrameBind.setSignOpinion(signOpinion);
             this.save(itemOpinionFrameBind);
@@ -124,7 +124,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                      * 保存意见框的授权
                      */
                     List<ItemOpinionFrameRole> roleList =
-                        itemOpinionFrameRoleService.findByItemOpinionFrameId(oldbindId);
+                        itemOpinionFrameRoleService.listByItemOpinionFrameId(oldbindId);
                     for (ItemOpinionFrameRole role : roleList) {
                         itemOpinionFrameRoleService.saveOrUpdate(newbindId, role.getRoleId());
                     }
@@ -135,9 +135,64 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
     @Override
     @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
+        try {
+            List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
+                .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
+            if (null != bindList && !bindList.isEmpty()) {
+                for (ItemOpinionFrameBind bind : bindList) {
+                    ItemOpinionFrameBind newbind = new ItemOpinionFrameBind();
+                    String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                    newbind.setId(newbindId);
+                    newbind.setItemId(newItemId);
+                    newbind.setCreateDate(sdf.format(new Date()));
+                    newbind.setModifyDate(sdf.format(new Date()));
+                    newbind.setOpinionFrameMark(bind.getOpinionFrameMark());
+                    newbind.setOpinionFrameName(bind.getOpinionFrameName());
+                    newbind.setProcessDefinitionId(lastVersionPid);
+                    newbind.setTaskDefKey(bind.getTaskDefKey());
+                    newbind.setTenantId(tenantId);
+                    newbind.setUserId(userId);
+                    newbind.setUserName(userName);
+                    itemOpinionFrameBindRepository.save(newbind);
+
+                    // 复制意见框一键设置的配置
+                    List<OpinionFrameOneClickSet> setList = opinionFrameOneClickSetService.findByBindId(bind.getId());
+                    for (OpinionFrameOneClickSet set : setList) {
+                        OpinionFrameOneClickSet newset = new OpinionFrameOneClickSet();
+                        newset.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                        newset.setBindId(newbindId);
+                        newset.setCreateDate(sdf.format(new Date()));
+                        newset.setOneSetType(set.getOneSetType());
+                        newset.setOneSetTypeName(set.getOneSetTypeName());
+                        newset.setExecuteAction(set.getExecuteAction());
+                        newset.setExecuteActionName(set.getExecuteActionName());
+                        newset.setUserId(userId);
+                        opinionFrameOneClickSetService.save(newset);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制意见框绑定信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
     public void delete(String id) {
         itemOpinionFrameRoleService.removeByItemOpinionFrameId(id);
         itemOpinionFrameBindRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void delete(String[] ids) {
+        for (String id : ids) {
+            this.delete(id);
+        }
     }
 
     @Override
@@ -151,39 +206,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     @Override
-    @Transactional
-    public void delete(String[] ids) {
-        for (String id : ids) {
-            this.delete(id);
-        }
-    }
-
-    @Override
-    public Page<ItemOpinionFrameBind> findAll(int page, int rows) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return itemOpinionFrameBindRepository.findAll(pageable);
-    }
-
-    @Override
-    public List<ItemOpinionFrameBind> findByItemId(String itemId) {
-        return itemOpinionFrameBindRepository.findByItemId(itemId);
-    }
-
-    @Override
-    public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
-        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId,
-            processDefinitionId);
-    }
-
-    @Override
-    public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
-        String processDefinitionId, String taskDefKey) {
-        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(
-            itemId, processDefinitionId, taskDefKey);
-    }
-
-    @Override
     public ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId,
         String processDefinitionId, String taskDefKey, String opinionFrameMark) {
         ItemOpinionFrameBind bind =
@@ -191,7 +213,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                 processDefinitionId, taskDefKey, opinionFrameMark);
         if (null != bind) {
             List<String> roleIds = new ArrayList<>();
-            List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
+            List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.listByItemOpinionFrameId(bind.getId());
             for (ItemOpinionFrameRole role : roleList) {
                 roleIds.add(role.getRoleId());
             }
@@ -203,7 +225,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
             if (null != bind) {
                 List<String> roleIds = new ArrayList<>();
                 List<ItemOpinionFrameRole> roleList =
-                    itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
+                    itemOpinionFrameRoleService.listByItemOpinionFrameId(bind.getId());
                 for (ItemOpinionFrameRole role : roleList) {
                     roleIds.add(role.getRoleId());
                 }
@@ -214,7 +236,35 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     @Override
-    public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId,
+    public List<String> getBindOpinionFrame(String itemId, String processDefinitionId) {
+        return itemOpinionFrameBindRepository.getBindOpinionFrame(itemId, processDefinitionId);
+    }
+
+    @Override
+    public ItemOpinionFrameBind getById(String id) {
+        return itemOpinionFrameBindRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<ItemOpinionFrameBind> listByItemId(String itemId) {
+        return itemOpinionFrameBindRepository.findByItemId(itemId);
+    }
+
+    @Override
+    public List<ItemOpinionFrameBind> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
+        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId,
+            processDefinitionId);
+    }
+
+    @Override
+    public List<ItemOpinionFrameBind> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey) {
+        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(
+            itemId, processDefinitionId, taskDefKey);
+    }
+
+    @Override
+    public List<ItemOpinionFrameBind> listByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId,
         String processDefinitionId, String taskDefKey) {
         List<ItemOpinionFrameBind> resList = new ArrayList<>();
         List<ItemOpinionFrameBind> bindList =
@@ -222,7 +272,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                 processDefinitionId, taskDefKey);
         for (ItemOpinionFrameBind bind : bindList) {
             List<String> roleIds = new ArrayList<>();
-            List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
+            List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.listByItemOpinionFrameId(bind.getId());
             String roleNames = "";
             for (ItemOpinionFrameRole role : roleList) {
                 roleIds.add(role.getId());
@@ -242,19 +292,16 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     @Override
-    public List<ItemOpinionFrameBind> findByMark(String mark) {
+    public List<ItemOpinionFrameBind> listByMark(String mark) {
         return StringUtils.isNotEmpty(mark)
             ? itemOpinionFrameBindRepository.findByOpinionFrameMarkOrderByItemIdDescModifyDateDesc(mark) : null;
     }
 
     @Override
-    public ItemOpinionFrameBind findOne(String id) {
-        return itemOpinionFrameBindRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public List<String> getBindOpinionFrame(String itemId, String processDefinitionId) {
-        return itemOpinionFrameBindRepository.getBindOpinionFrame(itemId, processDefinitionId);
+    public Page<ItemOpinionFrameBind> pageAll(int page, int rows) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return itemOpinionFrameBindRepository.findAll(pageable);
     }
 
     @Override
@@ -325,53 +372,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     resList.add(newoftrb);
                 }
             }
-        }
-    }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        try {
-            List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
-                .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
-            if (null != bindList && !bindList.isEmpty()) {
-                for (ItemOpinionFrameBind bind : bindList) {
-                    ItemOpinionFrameBind newbind = new ItemOpinionFrameBind();
-                    String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                    newbind.setId(newbindId);
-                    newbind.setItemId(newItemId);
-                    newbind.setCreateDate(sdf.format(new Date()));
-                    newbind.setModifyDate(sdf.format(new Date()));
-                    newbind.setOpinionFrameMark(bind.getOpinionFrameMark());
-                    newbind.setOpinionFrameName(bind.getOpinionFrameName());
-                    newbind.setProcessDefinitionId(lastVersionPid);
-                    newbind.setTaskDefKey(bind.getTaskDefKey());
-                    newbind.setTenantId(tenantId);
-                    newbind.setUserId(userId);
-                    newbind.setUserName(userName);
-                    itemOpinionFrameBindRepository.save(newbind);
-
-                    // 复制意见框一键设置的配置
-                    List<OpinionFrameOneClickSet> setList = opinionFrameOneClickSetService.findByBindId(bind.getId());
-                    for (OpinionFrameOneClickSet set : setList) {
-                        OpinionFrameOneClickSet newset = new OpinionFrameOneClickSet();
-                        newset.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        newset.setBindId(newbindId);
-                        newset.setCreateDate(sdf.format(new Date()));
-                        newset.setOneSetType(set.getOneSetType());
-                        newset.setOneSetTypeName(set.getOneSetTypeName());
-                        newset.setExecuteAction(set.getExecuteAction());
-                        newset.setExecuteActionName(set.getExecuteActionName());
-                        newset.setUserId(userId);
-                        opinionFrameOneClickSetService.save(newset);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制意见框绑定信息失败", e);
         }
     }
 }

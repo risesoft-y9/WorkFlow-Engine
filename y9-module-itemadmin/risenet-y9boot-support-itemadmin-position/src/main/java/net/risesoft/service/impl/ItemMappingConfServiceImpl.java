@@ -36,7 +36,7 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
     }
 
     @Override
-    public List<ItemMappingConf> getList(String itemId, String mappingId) {
+    public List<ItemMappingConf> listByItemIdAndMappingId(String itemId, String mappingId) {
         return itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
     }
 

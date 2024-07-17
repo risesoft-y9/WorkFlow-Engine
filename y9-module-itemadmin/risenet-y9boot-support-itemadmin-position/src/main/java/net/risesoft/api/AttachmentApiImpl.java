@@ -153,7 +153,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     public Y9Page<AttachmentModel> getAttachmentList(@RequestParam String tenantId,
         @RequestParam String processSerialNumber, String fileSource, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return transactionFileService.getAttachmentList(processSerialNumber, fileSource, page, rows);
+        return transactionFileService.pageByProcessSerialNumber(processSerialNumber, fileSource, page, rows);
     }
 
     /**
@@ -170,7 +170,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
         @RequestParam String processSerialNumber, String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<TransactionFile> transactionFileList =
-            transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
+            transactionFileService.listSearchByProcessSerialNumber(processSerialNumber, fileSource);
         List<AttachmentModel> list = ItemAdminModelConvertUtil.attachmentList2ModelList(transactionFileList);
         return Y9Result.success(list);
     }

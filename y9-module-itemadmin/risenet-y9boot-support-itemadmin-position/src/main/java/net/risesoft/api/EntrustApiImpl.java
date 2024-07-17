@@ -62,7 +62,7 @@ public class EntrustApiImpl implements Entrust4PositionApi {
     @Override
     public Y9Result<List<EntrustModel>> getEntrustList(@RequestParam String tenantId, @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<EntrustModel> list = entrustService.getEntrustList(positionId);
+        List<EntrustModel> list = entrustService.listEntrustByPositionId(positionId);
         return Y9Result.success(list);
     }
 
@@ -78,7 +78,7 @@ public class EntrustApiImpl implements Entrust4PositionApi {
     public Y9Result<List<EntrustModel>> getMyEntrustList(@RequestParam String tenantId,
         @RequestParam String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<EntrustModel> list = entrustService.getMyEntrustList(positionId);
+        List<EntrustModel> list = entrustService.listMyEntrust(positionId);
         return Y9Result.success(list);
     }
 

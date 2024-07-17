@@ -45,7 +45,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
             }
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            LOGGER.error("删除失败,异常信息：{}", e.getMessage());
+            LOGGER.error("删除失败", e);
             return Y9Result.failure("删除失败");
         }
     }
@@ -59,7 +59,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
             }
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            LOGGER.error("删除字典数据失败,异常信息：{}", e.getMessage());
+            LOGGER.error("删除字典数据失败", e);
             return Y9Result.failure("删除失败");
         }
     }
@@ -108,7 +108,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
 
             return Y9Result.success(y9FormOptionClass, "保存成功");
         } catch (Exception e) {
-            LOGGER.error("保存字典类型失败,异常信息：{}", e.getMessage());
+            LOGGER.error("保存字典类型失败", e);
             return Y9Result.failure("保存失败");
         }
     }
@@ -142,7 +142,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
 
             return Y9Result.success(y9FormOptionValue, "保存成功");
         } catch (Exception e) {
-            LOGGER.error("保存字典数据失败,异常信息：{}", e.getMessage());
+            LOGGER.error("保存字典数据失败", e);
             return Y9Result.failure("保存失败");
         }
     }
@@ -163,7 +163,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            LOGGER.error("保存失败,异常信息：{}", e.getMessage());
+            LOGGER.error("保存失败", e);
             return Y9Result.failure("保存失败");
         }
     }
@@ -188,7 +188,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
             }
             return Y9Result.successMsg("设置成功");
         } catch (Exception e) {
-            LOGGER.error("设置失败,异常信息：{}", e.getMessage());
+            LOGGER.error("设置失败", e);
             return Y9Result.failure("设置失败");
         }
     }

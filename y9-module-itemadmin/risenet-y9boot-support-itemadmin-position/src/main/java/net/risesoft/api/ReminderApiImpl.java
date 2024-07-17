@@ -104,7 +104,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Y9Page<ReminderModel> findByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return reminderService.findByProcessInstanceId(processInstanceId, page, rows);
+        return reminderService.pageByProcessInstanceId(processInstanceId, page, rows);
     }
 
     /**
@@ -123,7 +123,7 @@ public class ReminderApiImpl implements ReminderApi {
         @RequestParam String senderId, @RequestParam String processInstanceId, @RequestParam int page,
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return reminderService.findBySenderIdAndProcessInstanceIdAndActive(senderId, processInstanceId, page, rows);
+        return reminderService.pageBySenderIdAndProcessInstanceIdAndActive(senderId, processInstanceId, page, rows);
     }
 
     /**
@@ -140,7 +140,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Y9Page<ReminderModel> findByTaskId(@RequestParam String tenantId, @RequestParam String taskId,
         @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return reminderService.findByTaskId(taskId, page, rows);
+        return reminderService.pageByTaskId(taskId, page, rows);
     }
 
     /**

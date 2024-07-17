@@ -66,112 +66,8 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public List<Reminder> findAllByTaskId(Collection<String> taskIds) {
-        List<Reminder> list = new ArrayList<>();
-        if (taskIds != null && !taskIds.isEmpty()) {
-            list = reminderRepository.findAllByTastId(taskIds);
-        }
-        return list;
-    }
-
-    @Override
-    public List<Reminder> findAllByTaskIdsAndSenderId(Collection<String> taskIds, String senderId) {
-        return reminderRepository.findAllByTaskIdsAndSenderId(taskIds, senderId);
-    }
-
-    @Override
     public Reminder findById(String id) {
         return reminderRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public Y9Page<ReminderModel> findByProcessInstanceId(String processInstanceId, int page, int rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<Reminder> pageList = reminderRepository.findByprocInstId(processInstanceId, pageable);
-        List<Reminder> reminderList = pageList.getContent();
-        int num = (page - 1) * rows;
-        List<ReminderModel> listMap = new ArrayList<>();
-        HistoricTaskInstanceModel historicTaskTemp = null;
-        Position pTemp = null;
-        for (Reminder reminder : reminderList) {
-            ReminderModel model = new ReminderModel();
-            model.setId(reminder.getId());
-            model.setMsgContent(reminder.getMsgContent());
-            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            if (null == reminder.getReadTime()) {
-                model.setReadTime("");
-            } else {
-                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            }
-            model.setSenderName(reminder.getSenderName());
-            model.setUserName("无");
-            model.setTaskName("无");
-
-            historicTaskTemp = historicTaskManager.getById(tenantId, reminder.getTaskId()).getData();
-            if (null != historicTaskTemp) {
-                model.setTaskName(historicTaskTemp.getName());
-                if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
-                    pTemp = positionApi.get(tenantId, historicTaskTemp.getAssignee()).getData();
-                    if (null != pTemp) {
-                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
-                    }
-                }
-            }
-            model.setSerialNumber(num + 1);
-            num += 1;
-            listMap.add(model);
-        }
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
-    }
-
-    @Override
-    public Y9Page<ReminderModel> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
-        int page, int rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        List<String> taskIds = new ArrayList<>();
-        for (TaskModel task : taskList) {
-            taskIds.add(task.getId());
-        }
-        Page<Reminder> pageList = reminderRepository.findBySenderIdAndTaskIdIn(senderId, taskIds, pageable);
-        List<Reminder> reminderList = pageList.getContent();
-        int num = (page - 1) * rows;
-        List<ReminderModel> listMap = new ArrayList<>();
-        TaskModel taskTemp = null;
-        Position pTemp = null;
-        for (Reminder reminder : reminderList) {
-            ReminderModel model = new ReminderModel();
-            model.setId(reminder.getId());
-            model.setMsgContent(reminder.getMsgContent());
-            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            if (null == reminder.getReadTime()) {
-                model.setReadTime("");
-            } else {
-                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            }
-            model.setSenderName(reminder.getSenderName());
-            model.setUserName("无");
-            model.setTaskName("无");
-            taskTemp = taskManager.findById(tenantId, reminder.getTaskId()).getData();
-            if (null != taskTemp) {
-                model.setTaskName(taskTemp.getName());
-                if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
-                    pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
-                    if (null != pTemp) {
-                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
-                    }
-                }
-            }
-            model.setSerialNumber(num + 1);
-
-            num += 1;
-            listMap.add(model);
-        }
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
     }
 
     @Override
@@ -180,44 +76,8 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Y9Page<ReminderModel> findByTaskId(String taskId, int page, int rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<Reminder> pageList = reminderRepository.findByTaskId(taskId, pageable);
-        List<Reminder> reminderList = pageList.getContent();
-        int num = (page - 1) * rows;
-        List<ReminderModel> listMap = new ArrayList<>();
-        TaskModel taskTemp = taskManager.findById(tenantId, taskId).getData();
-        Position pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
-        for (Reminder reminder : reminderList) {
-            ReminderModel model = new ReminderModel();
-            model.setId(reminder.getId());
-            model.setMsgContent(reminder.getMsgContent());
-            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            if (null == reminder.getReadTime()) {
-                model.setReadTime("");
-            } else {
-                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            }
-            model.setSenderName(reminder.getSenderName());
-            model.setUserName(pTemp.getName());
-            model.setTaskName(taskTemp.getName());
-            model.setSerialNumber(num + 1);
-            num += 1;
-            listMap.add(model);
-        }
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
-    }
-
-    @Override
     public Reminder findByTaskIdAndSenderId(String taskId, String senderId) {
         return reminderRepository.findByTaskIdAndSenderId(taskId, senderId);
-    }
-
-    @Override
-    public List<Reminder> findByTastIdAndReminderSendType(String taskId, String reminderSendType) {
-        return reminderRepository.findByTastIdAndReminderSendType(taskId, reminderSendType);
     }
 
     @Override
@@ -267,6 +127,146 @@ public class ReminderServiceImpl implements ReminderService {
         } else {
             return smsErr + SysVariables.SEMICOLON + emailErr;
         }
+    }
+
+    @Override
+    public List<Reminder> listByTaskId(Collection<String> taskIds) {
+        List<Reminder> list = new ArrayList<>();
+        if (taskIds != null && !taskIds.isEmpty()) {
+            list = reminderRepository.findAllByTastId(taskIds);
+        }
+        return list;
+    }
+
+    @Override
+    public List<Reminder> listByTaskIdsAndSenderId(Collection<String> taskIds, String senderId) {
+        return reminderRepository.findAllByTaskIdsAndSenderId(taskIds, senderId);
+    }
+
+    @Override
+    public List<Reminder> listByTastIdAndReminderSendType(String taskId, String reminderSendType) {
+        return reminderRepository.findByTastIdAndReminderSendType(taskId, reminderSendType);
+    }
+
+    @Override
+    public Y9Page<ReminderModel> pageByProcessInstanceId(String processInstanceId, int page, int rows) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<Reminder> pageList = reminderRepository.findByprocInstId(processInstanceId, pageable);
+        List<Reminder> reminderList = pageList.getContent();
+        int num = (page - 1) * rows;
+        List<ReminderModel> listMap = new ArrayList<>();
+        HistoricTaskInstanceModel historicTaskTemp = null;
+        Position pTemp = null;
+        for (Reminder reminder : reminderList) {
+            ReminderModel model = new ReminderModel();
+            model.setId(reminder.getId());
+            model.setMsgContent(reminder.getMsgContent());
+            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
+            if (null == reminder.getReadTime()) {
+                model.setReadTime("");
+            } else {
+                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
+            }
+            model.setSenderName(reminder.getSenderName());
+            model.setUserName("无");
+            model.setTaskName("无");
+
+            historicTaskTemp = historicTaskManager.getById(tenantId, reminder.getTaskId()).getData();
+            if (null != historicTaskTemp) {
+                model.setTaskName(historicTaskTemp.getName());
+                if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
+                    pTemp = positionApi.get(tenantId, historicTaskTemp.getAssignee()).getData();
+                    if (null != pTemp) {
+                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
+                    }
+                }
+            }
+            model.setSerialNumber(num + 1);
+            num += 1;
+            listMap.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
+    }
+
+    @Override
+    public Y9Page<ReminderModel> pageBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
+        int page, int rows) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<String> taskIds = new ArrayList<>();
+        for (TaskModel task : taskList) {
+            taskIds.add(task.getId());
+        }
+        Page<Reminder> pageList = reminderRepository.findBySenderIdAndTaskIdIn(senderId, taskIds, pageable);
+        List<Reminder> reminderList = pageList.getContent();
+        int num = (page - 1) * rows;
+        List<ReminderModel> listMap = new ArrayList<>();
+        TaskModel taskTemp = null;
+        Position pTemp = null;
+        for (Reminder reminder : reminderList) {
+            ReminderModel model = new ReminderModel();
+            model.setId(reminder.getId());
+            model.setMsgContent(reminder.getMsgContent());
+            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
+            if (null == reminder.getReadTime()) {
+                model.setReadTime("");
+            } else {
+                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
+            }
+            model.setSenderName(reminder.getSenderName());
+            model.setUserName("无");
+            model.setTaskName("无");
+            taskTemp = taskManager.findById(tenantId, reminder.getTaskId()).getData();
+            if (null != taskTemp) {
+                model.setTaskName(taskTemp.getName());
+                if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
+                    pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
+                    if (null != pTemp) {
+                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
+                    }
+                }
+            }
+            model.setSerialNumber(num + 1);
+
+            num += 1;
+            listMap.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
+    }
+
+    @Override
+    public Y9Page<ReminderModel> pageByTaskId(String taskId, int page, int rows) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<Reminder> pageList = reminderRepository.findByTaskId(taskId, pageable);
+        List<Reminder> reminderList = pageList.getContent();
+        int num = (page - 1) * rows;
+        List<ReminderModel> listMap = new ArrayList<>();
+        TaskModel taskTemp = taskManager.findById(tenantId, taskId).getData();
+        Position pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
+        for (Reminder reminder : reminderList) {
+            ReminderModel model = new ReminderModel();
+            model.setId(reminder.getId());
+            model.setMsgContent(reminder.getMsgContent());
+            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
+            if (null == reminder.getReadTime()) {
+                model.setReadTime("");
+            } else {
+                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
+            }
+            model.setSenderName(reminder.getSenderName());
+            model.setUserName(pTemp.getName());
+            model.setTaskName(taskTemp.getName());
+            model.setSerialNumber(num + 1);
+            num += 1;
+            listMap.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ItemOpinionFrameRoleRestController {
     @GetMapping(value = "/list")
     public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam String itemOpinionFrameId) {
         List<ItemOpinionFrameRole> list =
-            itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
+            itemOpinionFrameRoleService.listByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
         return Y9Result.success(list, "获取成功");
     }
 

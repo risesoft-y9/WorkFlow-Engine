@@ -48,7 +48,7 @@ public class ItemOrganWordRoleController {
     @GetMapping(value = "/list")
     public Y9Result<List<ItemOrganWordRole>> list(@RequestParam String itemOrganWordBindId) {
         List<ItemOrganWordRole> list =
-            itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
+            itemOrganWordRoleService.listByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
         return Y9Result.success(list, "获取成功");
     }
 

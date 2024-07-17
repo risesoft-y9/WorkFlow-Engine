@@ -133,7 +133,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
     @Override
     public Y9Result<OpinionModel> getById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Opinion opinion = opinionService.findOne(id);
+        Opinion opinion = opinionService.getById(id);
         OpinionModel opinionModel = new OpinionModel();
         if (opinion != null) {
             Y9BeanUtil.copyProperties(opinion, opinionModel);
@@ -155,7 +155,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         @RequestParam String processSerialNumber, @RequestParam String opinionFrameMark) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<OpinionHistoryModel> opinionHistoryModelList =
-            opinionService.opinionHistoryList(processSerialNumber, opinionFrameMark);
+            opinionService.listOpinionHistory(processSerialNumber, opinionFrameMark);
         return Y9Result.success(opinionHistoryModelList);
     }
 
@@ -183,7 +183,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        List<OpinionListModel> opinionList = opinionService.personCommentList(processSerialNumber, taskId, itembox,
+        List<OpinionListModel> opinionList = opinionService.listPersonComment(processSerialNumber, taskId, itembox,
             opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
         return Y9Result.success(opinionList);
     }

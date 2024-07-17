@@ -209,7 +209,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
           1、查找源租户是否存在普通按钮
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<CommonButton> sourcecbList = commonButtonService.findAll();
+        List<CommonButton> sourcecbList = commonButtonService.listAll();
         if (sourcecbList.isEmpty()) {
             return;
         }
@@ -233,8 +233,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
 
-        List<ItemButtonBind> targetBindList =
-            itemButtonBindService.findList(itemId, ItemButtonTypeEnum.COMMON.getValue(), targetpdId);
+        List<ItemButtonBind> targetBindList = itemButtonBindService
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON.getValue(), targetpdId);
         if (!targetBindList.isEmpty()) {
             return;
         }
@@ -242,8 +242,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         ProcessDefinitionModel sourcepd =
             repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
-        List<ItemButtonBind> sourceBindList =
-            itemButtonBindService.findList(itemId, ItemButtonTypeEnum.COMMON.getValue(), sourcepdId);
+        List<ItemButtonBind> sourceBindList = itemButtonBindService
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON.getValue(), sourcepdId);
         if (sourceBindList.isEmpty()) {
             return;
         }
@@ -271,7 +271,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             itemButtonBindService.save(bind);
 
             /* 更新绑定角色 */
-            roleList = itemButtonRoleService.findByItemButtonId(bind.getId());
+            roleList = itemButtonRoleService.listByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
                 oldRole = roleManager.getRole(roleId).getData();
@@ -298,7 +298,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、在源租户查找动态角色
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<DynamicRole> roleList = dynamicRoleService.findAll();
+        List<DynamicRole> roleList = dynamicRoleService.listAll();
         /*
          * 2、复制动态角色到目标租户
          */
@@ -350,7 +350,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<Y9FormItemBind> targetFormItemBindList =
-            y9FormItemBindService.findByItemIdAndProcDefId(itemId, targetpdId);
+            y9FormItemBindService.listByItemIdAndProcDefId(itemId, targetpdId);
         if (!targetFormItemBindList.isEmpty()) {
             return;
         }
@@ -362,7 +362,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<Y9FormItemBind> sourceFormItemBindList =
-            y9FormItemBindService.findByItemIdAndProcDefId(itemId, sourcepdId);
+            y9FormItemBindService.listByItemIdAndProcDefId(itemId, sourcepdId);
         List<Y9Form> targetFormList = new ArrayList<>();
         List<Y9FormField> targetY9FormElementList = new ArrayList<>();
         List<Y9Table> targetY9TableList = new ArrayList<>();
@@ -422,7 +422,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (Y9FormItemBind bind : targetFormItemBindList) {
-            Y9FormItemBind y9FormItemBindTemp = y9FormItemBindService.findOne(bind.getId());
+            Y9FormItemBind y9FormItemBindTemp = y9FormItemBindService.getById(bind.getId());
             if (null == y9FormItemBindTemp) {
                 y9FormItemBindService.save(bind);
             }
@@ -508,7 +508,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、查找目标租户该事项是否存在视图配置
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        List<ItemViewConf> targetList = itemViewConfService.findByItemId(itemId);
+        List<ItemViewConf> targetList = itemViewConfService.listByItemId(itemId);
         if (!targetList.isEmpty()) {
             return;
         }
@@ -516,7 +516,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 2、查找源租户该事项的视图配置
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<ItemViewConf> sourceList = itemViewConfService.findByItemId(itemId);
+        List<ItemViewConf> sourceList = itemViewConfService.listByItemId(itemId);
         /*
          * 3、复制2中的结果到目标租户
          */
@@ -551,7 +551,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemOpinionFrameBind> targetBindList =
-            itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
+            itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
         if (!targetBindList.isEmpty()) {
             return;
         }
@@ -563,7 +563,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemOpinionFrameBind> sourceBindList =
-            itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
+            itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
         List<ItemOpinionFrameRole> targetRoleList = new ArrayList<>();
         for (ItemOpinionFrameBind bind : sourceBindList) {
             bind.setProcessDefinitionId(targetpdId);
@@ -571,7 +571,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             targetBindList.add(bind);
 
             List<ItemOpinionFrameRole> sourceRoleListTemp =
-                itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
+                itemOpinionFrameRoleService.listByItemOpinionFrameId(bind.getId());
             targetRoleList.addAll(sourceRoleListTemp);
         }
         /*
@@ -579,7 +579,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (ItemOpinionFrameBind bind : targetBindList) {
-            ItemOpinionFrameBind bindTemp = itemOpinionFrameBindService.findOne(bind.getId());
+            ItemOpinionFrameBind bindTemp = itemOpinionFrameBindService.getById(bind.getId());
             if (null == bindTemp) {
                 itemOpinionFrameBindService.save(bind);
             }
@@ -647,7 +647,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemOrganWordBind> targetBindList =
-            itemOrganWordBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
+            itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
         if (!targetBindList.isEmpty()) {
             return;
         }
@@ -656,7 +656,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemOrganWordBind> sourceBindList =
-            itemOrganWordBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
+            itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
         if (sourceBindList.isEmpty()) {
             return;
         }
@@ -798,7 +798,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、查找源租户是否存在发送按钮
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<SendButton> sourcecbList = sendButtonService.findAll();
+        List<SendButton> sourcecbList = sendButtonService.listAll();
         if (sourcecbList.isEmpty()) {
             return;
         }
@@ -822,8 +822,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
 
-        List<ItemButtonBind> targetBindList =
-            itemButtonBindService.findList(itemId, ItemButtonTypeEnum.SEND.getValue(), targetpdId);
+        List<ItemButtonBind> targetBindList = itemButtonBindService
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND.getValue(), targetpdId);
         if (!targetBindList.isEmpty()) {
             return;
         }
@@ -831,8 +831,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         ProcessDefinitionModel sourcepd =
             repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
-        List<ItemButtonBind> sourceBindList =
-            itemButtonBindService.findList(itemId, ItemButtonTypeEnum.SEND.getValue(), sourcepdId);
+        List<ItemButtonBind> sourceBindList = itemButtonBindService
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND.getValue(), sourcepdId);
         if (sourceBindList.isEmpty()) {
             return;
         }
@@ -859,7 +859,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             itemButtonBindService.save(bind);
 
             /* 更新绑定角色 */
-            roleList = itemButtonRoleService.findByItemButtonId(bind.getId());
+            roleList = itemButtonRoleService.listByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
                 oldRole = roleManager.getRole(roleId).getData();
@@ -886,7 +886,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、查找源租户是否存在页签
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<TabEntity> tabList = tabEntityService.findAll();
+        List<TabEntity> tabList = tabEntityService.listAll();
         if (tabList.isEmpty()) {
             return;
         }
@@ -906,7 +906,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         ProcessDefinitionModel sourcepd =
             repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
-        List<ItemTabBind> tabBindList = itemTabBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
+        List<ItemTabBind> tabBindList = itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
         if (tabBindList.isEmpty()) {
             return;
         }
@@ -917,12 +917,12 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         ProcessDefinitionModel targetpd =
             repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
-        List<ItemTabBind> targetTabBindList = itemTabBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
+        List<ItemTabBind> targetTabBindList = itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
         if (!targetTabBindList.isEmpty()) {
             return;
         }
         for (ItemTabBind bind : tabBindList) {
-            ItemTabBind oldBind = itemTabBindService.findOne(bind.getId());
+            ItemTabBind oldBind = itemTabBindService.getById(bind.getId());
             if (null == oldBind) {
                 bind.setProcessDefinitionId(targetpdId);
                 bind.setTenantId(targetTenantId);
@@ -940,11 +940,11 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、查找源租户是否存在套红模板
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<TaoHongTemplate> sourcettList = taoHongTemplateService.findByTenantId(sourceTenantId, "");
+        List<TaoHongTemplate> sourcettList = taoHongTemplateService.listByTenantId(sourceTenantId, "");
         if (sourcettList.isEmpty()) {
             return;
         }
-        List<TaoHongTemplateType> sourcetttList = taoHongTemplateTypeService.findAll();
+        List<TaoHongTemplateType> sourcetttList = taoHongTemplateTypeService.listAll();
         /*
          * 2、复制源租户的套红模板和模板类型到目标租户
          */
@@ -1026,7 +1026,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、查找源租户是否存在正文模板
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<WordTemplate> wordList = wordTemplateService.findAll();
+        List<WordTemplate> wordList = wordTemplateService.listAll();
         if (wordList.isEmpty()) {
             return;
         }
@@ -1063,7 +1063,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         itemWordTemplateBindService.save(itemId, targetpdId, bind.getTemplateId());
         /* 3、2模板和模板中的书签绑定关系 */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(bind.getTemplateId());
+        List<BookMarkBind> bookMarkBindList = bookMarkBindService.listByWordTemplateId(bind.getTemplateId());
 
         Y9LoginUserHolder.setTenantId(targetTenantId);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -1119,7 +1119,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
     @Override
     public void dataCopy4System(String sourceTenantId, String targetTenantId, String systemName) throws Exception {
-        List<SpmApproveItem> itemList = itemService.findBySystemName(systemName);
+        List<SpmApproveItem> itemList = itemService.listBySystemName(systemName);
         for (SpmApproveItem item : itemList) {
             this.dataCopy(sourceTenantId, targetTenantId, item.getId());
         }

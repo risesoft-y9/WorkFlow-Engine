@@ -7,6 +7,7 @@ import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -36,6 +37,14 @@ public interface ChaoSongInfoService {
      * @param ids
      */
     void changeStatus(String[] ids);
+
+    /**
+     * 获取个人抄送件计数
+     *
+     * @param userId
+     * @return
+     */
+    int countAllByUserId(String userId);
 
     /**
      *
@@ -95,26 +104,7 @@ public interface ChaoSongInfoService {
      * @param id
      * @return
      */
-    ChaoSongInfo findOne(String id);
-
-    /**
-     * 获取个人抄送件计数
-     *
-     * @param userId
-     * @return
-     */
-    int getAllCountByUserId(String userId);
-
-    /**
-     * 获取抄送所有件
-     *
-     * @param positionId
-     * @param documentTitle
-     * @param rows
-     * @param page
-     * @return
-     */
-    Map<String, Object> getAllList(String positionId, String documentTitle, int rows, int page);
+    ChaoSongInfo getById(String id);
 
     /**
      * 获取批阅件计数
@@ -133,8 +123,15 @@ public interface ChaoSongInfoService {
     int getDoneCountByUserId(String userId);
 
     /**
+     * 根据人员唯一标示查找待阅数量
      *
-     * Description: 获取抄送已阅件
+     * @param userId
+     * @return
+     */
+    int getTodoCountByUserId(String userId);
+
+    /**
+     * 获取抄送所有件
      *
      * @param positionId
      * @param documentTitle
@@ -142,7 +139,8 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> getDoneList(String positionId, String documentTitle, int rows, int page);
+    Y9Page<Map<String, Object>> pageByPositionIdAndDocumentTitle(String positionId, String documentTitle, int rows,
+        int page);
 
     /**
      *
@@ -154,7 +152,8 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page);
+    Y9Page<ChaoSongModel> pageByProcessInstanceIdAndUserName(String processInstanceId, String userName, int rows,
+        int page);
 
     /**
      *
@@ -167,30 +166,12 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
-        String userName, int rows, int page);
+    Y9Page<ChaoSongModel> pageBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName,
+        int rows, int page);
 
     /**
-     * 批阅件列表
      *
-     * @param userId
-     * @param documentTitle
-     * @param rows
-     * @param page
-     * @return
-     */
-    Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page);
-
-    /**
-     * 根据人员唯一标示查找待阅数量
-     *
-     * @param userId
-     * @return
-     */
-    int getTodoCountByUserId(String userId);
-
-    /**
-     * 获取抄送未阅件
+     * Description: 获取抄送已阅件
      *
      * @param positionId
      * @param documentTitle
@@ -198,7 +179,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> getTodoList(String positionId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSongModel> pageDoneList(String positionId, String documentTitle, int rows, int page);
 
     /**
      * 我的抄送列表
@@ -212,8 +193,30 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName, String state, String year,
-        int rows, int page);
+    Y9Page<ChaoSongModel> pageMyChaoSongList(String searchName, String itemId, String userName, String state,
+        String year, int rows, int page);
+
+    /**
+     * 批阅件列表
+     *
+     * @param userId
+     * @param documentTitle
+     * @param rows
+     * @param page
+     * @return
+     */
+    Y9Page<ChaoSongModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page);
+
+    /**
+     * 获取抄送未阅件
+     *
+     * @param positionId
+     * @param documentTitle
+     * @param rows
+     * @param page
+     * @return
+     */
+    Y9Page<ChaoSongModel> pageTodoList(String positionId, String documentTitle, int rows, int page);
 
     /**
      * 保存抄送
@@ -243,8 +246,8 @@ public interface ChaoSongInfoService {
      * @param smsPersonId
      * @return
      */
-    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
-        String smsContent, String smsPersonId);
+    Y9Result<Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent,
+        String smsPersonId);
 
     /**
      *

@@ -2,9 +2,9 @@ package net.risesoft.service;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.Entrust;
+import net.risesoft.model.EntrustItemModel;
 import net.risesoft.model.itemadmin.EntrustModel;
 
 /**
@@ -37,29 +37,6 @@ public interface EntrustService {
     void destroyEntrustById(String id);
 
     /**
-     * 获取某个用户没有删除的委托对象
-     *
-     * @return
-     */
-    List<Entrust> findAll();
-
-    /**
-     * Description: 获取某个用户没有删除的委托对象
-     *
-     * @param ownerId
-     * @return
-     */
-    List<Entrust> findByAssigneeId(String ownerId);
-
-    /**
-     * 根据唯一标示获取委托对象
-     *
-     * @param id
-     * @return
-     */
-    Entrust findOne(String id);
-
-    /**
      * Description:
      *
      * @param ownerId
@@ -79,6 +56,14 @@ public interface EntrustService {
     Entrust findOneByOwnerIdAndItemIdAndTime(String ownerId, String itemId, String dateTime);
 
     /**
+     * 根据唯一标示获取委托对象
+     *
+     * @param id
+     * @return
+     */
+    Entrust getById(String id);
+
+    /**
      * 根据委托人和事项Id查找没有删除的委托对象的数量
      *
      * @param ownerId
@@ -88,20 +73,35 @@ public interface EntrustService {
     Integer getCountByOwnerIdAndItemId(String ownerId, String itemId);
 
     /**
+     * Description:
+     *
+     * @param ownerId
+     * @return
+     */
+    List<Entrust> list(String ownerId);
+
+    /**
+     * 获取某个用户没有删除的委托对象
+     *
+     * @return
+     */
+    List<Entrust> listAll();
+
+    /**
+     * Description: 获取某个用户没有删除的委托对象
+     *
+     * @param ownerId
+     * @return
+     */
+    List<Entrust> listByAssigneeId(String ownerId);
+
+    /**
      * 获取委托列表
      *
      * @param positionId
      * @return
      */
-    List<EntrustModel> getEntrustList(String positionId);
-
-    /**
-     * 获取当前岗被委托记录
-     *
-     * @param positionId
-     * @return
-     */
-    List<EntrustModel> getMyEntrustList(String positionId);
+    List<EntrustModel> listEntrustByPositionId(String positionId);
 
     /**
      * 获取事项列表
@@ -111,15 +111,15 @@ public interface EntrustService {
      * @param rows
      * @return
      */
-    Map<String, Object> itemList(String userId, Integer page, Integer rows);
+    List<EntrustItemModel> listItem(String userId, Integer page, Integer rows);
 
     /**
-     * Description:
+     * 获取当前岗被委托记录
      *
-     * @param ownerId
+     * @param positionId
      * @return
      */
-    List<Entrust> list(String ownerId);
+    List<EntrustModel> listMyEntrust(String positionId);
 
     /**
      * 逻辑删除委托对象

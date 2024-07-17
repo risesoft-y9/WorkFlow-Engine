@@ -13,7 +13,7 @@ public interface BookMarkBindService {
 
     /**
      * Description:
-     * 
+     *
      * @param wordTemplateId
      * @param bookMarkName
      */
@@ -21,7 +21,7 @@ public interface BookMarkBindService {
 
     /**
      * Description:
-     * 
+     *
      * @param id
      * @return
      */
@@ -29,15 +29,7 @@ public interface BookMarkBindService {
 
     /**
      * Description:
-     * 
-     * @param wordTemplateId
-     * @return
-     */
-    List<BookMarkBind> findByWordTemplateId(String wordTemplateId);
-
-    /**
-     * Description:
-     * 
+     *
      * @param wordTemplateId
      * @param bookMarkName
      * @return
@@ -46,7 +38,15 @@ public interface BookMarkBindService {
 
     /**
      * Description:
-     * 
+     *
+     * @param wordTemplateId
+     * @return
+     */
+    List<BookMarkBind> listByWordTemplateId(String wordTemplateId);
+
+    /**
+     * Description:
+     *
      * @param bookMarkBind
      */
     void saveOrUpdate(BookMarkBind bookMarkBind);

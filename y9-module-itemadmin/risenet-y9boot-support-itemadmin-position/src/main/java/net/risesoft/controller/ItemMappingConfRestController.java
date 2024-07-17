@@ -93,7 +93,7 @@ public class ItemMappingConfRestController {
         ProcessDefinitionModel processDefinition =
             repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
@@ -113,7 +113,7 @@ public class ItemMappingConfRestController {
             ProcessDefinitionModel processDefinition1 =
                 repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey1).getData();
             List<Y9FormItemBind> formList1 = y9FormItemBindService
-                .findByItemIdAndProcDefIdAndTaskDefKeyIsNull(mappingItemId, processDefinition1.getId());
+                .listByItemIdAndProcDefIdAndTaskDefKeyIsNull(mappingItemId, processDefinition1.getId());
             List<String> tableNameList1 = new ArrayList<>();
             List<Y9Table> tableList1 = new ArrayList<>();
             for (Y9FormItemBind bind : formList1) {
@@ -146,7 +146,7 @@ public class ItemMappingConfRestController {
      */
     @GetMapping(value = "/getList")
     public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId, @RequestParam String mappingId) {
-        List<ItemMappingConf> list = itemMappingConfService.getList(itemId, mappingId);
+        List<ItemMappingConf> list = itemMappingConfService.listByItemIdAndMappingId(itemId, mappingId);
         return Y9Result.success(list, "获取成功");
     }
 

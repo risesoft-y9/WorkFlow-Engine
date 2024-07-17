@@ -62,7 +62,8 @@ public class WordTemplateRestController {
     @RequestMapping(value = "/bookMarKList")
     public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId,
         @RequestParam String wordTemplateType) {
-        List<Map<String, Object>> list = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
+        List<Map<String, Object>> list =
+            wordTemplateService.listBookMarkByWordTemplateIdAndWordTemplateType(wordTemplateId, wordTemplateType);
         return Y9Result.success(list);
     }
 
@@ -162,10 +163,10 @@ public class WordTemplateRestController {
         String personId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         List<WordTemplate> list;
         if (person.isGlobalManager()) {
-            list = wordTemplateService.findAll();
+            list = wordTemplateService.listAll();
         } else {
             list = wordTemplateService
-                .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
+                .listByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
         List<WordTemplateVO> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {

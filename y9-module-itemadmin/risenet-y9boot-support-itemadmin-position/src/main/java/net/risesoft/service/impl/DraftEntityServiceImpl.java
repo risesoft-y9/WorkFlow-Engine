@@ -2,9 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
@@ -31,6 +28,7 @@ import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.DraftEntityService;
@@ -109,48 +107,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     }
 
     @Override
-    public Page<DraftEntity> getDraftList(String itemId, String userId, int page, int rows, String title,
-        boolean delFlag) {
-        PageRequest pageable =
-            PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
-        Page<DraftEntity> list;
-        title = "%" + title + "%";
-        if (delFlag) {
-            if (StringUtil.isEmpty(itemId)) {
-                list = draftEntityRepository.findByCreaterIdAndTitleLikeAndDelFlagTrue(userId, title, pageable);
-            } else {
-                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(itemId, userId, title,
-                    pageable);
-            }
-        } else {
-            if (StringUtil.isEmpty(itemId)) {
-                list = draftEntityRepository.findByCreaterIdAndTitleLikeAndDelFlagFalse(userId, title, pageable);
-            } else {
-                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(itemId, userId, title,
-                    pageable);
-            }
-        }
-        return list;
-    }
-
-    @Override
-    public Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows,
-        String title, boolean delFlag) {
-        PageRequest pageable =
-            PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
-        Page<DraftEntity> list;
-        title = "%" + title + "%";
-        if (delFlag) {
-            list = draftEntityRepository.findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(systemName, userId, title,
-                pageable);
-        } else {
-            list = draftEntityRepository.findByTypeAndCreaterIdAndTitleLikeAndDelFlagFalse(systemName, userId, title,
-                pageable);
-        }
-        return list;
-    }
-
-    @Override
     @Transactional
     public OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -186,6 +142,48 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         model.setActivitiUser(positionId);
         model.setItembox(ItemBoxTypeEnum.DRAFT.getValue());
         return model;
+    }
+
+    @Override
+    public Page<DraftEntity> pageDraftList(String itemId, String userId, int page, int rows, String title,
+        boolean delFlag) {
+        PageRequest pageable =
+            PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
+        Page<DraftEntity> list;
+        title = "%" + title + "%";
+        if (delFlag) {
+            if (StringUtil.isEmpty(itemId)) {
+                list = draftEntityRepository.findByCreaterIdAndTitleLikeAndDelFlagTrue(userId, title, pageable);
+            } else {
+                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(itemId, userId, title,
+                    pageable);
+            }
+        } else {
+            if (StringUtil.isEmpty(itemId)) {
+                list = draftEntityRepository.findByCreaterIdAndTitleLikeAndDelFlagFalse(userId, title, pageable);
+            } else {
+                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(itemId, userId, title,
+                    pageable);
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public Page<DraftEntity> pageDraftListBySystemName(String systemName, String userId, int page, int rows,
+        String title, boolean delFlag) {
+        PageRequest pageable =
+            PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
+        Page<DraftEntity> list;
+        title = "%" + title + "%";
+        if (delFlag) {
+            list = draftEntityRepository.findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(systemName, userId, title,
+                pageable);
+        } else {
+            list = draftEntityRepository.findByTypeAndCreaterIdAndTitleLikeAndDelFlagFalse(systemName, userId, title,
+                pageable);
+        }
+        return list;
     }
 
     @Transactional
@@ -267,11 +265,8 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     @Transactional
     @Override
-    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
+    public Y9Result<Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
         String number, String level, String title, String jijian, String type) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("message", "保存失败");
-        map.put(UtilConsts.SUCCESS, false);
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             if (StringUtils.isNotBlank(processSerialNumber)) {
@@ -311,13 +306,10 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 }
                 draftEntityRepository.save(draft);
             }
-            map.put("message", "保存成功");
-            map.put(UtilConsts.SUCCESS, true);
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            map.put("message", "保存失败");
-            map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("保存草稿失败", e);
+            return Y9Result.failure("保存草稿失败");
         }
-        return map;
     }
 }

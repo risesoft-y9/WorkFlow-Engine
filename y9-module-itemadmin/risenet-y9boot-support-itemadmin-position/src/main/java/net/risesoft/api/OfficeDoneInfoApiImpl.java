@@ -164,7 +164,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
     public Y9Page<OfficeDoneInfoModel> getMeetingList(@RequestParam String tenantId, String userName, String deptName,
         String title, String meetingType, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.getMeetingList(userName, deptName, title, meetingType, page, rows);
+        return officeDoneInfoService.pageMeetingList(userName, deptName, title, meetingType, page, rows);
     }
 
     /**

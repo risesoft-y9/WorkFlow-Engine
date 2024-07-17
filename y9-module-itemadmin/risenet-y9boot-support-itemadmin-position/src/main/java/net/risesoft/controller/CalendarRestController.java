@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CalendarConfigService;
 
@@ -36,11 +35,7 @@ public class CalendarRestController {
      */
     @PostMapping(value = "/delCalendar")
     public Y9Result<String> delCalendar(@RequestParam String startDate) {
-        Map<String, Object> map = calendarConfigService.delCalendar(startDate);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("message"));
-        }
-        return Y9Result.failure((String)map.get("message"));
+        return calendarConfigService.delCalendar(startDate);
     }
 
     /**
@@ -51,7 +46,7 @@ public class CalendarRestController {
      */
     @GetMapping(value = "/getCalendar")
     public Y9Result<List<Map<String, Object>>> getCalendar(@RequestParam String month) {
-        List<Map<String, Object>> list = calendarConfigService.getCalendar(month);
+        List<Map<String, Object>> list = calendarConfigService.listCalendar(month);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -64,10 +59,6 @@ public class CalendarRestController {
      */
     @PostMapping(value = "/saveCalendar")
     public Y9Result<String> saveCalendar(@RequestParam String startDate, @RequestParam Integer type) {
-        Map<String, Object> map = calendarConfigService.saveCalendar(startDate, type);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("message"));
-        }
-        return Y9Result.failure((String)map.get("message"));
+        return calendarConfigService.saveCalendar(startDate, type);
     }
 }

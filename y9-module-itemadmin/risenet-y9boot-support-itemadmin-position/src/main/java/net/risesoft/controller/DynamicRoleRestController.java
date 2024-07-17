@@ -37,7 +37,7 @@ public class DynamicRoleRestController {
      */
     @GetMapping(value = "/dynamicRoleList")
     public Y9Result<List<DynamicRole>> dynamicRoleList() {
-        List<DynamicRole> drList = dynamicRoleService.findAll();
+        List<DynamicRole> drList = dynamicRoleService.listAll();
         return Y9Result.success(drList, "获取成功");
     }
 
@@ -49,7 +49,7 @@ public class DynamicRoleRestController {
      */
     @GetMapping(value = "/getDynamicRole")
     public Y9Result<DynamicRole> getDynamicRole(@RequestParam String id) {
-        DynamicRole dynamicRole = dynamicRoleService.findOne(id);
+        DynamicRole dynamicRole = dynamicRoleService.getById(id);
         return Y9Result.success(dynamicRole, "获取成功");
     }
 
@@ -61,7 +61,7 @@ public class DynamicRoleRestController {
     @GetMapping(value = "/list")
     public Y9Result<List<Map<String, Object>>> list() {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<DynamicRole> dynamicRoleList = dynamicRoleService.findAll();
+        List<DynamicRole> dynamicRoleList = dynamicRoleService.listAll();
         for (DynamicRole dynamicRole : dynamicRoleList) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("id", dynamicRole.getId());

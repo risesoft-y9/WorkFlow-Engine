@@ -37,12 +37,12 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
     }
 
     @Override
-    public List<ItemButtonRole> findByItemButtonId(String itemButtonId) {
+    public List<ItemButtonRole> listByItemButtonId(String itemButtonId) {
         return itemButtonRoleRepository.findByItemButtonId(itemButtonId);
     }
 
     @Override
-    public List<ItemButtonRole> findByItemButtonIdContainRoleName(String itemButtonId) {
+    public List<ItemButtonRole> listByItemButtonIdContainRoleName(String itemButtonId) {
         List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
         for (ItemButtonRole role : roleList) {
             Role r = roleManager.getRole(role.getRoleId()).getData();

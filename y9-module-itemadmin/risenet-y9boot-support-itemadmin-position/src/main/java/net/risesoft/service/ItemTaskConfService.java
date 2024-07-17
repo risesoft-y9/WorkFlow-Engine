@@ -10,6 +10,15 @@ import net.risesoft.entity.ItemTaskConf;
 public interface ItemTaskConfService {
 
     /**
+     * Description:复制任务签收绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     * @param lastVersionPid
+     */
+    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
+
+    /**
      * 复制该事项绑定的指定的流程定义的上一个版本流程定义的任务配置到该版本
      *
      * @param itemId
@@ -25,8 +34,15 @@ public interface ItemTaskConfService {
     void delete(String id);
 
     /**
+     * Description:删除任务签收绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
+
+    /**
      * 查找一个
-     * 
+     *
      * @param id
      * @return
      */
@@ -66,34 +82,18 @@ public interface ItemTaskConfService {
 
     /**
      * Description:
-     * 
+     *
      * @param t
      */
     void save(ItemTaskConf t);
 
     /**
      * Description:
-     * 
+     *
      * @param id
      * @param processDefinitionId
      * @param taskDefKey
      * @return
      */
     ItemTaskConf save(String id, String processDefinitionId, String taskDefKey);
-
-    /**
-     * Description:复制任务签收绑定信息
-     *
-     * @param itemId
-     * @param newItemId
-     * @param lastVersionPid
-     */
-    void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
-
-    /**
-     * Description:删除任务签收绑定信息
-     *
-     * @param itemId
-     */
-    void deleteBindInfo(String itemId);
 }

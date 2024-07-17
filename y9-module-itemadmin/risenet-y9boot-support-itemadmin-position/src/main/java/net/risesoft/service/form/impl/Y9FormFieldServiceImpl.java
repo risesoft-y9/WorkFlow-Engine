@@ -38,7 +38,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
             y9FormFieldRepository.deleteById(id);
             return Y9Result.successMsg("删除表单绑定字段成功");
         } catch (Exception e) {
-            LOGGER.error("删除表单绑定字段失败，异常信息：{}", e.getMessage());
+            LOGGER.error("删除表单绑定字段失败", e);
             return Y9Result.failure("删除表单绑定字段失败");
         }
     }
@@ -98,7 +98,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
             }
             return Y9Result.success(newField, "保存成功");
         } catch (Exception e) {
-            LOGGER.error("保存表单字段失败，异常信息：{}", e.getMessage());
+            LOGGER.error("保存表单字段失败", e);
             return Y9Result.failure("保存表单字段失败");
         }
     }

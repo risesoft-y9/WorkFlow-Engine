@@ -172,7 +172,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             }
         } catch (Exception e) {
             taskManager.unClaim(tenantId, taskId);
-            LOGGER.error("退回失败{}", e.getMessage());
+            LOGGER.error("退回失败", e);
             return Y9Result.failure("退回失败");
         }
         return Y9Result.success();

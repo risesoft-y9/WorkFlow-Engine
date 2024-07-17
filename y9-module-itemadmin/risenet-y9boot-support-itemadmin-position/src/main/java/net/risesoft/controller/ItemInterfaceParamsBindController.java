@@ -71,7 +71,7 @@ public class ItemInterfaceParamsBindController {
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         List<Map<String, Object>> tableField = new ArrayList<>();
@@ -116,7 +116,8 @@ public class ItemInterfaceParamsBindController {
     @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemInterfaceParamsBind>> getBindList(@RequestParam String itemId,
         @RequestParam String interfaceId, @RequestParam String type) {
-        List<ItemInterfaceParamsBind> list = itemInterfaceParamsBindService.getBindList(itemId, interfaceId, type);
+        List<ItemInterfaceParamsBind> list =
+            itemInterfaceParamsBindService.listByItemIdAndInterfaceIdAndType(itemId, interfaceId, type);
         return Y9Result.success(list, "获取成功");
     }
 

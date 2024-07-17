@@ -28,13 +28,13 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
     private final DynamicRoleRepository dynamicRoleRepository;
 
     @Override
-    public List<DynamicRole> findAll() {
-        return dynamicRoleRepository.findAllByOrderByTabIndexAsc();
+    public DynamicRole getById(String id) {
+        return dynamicRoleRepository.findById(id).orElse(null);
     }
 
     @Override
-    public DynamicRole findOne(String id) {
-        return dynamicRoleRepository.findById(id).orElse(null);
+    public List<DynamicRole> listAll() {
+        return dynamicRoleRepository.findAllByOrderByTabIndexAsc();
     }
 
     @Override

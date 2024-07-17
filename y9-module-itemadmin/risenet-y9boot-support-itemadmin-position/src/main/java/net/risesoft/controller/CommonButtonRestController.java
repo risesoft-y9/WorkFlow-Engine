@@ -47,7 +47,7 @@ public class CommonButtonRestController {
      */
     @GetMapping(value = "/getCommonButton")
     public Y9Result<CommonButton> getCommonButton(@RequestParam String id) {
-        CommonButton commonButton = commonButtonService.findOne(id);
+        CommonButton commonButton = commonButtonService.getById(id);
         return Y9Result.success(commonButton, "获取成功");
     }
 
@@ -58,7 +58,7 @@ public class CommonButtonRestController {
      */
     @GetMapping(value = "/getCommonButtonList")
     public Y9Result<List<CommonButton>> getCommonButtonList() {
-        List<CommonButton> list = commonButtonService.findAll();
+        List<CommonButton> list = commonButtonService.listAll();
         return Y9Result.success(list, "获取成功");
     }
 

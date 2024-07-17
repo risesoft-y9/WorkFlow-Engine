@@ -11,7 +11,7 @@ public interface OrganWordDetailService {
 
     /**
      * Description:
-     * 
+     *
      * @param custom
      * @param characterValue
      * @param year
@@ -23,7 +23,7 @@ public interface OrganWordDetailService {
 
     /**
      * Description:
-     * 
+     *
      * @param organWordDetail
      * @return
      */
@@ -31,7 +31,7 @@ public interface OrganWordDetailService {
 
     /**
      * Description:
-     * 
+     *
      * @param organWordDetail
      * @return
      */

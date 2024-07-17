@@ -31,13 +31,13 @@ public class TabEntityServiceImpl implements TabEntityService {
     private final TabEntityRepository tabEntityRepository;
 
     @Override
-    public List<TabEntity> findAll() {
-        return tabEntityRepository.findAll();
+    public TabEntity getById(String id) {
+        return tabEntityRepository.findById(id).orElse(null);
     }
 
     @Override
-    public TabEntity findOne(String id) {
-        return tabEntityRepository.findById(id).orElse(null);
+    public List<TabEntity> listAll() {
+        return tabEntityRepository.findAll();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TabEntityServiceImpl implements TabEntityService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = tabEntity.getId();
         if (StringUtils.isNotEmpty(id)) {
-            TabEntity oldte = this.findOne(id);
+            TabEntity oldte = this.getById(id);
             if (null != oldte) {
                 oldte.setName(tabEntity.getName());
                 oldte.setUrl(tabEntity.getUrl());

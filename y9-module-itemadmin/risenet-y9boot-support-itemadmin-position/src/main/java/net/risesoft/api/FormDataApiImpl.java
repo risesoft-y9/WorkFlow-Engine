@@ -96,7 +96,7 @@ public class FormDataApiImpl implements FormDataApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<BindFormModel> res_list = new ArrayList<>();
         List<Y9FormItemBind> list =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
         for (Y9FormItemBind item : list) {
             BindFormModel model = new BindFormModel();
             Y9BeanUtil.copyProperties(item, model);

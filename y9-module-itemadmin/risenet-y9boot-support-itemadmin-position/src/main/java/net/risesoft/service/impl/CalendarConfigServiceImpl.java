@@ -18,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.CalendarConfig;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.CalendarConfigRepository;
 import net.risesoft.service.CalendarConfigService;
 
@@ -40,10 +40,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
 
     @Override
     @Transactional
-    public Map<String, Object> delCalendar(String startDate) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("message", "删除成功");
-        map.put(UtilConsts.SUCCESS, true);
+    public Y9Result<String> delCalendar(String startDate) {
         try {
             String[] str = startDate.split("-");
             CalendarConfig calendarConfig = calendarConfigRepository.findByYear(str[0]);
@@ -116,51 +113,16 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 calendarConfig.setEveryYearHoliday(StringUtils.join(everyYearHolidayList, ","));
                 calendarConfigRepository.save(calendarConfig);
             }
+            return Y9Result.success("删除成功");
         } catch (Exception e) {
-            map.put("message", "删除失败");
-            map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("删除失败", e);
+            return Y9Result.failure("删除失败");
         }
-        return map;
     }
 
     @Override
     public CalendarConfig findByYear(String year) {
         return calendarConfigRepository.findByYear(year);
-    }
-
-    @Override
-    public List<Map<String, Object>> getCalendar(String month) {
-        List<Map<String, Object>> resList = new ArrayList<>();
-        try {
-            String[] str = month.split("-");
-            CalendarConfig calendarConfig = calendarConfigRepository.findByYear(str[0]);
-            if (calendarConfig != null) {
-                String weekend2WorkingDay = calendarConfig.getWeekend2WorkingDay();
-                String workingDay2Holiday = calendarConfig.getWorkingDay2Holiday();
-                if (StringUtils.isNotBlank(weekend2WorkingDay)) {
-                    String[] list = weekend2WorkingDay.split(",");
-                    for (String date : list) {
-                        Map<String, Object> map = new HashMap<>(16);
-                        map.put("date", date);
-                        map.put("type", 2);
-                        resList.add(map);
-                    }
-                }
-                if (StringUtils.isNotBlank(workingDay2Holiday)) {
-                    String[] list1 = workingDay2Holiday.split(",");
-                    for (String date : list1) {
-                        Map<String, Object> map = new HashMap<>(16);
-                        map.put("date", date);
-                        map.put("type", 1);
-                        resList.add(map);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取日历失败", e);
-        }
-        return resList;
     }
 
     /**
@@ -203,6 +165,40 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
         return cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
     }
 
+    @Override
+    public List<Map<String, Object>> listCalendar(String month) {
+        List<Map<String, Object>> resList = new ArrayList<>();
+        try {
+            String[] str = month.split("-");
+            CalendarConfig calendarConfig = calendarConfigRepository.findByYear(str[0]);
+            if (calendarConfig != null) {
+                String weekend2WorkingDay = calendarConfig.getWeekend2WorkingDay();
+                String workingDay2Holiday = calendarConfig.getWorkingDay2Holiday();
+                if (StringUtils.isNotBlank(weekend2WorkingDay)) {
+                    String[] list = weekend2WorkingDay.split(",");
+                    for (String date : list) {
+                        Map<String, Object> map = new HashMap<>(16);
+                        map.put("date", date);
+                        map.put("type", 2);
+                        resList.add(map);
+                    }
+                }
+                if (StringUtils.isNotBlank(workingDay2Holiday)) {
+                    String[] list1 = workingDay2Holiday.split(",");
+                    for (String date : list1) {
+                        Map<String, Object> map = new HashMap<>(16);
+                        map.put("date", date);
+                        map.put("type", 1);
+                        resList.add(map);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取日历失败", e);
+        }
+        return resList;
+    }
+
     public List<String> remove(List<String> list, String date) {
         list.removeIf(date::equals);
         return list;
@@ -210,10 +206,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
 
     @Override
     @Transactional
-    public Map<String, Object> saveCalendar(String startDate, Integer type) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("message", "保存成功");
-        map.put(UtilConsts.SUCCESS, true);
+    public Y9Result<String> saveCalendar(String startDate, Integer type) {
         try {
             String year = startDate.split("-")[0];
             CalendarConfig calendarConfig = calendarConfigRepository.findByYear(year);
@@ -291,12 +284,11 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 calendarConfig.setEveryYearHoliday(StringUtils.join(everyYearHolidayList, ","));
                 calendarConfigRepository.save(calendarConfig);
             }
+            return Y9Result.success("保存成功");
         } catch (Exception e) {
-            map.put("message", "保存失败");
-            map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("保存失败", e);
+            return Y9Result.failure("保存失败");
         }
-        return map;
     }
 
     @Override

@@ -110,7 +110,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             }
             return Y9Result.successMsg("添加数据表成功");
         } catch (Exception e) {
-            LOGGER.error("添加数据表失败,异常信息：{}", e.getMessage());
+            LOGGER.error("添加数据表失败", e);
             return Y9Result.failure("添加数据表失败");
         }
     }
@@ -150,7 +150,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             }
             return Y9Result.successMsg("创建数据表成功");
         } catch (Exception e) {
-            LOGGER.error("创建数据表失败,异常信息：{}", e.getMessage());
+            LOGGER.error("创建数据表失败", e);
             return Y9Result.failure("创建数据表失败");
         }
     }
@@ -167,7 +167,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             }
             return Y9Result.successMsg("删除数据表成功");
         } catch (Exception e) {
-            LOGGER.error("删除数据表失败,{}", e.getMessage());
+            LOGGER.error("删除数据表失败", e);
             return Y9Result.failure("删除数据表失败");
         }
     }
@@ -195,7 +195,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("获取所有表名失败,异常信息：{}", e.getMessage());
+            LOGGER.error("获取所有表名失败", e);
         }
         return tableNames.toString();
     }
@@ -227,7 +227,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             }
             map.put("rows", list);
         } catch (Exception e) {
-            LOGGER.error("获取所有表失败,异常信息：{}", e.getMessage());
+            LOGGER.error("获取所有表失败", e);
         }
         return map;
     }
@@ -395,8 +395,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             table.setCreateTime(sdf.format(new Date()));
             return y9TableRepository.save(table);
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("保存失败,异常信息：{}", e.getMessage());
+            LOGGER.error("保存失败", e);
             throw new Exception("Y9TableServiceImpl saveOrUpdate error");
         }
     }
@@ -433,8 +432,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             }
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("操作失败,异常信息：{}", e.getMessage());
+            LOGGER.error("操作失败", e);
             return Y9Result.failure("操作失败");
         }
     }

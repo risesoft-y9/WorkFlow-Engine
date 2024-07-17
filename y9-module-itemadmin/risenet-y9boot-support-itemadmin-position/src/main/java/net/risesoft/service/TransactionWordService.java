@@ -19,32 +19,6 @@ public interface TransactionWordService {
     void delBatchByProcessSerialNumbers(List<String> processSerialNumbers);
 
     /**
-     * 根据流程编号获取正文
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    List<TransactionWord> findByProcessSerialNumber(String processSerialNumber);
-
-    /**
-     * 根据流程编号和文档类别获取正文
-     *
-     * @param processSerialNumber
-     * @param docCategory
-     * @return
-     */
-    List<TransactionWord> findByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory);
-
-    /**
-     * 根据processSerialNumber和taohong获取套红正文
-     *
-     * @param processSerialNumber
-     * @param taohong
-     * @return
-     */
-    List<TransactionWord> findByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong);
-
-    /**
      * 根据流程编号获取最新正文
      *
      * @param processSerialNumber
@@ -53,15 +27,41 @@ public interface TransactionWordService {
     TransactionWord getByProcessSerialNumber(String processSerialNumber);
 
     /**
+     * 根据流程编号获取正文
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    List<TransactionWord> listByProcessSerialNumber(String processSerialNumber);
+
+    /**
+     * 根据流程编号和文档类别获取正文
+     *
+     * @param processSerialNumber
+     * @param docCategory
+     * @return
+     */
+    List<TransactionWord> listByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory);
+
+    /**
+     * 根据processSerialNumber和taohong获取套红正文
+     *
+     * @param processSerialNumber
+     * @param taohong
+     * @return
+     */
+    List<TransactionWord> listByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong);
+
+    /**
      * Description:
-     * 
+     *
      * @param tw
      */
     void save(TransactionWord tw);
 
     /**
      * Description: 保存word正文
-     * 
+     *
      * @param fileStoreId
      * @param fileSize
      * @param documenttitle
@@ -75,7 +75,7 @@ public interface TransactionWordService {
 
     /**
      * Description: 保存正文信息
-     * 
+     *
      * @param docjson
      * @param processSerialNumber
      * @return
@@ -84,7 +84,7 @@ public interface TransactionWordService {
 
     /**
      * Description:
-     * 
+     *
      * @param fileStoreId
      * @param fileType
      * @param fileName

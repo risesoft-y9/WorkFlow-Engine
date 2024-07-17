@@ -24,13 +24,13 @@ public class DocumentNumberDetailServiceImpl implements DocumentNumberDetailServ
     private final DocumentNumberDetailRepository documentNumberDetailRepository;
 
     @Override
-    public List<DocumentNumberDetail> findAll() {
-        return documentNumberDetailRepository.findAll();
+    public DocumentNumberDetail getById(String id) {
+        return documentNumberDetailRepository.findById(id).orElse(null);
     }
 
     @Override
-    public DocumentNumberDetail findOne(String id) {
-        return documentNumberDetailRepository.findById(id).orElse(null);
+    public List<DocumentNumberDetail> listAll() {
+        return documentNumberDetailRepository.findAll();
     }
 
     @Override
