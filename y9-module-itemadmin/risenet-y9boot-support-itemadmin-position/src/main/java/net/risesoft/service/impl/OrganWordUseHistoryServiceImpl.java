@@ -36,4 +36,16 @@ public class OrganWordUseHistoryServiceImpl implements OrganWordUseHistoryServic
     public OrganWordUseHistory save(OrganWordUseHistory organWordUseHistory) {
         return organWordUseHistoryRepository.save(organWordUseHistory);
     }
+
+    @Override
+    public OrganWordUseHistory findByItemIdAndNumberStringAndCustom(String itemId, String numberString, String custom) {
+        return organWordUseHistoryRepository.findByItemIdAndNumberStringAndCustom(itemId, numberString, custom);
+    }
+
+    @Override
+    public OrganWordUseHistory findByItemIdAndNumberStrAndCustomAndProcessSerialNumber(String itemId,
+        String numberString, String custom, String processSerialNumber) {
+        return organWordUseHistoryRepository.findByItemIdAndNumberStringAndCustomAndProcessSerialNumber(itemId,
+            numberString, custom, processSerialNumber);
+    }
 }

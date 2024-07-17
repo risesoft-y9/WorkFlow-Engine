@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -111,6 +112,27 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
+     * 查找有权限的机构代字
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务定义key
+     * @return {@code Y9Result<List<OrganWordPropertyModel>>} 通用请求返回对象 -data是数据字典列表
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String itemId, @RequestParam String processDefinitionId,
+        String taskDefKey) {
+        Position position = positionApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPosition(position);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return Y9Result.success(organWordService.listByCustomNumber(itemId, processDefinitionId, taskDefKey));
+    }
+
+    /**
      * 获取编号
      *
      * @param tenantId 租户id
@@ -131,6 +153,27 @@ public class OrganWordApiImpl implements OrganWordApi {
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.getNumber(custom, characterValue, year, common, itemId));
+    }
+
+    /**
+     * 获取临时编号
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param custom 机关代字标志
+     * @param characterValue 机关代字
+     * @param itemId 事项id
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号的数字
+     * @since 9.6.6
+     *
+     */
+    @Override
+    public Y9Result<String> getTempNumber(String tenantId, String userId, String custom, String characterValue,
+        String itemId) {
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return Y9Result.success(organWordService.getTempNumber(custom, characterValue, itemId));
     }
 
     /**
@@ -155,5 +198,28 @@ public class OrganWordApiImpl implements OrganWordApi {
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.getNumberOnly(custom, characterValue, year, common, itemId));
+    }
+
+    /**
+     * 保存编号
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param custom 机关代字标志
+     * @param numberString 编号字符串
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 -data是保存结果
+     * @since 9.6.6
+     *
+     */
+    @Override
+    public Y9Result<Map<String, Object>> saveNumberString(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String custom, @RequestParam String numberString, @RequestParam String itemId,
+        @RequestParam String processSerialNumber) {
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return Y9Result.success(organWordService.saveNumberString(custom, numberString, itemId, processSerialNumber));
     }
 }

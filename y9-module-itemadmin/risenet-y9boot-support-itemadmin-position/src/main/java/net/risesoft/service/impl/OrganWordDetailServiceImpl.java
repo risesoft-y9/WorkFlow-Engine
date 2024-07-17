@@ -41,4 +41,19 @@ public class OrganWordDetailServiceImpl implements OrganWordDetailService {
         return null;
     }
 
+    @Override
+    public Integer getMaxNumber(String custom, String itemId) {
+        return organWordDetailRepository.getMaxNumber(custom, itemId);
+    }
+
+    @Override
+    public OrganWordDetail findByCustomAndCharacterValueAndItemId(String custom, String characterValue, String itemId) {
+        return organWordDetailRepository.findByCustomAndCharacterValueAndItemId(custom, characterValue, itemId);
+    }
+
+    @Override
+    public OrganWordDetail findByCustomAndItemId(String custom, String itemId) {
+        return organWordDetailRepository.findByCustomAndItemId(custom, itemId);
+    }
+
 }

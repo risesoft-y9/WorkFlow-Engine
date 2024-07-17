@@ -1,6 +1,7 @@
 package net.risesoft.api.itemadmin;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -78,6 +79,21 @@ public interface OrganWordApi {
         @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
 
     /**
+     * 查找有权限的机构代字及编号
+     * 
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务定义key
+     * @return {@code Y9Result<List<OrganWordPropertyModel>>} 通用请求返回对象 -data是数据字典列表
+     */
+    @GetMapping("/findByCustomNumber")
+    Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+
+    /**
      * 获取编号
      *
      * @param tenantId 租户id
@@ -94,6 +110,22 @@ public interface OrganWordApi {
     Y9Result<Integer> getNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue,
         @RequestParam("year") Integer year, @RequestParam("common") Integer common,
+        @RequestParam("itemId") String itemId);
+
+    /**
+     * 获取临时编号
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param custom 机关代字标志
+     * @param characterValue 机关代字
+     * @param itemId 事项id
+     * @return {@code Y9Result<String>} 通用请求返回对象 -data是临时编号
+     * @since 9.6.6
+     */
+    @GetMapping("/getTempNumber")
+    Y9Result<String> getTempNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue,
         @RequestParam("itemId") String itemId);
 
     /**
@@ -115,5 +147,23 @@ public interface OrganWordApi {
         @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue,
         @RequestParam("year") Integer year, @RequestParam("common") Integer common,
         @RequestParam("itemId") String itemId);
+
+    /**
+     * 保存编号字符串
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param custom 机关代字标志
+     * @param numberString 编号字符串
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 -data是保存结果
+     * @since 9.6.6
+     */
+    @GetMapping("/saveNumberString")
+    Y9Result<Map<String, Object>> saveNumberString(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("custom") String custom,
+        @RequestParam("numberString") String numberString, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
 }

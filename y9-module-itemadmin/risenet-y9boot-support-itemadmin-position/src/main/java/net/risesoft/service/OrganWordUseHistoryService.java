@@ -34,4 +34,26 @@ public interface OrganWordUseHistoryService {
      * @return
      */
     OrganWordUseHistory save(OrganWordUseHistory organWordUseHistory);
+
+    /**
+     * 查询编号有没有使用
+     * 
+     * @param itemId
+     * @param numberString
+     * @param custom
+     * @return
+     */
+    OrganWordUseHistory findByItemIdAndNumberStringAndCustom(String itemId, String numberString, String custom);
+
+    /**
+     * 查询当前流程是否已经存在
+     * 
+     * @param itemId
+     * @param numberString
+     * @param custom
+     * @param processSerialNumber
+     * @return
+     */
+    OrganWordUseHistory findByItemIdAndNumberStrAndCustomAndProcessSerialNumber(String itemId, String numberString,
+        String custom, String processSerialNumber);
 }

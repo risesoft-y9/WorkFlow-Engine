@@ -21,6 +21,9 @@ public class OrganWordPropertyModel implements Serializable {
     /** 机关代字名字 */
     private String name;
 
+    /** 机关代字类型 */
+    private String custom;
+
     /** 初始值 */
     private Integer initNumber;
 
