@@ -14,7 +14,7 @@ import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.entity.ItemViewConf;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemViewConfService;
+import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

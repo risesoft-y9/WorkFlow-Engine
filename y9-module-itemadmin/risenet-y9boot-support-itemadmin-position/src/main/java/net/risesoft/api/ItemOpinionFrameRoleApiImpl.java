@@ -13,7 +13,7 @@ import net.risesoft.api.itemadmin.ItemOpinionFrameRoleApi;
 import net.risesoft.entity.ItemOpinionFrameRole;
 import net.risesoft.model.itemadmin.ItemOpinionFrameRoleModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemOpinionFrameRoleService;
+import net.risesoft.service.config.ItemOpinionFrameRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

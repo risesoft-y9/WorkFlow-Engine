@@ -26,8 +26,8 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ViewTypeRepository;
-import net.risesoft.service.ItemViewConfService;
 import net.risesoft.service.ViewTypeService;
+import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
