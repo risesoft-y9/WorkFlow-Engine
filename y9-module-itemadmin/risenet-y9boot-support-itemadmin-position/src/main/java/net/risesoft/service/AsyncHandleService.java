@@ -57,6 +57,7 @@ import net.risesoft.repository.jpa.OpinionHistoryRepository;
 import net.risesoft.repository.jpa.OpinionRepository;
 import net.risesoft.repository.jpa.ProcessTrackRepository;
 import net.risesoft.repository.jpa.TaskVariableRepository;
+import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;

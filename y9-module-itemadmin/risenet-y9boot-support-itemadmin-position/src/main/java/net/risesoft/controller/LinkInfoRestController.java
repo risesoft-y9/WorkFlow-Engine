@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.LinkInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemLinkBindService;
 import net.risesoft.service.LinkInfoService;
+import net.risesoft.service.config.ItemLinkBindService;
 
 /**
  * @author qinman

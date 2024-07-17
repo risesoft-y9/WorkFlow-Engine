@@ -43,6 +43,7 @@ import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.jpa.AssociatedFileRepository;
+import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;

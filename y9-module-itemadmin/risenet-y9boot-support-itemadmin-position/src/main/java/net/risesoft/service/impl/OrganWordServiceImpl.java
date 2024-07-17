@@ -42,12 +42,12 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.OrganWordRepository;
-import net.risesoft.service.ItemOrganWordBindService;
 import net.risesoft.service.OrganWordDetailService;
 import net.risesoft.service.OrganWordPropertyService;
 import net.risesoft.service.OrganWordService;
 import net.risesoft.service.OrganWordUseHistoryService;
 import net.risesoft.service.ProcessParamService;
+import net.risesoft.service.config.ItemOrganWordBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

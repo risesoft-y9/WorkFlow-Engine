@@ -22,9 +22,9 @@ import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomProcessInfoService;
-import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.service.ProcInstanceRelationshipService;
 import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 

@@ -29,8 +29,8 @@ import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Position;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.service.DynamicRoleMemberService;
-import net.risesoft.service.ItemPermissionService;
 import net.risesoft.service.RoleService;
+import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /*

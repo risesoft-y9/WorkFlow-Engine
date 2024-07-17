@@ -18,9 +18,9 @@ import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.ViewType;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemViewConfService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.ViewTypeService;
+import net.risesoft.service.config.ItemViewConfService;
 
 /**
  * @author qinman
