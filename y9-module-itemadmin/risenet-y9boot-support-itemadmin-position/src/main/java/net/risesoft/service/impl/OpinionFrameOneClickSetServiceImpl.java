@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +35,34 @@ public class OpinionFrameOneClickSetServiceImpl implements OpinionFrameOneClickS
 
     @Override
     @Transactional(readOnly = false)
+    public void delete(String id) {
+        opinionFrameOneClickSetRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OpinionFrameOneClickSet> findByBindId(String bindId) {
+        return opinionFrameOneClickSetRepository.findByBindId(bindId);
+    }
+
+    @Override
+    public List<OpinionFrameOneClickSetModel> findByBindIdModel(String bindId) {
+        List<OpinionFrameOneClickSetModel> opinionFrameOneClickSetModels = new ArrayList<>();
+        List<OpinionFrameOneClickSet> opinionFrameOneClickSets = opinionFrameOneClickSetRepository.findByBindId(bindId);
+        if (null != opinionFrameOneClickSets && !opinionFrameOneClickSets.isEmpty()) {
+            for (OpinionFrameOneClickSet opinionFrameOneClickSet : opinionFrameOneClickSets) {
+                OpinionFrameOneClickSetModel opinionFrameOneClickSetModel = new OpinionFrameOneClickSetModel();
+                Y9BeanUtil.copyProperties(opinionFrameOneClickSet, opinionFrameOneClickSetModel);
+                opinionFrameOneClickSetModels.add(opinionFrameOneClickSetModel);
+            }
+            return opinionFrameOneClickSetModels;
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    @Transactional(readOnly = false)
     public Map<String, Object> save(OpinionFrameOneClickSet opinionFrameOneClickSet) {
-        Map<String, Object> ret_Map = new HashMap<String, Object>();
+        Map<String, Object> retMap = new HashMap<>();
         try {
             if (StringUtils.isBlank(opinionFrameOneClickSet.getId())) {
                 opinionFrameOneClickSet.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -48,39 +75,13 @@ public class OpinionFrameOneClickSetServiceImpl implements OpinionFrameOneClickS
                 Y9BeanUtil.copyProperties(opinionFrameOneClickSet, oneClick);
                 opinionFrameOneClickSetRepository.save(oneClick);
             }
-            ret_Map.put("success", true);
-            ret_Map.put("msg", "一键配置成功！");
+            retMap.put("success", true);
+            retMap.put("msg", "一键配置成功！");
         } catch (Exception e) {
-            e.printStackTrace();
-            ret_Map.put("success", false);
-            ret_Map.put("msg", "一键配置失败！");
+            retMap.put("success", false);
+            retMap.put("msg", "一键配置失败！");
+            LOGGER.error("一键配置失败！", e);
         }
-        return ret_Map;
-    }
-
-    @Override
-    public List<OpinionFrameOneClickSet> findByBindId(String bindId) {
-        return opinionFrameOneClickSetRepository.findByBindId(bindId);
-    }
-
-    @Override
-    public List<OpinionFrameOneClickSetModel> findByBindIdModel(String bindId) {
-        List<OpinionFrameOneClickSetModel> opinionFrameOneClickSetModels = new ArrayList<>();
-        List<OpinionFrameOneClickSet> opinionFrameOneClickSets = opinionFrameOneClickSetRepository.findByBindId(bindId);
-        if (null != opinionFrameOneClickSets && opinionFrameOneClickSets.size() > 0) {
-            for (OpinionFrameOneClickSet opinionFrameOneClickSet : opinionFrameOneClickSets) {
-                OpinionFrameOneClickSetModel opinionFrameOneClickSetModel = new OpinionFrameOneClickSetModel();
-                Y9BeanUtil.copyProperties(opinionFrameOneClickSet, opinionFrameOneClickSetModel);
-                opinionFrameOneClickSetModels.add(opinionFrameOneClickSetModel);
-            }
-            return opinionFrameOneClickSetModels;
-        }
-        return null;
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public void delete(String id) {
-        opinionFrameOneClickSetRepository.deleteById(id);
+        return retMap;
     }
 }

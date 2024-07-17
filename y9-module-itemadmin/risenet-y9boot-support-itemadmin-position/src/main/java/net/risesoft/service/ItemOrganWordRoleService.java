@@ -20,23 +20,23 @@ public interface ItemOrganWordRoleService {
 
     /**
      * Description: 根据事项和编号框绑定的唯一标示查找绑定的角色
-     * 
+     *
      * @param itemOrganWordBindId
      * @return
      */
-    List<ItemOrganWordRole> findByItemOrganWordBindId(String itemOrganWordBindId);
+    List<ItemOrganWordRole> listByItemOrganWordBindId(String itemOrganWordBindId);
 
     /**
      * Description: 根据事项和编号框绑定的唯一标示查找绑定的角色（包含角色名称）
-     * 
+     *
      * @param itemOrganWordBindId
      * @return
      */
-    List<ItemOrganWordRole> findByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId);
+    List<ItemOrganWordRole> listByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId);
 
     /**
      * Description: 删除多个
-     * 
+     *
      * @param ids
      */
     void remove(String[] ids);
@@ -50,7 +50,7 @@ public interface ItemOrganWordRoleService {
 
     /**
      * Description: 保存或者更新
-     * 
+     *
      * @param itemOrganWordBindId
      * @param roleId
      * @return

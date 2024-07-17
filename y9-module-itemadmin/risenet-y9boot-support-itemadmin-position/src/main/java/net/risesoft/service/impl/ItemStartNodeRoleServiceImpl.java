@@ -126,14 +126,18 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    public ItemStartNodeRole findById(String id) {
-        return itemStartNodeRoleRepository.findById(id).orElse(null);
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            itemStartNodeRoleRepository.deleteByItemId(itemId);
+        } catch (Exception e) {
+            LOGGER.error("删除路由配置信息失败", e.getMessage());
+        }
     }
 
     @Override
-    public List<ItemStartNodeRole> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
-        return itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId,
-            processDefinitionId);
+    public ItemStartNodeRole findById(String id) {
+        return itemStartNodeRoleRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -141,27 +145,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         String taskDefKey) {
         return itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
             taskDefKey);
-    }
-
-    @Override
-    public List<Role> getRoleList(String itemId, String processDefinitionId, String taskDefKey) {
-        List<Role> list = new ArrayList<>();
-        ItemStartNodeRole isnr =
-            this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        if (null != isnr && StringUtils.isNotEmpty(isnr.getRoleIds())) {
-            String roleIds = isnr.getRoleIds();
-            String[] roleIdArr = roleIds.split(";");
-            Role role = null;
-            for (String roleId : roleIdArr) {
-                role = roleManager.getRole(roleId).getData();
-                if (null != role) {
-                    list.add(role);
-                } else {
-                    this.removeRole(itemId, processDefinitionId, taskDefKey, roleId);
-                }
-            }
-        }
-        return list;
     }
 
     @Override
@@ -233,6 +216,34 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             }
             itemStartNodeRoleRepository.save(isnr);
         }
+    }
+
+    @Override
+    public List<ItemStartNodeRole> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
+        return itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId,
+            processDefinitionId);
+    }
+
+    @Override
+    public List<Role> listRoleByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey) {
+        List<Role> list = new ArrayList<>();
+        ItemStartNodeRole isnr =
+            this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+        if (null != isnr && StringUtils.isNotEmpty(isnr.getRoleIds())) {
+            String roleIds = isnr.getRoleIds();
+            String[] roleIdArr = roleIds.split(";");
+            Role role = null;
+            for (String roleId : roleIdArr) {
+                role = roleManager.getRole(roleId).getData();
+                if (null != role) {
+                    list.add(role);
+                } else {
+                    this.removeRole(itemId, processDefinitionId, taskDefKey, roleId);
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -327,15 +338,5 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             isnr.setTabIndex(index + 1);
         }
         itemStartNodeRoleRepository.save(isnr);
-    }
-
-    @Override
-    @Transactional
-    public void deleteBindInfo(String itemId) {
-        try {
-            itemStartNodeRoleRepository.deleteByItemId(itemId);
-        } catch (Exception e) {
-            LOGGER.error("删除路由配置信息失败", e.getMessage());
-        }
     }
 }

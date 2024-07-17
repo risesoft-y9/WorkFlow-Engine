@@ -41,13 +41,13 @@ public class CommonButtonServiceImpl implements CommonButtonService {
     }
 
     @Override
-    public List<CommonButton> findAll() {
-        return commonButtonRepository.findAll();
+    public CommonButton getById(String id) {
+        return commonButtonRepository.findById(id).orElse(null);
     }
 
     @Override
-    public CommonButton findOne(String id) {
-        return commonButtonRepository.findById(id).orElse(null);
+    public List<CommonButton> listAll() {
+        return commonButtonRepository.findAll();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class CommonButtonServiceImpl implements CommonButtonService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = commonButton.getId();
         if (StringUtils.isNotEmpty(id)) {
-            CommonButton oldcb = this.findOne(id);
+            CommonButton oldcb = this.getById(id);
             if (null != oldcb) {
                 oldcb.setName(commonButton.getName());
                 oldcb.setUpdateTime(sdf.format(new Date()));

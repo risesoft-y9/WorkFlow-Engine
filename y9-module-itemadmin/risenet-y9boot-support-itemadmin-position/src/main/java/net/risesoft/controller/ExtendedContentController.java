@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.ExtendedContent;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ExtendedContentService;
 
 /**
@@ -41,7 +42,7 @@ public class ExtendedContentController {
         @RequestParam(required = false) String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            int count = extendedContentService.findByProcSerialNumberAndCategory(processSerialNumber, category);
+            int count = extendedContentService.countByProcSerialNumberAndCategory(processSerialNumber, category);
             if (count > 0) {
                 map.put("checkSignContent", true);
             } else {
@@ -65,7 +66,7 @@ public class ExtendedContentController {
     @RequestMapping(value = "/contentList")
     public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox,
         @RequestParam String taskId, @RequestParam String category) {
-        return extendedContentService.contentList(processSerialNumber, taskId, itembox, category);
+        return extendedContentService.listContents(processSerialNumber, taskId, itembox, category);
     }
 
     /**
@@ -75,7 +76,7 @@ public class ExtendedContentController {
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/delete")
-    public Map<String, Object> delete(@RequestParam String id) {
+    public Y9Result<Object> delete(@RequestParam String id) {
         return extendedContentService.delete(id);
     }
 
@@ -86,7 +87,7 @@ public class ExtendedContentController {
      * @return Map<String, Object>
      */
     @PostMapping(value = "/saveOrUpdate")
-    public Map<String, Object> saveOrUpdate(ExtendedContent content) {
+    public Y9Result<Object> saveOrUpdate(ExtendedContent content) {
         return extendedContentService.saveOrUpdate(content);
     }
 }

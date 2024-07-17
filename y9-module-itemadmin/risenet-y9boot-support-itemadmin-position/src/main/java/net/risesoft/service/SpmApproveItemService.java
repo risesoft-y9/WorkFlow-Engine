@@ -3,8 +3,11 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -14,16 +17,24 @@ import net.risesoft.model.itemadmin.ItemModel;
 public interface SpmApproveItemService {
 
     /**
-     * Description:
-     * 
-     * @param ids
+     * Description:复制事项
+     *
+     * @param id
      * @return
      */
-    Map<String, Object> delete(String ids);
+    Map<String, Object> copyItem(String id);
 
     /**
      * Description:
-     * 
+     *
+     * @param ids
+     * @return
+     */
+    Y9Result<String> delete(String ids);
+
+    /**
+     * Description:
+     *
      * @param id
      * @return
      */
@@ -31,7 +42,7 @@ public interface SpmApproveItemService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param map
      * @return
@@ -48,23 +59,6 @@ public interface SpmApproveItemService {
     ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
     /**
-     * Description:
-     * 
-     * @param systemName
-     * @return
-     */
-    List<SpmApproveItem> findBySystemName(String systemName);
-
-    /**
-     * Description: 查询不包含当前事项id和事项name模糊匹配的事项列表
-     *
-     * @param id
-     * @param name
-     * @return
-     */
-    List<SpmApproveItem> findByIdNotAndNameLike(String id, String name);
-
-    /**
      * 根据流程定义key和租户Id判断当前租户是否存在事项
      *
      * @param processDefinitionKey
@@ -74,18 +68,27 @@ public interface SpmApproveItemService {
 
     /**
      * Description:
-     * 
+     *
      * @return
      */
-    Map<String, Object> list();
+    List<SpmApproveItem> list();
 
     /**
-     * Description:复制事项
+     * Description: 查询不包含当前事项id和事项name模糊匹配的事项列表
      *
      * @param id
+     * @param name
      * @return
      */
-    Map<String, Object> copyItem(String id);
+    List<SpmApproveItem> listByIdNotAndNameLike(String id, String name);
+
+    /**
+     * Description:
+     *
+     * @param systemName
+     * @return
+     */
+    List<SpmApproveItem> listBySystemName(String systemName);
 
     /**
      * 分页获取事项列表
@@ -94,7 +97,7 @@ public interface SpmApproveItemService {
      * @param rows
      * @return
      */
-    Map<String, Object> list(Integer page, Integer rows);
+    Page<SpmApproveItem> page(Integer page, Integer rows);
 
     /**
      * 发布事项为应用
@@ -102,15 +105,15 @@ public interface SpmApproveItemService {
      * @param itemId
      * @return
      */
-    Map<String, Object> publishToSystemApp(String itemId);
+    Y9Result<String> publishToSystemApp(String itemId);
 
     /**
      * Description:
-     * 
+     *
      * @param item
      * @return
      */
-    Map<String, Object> save(SpmApproveItem item);
+    Y9Result<SpmApproveItem> save(SpmApproveItem item);
 
     /**
      * 更新事项排序

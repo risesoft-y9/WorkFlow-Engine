@@ -511,7 +511,7 @@ public class DocumentServiceImpl implements DocumentService {
         String formNames = "";
         if (mobile) {
             List<Y9FormItemMobileBind> eformTaskBinds = y9FormItemBindService
-                .findByItemIdAndProcDefIdAndTaskDefKey4Mobile(itemId, processDefinitionId, taskDefinitionKey);
+                .listByItemIdAndProcDefIdAndTaskDefKey4Mobile(itemId, processDefinitionId, taskDefinitionKey);
             model.setFormId("");
             model.setFormName("");
             model.setFormJson("");
@@ -531,7 +531,7 @@ public class DocumentServiceImpl implements DocumentService {
             return model;
         }
         List<Y9FormItemBind> eformTaskBinds =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
         List<Map<String, String>> list = new ArrayList<>();
         if (!eformTaskBinds.isEmpty()) {
             for (Y9FormItemBind eftb : eformTaskBinds) {
@@ -606,7 +606,7 @@ public class DocumentServiceImpl implements DocumentService {
         String processDefinitionId = repositoryManager
             .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey).getData().getId();
         List<Y9FormItemBind> eformTaskBinds =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
         if (!eformTaskBinds.isEmpty()) {
             for (Y9FormItemBind eftb : eformTaskBinds) {
                 formIds = Y9Util.genCustomStr(formIds, eftb.getFormId());
@@ -615,8 +615,47 @@ public class DocumentServiceImpl implements DocumentService {
         return formIds;
     }
 
+    public List<OrgUnit> getUserChoice(String itemId, String processDefinitionId, String taskDefinitionKey,
+        String processSerialNumber) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ItemPermission> list = itemPermissionService.listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
+            processDefinitionId, taskDefinitionKey);
+        List<OrgUnit> orgUnitList = new ArrayList<>();
+        for (ItemPermission o : list) {
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())
+                || Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())
+                || Objects.equals(o.getRoleType(), ItemPermissionEnum.USER.getValue())) {
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
+                if (null != orgUnit) {
+                    orgUnitList.add(orgUnit);
+                }
+            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
+                List<OrgUnit> deptList =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData();
+                List<OrgUnit> personList =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData();
+                orgUnitList.addAll(deptList);
+                orgUnitList.addAll(personList);
+            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
+                List<OrgUnit> ouList = dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(),
+                    processSerialNumber);
+                for (OrgUnit orgUnit : ouList) {
+                    if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                        Position position = positionManager.get(tenantId, orgUnit.getId()).getData();
+                        if (position != null && !position.getDisabled()) {
+                            orgUnitList.add(orgUnit);
+                        }
+                    } else {
+                        orgUnitList.add(orgUnit);
+                    }
+                }
+            }
+        }
+        return orgUnitList;
+    }
+
     @Override
-    public List<ItemListModel> getItemList() {
+    public List<ItemListModel> listItems() {
         List<ItemListModel> listMap = new ArrayList<>();
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -665,7 +704,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<ItemListModel> getMyItemList() {
+    public List<ItemListModel> listMyItems() {
         List<ItemListModel> listMap = new ArrayList<>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -705,44 +744,6 @@ public class DocumentServiceImpl implements DocumentService {
         return listMap;
     }
 
-    public List<OrgUnit> getUserChoice(String itemId, String processDefinitionId, String taskDefinitionKey,
-        String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> list = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
-            processDefinitionId, taskDefinitionKey);
-        List<OrgUnit> orgUnitList = new ArrayList<>();
-        for (ItemPermission o : list) {
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())
-                || Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())
-                || Objects.equals(o.getRoleType(), ItemPermissionEnum.USER.getValue())) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
-                if (null != orgUnit) {
-                    orgUnitList.add(orgUnit);
-                }
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
-                List<OrgUnit> deptList =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData();
-                List<OrgUnit> personList =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData();
-                orgUnitList.addAll(deptList);
-                orgUnitList.addAll(personList);
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
-                List<OrgUnit> ouList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processSerialNumber);
-                for (OrgUnit orgUnit : ouList) {
-                    if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        Position position = positionManager.get(tenantId, orgUnit.getId()).getData();
-                        if (position != null && !position.getDisabled()) {
-                            orgUnitList.add(orgUnit);
-                        }
-                    } else {
-                        orgUnitList.add(orgUnit);
-                    }
-                }
-            }
-        }
-        return orgUnitList;
-    }
-
     @Override
     public OpenDataModel menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId,
         OpenDataModel model, String itembox) {
@@ -771,7 +772,7 @@ public class DocumentServiceImpl implements DocumentService {
              * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
              */
             if (k == 0 && isButtonShow[0]) {
-                bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
                     processDefinitionId, taskDefKey);
                 for (ItemButtonBind bind : bibList) {
                     String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
@@ -811,7 +812,7 @@ public class DocumentServiceImpl implements DocumentService {
                  * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
                  */
                 boolean haveSendButton = false;
-                bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
                     processDefinitionId, taskDefKey);
                 bibFor:
                 for (ItemButtonBind bib : bibList) {
@@ -874,7 +875,7 @@ public class DocumentServiceImpl implements DocumentService {
                     /*
                      * 添加自定义按钮到发送
                      */
-                    bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
+                    bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
                         processDefinitionId, taskDefKey);
                     for (ItemButtonBind bind : bibList) {
                         List<String> roleIds = bind.getRoleIds();
@@ -973,7 +974,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return result;
             }
             List<Y9FormItemBind> eformTaskBinds =
-                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+                y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
             Map<String, Object> variables =
                 y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
             List<TargetModel> targetNodesTemp = new ArrayList<>();
@@ -1022,7 +1023,7 @@ public class DocumentServiceImpl implements DocumentService {
         String routeToTaskName, String processInstanceId, String multiInstance) {
         Y9Result<List<String>> result = Y9Result.failure("解析人员失败");
         List<OrgUnit> orgUnitList =
-            roleService.findPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
+            roleService.listPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
         if (orgUnitList.isEmpty()) {
             result.setMsg("目标路由【" + routeToTaskName + "】未授权人员");
             return result;
@@ -1411,7 +1412,7 @@ public class DocumentServiceImpl implements DocumentService {
                 ProcessDefinitionModel processDefinitionModel =
                     repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
                 List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService
-                    .findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
+                    .listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
                     y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
                 for (String columnName : variables.keySet()) {

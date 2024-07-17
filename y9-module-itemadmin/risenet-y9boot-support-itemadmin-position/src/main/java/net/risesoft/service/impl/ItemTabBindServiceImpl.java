@@ -81,11 +81,25 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     }
 
     @Override
-    public List<ItemTabBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
+    public ItemTabBind getById(String id) {
+        ItemTabBind tabItemBind = tabItemBindRepository.findById(id).orElse(null);
+        assert tabItemBind != null;
+        TabEntity tabEntity = tabEntityService.getById(tabItemBind.getTabId());
+        if (null != tabEntity) {
+            tabItemBind.setTabName(tabEntity.getName());
+            tabItemBind.setTabUrl(tabEntity.getUrl());
+        } else {
+            tabItemBind.setTabName("页签已删除");
+        }
+        return tabItemBind;
+    }
+
+    @Override
+    public List<ItemTabBind> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
         List<ItemTabBind> tibList =
             tabItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, processDefinitionId);
         for (ItemTabBind tib : tibList) {
-            TabEntity tabEntity = tabEntityService.findOne(tib.getTabId());
+            TabEntity tabEntity = tabEntityService.getById(tib.getTabId());
             if (null != tabEntity) {
                 tib.setTabName(tabEntity.getName());
                 tib.setTabUrl(tabEntity.getUrl());
@@ -94,20 +108,6 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
             }
         }
         return tibList;
-    }
-
-    @Override
-    public ItemTabBind findOne(String id) {
-        ItemTabBind tabItemBind = tabItemBindRepository.findById(id).orElse(null);
-        assert tabItemBind != null;
-        TabEntity tabEntity = tabEntityService.findOne(tabItemBind.getTabId());
-        if (null != tabEntity) {
-            tabItemBind.setTabName(tabEntity.getName());
-            tabItemBind.setTabUrl(tabEntity.getUrl());
-        } else {
-            tabItemBind.setTabName("页签已删除");
-        }
-        return tabItemBind;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
         List<ItemTabBind> oldtibList = new ArrayList<>();
         for (String idAndTabIndex : idAndTabIndexs) {
             String[] arr = idAndTabIndex.split(SysVariables.COLON);
-            ItemTabBind oldtib = this.findOne(arr[0]);
+            ItemTabBind oldtib = this.getById(arr[0]);
             oldtib.setTabIndex(Integer.valueOf(arr[1]));
             oldtib.setUpdateTime(sdf.format(new Date()));
             oldtib.setUserId(userId);
@@ -151,7 +151,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
 
-        TabEntity tabEntity = tabEntityService.findOne(tabId);
+        TabEntity tabEntity = tabEntityService.getById(tabId);
         ItemTabBind tabItemBind = new ItemTabBind();
         tabItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         tabItemBind.setTenantId(tenantId);

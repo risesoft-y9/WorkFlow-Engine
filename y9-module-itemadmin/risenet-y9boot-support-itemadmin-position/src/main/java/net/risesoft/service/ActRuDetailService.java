@@ -29,9 +29,6 @@ public interface ActRuDetailService {
      *
      * @param systemName
      * @param assignee
-     * @param rows
-     * @param page
-     * @param sort
      * @return
      */
     int countBySystemNameAndAssignee(String systemName, String assignee);
@@ -42,9 +39,6 @@ public interface ActRuDetailService {
      * @param systemName
      * @param assignee
      * @param status 0为待办，1位在办
-     * @param rows
-     * @param page
-     * @param sort
      * @return
      */
     int countBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status);
@@ -74,14 +68,6 @@ public interface ActRuDetailService {
     boolean endByProcessSerialNumber(String processSerialNumber);
 
     /**
-     * 根据流程实例id获取列表
-     *
-     * @param processInstanceId
-     * @return
-     */
-    List<ActRuDetail> findByProcessInstanceId(String processInstanceId);
-
-    /**
      * 根据流程实例Id和办理人查找
      *
      * @param processInstanceId
@@ -89,23 +75,6 @@ public interface ActRuDetailService {
      * @return
      */
     ActRuDetail findByProcessInstanceIdAndAssignee(String processInstanceId, String assignee);
-
-    /**
-     * 根据流程实例Id和状态查找
-     *
-     * @param processInstanceId
-     * @param status 0位待办，1位在办
-     * @return
-     */
-    List<ActRuDetail> findByProcessInstanceIdAndStatus(String processInstanceId, int status);
-
-    /**
-     * 根据流程实例Id和办理人查找
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    List<ActRuDetail> findByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据流程实例Id和办理人查找
@@ -117,6 +86,31 @@ public interface ActRuDetailService {
     ActRuDetail findByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee);
 
     /**
+     * 根据流程实例id获取列表
+     *
+     * @param processInstanceId
+     * @return
+     */
+    List<ActRuDetail> listByProcessInstanceId(String processInstanceId);
+
+    /**
+     * 根据流程实例Id和状态查找
+     *
+     * @param processInstanceId
+     * @param status 0位待办，1位在办
+     * @return
+     */
+    List<ActRuDetail> listByProcessInstanceIdAndStatus(String processInstanceId, int status);
+
+    /**
+     * 根据流程实例Id和办理人查找
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    List<ActRuDetail> listByProcessSerialNumber(String processSerialNumber);
+
+    /**
      *
      * Description: 根据流程序列号和是否结束查找
      *
@@ -124,7 +118,7 @@ public interface ActRuDetailService {
      * @param ended
      * @return
      */
-    List<ActRuDetail> findByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended);
+    List<ActRuDetail> listByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended);
 
     /**
      * 根据流程实例Id和状态查找
@@ -133,7 +127,7 @@ public interface ActRuDetailService {
      * @param status 0位待办，1位在办
      * @return
      */
-    List<ActRuDetail> findByProcessSerialNumberAndStatus(String processSerialNumber, int status);
+    List<ActRuDetail> listByProcessSerialNumberAndStatus(String processSerialNumber, int status);
 
     /**
      * 查找个人办结列表
@@ -145,7 +139,7 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page,
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page,
         Sort sort);
 
     /**
@@ -159,7 +153,7 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
         int page, Sort sort);
 
     /**

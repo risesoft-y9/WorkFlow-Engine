@@ -20,7 +20,7 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<ItemRoleOrgUnitModel> findCsUser(String id, Integer principalType, String processInstanceId);
+    List<ItemRoleOrgUnitModel> listCsUser(String id, Integer principalType, String processInstanceId);
 
     /**
      * Description: 抄送选人搜索
@@ -30,7 +30,7 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<ItemRoleOrgUnitModel> findCsUserSearch(String name, Integer principalType, String processInstanceId);
+    List<ItemRoleOrgUnitModel> listCsUserSearch(String name, Integer principalType, String processInstanceId);
 
     /**
      * Description:
@@ -43,10 +43,10 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<ItemRoleOrgUnitModel> findPermUser(String itemId, String processDefinitionId, String taskDefKey,
+    List<ItemRoleOrgUnitModel> listPermUser(String itemId, String processDefinitionId, String taskDefKey,
         Integer principalType, String id, String processInstanceId);
 
-    List<OrgUnit> findPermUser4SUbmitTo(String itemId, String processDefinitionId, String taskDefKey,
+    List<OrgUnit> listPermUser4SUbmitTo(String itemId, String processDefinitionId, String taskDefKey,
         String processInstanceId);
 
     /**
@@ -60,7 +60,7 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<ItemRoleOrgUnitModel> findPermUserByName(String name, String itemId, String processDefinitionId,
+    List<ItemRoleOrgUnitModel> listPermUserByName(String name, String itemId, String processDefinitionId,
         String taskDefKey, Integer principalType, String processInstanceId);
 
     /**
@@ -69,5 +69,5 @@ public interface RoleService {
      * @param id
      * @return
      */
-    List<ItemRoleOrgUnitModel> findPermUserSendReceive(String id);
+    List<ItemRoleOrgUnitModel> listPermUserSendReceive(String id);
 }

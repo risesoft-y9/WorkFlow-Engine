@@ -35,12 +35,12 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     }
 
     @Override
-    public List<ItemOrganWordRole> findByItemOrganWordBindId(String itemOrganWordBindId) {
+    public List<ItemOrganWordRole> listByItemOrganWordBindId(String itemOrganWordBindId) {
         return itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
     }
 
     @Override
-    public List<ItemOrganWordRole> findByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
+    public List<ItemOrganWordRole> listByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
         for (ItemOrganWordRole role : roleList) {
             Role r = roleManager.getRole(role.getRoleId()).getData();

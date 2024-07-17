@@ -15,58 +15,58 @@ import net.risesoft.entity.EntrustHistory;
 public interface EntrustHistoryService {
 
     /**
-     * 
+     *
      * Description: 获取某个用户的委托历史对象集合
-     * 
+     *
+     * @param ownerId
+     * @return
+     */
+    List<EntrustHistory> listByOwnerId(String ownerId);
+
+    /**
+     * Description: 获取某个用户的某个事项委托历史对象集合
+     *
+     * @param ownerId
+     * @param itemId
+     * @return
+     */
+    List<EntrustHistory> listByOwnerIdAndItemId(String ownerId, String itemId);
+
+    /**
+     *
+     * Description: 获取某个用户的委托历史对象集合
+     *
      * @param page
      * @param rows
      * @return
      */
-    Page<EntrustHistory> findAll(int page, int rows);
+    Page<EntrustHistory> pageAll(int page, int rows);
 
     /**
-     * 
+     *
      * Description: 获取某个用户的委托历史对象集合
-     * 
+     *
      * @param assigneeId
      * @param page
      * @param rows
      * @return
      */
-    Page<EntrustHistory> findByAssigneeId(String assigneeId, int page, int rows);
-
-    /**
-     * 
-     * Description: 获取某个用户的委托历史对象集合
-     * 
-     * @param ownerId
-     * @return
-     */
-    List<EntrustHistory> list(String ownerId);
+    Page<EntrustHistory> pageByAssigneeId(String assigneeId, int page, int rows);
 
     /**
      * Description: 获取某个用户的委托历史对象集合
-     * 
+     *
      * @param ownerId
      * @param page
      * @param rows
      * @return
      */
-    Page<EntrustHistory> list(String ownerId, int page, int rows);
+    Page<EntrustHistory> pageByOwnerId(String ownerId, int page, int rows);
 
     /**
-     * Description: 获取某个用户的某个事项委托历史对象集合
-     * 
-     * @param ownerId
-     * @param itemId
-     * @return
-     */
-    List<EntrustHistory> list(String ownerId, String itemId);
-
-    /**
-     * 
+     *
      * Description: 保存委托历史对象
-     * 
+     *
      * @param entrustHistory
      * @return
      * @throws ParseException

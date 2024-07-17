@@ -21,7 +21,7 @@ public interface TransactionFileService {
      *
      * @param processSerialNumbers
      */
-    public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers);
+    void delBatchByProcessSerialNumbers(List<String> processSerialNumbers);
 
     /**
      * 删除附件
@@ -29,7 +29,7 @@ public interface TransactionFileService {
      * @param ids
      * @return
      */
-    public void delFile(String ids);
+    void delFile(String ids);
 
     /**
      * (软航附件控件) 根据流程序列号查询附件数量
@@ -37,7 +37,7 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    public Integer fileCounts(String processSerialNumber);
+    Integer fileCounts(String processSerialNumber);
 
     /**
      * 获取附件
@@ -45,7 +45,61 @@ public interface TransactionFileService {
      * @param id
      * @return
      */
-    public TransactionFile findById(String id);
+    TransactionFile findById(String id);
+
+    /**
+     * (软航附件控件) 根据附件名称查询附件信息
+     *
+     * @param fileName
+     * @param processSerialNumber
+     * @return
+     */
+    TransactionFile getFileInfoByFileName(String fileName, String processSerialNumber);
+
+    /**
+     * 根据流程实例id、附件来源和文件类型获取附件数
+     *
+     * @param processSerialNumber
+     * @param fileSource
+     * @param fileType
+     * @return
+     */
+    Integer getTransactionFileCount(String processSerialNumber, String fileSource, String fileType);
+
+    /**
+     * (软航附件控件) 获取下一个附件控件
+     *
+     * @param nextTabIndex
+     * @param processSerialNumber
+     * @return
+     */
+    TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex, String processSerialNumber);
+
+    /**
+     * 根据processSerialNumber获取
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    List<TransactionFile> listByProcessSerialNumber(String processSerialNumber);
+
+    /**
+     * 根据流程实例id和附件来源获取附件列表
+     *
+     * @param processSerialNumber
+     * @param fileSource
+     * @return
+     */
+    List<TransactionFile> listByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
+
+    /**
+     * Description: 获取附件列表
+     *
+     * @param processSerialNumber
+     * @param fileSource
+     * @return
+     */
+    List<TransactionFile> listSearchByProcessSerialNumber(String processSerialNumber, String fileSource);
 
     /**
      * Description: 获取附件列表
@@ -56,70 +110,15 @@ public interface TransactionFileService {
      * @param rows
      * @return
      */
-    public Y9Page<AttachmentModel> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows);
-
-    /**
-     * Description: 获取附件列表
-     *
-     * @param processSerialNumber
-     * @param fileSource
-     * @return
-     */
-    public List<TransactionFile> getAttachmentModelList(String processSerialNumber, String fileSource);
-
-    /**
-     * (软航附件控件) 根据附件名称查询附件信息
-     *
-     * @param fileName
-     * @param processSerialNumber
-     * @return
-     */
-    public TransactionFile getFileInfoByFileName(String fileName, String processSerialNumber);
-
-    /**
-     * 根据processSerialNumber获取
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    public List<TransactionFile> getListByProcessSerialNumber(String processSerialNumber);
-
-    /**
-     * 根据流程实例id和附件来源获取附件列表
-     *
-     * @param processSerialNumber
-     * @param fileSource
-     * @return
-     */
-    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber,
-        String fileSource);
-
-    /**
-     * 根据流程实例id、附件来源和文件类型获取附件数
-     *
-     * @param processSerialNumber
-     * @param fileSource
-     * @param fileType
-     * @return
-     */
-    public Integer getTransactionFileCount(String processSerialNumber, String fileSource, String fileType);
-
-    /**
-     * (软航附件控件) 获取下一个附件控件
-     *
-     * @param nextTabIndex
-     * @param processSerialNumber
-     * @return
-     */
-    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex,
-        String processSerialNumber);
+    Y9Page<AttachmentModel> pageByProcessSerialNumber(String processSerialNumber, String fileSource, int page,
+        int rows);
 
     /**
      * Description: 保存附件
      *
      * @param file
      */
-    public void save(TransactionFile file);
+    void save(TransactionFile file);
 
     /**
      * Description: 保存附件信息
@@ -128,7 +127,7 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    public Boolean saveAttachment(String attachjson, String processSerialNumber);
+    Boolean saveAttachment(String attachjson, String processSerialNumber);
 
     /**
      * 更新附件
@@ -137,7 +136,7 @@ public interface TransactionFileService {
      * @param processInstanceId
      * @param taskId
      */
-    public void update(String processSerialNumber, String processInstanceId, String taskId);
+    void update(String processSerialNumber, String processInstanceId, String taskId);
 
     /**
      * Description: 上传附件
@@ -150,7 +149,7 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    public Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId,
+    Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId,
         String processSerialNumber, String describes, String fileSource);
 
     /**
@@ -166,7 +165,7 @@ public interface TransactionFileService {
      * @param y9FileStoreId
      * @return
      */
-    public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,
+    void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,
         String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
 
     /**
@@ -175,5 +174,5 @@ public interface TransactionFileService {
      * @param transactionFile
      * @return
      */
-    public TransactionFile uploadRestModel(TransactionFile transactionFile);
+    TransactionFile uploadRestModel(TransactionFile transactionFile);
 }

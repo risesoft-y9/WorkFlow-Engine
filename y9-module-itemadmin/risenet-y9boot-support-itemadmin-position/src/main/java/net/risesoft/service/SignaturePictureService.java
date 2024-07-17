@@ -25,9 +25,9 @@ public interface SignaturePictureService {
     SignaturePicture findById(String id);
 
     /**
-     * 
+     *
      * Description: 根据人员Id查找签名图片
-     * 
+     *
      * @param userId
      * @return
      */

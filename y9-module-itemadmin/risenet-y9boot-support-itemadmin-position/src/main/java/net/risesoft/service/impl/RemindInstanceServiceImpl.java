@@ -33,41 +33,37 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     private final RemindInstanceRepository remindInstanceRepository;
 
     @Override
-    public List<RemindInstance> findRemindInstance(String processInstanceId) {
+    public RemindInstance getRemindInstance(String processInstanceId) {
+        return remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId,
+            Y9LoginUserHolder.getPositionId());
+    }
+
+    @Override
+    public List<RemindInstance> listByProcessInstanceId(String processInstanceId) {
         return remindInstanceRepository.findByProcessInstanceId(processInstanceId);
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String processInstanceId,
-        String taskKey) {
+    public List<RemindInstance> listByProcessInstanceIdAndArriveTaskKey(String processInstanceId, String taskKey) {
         return remindInstanceRepository.findByProcessInstanceIdAndArriveTaskKeyLike(processInstanceId,
             "%" + taskKey + "%");
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String processInstanceId,
-        String taskKey) {
+    public List<RemindInstance> listByProcessInstanceIdAndCompleteTaskKey(String processInstanceId, String taskKey) {
         return remindInstanceRepository.findByProcessInstanceIdAndCompleteTaskKeyLike(processInstanceId,
             "%" + taskKey + "%");
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndRemindType(String processInstanceId,
-        String remindType) {
+    public List<RemindInstance> listByProcessInstanceIdAndRemindType(String processInstanceId, String remindType) {
         return remindInstanceRepository.findByProcessInstanceIdAndRemindTypeLike(processInstanceId,
             "%" + remindType + "%");
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndTaskId(String processInstanceId,
-        String taskId) {
+    public List<RemindInstance> listByProcessInstanceIdAndTaskId(String processInstanceId, String taskId) {
         return remindInstanceRepository.findByProcessInstanceIdAndTaskId(processInstanceId, taskId);
-    }
-
-    @Override
-    public RemindInstance getRemindInstance(String processInstanceId) {
-        return remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId,
-            Y9LoginUserHolder.getPositionId());
     }
 
     @Override

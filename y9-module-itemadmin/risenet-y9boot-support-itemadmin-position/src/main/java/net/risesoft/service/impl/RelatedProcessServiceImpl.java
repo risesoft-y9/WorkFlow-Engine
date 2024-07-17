@@ -52,6 +52,12 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
 
     @Override
     @Transactional
+    public void delete(String id) {
+        relatedProcessRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
     public void deleteBindInfo(String itemId) {
         try {
             relatedProcessRepository.deleteByParentItemId(itemId);
@@ -61,13 +67,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     }
 
     @Override
-    @Transactional
-    public void delete(String id) {
-        relatedProcessRepository.deleteById(id);
-    }
-
-    @Override
-    public Page<RelatedProcess> findAll(String parentItemId, int page, int rows) {
+    public Page<RelatedProcess> pageByParentItemId(String parentItemId, int page, int rows) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows);
         return relatedProcessRepository.findByParentItemIdOrderByCreateDateAsc(parentItemId, pageable);
     }

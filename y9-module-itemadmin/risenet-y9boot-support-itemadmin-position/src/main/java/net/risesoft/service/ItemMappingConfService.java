@@ -13,7 +13,7 @@ public interface ItemMappingConfService {
 
     /**
      * Description: 删除映射
-     * 
+     *
      * @param ids
      */
     void delItemMappingConf(String[] ids);
@@ -25,7 +25,7 @@ public interface ItemMappingConfService {
      * @param mappingId
      * @return
      */
-    List<ItemMappingConf> getList(String itemId, String mappingId);
+    List<ItemMappingConf> listByItemIdAndMappingId(String itemId, String mappingId);
 
     /**
      * 保存映射信息

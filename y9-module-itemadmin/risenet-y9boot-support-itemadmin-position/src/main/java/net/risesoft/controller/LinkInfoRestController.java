@@ -65,7 +65,7 @@ public class LinkInfoRestController {
      */
     @GetMapping(value = "/findByLinkId")
     public Y9Result<List<ItemLinkBind>> findByLinkId(@RequestParam String id) {
-        List<ItemLinkBind> list = itemLinkBindService.findByLinkId(id);
+        List<ItemLinkBind> list = itemLinkBindService.listByLinkId(id);
         return Y9Result.success(list, "获取成功");
     }
 

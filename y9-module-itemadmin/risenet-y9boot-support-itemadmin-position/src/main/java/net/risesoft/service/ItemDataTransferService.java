@@ -14,7 +14,7 @@ public interface ItemDataTransferService {
 
     /**
      * Description:
-     * 
+     *
      * @param processDefinitionId
      * @param processInstanceId
      * @return
@@ -23,14 +23,14 @@ public interface ItemDataTransferService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param page
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page,
-        Integer rows);
+    Y9Page<Map<String, Object>> pageByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId,
+        Integer page, Integer rows);
 
 }

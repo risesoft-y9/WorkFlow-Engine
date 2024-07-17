@@ -65,7 +65,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
     public Y9Page<ProcessCooperationModel> processInstanceList(@RequestParam String tenantId,
         @RequestParam String userId, String title, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return processInstanceDetailsService.processInstanceList(userId, title, page, rows);
+        return processInstanceDetailsService.pageByUserIdAndTitle(userId, title, page, rows);
     }
 
     /**

@@ -19,7 +19,7 @@ public interface ItemInterfaceParamsBindService {
      * @param type
      * @return
      */
-    List<ItemInterfaceParamsBind> getBindList(String itemId, String interfaceId, String type);
+    List<ItemInterfaceParamsBind> listByItemIdAndInterfaceIdAndType(String itemId, String interfaceId, String type);
 
     /**
      * 删除绑定

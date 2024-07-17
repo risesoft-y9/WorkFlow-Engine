@@ -12,29 +12,29 @@ import net.risesoft.entity.TaoHongTemplate;
 public interface TaoHongTemplateService {
 
     /**
-     * 根据委办局Id查找套红模板（委办局Id是唯一的，所以这里就不在加上租户Id这个条件）
-     *
-     * @param bureauGuid
-     * @return
-     */
-    List<TaoHongTemplate> findByBureauGuid(String bureauGuid);
-
-    /**
-     * Description:查找当前租户的套红模板
-     * 
-     * @param tenantId
-     * @param name
-     * @return
-     */
-    List<TaoHongTemplate> findByTenantId(String tenantId, String name);
-
-    /**
      * 根据id查找套红模板
      *
      * @param id
      * @return
      */
-    TaoHongTemplate findOne(String id);
+    TaoHongTemplate getById(String id);
+
+    /**
+     * 根据委办局Id查找套红模板（委办局Id是唯一的，所以这里就不在加上租户Id这个条件）
+     *
+     * @param bureauGuid
+     * @return
+     */
+    List<TaoHongTemplate> listByBureauGuid(String bureauGuid);
+
+    /**
+     * Description:查找当前租户的套红模板
+     *
+     * @param tenantId
+     * @param name
+     * @return
+     */
+    List<TaoHongTemplate> listByTenantId(String tenantId, String name);
 
     /**
      * 根据Id删除模板

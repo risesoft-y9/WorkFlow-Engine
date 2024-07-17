@@ -153,23 +153,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public List<ActRuDetail> findByProcessInstanceId(String processInstanceId) {
-        return actRuDetailRepository.findByProcessInstanceId(processInstanceId);
-    }
-
-    @Override
     public ActRuDetail findByProcessInstanceIdAndAssignee(String processInstanceId, String assignee) {
         return actRuDetailRepository.findByProcessInstanceIdAndAssignee(processInstanceId, assignee);
-    }
-
-    @Override
-    public List<ActRuDetail> findByProcessInstanceIdAndStatus(String processInstanceId, int status) {
-        return actRuDetailRepository.findByProcessInstanceIdAndStatusOrderByCreateTimeAsc(processInstanceId, status);
-    }
-
-    @Override
-    public List<ActRuDetail> findByProcessSerialNumber(String processSerialNumber) {
-        return actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
@@ -178,18 +163,33 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public List<ActRuDetail> findByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended) {
+    public List<ActRuDetail> listByProcessInstanceId(String processInstanceId) {
+        return actRuDetailRepository.findByProcessInstanceId(processInstanceId);
+    }
+
+    @Override
+    public List<ActRuDetail> listByProcessInstanceIdAndStatus(String processInstanceId, int status) {
+        return actRuDetailRepository.findByProcessInstanceIdAndStatusOrderByCreateTimeAsc(processInstanceId, status);
+    }
+
+    @Override
+    public List<ActRuDetail> listByProcessSerialNumber(String processSerialNumber) {
+        return actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
+    }
+
+    @Override
+    public List<ActRuDetail> listByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended) {
         return actRuDetailRepository.findByProcessSerialNumberAndEnded(processSerialNumber, ended);
     }
 
     @Override
-    public List<ActRuDetail> findByProcessSerialNumberAndStatus(String processSerialNumber, int status) {
+    public List<ActRuDetail> listByProcessSerialNumberAndStatus(String processSerialNumber, int status) {
         return actRuDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(processSerialNumber,
             status);
     }
 
     @Override
-    public Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows,
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows,
         int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return actRuDetailRepository
@@ -197,7 +197,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status,
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status,
         int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ActRuDetail> pageList;

@@ -38,22 +38,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     private final PersonApi personManager;
 
     @Override
-    public Page<EntrustHistory> findAll(int page, int rows) {
-        Pageable pageable = PageRequest.of(page - 1, rows);
-        Page<EntrustHistory> ehPage = entrustHistoryRepository.findAll(pageable);
-        return ehPage;
-    }
-
-    @Override
-    public Page<EntrustHistory> findByAssigneeId(String assigneeId, int page, int rows) {
-        Pageable pageable = PageRequest.of(page - 1, rows);
-        Page<EntrustHistory> ehPage =
-            entrustHistoryRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId, pageable);
-        return ehPage;
-    }
-
-    @Override
-    public List<EntrustHistory> list(String ownerId) {
+    public List<EntrustHistory> listByOwnerId(String ownerId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<EntrustHistory> ehList = entrustHistoryRepository.findByOwnerId(ownerId);
         Person pTemp = null;
@@ -76,14 +61,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     }
 
     @Override
-    public Page<EntrustHistory> list(String ownerId, int page, int rows) {
-        Pageable pageable = PageRequest.of(page - 1, rows);
-        Page<EntrustHistory> ehPage = entrustHistoryRepository.findByOwnerIdOrderByCreatTimeDesc(ownerId, pageable);
-        return ehPage;
-    }
-
-    @Override
-    public List<EntrustHistory> list(String ownerId, String itemId) {
+    public List<EntrustHistory> listByOwnerIdAndItemId(String ownerId, String itemId) {
         List<EntrustHistory> ehList = entrustHistoryRepository.findByOwnerIdAndItemId(ownerId, itemId);
         Person pTemp = null;
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -105,6 +83,24 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
             eh.setItemName(itemName);
         }
         return ehList;
+    }
+
+    @Override
+    public Page<EntrustHistory> pageAll(int page, int rows) {
+        Pageable pageable = PageRequest.of(page - 1, rows);
+        return entrustHistoryRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<EntrustHistory> pageByAssigneeId(String assigneeId, int page, int rows) {
+        Pageable pageable = PageRequest.of(page - 1, rows);
+        return entrustHistoryRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId, pageable);
+    }
+
+    @Override
+    public Page<EntrustHistory> pageByOwnerId(String ownerId, int page, int rows) {
+        Pageable pageable = PageRequest.of(page - 1, rows);
+        return entrustHistoryRepository.findByOwnerIdOrderByCreatTimeDesc(ownerId, pageable);
     }
 
     @Override

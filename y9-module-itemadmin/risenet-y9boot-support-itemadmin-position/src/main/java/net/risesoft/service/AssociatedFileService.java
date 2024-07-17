@@ -43,7 +43,7 @@ public interface AssociatedFileService {
      * @param processSerialNumber
      * @return
      */
-    List<AssociatedFileModel> getAssociatedFileAllList(String processSerialNumber);
+    List<AssociatedFileModel> listAssociatedFileAll(String processSerialNumber);
 
     /**
      * 保存关联流程

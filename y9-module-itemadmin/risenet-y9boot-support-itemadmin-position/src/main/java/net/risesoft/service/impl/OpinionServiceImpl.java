@@ -128,7 +128,7 @@ public class OpinionServiceImpl implements OpinionService {
     public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
         String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
         try {
-            List<Opinion> oldOpinionList = this.findByProcessSerialNumber(oldProcessSerialNumber);
+            List<Opinion> oldOpinionList = this.listByProcessSerialNumber(oldProcessSerialNumber);
             for (Opinion oldOpinion : oldOpinionList) {
                 oldOpinion.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 oldOpinion.setOpinionFrameMark(newOpinionFrameMark);
@@ -161,11 +161,6 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<Opinion> findByProcessSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
-    }
-
-    @Override
     public Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId,
         String userId) {
         return opinionRepository.findByPsnsAndTaskIdAndOfidAndUserId(processSerialNumber, taskId, opinionFrameId,
@@ -173,27 +168,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<Opinion> findByTaskId(String taskId) {
-        return opinionRepository.findByTaskId(taskId);
-    }
-
-    @Override
-    public List<Opinion> findByTaskIdAndPositionIdAndProcessTrackIdIsNull(String taskId, String positionId) {
-        return opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId, positionId);
-    }
-
-    @Override
-    public List<Opinion> findByTaskIdAndProcessTrackId(String taskId, String processTrackId) {
-        return opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateDateDesc(taskId, processTrackId);
-    }
-
-    @Override
-    public List<Opinion> findByTaskIdAndUserIdAndProcessTrackIdIsNull(String taskId, String userId) {
-        return opinionRepository.findByTaskIdAndUserIdAndProcessTrackIdIsNull(taskId, userId);
-    }
-
-    @Override
-    public Opinion findOne(String id) {
+    public Opinion getById(String id) {
         return opinionRepository.findById(id).orElse(null);
     }
 
@@ -213,8 +188,33 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<OpinionHistoryModel> opinionHistoryList(String processSerialNumber, String opinionFrameMark) {
-        List<OpinionHistoryModel> resList = new ArrayList<OpinionHistoryModel>();
+    public List<Opinion> listByProcessSerialNumber(String processSerialNumber) {
+        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
+    }
+
+    @Override
+    public List<Opinion> listByTaskId(String taskId) {
+        return opinionRepository.findByTaskId(taskId);
+    }
+
+    @Override
+    public List<Opinion> listByTaskIdAndPositionIdAndProcessTrackIdIsNull(String taskId, String positionId) {
+        return opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId, positionId);
+    }
+
+    @Override
+    public List<Opinion> listByTaskIdAndProcessTrackId(String taskId, String processTrackId) {
+        return opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateDateDesc(taskId, processTrackId);
+    }
+
+    @Override
+    public List<Opinion> listByTaskIdAndUserIdAndProcessTrackIdIsNull(String taskId, String userId) {
+        return opinionRepository.findByTaskIdAndUserIdAndProcessTrackIdIsNull(taskId, userId);
+    }
+
+    @Override
+    public List<OpinionHistoryModel> listOpinionHistory(String processSerialNumber, String opinionFrameMark) {
+        List<OpinionHistoryModel> resList = new ArrayList<>();
         try {
             List<OpinionHistory> list = opinionHistoryRepository
                 .findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
@@ -287,7 +287,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<OpinionListModel> personCommentList(String processSerialNumber, String taskId, String itembox,
+    public List<OpinionListModel> listPersonComment(String processSerialNumber, String taskId, String itembox,
         String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser) {
         List<OpinionListModel> resList = new ArrayList<>();
         try {
@@ -687,7 +687,7 @@ public class OpinionServiceImpl implements OpinionService {
             o.setPositionName(position.getName());
             if (StringUtils.isNotBlank(entity.getTaskId())) {
                 try {
-                    List<ProcessTrack> list = processTrackService.findByTaskIdAndEndTimeIsNull(entity.getTaskId());
+                    List<ProcessTrack> list = processTrackService.listByTaskIdAndEndTimeIsNull(entity.getTaskId());
                     // 处理恢复待办后,填写意见错位问题,意见显示在自定义历程上
                     if (list.size() > 0) {
                         o.setProcessTrackId(list.get(0).getId());

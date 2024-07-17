@@ -30,7 +30,7 @@ public interface ProcessInstanceDetailsService {
      * @param rows
      * @return
      */
-    Y9Page<ProcessCooperationModel> processInstanceList(String userId, String title, int page, int rows);
+    Y9Page<ProcessCooperationModel> pageByUserIdAndTitle(String userId, String title, int page, int rows);
 
     /**
      * 保存协作状态

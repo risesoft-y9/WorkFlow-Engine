@@ -39,13 +39,36 @@ public interface Y9FormItemBindService {
     Y9Result<String> delete(String id);
 
     /**
+     * Description:删除表单绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
+
+    /**
+     * 根据id获取绑定信息
+     *
+     * @param id
+     * @return
+     */
+    Y9FormItemBind getById(String id);
+
+    /**
+     * 表单正文、附件是否显示的代码
+     *
+     * @param eformItemBinds
+     * @return
+     */
+    String getShowOther(List<Y9FormItemBind> eformItemBinds);
+
+    /**
      * 查找指定事项id和流程定义Id绑定的表单
      *
      * @param itemId
      * @param procDefId
      * @return
      */
-    List<Y9FormItemBind> findByItemIdAndProcDefId(String itemId, String procDefId);
+    List<Y9FormItemBind> listByItemIdAndProcDefId(String itemId, String procDefId);
 
     /**
      * 查找指定事项id和流程定义Id和节点key对应的绑定表单，如果当前节点没绑定表单，则查流程绑定的表单
@@ -55,7 +78,7 @@ public interface Y9FormItemBindService {
      * @param taskDefKey
      * @return
      */
-    List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId, String taskDefKey);
+    List<Y9FormItemBind> listByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId, String taskDefKey);
 
     /**
      * Description:
@@ -65,7 +88,7 @@ public interface Y9FormItemBindService {
      * @param taskDefinitionKey
      * @return
      */
-    List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4Mobile(String itemId, String processDefinitionId,
+    List<Y9FormItemMobileBind> listByItemIdAndProcDefIdAndTaskDefKey4Mobile(String itemId, String processDefinitionId,
         String taskDefinitionKey);
 
     /**
@@ -76,7 +99,7 @@ public interface Y9FormItemBindService {
      * @param taskDefKey
      * @return
      */
-    List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey4Own(String itemId, String procDefId, String taskDefKey);
+    List<Y9FormItemBind> listByItemIdAndProcDefIdAndTaskDefKey4Own(String itemId, String procDefId, String taskDefKey);
 
     /**
      * Description:
@@ -86,7 +109,7 @@ public interface Y9FormItemBindService {
      * @param taskDefKey
      * @return
      */
-    List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(String itemId, String procDefId,
+    List<Y9FormItemMobileBind> listByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(String itemId, String procDefId,
         String taskDefKey);
 
     /**
@@ -96,23 +119,7 @@ public interface Y9FormItemBindService {
      * @param procDefId
      * @return
      */
-    List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKeyIsNull(String itemId, String procDefId);
-
-    /**
-     * 根据id获取绑定信息
-     *
-     * @param id
-     * @return
-     */
-    Y9FormItemBind findOne(String id);
-
-    /**
-     * 表单正文、附件是否显示的代码
-     *
-     * @param eformItemBinds
-     * @return
-     */
-    String getShowOther(List<Y9FormItemBind> eformItemBinds);
+    List<Y9FormItemBind> listByItemIdAndProcDefIdAndTaskDefKeyIsNull(String itemId, String procDefId);
 
     /**
      * Description:
@@ -129,12 +136,5 @@ public interface Y9FormItemBindService {
      * @return
      */
     Y9Result<String> save(Y9FormItemMobileBind eformItem);
-
-    /**
-     * Description:删除表单绑定信息
-     * 
-     * @param itemId
-     */
-    void deleteBindInfo(String itemId);
 
 }

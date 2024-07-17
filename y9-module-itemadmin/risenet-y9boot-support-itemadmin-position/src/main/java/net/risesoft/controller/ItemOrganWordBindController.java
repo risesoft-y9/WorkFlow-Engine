@@ -55,7 +55,7 @@ public class ItemOrganWordBindController {
     @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemOrganWordBind>> getBindList(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
-        List<ItemOrganWordBind> list = itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+        List<ItemOrganWordBind> list = itemOrganWordBindService.listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             processDefinitionId, taskDefKey);
         return Y9Result.success(list, "获取成功");
     }
@@ -76,7 +76,7 @@ public class ItemOrganWordBindController {
         List<ItemOrganWordBind> bindList;
         for (TargetModel targetModel : list) {
             StringBuilder bindNames = new StringBuilder();
-            bindList = itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+            bindList = itemOrganWordBindService.listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
                 processDefinitionId, targetModel.getTaskDefKey());
             for (ItemOrganWordBind cb : bindList) {
                 if (StringUtils.isEmpty(bindNames)) {
@@ -96,7 +96,7 @@ public class ItemOrganWordBindController {
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         Map<String, Object> map = new HashMap<>(16);
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<OrganWord> owList = organWordService.listAll();
         List<OrganWord> owListTemp = new ArrayList<>();
         if (bindList.isEmpty()) {

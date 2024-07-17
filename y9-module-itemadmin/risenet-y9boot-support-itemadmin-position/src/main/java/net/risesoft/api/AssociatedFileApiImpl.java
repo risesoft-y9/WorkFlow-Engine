@@ -102,7 +102,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<AssociatedFileModel> list = associatedFileService.getAssociatedFileAllList(processSerialNumber);
+        List<AssociatedFileModel> list = associatedFileService.listAssociatedFileAll(processSerialNumber);
         return Y9Result.success(list, "获取成功");
     }
 

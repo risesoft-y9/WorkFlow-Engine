@@ -70,11 +70,6 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     }
 
     @Override
-    public List<TransactionHistoryWord> findByProcessSerialNumber(String processSerialNumber) {
-        return transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
-    }
-
-    @Override
     public TransactionHistoryWord getByProcessSerialNumber(String processSerialNumber) {
         TransactionHistoryWord fileDocument = new TransactionHistoryWord();
         if (StringUtils.isNotBlank(processSerialNumber)) {
@@ -88,17 +83,22 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     }
 
     @Override
-    public List<TransactionHistoryWord> getListByTaskId(String taskId) {
-        return transactionHistoryWordRepository.findListByTaskId(taskId);
-    }
-
-    @Override
     public TransactionHistoryWord getTransactionHistoryWordByTaskId(String taskId) {
         List<TransactionHistoryWord> list = transactionHistoryWordRepository.getTransactionHistoryWordByTaskId(taskId);
         if (!list.isEmpty()) {
             return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<TransactionHistoryWord> listByProcessSerialNumber(String processSerialNumber) {
+        return transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+    }
+
+    @Override
+    public List<TransactionHistoryWord> listByTaskId(String taskId) {
+        return transactionHistoryWordRepository.findListByTaskId(taskId);
     }
 
     @Transactional

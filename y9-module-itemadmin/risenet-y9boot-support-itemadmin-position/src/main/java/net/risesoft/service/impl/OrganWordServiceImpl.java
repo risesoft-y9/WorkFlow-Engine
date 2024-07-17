@@ -580,7 +580,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 organWordDetailService.save(owd);
             }
         } catch (Exception e) {
-            LOGGER.error("获取编号失败", e);
+            LOGGER.error("获取编号失败 ", e.getMessage());
         }
         return number;
     }
@@ -646,9 +646,9 @@ public class OrganWordServiceImpl implements OrganWordService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPosition().getId();
 
-        List<OrganWordPropertyModel> ret_list = new ArrayList<>();
+        List<OrganWordPropertyModel> retList = new ArrayList<>();
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (!bindList.isEmpty()) {
             for (ItemOrganWordBind bind : bindList) {
                 boolean hasPermission = false;
@@ -665,14 +665,14 @@ public class OrganWordServiceImpl implements OrganWordService {
                     }
                 }
                 editMap.setCustom(bind.getOrganWordCustom());
-                ret_list.add(editMap);
+                retList.add(editMap);
             }
         } else {
             OrganWordPropertyModel editMap = new OrganWordPropertyModel();
             editMap.setHasPermission(false);
-            ret_list.add(editMap);
+            retList.add(editMap);
         }
-        return ret_list;
+        return retList;
     }
 
     @Override
@@ -726,7 +726,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     public Map<String, Object> saveNumberString(String custom, String numberString, String itemId,
         String processSerialNumber) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String, Object> ret_map = new HashMap<String, Object>();
+        Map<String, Object> retMap = new HashMap<String, Object>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -796,25 +796,25 @@ public class OrganWordServiceImpl implements OrganWordService {
                 history.setTenantId(tenantId);
                 history.setCreateTime(sdf.format(new Date()));
                 organWordUseHistoryService.save(history);
-                ret_map.put("success", true);
-                ret_map.put("msg", "保存编号成功");
+                retMap.put("success", true);
+                retMap.put("msg", "保存编号成功");
             } else {
                 OrganWordUseHistory history =
                     organWordUseHistoryService.findByItemIdAndNumberStrAndCustomAndProcessSerialNumber(itemId,
                         numberString, custom, processSerialNumber);
                 if (null != history) {
-                    ret_map.put("success", true);
-                    ret_map.put("msg", "当前编号已经保存");
+                    retMap.put("success", true);
+                    retMap.put("msg", "当前编号已经保存");
                 } else {
-                    ret_map.put("success", false);
-                    ret_map.put("msg", "当前编号已经被占用，请双击编号框重新生成新的编号！");
+                    retMap.put("success", false);
+                    retMap.put("msg", "当前编号已经被占用，请双击编号框重新生成新的编号！");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            ret_map.put("success", false);
-            ret_map.put("msg", "出现异常，保存编号失败");
+            retMap.put("success", false);
+            retMap.put("msg", "出现异常，保存编号失败");
         }
-        return ret_map;
+        return retMap;
     }
 }

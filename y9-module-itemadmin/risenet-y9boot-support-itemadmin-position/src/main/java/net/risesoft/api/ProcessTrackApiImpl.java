@@ -70,10 +70,10 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ProcessTrackModel> items = new ArrayList<>();
         try {
-            List<ProcessTrack> list = processTrackService.findByTaskId(taskId);
+            List<ProcessTrack> list = processTrackService.listByTaskId(taskId);
             items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
         } catch (Exception e) {
-            LOGGER.error("根据任务id获取自定义历程异常：{}", e.getMessage());
+            LOGGER.error("根据任务id获取自定义历程异常", e);
         }
         return Y9Result.success(items);
     }
@@ -92,10 +92,10 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ProcessTrackModel> items = new ArrayList<>();
         try {
-            List<ProcessTrack> list = processTrackService.findByTaskIdAsc(taskId);
+            List<ProcessTrack> list = processTrackService.listByTaskIdAsc(taskId);
             items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
         } catch (Exception e) {
-            LOGGER.error("根据任务id获取自定义历程异常：{}", e.getMessage());
+            LOGGER.error("根据任务id获取自定义历程异常", e);
         }
         return Y9Result.success(items);
     }
@@ -131,10 +131,10 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         try {
-            List<HistoryProcessModel> items = processTrackService.getListMap(processInstanceId);
+            List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId(processInstanceId);
             return Y9Result.success(items);
         } catch (Exception e) {
-            LOGGER.error("获取历程列表异常：{}", e.getMessage());
+            LOGGER.error("获取历程列表异常", e);
             return Y9Result.failure("获取历程列表异常 ");
         }
     }
@@ -156,13 +156,12 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
         Y9LoginUserHolder.setPosition(position);
 
         try {
-            List<HistoryProcessModel> items = processTrackService.getListMap4Simple(processInstanceId);
+            List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId4Simple(processInstanceId);
             return Y9Result.success(items);
         } catch (Exception e) {
-            LOGGER.error("获取历程列表异常：{}", e.getMessage());
+            LOGGER.error("获取历程列表异常", e);
             return Y9Result.failure("获取历程列表异常 ");
         }
-
     }
 
     /**

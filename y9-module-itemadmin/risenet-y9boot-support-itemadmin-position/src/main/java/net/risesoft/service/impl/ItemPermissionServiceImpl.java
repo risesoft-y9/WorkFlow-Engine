@@ -120,33 +120,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    public List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
-        String processDefinitionId, String taskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> ipList = itemPermissionRepository
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
-        for (ItemPermission ip : ipList) {
-            if ((ip.getRoleType() == 1)) {
-                Role role = roleManager.getRole(ip.getRoleId()).getData();
-                if (null != role) {
-                    ip.setRoleName(role.getName());
-                }
-            } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3 || ip.getRoleType() == 6) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
-                if (null != orgUnit) {
-                    ip.setRoleName(orgUnit.getName());
-                }
-            } else if (ip.getRoleType() == 4) {
-                DynamicRole dr = dynamicRoleService.findOne(ip.getRoleId());
-                if (null != dr) {
-                    ip.setRoleName(dr.getName());
-                }
-            }
-        }
-        return ipList;
-    }
-
-    @Override
     public ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId,
         String processDefinitionId, String taskdefKey, String roleId) {
         return itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
@@ -154,42 +127,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    public List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(String itemId,
-        String processDefinitionId, String taskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> ipList = itemPermissionRepository
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
-        if (ipList.isEmpty()) {
-            ipList = itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId,
-                processDefinitionId);
-        }
-        for (ItemPermission ip : ipList) {
-            if (ip.getRoleType() == 4) {
-                DynamicRole dr = dynamicRoleService.findOne(ip.getRoleId());
-                if (null != dr) {
-                    ip.setRoleName(dr.getName());
-                }
-            } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
-                if (null != orgUnit) {
-                    ip.setRoleName(orgUnit.getName());
-                }
-            } else if ((ip.getRoleType() == 1)) {
-                Role role = roleManager.getRole(ip.getRoleId()).getData();
-                if (null != role) {
-                    ip.setRoleName(role.getName());
-                }
-            }
-        }
-        return ipList;
-    }
-
-    @Override
     public Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey,
         String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemPermission> objectPermList =
-            findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+            listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
         Map<String, Object> map = new HashMap<>(16);
         map.put("existPosition", false);
         map.put("existDepartment", false);
@@ -224,7 +166,8 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 }
             }
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
-                List<OrgUnit> orgUnitList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
+                List<OrgUnit> orgUnitList =
+                    dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                 for (OrgUnit orgUnit : orgUnitList) {
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                         map.put("existPosition", true);
@@ -244,7 +187,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemPermission> objectPermList =
-            findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+            listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
         Map<String, Object> map = new HashMap<>(16);
         boolean existDepartment = false;
         boolean existPosition = false;
@@ -266,7 +209,8 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 continue;
             }
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
-                List<OrgUnit> orgUnitList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
+                List<OrgUnit> orgUnitList =
+                    dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                 for (OrgUnit orgUnit : orgUnitList) {
                     if (existPosition && existDepartment) {
                         break;
@@ -284,6 +228,64 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         map.put("existDepartment", existDepartment);
         map.put("existPosition", existPosition);
         return map;
+    }
+
+    @Override
+    public List<ItemPermission> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ItemPermission> ipList = itemPermissionRepository
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
+        for (ItemPermission ip : ipList) {
+            if ((ip.getRoleType() == 1)) {
+                Role role = roleManager.getRole(ip.getRoleId()).getData();
+                if (null != role) {
+                    ip.setRoleName(role.getName());
+                }
+            } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3 || ip.getRoleType() == 6) {
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
+                if (null != orgUnit) {
+                    ip.setRoleName(orgUnit.getName());
+                }
+            } else if (ip.getRoleType() == 4) {
+                DynamicRole dr = dynamicRoleService.getById(ip.getRoleId());
+                if (null != dr) {
+                    ip.setRoleName(dr.getName());
+                }
+            }
+        }
+        return ipList;
+    }
+
+    @Override
+    public List<ItemPermission> listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(String itemId,
+        String processDefinitionId, String taskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ItemPermission> ipList = itemPermissionRepository
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
+        if (ipList.isEmpty()) {
+            ipList = itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId,
+                processDefinitionId);
+        }
+        for (ItemPermission ip : ipList) {
+            if (ip.getRoleType() == 4) {
+                DynamicRole dr = dynamicRoleService.getById(ip.getRoleId());
+                if (null != dr) {
+                    ip.setRoleName(dr.getName());
+                }
+            } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3) {
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
+                if (null != orgUnit) {
+                    ip.setRoleName(orgUnit.getName());
+                }
+            } else if ((ip.getRoleType() == 1)) {
+                Role role = roleManager.getRole(ip.getRoleId()).getData();
+                if (null != role) {
+                    ip.setRoleName(role.getName());
+                }
+            }
+        }
+        return ipList;
     }
 
     @Override

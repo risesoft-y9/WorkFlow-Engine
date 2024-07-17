@@ -39,7 +39,7 @@ public class InterfaceRestController {
      */
     @GetMapping(value = "/findByInterfaceId")
     public Y9Result<List<ItemInterfaceBind>> findByInterfaceId(@RequestParam String id) {
-        List<ItemInterfaceBind> list = interfaceService.findByInterfaceId(id);
+        List<ItemInterfaceBind> list = interfaceService.listInterfaceById(id);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -54,7 +54,7 @@ public class InterfaceRestController {
     @GetMapping(value = "/findInterfaceList")
     public Y9Result<List<InterfaceInfo>> findInterfaceList(@RequestParam(required = false) String name,
         @RequestParam(required = false) String type, @RequestParam(required = false) String address) {
-        List<InterfaceInfo> list = interfaceService.findInterfaceList(name, type, address);
+        List<InterfaceInfo> list = interfaceService.listInterfaces(name, type, address);
         return Y9Result.success(list, "获取列表成功");
     }
 
@@ -69,7 +69,7 @@ public class InterfaceRestController {
     @GetMapping(value = "/findRequestParamsList")
     public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name,
         @RequestParam(required = false) String type, @RequestParam String id) {
-        List<InterfaceRequestParams> list = interfaceService.findRequestParamsList(name, type, id);
+        List<InterfaceRequestParams> list = interfaceService.listRequestParams(name, type, id);
         return Y9Result.success(list, "获取列表成功");
     }
 
@@ -83,7 +83,7 @@ public class InterfaceRestController {
     @GetMapping(value = "/findResponseParamsList")
     public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name,
         @RequestParam String id) {
-        List<InterfaceResponseParams> list = interfaceService.findResponseParamsList(name, id);
+        List<InterfaceResponseParams> list = interfaceService.listResponseParamsByNameAndId(name, id);
         return Y9Result.success(list, "获取列表成功");
     }
 

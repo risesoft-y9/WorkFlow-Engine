@@ -66,17 +66,17 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     @Override
     @Transactional
+    public void deleteByProcessInstanceId(String processInstanceId) {
+        officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
+    }
+
+    @Override
+    @Transactional
     public void delOfficeFollow(String processInstanceIds) {
         String[] ids = processInstanceIds.split(",");
         for (String processInstanceId : ids) {
             officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9LoginUserHolder.getPositionId());
         }
-    }
-
-    @Override
-    @Transactional
-    public void deleteByProcessInstanceId(String processInstanceId) {
-        officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
     }
 
     /**
@@ -145,7 +145,59 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
-    public Y9Page<OfficeFollowModel> getFollowListBySystemName(String systemName, String searchName, int page,
+    public Y9Page<OfficeFollowModel> pageBySearchName(String searchName, int page, int rows) {
+        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<OfficeFollowModel> list = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
+        Page<OfficeFollow> followList = null;
+        if (StringUtils.isBlank(searchName)) {
+            followList = officeFollowRepository.findByUserId(positionId, pageable);
+        } else {
+            searchName = "%" + searchName + "%";
+            followList = officeFollowRepository.findByParamsLike(positionId, searchName, pageable);
+        }
+        for (OfficeFollow officeFollow : followList.getContent()) {
+            try {
+                String processInstanceId = officeFollow.getProcessInstanceId();
+                officeFollow.setStartTime(sdf5.format(sdf.parse(officeFollow.getStartTime())));
+                List<TaskModel> taskList =
+                    taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId()).getData();
+                if (CollectionUtils.isNotEmpty(taskList)) {
+                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                    String taskIds = listTemp.get(0);
+                    String assigneeNames = listTemp.get(2);
+                    officeFollow.setTaskId(
+                        listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                    officeFollow
+                        .setTaskName(StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
+                    officeFollow.setItembox(listTemp.get(3));
+                    officeFollow.setTaskAssignee(StringUtils.isEmpty(assigneeNames) ? "" : assigneeNames);
+                } else {
+                    officeFollow.setTaskId("");
+                    officeFollow.setItembox(ItemBoxTypeEnum.DONE.getValue());
+                    ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                    officeFollow.setTaskAssignee(processParam != null ? processParam.getCompleter() : "");
+                }
+                officeFollow.setMsgremind(false);
+                RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
+                // 流程实例是否设置消息提醒
+                if (remindInstance != null) {
+                    officeFollow.setMsgremind(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            OfficeFollowModel model = new OfficeFollowModel();
+            Y9BeanUtil.copyProperties(officeFollow, model);
+            list.add(model);
+        }
+        return Y9Page.success(page, followList.getTotalPages(), followList.getTotalElements(), list);
+    }
+
+    @Override
+    public Y9Page<OfficeFollowModel> pageBySystemNameAndSearchName(String systemName, String searchName, int page,
         int rows) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -187,58 +239,6 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
                 }
                 officeFollow.setSendDept(processParam.getStartorName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            OfficeFollowModel model = new OfficeFollowModel();
-            Y9BeanUtil.copyProperties(officeFollow, model);
-            list.add(model);
-        }
-        return Y9Page.success(page, followList.getTotalPages(), followList.getTotalElements(), list);
-    }
-
-    @Override
-    public Y9Page<OfficeFollowModel> getOfficeFollowList(String searchName, int page, int rows) {
-        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<OfficeFollowModel> list = new ArrayList<OfficeFollowModel>();
-        Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
-        Page<OfficeFollow> followList = null;
-        if (StringUtils.isBlank(searchName)) {
-            followList = officeFollowRepository.findByUserId(positionId, pageable);
-        } else {
-            searchName = "%" + searchName + "%";
-            followList = officeFollowRepository.findByParamsLike(positionId, searchName, pageable);
-        }
-        for (OfficeFollow officeFollow : followList.getContent()) {
-            try {
-                String processInstanceId = officeFollow.getProcessInstanceId();
-                officeFollow.setStartTime(sdf5.format(sdf.parse(officeFollow.getStartTime())));
-                List<TaskModel> taskList =
-                    taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId()).getData();
-                if (CollectionUtils.isNotEmpty(taskList)) {
-                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    String taskIds = listTemp.get(0);
-                    String assigneeNames = listTemp.get(2);
-                    officeFollow.setTaskId(
-                        listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                    officeFollow
-                        .setTaskName(StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
-                    officeFollow.setItembox(listTemp.get(3));
-                    officeFollow.setTaskAssignee(StringUtils.isEmpty(assigneeNames) ? "" : assigneeNames);
-                } else {
-                    officeFollow.setTaskId("");
-                    officeFollow.setItembox(ItemBoxTypeEnum.DONE.getValue());
-                    ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                    officeFollow.setTaskAssignee(processParam != null ? processParam.getCompleter() : "");
-                }
-                officeFollow.setMsgremind(false);
-                RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
-                // 流程实例是否设置消息提醒
-                if (remindInstance != null) {
-                    officeFollow.setMsgremind(true);
-                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

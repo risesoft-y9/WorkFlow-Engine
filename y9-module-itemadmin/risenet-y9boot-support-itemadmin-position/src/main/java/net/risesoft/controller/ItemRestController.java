@@ -64,6 +64,21 @@ public class ItemRestController {
     private final PositionApi positionApi;
 
     /**
+     * 复制事项
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/copyItem")
+    public Y9Result<String> copyItem(@RequestParam(required = true) String id) {
+        Map<String, Object> map = spmApproveItemService.copyItem(id);
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
+        }
+        return Y9Result.failure((String)map.get("msg"));
+    }
+
+    /**
      * 删除事项
      *
      * @param id 事项id
@@ -71,11 +86,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String id) {
-        Map<String, Object> map = spmApproveItemService.delete(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return spmApproveItemService.delete(id);
     }
 
     @SuppressWarnings("unused")
@@ -113,6 +124,30 @@ public class ItemRestController {
             flag = true;
         }
         return flag;
+    }
+
+    /**
+     * 获取绑定的事项列表(不包含选择的事项)
+     *
+     * @param itemId 事项id
+     * @return
+     */
+    @GetMapping(value = "/getBindItemList")
+    public Y9Result<List<Map<String, Object>>> getBindItemList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String itemName) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<SpmApproveItem> itemList = spmApproveItemService.listByIdNotAndNameLike(itemId, itemName);
+        for (SpmApproveItem item : itemList) {
+            if (!item.getId().equals(itemId)) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", item.getId());
+                map.put("itemName", item.getName());
+                map.put("workflowGuid", item.getWorkflowGuid());
+                map.put("systemName", item.getSystemName());
+                listMap.add(map);
+            }
+        }
+        return Y9Result.success(listMap, "获取成功");
     }
 
     /**
@@ -159,36 +194,10 @@ public class ItemRestController {
      *
      * @return
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/list")
     public Y9Result<List<SpmApproveItem>> list() {
-        Map<String, Object> map = spmApproveItemService.list();
-        List<SpmApproveItem> list = (List<SpmApproveItem>)map.get("rows");
+        List<SpmApproveItem> list = spmApproveItemService.list();
         return Y9Result.success(list, "获取成功");
-    }
-
-    /**
-     * 获取绑定的事项列表(不包含选择的事项)
-     *
-     * @param itemId 事项id
-     * @return
-     */
-    @GetMapping(value = "/getBindItemList")
-    public Y9Result<List<Map<String, Object>>> getBindItemList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String itemName) {
-        List<Map<String, Object>> list_map = new ArrayList<Map<String, Object>>();
-        List<SpmApproveItem> itemList = spmApproveItemService.findByIdNotAndNameLike(itemId, itemName);
-        for (SpmApproveItem item : itemList) {
-            if (!item.getId().equals(itemId)) {
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("id", item.getId());
-                map.put("itemName", item.getName());
-                map.put("workflowGuid", item.getWorkflowGuid());
-                map.put("systemName", item.getSystemName());
-                list_map.add(map);
-            }
-        }
-        return Y9Result.success(list_map, "获取成功");
     }
 
     /**
@@ -231,21 +240,6 @@ public class ItemRestController {
     }
 
     /**
-     * 复制事项
-     * 
-     * @param id
-     * @return
-     */
-    @PostMapping(value = "/copyItem")
-    public Y9Result<String> copyItem(@RequestParam(required = true) String id) {
-        Map<String, Object> map = spmApproveItemService.copyItem(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
-    }
-
-    /**
      * 发布为应用系统
      *
      * @param itemId 事项id
@@ -253,11 +247,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/publishToSystemApp")
     public Y9Result<String> publishToSystemApp(@RequestParam String itemId) {
-        Map<String, Object> map = spmApproveItemService.publishToSystemApp(itemId);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return spmApproveItemService.publishToSystemApp(itemId);
     }
 
     /**
@@ -285,42 +275,15 @@ public class ItemRestController {
     }
 
     /**
-     * 上传图标
-     * 
-     * @param files
-     * @return
-     */
-    @PostMapping(value = "/uploadItemIcon")
-    public Y9Result<Map<String, Object>> uploadItemIcon(@RequestParam MultipartFile files) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("iconData", "");
-        byte[] iconData = null;
-        try {
-            if (!files.isEmpty()) {
-                iconData = files.getBytes();
-                map.put("iconData", Base64.encodeToString(iconData));
-            }
-            return Y9Result.success(map, "上传成功");
-        } catch (IOException e1) {
-            LOGGER.warn(e1.getMessage(), e1);
-        }
-        return Y9Result.failure("上传失败");
-    }
-
-    /**
      * 保存事项
      *
      * @param itemJson 事项信息json
      * @return
      */
     @PostMapping(value = "/save")
-    public Y9Result<String> save(String itemJson) {
+    public Y9Result<SpmApproveItem> save(String itemJson) {
         SpmApproveItem item = Y9JsonUtil.readValue(itemJson, SpmApproveItem.class);
-        Map<String, Object> map = spmApproveItemService.save(item);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return spmApproveItemService.save(item);
     }
 
     /**
@@ -357,5 +320,28 @@ public class ItemRestController {
         Map<String, Object> map = new HashMap<>(16);
         map.put("iconList", iconList);
         return Y9Result.success(map, "获取成功");
+    }
+
+    /**
+     * 上传图标
+     *
+     * @param files
+     * @return
+     */
+    @PostMapping(value = "/uploadItemIcon")
+    public Y9Result<Map<String, Object>> uploadItemIcon(@RequestParam MultipartFile files) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("iconData", "");
+        byte[] iconData = null;
+        try {
+            if (!files.isEmpty()) {
+                iconData = files.getBytes();
+                map.put("iconData", Base64.encodeToString(iconData));
+            }
+            return Y9Result.success(map, "上传成功");
+        } catch (IOException e1) {
+            LOGGER.warn(e1.getMessage(), e1);
+        }
+        return Y9Result.failure("上传失败");
     }
 }

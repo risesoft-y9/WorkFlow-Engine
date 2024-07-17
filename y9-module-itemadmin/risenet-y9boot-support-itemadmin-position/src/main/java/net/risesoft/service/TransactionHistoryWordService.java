@@ -20,19 +20,11 @@ public interface TransactionHistoryWordService {
 
     /**
      * Description: 删除历史正文
-     * 
+     *
      * @param processSerialNumber
      * @param isTaoHong
      */
     void deleteHistoryWordByIsTaoHong(String processSerialNumber, String isTaoHong);
-
-    /**
-     * 根据流程编号获取正文
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    List<TransactionHistoryWord> findByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据流程编号获取最新正文
@@ -46,21 +38,29 @@ public interface TransactionHistoryWordService {
      * 根据taskId找历史正文
      *
      * @param taskId
-     * @return List
-     */
-    List<TransactionHistoryWord> getListByTaskId(String taskId);
-
-    /**
-     * 根据taskId找历史正文
-     *
-     * @param taskId
      * @return
      */
     TransactionHistoryWord getTransactionHistoryWordByTaskId(String taskId);
 
     /**
+     * 根据流程编号获取正文
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    List<TransactionHistoryWord> listByProcessSerialNumber(String processSerialNumber);
+
+    /**
+     * 根据taskId找历史正文
+     *
+     * @param taskId
+     * @return List
+     */
+    List<TransactionHistoryWord> listByTaskId(String taskId);
+
+    /**
      * Description: 保存word正文
-     * 
+     *
      * @param fileStoreId
      * @param fileSize
      * @param documenttitle
@@ -84,7 +84,7 @@ public interface TransactionHistoryWordService {
 
     /**
      * Description: 更新正文
-     * 
+     *
      * @param fileStoreId
      * @param fileType
      * @param fileName

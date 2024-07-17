@@ -82,7 +82,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     public Page<OpinionFrame> pageAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page,
         int rows) {
         List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<String> markList = new ArrayList<>();
         for (ItemOpinionFrameBind bind : bindList) {
             markList.add(bind.getOpinionFrameMark());
@@ -101,7 +101,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     public void remove(String id) {
         OpinionFrame opinionFrame = this.getById(id);
         if (opinionFrame != null) {
-            List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByMark(opinionFrame.getMark());
+            List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.listByMark(opinionFrame.getMark());
             for (ItemOpinionFrameBind bind : list) {
                 itemOpinionFrameBindService.delete(bind.getId());
             }
@@ -188,7 +188,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     public Page<OpinionFrame> search4NotUsed(String itemId, String processDefinitionId, String taskDefKey, int page,
         int rows, final String keyword) {
         List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<String> markList = new ArrayList<>();
         for (ItemOpinionFrameBind bind : bindList) {
             markList.add(bind.getOpinionFrameMark());

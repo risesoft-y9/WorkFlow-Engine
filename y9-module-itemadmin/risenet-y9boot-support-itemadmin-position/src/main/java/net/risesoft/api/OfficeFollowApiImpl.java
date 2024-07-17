@@ -117,7 +117,7 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        return officeFollowService.getFollowListBySystemName(systemName, searchName, page, rows);
+        return officeFollowService.pageBySystemNameAndSearchName(systemName, searchName, page, rows);
     }
 
     /**
@@ -136,7 +136,7 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
         String searchName, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        return officeFollowService.getOfficeFollowList(searchName, page, rows);
+        return officeFollowService.pageBySearchName(searchName, page, rows);
     }
 
     /**

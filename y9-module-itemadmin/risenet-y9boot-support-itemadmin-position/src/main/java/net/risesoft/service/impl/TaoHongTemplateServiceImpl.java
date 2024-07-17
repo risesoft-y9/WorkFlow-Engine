@@ -32,18 +32,18 @@ public class TaoHongTemplateServiceImpl implements TaoHongTemplateService {
     private final OrgUnitApi orgUnitManager;
 
     @Override
-    public List<TaoHongTemplate> findByBureauGuid(String bureauGuid) {
+    public TaoHongTemplate getById(String id) {
+        return taoHongTemplateRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<TaoHongTemplate> listByBureauGuid(String bureauGuid) {
         return taoHongTemplateRepository.findByBureauGuid(bureauGuid);
     }
 
     @Override
-    public List<TaoHongTemplate> findByTenantId(String tenantId, String name) {
+    public List<TaoHongTemplate> listByTenantId(String tenantId, String name) {
         return taoHongTemplateRepository.findByTenantId(tenantId, name);
-    }
-
-    @Override
-    public TaoHongTemplate findOne(String id) {
-        return taoHongTemplateRepository.findById(id).orElse(null);
     }
 
     @Override

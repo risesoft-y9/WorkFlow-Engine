@@ -20,30 +20,30 @@ public interface SendButtonService {
     boolean checkCustomId(String customId);
 
     /**
-     * 查找所有
-     *
-     * @return
-     */
-    List<SendButton> findAll();
-
-    /**
      * 根据唯一标示查找
      *
      * @param id
      * @return
      */
-    SendButton findOne(String id);
+    SendButton getById(String id);
+
+    /**
+     * 查找所有
+     *
+     * @return
+     */
+    List<SendButton> listAll();
 
     /**
      * Description: 根据传进来的Id集合删除
-     * 
+     *
      * @param sendButtonIds
      */
     void removeSendButtons(String[] sendButtonIds);
 
     /**
      * Description: 保存或者更新
-     * 
+     *
      * @param sendButton
      * @return
      */

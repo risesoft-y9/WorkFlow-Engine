@@ -1,11 +1,10 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.model.itemadmin.OpenDataModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -30,17 +29,28 @@ public interface DraftEntityService {
     void deleteDraft(String ids);
 
     /**
+     *
+     * Description: 打开草稿
+     *
+     * @param processSerialNumber
+     * @param itemId
+     * @param mobile
+     * @return
+     */
+    OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile);
+
+    /**
      * 获取草稿列表
      *
-     * @param userid
+     * @param itemId
+     * @param userId
      * @param page
      * @param rows
      * @param title
-     * @param itemId
      * @param delFlag
      * @return
      */
-    Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title, boolean delFlag);
+    Page<DraftEntity> pageDraftList(String itemId, String userId, int page, int rows, String title, boolean delFlag);
 
     /**
      *
@@ -54,19 +64,8 @@ public interface DraftEntityService {
      * @param delFlag
      * @return
      */
-    Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows, String title,
+    Page<DraftEntity> pageDraftListBySystemName(String systemName, String userId, int page, int rows, String title,
         boolean delFlag);
-
-    /**
-     *
-     * Description: 打开草稿
-     *
-     * @param processSerialNumber
-     * @param itemId
-     * @param mobile
-     * @return
-     */
-    OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile);
 
     /**
      * 还原草稿
@@ -114,6 +113,6 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
+    Y9Result<Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
         String level, String jijian, String title, String type);
 }

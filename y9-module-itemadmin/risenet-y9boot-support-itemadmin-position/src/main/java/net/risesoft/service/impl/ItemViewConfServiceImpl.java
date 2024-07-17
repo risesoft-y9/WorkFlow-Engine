@@ -38,6 +38,32 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
 
     @Override
     @Transactional
+    public void copyBindInfo(String itemId, String newItemId) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
+            if (null != list && !list.isEmpty()) {
+                for (ItemViewConf itemViewConf : list) {
+                    ItemViewConf newConf = new ItemViewConf();
+                    Y9BeanUtil.copyProperties(itemViewConf, newConf);
+                    newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    newConf.setItemId(newItemId);
+                    newConf.setCreateTime(sdf.format(new Date()));
+                    newConf.setUpdateTime(sdf.format(new Date()));
+                    newConf.setUserId(person.getPersonId());
+                    newConf.setUserName(person.getName());
+                    newConf.setTabIndex(itemViewConf.getTabIndex());
+                    itemViewConfRepository.save(newConf);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制视图配置信息失败", e);
+        }
+    }
+
+    @Override
+    @Transactional
     public void copyView(String[] ids, String viewType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
@@ -54,22 +80,35 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
+            if (null != list && !list.isEmpty()) {
+                itemViewConfRepository.deleteAll(list);
+            }
+        } catch (Exception e) {
+            LOGGER.error("删除视图配置信息失败", e);
+        }
+    }
+
+    @Override
     public ItemViewConf findById(String id) {
         return itemViewConfRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<ItemViewConf> findByItemId(String itemId) {
+    public List<ItemViewConf> listByItemId(String itemId) {
         return itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
     }
 
     @Override
-    public List<ItemViewConf> findByItemIdAndViewType(String itemId, String viewType) {
+    public List<ItemViewConf> listByItemIdAndViewType(String itemId, String viewType) {
         return itemViewConfRepository.findByItemIdAndViewTypeOrderByTabIndexAsc(itemId, viewType);
     }
 
     @Override
-    public List<ItemViewConf> findByViewType(String viewType) {
+    public List<ItemViewConf> listByViewType(String viewType) {
         return itemViewConfRepository.findByViewTypeOrderByTabIndexAsc(viewType);
     }
 
@@ -157,45 +196,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
-            if (null != list && !list.isEmpty()) {
-                for (ItemViewConf itemViewConf : list) {
-                    ItemViewConf newConf = new ItemViewConf();
-                    Y9BeanUtil.copyProperties(itemViewConf, newConf);
-                    newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newConf.setItemId(newItemId);
-                    newConf.setCreateTime(sdf.format(new Date()));
-                    newConf.setUpdateTime(sdf.format(new Date()));
-                    newConf.setUserId(person.getPersonId());
-                    newConf.setUserName(person.getName());
-                    newConf.setTabIndex(itemViewConf.getTabIndex());
-                    itemViewConfRepository.save(newConf);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制视图配置信息失败", e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteBindInfo(String itemId) {
-        try {
-            List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
-            if (null != list && !list.isEmpty()) {
-                itemViewConfRepository.deleteAll(list);
-            }
-        } catch (Exception e) {
-            LOGGER.error("删除视图配置信息失败", e);
         }
     }
 }

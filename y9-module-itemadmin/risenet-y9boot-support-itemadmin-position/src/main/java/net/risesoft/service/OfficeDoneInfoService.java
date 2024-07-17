@@ -82,7 +82,7 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return Y9Page<OfficeDoneInfoModel>
      */
-    Y9Page<OfficeDoneInfoModel> getMeetingList(String userName, String deptName, String title, String meetingType,
+    Y9Page<OfficeDoneInfoModel> pageMeetingList(String userName, String deptName, String title, String meetingType,
         Integer page, Integer rows);
 
     /**

@@ -19,8 +19,8 @@ public interface PrintTemplateRepository
     extends JpaRepository<PrintTemplate, String>, JpaSpecificationExecutor<PrintTemplate> {
 
     @Query("from PrintTemplate t order by t.uploadTime DESC")
-    public List<PrintTemplate> findAllOrderByUploadTimeDesc();
+    List<PrintTemplate> findAllOrderByUploadTimeDesc();
 
-    public List<PrintTemplate> findByFileNameContaining(String fileName);
+    List<PrintTemplate> findByFileNameContaining(String fileName);
 
 }

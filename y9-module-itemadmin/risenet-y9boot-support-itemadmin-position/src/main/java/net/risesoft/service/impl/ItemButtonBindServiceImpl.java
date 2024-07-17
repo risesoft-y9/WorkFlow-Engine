@@ -162,275 +162,13 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     /**
                      * 保存按钮的授权
                      */
-                    List<ItemButtonRole> roleList = itemButtonRoleService.findByItemButtonId(oldbindId);
+                    List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonId(oldbindId);
                     for (ItemButtonRole role : roleList) {
                         itemButtonRoleService.saveOrUpdate(newbindId, role.getRoleId());
                     }
                 }
             }
         }
-    }
-
-    @Override
-    public List<ItemButtonBind> findList(String itemId, Integer buttonType, String processDefinitionId) {
-        String buttonName = "按钮不存在";
-        String buttonCustomId = "";
-        List<ItemButtonBind> bibList = buttonItemBindRepository
-            .findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(itemId, buttonType, processDefinitionId);
-        for (ItemButtonBind bib : bibList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
-                CommonButton cb = commonButtonService.findOne(bib.getButtonId());
-                if (null != cb) {
-                    buttonName = cb.getName();
-                    buttonCustomId = cb.getCustomId();
-                }
-            } else {
-                SendButton sb = sendButtonService.findOne(bib.getButtonId());
-                if (null != sb) {
-                    buttonName = sb.getName();
-                    buttonCustomId = sb.getCustomId();
-                }
-            }
-            bib.setButtonName(buttonName);
-            bib.setButtonCustomId(buttonCustomId);
-        }
-        return bibList;
-    }
-
-    @Override
-    public List<ItemButtonBind> findList(String itemId, Integer buttonType, String processDefinitionId,
-        String taskDefKey) {
-        String buttonName = "按钮不存在";
-        String buttonCustomId = "";
-        List<ItemButtonBind> bibList =
-            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
-                itemId, buttonType, processDefinitionId, taskDefKey);
-        for (ItemButtonBind bib : bibList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
-                CommonButton cb = commonButtonService.findOne(bib.getButtonId());
-                if (null != cb) {
-                    buttonName = cb.getName();
-                    buttonCustomId = cb.getCustomId();
-                }
-            } else {
-                SendButton sb = sendButtonService.findOne(bib.getButtonId());
-                if (null != sb) {
-                    buttonName = sb.getName();
-                    buttonCustomId = sb.getCustomId();
-                }
-            }
-            bib.setButtonName(buttonName);
-            bib.setButtonCustomId(buttonCustomId);
-        }
-        return bibList;
-    }
-
-    @Override
-    public List<ItemButtonBind> findListByButtonId(String buttonId) {
-        List<ItemButtonBind> bindList =
-            buttonItemBindRepository.findByButtonIdOrderByItemIdDescUpdateTimeDesc(buttonId);
-        for (ItemButtonBind bind : bindList) {
-            List<ItemButtonRole> roleList = itemButtonRoleService.findByItemButtonIdContainRoleName(bind.getId());
-            String roleNames = "";
-            for (ItemButtonRole role : roleList) {
-                if (StringUtils.isEmpty(roleNames)) {
-                    roleNames = role.getRoleName();
-                } else {
-                    roleNames += "、" + role.getRoleName();
-                }
-            }
-            bind.setRoleNames(roleNames);
-        }
-        return bindList;
-    }
-
-    @Override
-    public List<ItemButtonBind> findListContainRole(String itemId, Integer buttonType, String processDefinitionId,
-        String taskDefineKey) {
-        String buttonName = "按钮不存在";
-        String buttonCustomId = "";
-        List<ItemButtonBind> bindList =
-            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
-                itemId, buttonType, processDefinitionId, taskDefineKey);
-        for (ItemButtonBind bind : bindList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
-                CommonButton cb = commonButtonService.findOne(bind.getButtonId());
-                if (null != cb) {
-                    buttonName = cb.getName();
-                    buttonCustomId = cb.getCustomId();
-                }
-            } else {
-                SendButton sb = sendButtonService.findOne(bind.getButtonId());
-                if (null != sb) {
-                    buttonName = sb.getName();
-                    buttonCustomId = sb.getCustomId();
-                }
-            }
-            bind.setButtonName(buttonName);
-            bind.setButtonCustomId(buttonCustomId);
-
-            List<ItemButtonRole> roleList = itemButtonRoleService.findByItemButtonIdContainRoleName(bind.getId());
-            List<String> roleIds = new ArrayList<>();
-            String roleNames = "";
-            for (ItemButtonRole role : roleList) {
-                // 存绑定关系id，便于删除
-                roleIds.add(role.getId());
-                if (StringUtils.isEmpty(roleNames)) {
-                    roleNames = role.getRoleName();
-                } else {
-                    roleNames += "、" + role.getRoleName();
-                }
-            }
-            bind.setRoleIds(roleIds);
-            bind.setRoleNames(roleNames);
-        }
-        return bindList;
-    }
-
-    @Override
-    public List<ItemButtonBind> findListContainRoleId(String itemId, Integer buttonType, String processDefinitionId,
-        String taskDefineKey) {
-        String buttonName = "按钮不存在";
-        String buttonCustomId = "";
-        List<ItemButtonBind> bindList =
-            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
-                itemId, buttonType, processDefinitionId, taskDefineKey);
-        if (bindList.isEmpty()) {
-            bindList = buttonItemBindRepository
-                .findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId,
-                    buttonType, processDefinitionId);
-        }
-        for (ItemButtonBind bind : bindList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
-                CommonButton cb = commonButtonService.findOne(bind.getButtonId());
-                if (null != cb) {
-                    buttonName = cb.getName();
-                    buttonCustomId = cb.getCustomId();
-                }
-            } else {
-                SendButton sb = sendButtonService.findOne(bind.getButtonId());
-                if (null != sb) {
-                    buttonName = sb.getName();
-                    buttonCustomId = sb.getCustomId();
-                }
-            }
-            bind.setButtonName(buttonName);
-            bind.setButtonCustomId(buttonCustomId);
-
-            List<ItemButtonRole> roleList = itemButtonRoleService.findByItemButtonId(bind.getId());
-            List<String> roleIds = new ArrayList<>();
-            for (ItemButtonRole role : roleList) {
-                roleIds.add(role.getRoleId());
-            }
-            bind.setRoleIds(roleIds);
-        }
-        return bindList;
-    }
-
-    @Override
-    public List<ItemButtonBind> findListExtra(String itemId, Integer buttonType, String processDefinitionId,
-        String taskDefineKey) {
-        String buttonName = "按钮不存在";
-        String buttonCustomId = "";
-        List<ItemButtonBind> bibList =
-            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
-                itemId, buttonType, processDefinitionId, taskDefineKey);
-        if (bibList.isEmpty()) {
-            bibList =
-                buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
-                    itemId, buttonType, processDefinitionId, "");
-        }
-        for (ItemButtonBind bib : bibList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
-                CommonButton cb = commonButtonService.findOne(bib.getButtonId());
-                if (null != cb) {
-                    buttonName = cb.getName();
-                    buttonCustomId = cb.getCustomId();
-                }
-            } else {
-                SendButton sb = sendButtonService.findOne(bib.getButtonId());
-                if (null != sb) {
-                    buttonName = sb.getName();
-                    buttonCustomId = sb.getCustomId();
-                }
-            }
-            bib.setButtonName(buttonName);
-            bib.setButtonCustomId(buttonCustomId);
-        }
-        return bibList;
-    }
-
-    @Override
-    public ItemButtonBind findOne(String id) {
-        return buttonItemBindRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    @Transactional
-    public void removeButtonItemBinds(String[] buttonItemBindIds) {
-        for (String buttonItemBindId : buttonItemBindIds) {
-            itemButtonRoleService.deleteByItemButtonId(buttonItemBindId);
-            buttonItemBindRepository.deleteById(buttonItemBindId);
-        }
-    }
-
-    @Override
-    @Transactional
-    public ItemButtonBind save(ItemButtonBind buttonItemBind) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String id = buttonItemBind.getId();
-        ItemButtonBind oldbib = this.findOne(id);
-        if (null != oldbib) {
-            oldbib.setTenantId(tenantId);
-            oldbib.setUpdateTime(sdf.format(new Date()));
-            oldbib.setUserId(userId);
-            oldbib.setUserName(userName);
-
-            String buttonName = "按钮不存在";
-            String buttonCustomId = "";
-            if (Objects.equals(ItemButtonTypeEnum.COMMON.getValue(), oldbib.getButtonType())) {
-                CommonButton cb = commonButtonService.findOne(oldbib.getButtonId());
-                if (null != cb) {
-                    buttonName = cb.getName();
-                    buttonCustomId = cb.getCustomId();
-                }
-            } else {
-                SendButton sb = sendButtonService.findOne(oldbib.getButtonId());
-                if (null != sb) {
-                    buttonName = sb.getName();
-                    buttonCustomId = sb.getCustomId();
-                }
-            }
-            oldbib.setButtonName(buttonName);
-            oldbib.setButtonCustomId(buttonCustomId);
-
-            buttonItemBindRepository.save(oldbib);
-            return oldbib;
-        } else {
-            return buttonItemBindRepository.save(buttonItemBind);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void saveOrder(String[] idAndTabIndexs) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), userName = person.getName();
-        List<ItemButtonBind> oldtibList = new ArrayList<>();
-        for (String idAndTabIndex : idAndTabIndexs) {
-            String[] arr = idAndTabIndex.split(SysVariables.COLON);
-            ItemButtonBind oldBib = this.findOne(arr[0]);
-            oldBib.setTabIndex(Integer.valueOf(arr[1]));
-            oldBib.setUpdateTime(sdf.format(new Date()));
-            oldBib.setUserId(userId);
-            oldBib.setUserName(userName);
-
-            oldtibList.add(oldBib);
-        }
-        buttonItemBindRepository.saveAll(oldtibList);
     }
 
     @Override
@@ -479,5 +217,268 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         } catch (Exception e) {
             LOGGER.error("删除按钮绑定信息失败", e);
         }
+    }
+
+    @Override
+    public ItemButtonBind getById(String id) {
+        return buttonItemBindRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<ItemButtonBind> listByButtonId(String buttonId) {
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByButtonIdOrderByItemIdDescUpdateTimeDesc(buttonId);
+        for (ItemButtonBind bind : bindList) {
+            List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonIdContainRoleName(bind.getId());
+            String roleNames = "";
+            for (ItemButtonRole role : roleList) {
+                if (StringUtils.isEmpty(roleNames)) {
+                    roleNames = role.getRoleName();
+                } else {
+                    roleNames += "、" + role.getRoleName();
+                }
+            }
+            bind.setRoleNames(roleNames);
+        }
+        return bindList;
+    }
+
+    @Override
+    public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId, Integer buttonType,
+        String processDefinitionId) {
+        String buttonName = "按钮不存在";
+        String buttonCustomId = "";
+        List<ItemButtonBind> bibList = buttonItemBindRepository
+            .findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(itemId, buttonType, processDefinitionId);
+        for (ItemButtonBind bib : bibList) {
+            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+                CommonButton cb = commonButtonService.getById(bib.getButtonId());
+                if (null != cb) {
+                    buttonName = cb.getName();
+                    buttonCustomId = cb.getCustomId();
+                }
+            } else {
+                SendButton sb = sendButtonService.getById(bib.getButtonId());
+                if (null != sb) {
+                    buttonName = sb.getName();
+                    buttonCustomId = sb.getCustomId();
+                }
+            }
+            bib.setButtonName(buttonName);
+            bib.setButtonCustomId(buttonCustomId);
+        }
+        return bibList;
+    }
+
+    @Override
+    public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        Integer buttonType, String processDefinitionId, String taskDefKey) {
+        String buttonName = "按钮不存在";
+        String buttonCustomId = "";
+        List<ItemButtonBind> bibList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefKey);
+        for (ItemButtonBind bib : bibList) {
+            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+                CommonButton cb = commonButtonService.getById(bib.getButtonId());
+                if (null != cb) {
+                    buttonName = cb.getName();
+                    buttonCustomId = cb.getCustomId();
+                }
+            } else {
+                SendButton sb = sendButtonService.getById(bib.getButtonId());
+                if (null != sb) {
+                    buttonName = sb.getName();
+                    buttonCustomId = sb.getCustomId();
+                }
+            }
+            bib.setButtonName(buttonName);
+            bib.setButtonCustomId(buttonCustomId);
+        }
+        return bibList;
+    }
+
+    @Override
+    public List<ItemButtonBind> listContainRole(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey) {
+        String buttonName = "按钮不存在";
+        String buttonCustomId = "";
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefineKey);
+        for (ItemButtonBind bind : bindList) {
+            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+                CommonButton cb = commonButtonService.getById(bind.getButtonId());
+                if (null != cb) {
+                    buttonName = cb.getName();
+                    buttonCustomId = cb.getCustomId();
+                }
+            } else {
+                SendButton sb = sendButtonService.getById(bind.getButtonId());
+                if (null != sb) {
+                    buttonName = sb.getName();
+                    buttonCustomId = sb.getCustomId();
+                }
+            }
+            bind.setButtonName(buttonName);
+            bind.setButtonCustomId(buttonCustomId);
+
+            List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonIdContainRoleName(bind.getId());
+            List<String> roleIds = new ArrayList<>();
+            String roleNames = "";
+            for (ItemButtonRole role : roleList) {
+                // 存绑定关系id，便于删除
+                roleIds.add(role.getId());
+                if (StringUtils.isEmpty(roleNames)) {
+                    roleNames = role.getRoleName();
+                } else {
+                    roleNames += "、" + role.getRoleName();
+                }
+            }
+            bind.setRoleIds(roleIds);
+            bind.setRoleNames(roleNames);
+        }
+        return bindList;
+    }
+
+    @Override
+    public List<ItemButtonBind> listContainRoleId(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey) {
+        String buttonName = "按钮不存在";
+        String buttonCustomId = "";
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefineKey);
+        if (bindList.isEmpty()) {
+            bindList = buttonItemBindRepository
+                .findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId,
+                    buttonType, processDefinitionId);
+        }
+        for (ItemButtonBind bind : bindList) {
+            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+                CommonButton cb = commonButtonService.getById(bind.getButtonId());
+                if (null != cb) {
+                    buttonName = cb.getName();
+                    buttonCustomId = cb.getCustomId();
+                }
+            } else {
+                SendButton sb = sendButtonService.getById(bind.getButtonId());
+                if (null != sb) {
+                    buttonName = sb.getName();
+                    buttonCustomId = sb.getCustomId();
+                }
+            }
+            bind.setButtonName(buttonName);
+            bind.setButtonCustomId(buttonCustomId);
+
+            List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonId(bind.getId());
+            List<String> roleIds = new ArrayList<>();
+            for (ItemButtonRole role : roleList) {
+                roleIds.add(role.getRoleId());
+            }
+            bind.setRoleIds(roleIds);
+        }
+        return bindList;
+    }
+
+    @Override
+    public List<ItemButtonBind> listExtra(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey) {
+        String buttonName = "按钮不存在";
+        String buttonCustomId = "";
+        List<ItemButtonBind> bibList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefineKey);
+        if (bibList.isEmpty()) {
+            bibList =
+                buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                    itemId, buttonType, processDefinitionId, "");
+        }
+        for (ItemButtonBind bib : bibList) {
+            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+                CommonButton cb = commonButtonService.getById(bib.getButtonId());
+                if (null != cb) {
+                    buttonName = cb.getName();
+                    buttonCustomId = cb.getCustomId();
+                }
+            } else {
+                SendButton sb = sendButtonService.getById(bib.getButtonId());
+                if (null != sb) {
+                    buttonName = sb.getName();
+                    buttonCustomId = sb.getCustomId();
+                }
+            }
+            bib.setButtonName(buttonName);
+            bib.setButtonCustomId(buttonCustomId);
+        }
+        return bibList;
+    }
+
+    @Override
+    @Transactional
+    public void removeButtonItemBinds(String[] buttonItemBindIds) {
+        for (String buttonItemBindId : buttonItemBindIds) {
+            itemButtonRoleService.deleteByItemButtonId(buttonItemBindId);
+            buttonItemBindRepository.deleteById(buttonItemBindId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public ItemButtonBind save(ItemButtonBind buttonItemBind) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String id = buttonItemBind.getId();
+        ItemButtonBind oldbib = this.getById(id);
+        if (null != oldbib) {
+            oldbib.setTenantId(tenantId);
+            oldbib.setUpdateTime(sdf.format(new Date()));
+            oldbib.setUserId(userId);
+            oldbib.setUserName(userName);
+
+            String buttonName = "按钮不存在";
+            String buttonCustomId = "";
+            if (Objects.equals(ItemButtonTypeEnum.COMMON.getValue(), oldbib.getButtonType())) {
+                CommonButton cb = commonButtonService.getById(oldbib.getButtonId());
+                if (null != cb) {
+                    buttonName = cb.getName();
+                    buttonCustomId = cb.getCustomId();
+                }
+            } else {
+                SendButton sb = sendButtonService.getById(oldbib.getButtonId());
+                if (null != sb) {
+                    buttonName = sb.getName();
+                    buttonCustomId = sb.getCustomId();
+                }
+            }
+            oldbib.setButtonName(buttonName);
+            oldbib.setButtonCustomId(buttonCustomId);
+
+            buttonItemBindRepository.save(oldbib);
+            return oldbib;
+        } else {
+            return buttonItemBindRepository.save(buttonItemBind);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void saveOrder(String[] idAndTabIndexs) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), userName = person.getName();
+        List<ItemButtonBind> oldtibList = new ArrayList<>();
+        for (String idAndTabIndex : idAndTabIndexs) {
+            String[] arr = idAndTabIndex.split(SysVariables.COLON);
+            ItemButtonBind oldBib = this.getById(arr[0]);
+            oldBib.setTabIndex(Integer.valueOf(arr[1]));
+            oldBib.setUpdateTime(sdf.format(new Date()));
+            oldBib.setUserId(userId);
+            oldBib.setUserName(userName);
+
+            oldtibList.add(oldBib);
+        }
+        buttonItemBindRepository.saveAll(oldtibList);
     }
 }

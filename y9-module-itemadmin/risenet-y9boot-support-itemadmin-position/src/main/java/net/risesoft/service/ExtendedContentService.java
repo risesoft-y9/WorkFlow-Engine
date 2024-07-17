@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.ui.Model;
 
 import net.risesoft.entity.ExtendedContent;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -15,15 +16,32 @@ import net.risesoft.entity.ExtendedContent;
 public interface ExtendedContentService {
 
     /**
-     * 获取内容列表
+     * Description: 根据人员统计
      *
      * @param processSerialNumber
-     * @param itembox
+     * @param userid
+     * @param category
+     * @return
+     */
+    int countByProcessSerialNumberAndUserIdAndCategory(String processSerialNumber, String userid, String category);
+
+    /**
+     * Description: 根据processSerialNumber获取统计
+     *
+     * @param processSerialNumber
+     * @param category
+     * @return
+     */
+    int countByProcSerialNumberAndCategory(String processSerialNumber, String category);
+
+    /**
+     * Description: 根据taskId获取统计
+     *
      * @param taskId
      * @param category
      * @return
      */
-    List<Map<String, Object>> contentList(String processSerialNumber, String taskId, String itembox, String category);
+    int countByTaskIdAndCategory(String taskId, String category);
 
     /**
      * 删除内容
@@ -31,7 +49,7 @@ public interface ExtendedContentService {
      * @param id
      * @return
      */
-    Map<String, Object> delete(String id);
+    Y9Result<Object> delete(String id);
 
     /**
      * 根据id获取内容
@@ -40,34 +58,6 @@ public interface ExtendedContentService {
      * @return
      */
     ExtendedContent findById(String id);
-
-    /**
-     * Description: 根据processSerialNumber获取统计
-     * 
-     * @param processSerialNumber
-     * @param category
-     * @return
-     */
-    int findByProcSerialNumberAndCategory(String processSerialNumber, String category);
-
-    /**
-     * Description: 根据taskId获取统计
-     * 
-     * @param taskId
-     * @param category
-     * @return
-     */
-    int getCountByTaskIdAndCategory(String taskId, String category);
-
-    /**
-     * Description: 根据人员统计
-     * 
-     * @param processSerialNumber
-     * @param userid
-     * @param category
-     * @return
-     */
-    int getCountByUserIdAndCategory(String processSerialNumber, String userid, String category);
 
     /**
      * 根据人员id，流程编号统计当前类型的内容数
@@ -110,6 +100,17 @@ public interface ExtendedContentService {
     ExtendedContent getResultByUserIdAndCategory(String processSerialNumber, String userid, String category);
 
     /**
+     * 获取内容列表
+     *
+     * @param processSerialNumber
+     * @param itembox
+     * @param taskId
+     * @param category
+     * @return
+     */
+    List<Map<String, Object>> listContents(String processSerialNumber, String taskId, String itembox, String category);
+
+    /**
      * 新增或编辑内容
      *
      * @param processSerialNumber
@@ -127,7 +128,7 @@ public interface ExtendedContentService {
      * @param content
      * @return
      */
-    Map<String, Object> saveOrUpdate(ExtendedContent content);
+    Y9Result<Object> saveOrUpdate(ExtendedContent content);
 
     /**
      * 更新内容

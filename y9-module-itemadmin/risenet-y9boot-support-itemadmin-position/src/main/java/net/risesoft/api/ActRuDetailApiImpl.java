@@ -81,7 +81,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         @RequestParam String processInstanceId, int status) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ActRuDetail> actRuDetailList =
-            actRuDetailService.findByProcessInstanceIdAndStatus(processInstanceId, status);
+            actRuDetailService.listByProcessInstanceIdAndStatus(processInstanceId, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
         ActRuDetailModel model;
         for (ActRuDetail actRuDetail : actRuDetailList) {
@@ -104,7 +104,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     public Y9Result<List<ActRuDetailModel>> findByProcessSerialNumber(@RequestParam String tenantId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessSerialNumber(processSerialNumber);
+        List<ActRuDetail> actRuDetailList = actRuDetailService.listByProcessSerialNumber(processSerialNumber);
         List<ActRuDetailModel> modelList = new ArrayList<>();
         ActRuDetailModel model;
         for (ActRuDetail actRuDetail : actRuDetailList) {
@@ -149,7 +149,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         @RequestParam String processSerialNumber, @RequestParam int status) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ActRuDetail> actRuDetailList =
-            actRuDetailService.findByProcessSerialNumberAndStatus(processSerialNumber, status);
+            actRuDetailService.listByProcessSerialNumberAndStatus(processSerialNumber, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
         ActRuDetailModel model;
         for (ActRuDetail actRuDetail : actRuDetailList) {

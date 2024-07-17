@@ -52,7 +52,7 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
         @RequestParam String wordTemplateId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);
+        List<BookMarkBind> bookMarkBindList = bookMarkBindService.listByWordTemplateId(wordTemplateId);
         if (!bookMarkBindList.isEmpty()) {
             String tableName = bookMarkBindList.get(0).getTableName();
             String columnName = "";

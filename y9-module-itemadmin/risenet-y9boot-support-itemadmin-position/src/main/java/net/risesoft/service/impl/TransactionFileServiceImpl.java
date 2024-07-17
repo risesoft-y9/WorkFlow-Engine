@@ -99,8 +99,49 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
+    public TransactionFile getFileInfoByFileName(String fileName, String processSerialNumber) {
+        return transactionFileRepository.getFileInfoByFileName(fileName, processSerialNumber);
+    }
+
+    @Override
+    public Integer getTransactionFileCount(String processSerialNumber, String fileSource, String fileType) {
+        if (StringUtils.isBlank(fileType)) {
+            return transactionFileRepository.getTransactionFileCount(processSerialNumber, fileSource);
+        } else {
+            return transactionFileRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource,
+                fileType);
+        }
+    }
+
+    @Override
+    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber) {
+        return transactionFileRepository.getUpFileInfoByTabIndexOrProcessSerialNumber(tabIndex, processSerialNumber);
+    }
+
+    @Override
+    public List<TransactionFile> listByProcessSerialNumber(String processSerialNumber) {
+        return transactionFileRepository.findByProcessSerialNumber(processSerialNumber);
+    }
+
+    @Override
+    public List<TransactionFile> listByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource) {
+        return transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
+    }
+
+    @Override
+    public List<TransactionFile> listSearchByProcessSerialNumber(String processSerialNumber, String fileSource) {
+        List<TransactionFile> transactionFileList = new ArrayList<>();
+        if (StringUtils.isBlank(fileSource)) {
+            transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber);
+        } else {
+            transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber, fileSource);
+        }
+        return transactionFileList;
+    }
+
+    @Override
     @Transactional
-    public Y9Page<AttachmentModel> getAttachmentList(String processSerialNumber, String fileSource, int page,
+    public Y9Page<AttachmentModel> pageByProcessSerialNumber(String processSerialNumber, String fileSource, int page,
         int rows) {
         List<AttachmentModel> item = new ArrayList<>();
         try {
@@ -152,48 +193,6 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             e.printStackTrace();
         }
         return Y9Page.failure(page, 0, 0, new ArrayList<>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
-    }
-
-    @Override
-    public List<TransactionFile> getAttachmentModelList(String processSerialNumber, String fileSource) {
-        List<TransactionFile> transactionFileList = new ArrayList<>();
-        if (StringUtils.isBlank(fileSource)) {
-            transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber);
-        } else {
-            transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber, fileSource);
-        }
-        return transactionFileList;
-    }
-
-    @Override
-    public TransactionFile getFileInfoByFileName(String fileName, String processSerialNumber) {
-        return transactionFileRepository.getFileInfoByFileName(fileName, processSerialNumber);
-    }
-
-    @Override
-    public List<TransactionFile> getListByProcessSerialNumber(String processSerialNumber) {
-        return transactionFileRepository.findByProcessSerialNumber(processSerialNumber);
-    }
-
-    @Override
-    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber,
-        String fileSource) {
-        return transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
-    }
-
-    @Override
-    public Integer getTransactionFileCount(String processSerialNumber, String fileSource, String fileType) {
-        if (StringUtils.isBlank(fileType)) {
-            return transactionFileRepository.getTransactionFileCount(processSerialNumber, fileSource);
-        } else {
-            return transactionFileRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource,
-                fileType);
-        }
-    }
-
-    @Override
-    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber) {
-        return transactionFileRepository.getUpFileInfoByTabIndexOrProcessSerialNumber(tabIndex, processSerialNumber);
     }
 
     @Override

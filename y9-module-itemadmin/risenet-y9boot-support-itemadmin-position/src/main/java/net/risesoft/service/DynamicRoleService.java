@@ -12,19 +12,19 @@ import net.risesoft.entity.DynamicRole;
 public interface DynamicRoleService {
 
     /**
+     * Description: 根据动态角色Id查找动态角色
+     *
+     * @param id
+     * @return
+     */
+    DynamicRole getById(String id);
+
+    /**
      * 查找当前租户的所有动态角色
      *
      * @return
      */
-    List<DynamicRole> findAll();
-
-    /**
-     * Description: 根据动态角色Id查找动态角色
-     * 
-     * @param id
-     * @return
-     */
-    DynamicRole findOne(String id);
+    List<DynamicRole> listAll();
 
     /**
      * 根据传过来的Id数组删除动态角色

@@ -172,7 +172,7 @@ public class DraftApiImpl implements Draft4PositionApi {
         if (StringUtils.isEmpty(title)) {
             title = "";
         }
-        Page<DraftEntity> pageList = draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
+        Page<DraftEntity> pageList = draftEntityService.pageDraftList(itemId, positionId, page, rows, title, delFlag);
         List<Map<String, Object>> draftList = new ArrayList<>();
         Map<String, Object> formDataMap = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -242,8 +242,7 @@ public class DraftApiImpl implements Draft4PositionApi {
             title = "";
         }
         Page<DraftEntity> pageList =
-            draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
-
+            draftEntityService.pageDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
         int number = (page - 1) * rows;
         List<DraftModel> list = new ArrayList<>();
         for (DraftEntity draftEntity : pageList) {

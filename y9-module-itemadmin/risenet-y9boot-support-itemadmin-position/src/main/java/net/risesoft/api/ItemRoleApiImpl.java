@@ -71,7 +71,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<ItemRoleOrgUnitModel> list = roleService.findCsUser(id, principalType, processInstanceId);
+        List<ItemRoleOrgUnitModel> list = roleService.listCsUser(id, principalType, processInstanceId);
         return Y9Result.success(list);
     }
 
@@ -127,7 +127,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<ItemRoleOrgUnitModel> list = roleService.findCsUserSearch(name, principalType, processInstanceId);
+        List<ItemRoleOrgUnitModel> list = roleService.listCsUserSearch(name, principalType, processInstanceId);
         return Y9Result.success(list);
     }
 
@@ -156,7 +156,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<ItemRoleOrgUnitModel> list =
-            roleService.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+            roleService.listPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
         return Y9Result.success(list);
     }
 
@@ -185,7 +185,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<ItemRoleOrgUnitModel> list = roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey,
+        List<ItemRoleOrgUnitModel> list = roleService.listPermUserByName(name, itemId, processDefinitionId, taskDefKey,
             principalType, processInstanceId);
         return Y9Result.success(list);
     }
@@ -205,7 +205,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<ItemRoleOrgUnitModel> list = roleService.findPermUserSendReceive(id);
+        List<ItemRoleOrgUnitModel> list = roleService.listPermUserSendReceive(id);
         return Y9Result.success(list);
     }
 

@@ -36,7 +36,7 @@ public interface OfficeFollowRepository
     void deleteByProcessInstanceId(String processInstanceId, String userId);
 
     @Query("from OfficeFollow h where h.userId = ?1 and (h.documentTitle like ?2 or h.numbers like ?2) ")
-    public Page<OfficeFollow> findByParamsLike(String userId, String searchName, Pageable pageable);
+    Page<OfficeFollow> findByParamsLike(String userId, String searchName, Pageable pageable);
 
     List<OfficeFollow> findByProcessInstanceId(String processInstanceId);
 
@@ -50,6 +50,6 @@ public interface OfficeFollowRepository
     Page<OfficeFollow> findBySystemNameAndUserId(String systemName, String positionId, Pageable pageable);
 
     @Query("from OfficeFollow h where h.userId = ?1")
-    public Page<OfficeFollow> findByUserId(String userId, Pageable pageable);
+    Page<OfficeFollow> findByUserId(String userId, Pageable pageable);
 
 }

@@ -46,7 +46,7 @@ public class ItemViewConfApiImpl implements ItemViewConfApi {
         @RequestParam String itemId, @RequestParam String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemViewConfModel> modelList = new ArrayList<>();
-        List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
+        List<ItemViewConf> list = itemViewConfService.listByItemIdAndViewType(itemId, viewType);
         ItemViewConfModel model;
         for (ItemViewConf itemViewConf : list) {
             model = new ItemViewConfModel();

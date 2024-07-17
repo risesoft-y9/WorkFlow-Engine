@@ -44,7 +44,7 @@ public class ItemOpinionFrameRoleApiImpl implements ItemOpinionFrameRoleApi {
         @RequestParam String itemOpinionFrameId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameRoleModel> modelList = new ArrayList<>();
-        List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameId(itemOpinionFrameId);
+        List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.listByItemOpinionFrameId(itemOpinionFrameId);
         for (ItemOpinionFrameRole role : list) {
             ItemOpinionFrameRoleModel model = new ItemOpinionFrameRoleModel();
             Y9BeanUtil.copyProperties(role, model);

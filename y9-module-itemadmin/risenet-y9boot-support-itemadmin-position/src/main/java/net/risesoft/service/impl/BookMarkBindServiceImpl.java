@@ -34,7 +34,6 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
     @Transactional
     public void deleteBind(String wordTemplateId, String bookMarkName) {
         bookMarkBindRepository.deleteByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
-
     }
 
     @Override
@@ -43,13 +42,13 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
     }
 
     @Override
-    public List<BookMarkBind> findByWordTemplateId(String wordTemplateId) {
-        return bookMarkBindRepository.findByWordTemplateId(wordTemplateId);
+    public BookMarkBind findByWordTemplateIdAndBookMarkName(String wordTemplateId, String bookMarkName) {
+        return bookMarkBindRepository.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
     }
 
     @Override
-    public BookMarkBind findByWordTemplateIdAndBookMarkName(String wordTemplateId, String bookMarkName) {
-        return bookMarkBindRepository.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
+    public List<BookMarkBind> listByWordTemplateId(String wordTemplateId) {
+        return bookMarkBindRepository.findByWordTemplateId(wordTemplateId);
     }
 
     @Override

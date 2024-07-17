@@ -91,7 +91,7 @@ public class ItemPermissionRestController {
         List<ItemPermission> ipList;
         for (TargetModel targetModel : list) {
             String roleNames = "";
-            ipList = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
+            ipList = itemPermissionService.listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
                 targetModel.getTaskDefKey());
             for (ItemPermission ip : ipList) {
                 if (StringUtils.isEmpty(roleNames)) {
@@ -119,7 +119,7 @@ public class ItemPermissionRestController {
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<Map<String, Object>> list = new ArrayList<>();
         List<ItemPermission> itemPermissionList = itemPermissionService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         for (ItemPermission o : itemPermissionList) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("id", o.getId());

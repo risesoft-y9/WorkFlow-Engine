@@ -15,23 +15,7 @@ public interface ViewTypeService {
 
     /**
      * Description:
-     * 
-     * @return
-     */
-    List<ViewType> findAll();
-
-    /**
-     * Description:
-     * 
-     * @param page
-     * @param rows
-     * @return
-     */
-    Page<ViewType> findAll(int page, int rows);
-
-    /**
-     * Description:
-     * 
+     *
      * @param id
      * @return
      */
@@ -39,7 +23,7 @@ public interface ViewTypeService {
 
     /**
      * Description:
-     * 
+     *
      * @param mark
      * @return
      */
@@ -47,21 +31,37 @@ public interface ViewTypeService {
 
     /**
      * Description:
-     * 
+     *
+     * @return
+     */
+    List<ViewType> listAll();
+
+    /**
+     * Description:
+     *
+     * @param page
+     * @param rows
+     * @return
+     */
+    Page<ViewType> pageAll(int page, int rows);
+
+    /**
+     * Description:
+     *
      * @param id
      */
     void remove(String id);
 
     /**
      * Description:
-     * 
+     *
      * @param ids
      */
     void remove(String[] ids);
 
     /**
      * Description:
-     * 
+     *
      * @param viewType
      * @return
      */
@@ -69,7 +69,7 @@ public interface ViewTypeService {
 
     /**
      * Description:
-     * 
+     *
      * @param viewType
      * @return
      */
@@ -77,7 +77,7 @@ public interface ViewTypeService {
 
     /**
      * Description:
-     * 
+     *
      * @param page
      * @param rows
      * @param keyword

@@ -35,7 +35,7 @@ public class ItemInterfaceBindController {
      */
     @GetMapping(value = "/getBindList")
     public Y9Result<List<ItemInterfaceBind>> getBindList(@RequestParam String itemId) {
-        List<ItemInterfaceBind> list = itemInterfaceBindService.findByItemId(itemId);
+        List<ItemInterfaceBind> list = itemInterfaceBindService.listByItemId(itemId);
         return Y9Result.success(list, "获取成功");
     }
 

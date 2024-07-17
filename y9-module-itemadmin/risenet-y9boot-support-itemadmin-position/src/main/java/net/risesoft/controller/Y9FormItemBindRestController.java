@@ -71,7 +71,7 @@ public class Y9FormItemBindRestController {
     public Y9Result<List<Y9FormItemBind>> bindList(@RequestParam String itemId, @RequestParam String procDefId,
         @RequestParam(required = false) String taskDefKey) {
         List<Y9FormItemBind> eformItemList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, procDefId, taskDefKey);
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, procDefId, taskDefKey);
         for (Y9FormItemBind bind : eformItemList) {
             Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
             bind.setFormName(form != null ? form.getFormName() : "表单不存在");
@@ -130,7 +130,7 @@ public class Y9FormItemBindRestController {
         List<Y9FormVO> listMap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%%");
         List<Y9FormItemBind> bindList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
         for (Y9Form y9Form : list) {
             boolean isbind = false;
             for (Y9FormItemBind bind : bindList) {
@@ -162,7 +162,7 @@ public class Y9FormItemBindRestController {
         Y9FormItemBind eformItemBind;
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
-            eformItemBind = y9FormItemBindService.findOne(id);
+            eformItemBind = y9FormItemBindService.getById(id);
             Y9Form form = y9FormRepository.findById(eformItemBind.getFormId()).orElse(null);
             eformItemBind.setFormName(form != null ? form.getFormName() : "表单不存在");
         } else {
@@ -198,9 +198,9 @@ public class Y9FormItemBindRestController {
             map = new Y9FormItemBinVO();
             String eformNames = "";
             String mobileFormName = "";
-            pcBindList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId,
+            pcBindList = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId,
                 targetModel.getTaskDefKey());
-            mobileBindList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId,
+            mobileBindList = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId,
                 processDefinitionId, targetModel.getTaskDefKey());
             for (Y9FormItemBind eib : pcBindList) {
                 String formId = eib.getFormId();
@@ -285,7 +285,7 @@ public class Y9FormItemBindRestController {
     public Y9Result<List<Y9FormItemMobileBind>> mobileBindList(@RequestParam String itemId,
         @RequestParam String procDefId, @RequestParam(required = false) String taskDefKey) {
         List<Y9FormItemMobileBind> eformItemList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId, procDefId, taskDefKey);
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId, procDefId, taskDefKey);
         for (Y9FormItemMobileBind bind : eformItemList) {
             Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
             bind.setFormName(form != null ? form.getFormName() : "表单不存在");

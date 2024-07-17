@@ -55,7 +55,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @SuppressWarnings("serial")
     @Override
-    public List<ItemInterfaceBind> findByInterfaceId(String id) {
+    public List<ItemInterfaceBind> listInterfaceById(String id) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         List<ItemInterfaceBind> list = itemInterfaceBindRepository.findAll(new Specification<ItemInterfaceBind>() {
             @Override
@@ -77,7 +77,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @SuppressWarnings("serial")
     @Override
-    public List<InterfaceInfo> findInterfaceList(String name, String type, String address) {
+    public List<InterfaceInfo> listInterfaces(String name, String type, String address) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return interfaceInfoRepository.findAll(new Specification<InterfaceInfo>() {
             @Override
@@ -101,7 +101,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @SuppressWarnings("serial")
     @Override
-    public List<InterfaceRequestParams> findRequestParamsList(String name, String type, String id) {
+    public List<InterfaceRequestParams> listRequestParams(String name, String type, String id) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return interfaceRequestParamsRepository.findAll(new Specification<InterfaceRequestParams>() {
             @Override
@@ -126,7 +126,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @SuppressWarnings("serial")
     @Override
-    public List<InterfaceResponseParams> findResponseParamsList(String name, String id) {
+    public List<InterfaceResponseParams> listResponseParamsByNameAndId(String name, String id) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return interfaceResponseParamsRepository.findAll(new Specification<InterfaceResponseParams>() {
             @Override

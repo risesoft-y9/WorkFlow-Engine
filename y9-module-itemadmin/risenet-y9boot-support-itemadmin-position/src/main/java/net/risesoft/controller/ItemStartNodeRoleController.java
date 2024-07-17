@@ -56,7 +56,7 @@ public class ItemStartNodeRoleController {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
-            itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
             String startNode =
                 processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
@@ -66,7 +66,7 @@ public class ItemStartNodeRoleController {
                 itemStartNodeRoleService.initRole(itemId, processDefinitionId, targetModel.getTaskDefKey(),
                     targetModel.getTaskDefName());
             }
-            oldList = itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            oldList = itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         }
         List<Map<String, Object>> rows = new ArrayList<>();
         List<Role> roleList;
@@ -82,7 +82,8 @@ public class ItemStartNodeRoleController {
             mapTemp.put("tabIndex", isnr.getTabIndex());
 
             String roleNames = "";
-            roleList = itemStartNodeRoleService.getRoleList(itemId, processDefinitionId, isnr.getTaskDefKey());
+            roleList = itemStartNodeRoleService.listRoleByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+                processDefinitionId, isnr.getTaskDefKey());
             for (Role role : roleList) {
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = role.getName();
@@ -104,7 +105,7 @@ public class ItemStartNodeRoleController {
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
-            itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
             String startNode =
                 processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
@@ -114,7 +115,7 @@ public class ItemStartNodeRoleController {
                 itemStartNodeRoleService.initRole(itemId, processDefinitionId, targetModel.getTaskDefKey(),
                     targetModel.getTaskDefName());
             }
-            oldList = itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            oldList = itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         }
         return Y9Result.success(oldList, "获取成功");
     }
@@ -130,7 +131,8 @@ public class ItemStartNodeRoleController {
     @GetMapping(value = "/list")
     public Y9Result<List<Role>> list(@RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam String taskDefKey) {
-        List<Role> roleList = itemStartNodeRoleService.getRoleList(itemId, processDefinitionId, taskDefKey);
+        List<Role> roleList = itemStartNodeRoleService.listRoleByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+            processDefinitionId, taskDefKey);
         return Y9Result.success(roleList, "获取成功");
     }
 

@@ -20,7 +20,7 @@ public interface InterfaceService {
      * @param id
      * @return
      */
-    List<ItemInterfaceBind> findByInterfaceId(String id);
+    List<ItemInterfaceBind> listInterfaceById(String id);
 
     /**
      * 获取接口列表
@@ -30,7 +30,7 @@ public interface InterfaceService {
      * @param address
      * @return
      */
-    List<InterfaceInfo> findInterfaceList(String name, String type, String address);
+    List<InterfaceInfo> listInterfaces(String name, String type, String address);
 
     /**
      * 获取接口请求参数列表
@@ -40,7 +40,7 @@ public interface InterfaceService {
      * @param id
      * @return
      */
-    List<InterfaceRequestParams> findRequestParamsList(String name, String type, String id);
+    List<InterfaceRequestParams> listRequestParams(String name, String type, String id);
 
     /**
      * 获取接口响应参数列表
@@ -49,7 +49,7 @@ public interface InterfaceService {
      * @param id
      * @return
      */
-    List<InterfaceResponseParams> findResponseParamsList(String name, String id);
+    List<InterfaceResponseParams> listResponseParamsByNameAndId(String name, String id);
 
     /**
      * 移除接口信息

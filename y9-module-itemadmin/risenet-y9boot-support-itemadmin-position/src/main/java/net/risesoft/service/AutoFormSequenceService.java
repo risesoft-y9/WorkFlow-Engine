@@ -36,7 +36,7 @@ public class AutoFormSequenceService {
         StringBuilder stringBuilder = new StringBuilder();
         int numberLength = Integer.toString(sequence).length();
         if (patternLength > 0) {
-            stringBuilder.append(Integer.toString(sequence));
+            stringBuilder.append(sequence);
             for (int i = 1; i <= (patternLength - numberLength); i++) {
                 stringBuilder.insert(0, "0");
             }
@@ -58,7 +58,7 @@ public class AutoFormSequenceService {
         Integer sequence = getSequence(tenantId, labelName, character);
         String result = "";
         if (sequence > 0) {
-            DocumentNumberDetail yanl = documentNumberDetailService.findAll().get(0);
+            DocumentNumberDetail yanl = documentNumberDetailService.listAll().get(0);
             result = calculateSequence(yanl.getNumLength(), sequence);
             if (StringUtils.isNotBlank(result)) {
                 Integer calendarYear = yanl.getCalendarYear();
@@ -81,13 +81,13 @@ public class AutoFormSequenceService {
         Integer sequence = 1;
         if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
             && StringUtils.isNotBlank(character)) {
-            DocumentNumberDetail yanl = documentNumberDetailService.findAll().get(0);
+            DocumentNumberDetail yanl = documentNumberDetailService.listAll().get(0);
             AutoFormSequence autoFormSequence =
                 autoFormSequenceRepository.findOne(tenantId, labelName, character, yanl.getCalendarYear());
             if (autoFormSequence != null && autoFormSequence.getSequenceValue() != null) {
                 sequence = autoFormSequence.getSequenceValue();
             } else {
-                sequence = documentNumberDetailService.findAll().get(0).getSequenceInitValue();
+                sequence = documentNumberDetailService.listAll().get(0).getSequenceInitValue();
                 AutoFormSequence afs = new AutoFormSequence();
                 afs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 afs.setCharacterValue(character);
@@ -112,7 +112,7 @@ public class AutoFormSequenceService {
     public void updateSequence(String tenantId, String labelName, String character) {
         if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
             && StringUtils.isNotBlank(character)) {
-            DocumentNumberDetail yanl = documentNumberDetailService.findAll().get(0);
+            DocumentNumberDetail yanl = documentNumberDetailService.listAll().get(0);
             autoFormSequenceRepository.updateSequence(tenantId, labelName, character, yanl.getCalendarYear());
         }
     }

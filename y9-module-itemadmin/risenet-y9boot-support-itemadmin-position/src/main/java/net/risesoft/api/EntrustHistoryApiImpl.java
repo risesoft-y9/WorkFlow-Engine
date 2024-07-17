@@ -45,7 +45,7 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
     public Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String ownerId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<EntrustHistory> ehList = entrustHistoryService.list(ownerId, itemId);
+        List<EntrustHistory> ehList = entrustHistoryService.listByOwnerIdAndItemId(ownerId, itemId);
         List<EntrustHistoryModel> list = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
         return Y9Result.success(list, "获取成功");
     }
@@ -63,7 +63,7 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
     public Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String ownerId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<EntrustHistory> ehList = entrustHistoryService.list(ownerId);
+        List<EntrustHistory> ehList = entrustHistoryService.listByOwnerId(ownerId);
         List<EntrustHistoryModel> list = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
         return Y9Result.success(list, "获取成功");
     }

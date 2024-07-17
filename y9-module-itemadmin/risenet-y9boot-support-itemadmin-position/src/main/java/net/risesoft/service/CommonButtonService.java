@@ -20,19 +20,19 @@ public interface CommonButtonService {
     boolean checkCustomId(String customId);
 
     /**
-     * 查找所有
-     *
-     * @return
-     */
-    List<CommonButton> findAll();
-
-    /**
      * 根据唯一标示查找
      *
      * @param id
      * @return
      */
-    CommonButton findOne(String id);
+    CommonButton getById(String id);
+
+    /**
+     * 查找所有
+     *
+     * @return
+     */
+    List<CommonButton> listAll();
 
     /**
      * 根据传进来的Id集合删除

@@ -37,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author qinman
  * 
  * @author zhangchongjie
- * 
+ *
  * @date 2022/12/20
  */
 @Service
@@ -61,7 +61,7 @@ public class RoleServiceImpl implements RoleService {
     private final CustomGroupApi customGroupApi;
 
     @Override
-    public List<ItemRoleOrgUnitModel> findCsUser(String id, Integer principalType, String processInstanceId) {
+    public List<ItemRoleOrgUnitModel> listCsUser(String id, Integer principalType, String processInstanceId) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
@@ -171,7 +171,7 @@ public class RoleServiceImpl implements RoleService {
      * @return
      */
     @Override
-    public List<ItemRoleOrgUnitModel> findCsUserSearch(String name, Integer principalType, String processInstanceId) {
+    public List<ItemRoleOrgUnitModel> listCsUserSearch(String name, Integer principalType, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
@@ -259,13 +259,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<ItemRoleOrgUnitModel> findPermUser(String itemId, String processDefinitionId, String taskDefKey,
+    public List<ItemRoleOrgUnitModel> listPermUser(String itemId, String processDefinitionId, String taskDefKey,
         Integer principalType, String id, String processInstanceId) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<ItemPermission> list = itemPermissionService
-                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+                .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
             if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
                 if (StringUtils.isBlank(id)) {
                     List<OrgUnit> deptList = new ArrayList<>();
@@ -280,8 +280,8 @@ public class RoleServiceImpl implements RoleService {
                             deptList.add(orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData());
                         }
                         if (o.getRoleType() == 4) {
-                            List<OrgUnit> orgUnitList =
-                                dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
+                            List<OrgUnit> orgUnitList = dynamicRoleMemberService
+                                .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                             for (OrgUnit orgUnit : orgUnitList) {
                                 if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                                     || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
@@ -364,8 +364,8 @@ public class RoleServiceImpl implements RoleService {
                         orgList.add(orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData());
                     }
                     if (o.getRoleType() == 4) {
-                        List<OrgUnit> orgUnitList =
-                            dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
+                        List<OrgUnit> orgUnitList = dynamicRoleMemberService
+                            .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                         for (OrgUnit orgUnit : orgUnitList) {
                             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                                 orgList.add(orgUnit);
@@ -435,14 +435,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<OrgUnit> findPermUser4SUbmitTo(String itemId, String processDefinitionId, String taskDefKey,
+    public List<OrgUnit> listPermUser4SUbmitTo(String itemId, String processDefinitionId, String taskDefKey,
         String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> orgList = new ArrayList<>();
         try {
             List<OrgUnit> orgListTemp = new ArrayList<>();
             List<ItemPermission> list = itemPermissionService
-                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+                .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
             for (ItemPermission o : list) {
                 /*
                  * 1暂时只获取角色中的岗位
@@ -461,8 +461,8 @@ public class RoleServiceImpl implements RoleService {
                  * 4暂时只解析动态角色里面的岗位
                  */
                 if (o.getRoleType() == 4) {
-                    List<OrgUnit> orgUnitList =
-                        dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
+                    List<OrgUnit> orgUnitList = dynamicRoleMemberService
+                        .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                     for (OrgUnit orgUnit : orgUnitList) {
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                             orgListTemp.add(orgUnit);
@@ -488,10 +488,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<ItemRoleOrgUnitModel> findPermUserByName(String name, String itemId, String processDefinitionId,
+    public List<ItemRoleOrgUnitModel> listPermUserByName(String name, String itemId, String processDefinitionId,
         String taskDefKey, Integer principalType, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> list = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
+        List<ItemPermission> list = itemPermissionService.listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
             processDefinitionId, taskDefKey);
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
@@ -504,8 +504,8 @@ public class RoleServiceImpl implements RoleService {
                         roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData());
                 }
                 if (o.getRoleType() == 4) {
-                    List<OrgUnit> orgUnitList =
-                        dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
+                    List<OrgUnit> orgUnitList = dynamicRoleMemberService
+                        .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                     for (OrgUnit orgUnit : orgUnitList) {
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                             || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
@@ -582,8 +582,8 @@ public class RoleServiceImpl implements RoleService {
                         .addAll(roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData());
                 }
                 if (o.getRoleType() == 4) {
-                    List<OrgUnit> orgUnitList =
-                        dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
+                    List<OrgUnit> orgUnitList = dynamicRoleMemberService
+                        .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                     for (OrgUnit orgUnit : orgUnitList) {
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                             orgList.add(orgUnit);
@@ -663,7 +663,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<ItemRoleOrgUnitModel> findPermUserSendReceive(String id) {
+    public List<ItemRoleOrgUnitModel> listPermUserSendReceive(String id) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {

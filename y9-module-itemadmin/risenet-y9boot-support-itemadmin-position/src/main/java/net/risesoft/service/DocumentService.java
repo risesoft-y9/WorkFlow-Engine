@@ -109,14 +109,14 @@ public interface DocumentService {
      *
      * @return
      */
-    List<ItemListModel> getItemList();
+    List<ItemListModel> listItems();
 
     /**
      * 获取个人有权限列表
      *
      * @return
      */
-    List<ItemListModel> getMyItemList();
+    List<ItemListModel> listMyItems();
 
     /**
      * Description: 获取菜单

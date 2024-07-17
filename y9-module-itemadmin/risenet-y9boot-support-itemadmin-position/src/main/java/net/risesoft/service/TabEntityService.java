@@ -12,19 +12,19 @@ import net.risesoft.entity.TabEntity;
 public interface TabEntityService {
 
     /**
-     * 查找所有的页签实体
-     *
-     * @return
-     */
-    List<TabEntity> findAll();
-
-    /**
      * 根据唯一标示查找页签
      *
      * @param id
      * @return
      */
-    TabEntity findOne(String id);
+    TabEntity getById(String id);
+
+    /**
+     * 查找所有的页签实体
+     *
+     * @return
+     */
+    List<TabEntity> listAll();
 
     /**
      * 根据传进来的Id集合删除页签实体

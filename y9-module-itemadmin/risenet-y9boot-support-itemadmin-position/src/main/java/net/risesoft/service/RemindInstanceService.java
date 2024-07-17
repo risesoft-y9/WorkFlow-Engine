@@ -13,12 +13,20 @@ import net.risesoft.pojo.Y9Result;
 public interface RemindInstanceService {
 
     /**
+     * 根据流程实例id获取个人消息提醒设置
+     *
+     * @param processInstanceId
+     * @return
+     */
+    RemindInstance getRemindInstance(String processInstanceId);
+
+    /**
      * 根据流程实例id获取消息提醒设置
      *
      * @param processInstanceId
      * @return
      */
-    List<RemindInstance> findRemindInstance(String processInstanceId);
+    List<RemindInstance> listByProcessInstanceId(String processInstanceId);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -27,8 +35,7 @@ public interface RemindInstanceService {
      * @param taskKey
      * @return
      */
-    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String processInstanceId,
-        String taskKey);
+    List<RemindInstance> listByProcessInstanceIdAndArriveTaskKey(String processInstanceId, String taskKey);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -37,8 +44,7 @@ public interface RemindInstanceService {
      * @param taskKey
      * @return
      */
-    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String processInstanceId,
-        String taskKey);
+    List<RemindInstance> listByProcessInstanceIdAndCompleteTaskKey(String processInstanceId, String taskKey);
 
     /**
      * 根据流程实例id和提醒类型获取消息提醒设置
@@ -47,8 +53,7 @@ public interface RemindInstanceService {
      * @param remindType
      * @return
      */
-    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndRemindType(String processInstanceId,
-        String remindType);
+    List<RemindInstance> listByProcessInstanceIdAndRemindType(String processInstanceId, String remindType);
 
     /**
      * 根据流程实例id和任务id获取消息提醒设置
@@ -57,15 +62,7 @@ public interface RemindInstanceService {
      * @param taskId
      * @return
      */
-    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndTaskId(String processInstanceId, String taskId);
-
-    /**
-     * 根据流程实例id获取个人消息提醒设置
-     *
-     * @param processInstanceId
-     * @return
-     */
-    RemindInstance getRemindInstance(String processInstanceId);
+    List<RemindInstance> listByProcessInstanceIdAndTaskId(String processInstanceId, String taskId);
 
     /**
      * 保存流程实例消息提醒

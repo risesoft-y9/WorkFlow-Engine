@@ -34,18 +34,18 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
     private final OrgUnitApi orgUnitApi;
 
     @Override
-    public List<TaoHongTemplateType> findAll() {
+    public TaoHongTemplateType getById(String id) {
+        return taoHongTemplateTypeRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<TaoHongTemplateType> listAll() {
         return taoHongTemplateTypeRepository.findAll();
     }
 
     @Override
-    public List<TaoHongTemplateType> findByBureauId(String bureauId) {
+    public List<TaoHongTemplateType> listByBureauId(String bureauId) {
         return taoHongTemplateTypeRepository.findByBureauId(bureauId);
-    }
-
-    @Override
-    public TaoHongTemplateType findOne(String id) {
-        return taoHongTemplateTypeRepository.findById(id).orElse(null);
     }
 
     @Override

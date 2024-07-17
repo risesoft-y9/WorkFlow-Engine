@@ -91,28 +91,65 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     }
 
     @Override
-    public List<ProcessTrack> findByTaskId(String taskId) {
-        return processTrackRepository.findByTaskId(taskId);
-    }
-
-    @Override
-    public List<ProcessTrack> findByTaskIdAndEndTimeIsNull(String taskId) {
-        return processTrackRepository.findByTaskIdAndEndTimeIsNull(taskId, "");
-    }
-
-    @Override
-    public List<ProcessTrack> findByTaskIdAsc(String taskId) {
-        return processTrackRepository.findByTaskIdAsc(taskId);
-    }
-
-    @Override
     public ProcessTrack findOne(String id) {
         return processTrackRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(String processInstanceId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<HistoricActivityInstanceModel> list = new ArrayList<>();
+        try {
+            List<net.risesoft.model.processadmin.HistoricActivityInstanceModel> list1 =
+                historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "").getData();
+            String year = "";
+            if (list1 == null || list1.isEmpty()) {
+                OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                year = info.getStartTime().substring(0, 4);
+                list1 = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year).getData();
+            }
+            for (net.risesoft.model.processadmin.HistoricActivityInstanceModel task : list1) {
+                String assignee = task.getAssignee();
+                task.setExecutionId("");
+                task.setCalledProcessInstanceId("");
+                if (assignee != null) {
+                    // 意见
+                    List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
+                        task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
+                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
+                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
+                    if (employee != null) {
+                        String employeeName = employee.getName();
+                        HistoricVariableInstanceModel zhuBan = null;
+                        try {
+                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(),
+                                SysVariables.PARALLELSPONSOR, year).getData();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (zhuBan != null) {// 办理人
+                            task.setCalledProcessInstanceId(employeeName + "(主办)");
+                        } else {
+                            task.setCalledProcessInstanceId(employeeName);
+                        }
+                    }
+                    if (task.getStartTime() != null && task.getEndTime() != null) {// 办理时长
+                        task.setExecutionId(longTime(task.getStartTime(), task.getEndTime()));
+                    }
+                }
+                HistoricActivityInstanceModel task1 = new HistoricActivityInstanceModel();
+                Y9BeanUtil.copyProperties(task, task1);
+                list.add(task1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.success(list, "获取成功");
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public List<HistoryProcessModel> getListMap(String processInstanceId) {
+    public List<HistoryProcessModel> listByProcessInstanceId(String processInstanceId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<HistoryProcessModel> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -272,7 +309,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
              * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
              */
             Date endTime1 = hai.getEndTime();
-            List<ProcessTrack> ptList = this.findByTaskId(taskId);
+            List<ProcessTrack> ptList = this.listByTaskId(taskId);
             if (ptList.size() >= 1) {
                 model.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
                 try {
@@ -368,7 +405,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<HistoryProcessModel> getListMap4Simple(String processInstanceId) {
+    public List<HistoryProcessModel> listByProcessInstanceId4Simple(String processInstanceId) {
         List<HistoryProcessModel> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> results =
@@ -445,7 +482,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
              * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
              */
             Date endTime1 = hai.getEndTime();
-            List<ProcessTrack> ptList = this.findByTaskId(taskId);
+            List<ProcessTrack> ptList = this.listByTaskId(taskId);
             if (ptList.size() >= 1) {
 
                 history.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
@@ -512,55 +549,18 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     }
 
     @Override
-    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<HistoricActivityInstanceModel> list = new ArrayList<>();
-        try {
-            List<net.risesoft.model.processadmin.HistoricActivityInstanceModel> list1 =
-                historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "").getData();
-            String year = "";
-            if (list1 == null || list1.isEmpty()) {
-                OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                year = info.getStartTime().substring(0, 4);
-                list1 = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year).getData();
-            }
-            for (net.risesoft.model.processadmin.HistoricActivityInstanceModel task : list1) {
-                String assignee = task.getAssignee();
-                task.setExecutionId("");
-                task.setCalledProcessInstanceId("");
-                if (assignee != null) {
-                    // 意见
-                    List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
-                        task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
-                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
-                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
-                    if (employee != null) {
-                        String employeeName = employee.getName();
-                        HistoricVariableInstanceModel zhuBan = null;
-                        try {
-                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(),
-                                SysVariables.PARALLELSPONSOR, year).getData();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (zhuBan != null) {// 办理人
-                            task.setCalledProcessInstanceId(employeeName + "(主办)");
-                        } else {
-                            task.setCalledProcessInstanceId(employeeName);
-                        }
-                    }
-                    if (task.getStartTime() != null && task.getEndTime() != null) {// 办理时长
-                        task.setExecutionId(longTime(task.getStartTime(), task.getEndTime()));
-                    }
-                }
-                HistoricActivityInstanceModel task1 = new HistoricActivityInstanceModel();
-                Y9BeanUtil.copyProperties(task, task1);
-                list.add(task1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.success(list, "获取成功");
+    public List<ProcessTrack> listByTaskId(String taskId) {
+        return processTrackRepository.findByTaskId(taskId);
+    }
+
+    @Override
+    public List<ProcessTrack> listByTaskIdAndEndTimeIsNull(String taskId) {
+        return processTrackRepository.findByTaskIdAndEndTimeIsNull(taskId, "");
+    }
+
+    @Override
+    public List<ProcessTrack> listByTaskIdAsc(String taskId) {
+        return processTrackRepository.findByTaskIdAsc(taskId);
     }
 
     private final String longTime(Date startTime, Date endTime) {

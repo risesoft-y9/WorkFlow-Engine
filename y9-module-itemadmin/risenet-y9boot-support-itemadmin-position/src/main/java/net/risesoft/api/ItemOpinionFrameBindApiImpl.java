@@ -48,7 +48,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     public Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam String tenantId,
         @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemId(itemId);
+        List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.listByItemId(itemId);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
@@ -74,7 +74,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         @RequestParam String itemId, @RequestParam String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list =
-            itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
@@ -103,7 +103,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         @RequestParam String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
@@ -132,7 +132,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         @RequestParam String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();

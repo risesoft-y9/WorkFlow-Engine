@@ -13,12 +13,27 @@ import net.risesoft.entity.ItemLinkRole;
 public interface ItemLinkBindService {
 
     /**
+     * 复制事项链接绑定信息
+     *
+     * @param itemId
+     * @param newItemId
+     */
+    void copyBindInfo(String itemId, String newItemId);
+
+    /**
+     * 删除事项链接绑定信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
+
+    /**
      * 根据事项id获取绑定列表
      *
      * @param itemId
      * @return
      */
-    List<ItemLinkBind> findByItemId(String itemId);
+    List<ItemLinkBind> listByItemId(String itemId);
 
     /**
      * 根据事项链接绑定id获取权限绑定列表
@@ -26,7 +41,7 @@ public interface ItemLinkBindService {
      * @param itemLinkId
      * @return
      */
-    List<ItemLinkRole> findByItemLinkId(String itemLinkId);
+    List<ItemLinkRole> listByItemLinkId(String itemLinkId);
 
     /**
      * 根据链接id获取绑定关系列表
@@ -34,7 +49,7 @@ public interface ItemLinkBindService {
      * @param linkId
      * @return
      */
-    List<ItemLinkBind> findByLinkId(String linkId);
+    List<ItemLinkBind> listByLinkId(String linkId);
 
     /**
      * 获取链接绑定角色列表
@@ -42,7 +57,7 @@ public interface ItemLinkBindService {
      * @param itemLinkId
      * @return
      */
-    List<ItemLinkRole> getBindRoleList(String itemLinkId);
+    List<ItemLinkRole> listWithBindRole(String itemLinkId);
 
     /**
      * 根据id删除绑定关系
@@ -74,19 +89,4 @@ public interface ItemLinkBindService {
      * @return
      */
     void saveItemLinkBind(String itemId, String[] linkIds);
-
-    /**
-     * 复制事项链接绑定信息
-     * 
-     * @param itemId
-     * @param newItemId
-     */
-    void copyBindInfo(String itemId, String newItemId);
-
-    /**
-     * 删除事项链接绑定信息
-     * 
-     * @param itemId
-     */
-    void deleteBindInfo(String itemId);
 }

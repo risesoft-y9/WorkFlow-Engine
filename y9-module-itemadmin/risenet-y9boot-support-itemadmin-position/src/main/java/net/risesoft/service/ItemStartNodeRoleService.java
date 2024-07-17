@@ -14,15 +14,22 @@ public interface ItemStartNodeRoleService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      */
     void copyBind(String itemId, String processDefinitionId);
 
     /**
+     * Description: 删除绑定路由节点角色信息
+     *
+     * @param itemId
+     */
+    void deleteBindInfo(String itemId);
+
+    /**
      * Description:
-     * 
+     *
      * @param id
      * @return
      */
@@ -30,16 +37,7 @@ public interface ItemStartNodeRoleService {
 
     /**
      * Description:
-     * 
-     * @param itemId
-     * @param processDefinitionId
-     * @return
-     */
-    List<ItemStartNodeRole> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
-
-    /**
-     * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -50,17 +48,7 @@ public interface ItemStartNodeRoleService {
 
     /**
      * Description:
-     * 
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    List<Role> getRoleList(String itemId, String processDefinitionId, String taskDefKey);
-
-    /**
-     * Description:
-     * 
+     *
      * @param itemId
      * @return
      */
@@ -68,7 +56,7 @@ public interface ItemStartNodeRoleService {
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -78,7 +66,27 @@ public interface ItemStartNodeRoleService {
 
     /**
      * Description:
-     * 
+     *
+     * @param itemId
+     * @param processDefinitionId
+     * @return
+     */
+    List<ItemStartNodeRole> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
+
+    /**
+     * Description:
+     *
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    List<Role> listRoleByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
+
+    /**
+     * Description:
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -93,25 +101,18 @@ public interface ItemStartNodeRoleService {
      */
     /**
      * Description:
-     * 
+     *
      * @param idAndTabIndexs
      */
     void saveOrder(String[] idAndTabIndexs);
 
     /**
      * Description:
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
      * @param roleIds
      */
     void saveRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds);
-
-    /**
-     * Description: 删除绑定路由节点角色信息
-     * 
-     * @param itemId
-     */
-    void deleteBindInfo(String itemId);
 }

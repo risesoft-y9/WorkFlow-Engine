@@ -1,11 +1,12 @@
 package net.risesoft.repository.jpa;
 
-import net.risesoft.entity.WordTemplate;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
+import net.risesoft.entity.WordTemplate;
 
 /**
  * @author qinman
@@ -20,5 +21,6 @@ public interface WordTemplateRepository
 
     List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId);
 
-    public List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,String fileName);
+    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,
+                                                                                String fileName);
 }
