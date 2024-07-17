@@ -2,11 +2,14 @@ package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.PersonRoleApi;
@@ -29,6 +33,7 @@ import net.risesoft.entity.OrganWordProperty;
 import net.risesoft.entity.OrganWordUseHistory;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.ItemOrganWordEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OrganWordModel;
@@ -52,6 +57,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class OrganWordServiceImpl implements OrganWordService {
 
@@ -148,7 +154,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 status = 2;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("验证编号失败", e);
         }
         return status;
     }
@@ -217,7 +223,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 return 1;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("验证部门名称编号失败", e);
             return 3;
         }
     }
@@ -428,9 +434,35 @@ public class OrganWordServiceImpl implements OrganWordService {
                 organWordDetailService.save(owd);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取编号失败", e);
         }
         return number;
+    }
+
+    @Override
+    public String getTempNumber(String custom, String characterValue, String itemId) {
+        String numberStr = "";
+        Integer number = 0;
+
+        try {
+            OrganWord organWord = this.findByCustom(custom);
+            if (null != organWord) {
+                String numberType = organWord.getNumberType();
+                if (numberType.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
+                    Integer oldNumber = organWordDetailService.getMaxNumber(custom, itemId);
+                    if (null != oldNumber) {
+                        number = oldNumber + 1;
+                    } else {
+                        number = 1;
+                    }
+                    String formattedNumber = String.format("%0" + organWord.getNumberLength() + "d", number);
+                    numberStr = formattedNumber;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取临时编号失败", e);
+        }
+        return numberStr;
     }
 
     @Override
@@ -465,7 +497,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 return map;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取部门名称编号失败", e);
             map.put("numberStr", "编号错误");
             map.put("numberTemp", 0);
         }
@@ -548,7 +580,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 organWordDetailService.save(owd);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取编号失败", e);
         }
         return number;
     }
@@ -585,19 +617,62 @@ public class OrganWordServiceImpl implements OrganWordService {
             if (!hasPermission) {
                 return Collections.emptyList();
             } else {
-                List<OrganWordProperty> propertyList = organWordPropertyService.listByOrganWordId(organWord.getId());
                 List<OrganWordPropertyModel> retList = new ArrayList<>();
-                for (OrganWordProperty op : propertyList) {
+                if (custom.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
                     OrganWordPropertyModel editMap = new OrganWordPropertyModel();
                     editMap.setHasPermission(true);
-                    editMap.setName(op.getName());
-                    editMap.setInitNumber(op.getInitNumber());
+                    editMap.setName(ItemOrganWordEnum.PURENUMBER.getName());
                     retList.add(editMap);
+                } else {
+                    List<OrganWordProperty> propertyList =
+                        organWordPropertyService.listByOrganWordId(organWord.getId());
+                    for (OrganWordProperty op : propertyList) {
+                        OrganWordPropertyModel editMap = new OrganWordPropertyModel();
+                        editMap.setHasPermission(true);
+                        editMap.setName(op.getName());
+                        editMap.setInitNumber(op.getInitNumber());
+                        retList.add(editMap);
+                    }
                 }
                 return retList;
             }
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<OrganWordPropertyModel> listByCustomNumber(String itemId, String processDefinitionId,
+        String taskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPosition().getId();
+
+        List<OrganWordPropertyModel> ret_list = new ArrayList<>();
+        List<ItemOrganWordBind> bindList = itemOrganWordBindService
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+        if (!bindList.isEmpty()) {
+            for (ItemOrganWordBind bind : bindList) {
+                boolean hasPermission = false;
+                OrganWordPropertyModel editMap = new OrganWordPropertyModel();
+                List<String> roleIds = bind.getRoleIds();
+                if (roleIds.isEmpty()) {
+                    editMap.setHasPermission(true);
+                } else {
+                    for (String roleId : roleIds) {
+                        hasPermission = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
+                        if (hasPermission) {
+                            break;
+                        }
+                    }
+                }
+                editMap.setCustom(bind.getOrganWordCustom());
+                ret_list.add(editMap);
+            }
+        } else {
+            OrganWordPropertyModel editMap = new OrganWordPropertyModel();
+            editMap.setHasPermission(false);
+            ret_list.add(editMap);
+        }
+        return ret_list;
     }
 
     @Override
@@ -644,5 +719,102 @@ public class OrganWordServiceImpl implements OrganWordService {
         newOw.setNumberLength(organWord.getNumberLength());
         return organWordRepository.save(newOw);
 
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Map<String, Object> saveNumberString(String custom, String numberString, String itemId,
+        String processSerialNumber) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Map<String, Object> ret_map = new HashMap<String, Object>();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        try {
+            OrganWordUseHistory hisNumber =
+                organWordUseHistoryService.findByItemIdAndNumberStringAndCustom(itemId, numberString, custom);
+            if (null == hisNumber) {
+                OrganWord organWord = this.findByCustom(custom);
+                String numberType = organWord.getNumberType();
+                if (numberType.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
+                    OrganWordDetail oldDetail = organWordDetailService.findByCustomAndItemId(custom, itemId);
+                    if (null == oldDetail) {
+                        OrganWordDetail detail = new OrganWordDetail();
+                        detail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                        detail.setNumber(1);
+                        detail.setCustom(custom);
+                        detail.setTenantId(tenantId);
+                        detail.setItemId(itemId);
+                        detail.setCharacterValue(numberString);
+                        detail.setYear(year);
+                        detail.setCreateTime(sdf.format(new Date()));
+                        organWordDetailService.save(detail);
+                    } else {
+                        oldDetail.setNumber(oldDetail.getNumber() + 1);
+                        organWordDetailService.save(oldDetail);
+                    }
+                } else if (numberType.equals(ItemOrganWordEnum.BUREAUAREANUMBER.getValue())) {
+                    String characterValue = numberString.substring(0, 2);
+                    String str = numberString.substring(2);
+                    Pattern pattern = Pattern.compile("(?<=\\d{2})(\\d+)"); // 定义正则表达式模式
+                    Matcher matcher = pattern.matcher(str); // 创建Matcher对象
+                    String replaceStr = "";
+                    if (matcher.find()) { // 查找第一个匹配项
+                        replaceStr = matcher.group(); // 获取匹配到的结果
+                    } else {
+                        replaceStr = str;
+                    }
+                    int number = Integer.valueOf(replaceStr);
+                    OrganWordDetail oldDetail =
+                        organWordDetailService.findByCustomAndCharacterValueAndItemId(custom, characterValue, itemId);
+                    if (null == oldDetail) {
+                        OrganWordDetail detail = new OrganWordDetail();
+                        detail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                        detail.setNumber(number);
+                        detail.setCustom(custom);
+                        detail.setTenantId(tenantId);
+                        detail.setCharacterValue(characterValue);
+                        detail.setItemId(itemId);
+                        detail.setYear(year);
+                        detail.setCreateTime(sdf.format(new Date()));
+                        organWordDetailService.save(detail);
+                    } else {
+                        oldDetail.setNumber(oldDetail.getNumber() + 1);
+                        organWordDetailService.save(oldDetail);
+                    }
+                }
+
+                OrganWordUseHistory history = new OrganWordUseHistory();
+                history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                history.setNumberString(numberString);
+                history.setCustom(custom);
+                history.setProcessSerialNumber(processSerialNumber);
+                history.setItemId(itemId);
+                history.setUserId(person.getPersonId());
+                history.setUserName(person.getName());
+                history.setTenantId(tenantId);
+                history.setCreateTime(sdf.format(new Date()));
+                organWordUseHistoryService.save(history);
+                ret_map.put("success", true);
+                ret_map.put("msg", "保存编号成功");
+            } else {
+                OrganWordUseHistory history =
+                    organWordUseHistoryService.findByItemIdAndNumberStrAndCustomAndProcessSerialNumber(itemId,
+                        numberString, custom, processSerialNumber);
+                if (null != history) {
+                    ret_map.put("success", true);
+                    ret_map.put("msg", "当前编号已经保存");
+                } else {
+                    ret_map.put("success", false);
+                    ret_map.put("msg", "当前编号已经被占用，请双击编号框重新生成新的编号！");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ret_map.put("success", false);
+            ret_map.put("msg", "出现异常，保存编号失败");
+        }
+        return ret_map;
     }
 }

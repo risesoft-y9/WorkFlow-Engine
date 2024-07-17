@@ -94,6 +94,16 @@ public interface OrganWordService {
     Integer getNumber(String custom, String characterValue, Integer year, Integer common, String itemId);
 
     /**
+     * 获取临时编号
+     *
+     * @param custom
+     * @param characterValue
+     * @param itemId
+     * @return
+     */
+    String getTempNumber(String custom, String characterValue, String itemId);
+
+    /**
      * 当前部门的自动编号
      *
      * @param custom
@@ -136,6 +146,16 @@ public interface OrganWordService {
         String custom);
 
     /**
+     * Description: 查找有权限的机构代字
+     *
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    List<OrganWordPropertyModel> listByCustomNumber(String itemId, String processDefinitionId, String taskDefKey);
+
+    /**
      * 获取所有的编号列表
      *
      * @param rows
@@ -158,4 +178,15 @@ public interface OrganWordService {
      * @return
      */
     OrganWord save(OrganWord organWord);
+
+    /**
+     * 保存编号字符串
+     *
+     * @param custom
+     * @param numberString
+     * @param itemId
+     * @param processSerialNumber
+     * @return
+     */
+    Map<String, Object> saveNumberString(String custom, String numberString, String itemId, String processSerialNumber);
 }

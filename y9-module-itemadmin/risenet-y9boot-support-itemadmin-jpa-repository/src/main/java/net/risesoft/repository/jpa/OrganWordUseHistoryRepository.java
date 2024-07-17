@@ -18,4 +18,9 @@ public interface OrganWordUseHistoryRepository
     OrganWordUseHistory findByItemIdAndNumberString(String itemId, String numberString);
 
     OrganWordUseHistory findByProcessSerialNumberAndCustom(String processInstanceId, String custom);
+
+    OrganWordUseHistory findByItemIdAndNumberStringAndCustom(String itemId, String numberString, String custom);
+
+    OrganWordUseHistory findByItemIdAndNumberStringAndCustomAndProcessSerialNumber(String itemId, String numberString,
+        String custom, String processSerialNumber);
 }

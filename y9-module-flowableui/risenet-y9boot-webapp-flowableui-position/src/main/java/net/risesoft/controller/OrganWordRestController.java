@@ -95,6 +95,21 @@ public class OrganWordRestController {
     }
 
     /**
+     * 获取有权限的特殊编号配置
+     * 
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    @RequestMapping(value = "/findByCustomNumber", method = RequestMethod.GET, produces = "application/json")
+    public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        return organWordApi.findByCustomNumber(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
+    }
+
+    /**
      * 获取最新编号
      *
      * @param custom 编号标识
@@ -120,6 +135,50 @@ public class OrganWordRestController {
             LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取最新编号
+     * 
+     * @param itemId
+     * @param custom
+     * @return
+     */
+    @RequestMapping(value = "/getTempNumber", method = RequestMethod.GET, produces = "application/json")
+    public Y9Result<String> getTempNumber(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String custom, @RequestParam @NotBlank String processSerialNumber) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
+        try {
+            String tempNumber = organWordApi.getTempNumber(tenantId, userId, custom, "", itemId).getData();
+            return Y9Result.success(tempNumber, "获取最新编号成功");
+        } catch (Exception e) {
+            LOGGER.error("获取最新编号失败", e);
+        }
+        return Y9Result.failure("获取最新编号失败");
+    }
+
+    /**
+     * 保存编号
+     * 
+     * @param numberString
+     * @param itemId
+     * @param processSerialNumber
+     * @return
+     */
+    @RequestMapping(value = "/saveNumberString", method = RequestMethod.POST, produces = "application/json")
+    public Y9Result<Map<String, Object>> saveNumberString(@RequestParam String custom,
+        @RequestParam String numberString, @RequestParam String itemId, @RequestParam String processSerialNumber) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
+        try {
+            Map<String, Object> map = organWordApi
+                .saveNumberString(tenantId, userId, custom, numberString, itemId, processSerialNumber).getData();
+            return Y9Result.success(map, "保存编号成功");
+        } catch (Exception e) {
+            LOGGER.error("保存编号失败", e);
+        }
+        return Y9Result.failure("保存编号失败");
     }
 
 }
