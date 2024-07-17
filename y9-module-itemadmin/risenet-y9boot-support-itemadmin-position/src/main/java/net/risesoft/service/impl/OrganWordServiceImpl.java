@@ -440,32 +440,6 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public String getTempNumber(String custom, String characterValue, String itemId) {
-        String numberStr = "";
-        Integer number = 0;
-
-        try {
-            OrganWord organWord = this.findByCustom(custom);
-            if (null != organWord) {
-                String numberType = organWord.getNumberType();
-                if (numberType.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
-                    Integer oldNumber = organWordDetailService.getMaxNumber(custom, itemId);
-                    if (null != oldNumber) {
-                        number = oldNumber + 1;
-                    } else {
-                        number = 1;
-                    }
-                    String formattedNumber = String.format("%0" + organWord.getNumberLength() + "d", number);
-                    numberStr = formattedNumber;
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取临时编号失败", e);
-        }
-        return numberStr;
-    }
-
-    @Override
     public Map<String, Object> getNumber4DeptName(String custom, Integer year, Integer common, String itemId) {
         Map<String, Object> map = new HashMap<>(16);
         String numberStr = "";
@@ -586,6 +560,32 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
+    public String getTempNumber(String custom, String characterValue, String itemId) {
+        String numberStr = "";
+        Integer number = 0;
+
+        try {
+            OrganWord organWord = this.findByCustom(custom);
+            if (null != organWord) {
+                String numberType = organWord.getNumberType();
+                if (numberType.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
+                    Integer oldNumber = organWordDetailService.getMaxNumber(custom, itemId);
+                    if (null != oldNumber) {
+                        number = oldNumber + 1;
+                    } else {
+                        number = 1;
+                    }
+                    String formattedNumber = String.format("%0" + organWord.getNumberLength() + "d", number);
+                    numberStr = formattedNumber;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取临时编号失败", e);
+        }
+        return numberStr;
+    }
+
+    @Override
     public List<OrganWord> listAll() {
         return organWordRepository.findAllByOrderByCreateTimeAsc();
     }
@@ -622,6 +622,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     OrganWordPropertyModel editMap = new OrganWordPropertyModel();
                     editMap.setHasPermission(true);
                     editMap.setName(ItemOrganWordEnum.PURENUMBER.getName());
+                    editMap.setCustom(custom);
                     retList.add(editMap);
                 } else {
                     List<OrganWordProperty> propertyList =
@@ -630,6 +631,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                         OrganWordPropertyModel editMap = new OrganWordPropertyModel();
                         editMap.setHasPermission(true);
                         editMap.setName(op.getName());
+                        editMap.setCustom(organWord.getCustom());
                         editMap.setInitNumber(op.getInitNumber());
                         retList.add(editMap);
                     }
