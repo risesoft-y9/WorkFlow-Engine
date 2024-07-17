@@ -217,7 +217,8 @@ public class Process4CompleteUtilService {
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
-            if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
+            if (DialectEnum.MYSQL.getValue().equals(dialectName)
+                || DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                 sql0 = "SELECT"
                     + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
                     + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
