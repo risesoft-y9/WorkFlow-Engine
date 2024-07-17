@@ -78,7 +78,7 @@ async function show(tableId){
 			let res = await getTableFieldList(tableId);
 			loading.value = false;
 			if(res.success){
-				fieldList.value = res.data.rows;
+				fieldList.value = res.data;
 			}
 		}
 	}, 500);

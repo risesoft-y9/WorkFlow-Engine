@@ -4,7 +4,7 @@
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:39
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-06-04 17:54:50
+ * @LastEditTime: 2024-07-16 16:07:14
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\views\y9form\table\newOrModifyTable.vue
 -->
 <!--
@@ -179,7 +179,7 @@
 						});
 						if(res.success && res.type == undefined){
 							let res1 = await getTableFieldList(table.value.id);
-							fieldList.value = res1.data.rows;
+							fieldList.value = res1.data;
 						}
 						resolve()
 					}
@@ -227,7 +227,7 @@
 			table.value = y9table;
 			tableOldName.value = y9table.tableName;
 			let res = await getTableFieldList(table.value.id);
-			fieldList.value = res.data.rows;
+			fieldList.value = res.data;
 		}
 	 	let res = await getTable(table.value.id);
 		loading.value = false;
