@@ -93,6 +93,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
+    @Transactional
     public Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId,
         Integer common, String processSerialNumber) {
         int status = 3;
@@ -160,6 +161,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
+    @Transactional
     public Integer checkNumberStr4DeptName(String custom, Integer year, Integer numberTemp, String itemId,
         Integer common, String processSerialNumber) {
         try {
@@ -228,6 +230,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         }
     }
 
+    @Transactional
     private Integer checkOrganWordUseHistory(String characterValue, String custom, Integer year, Integer numberTemp,
         String itemId, String processSerialNumber) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -355,6 +358,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
+    @Transactional
     public OrganWord findOne(String id) {
         return organWordRepository.findById(id).orElse(null);
     }
@@ -479,6 +483,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
+    @Transactional
     public Integer getNumberOnly(String custom, String characterValue, Integer year, Integer common, String itemId) {
         Integer number = 0;
         OrganWordDetail owd = null;
