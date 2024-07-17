@@ -68,7 +68,7 @@ public class MultiInstanceRestController {
      */
     @RequestMapping(value = "/addExecutionId", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId,
-        @RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String executionId, @RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String selectUserId,
         @RequestParam(required = false) int num, @RequestParam(required = false) String isSendSms,
         @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
