@@ -12,9 +12,11 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +42,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/variable")
+@RequestMapping(value = "/vue/variable", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VariableVueController {
 
     private final CustomVariableService customVariableService;
@@ -60,7 +62,7 @@ public class VariableVueController {
      * @param key 变量key
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteProcessVar", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteProcessVar")
     public Y9Result<String> deleteProcessVar(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String key) {
         runtimeService.removeVariable(processInstanceId, key);
@@ -74,7 +76,7 @@ public class VariableVueController {
      * @param key 变量key
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteTaskVar", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteTaskVar")
     public Y9Result<String> deleteTaskVar(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String key) {
         customVariableService.removeVariableLocal(taskId, key);
         return Y9Result.successMsg("删除成功");
@@ -88,7 +90,7 @@ public class VariableVueController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/getAllVariable", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getAllVariable")
     public Y9Page<Map<String, Object>> getAllVariable(@RequestParam(required = false) String processInstanceId,
         @RequestParam int page, @RequestParam int rows) {
         List<Map<String, Object>> items = new ArrayList<>();
@@ -148,7 +150,7 @@ public class VariableVueController {
      * @return Y9Result<Object>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/getProcessVariable", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getProcessVariable")
     public Y9Result<Object> getProcessVariable(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String key) {
         Object obj = runtimeService.getVariable(processInstanceId, key);
@@ -174,10 +176,10 @@ public class VariableVueController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTaskList")
     public Y9Result<List<Map<String, Object>>> getTaskList(@RequestParam @NotBlank String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Task> taskListTemp = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskListTemp = customTaskService.listByProcessInstanceId(processInstanceId);
         List<Map<String, Object>> taskList = new ArrayList<>();
         Map<String, Object> mapTemp;
         for (Task task : taskListTemp) {
@@ -204,7 +206,7 @@ public class VariableVueController {
      * @return Y9Result<Object>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/getTaskVariable", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTaskVariable")
     public Y9Result<Object> getTaskVariable(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String key) {
         Object obj = customVariableService.getVariableLocal(taskId, key);
         if (SysVariables.USERS.equals(key)) {
@@ -229,7 +231,7 @@ public class VariableVueController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/processVarList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/processVarList")
     public Y9Result<List<Map<String, Object>>> processVarList(@RequestParam @NotBlank String processInstanceId) {
         List<Map<String, Object>> items = new ArrayList<>();
         Map<String, Object> vars = runtimeService.getVariables(processInstanceId);
@@ -253,7 +255,7 @@ public class VariableVueController {
      * @param value 变量值
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveProcessVariable", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveProcessVariable")
     public Y9Result<String> saveProcessVariable(@RequestParam String type, @RequestParam String processInstanceId,
         @RequestParam String key, @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -306,7 +308,7 @@ public class VariableVueController {
      * @param value 变量值
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveTaskVariable", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveTaskVariable")
     public Y9Result<String> saveTaskVariable(@RequestParam String type, @RequestParam String taskId,
         @RequestParam String key, @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -356,7 +358,7 @@ public class VariableVueController {
      * @param taskId 任务id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/taskVarList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/taskVarList")
     public Y9Result<List<Map<String, Object>>> taskVarList(@RequestParam @NotBlank String taskId) {
         List<Map<String, Object>> items = new ArrayList<>();
         Map<String, Object> vars = customVariableService.getVariablesLocal(taskId);

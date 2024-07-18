@@ -44,7 +44,7 @@ public interface CustomDoingService {
      * @param rows 行数
      * @return Map<String, Object>
      */
-    Y9Page<ProcessInstanceModel> getListByUserId(String userId, Integer page, Integer rows);
+    Y9Page<ProcessInstanceModel> pageByUserId(String userId, Integer page, Integer rows);
 
     /**
      * 根据用户Id获取用户所有的在办流程
@@ -55,7 +55,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+    Y9Page<ProcessInstanceModel> pageByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         Integer page, Integer rows);
 
     /**
@@ -67,7 +67,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Y9Page<ProcessInstanceModel> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
+    Y9Page<ProcessInstanceModel> pageByUserIdAndSystemName(String userId, String systemName, Integer page,
         Integer rows);
 
     /**
@@ -79,7 +79,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Y9Page<ProcessInstanceModel> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows);
+    Y9Page<ProcessInstanceModel> pageSearchByUserId(String userId, String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -91,7 +91,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+    Y9Page<ProcessInstanceModel> pageSearchByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         String searchTerm, Integer page, Integer rows);
 
     /**
@@ -104,7 +104,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+    Y9Page<ProcessInstanceModel> pageSearchByUserIdAndSystemName(String userId, String systemName, String searchTerm,
         Integer page, Integer rows);
 
 }

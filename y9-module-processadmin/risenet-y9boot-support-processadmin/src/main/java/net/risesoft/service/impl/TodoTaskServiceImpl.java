@@ -60,7 +60,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
         String processInstanceId = task.getProcessInstanceId();
         try {
             Boolean todoSwitch = y9Conf.getApp().getProcessAdmin().getTodoSwitch();
-            if (!todoSwitch) {
+            if (todoSwitch == null || Boolean.FALSE.equals(todoSwitch)) {
                 LOGGER.info("######################保存超级待办按钮已关闭,如需保存超级待办请更改配置文件######################");
                 return;
             }
@@ -112,7 +112,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
     public void deleteTodoByProcessInstanceId(final FlowableEvent event, final Map<String, Object> variables) {
         try {
             Boolean todoSwitch = y9Conf.getApp().getProcessAdmin().getTodoSwitch();
-            if (!todoSwitch) {
+            if (todoSwitch == null || Boolean.FALSE.equals(todoSwitch)) {
                 LOGGER.info("######################保存超级待办按钮已关闭,如需保存超级待办请更改配置文件######################");
                 return;
             }
@@ -141,7 +141,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
     @Override
     public void saveTodoTask(final DelegateTask task, final Map<String, Object> map) {
         Boolean todoSwitch = y9Conf.getApp().getProcessAdmin().getTodoSwitch();
-        if (!todoSwitch) {
+        if (todoSwitch == null || Boolean.FALSE.equals(todoSwitch)) {
             LOGGER.info("######################保存超级待办按钮已关闭,如需保存超级待办请更改配置文件######################");
             return;
         }

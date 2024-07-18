@@ -11,7 +11,7 @@ public interface OperationService {
 
     /**
      * Description: 重定向
-     * 
+     *
      * @param taskId
      * @param targetTaskDefineKey
      * @param users
@@ -22,7 +22,7 @@ public interface OperationService {
 
     /**
      * Description: 重定向(岗位)
-     * 
+     *
      * @param taskId
      * @param targetTaskDefineKey
      * @param users
@@ -80,7 +80,7 @@ public interface OperationService {
 
     /**
      * Description: 特殊办结
-     * 
+     *
      * @param taskId
      * @param reason
      */
@@ -88,7 +88,7 @@ public interface OperationService {
 
     /**
      * Description: 特殊办结
-     * 
+     *
      * @param taskId
      * @param reason
      */

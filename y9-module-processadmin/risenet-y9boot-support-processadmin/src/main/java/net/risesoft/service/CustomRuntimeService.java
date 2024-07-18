@@ -47,14 +47,6 @@ public interface CustomRuntimeService {
     Execution getExecutionById(String executionId);
 
     /**
-     * 根据父流程实例获取子流程实例
-     *
-     * @param superProcessInstanceId
-     * @return
-     */
-    List<ProcessInstance> getListBySuperProcessInstanceId(String superProcessInstanceId);
-
-    /**
      * 根据流程实例Id获取流程实例
      *
      * @param processInstanceId
@@ -63,16 +55,24 @@ public interface CustomRuntimeService {
     ProcessInstance getProcessInstance(String processInstanceId);
 
     /**
+     * 根据父流程实例获取子流程实例
+     *
+     * @param superProcessInstanceId
+     * @return
+     */
+    List<ProcessInstance> listBySuperProcessInstanceId(String superProcessInstanceId);
+
+    /**
      * 根据流程定义Key获取流程实例列表
      *
      * @param processDefinitionKey
      * @return
      */
-    List<ProcessInstance> getProcessInstancesByKey(String processDefinitionKey);
+    List<ProcessInstance> listProcessInstancesByKey(String processDefinitionKey);
 
     /**
      * Description: 真办结后恢复设置办结的件
-     * 
+     *
      * @param processInstanceId
      * @param year
      * @throws Exception
@@ -81,14 +81,14 @@ public interface CustomRuntimeService {
 
     /**
      * Description: 恢复设置办结的件，其实是先激活流程，再设置流程的结束时间为null
-     * 
+     *
      * @param processInstanceId
      */
     void recovery4SetUpCompleted(String processInstanceId);
 
     /**
      * Description: 恢复待办
-     * 
+     *
      * @param processInstanceId
      * @param year
      * @throws Exception
@@ -123,7 +123,7 @@ public interface CustomRuntimeService {
 
     /**
      * Description: 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是userId:deptId
-     * 
+     *
      * @param processDefinitionKey
      * @param systemName
      * @param map
@@ -133,7 +133,7 @@ public interface CustomRuntimeService {
 
     /**
      * Description:
-     * 
+     *
      * @param processDefinitionKey
      * @param systemName
      * @param map

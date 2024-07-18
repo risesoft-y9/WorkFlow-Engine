@@ -44,7 +44,6 @@ import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.CustomVariableService;
 import net.risesoft.service.OperationService;
-import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -77,8 +76,6 @@ public class OperationServiceImpl implements OperationService {
 
     private final HistoryService historyService;
 
-    private final Process4CompleteUtilService process4CompleteUtilService;
-
     private final ErrorLogApi errorLogManager;
 
     private final ProcessParamApi processParamManager;
@@ -96,7 +93,7 @@ public class OperationServiceImpl implements OperationService {
         String reason0 = "该任务已由" + userName + "重定向" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
         managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reason0));
 
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
         String multiInstance =
             customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
         // 更新自定义历程结束时间
@@ -128,7 +125,7 @@ public class OperationServiceImpl implements OperationService {
         String reason0 = "该任务已由" + userName + "重定向" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
         managementService.executeCommand(new JumpCommand4Position(taskId, targetTaskDefineKey, users, reason0));
 
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
         String multiInstance =
             customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
         // 更新自定义历程结束时间
@@ -189,7 +186,7 @@ public class OperationServiceImpl implements OperationService {
         managementService
             .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "退回:" + reason));
 
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
             customVariableService.setVariableLocal(task.getId(), SysVariables.ROLLBACK, true);
         }
@@ -216,7 +213,7 @@ public class OperationServiceImpl implements OperationService {
         users.add(user);
         managementService.executeCommand(
             new JumpCommand4Position(taskId, targetTaskDefineKey, users, "该任务由" + userName + "驳回：" + reason));
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
             customVariableService.setVariableLocal(task.getId(), SysVariables.ROLLBACK, true);
         }
@@ -258,7 +255,7 @@ public class OperationServiceImpl implements OperationService {
          * 获取第一个任务
          */
         List<HistoricTaskInstance> hisTaskList =
-            customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
+            customHistoricTaskService.listByProcessInstanceId(processInstanceId, "");
         String startActivityId = hisTaskList.get(0).getTaskDefinitionKey();
         /*
          * 获取流程的启东人
@@ -279,7 +276,7 @@ public class OperationServiceImpl implements OperationService {
          * 获取第一个任务
          */
         List<HistoricTaskInstance> hisTaskList =
-            customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
+            customHistoricTaskService.listByProcessInstanceId(processInstanceId, "");
         String startActivityId = hisTaskList.get(0).getTaskDefinitionKey();
         /*
          * 获取流程的启东人
@@ -443,7 +440,7 @@ public class OperationServiceImpl implements OperationService {
         managementService
             .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "收回:" + reason));
 
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
             customVariableService.setVariableLocal(task.getId(), SysVariables.TAKEBACK, true);
         }
@@ -465,7 +462,7 @@ public class OperationServiceImpl implements OperationService {
         users.add(user);
         managementService.executeCommand(
             new JumpCommand4Position(taskId, targetTaskDefineKey, users, "该任务由" + userName + "撤回：" + reason));
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
             customVariableService.setVariableLocal(task.getId(), SysVariables.TAKEBACK, true);
         }

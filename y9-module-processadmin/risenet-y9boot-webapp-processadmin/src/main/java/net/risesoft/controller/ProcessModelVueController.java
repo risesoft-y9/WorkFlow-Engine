@@ -10,9 +10,11 @@ import jakarta.validation.constraints.NotBlank;
 
 import org.flowable.engine.RepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +32,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * 流程模型控制器
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
@@ -39,7 +41,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/processModel")
+@RequestMapping(value = "/vue/processModel", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessModelVueController {
 
     private final RepositoryService repositoryService;
@@ -54,7 +56,7 @@ public class ProcessModelVueController {
      * @param key 流程定义key
      * @param description 描述
      */
-    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/create")
     public Y9Result<String> create(@RequestParam @NotBlank String name, @RequestParam @NotBlank String key,
         @RequestParam(required = false) String description) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -80,7 +82,7 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteModel")
     public Y9Result<String> deleteModel(@RequestParam @NotBlank String modelId) {
         return Y9Result.successMsg("删除成功");
     }
@@ -91,7 +93,7 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deployModel")
     public Y9Result<String> deployModel(@RequestParam(required = true) String modelId) {
         return Y9Result.successMsg("部署成功");
     }
@@ -117,7 +119,7 @@ public class ProcessModelVueController {
      *
      * @return Y9Result<List<Map<String, Object>>>
      */
-    @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getModelList")
     public Y9Result<List<Map<String, Object>>> getModelList() {
         List<Map<String, Object>> items = new ArrayList<>();
 

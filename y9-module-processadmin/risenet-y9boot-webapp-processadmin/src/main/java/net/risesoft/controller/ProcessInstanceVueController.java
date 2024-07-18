@@ -12,8 +12,10 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,7 +54,7 @@ import net.risesoft.y9.util.Y9Util;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/processInstance")
+@RequestMapping(value = "/vue/processInstance", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessInstanceVueController {
 
     protected final HistoryService historyService;
@@ -83,7 +85,7 @@ public class ProcessInstanceVueController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParamModel processParamModel;
@@ -105,95 +107,6 @@ public class ProcessInstanceVueController {
             LOGGER.error("删除流程实例失败", e);
         }
         return Y9Result.failure("删除失败");
-    }
-
-    /**
-     * 获取流程实例列表（包括办结，未办结）
-     *
-     * @param searchName 标题，编号
-     * @param itemId 事项id
-     * @param userName 发起人
-     * @param state 状态
-     * @param year 年度
-     * @param page 页面
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/getAllProcessList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getAllProcessList(@RequestParam(required = false) String searchName,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
-        @RequestParam int page, @RequestParam int rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Y9Page<OfficeDoneInfoModel> y9Page;
-        try {
-            y9Page = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
-                rows);
-            List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            for (OfficeDoneInfoModel officeDoneInfoModel : hpiList) {
-                mapTemp = new HashMap<>(16);
-                String processInstanceId = officeDoneInfoModel.getProcessInstanceId();
-                try {
-                    String processDefinitionId = officeDoneInfoModel.getProcessDefinitionId();
-                    String startTime = officeDoneInfoModel.getStartTime().substring(0, 16);
-                    String processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
-                    String documentTitle =
-                        StringUtils.isBlank(officeDoneInfoModel.getTitle()) ? "无标题" : officeDoneInfoModel.getTitle();
-                    String level = officeDoneInfoModel.getUrgency();
-                    String number = officeDoneInfoModel.getDocNumber();
-                    String completer = officeDoneInfoModel.getUserComplete();
-                    mapTemp.put("itemName", officeDoneInfoModel.getItemName());
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", officeDoneInfoModel.getProcessDefinitionKey());
-                    mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfoModel.getEndTime()) ? "--"
-                        : officeDoneInfoModel.getEndTime().substring(0, 16));
-                    mapTemp.put("taskDefinitionKey", "");
-                    mapTemp.put("taskAssignee", completer);
-                    mapTemp.put("creatUserName", officeDoneInfoModel.getCreatUserName());
-                    mapTemp.put("itemId", officeDoneInfoModel.getItemId());
-                    mapTemp.put("level", level == null ? "" : level);
-                    mapTemp.put("number", number == null ? "" : number);
-                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
-                    if (StringUtils.isBlank(officeDoneInfoModel.getEndTime())) {
-                        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
-                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId",
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssigneeId", assigneeIds);
-                        mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", listTemp.get(3));
-                    }
-                    mapTemp.put("suspended", "--");
-                    ProcessInstance processInstance =
-                        runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-                    if (processInstance != null) {
-                        mapTemp.put("suspended", processInstance.isSuspended());
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("获取流程实例列表失败processInstanceId:{}, e:{}", processInstanceId, e);
-                }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
-            }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取流程实例列表失败", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     private List<String> getAssigneeIdsAndAssigneeNames1(List<Task> taskList) {
@@ -220,7 +133,7 @@ public class ProcessInstanceVueController {
                             taskId = task.getId();
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLink> iList = customIdentityService.getIdentityLinksForTask(taskId);
+                        List<IdentityLink> iList = customIdentityService.listIdentityLinksForTaskByTaskId(taskId);
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLink identityLink : iList) {
@@ -269,6 +182,94 @@ public class ProcessInstanceVueController {
     }
 
     /**
+     * 获取流程实例列表（包括办结，未办结）
+     *
+     * @param searchName 标题，编号
+     * @param itemId 事项id
+     * @param userName 发起人
+     * @param state 状态
+     * @param year 年度
+     * @param page 页面
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/getAllProcessList")
+    public Y9Page<Map<String, Object>> pageAllProcessList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam int page, @RequestParam int rows) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Y9Page<OfficeDoneInfoModel> y9Page;
+        try {
+            y9Page = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
+                rows);
+            List<Map<String, Object>> items = new ArrayList<>();
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp;
+            for (OfficeDoneInfoModel officeDoneInfoModel : hpiList) {
+                mapTemp = new HashMap<>(16);
+                String processInstanceId = officeDoneInfoModel.getProcessInstanceId();
+                try {
+                    String processDefinitionId = officeDoneInfoModel.getProcessDefinitionId();
+                    String startTime = officeDoneInfoModel.getStartTime().substring(0, 16);
+                    String processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
+                    String documentTitle =
+                        StringUtils.isBlank(officeDoneInfoModel.getTitle()) ? "无标题" : officeDoneInfoModel.getTitle();
+                    String level = officeDoneInfoModel.getUrgency();
+                    String number = officeDoneInfoModel.getDocNumber();
+                    String completer = officeDoneInfoModel.getUserComplete();
+                    mapTemp.put("itemName", officeDoneInfoModel.getItemName());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put("processDefinitionKey", officeDoneInfoModel.getProcessDefinitionKey());
+                    mapTemp.put("startTime", startTime);
+                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfoModel.getEndTime()) ? "--"
+                        : officeDoneInfoModel.getEndTime().substring(0, 16));
+                    mapTemp.put("taskDefinitionKey", "");
+                    mapTemp.put("taskAssignee", completer);
+                    mapTemp.put("creatUserName", officeDoneInfoModel.getCreatUserName());
+                    mapTemp.put("itemId", officeDoneInfoModel.getItemId());
+                    mapTemp.put("level", level == null ? "" : level);
+                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    if (StringUtils.isBlank(officeDoneInfoModel.getEndTime())) {
+                        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                            assigneeNames = listTemp.get(2);
+                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put("taskId",
+                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskAssigneeId", assigneeIds);
+                        mapTemp.put("taskAssignee", assigneeNames);
+                        mapTemp.put("itembox", listTemp.get(3));
+                    }
+                    mapTemp.put("suspended", "--");
+                    ProcessInstance processInstance =
+                        runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                    if (processInstance != null) {
+                        mapTemp.put("suspended", processInstance.isSuspended());
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("获取流程实例列表失败processInstanceId:{}, e:{}", processInstanceId, e);
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取流程实例列表失败", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
+    /**
      * 获取流程实例列表
      *
      * @param processInstanceId 流程实例id
@@ -276,8 +277,8 @@ public class ProcessInstanceVueController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId,
+    @GetMapping(value = "/runningList")
+    public Y9Page<Map<String, Object>> pageRunningList(@RequestParam(required = false) String processInstanceId,
         @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
@@ -345,7 +346,7 @@ public class ProcessInstanceVueController {
      * @param processInstanceId 流程实例
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/switchSuspendOrActive")
     public Y9Result<String> switchSuspendOrActive(@RequestParam String state, @RequestParam String processInstanceId) {
         try {
             if (ItemProcessStateTypeEnum.ACTIVE.getValue().equals(state)) {

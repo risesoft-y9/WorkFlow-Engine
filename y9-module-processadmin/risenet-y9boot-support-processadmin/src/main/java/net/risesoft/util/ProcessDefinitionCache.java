@@ -8,7 +8,6 @@ import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.impl.RepositoryServiceImpl;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.flowable.engine.repository.ProcessDefinition;
 
 import net.risesoft.y9.Y9Context;
@@ -25,19 +24,19 @@ import net.risesoft.y9.Y9Context;
  */
 public class ProcessDefinitionCache {
 
-    private static Map<String, ProcessDefinition> map = new HashMap<String, ProcessDefinition>();
+    private static final Map<String, ProcessDefinition> map = new HashMap<String, ProcessDefinition>();
 
-    private static Map<String, List<FlowElement>> activities = new HashMap<String, List<FlowElement>>();
+    private static final Map<String, List<FlowElement>> activities = new HashMap<String, List<FlowElement>>();
 
-    private static Map<String, FlowElement> singleActivity = new HashMap<String, FlowElement>();
+    private static final Map<String, FlowElement> singleActivity = new HashMap<String, FlowElement>();
 
     private static RepositoryService repositoryService = Y9Context.getBean(RepositoryService.class);
 
     public static ProcessDefinition get(String processDefinitionId) {
         ProcessDefinition processDefinition = map.get(processDefinitionId);
         if (processDefinition == null) {
-            processDefinition = (ProcessDefinitionEntity)((RepositoryServiceImpl)repositoryService)
-                .getDeployedProcessDefinition(processDefinitionId);
+            processDefinition =
+                ((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(processDefinitionId);
             if (processDefinition != null) {
                 put(processDefinitionId, processDefinition);
             }
@@ -49,9 +48,7 @@ public class ProcessDefinitionCache {
         ProcessDefinition processDefinition = get(processDefinitionId);
         if (processDefinition != null) {
             FlowElement activityImpl = singleActivity.get(processDefinitionId + "_" + activityId);
-            if (activityImpl != null) {
-                return activityImpl;
-            }
+            return activityImpl;
         }
         return null;
     }

@@ -13,8 +13,8 @@ import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -46,7 +46,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list =
-            customHistoricTaskService.getByProcessInstanceIdOrderByEndTimeAsc(processInstanceId, year);
+            customHistoricTaskService.listByProcessInstanceIdOrderByEndTimeAsc(processInstanceId, year);
         return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
@@ -66,7 +66,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list =
-            customHistoricTaskService.getByProcessInstanceIdOrderByStartTimeAsc(processInstanceId, year);
+            customHistoricTaskService.listByProcessInstanceIdOrderByStartTimeAsc(processInstanceId, year);
         return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
@@ -98,7 +98,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public Y9Result<List<HistoricTaskInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam(required = false) String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceId(processInstanceId, year);
+        List<HistoricTaskInstance> list = customHistoricTaskService.listByProcessInstanceId(processInstanceId, year);
         return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
@@ -116,7 +116,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
         @RequestParam String tenantId, @RequestParam String processInstanceId, String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list =
-            customHistoricTaskService.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year);
+            customHistoricTaskService.listByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year);
         return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
@@ -164,7 +164,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public Y9Result<List<HistoricTaskInstanceModel>> getThePreviousTasks(@RequestParam String tenantId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<HistoricTaskInstance> htiList = customHistoricTaskService.getThePreviousTasks(taskId);
+        List<HistoricTaskInstance> htiList = customHistoricTaskService.listThePreviousTasksByTaskId(taskId);
         return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(htiList));
     }
 

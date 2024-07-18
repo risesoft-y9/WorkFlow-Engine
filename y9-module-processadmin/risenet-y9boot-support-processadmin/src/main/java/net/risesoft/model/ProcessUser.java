@@ -31,43 +31,13 @@ public class ProcessUser implements User {
     }
 
     @Override
-    public String getEmail() {
-        return email;
-    }
-
-    @Override
-    public String getFirstName() {
-        return firstName;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getLastName() {
-        return lastName;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    @Override
-    public boolean isPictureSet() {
-        return false;
-    }
-
-    @Override
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public String getEmail() {
+        return email;
     }
 
     @Override
@@ -76,8 +46,18 @@ public class ProcessUser implements User {
     }
 
     @Override
+    public String getFirstName() {
+        return firstName;
+    }
+
+    @Override
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -86,8 +66,18 @@ public class ProcessUser implements User {
     }
 
     @Override
+    public String getLastName() {
+        return lastName;
+    }
+
+    @Override
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override
@@ -96,7 +86,17 @@ public class ProcessUser implements User {
     }
 
     @Override
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    @Override
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
+    }
+
+    @Override
+    public boolean isPictureSet() {
+        return false;
     }
 }

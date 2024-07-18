@@ -17,7 +17,8 @@ import net.risesoft.enums.DialectEnum;
  * @date 2022/12/30
  */
 public class Y9SqlPaginationUtil {
-    private static Logger log = LoggerFactory.getLogger(Y9SqlPaginationUtil.class);
+
+    private static final Logger log = LoggerFactory.getLogger(Y9SqlPaginationUtil.class);
 
     private static String dbType;
     private static int dbVersion;

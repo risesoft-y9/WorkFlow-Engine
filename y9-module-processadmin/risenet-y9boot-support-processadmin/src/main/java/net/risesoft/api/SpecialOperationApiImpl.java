@@ -16,8 +16,8 @@ import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.OperationService;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

@@ -41,15 +41,8 @@ public interface CustomRepositoryService {
     ProcessDefinition getLatestProcessDefinitionByKey(String processDefinitionKey);
 
     /**
-     * 获取所有流程定义最新版本的集合
-     *
-     * @return
-     */
-    List<ProcessDefinition> getLatestProcessDefinitionList();
-
-    /**
      * Description: 根据流程定义Id获取上一个版本的流程定义，如果当前版本是1，则返回自己
-     * 
+     *
      * @param processDefinitionId
      * @return
      */
@@ -64,16 +57,8 @@ public interface CustomRepositoryService {
     ProcessDefinition getProcessDefinitionById(String processDefinitionId);
 
     /**
-     * Description: 根据流程定义Key,获取所有的流程定义
-     * 
-     * @param processDefinitionKey
-     * @return
-     */
-    List<ProcessDefinition> getProcessDefinitionListByKey(String processDefinitionKey);
-
-    /**
      * Description: 获取流程实例,以InputStream返回
-     * 
+     *
      * @param resourceType
      * @param processInstanceId
      * @param processDefinitionId
@@ -83,11 +68,26 @@ public interface CustomRepositoryService {
 
     /**
      * Description: 流程模型列表
-     * 
+     *
      * @param resourceId
      * @return
      */
     Y9Result<List<ProcessDefinitionModel>> list(String resourceId);
+
+    /**
+     * 获取所有流程定义最新版本的集合
+     *
+     * @return
+     */
+    List<ProcessDefinition> listLatestProcessDefinition();
+
+    /**
+     * Description: 根据流程定义Key,获取所有的流程定义
+     *
+     * @param processDefinitionKey
+     * @return
+     */
+    List<ProcessDefinition> listProcessDefinitionByKey(String processDefinitionKey);
 
     /**
      * 激活或者挂起流程

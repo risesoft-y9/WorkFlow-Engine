@@ -15,7 +15,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomDoingService;
 import net.risesoft.service.CustomTodoService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 待办件列表
@@ -89,7 +89,7 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
         @RequestParam @NotBlank String userId, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customTodoService.getListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page, rows);
+        return customTodoService.pageByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page, rows);
     }
 
     /**
@@ -108,7 +108,7 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
         @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customTodoService.getListByUserIdAndSystemName(userId, systemName, page, rows);
+        return customTodoService.pageByUserIdAndSystemName(userId, systemName, page, rows);
     }
 
     /**

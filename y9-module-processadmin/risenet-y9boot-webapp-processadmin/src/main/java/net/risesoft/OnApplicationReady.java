@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.enums.platform.TenantTypeEnum;
 import net.risesoft.model.platform.Tenant;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 

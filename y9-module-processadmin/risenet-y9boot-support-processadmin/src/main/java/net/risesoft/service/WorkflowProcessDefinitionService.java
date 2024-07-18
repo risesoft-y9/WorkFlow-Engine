@@ -122,12 +122,12 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取ActivityImpl的list
-     * 
+     *
      * @param bpmnModel
      * @return
      */
     public List<FlowElement> getActivityImpls(BpmnModel bpmnModel) {
-        List<FlowElement> list = new ArrayList<FlowElement>();
+        List<FlowElement> list = new ArrayList<>();
         try {
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
             list = (List<FlowElement>)process.getFlowElements();
@@ -139,12 +139,12 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取ActivityImpl的list
-     * 
+     *
      * @param processDefinitionId 流程定义Id
      * @return
      */
     public List<FlowElement> getActivityImpls(String processDefinitionId) {
-        List<FlowElement> list = new ArrayList<FlowElement>();
+        List<FlowElement> list = new ArrayList<>();
         try {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             list = getActivityImpls(bpmnModel);
@@ -163,7 +163,7 @@ public class WorkflowProcessDefinitionService {
      */
     public Map<String, String> getActivityProperties(List<FlowElement> activities, String activityId,
         List<String> propertiesNameList) {
-        Map<String, String> result = new HashMap<String, String>(16);
+        Map<String, String> result = new HashMap<>(16);
         try {
             for (FlowElement activity : activities) {
                 if (activityId.equals(activity.getId())) {
@@ -196,7 +196,7 @@ public class WorkflowProcessDefinitionService {
      */
     public Map<String, String> getActivityProperties(String processDefinitionId, String activityId,
         List<String> propertiesNameList) {
-        Map<String, String> result = new HashMap<String, String>(16);
+        Map<String, String> result = new HashMap<>(16);
         try {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -217,8 +217,8 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public String getActivityProperty(String processDefinitionId, String activityId, String propertyName) {
-        Map<String, String> map = new HashMap<String, String>(16);
-        List<String> propertiesNameList = new ArrayList<String>();
+        Map<String, String> map = new HashMap<>(16);
+        List<String> propertiesNameList = new ArrayList<>();
         propertiesNameList.add(propertyName);
         try {
             map = getActivityProperties(processDefinitionId, activityId, propertiesNameList);
@@ -236,10 +236,10 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<Map<String, Object>> getBpmList(String processDefinitionId, Boolean isFilter) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        List<FlowElement> activitieList = new ArrayList<FlowElement>();
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<FlowElement> activitieList = new ArrayList<>();
         if (isFilter != null && isFilter) {
-            List<FlowElement> list1 = new ArrayList<FlowElement>();
+            List<FlowElement> list1 = new ArrayList<>();
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
             list1 = (List<FlowElement>)process.getFlowElements();
@@ -259,12 +259,12 @@ public class WorkflowProcessDefinitionService {
             activitieList = getFilteredActivityImpls(processDefinitionId);
         }
         for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMap = new LinkedHashMap<String, Object>();
+            Map<String, Object> tempMap = new LinkedHashMap<>();
             tempMap.put("taskDefKey", activity.getId());
             tempMap.put("taskDefName", activity.getName());
             list.add(tempMap);
         }
-        Map<String, Object> tempMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> tempMap = new LinkedHashMap<>();
         tempMap.put("taskDefKey", "");
         tempMap.put("taskDefName", "流程");
         list.add(0, tempMap);
@@ -278,9 +278,9 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<Map<String, Object>> getBpmListContainStart(String processDefinitionId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        List<FlowElement> activitieList = new ArrayList<FlowElement>();
-        List<FlowElement> list1 = new ArrayList<FlowElement>();
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<FlowElement> activitieList = new ArrayList<>();
+        List<FlowElement> list1 = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         list1 = (List<FlowElement>)process.getFlowElements();
@@ -296,12 +296,12 @@ public class WorkflowProcessDefinitionService {
             }
         }
         for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMap = new LinkedHashMap<String, Object>();
+            Map<String, Object> tempMap = new LinkedHashMap<>();
             tempMap.put("taskDefKey", activity.getId());
             tempMap.put("taskDefName", activity.getName());
             list.add(tempMap);
         }
-        Map<String, Object> tempMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> tempMap = new LinkedHashMap<>();
         tempMap.put("taskDefKey", "");
         tempMap.put("taskDefName", "流程");
         list.add(0, tempMap);
@@ -310,14 +310,14 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取过滤过的ActivityImpl的list，过滤掉GateWay类型节点
-     * 
+     *
      * @param bpmnModel
      * @return
      */
     public List<FlowElement> getFilteredActivityImpls(BpmnModel bpmnModel) {
         List<FlowElement> list = getActivityImpls(bpmnModel);
-        List<FlowElement> resultList = new ArrayList<FlowElement>();
-        if (list.size() > 0) {
+        List<FlowElement> resultList = new ArrayList<>();
+        if (!list.isEmpty()) {
             // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
             resultList.addAll(list);
         }
@@ -338,7 +338,7 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<FlowElement> getFilteredActivityImpls(String processDefinitionId) {
-        List<FlowElement> list = new ArrayList<FlowElement>();
+        List<FlowElement> list = new ArrayList<>();
         try {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             list = getFilteredActivityImpls(bpmnModel);
@@ -355,13 +355,13 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<FlowElement> getFilteredActivityImpls(String processDefinitionId, List<String> filterList) {
-        List<FlowElement> resultList = new ArrayList<FlowElement>();
-        List<FlowElement> list = new ArrayList<FlowElement>();
+        List<FlowElement> resultList = new ArrayList<>();
+        List<FlowElement> list = new ArrayList<>();
         try {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
             list = (List<FlowElement>)process.getFlowElements();
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
                 resultList.addAll(list);
             }
@@ -438,7 +438,7 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<String> getNodeName(String processDefinitionId, String nodeType) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         Collection<FlowElement> flowElements = process.getFlowElements();
@@ -455,7 +455,7 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<String> getProcessDefinitionIds(String processDefinitionKey) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         List<ProcessDefinition> processDefinitionList = getProcessDefinitions(processDefinitionKey);
         for (ProcessDefinition pd : processDefinitionList) {
             list.add(pd.getId());
@@ -470,7 +470,7 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<ProcessDefinition> getProcessDefinitions(String processDefinitionKey) {
-        List<ProcessDefinition> processDefinitionList = new ArrayList<ProcessDefinition>();
+        List<ProcessDefinition> processDefinitionList = new ArrayList<>();
         if (StringUtils.isNotBlank(processDefinitionKey)) {
             ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionKey(processDefinitionKey).orderByProcessDefinitionVersion().desc();
@@ -486,7 +486,7 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<Integer> getProcessDefinitionVersions(String processDefinitionKey) {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         List<ProcessDefinition> processDefinitionList = getProcessDefinitions(processDefinitionKey);
         for (ProcessDefinition pd : processDefinitionList) {
             list.add(pd.getVersion());
@@ -538,7 +538,7 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * Description: 获取流程定义Id
-     * 
+     *
      * @return
      */
     public Map<String, String> procDefIdMap() {

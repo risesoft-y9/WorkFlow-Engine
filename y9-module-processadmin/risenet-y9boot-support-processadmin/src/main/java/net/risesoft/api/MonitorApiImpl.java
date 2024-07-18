@@ -14,7 +14,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomMonitorService;
 import net.risesoft.service.CustomRecycleService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 监控流程实例接口
@@ -76,7 +76,7 @@ public class MonitorApiImpl implements MonitorApi {
     public Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customMonitorService.getDoingListByProcessDefinitionKey(processDefinitionKey, page, rows);
+        return customMonitorService.pageDoingListByProcessDefinitionKey(processDefinitionKey, page, rows);
     }
 
     /**
@@ -93,7 +93,7 @@ public class MonitorApiImpl implements MonitorApi {
     public Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(@RequestParam String tenantId,
         @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customMonitorService.getDoingListBySystemName(systemName, page, rows);
+        return customMonitorService.pageDoingListBySystemName(systemName, page, rows);
     }
 
     /**
@@ -187,7 +187,7 @@ public class MonitorApiImpl implements MonitorApi {
     public Y9Page<HistoricProcessInstanceModel> getRecycleListByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRecycleService.getRecycleListByProcessDefinitionKey(processDefinitionKey, page, rows);
+        return customRecycleService.pageRecycleListByProcessDefinitionKey(processDefinitionKey, page, rows);
     }
 
     /**
@@ -204,7 +204,7 @@ public class MonitorApiImpl implements MonitorApi {
     public Y9Page<HistoricProcessInstanceModel> getRecycleListBySystemName(@RequestParam String tenantId,
         @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRecycleService.getRecycleListBySystemName(systemName, page, rows);
+        return customRecycleService.pageRecycleListBySystemName(systemName, page, rows);
     }
 
     /**
@@ -223,7 +223,7 @@ public class MonitorApiImpl implements MonitorApi {
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey,
         @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRecycleService.getRecycleListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page,
+        return customRecycleService.pageRecycleListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page,
             rows);
     }
 
@@ -243,7 +243,7 @@ public class MonitorApiImpl implements MonitorApi {
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRecycleService.getRecycleListByUserIdAndSystemName(userId, systemName, page, rows);
+        return customRecycleService.pageRecycleListByUserIdAndSystemName(userId, systemName, page, rows);
     }
 
     /**

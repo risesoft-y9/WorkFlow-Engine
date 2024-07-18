@@ -18,8 +18,8 @@ import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomTaskService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -58,7 +58,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<org.flowable.task.api.Task> list = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<org.flowable.task.api.Task> list = customTaskService.listByProcessInstanceId(processInstanceId);
         boolean b = customHistoricProcessService.deleteProcessInstance(processInstanceId);
         if (b) {
             if (list != null && !list.isEmpty()) {
@@ -118,7 +118,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId, year);
+        HistoricProcessInstance hpi = customHistoricProcessService.getByIdAndYear(processInstanceId, year);
         HistoricProcessInstanceModel hpiModel = null;
         if (hpi != null) {
             hpiModel = FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
@@ -140,7 +140,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         List<HistoricProcessInstance> hpiList =
-            customHistoricProcessService.getBySuperProcessInstanceId(superProcessInstanceId);
+            customHistoricProcessService.listBySuperProcessInstanceId(superProcessInstanceId);
         return Y9Result.success(FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList));
     }
 
@@ -176,7 +176,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         boolean b = customHistoricProcessService.recoveryProcessInstance(processInstanceId);
-        List<org.flowable.task.api.Task> list = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<org.flowable.task.api.Task> list = customTaskService.listByProcessInstanceId(processInstanceId);
         if (b && (list != null && !list.isEmpty())) {
             for (org.flowable.task.api.Task task : list) {
                 try {

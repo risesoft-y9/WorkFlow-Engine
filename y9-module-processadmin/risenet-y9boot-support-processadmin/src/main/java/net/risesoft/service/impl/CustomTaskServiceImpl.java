@@ -30,15 +30,12 @@ import net.risesoft.command.JumpSubProcessCommand;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomTaskService;
-import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -66,8 +63,6 @@ public class CustomTaskServiceImpl implements CustomTaskService {
 
     private final RuntimeService runtimeService;
 
-    private final Process4CompleteUtilService process4CompleteUtilService;
-
     private final ErrorLogApi errorLogManager;
 
     @Override
@@ -87,15 +82,13 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     public void complete(String processInstanceId, String taskId) throws Exception {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-            UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            String personName = userInfo.getName();
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             String nodeType =
                 customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             HistoricProcessInstance historicProcessInstance =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
-                List<Task> taskList = this.findByProcessInstanceId(processInstanceId);
+                List<Task> taskList = this.listByProcessInstanceId(processInstanceId);
                 for (Task tTemp : taskList) {
                     if (!taskId.equals(tTemp.getId())) {
                         this.complete(tTemp.getId());
@@ -169,15 +162,13 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     public void complete4Position(String processInstanceId, String taskId) throws Exception {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-            Position position = Y9LoginUserHolder.getPosition();
-            String personName = position.getName();
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             String nodeType =
                 customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             HistoricProcessInstance historicProcessInstance =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
-                List<Task> taskList = this.findByProcessInstanceId(processInstanceId);
+                List<Task> taskList = this.listByProcessInstanceId(processInstanceId);
                 for (Task tTemp : taskList) {
                     if (!taskId.equals(tTemp.getId())) {
                         this.complete(tTemp.getId());
@@ -248,10 +239,10 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     @Override
     @Transactional
     public void completeTaskWithoutAssignee(String processInstanceId) {
-        List<Task> taskList = this.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = this.listByProcessInstanceId(processInstanceId);
         Task task = taskList.get(0);
         List<GatewayModel> parallelGatewayList = customProcessDefinitionService
-            .getParallelGatewayList(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            .listParallelGateway(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
         String routeToTaskId = parallelGatewayList.get(0).getTaskDefKey();
         Map<String, Object> vars = new HashMap<>(16);
         vars.put(SysVariables.ROUTETOTASKID, routeToTaskId);
@@ -310,32 +301,6 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     }
 
     @Override
-    public List<Task> findByProcessInstanceId(String processInstanceId) {
-        return taskService.createTaskQuery().processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
-    }
-
-    @Override
-    public List<Task> findByProcessInstanceId(String processInstanceId, boolean active) {
-        if (active) {
-            return taskService.createTaskQuery().processInstanceId(processInstanceId).active().orderByTaskCreateTime()
-                .asc().list();
-        } else {
-            return taskService.createTaskQuery().processInstanceId(processInstanceId).suspended()
-                .orderByTaskCreateTime().asc().list();
-        }
-    }
-
-    @Override
-    public Y9Page<TaskModel> findListByProcessInstanceId(String processInstanceId, Integer page, Integer rows) {
-        long totalCount = taskService.createTaskQuery().processInstanceId(processInstanceId).active().count();
-        List<Task> taskList = taskService.createTaskQuery().processInstanceId(processInstanceId).active()
-            .orderByTaskCreateTime().asc().listPage((page - 1) * rows, rows);
-        List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
-        int totalPages = (int)(totalCount + rows - 1) / rows;
-        return Y9Page.success(page, totalPages, totalCount, taskModelList);
-    }
-
-    @Override
     public Integer getCompleteTaskCount4Parallel(String taskId) {
         List<HistoricTaskInstance> list = new ArrayList<>();
         try {
@@ -371,6 +336,32 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             LOGGER.error("获取并行任务完成数量失败", e);
         }
         return -1;
+    }
+
+    @Override
+    public List<Task> listByProcessInstanceId(String processInstanceId) {
+        return taskService.createTaskQuery().processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
+    }
+
+    @Override
+    public List<Task> listByProcessInstanceIdAndActive(String processInstanceId, boolean active) {
+        if (active) {
+            return taskService.createTaskQuery().processInstanceId(processInstanceId).active().orderByTaskCreateTime()
+                .asc().list();
+        } else {
+            return taskService.createTaskQuery().processInstanceId(processInstanceId).suspended()
+                .orderByTaskCreateTime().asc().list();
+        }
+    }
+
+    @Override
+    public Y9Page<TaskModel> pageByProcessInstanceId(String processInstanceId, Integer page, Integer rows) {
+        long totalCount = taskService.createTaskQuery().processInstanceId(processInstanceId).active().count();
+        List<Task> taskList = taskService.createTaskQuery().processInstanceId(processInstanceId).active()
+            .orderByTaskCreateTime().asc().listPage((page - 1) * rows, rows);
+        List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
+        int totalPages = (int)(totalCount + rows - 1) / rows;
+        return Y9Page.success(page, totalPages, totalCount, taskModelList);
     }
 
     @Override

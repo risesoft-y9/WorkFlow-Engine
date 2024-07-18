@@ -6,7 +6,7 @@
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>  
             </PatternLayout>  
         </Console>  
-        <File name="File" fileName="D:/cas-log/processAdmin/processAdmin.log">  
+        <File name="File" fileName="/software/logs/processAdmin/processAdmin.log">
             <PatternLayout>  
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>  
             </PatternLayout>  

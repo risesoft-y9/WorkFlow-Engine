@@ -8,8 +8,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FlowElement;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +26,7 @@ import net.risesoft.util.SysVariables;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/procDef")
+@RequestMapping(value = "/procDef", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessDefinitionController {
 
     private final WorkflowProcessDefinitionService workflowProcessDefinitionService;
@@ -59,7 +60,7 @@ public class ProcessDefinitionController {
      * @param processDefinitionKey 流程定义Key
      * @return List<String>
      */
-    @RequestMapping(value = "/getProcDefIds", method = RequestMethod.GET)
+    @GetMapping(value = "/getProcDefIds")
     public List<String> getProcDefIds(@RequestParam(required = false) String processDefinitionKey) {
         return workflowProcessDefinitionService.getProcessDefinitionIds(processDefinitionKey);
     }
@@ -70,7 +71,7 @@ public class ProcessDefinitionController {
      * @param processDefinitionKey 流程定义Key
      * @return List<Integer>
      */
-    @RequestMapping(value = "/getProcDefVersions", method = RequestMethod.GET)
+    @GetMapping(value = "/getProcDefVersions")
     public List<Integer> getProcDefVersions(@RequestParam(required = false) String processDefinitionKey) {
         return workflowProcessDefinitionService.getProcessDefinitionVersions(processDefinitionKey);
     }
@@ -104,7 +105,7 @@ public class ProcessDefinitionController {
      * @param processDefinitionId 流程定义ID
      * @return Map<String, Object>
      */
-    @RequestMapping(value = "/getTaskMap", method = RequestMethod.GET)
+    @GetMapping(value = "/getTaskMap")
     public Map<String, Object> getTaskMap(@RequestParam(required = false) String processDefinitionId) {
         Map<String, Object> taskMap = new LinkedHashMap<>();
         taskMap.put("", "--");
@@ -122,10 +123,10 @@ public class ProcessDefinitionController {
 
     /**
      * 查询流程定义，获取map，其key为流程定义对象ID，其value为流程定义对象名称
-     * 
+     *
      * @return Map<String, String>
      */
-    @RequestMapping(value = "/map", method = RequestMethod.GET)
+    @GetMapping(value = "/map")
     public Map<String, String> runningShow() {
         // 获取流程定义对象ID和流程定义对象名称
         return workflowProcessDefinitionService.procDefIdMap();

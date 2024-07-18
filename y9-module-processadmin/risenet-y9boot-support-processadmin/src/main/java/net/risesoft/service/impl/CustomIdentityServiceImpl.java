@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.service.CustomIdentityService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * @author qinman
@@ -57,7 +57,7 @@ public class CustomIdentityServiceImpl implements CustomIdentityService {
     }
 
     @Override
-    public List<IdentityLink> getIdentityLinksForTask(String taskId) {
+    public List<IdentityLink> listIdentityLinksForTaskByTaskId(String taskId) {
         try {
             return taskService.getIdentityLinksForTask(taskId);
         } catch (Exception e) {

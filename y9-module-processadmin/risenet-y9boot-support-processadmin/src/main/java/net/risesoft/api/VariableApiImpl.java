@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 

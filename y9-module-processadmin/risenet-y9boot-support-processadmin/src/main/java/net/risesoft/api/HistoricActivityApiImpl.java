@@ -13,8 +13,8 @@ import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricActivityService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 获取历史节点实例
@@ -42,7 +42,7 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
     public Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<HistoricActivityInstance> list = customHistoricActivityService.getByProcessInstanceId(processInstanceId);
+        List<HistoricActivityInstance> list = customHistoricActivityService.listByProcessInstanceId(processInstanceId);
         return Y9Result.success(FlowableModelConvertUtil.historicActivityInstanceList2Model(list));
     }
 
@@ -60,7 +60,7 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
         @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricActivityInstance> list =
-            customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
+            customHistoricActivityService.listByProcessInstanceIdAndYear(processInstanceId, year);
         return Y9Result.success(FlowableModelConvertUtil.historicActivityInstanceList2Model(list));
     }
 

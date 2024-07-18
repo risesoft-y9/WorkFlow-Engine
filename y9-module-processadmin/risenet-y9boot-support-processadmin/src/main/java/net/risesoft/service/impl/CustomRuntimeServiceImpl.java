@@ -184,17 +184,17 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     }
 
     @Override
-    public List<ProcessInstance> getListBySuperProcessInstanceId(String superProcessInstanceId) {
-        return runtimeService.createProcessInstanceQuery().superProcessInstanceId(superProcessInstanceId).list();
-    }
-
-    @Override
     public ProcessInstance getProcessInstance(String processInstanceId) {
         return runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
     }
 
     @Override
-    public List<ProcessInstance> getProcessInstancesByKey(String processDefinitionKey) {
+    public List<ProcessInstance> listBySuperProcessInstanceId(String superProcessInstanceId) {
+        return runtimeService.createProcessInstanceQuery().superProcessInstanceId(superProcessInstanceId).list();
+    }
+
+    @Override
+    public List<ProcessInstance> listProcessInstancesByKey(String processDefinitionKey) {
         return runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).list();
     }
 

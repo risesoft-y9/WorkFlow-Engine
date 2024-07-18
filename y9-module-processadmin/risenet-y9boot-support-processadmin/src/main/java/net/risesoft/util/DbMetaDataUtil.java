@@ -15,7 +15,8 @@ import net.risesoft.enums.DialectEnum;
  * @date 2022/12/30
  */
 public class DbMetaDataUtil {
-    private static Logger log = LoggerFactory.getLogger(DbMetaDataUtil.class);
+
+    private static final Logger log = LoggerFactory.getLogger(DbMetaDataUtil.class);
 
     public static String getDatabaseProductName(Connection connection) throws SQLException {
         try {
@@ -25,8 +26,6 @@ public class DbMetaDataUtil {
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw e;
-        } finally {
-            // connection.close();
         }
     }
 

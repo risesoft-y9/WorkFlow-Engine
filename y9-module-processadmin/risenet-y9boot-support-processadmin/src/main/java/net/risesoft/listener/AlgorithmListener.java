@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.util.RemoteCallUtil;
 

@@ -41,12 +41,6 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
     private final DeleteProcessUtilService deleteProcessUtilService;
 
     @Override
-    public List<HistoricProcessInstance> deleteProList(String itemId, Integer page, Integer rows) {
-        return historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId).deleted()
-            .orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
-    }
-
-    @Override
     public boolean deleteProcessInstance(String processInstanceId) {
         try {
             HistoricProcessInstance his =
@@ -80,7 +74,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
     }
 
     @Override
-    public HistoricProcessInstance getById(String processInstanceId, String year) {
+    public HistoricProcessInstance getByIdAndYear(String processInstanceId, String year) {
         if (StringUtils.isNotBlank(year)) {
             String sql =
                 "SELECT * from ACT_HI_PROCINST_" + year + " p where p.PROC_INST_ID_ = '" + processInstanceId + "'";
@@ -89,33 +83,6 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             return historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId)
                 .singleResult();
         }
-    }
-
-    @Override
-    public List<HistoricProcessInstance> getBySuperProcessInstanceId(String superProcessInstanceId) {
-        return historyService.createHistoricProcessInstanceQuery().superProcessInstanceId(superProcessInstanceId)
-            .notDeleted().orderByProcessInstanceStartTime().asc().list();
-    }
-
-    @Override
-    public List<HistoricProcessInstance> getRecycleAll(String title, Integer page, Integer rows) {
-        return historyService.createHistoricProcessInstanceQuery().deleted()
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
-            .listPage((page - 1) * rows, rows);
-    }
-
-    @Override
-    public List<HistoricProcessInstance> getRecycleByItemId(String itemId, String title, Integer page, Integer rows) {
-        return historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId).deleted()
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
-            .listPage((page - 1) * rows, rows);
-    }
-
-    @Override
-    public List<HistoricProcessInstance> getRecycleByUserId(String title, String userId, Integer page, Integer rows) {
-        return historyService.createHistoricProcessInstanceQuery().involvedUser(userId).deleted()
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
-            .listPage((page - 1) * rows, rows);
     }
 
     @Override
@@ -139,6 +106,39 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
     @Override
     public HistoricProcessInstance getSuperProcessInstanceById(String processInstanceId) {
         return historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+    }
+
+    @Override
+    public List<HistoricProcessInstance> listBySuperProcessInstanceId(String superProcessInstanceId) {
+        return historyService.createHistoricProcessInstanceQuery().superProcessInstanceId(superProcessInstanceId)
+            .notDeleted().orderByProcessInstanceStartTime().asc().list();
+    }
+
+    @Override
+    public List<HistoricProcessInstance> listDeleteProByItemId(String itemId, Integer page, Integer rows) {
+        return historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId).deleted()
+            .orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
+    }
+
+    @Override
+    public List<HistoricProcessInstance> listRecycleAll(String title, Integer page, Integer rows) {
+        return historyService.createHistoricProcessInstanceQuery().deleted()
+            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
+            .listPage((page - 1) * rows, rows);
+    }
+
+    @Override
+    public List<HistoricProcessInstance> listRecycleByItemId(String itemId, String title, Integer page, Integer rows) {
+        return historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId).deleted()
+            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
+            .listPage((page - 1) * rows, rows);
+    }
+
+    @Override
+    public List<HistoricProcessInstance> listRecycleByUserId(String title, String userId, Integer page, Integer rows) {
+        return historyService.createHistoricProcessInstanceQuery().involvedUser(userId).deleted()
+            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
+            .listPage((page - 1) * rows, rows);
     }
 
     @Override
@@ -173,11 +173,8 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricProcessInstance his =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-            String year = "";
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             // 未办结件删除
             if (his != null && his.getEndTime() == null) {
-                year = sdf.format(his.getStartTime());
                 runtimeService.deleteProcessInstance(processInstanceId, "已删除");
                 historyService.deleteHistoricProcessInstance(his.getId());
             } else {
@@ -185,7 +182,6 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 if (his == null) {
                 } else {
                     // 办结件
-                    year = sdf.format(his.getStartTime());
                     historyService.deleteHistoricProcessInstance(his.getId());
                 }
             }

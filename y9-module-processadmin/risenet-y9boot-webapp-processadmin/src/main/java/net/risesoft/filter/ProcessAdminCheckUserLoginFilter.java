@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.ManagerApi;
 import net.risesoft.model.platform.Manager;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 

@@ -8,8 +8,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.variable.api.history.HistoricVariableInstance;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +25,7 @@ import net.risesoft.pojo.Y9Page;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/historicVariable")
+@RequestMapping(value = "/vue/historicVariable", produces = MediaType.APPLICATION_JSON_VALUE)
 public class HistoricVariableVueController {
 
     private final HistoryService historyService;
@@ -34,7 +35,7 @@ public class HistoricVariableVueController {
      *
      */
     @RequestMapping(value = "/getAllHistoricVariable")
-    public Y9Page<Map<String, Object>> getAllHistoricVariable(@RequestParam int page, @RequestParam int rows) {
+    public Y9Page<Map<String, Object>> pageAllHistoricVariable(@RequestParam int page, @RequestParam int rows) {
         List<Map<String, Object>> items = new ArrayList<>();
         long totalCount = historyService.createHistoricVariableInstanceQuery().count();
         List<HistoricVariableInstance> hviList =
@@ -66,7 +67,7 @@ public class HistoricVariableVueController {
      * @param rows 条数
      * @return Y9Page<Map<String, Object>>
      */
-    @RequestMapping(value = "/searchHistoricVariable", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/searchHistoricVariable")
     public Y9Page<Map<String, Object>> searchHistoricVariable(@RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String variableName,
         @RequestParam int page, @RequestParam int rows) {

@@ -78,12 +78,6 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     }
 
     @Override
-    public List<ProcessDefinition> getLatestProcessDefinitionList() {
-        return repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc()
-            .list();
-    }
-
-    @Override
     public ProcessDefinition getPreviousProcessDefinitionById(String processDefinitionId) {
         ProcessDefinition pd =
             repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId).singleResult();
@@ -99,12 +93,6 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     @Override
     public ProcessDefinition getProcessDefinitionById(String processDefinitionId) {
         return repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId).singleResult();
-    }
-
-    @Override
-    public List<ProcessDefinition> getProcessDefinitionListByKey(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
-            .orderByProcessDefinitionVersion().desc().list();
     }
 
     @Override
@@ -176,8 +164,21 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
             });
             return Y9Result.success(items);
         } catch (Exception e) {
+            LOGGER.error("操作异常", e);
             return Y9Result.failure("操作异常");
         }
+    }
+
+    @Override
+    public List<ProcessDefinition> listLatestProcessDefinition() {
+        return repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc()
+            .list();
+    }
+
+    @Override
+    public List<ProcessDefinition> listProcessDefinitionByKey(String processDefinitionKey) {
+        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
+            .orderByProcessDefinitionVersion().desc().list();
     }
 
     @Override
