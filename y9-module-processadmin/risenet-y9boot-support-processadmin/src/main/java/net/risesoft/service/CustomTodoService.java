@@ -3,8 +3,6 @@ package net.risesoft.service;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 
-import java.util.Map;
-
 /**
  * @author qinman
  * @author zhangchongjie
@@ -40,13 +38,13 @@ public interface CustomTodoService {
 
     /**
      * 根据人员Id获取用户的待办任务(分页)
-     * 
+     *
      * @param userId
      * @param page
      * @param rows
      * @return
      */
-    Map<String, Object> getListByUserId(String userId, Integer page, Integer rows);
+    Y9Page<TaskModel> pageByUserId(String userId, Integer page, Integer rows);
 
     /**
      * 根据人员Id，事项id获取用户的待办任务(分页)
@@ -57,7 +55,7 @@ public interface CustomTodoService {
      * @param rows 行数
      * @return Y9Page<TaskModel>
      */
-    Y9Page<TaskModel> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
+    Y9Page<TaskModel> pageByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
         Integer rows);
 
     /**
@@ -69,7 +67,7 @@ public interface CustomTodoService {
      * @param rows
      * @return Y9Page<TaskModel>
      */
-    Y9Page<TaskModel> getListByUserIdAndSystemName(String userId, String systemName, Integer page, Integer rows);
+    Y9Page<TaskModel> pageByUserIdAndSystemName(String userId, String systemName, Integer page, Integer rows);
 
     /**
      * 条件搜索待办件
@@ -80,7 +78,7 @@ public interface CustomTodoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows);
+    Y9Page<TaskModel> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索待办件
@@ -105,6 +103,6 @@ public interface CustomTodoService {
      * @param rows
      * @return
      */
-    Y9Page<TaskModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
-        Integer page, Integer rows);
+    Y9Page<TaskModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm, Integer page,
+        Integer rows);
 }

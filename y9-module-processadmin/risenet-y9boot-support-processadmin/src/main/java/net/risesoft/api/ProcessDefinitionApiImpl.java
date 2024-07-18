@@ -15,7 +15,7 @@ import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 流程定义相关接口
@@ -43,7 +43,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam String tenantId,
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getContainEndEvent4UserTask(processDefinitionId);
+        return customProcessDefinitionService.listContainEndEvent4UserTask(processDefinitionId);
     }
 
     /**
@@ -73,7 +73,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<List<FlowElementModel>> getFlowElement(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getFlowElement(processDefinitionId, isContainStartNode);
+        return customProcessDefinitionService.listFlowElementByProcessDefinitionId(processDefinitionId,
+            isContainStartNode);
     }
 
     /**
@@ -89,7 +90,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<List<TargetModel>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getNodes(processDefinitionId, isContainStartNode);
+        return customProcessDefinitionService.listNodesByProcessDefinitionId(processDefinitionId, isContainStartNode);
     }
 
     /**
@@ -135,7 +136,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<List<GatewayModel>> getParallelGatewayList(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getParallelGatewayList(processDefinitionId, taskDefKey);
+        return customProcessDefinitionService.listParallelGateway(processDefinitionId, taskDefKey);
     }
 
     /**
@@ -183,7 +184,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<List<TargetModel>> getTargetNodes(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getTargetNodes(processDefinitionId, taskDefKey);
+        return customProcessDefinitionService.listTargetNodes(processDefinitionId, taskDefKey);
     }
 
     /**
@@ -199,7 +200,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<List<TargetModel>> getTargetNodes1(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getTargetNodes1(processDefinitionId, taskDefKey);
+        return customProcessDefinitionService.listTargetNodesContainEndNodeAndNotEq(processDefinitionId, taskDefKey);
     }
 
     /**
@@ -215,7 +216,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getTargetNodes4ParallelGateway(processDefinitionId, taskDefKey);
+        return customProcessDefinitionService.listTargetNodes4ParallelGateway(processDefinitionId, taskDefKey);
     }
 
     /**
@@ -233,7 +234,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
         @RequestParam Boolean isContainEndNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getTargetNodes4UserTask(processDefinitionId, taskDefKey,
+        return customProcessDefinitionService.listTargetNodes4UserTask(processDefinitionId, taskDefKey,
             isContainEndNode);
     }
 

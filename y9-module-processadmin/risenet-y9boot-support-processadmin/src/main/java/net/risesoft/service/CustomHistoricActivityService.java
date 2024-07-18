@@ -17,7 +17,7 @@ public interface CustomHistoricActivityService {
      * @param processInstanceId
      * @return
      */
-    List<HistoricActivityInstance> getByProcessInstanceId(String processInstanceId);
+    List<HistoricActivityInstance> listByProcessInstanceId(String processInstanceId);
 
     /**
      * 根据流程实例和流程节点类型获取历史节点实例
@@ -26,14 +26,15 @@ public interface CustomHistoricActivityService {
      * @param activityType
      * @return
      */
-    List<HistoricActivityInstance> getByProcessInstanceIdAndActivityType(String processInstanceId, String activityType);
+    List<HistoricActivityInstance> listByProcessInstanceIdAndActivityType(String processInstanceId,
+        String activityType);
 
     /**
      * Description:
-     * 
+     *
      * @param processInstanceId
      * @param year
      * @return
      */
-    List<HistoricActivityInstance> getByProcessInstanceIdAndYear(String processInstanceId, String year);
+    List<HistoricActivityInstance> listByProcessInstanceIdAndYear(String processInstanceId, String year);
 }

@@ -79,8 +79,8 @@ import net.risesoft.service.CustomHistoricActivityService;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomHistoricVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.SysVariables;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
@@ -309,7 +309,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             }
         }
 
-        List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
+        List<HistoricTaskInstance> list = customHistoricTaskService.listByProcessInstanceId(processInstanceId, "");
         for (HistoricTaskInstance task : list) {
             txtFlowPath = Y9Util.genCustomStr(txtFlowPath, task.getTaskDefinitionKey());
         }
@@ -349,7 +349,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
             }
             List<HistoricActivityInstance> list =
-                customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
+                customHistoricActivityService.listByProcessInstanceIdAndYear(processInstanceId, year);
             list.sort((o1, o2) -> {
                 if (o1.getEndTime() == null || o2.getEndTime() == null) {
                     return 0;
@@ -656,7 +656,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
             List<ValidationError> errors = validator.validate(bpmnModel);
             if (!errors.isEmpty()) {
-                StringBuffer es = new StringBuffer();
+                StringBuilder es = new StringBuilder();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
                 return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
             }

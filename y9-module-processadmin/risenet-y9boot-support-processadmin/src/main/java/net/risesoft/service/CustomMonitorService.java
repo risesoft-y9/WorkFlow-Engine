@@ -27,27 +27,6 @@ public interface CustomMonitorService {
     long getDoingCountBySystemName(String systemName);
 
     /**
-     * 查询监控在办件列表
-     *
-     * @param processDefinitionKey
-     * @param page
-     * @param rows
-     * @return
-     */
-    Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(String processDefinitionKey, Integer page,
-        Integer rows);
-
-    /**
-     * 查询监控在办件列表
-     *
-     * @param systemName
-     * @param page
-     * @param rows
-     * @return
-     */
-    Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(String systemName, Integer page, Integer rows);
-
-    /**
      * 监控办结件列表统计
      *
      * @param systemName
@@ -64,6 +43,27 @@ public interface CustomMonitorService {
     long getDoneCountBySystemName(String systemName);
 
     /**
+     * 查询监控在办件列表
+     *
+     * @param processDefinitionKey
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<HistoricProcessInstanceModel> pageDoingListByProcessDefinitionKey(String processDefinitionKey, Integer page,
+        Integer rows);
+
+    /**
+     * 查询监控在办件列表
+     *
+     * @param systemName
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<HistoricProcessInstanceModel> pageDoingListBySystemName(String systemName, Integer page, Integer rows);
+
+    /**
      * 查询监控办结件列表
      *
      * @param processDefinitionKey
@@ -71,7 +71,7 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Y9Page<HistoricProcessInstanceModel> getDoneListByProcessDefinitionKey(String processDefinitionKey, Integer page,
+    Y9Page<HistoricProcessInstanceModel> pageDoneListByProcessDefinitionKey(String processDefinitionKey, Integer page,
         Integer rows);
 
     /**
@@ -82,7 +82,7 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Y9Page<HistoricProcessInstanceModel> getDoneListBySystemName(String systemName, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> pageDoneListBySystemName(String systemName, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件

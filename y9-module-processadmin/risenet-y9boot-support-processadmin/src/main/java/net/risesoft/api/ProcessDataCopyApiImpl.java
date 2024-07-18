@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDataCopyApi;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 流程定义数据复制接口

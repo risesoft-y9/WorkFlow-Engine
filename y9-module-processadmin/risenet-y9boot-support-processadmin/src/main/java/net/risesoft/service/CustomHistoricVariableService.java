@@ -14,16 +14,8 @@ import org.flowable.variable.api.history.HistoricVariableInstance;
 public interface CustomHistoricVariableService {
 
     /**
-     * 根据流程实例Id,获取历史流程变量集合
-     *
-     * @param processInstanceId
-     * @return
-     */
-    List<HistoricVariableInstance> getByProcessInstanceId(String processInstanceId);
-
-    /**
      * Description: 根据流程实例Id和流程变量的Key,获取历史流程变量的值
-     * 
+     *
      * @param processInstanceId
      * @param variableName
      * @param year
@@ -33,16 +25,8 @@ public interface CustomHistoricVariableService {
         String year);
 
     /**
-     * 根据流程实例Id,获取历史任务变量的值集合
-     *
-     * @param taskId
-     * @return
-     */
-    List<HistoricVariableInstance> getByTaskId(String taskId);
-
-    /**
      * Description: 根据流程实例Id和流程变量的Key,获取历史任务变量的值
-     * 
+     *
      * @param taskId
      * @param variableName
      * @param year
@@ -59,4 +43,20 @@ public interface CustomHistoricVariableService {
      * @return
      */
     Map<String, Object> getVariables(String tenantId, String processInstanceId, Collection<String> keys);
+
+    /**
+     * 根据流程实例Id,获取历史流程变量集合
+     *
+     * @param processInstanceId
+     * @return
+     */
+    List<HistoricVariableInstance> listByProcessInstanceId(String processInstanceId);
+
+    /**
+     * 根据流程实例Id,获取历史任务变量的值集合
+     *
+     * @param taskId
+     * @return
+     */
+    List<HistoricVariableInstance> listByTaskId(String taskId);
 }

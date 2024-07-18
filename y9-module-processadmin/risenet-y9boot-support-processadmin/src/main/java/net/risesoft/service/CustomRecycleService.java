@@ -52,8 +52,8 @@ public interface CustomRecycleService {
      * @param rows rows
      * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Y9Page<HistoricProcessInstanceModel> getRecycleListByProcessDefinitionKey(String processDefinitionKey, Integer page,
-        Integer rows);
+    Y9Page<HistoricProcessInstanceModel> pageRecycleListByProcessDefinitionKey(String processDefinitionKey,
+        Integer page, Integer rows);
 
     /**
      * 获取回收站列表
@@ -63,7 +63,7 @@ public interface CustomRecycleService {
      * @param rows rows
      * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Y9Page<HistoricProcessInstanceModel> getRecycleListBySystemName(String systemName, Integer page, Integer rows);
+    Y9Page<HistoricProcessInstanceModel> pageRecycleListBySystemName(String systemName, Integer page, Integer rows);
 
     /**
      * 获取回收站列表
@@ -74,7 +74,7 @@ public interface CustomRecycleService {
      * @param rows rows
      * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndProcessDefinitionKey(String userId,
+    Y9Page<HistoricProcessInstanceModel> pageRecycleListByUserIdAndProcessDefinitionKey(String userId,
         String processDefinitionKey, Integer page, Integer rows);
 
     /**
@@ -86,7 +86,7 @@ public interface CustomRecycleService {
      * @param rows 总条数
      * @return Y9Page<HistoricProcessInstanceModel>
      */
-    Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndSystemName(String userId, String systemName,
+    Y9Page<HistoricProcessInstanceModel> pageRecycleListByUserIdAndSystemName(String userId, String systemName,
         Integer page, Integer rows);
 
     /**
@@ -128,7 +128,7 @@ public interface CustomRecycleService {
 
     /**
      * Description: 条件搜索在办件
-     * 
+     *
      * @param userId
      * @param systemName
      * @param searchTerm

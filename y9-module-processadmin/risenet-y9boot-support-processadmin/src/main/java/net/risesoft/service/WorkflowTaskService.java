@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
-import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
@@ -34,8 +33,6 @@ public class WorkflowTaskService {
 
     private final RuntimeService runtimeService;
 
-    private final RepositoryService repositoryService;
-
     private final HistoryService historyService;
 
     private final TaskService taskService;
@@ -46,7 +43,7 @@ public class WorkflowTaskService {
      * 获取当前运行的taskDefKey
      */
     public List<String> getActiveTaskDefinitionKeys(String processInstanceId) {
-        List<String> taskDefinitionKeyList = new ArrayList<String>();
+        List<String> taskDefinitionKeyList = new ArrayList<>();
         List<Execution> executionList =
             runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();
         for (Execution execution : executionList) {
@@ -59,7 +56,7 @@ public class WorkflowTaskService {
 
     /**
      * Description: 根据当前的task获取当前活动节点的Id
-     * 
+     *
      * @param task
      * @return
      */
@@ -68,15 +65,14 @@ public class WorkflowTaskService {
             String excId = task.getExecutionId();
             ExecutionEntity execution =
                 (ExecutionEntity)runtimeService.createExecutionQuery().executionId(excId).singleResult();
-            String activitiId = execution.getActivityId();
-            return activitiId;
+            return execution.getActivityId();
         }
         return "";
     }
 
     /**
      * Description: 根据当前的taskId获取当前活动节点的Id，例如outerflow
-     * 
+     *
      * @param taskId
      * @return
      */
@@ -92,8 +88,7 @@ public class WorkflowTaskService {
      * @return
      */
     public List<Task> getListTaskByCreateTime(Date createTime) {
-        List<Task> taskList = taskService.createTaskQuery().taskCreatedOn(createTime).list();
-        return taskList;
+        return taskService.createTaskQuery().taskCreatedOn(createTime).list();
     }
 
     /**
@@ -103,7 +98,7 @@ public class WorkflowTaskService {
      * @return
      */
     public List<HistoricTaskInstance> getParallelTask(String taskId) {
-        List<HistoricTaskInstance> list = new ArrayList<HistoricTaskInstance>();
+        List<HistoricTaskInstance> list = new ArrayList<>();
         try {
             Task currentTask = getTaskByTaskId(taskId);
             if (currentTask != null) {
@@ -262,7 +257,7 @@ public class WorkflowTaskService {
      * @return
      */
     public List<Task> getTaskByProcessInstanceId(String processInstanceId) {
-        List<Task> list = new ArrayList<Task>();
+        List<Task> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processInstanceId)) {
             list = taskService.createTaskQuery().processInstanceId(processInstanceId).orderByTaskId().desc().list();
         }
@@ -276,9 +271,7 @@ public class WorkflowTaskService {
      * @return
      */
     public Task getTaskByProcessInstanceIdAndAssgness(String processInstanceId, String assgness) {
-        Task task =
-            taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(assgness).singleResult();
-        return task;
+        return taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(assgness).singleResult();
     }
 
     /**
@@ -328,7 +321,7 @@ public class WorkflowTaskService {
      */
     public int isHandledParallel(String taskId) {
         List<HistoricTaskInstance> list = getParallelTask(taskId);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             int count = 0;
             for (HistoricTaskInstance task : list) {
                 if (task.getEndTime() != null) {
@@ -354,7 +347,7 @@ public class WorkflowTaskService {
             List<HistoricTaskInstance> list =
                 historyService.createHistoricTaskInstanceQuery().processDefinitionId(processDefinitionId)
                     .processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
-            if (list != null && list.size() > 0) {
+            if (list != null && !list.isEmpty()) {
                 sendUserId = list.get(0).getAssignee();
             }
         }
@@ -370,11 +363,11 @@ public class WorkflowTaskService {
      */
     public String startTaskDefKey(String processDefinitionId, String processInstanceId) {
         String startTaskDefKey = "";
-        if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processDefinitionId)) {
+        if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
             List<HistoricTaskInstance> list =
                 historyService.createHistoricTaskInstanceQuery().processDefinitionId(processDefinitionId)
                     .processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
-            if (list != null && list.size() > 0) {
+            if (list != null && !list.isEmpty()) {
                 startTaskDefKey = list.get(0).getTaskDefinitionKey();
             }
         }

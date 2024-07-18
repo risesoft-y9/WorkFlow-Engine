@@ -20,8 +20,8 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 部署流程相关接口
@@ -92,7 +92,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     @Override
     public Y9Result<List<ProcessDefinitionModel>> getLatestProcessDefinitionList(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<ProcessDefinition> pdList = customRepositoryService.getLatestProcessDefinitionList();
+        List<ProcessDefinition> pdList = customRepositoryService.listLatestProcessDefinition();
         return Y9Result.success(FlowableModelConvertUtil.processDefinitionList2ModelList(pdList));
     }
 
@@ -140,7 +140,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     public Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionListByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<ProcessDefinition> pdList = customRepositoryService.getProcessDefinitionListByKey(processDefinitionKey);
+        List<ProcessDefinition> pdList = customRepositoryService.listProcessDefinitionByKey(processDefinitionKey);
         return Y9Result.success(FlowableModelConvertUtil.processDefinitionList2ModelList(pdList));
     }
 

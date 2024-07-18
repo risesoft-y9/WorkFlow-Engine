@@ -42,7 +42,7 @@ import net.risesoft.api.processadmin.ProcessModelApi;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

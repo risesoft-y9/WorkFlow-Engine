@@ -35,5 +35,5 @@ public interface CustomIdentityService {
      * @param taskId
      * @return
      */
-    List<IdentityLink> getIdentityLinksForTask(String taskId);
+    List<IdentityLink> listIdentityLinksForTaskByTaskId(String taskId);
 }

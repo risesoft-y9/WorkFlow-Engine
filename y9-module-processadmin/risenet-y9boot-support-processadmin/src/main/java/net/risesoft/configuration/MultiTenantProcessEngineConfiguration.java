@@ -1,4 +1,4 @@
-package net.risesoft.service;
+package net.risesoft.configuration;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.InitDataConsts;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.base64.Y9Base64Util;
 
@@ -31,7 +32,7 @@ import net.risesoft.y9.util.base64.Y9Base64Util;
  * @date 2022/12/30
  */
 @Slf4j
-@Service
+@Component
 public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenantProcessEngineConfiguration {
 
     public static final String SYSTEM_ID = "11111111-1111-1111-1111-111111111100";
@@ -42,7 +43,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
         return flowableTenantInfoHolder;
     }
 
-    private JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
+    private final JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
 
     @Resource(name = "jdbcTemplate4Public")
     private JdbcTemplate jdbcTemplate4Public;
@@ -65,7 +66,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
     public ProcessEngine buildProcessEngine() {
         createSystem(y9Config.getApp().getProcessAdmin().getSystemName());// 创建系统
         createTenantSystem(y9Config.getApp().getProcessAdmin().getSystemName());// 租户租用系统
-
+        LOGGER.info("start registerTenant");
         /*
          * 设置默认的租户数据源
          */

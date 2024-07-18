@@ -1,4 +1,4 @@
-package net.risesoft.service;
+package net.risesoft.y9;
 
 import java.util.Collection;
 import java.util.HashMap;

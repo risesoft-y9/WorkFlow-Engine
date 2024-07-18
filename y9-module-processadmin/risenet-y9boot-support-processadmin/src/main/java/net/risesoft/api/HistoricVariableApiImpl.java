@@ -16,8 +16,8 @@ import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 历史变量相关接口
@@ -46,7 +46,7 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricVariableInstance> hviList =
-            customHistoricVariableService.getByProcessInstanceId(processInstanceId);
+            customHistoricVariableService.listByProcessInstanceId(processInstanceId);
         return Y9Result.success(FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList));
     }
 
@@ -84,7 +84,7 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     public Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam String tenantId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<HistoricVariableInstance> hviList = customHistoricVariableService.getByTaskId(taskId);
+        List<HistoricVariableInstance> hviList = customHistoricVariableService.listByTaskId(taskId);
         return Y9Result.success(FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList));
     }
 

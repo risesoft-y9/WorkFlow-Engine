@@ -28,11 +28,6 @@ public class CustomHistoricVariableServiceImpl implements CustomHistoricVariable
     private final HistoryService historyService;
 
     @Override
-    public List<HistoricVariableInstance> getByProcessInstanceId(String processInstanceId) {
-        return historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId).list();
-    }
-
-    @Override
     public HistoricVariableInstance getByProcessInstanceIdAndVariableName(String processInstanceId, String variableName,
         String year) {
         if (StringUtils.isBlank(year)) {
@@ -44,11 +39,6 @@ public class CustomHistoricVariableServiceImpl implements CustomHistoricVariable
                 + processInstanceId + "' and RES.NAME_ = '" + variableName + "'";
             return historyService.createNativeHistoricVariableInstanceQuery().sql(sql).singleResult();
         }
-    }
-
-    @Override
-    public List<HistoricVariableInstance> getByTaskId(String taskId) {
-        return historyService.createHistoricVariableInstanceQuery().taskId(taskId).list();
     }
 
     @Override
@@ -78,5 +68,15 @@ public class CustomHistoricVariableServiceImpl implements CustomHistoricVariable
             }
         }
         return map;
+    }
+
+    @Override
+    public List<HistoricVariableInstance> listByProcessInstanceId(String processInstanceId) {
+        return historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId).list();
+    }
+
+    @Override
+    public List<HistoricVariableInstance> listByTaskId(String taskId) {
+        return historyService.createHistoricVariableInstanceQuery().taskId(taskId).list();
     }
 }

@@ -20,7 +20,7 @@ import net.risesoft.y9.Y9Context;
  */
 public class WorkflowUtils {
 
-    private static Logger logger = LoggerFactory.getLogger(WorkflowUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowUtils.class);
 
     /**
      * 导出图片文件到硬盘

@@ -51,7 +51,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     }
 
     @Override
-    public Y9Page<HistoricProcessInstanceModel> getRecycleListByProcessDefinitionKey(String processDefinitionKey,
+    public Y9Page<HistoricProcessInstanceModel> pageRecycleListByProcessDefinitionKey(String processDefinitionKey,
         Integer page, Integer rows) {
         long totalCount = this.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list =
@@ -63,7 +63,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     }
 
     @Override
-    public Y9Page<HistoricProcessInstanceModel> getRecycleListBySystemName(String systemName, Integer page,
+    public Y9Page<HistoricProcessInstanceModel> pageRecycleListBySystemName(String systemName, Integer page,
         Integer rows) {
         long totalCount = this.getRecycleCountBySystemName(systemName);
         List<HistoricProcessInstance> list =
@@ -75,7 +75,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     }
 
     @Override
-    public Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndProcessDefinitionKey(String userId,
+    public Y9Page<HistoricProcessInstanceModel> pageRecycleListByUserIdAndProcessDefinitionKey(String userId,
         String processDefinitionKey, Integer page, Integer rows) {
         long totalCount = this.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
@@ -87,7 +87,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     }
 
     @Override
-    public Y9Page<HistoricProcessInstanceModel> getRecycleListByUserIdAndSystemName(String userId, String systemName,
+    public Y9Page<HistoricProcessInstanceModel> pageRecycleListByUserIdAndSystemName(String userId, String systemName,
         Integer page, Integer rows) {
         long totalCount = this.getRecycleCountBySystemName(systemName);
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)

@@ -46,7 +46,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     }
 
     @Override
-    public Y9Page<ProcessInstanceModel> getListByUserId(String userId, Integer page, Integer rows) {
+    public Y9Page<ProcessInstanceModel> pageByUserId(String userId, Integer page, Integer rows) {
         long totalCount = this.getCountByUserId(userId);
         List<ProcessInstance> hpiList =
             runtimeService.createProcessInstanceQuery().involvedUser(userId).active().variableNotExists(userId)
@@ -56,8 +56,8 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     }
 
     @Override
-    public Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKey(String userId,
-        String processDefinitionKey, Integer page, Integer rows) {
+    public Y9Page<ProcessInstanceModel> pageByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+        Integer page, Integer rows) {
         long totalCount = this.getCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey);
         List<ProcessInstance> hpiList = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
             .variableNotExists(userId).processDefinitionKey(processDefinitionKey)
@@ -67,7 +67,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     }
 
     @Override
-    public Y9Page<ProcessInstanceModel> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
+    public Y9Page<ProcessInstanceModel> pageByUserIdAndSystemName(String userId, String systemName, Integer page,
         Integer rows) {
         long totalCount = this.getCountByUserIdAndSystemName(userId, systemName);
         List<ProcessInstance> hpiList = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
@@ -78,7 +78,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     }
 
     @Override
-    public Y9Page<ProcessInstanceModel> searchListByUserId(String userId, String searchTerm, Integer page,
+    public Y9Page<ProcessInstanceModel> pageSearchByUserId(String userId, String searchTerm, Integer page,
         Integer rows) {
         long totalCount = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
             .variableNotExists(userId).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
@@ -90,7 +90,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     }
 
     @Override
-    public Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(String userId,
+    public Y9Page<ProcessInstanceModel> pageSearchByUserIdAndProcessDefinitionKey(String userId,
         String processDefinitionKey, String searchTerm, Integer page, Integer rows) {
         long totalCount = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
             .variableNotExists(userId).processDefinitionKey(processDefinitionKey)
@@ -104,8 +104,8 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     }
 
     @Override
-    public Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
-        Integer page, Integer rows) {
+    public Y9Page<ProcessInstanceModel> pageSearchByUserIdAndSystemName(String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) {
         long totalCount =
             runtimeService.createProcessInstanceQuery().involvedUser(userId).active().variableNotExists(userId)
                 .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();

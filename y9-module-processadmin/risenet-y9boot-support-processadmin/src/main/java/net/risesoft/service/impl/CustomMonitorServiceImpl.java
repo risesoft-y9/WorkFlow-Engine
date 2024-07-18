@@ -39,30 +39,6 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     }
 
     @Override
-    public Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(String processDefinitionKey,
-        Integer page, Integer rows) {
-        long totalCount = this.getDoingCountByProcessDefinitionKey(processDefinitionKey);
-        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted()
-            .unfinished().processDefinitionKey(processDefinitionKey).orderByProcessInstanceStartTime().desc()
-            .listPage((page - 1) * rows, rows);
-        List<HistoricProcessInstanceModel> modelList =
-            FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
-    }
-
-    @Override
-    public Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(String systemName, Integer page,
-        Integer rows) {
-        long totalCount = this.getDoingCountBySystemName(systemName);
-        List<HistoricProcessInstance> list =
-            historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).notDeleted()
-                .unfinished().orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
-        List<HistoricProcessInstanceModel> modelList =
-            FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
-        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
-    }
-
-    @Override
     public long getDoneCountByProcessDefinitionKey(String processDefinitionKey) {
         return historyService.createHistoricProcessInstanceQuery().processDefinitionKey(processDefinitionKey)
             .notDeleted().finished().count();
@@ -75,7 +51,31 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     }
 
     @Override
-    public Y9Page<HistoricProcessInstanceModel> getDoneListByProcessDefinitionKey(String processDefinitionKey,
+    public Y9Page<HistoricProcessInstanceModel> pageDoingListByProcessDefinitionKey(String processDefinitionKey,
+        Integer page, Integer rows) {
+        long totalCount = this.getDoingCountByProcessDefinitionKey(processDefinitionKey);
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted()
+            .unfinished().processDefinitionKey(processDefinitionKey).orderByProcessInstanceStartTime().desc()
+            .listPage((page - 1) * rows, rows);
+        List<HistoricProcessInstanceModel> modelList =
+            FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
+    }
+
+    @Override
+    public Y9Page<HistoricProcessInstanceModel> pageDoingListBySystemName(String systemName, Integer page,
+        Integer rows) {
+        long totalCount = this.getDoingCountBySystemName(systemName);
+        List<HistoricProcessInstance> list =
+            historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).notDeleted()
+                .unfinished().orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
+        List<HistoricProcessInstanceModel> modelList =
+            FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
+    }
+
+    @Override
+    public Y9Page<HistoricProcessInstanceModel> pageDoneListByProcessDefinitionKey(String processDefinitionKey,
         Integer page, Integer rows) {
         long totalCount = this.getDoneCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list =
@@ -87,7 +87,8 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     }
 
     @Override
-    public Y9Page<HistoricProcessInstanceModel> getDoneListBySystemName(String systemName, Integer page, Integer rows) {
+    public Y9Page<HistoricProcessInstanceModel> pageDoneListBySystemName(String systemName, Integer page,
+        Integer rows) {
         long totalCount = this.getDoneCountBySystemName(systemName);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).notDeleted()

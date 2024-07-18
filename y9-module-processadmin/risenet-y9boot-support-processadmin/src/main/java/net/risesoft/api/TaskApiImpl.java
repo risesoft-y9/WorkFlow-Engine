@@ -25,8 +25,8 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomTaskService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -281,7 +281,7 @@ public class TaskApiImpl implements TaskApi {
     public Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
         return Y9Result.success(FlowableModelConvertUtil.taskList2TaskModelList(taskList));
     }
 
@@ -298,7 +298,7 @@ public class TaskApiImpl implements TaskApi {
     public Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam boolean active) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId, active);
+        List<Task> taskList = customTaskService.listByProcessInstanceIdAndActive(processInstanceId, active);
         return Y9Result.success(FlowableModelConvertUtil.taskList2TaskModelList(taskList));
     }
 
@@ -316,7 +316,7 @@ public class TaskApiImpl implements TaskApi {
     public Y9Page<TaskModel> findListByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customTaskService.findListByProcessInstanceId(processInstanceId, page, rows);
+        return customTaskService.pageByProcessInstanceId(processInstanceId, page, rows);
     }
 
     /**

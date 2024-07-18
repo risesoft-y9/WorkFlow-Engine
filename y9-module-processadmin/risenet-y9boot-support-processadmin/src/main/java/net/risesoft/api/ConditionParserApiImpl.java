@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ConditionParserApi;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomConditionParser;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 解析表达式条件接口

@@ -18,7 +18,7 @@ import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomDoingService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 在办件列表
@@ -65,7 +65,7 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
     public Y9Page<ProcessInstanceModel> getListByUserId(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.getListByUserId(userId, page, rows);
+        return customDoingService.pageByUserId(userId, page, rows);
     }
 
     /**
@@ -84,7 +84,7 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
         @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam Integer page,
         @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.getListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page, rows);
+        return customDoingService.pageByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page, rows);
     }
 
     /**
@@ -149,7 +149,7 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.getListByUserIdAndSystemName(userId, systemName, page, rows);
+        return customDoingService.pageByUserIdAndSystemName(userId, systemName, page, rows);
     }
 
     /**
@@ -167,7 +167,7 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
     public Y9Page<ProcessInstanceModel> searchListByUserId(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.searchListByUserId(userId, searchTerm, page, rows);
+        return customDoingService.pageSearchByUserId(userId, searchTerm, page, rows);
     }
 
     /**
@@ -187,7 +187,7 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
         @RequestParam String userId, @RequestParam String processDefinitionKey,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm,
+        return customDoingService.pageSearchByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm,
             page, rows);
     }
 
@@ -208,6 +208,6 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.searchListByUserIdAndSystemName(userId, systemName, searchTerm, page, rows);
+        return customDoingService.pageSearchByUserIdAndSystemName(userId, systemName, searchTerm, page, rows);
     }
 }

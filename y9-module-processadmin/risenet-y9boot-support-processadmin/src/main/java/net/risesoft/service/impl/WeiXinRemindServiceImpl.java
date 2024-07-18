@@ -56,7 +56,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
     @SuppressWarnings("unchecked")
     public void weiXinRemind(final DelegateTask task, final Map<String, Object> map, final Map<String, Object> local) {
         Boolean weiXinSwitch = y9Conf.getApp().getProcessAdmin().getWeiXinSwitch();
-        if (!weiXinSwitch) {
+        if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
         }

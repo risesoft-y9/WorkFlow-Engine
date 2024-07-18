@@ -25,20 +25,20 @@ public class CustomHistoricActivityServiceImpl implements CustomHistoricActivity
     private final HistoryService historyService;
 
     @Override
-    public List<HistoricActivityInstance> getByProcessInstanceId(String processInstanceId) {
+    public List<HistoricActivityInstance> listByProcessInstanceId(String processInstanceId) {
         return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
             .orderByHistoricActivityInstanceStartTime().asc().list();
     }
 
     @Override
-    public List<HistoricActivityInstance> getByProcessInstanceIdAndActivityType(String processInstanceId,
+    public List<HistoricActivityInstance> listByProcessInstanceIdAndActivityType(String processInstanceId,
         String activityType) {
         return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
             .activityType(activityType).list();
     }
 
     @Override
-    public List<HistoricActivityInstance> getByProcessInstanceIdAndYear(String processInstanceId, String year) {
+    public List<HistoricActivityInstance> listByProcessInstanceIdAndYear(String processInstanceId, String year) {
         if (StringUtils.isBlank(year)) {
             return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
                 .orderByHistoricActivityInstanceStartTime().asc().list();

@@ -31,8 +31,8 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.CustomTaskService;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -192,7 +192,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     public Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String superProcessInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<ProcessInstance> list = customRuntimeService.getListBySuperProcessInstanceId(superProcessInstanceId);
+        List<ProcessInstance> list = customRuntimeService.listBySuperProcessInstanceId(superProcessInstanceId);
         return Y9Result.success(FlowableModelConvertUtil.processInstanceList2ModelList(list));
     }
 
@@ -249,7 +249,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     public Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<ProcessInstance> list = customRuntimeService.getProcessInstancesByKey(processDefinitionKey);
+        List<ProcessInstance> list = customRuntimeService.listProcessInstancesByKey(processDefinitionKey);
         return Y9Result.success(FlowableModelConvertUtil.processInstanceList2ModelList(list));
     }
 

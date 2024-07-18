@@ -20,16 +20,6 @@ public interface CustomHistoricProcessService {
     boolean deleteProcessInstance(String processInstanceId);
 
     /**
-     * 获取删除实例列表
-     *
-     * @param itemId
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> deleteProList(String itemId, Integer page, Integer rows);
-
-    /**
      * 根据流程实例Id获取历史流程实例
      *
      * @param processInstanceId
@@ -39,52 +29,12 @@ public interface CustomHistoricProcessService {
 
     /**
      * Description:
-     * 
+     *
      * @param processInstanceId
      * @param year
      * @return
      */
-    HistoricProcessInstance getById(String processInstanceId, String year);
-
-    /**
-     * 根据父流程实例获取所有历史子流程实例
-     *
-     * @param superProcessInstanceId
-     * @return
-     */
-    List<HistoricProcessInstance> getBySuperProcessInstanceId(String superProcessInstanceId);
-
-    /**
-     * 获取所有回收站列表
-     *
-     * @param title
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> getRecycleAll(String title, Integer page, Integer rows);
-
-    /**
-     * 获取回收站列表
-     *
-     * @param itemId
-     * @param title
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> getRecycleByItemId(String itemId, String title, Integer page, Integer rows);
-
-    /**
-     * 根据人员id获取回收站列表
-     *
-     * @param title
-     * @param userId
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> getRecycleByUserId(String title, String userId, Integer page, Integer rows);
+    HistoricProcessInstance getByIdAndYear(String processInstanceId, String year);
 
     /**
      * 获取所有回收站统计
@@ -121,6 +71,56 @@ public interface CustomHistoricProcessService {
     HistoricProcessInstance getSuperProcessInstanceById(String processInstanceId);
 
     /**
+     * 根据父流程实例获取所有历史子流程实例
+     *
+     * @param superProcessInstanceId
+     * @return
+     */
+    List<HistoricProcessInstance> listBySuperProcessInstanceId(String superProcessInstanceId);
+
+    /**
+     * 获取删除实例列表
+     *
+     * @param itemId
+     * @param page
+     * @param rows
+     * @return
+     */
+    List<HistoricProcessInstance> listDeleteProByItemId(String itemId, Integer page, Integer rows);
+
+    /**
+     * 获取所有回收站列表
+     *
+     * @param title
+     * @param page
+     * @param rows
+     * @return
+     */
+    List<HistoricProcessInstance> listRecycleAll(String title, Integer page, Integer rows);
+
+    /**
+     * 获取回收站列表
+     *
+     * @param itemId
+     * @param title
+     * @param page
+     * @param rows
+     * @return
+     */
+    List<HistoricProcessInstance> listRecycleByItemId(String itemId, String title, Integer page, Integer rows);
+
+    /**
+     * 根据人员id获取回收站列表
+     *
+     * @param title
+     * @param userId
+     * @param page
+     * @param rows
+     * @return
+     */
+    List<HistoricProcessInstance> listRecycleByUserId(String title, String userId, Integer page, Integer rows);
+
+    /**
      * 恢复，激活流程实例
      *
      * @param processInstanceId
@@ -146,7 +146,7 @@ public interface CustomHistoricProcessService {
 
     /**
      * Description:
-     * 
+     *
      * @param processInstanceId
      * @param priority
      * @throws Exception

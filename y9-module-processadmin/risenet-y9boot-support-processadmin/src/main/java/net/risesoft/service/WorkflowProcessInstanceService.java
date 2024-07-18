@@ -143,7 +143,7 @@ public class WorkflowProcessInstanceService {
             FlowElement flowElement = flowElements.get(i);
             // 如果是任务节点
             if (taskDefKey.equals(flowElement.getId())) {
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+                List<SequenceFlow> list = new ArrayList<>();
                 if (flowElement instanceof StartEvent) {
                     StartEvent task = (StartEvent)flowElement;
                     list = task.getOutgoingFlows();
@@ -228,9 +228,9 @@ public class WorkflowProcessInstanceService {
      * @return
      */
     public List<String> getProcessInstanceIds(String processDefinitionKey) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         List<ProcessInstance> processInstanceList = getProcessInstances(processDefinitionKey);
-        if (processInstanceList.size() > 0) {
+        if (!processInstanceList.isEmpty()) {
             for (ProcessInstance entity : processInstanceList) {
                 result.add(entity.getProcessInstanceId());
             }
@@ -245,7 +245,7 @@ public class WorkflowProcessInstanceService {
      * @return
      */
     public List<ProcessInstance> getProcessInstances(String processDefinitionKey) {
-        List<ProcessInstance> list = new ArrayList<ProcessInstance>();
+        List<ProcessInstance> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processDefinitionKey)) {
             list = runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).list();
         }
@@ -297,8 +297,8 @@ public class WorkflowProcessInstanceService {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
         Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
-        List<SequenceFlow> list = new ArrayList<SequenceFlow>();
-        List<SequenceFlow> flowList = new ArrayList<SequenceFlow>();
+        List<SequenceFlow> list = new ArrayList<>();
+        List<SequenceFlow> flowList = new ArrayList<>();
         String activitiId = workflowTaskService.getActivitiIdByTask(task);
         for (int i = 0; i < flowElements.size(); i++) {
             FlowElement flowElement = flowElements.get(i);
@@ -349,8 +349,8 @@ public class WorkflowProcessInstanceService {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
-        List<SequenceFlow> list = new ArrayList<SequenceFlow>();
-        List<SequenceFlow> flowList = new ArrayList<SequenceFlow>();
+        List<SequenceFlow> list = new ArrayList<>();
+        List<SequenceFlow> flowList = new ArrayList<>();
         for (int i = 0; i < flowElements.size(); i++) {
             FlowElement flowElement = flowElements.get(i);
             String id = flowElement.getId();
@@ -400,7 +400,7 @@ public class WorkflowProcessInstanceService {
     public int getPvmTransitionsCount(String taskId) {
         int count = 0;
         List<SequenceFlow> outTransitions = getPvmTransitions(taskId);
-        List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+        List<SequenceFlow> list = new ArrayList<>();
         for (SequenceFlow tr : outTransitions) {
             if (tr.getTargetFlowElement() instanceof EndEvent) {
                 continue;
@@ -428,7 +428,7 @@ public class WorkflowProcessInstanceService {
     }
 
     public List<Map<String, String>> getStartTaskTargets(String processDefinitionKey) {
-        List<Map<String, String>> targetTasks = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> targetTasks = new ArrayList<>();
         ProcessDefinitionQuery processDefinitionQuery =
             repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
         String processDefinitionId = "";
@@ -453,7 +453,7 @@ public class WorkflowProcessInstanceService {
                         sourceNode = targetFlowElement;
                     } else {
                         org.flowable.bpmn.model.Task targetTask = (org.flowable.bpmn.model.Task)targetFlowElement;
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        Map<String, String> map = new HashMap<>(16);
                         map.put("taskName", targetTask.getName());
                         map.put("taskId", targetTask.getId());
                         targetTasks.add(map);

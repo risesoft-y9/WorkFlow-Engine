@@ -33,9 +33,11 @@ import org.flowable.ui.modeler.serviceapi.ModelService;
 import org.flowable.validation.ProcessValidator;
 import org.flowable.validation.ProcessValidatorFactory;
 import org.flowable.validation.ValidationError;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,7 +55,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * 流程模型控制器
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
@@ -62,7 +64,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/processModel")
+@RequestMapping(value = "/vue/processModel", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessModelVueController {
 
     private final RepositoryService repositoryService;
@@ -80,7 +82,7 @@ public class ProcessModelVueController {
      * @param key 流程定义key
      * @param description 描述
      */
-    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/create")
     public Y9Result<String> create(@RequestParam @NotBlank String name, @RequestParam @NotBlank String key,
         @RequestParam(required = false) String description) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -117,7 +119,7 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteModel")
     public Y9Result<String> deleteModel(@RequestParam @NotBlank String modelId) {
         modelService.deleteModel(modelId);
         return Y9Result.successMsg("删除成功");
@@ -129,7 +131,7 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deployModel")
     public Y9Result<String> deployModel(@RequestParam @NotBlank String modelId) {
         Model modelData = modelService.getModel(modelId);
         BpmnModel model = modelService.getBpmnModel(modelData);
@@ -169,7 +171,7 @@ public class ProcessModelVueController {
      *
      * @return Y9Result<List<Map<String, Object>>>
      */
-    @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getModelList")
     public Y9Result<List<Map<String, Object>>> getModelList() {
         List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
@@ -248,7 +250,7 @@ public class ProcessModelVueController {
             ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
             List<ValidationError> errors = validator.validate(bpmnModel);
             if (!errors.isEmpty()) {
-                StringBuffer es = new StringBuffer();
+                StringBuilder es = new StringBuilder();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
                 map.put("msg", "导入失败：模板验证失败，原因: " + es);
                 return map;
@@ -323,7 +325,7 @@ public class ProcessModelVueController {
             ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
             List<ValidationError> errors = validator.validate(bpmnModel);
             if (!errors.isEmpty()) {
-                StringBuffer es = new StringBuffer();
+                StringBuilder es = new StringBuilder();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
                 return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
             }

@@ -21,18 +21,19 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.util.SysVariables;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @Service(value = "task4ActRuDetaillService")
 public class Task4ActRuDetaillService {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
-
     private final ActRuDetailApi actRuDetailApi;
 
     private final PositionApi positionApi;
+
+    @Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
 
     public Task4ActRuDetaillService(ActRuDetailApi actRuDetailApi, PositionApi positionApi) {
         this.actRuDetailApi = actRuDetailApi;

@@ -33,7 +33,7 @@ public interface CustomTaskService {
 
     /**
      * Description: 办结流程
-     * 
+     *
      * @param processInstanceId
      * @param taskId
      * @throws Exception
@@ -42,7 +42,7 @@ public interface CustomTaskService {
 
     /**
      * Description:
-     * 
+     *
      * @param processInstanceId
      * @param taskId
      * @throws Exception
@@ -66,7 +66,7 @@ public interface CustomTaskService {
 
     /**
      * Description:
-     * 
+     *
      * @param vars
      * @param routeToTaskId
      * @param positionIdList
@@ -118,39 +118,39 @@ public interface CustomTaskService {
     Task findById(String taskId);
 
     /**
-     * 根据流程实例Id查找任务
-     *
-     * @param processInstanceId
-     * @return
-     */
-    List<Task> findByProcessInstanceId(String processInstanceId);
-
-    /**
-     * Description: 根据流程实例Id查找任务
-     * 
-     * @param processInstanceId
-     * @param active
-     * @return
-     */
-    List<Task> findByProcessInstanceId(String processInstanceId, boolean active);
-
-    /**
-     * Description: 根据流程实例人员Id获取待办任务(分页)
-     * 
-     * @param processInstanceId
-     * @param page
-     * @param rows
-     * @return
-     */
-    Y9Page<TaskModel> findListByProcessInstanceId(String processInstanceId, Integer page, Integer rows);
-
-    /**
      * 获取当前任务所在并行节点的多个任务的已完成的数量
      *
      * @param taskId
      * @return
      */
     Integer getCompleteTaskCount4Parallel(String taskId);
+
+    /**
+     * 根据流程实例Id查找任务
+     *
+     * @param processInstanceId
+     * @return
+     */
+    List<Task> listByProcessInstanceId(String processInstanceId);
+
+    /**
+     * Description: 根据流程实例Id查找任务
+     *
+     * @param processInstanceId
+     * @param active
+     * @return
+     */
+    List<Task> listByProcessInstanceIdAndActive(String processInstanceId, boolean active);
+
+    /**
+     * Description: 根据流程实例人员Id获取待办任务(分页)
+     *
+     * @param processInstanceId
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<TaskModel> pageByProcessInstanceId(String processInstanceId, Integer page, Integer rows);
 
     /**
      * 完成按钮的任务完结
@@ -161,7 +161,7 @@ public interface CustomTaskService {
 
     /**
      * Description: 保存任务
-     * 
+     *
      * @param task
      */
     void saveTask(Task task);

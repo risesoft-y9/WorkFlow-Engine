@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.WorkflowApi;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.WorkflowProcessInstanceService;
+import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
  * 获取当前任务节点的目标节点
