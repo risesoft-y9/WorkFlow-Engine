@@ -69,7 +69,7 @@ public class ReceivePerson implements Serializable {
     private String personDeptId;
 
     @Comment("创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDATE")
     private Date createDate;

@@ -69,7 +69,7 @@ public class WordTemplate implements Serializable {
      * 上传时间
      */
     @Comment("上传时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "UPLOADTIME")
     private Date uploadTime;
