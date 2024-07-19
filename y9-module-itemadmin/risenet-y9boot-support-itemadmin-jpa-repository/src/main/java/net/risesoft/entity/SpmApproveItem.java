@@ -85,7 +85,7 @@ public class SpmApproveItem implements Serializable {
     private String createrName;
 
     @Comment("创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDATE")
     private Date createDate;
@@ -99,7 +99,7 @@ public class SpmApproveItem implements Serializable {
     private String reviserName;
 
     @Comment("修改时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REVISEDATE")
     private Date reviseDate = new Date();
