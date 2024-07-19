@@ -132,7 +132,7 @@ public class QueryListServiceImpl implements QueryListService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName,
+    public Y9Page<Map<String, Object>> pageQueryList(String itemId, String state, String createDate, String tableName,
         String searchMapStr, Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();

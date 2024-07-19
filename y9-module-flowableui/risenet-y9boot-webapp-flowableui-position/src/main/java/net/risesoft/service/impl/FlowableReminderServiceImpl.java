@@ -33,8 +33,22 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
 
     private final OrgUnitApi orgUnitApi;
 
+    private String longTime(Date startTime, Date endTime) {
+        if (endTime == null) {
+            return "";
+        } else {
+            long time = endTime.getTime() - startTime.getTime();
+            time = time / 1000;
+            int s = (int)(time % 60);
+            int m = (int)(time / 60 % 60);
+            int h = (int)(time / 3600 % 24);
+            int d = (int)(time / 86400);
+            return d + " 天  " + h + " 小时 " + m + " 分 " + s + " 秒 ";
+        }
+    }
+
     @Override
-    public Y9Page<Map<String, Object>> findTaskListByProcessInstanceId(String processInstanceId, int page, int rows) {
+    public Y9Page<Map<String, Object>> pageTaskListByProcessInstanceId(String processInstanceId, int page, int rows) {
         Y9Page<TaskModel> taskPage;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -66,20 +80,6 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
             LOGGER.error("获取列表失败", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    private String longTime(Date startTime, Date endTime) {
-        if (endTime == null) {
-            return "";
-        } else {
-            long time = endTime.getTime() - startTime.getTime();
-            time = time / 1000;
-            int s = (int)(time % 60);
-            int m = (int)(time / 60 % 60);
-            int h = (int)(time / 3600 % 24);
-            int d = (int)(time / 86400);
-            return d + " 天  " + h + " 小时 " + m + " 分 " + s + " 秒 ";
-        }
     }
 
 }

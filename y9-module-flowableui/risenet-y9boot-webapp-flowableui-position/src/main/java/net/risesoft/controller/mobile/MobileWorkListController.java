@@ -81,7 +81,6 @@ public class MobileWorkListController {
      * @param page 页码
      * @param rows 行数
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/doingList")
     public void doingList(@RequestHeader("auth-tenantId") String tenantId,
         @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId,
@@ -91,12 +90,12 @@ public class MobileWorkListController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
-            Map<String, Object> m = doingService.list(itemId, title, page, rows);
-            List<Map<String, Object>> doingList = (List<Map<String, Object>>)m.get("rows");
-            map.put("doingList", doingList);
+            Y9Page<Map<String, Object>> doningPage =
+                doingService.page4MobileByItemIdAndSearchTerm(itemId, title, page, rows);
+            map.put("doingList", doningPage.getRows());
             map.put("currpage", page);
-            map.put("totalpage", m.get("totalpages"));
-            map.put("total", m.get("total"));
+            map.put("totalpage", doningPage.getTotalPages());
+            map.put("total", doningPage.getTotal());
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("获取在办件列表失败", e);
@@ -124,7 +123,8 @@ public class MobileWorkListController {
             map.put(UtilConsts.SUCCESS, true);
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
-            Y9Page<Map<String, Object>> y9page = doneService.list(itemId, title, page, rows);
+            Y9Page<Map<String, Object>> y9page =
+                doneService.page4MobileByItemIdAndSearchTerm(itemId, title, page, rows);
             List<Map<String, Object>> doneList = y9page.getRows();
             map.put("doneList", doneList);
             map.put("currpage", page);
@@ -177,8 +177,9 @@ public class MobileWorkListController {
                         .getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
                         .getData();
                     Map<String, Object> m = new HashMap<>(16);
-                    Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
-                    List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
+                    Y9Page<Map<String, Object>> resMap =
+                        todoService.page4MobileByItemIdAndSearchTerm(item.getId(), "", 1, 1);
+                    List<Map<String, Object>> todoList = resMap.getRows();
                     if (todoList != null && !todoList.isEmpty()) {
                         Map<String, Object> todo = todoList.get(0);
                         m.put("title", todo.get(SysVariables.DOCUMENTTITLE));
@@ -323,12 +324,12 @@ public class MobileWorkListController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
-            Map<String, Object> m = todoService.list(itemId, title, page, rows);
-            List<Map<String, Object>> todoList = (List<Map<String, Object>>)m.get("rows");
+            Y9Page<Map<String, Object>> m = todoService.page4MobileByItemIdAndSearchTerm(itemId, title, page, rows);
+            List<Map<String, Object>> todoList = m.getRows();
             map.put("todoList", todoList);
             map.put("currpage", page);
-            map.put("totalpage", m.get("totalpages"));
-            map.put("total", m.get("total"));
+            map.put("totalpage", m.getTotalPages());
+            map.put("total", m.getTotal());
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("获取待办件列表失败", e);

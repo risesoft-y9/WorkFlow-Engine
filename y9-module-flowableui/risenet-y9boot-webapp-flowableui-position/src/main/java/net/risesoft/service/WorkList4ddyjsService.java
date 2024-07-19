@@ -17,7 +17,7 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doingList(String itemId, String searchItemId, String searchTerm, Integer page,
+    Y9Page<Map<String, Object>> pageDoingList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows);
 
     /**
@@ -29,7 +29,7 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page,
+    Y9Page<Map<String, Object>> pageDoneList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows);
 
     /**
@@ -41,7 +41,25 @@ public interface WorkList4ddyjsService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<OfficeFollowModel> followList(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<OfficeFollowModel> pageFollowList(String itemId, String searchTerm, Integer page, Integer rows);
+
+    /**
+     * 我的在办事项
+     *
+     * @param page 当前页
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> pageHomeDoingList(Integer page, Integer rows);
+
+    /**
+     * 首页办结事项
+     *
+     * @param page 当前页
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> pageHomeDoneList(Integer page, Integer rows);
 
     /**
      * 获取上会台账列表
@@ -54,26 +72,8 @@ public interface WorkList4ddyjsService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title, String meetingType,
+    Y9Page<Map<String, Object>> pageMeetingList(String userName, String deptName, String title, String meetingType,
         Integer page, Integer rows);
-
-    /**
-     * 我的在办事项
-     *
-     * @param page 当前页
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows);
-
-    /**
-     * 首页办结事项
-     *
-     * @param page 当前页
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    Y9Page<Map<String, Object>> homeDoneList(Integer page, Integer rows);
 
     /**
      * 我的传阅列表
@@ -87,8 +87,8 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName, String state, String year,
-        Integer page, Integer rows);
+    Y9Page<ChaoSongModel> pageMyChaoSongList(String searchName, String itemId, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * 获取待办列表
@@ -99,6 +99,6 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> todoList(String itemId, String searchItemId, String searchTerm, Integer page,
+    Y9Page<Map<String, Object>> pageTodoList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows);
 }

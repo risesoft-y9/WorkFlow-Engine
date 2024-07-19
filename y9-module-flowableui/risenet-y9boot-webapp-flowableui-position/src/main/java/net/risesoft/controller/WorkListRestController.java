@@ -60,7 +60,7 @@ public class WorkListRestController {
     @GetMapping(value = "/doingList")
     public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return doingService.listNew(itemId, searchTerm, page, rows);
+        return doingService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
     }
 
     /**
@@ -89,7 +89,7 @@ public class WorkListRestController {
     @GetMapping(value = "/doneList")
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return doneService.listNew(itemId, searchTerm, page, rows);
+        return doneService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
     }
 
     /**
@@ -123,7 +123,7 @@ public class WorkListRestController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return queryListService.queryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
+        return queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -140,7 +140,7 @@ public class WorkListRestController {
     public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return doingService.searchList(itemId, tableName, searchMapStr, page, rows);
+        return doingService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -157,7 +157,7 @@ public class WorkListRestController {
     public Y9Page<Map<String, Object>> searchDoneList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return doneService.searchList(itemId, tableName, searchMapStr, page, rows);
+        return doneService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -174,7 +174,7 @@ public class WorkListRestController {
     public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return todoService.searchList(itemId, tableName, searchMapStr, page, rows);
+        return todoService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -189,7 +189,7 @@ public class WorkListRestController {
     @GetMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return todoService.listNew(itemId, searchTerm, page, rows);
+        return todoService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
     }
 
     /**

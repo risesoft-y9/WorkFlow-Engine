@@ -15,7 +15,8 @@ public interface DoneService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 获取办结列表
@@ -26,7 +27,8 @@ public interface DoneService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> pageNewByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 办结列表
@@ -38,6 +40,6 @@ public interface DoneService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
+    Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr, Integer page,
         Integer rows);
 }

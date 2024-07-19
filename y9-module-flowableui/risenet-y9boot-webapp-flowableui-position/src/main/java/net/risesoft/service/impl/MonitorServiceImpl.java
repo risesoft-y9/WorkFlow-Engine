@@ -61,73 +61,6 @@ public class MonitorServiceImpl implements MonitorService {
 
     private final IdentityApi identityApi;
 
-    @Override
-    public Y9Page<Map<String, Object>> deptList(String itemId, String searchName, String userName, String state,
-        String year, Integer page, Integer rows) {
-        Y9Page<OfficeDoneInfoModel> y9Page;
-        try {
-            Position position = Y9LoginUserHolder.getPosition();
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page = officeDoneInfo4PositionApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId,
-                userName, state, year, page, rows);
-            List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> list = y9Page.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
-            Map<String, Object> mapTemp;
-            String processInstanceId;
-            for (OfficeDoneInfoModel hpim : hpiModelList) {
-                mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
-                try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
-                    String startTime = hpim.getStartTime().substring(0, 16);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    String completer = hpim.getUserComplete();
-                    mapTemp.put("itemName", hpim.getItemName());
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
-                    mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime",
-                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
-                    mapTemp.put("taskDefinitionKey", "");
-                    mapTemp.put("taskAssignee", completer);
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
-                    mapTemp.put("itemId", hpim.getItemId());
-                    mapTemp.put("level", level == null ? "" : level);
-                    mapTemp.put("number", number == null ? "" : number);
-                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
-                    if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
-                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId",
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssigneeId", assigneeIds);
-                        mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", new HashMap<String, String>(16));
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("获取列表失败" + processInstanceId, e);
-                }
-                items.add(mapTemp);
-            }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
     /**
      * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
      *
@@ -286,7 +219,74 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> monitorBanjianList(String searchName, String itemId, String userName,
+    public Y9Page<Map<String, Object>> pageDeptList(String itemId, String searchName, String userName, String state,
+        String year, Integer page, Integer rows) {
+        Y9Page<OfficeDoneInfoModel> y9Page;
+        try {
+            Position position = Y9LoginUserHolder.getPosition();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            y9Page = officeDoneInfo4PositionApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId,
+                userName, state, year, page, rows);
+            List<Map<String, Object>> items = new ArrayList<>();
+            List<OfficeDoneInfoModel> list = y9Page.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
+            Map<String, Object> mapTemp;
+            String processInstanceId;
+            for (OfficeDoneInfoModel hpim : hpiModelList) {
+                mapTemp = new HashMap<>(16);
+                processInstanceId = hpim.getProcessInstanceId();
+                try {
+                    String processDefinitionId = hpim.getProcessDefinitionId();
+                    String startTime = hpim.getStartTime().substring(0, 16);
+                    String processSerialNumber = hpim.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
+                    String level = hpim.getUrgency();
+                    String number = hpim.getDocNumber();
+                    String completer = hpim.getUserComplete();
+                    mapTemp.put("itemName", hpim.getItemName());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("startTime", startTime);
+                    mapTemp.put("endTime",
+                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put("taskDefinitionKey", "");
+                    mapTemp.put("taskAssignee", completer);
+                    mapTemp.put("creatUserName", hpim.getCreatUserName());
+                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("level", level == null ? "" : level);
+                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                            assigneeNames = listTemp.get(2);
+                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put("taskId",
+                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskAssigneeId", assigneeIds);
+                        mapTemp.put("taskAssignee", assigneeNames);
+                        mapTemp.put("itembox", new HashMap<String, String>(16));
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("获取列表失败" + processInstanceId, e);
+                }
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取列表失败", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> pageMonitorBanjianList(String searchName, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
@@ -355,7 +355,7 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> monitorChaosongList(String searchName, String itemId, String senderName,
+    public Y9Page<ChaoSongModel> pageMonitorChaosongList(String searchName, String itemId, String senderName,
         String userName, String state, String year, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -368,7 +368,8 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> monitorDoingList(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageMonitorDoingList(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -445,7 +446,8 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> monitorDoneList(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageMonitorDoneList(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -501,7 +503,7 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public Map<String, Object> monitorRecycleList(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Map<String, Object> pageMonitorRecycleList(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {

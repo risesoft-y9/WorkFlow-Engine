@@ -89,7 +89,7 @@ public class SearchRestController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return searchService.getSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
+        return searchService.pageSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 
     /**
@@ -109,7 +109,7 @@ public class SearchRestController {
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return searchService.getYuejianList(searchName, itemId, userName, state, year, page, rows);
+        return searchService.pageYuejianList(searchName, itemId, userName, state, year, page, rows);
     }
 
 }

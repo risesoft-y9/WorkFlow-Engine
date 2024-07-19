@@ -23,7 +23,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 催办
- * 
+ *
  * @author zhangchongjie
  * @date 2024/06/05
  */
@@ -129,7 +129,7 @@ public class ReminderRestController {
     @GetMapping(value = "/taskList")
     public Y9Page<Map<String, Object>> taskList(@RequestParam @NotBlank String processInstanceId,
         @RequestParam int page, @RequestParam int rows) {
-        return flowableReminderService.findTaskListByProcessInstanceId(processInstanceId, page, rows);
+        return flowableReminderService.pageTaskListByProcessInstanceId(processInstanceId, page, rows);
     }
 
     /**

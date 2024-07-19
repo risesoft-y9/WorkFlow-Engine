@@ -93,227 +93,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     @Value("${y9.common.flowableBaseUrl}")
     private String flowableBaseUrl;
 
-    @Override
-    public Y9Page<Map<String, Object>> doingList(String itemId, String searchItemId, String searchTerm, Integer page,
-        Integer rows) {
-        Y9Page<ProcessInstanceModel> piPage;
-        try {
-            List<Map<String, Object>> items = new ArrayList<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
-            if (StringUtils.isBlank(searchTerm)) {
-                if (StringUtils.isNotBlank(searchItemId)) {
-                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    piPage = processDoingApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                        item1.getWorkflowGuid(), page, rows);
-                } else {
-                    piPage = processDoingApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                        page, rows);
-                }
-                List<ProcessInstanceModel> list = piPage.getRows();
-                ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
-                int serialNumber = (page - 1) * rows;
-                Map<String, Object> mapTemp;
-                ProcessParamModel processParam;
-                String processInstanceId = "";
-                for (ProcessInstanceModel hpim : hpiModelList) {// 以办理时间排序
-                    mapTemp = new HashMap<>(16);
-                    try {
-                        processInstanceId = hpim.getId();
-                        String processDefinitionId = hpim.getProcessDefinitionId();
-                        String taskCreateTime = sdf.format(hpim.getStartTime());
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
-                        Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
-                        String level = processParam.getCustomLevel();
-                        String number = processParam.getCustomNumber();
-                        mapTemp.put("itemId", processParam.getItemId());
-                        mapTemp.put("itemName", processParam.getItemName());
-                        mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
-                        mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                        mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put("title", documentTitle);
-                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime", taskCreateTime);
-                        mapTemp.put("taskId", taskIds);
-                        mapTemp.put("taskAssigneeId", assigneeIds);
-                        mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put(SysVariables.LEVEL, level);
-                        mapTemp.put(SysVariables.NUMBER, number);
-                        mapTemp.put("isReminder", isReminder);
-                        mapTemp.put("chaosongNum", 0);
-                        mapTemp.put("status", 1);
-                        mapTemp.put("taskDueDate", "");
-                        mapTemp.put("processInstanceId", processInstanceId);
-                        mapTemp.put("speakInfoNum", 0);
-                        mapTemp.put("remindSetting", false);
-                        mapTemp.put("meeting", false);
-                        if ("gongwenguanli".equals(item.getSystemName())) {
-                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
-                                .findByProcessInstanceId(tenantId, processInstanceId).getData();
-                            mapTemp.put("meeting",
-                                officeDoneInfo.getMeeting() != null && "1".equals(officeDoneInfo.getMeeting()));
-                        }
-                    } catch (Exception e) {
-                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
-                    }
-                    mapTemp.put("serialNumber", serialNumber + 1);
-                    serialNumber += 1;
-                    items.add(mapTemp);
-                }
-            } else {
-                if (StringUtils.isNotBlank(searchItemId)) {
-                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
-                    piPage = processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                        item1.getWorkflowGuid(), searchTerm, page, rows);
-                } else {
-                    piPage = processDoingApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                        searchTerm, page, rows);
-                }
-                List<ProcessInstanceModel> list = piPage.getRows();
-                ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
-                int serialNumber = (page - 1) * rows;
-                Map<String, Object> mapTemp;
-                ProcessParamModel processParam;
-                String processInstanceId = "";
-                for (ProcessInstanceModel hpim : hpiModelList) {
-                    mapTemp = new HashMap<>(16);
-                    try {
-                        processInstanceId = hpim.getId();
-                        String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
-                        Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
-                        String level = processParam.getCustomLevel();
-                        String number = processParam.getCustomNumber();
-                        mapTemp.put("itemId", processParam.getItemId());
-                        mapTemp.put("itemName", processParam.getItemName());
-                        mapTemp.put("processInstanceId", processInstanceId);
-                        mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
-                        mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                        mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
-                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime", sdf.format(hpim.getStartTime()));
-                        mapTemp.put("taskId", taskIds);
-                        mapTemp.put("taskAssigneeId", assigneeIds);
-                        mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put(SysVariables.LEVEL, level);
-                        mapTemp.put(SysVariables.NUMBER, number);
-                        mapTemp.put("isReminder", isReminder);
-                        mapTemp.put("chaosongNum", 0);
-                        mapTemp.put("status", 1);
-                        mapTemp.put("taskDueDate", "");
-                        mapTemp.put("speakInfoNum", 0);
-
-                        mapTemp.put("meeting", false);
-                        if ("gongwenguanli".equals(item.getSystemName())) {
-                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
-                                .findByProcessInstanceId(tenantId, processInstanceId).getData();
-                            mapTemp.put("meeting",
-                                officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
-                        }
-                    } catch (Exception e) {
-                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
-                    }
-                    mapTemp.put("serialNumber", serialNumber + 1);
-                    serialNumber += 1;
-                    items.add(mapTemp);
-                }
-            }
-            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办列表失败", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    @Override
-    public Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page,
-        Integer rows) {
-        Y9Page<OfficeDoneInfoModel> y9Page;
-        String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
-        if (StringUtils.isNotBlank(searchItemId)) {
-            y9Page = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, searchItemId, "", "",
-                page, rows);
-        } else {
-            y9Page = officeDoneInfo4PositionApi.searchByPositionIdAndSystemName(tenantId, userId, searchTerm,
-                item.getSystemName(), "", "", page, rows);
-        }
-        List<Map<String, Object>> items = new ArrayList<>();
-        List<OfficeDoneInfoModel> list = y9Page.getRows();
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
-        int serialNumber = (page - 1) * rows;
-        Map<String, Object> mapTemp;
-        String processInstanceId;
-        for (OfficeDoneInfoModel hpim : hpiModelList) {
-            mapTemp = new HashMap<>(16);
-            processInstanceId = hpim.getProcessInstanceId();
-            try {
-                String processDefinitionId = hpim.getProcessDefinitionId();
-                String startTime = hpim.getStartTime().substring(0, 16), endTime = hpim.getEndTime().substring(0, 16);
-                String processSerialNumber = hpim.getProcessSerialNumber();
-                String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                String level = hpim.getUrgency();
-                String number = hpim.getDocNumber();
-                String completer = StringUtils.isBlank(hpim.getUserComplete()) ? "无" : hpim.getUserComplete();
-                mapTemp.put("itemId", hpim.getItemId());
-                mapTemp.put("itemName", hpim.getItemName());
-                mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                mapTemp.put("title", documentTitle);
-                mapTemp.put("processDefinitionId", processDefinitionId);
-                mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionId());
-                mapTemp.put("startTime", startTime);
-                mapTemp.put("endTime", endTime);
-                mapTemp.put("taskDefinitionKey", "");
-                mapTemp.put("user4Complete", completer);
-                mapTemp.put("level", level);
-                mapTemp.put("number", number);
-                mapTemp.put("chaosongNum", 0);
-                mapTemp.put("processInstanceId", processInstanceId);
-                mapTemp.put("meeting", false);
-                if (item.getSystemName().equals("gongwenguanli")) {
-                    mapTemp.put("meeting", hpim.getMeeting() != null && hpim.getMeeting().equals("1"));
-                }
-            } catch (Exception e) {
-                LOGGER.error("获取待办列表失败" + processInstanceId, e);
-            }
-            mapTemp.put("serialNumber", serialNumber + 1);
-            serialNumber += 1;
-            items.add(mapTemp);
-        }
-        return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
-    }
-
-    @Override
-    public Y9Page<OfficeFollowModel> followList(String itemId, String searchTerm, Integer page, Integer rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
-        return officeFollow4PositionApi.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(),
-            item.getSystemName(), searchTerm, page, rows);
-    }
-
     /**
      * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
      *
@@ -470,86 +249,228 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title,
-        String meetingType, Integer page, Integer rows) {
-        Y9Page<OfficeDoneInfoModel> y9Page;
+    public Y9Page<Map<String, Object>> pageDoingList(String itemId, String searchItemId, String searchTerm,
+        Integer page, Integer rows) {
+        Y9Page<ProcessInstanceModel> piPage;
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page =
-                officeDoneInfo4PositionApi.getMeetingList(tenantId, userName, deptName, title, meetingType, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            String processInstanceId;
-            for (OfficeDoneInfoModel hpim : hpiList) {
-                mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
-                try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
-                    String startTime = hpim.getStartTime().substring(0, 10);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    String completer = hpim.getUserComplete();
-                    mapTemp.put("itemName", hpim.getItemName());
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
-                    mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime",
-                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
-                    mapTemp.put("taskDefinitionKey", "");
-                    mapTemp.put("taskAssignee", completer);
-
-                    mapTemp.put("deptName", hpim.getDeptName());
-                    mapTemp.put("meetingType", hpim.getMeetingType());
-
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
-                    mapTemp.put("itemId", hpim.getItemId());
-                    mapTemp.put("level", level == null ? "" : level);
-                    mapTemp.put("number", number == null ? "" : number);
-                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
-                    if (StringUtils.isBlank(hpim.getEndTime())) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            if (StringUtils.isBlank(searchTerm)) {
+                if (StringUtils.isNotBlank(searchItemId)) {
+                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
+                    piPage = processDoingApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                        item1.getWorkflowGuid(), page, rows);
+                } else {
+                    piPage = processDoingApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                        page, rows);
+                }
+                List<ProcessInstanceModel> list = piPage.getRows();
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
+                int serialNumber = (page - 1) * rows;
+                Map<String, Object> mapTemp;
+                ProcessParamModel processParam;
+                String processInstanceId = "";
+                for (ProcessInstanceModel hpim : hpiModelList) {// 以办理时间排序
+                    mapTemp = new HashMap<>(16);
+                    try {
+                        processInstanceId = hpim.getId();
+                        String processDefinitionId = hpim.getProcessDefinitionId();
+                        String taskCreateTime = sdf.format(hpim.getStartTime());
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
+                        Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        String processSerialNumber = processParam.getProcessSerialNumber();
+                        String documentTitle =
+                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                        String level = processParam.getCustomLevel();
+                        String number = processParam.getCustomNumber();
+                        mapTemp.put("itemId", processParam.getItemId());
+                        mapTemp.put("itemName", processParam.getItemName());
+                        mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                        mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                        mapTemp.put("processDefinitionId", processDefinitionId);
+                        mapTemp.put("title", documentTitle);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId",
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskName", taskList.get(0).getName());
+                        mapTemp.put("taskCreateTime", taskCreateTime);
+                        mapTemp.put("taskId", taskIds);
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", listTemp.get(3));
+                        mapTemp.put(SysVariables.LEVEL, level);
+                        mapTemp.put(SysVariables.NUMBER, number);
+                        mapTemp.put("isReminder", isReminder);
+                        mapTemp.put("chaosongNum", 0);
+                        mapTemp.put("status", 1);
+                        mapTemp.put("taskDueDate", "");
+                        mapTemp.put("processInstanceId", processInstanceId);
+                        mapTemp.put("speakInfoNum", 0);
+                        mapTemp.put("remindSetting", false);
+                        mapTemp.put("meeting", false);
+                        if ("gongwenguanli".equals(item.getSystemName())) {
+                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
+                                .findByProcessInstanceId(tenantId, processInstanceId).getData();
+                            mapTemp.put("meeting",
+                                officeDoneInfo.getMeeting() != null && "1".equals(officeDoneInfo.getMeeting()));
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
                     }
-                    mapTemp.put("beizhu", "");
-                    Map<String, Object> formDataMap =
-                        formDataApi.getData(tenantId, hpim.getItemId(), processSerialNumber).getData();
-                    if (formDataMap.get("beizhu") != null) {
-                        mapTemp.put("beizhu", formDataMap.get("beizhu"));
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("获取会议列表失败" + processInstanceId, e);
+                    mapTemp.put("serialNumber", serialNumber + 1);
+                    serialNumber += 1;
+                    items.add(mapTemp);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
+            } else {
+                if (StringUtils.isNotBlank(searchItemId)) {
+                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
+                    piPage = processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                        item1.getWorkflowGuid(), searchTerm, page, rows);
+                } else {
+                    piPage = processDoingApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                        searchTerm, page, rows);
+                }
+                List<ProcessInstanceModel> list = piPage.getRows();
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
+                int serialNumber = (page - 1) * rows;
+                Map<String, Object> mapTemp;
+                ProcessParamModel processParam;
+                String processInstanceId = "";
+                for (ProcessInstanceModel hpim : hpiModelList) {
+                    mapTemp = new HashMap<>(16);
+                    try {
+                        processInstanceId = hpim.getId();
+                        String processDefinitionId = hpim.getProcessDefinitionId();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                            assigneeNames = listTemp.get(2);
+                        Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        String processSerialNumber = processParam.getProcessSerialNumber();
+                        String documentTitle =
+                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                        String level = processParam.getCustomLevel();
+                        String number = processParam.getCustomNumber();
+                        mapTemp.put("itemId", processParam.getItemId());
+                        mapTemp.put("itemName", processParam.getItemName());
+                        mapTemp.put("processInstanceId", processInstanceId);
+                        mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                        mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                        mapTemp.put("processDefinitionId", processDefinitionId);
+                        mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put("taskName", taskList.get(0).getName());
+                        mapTemp.put("taskCreateTime", sdf.format(hpim.getStartTime()));
+                        mapTemp.put("taskId", taskIds);
+                        mapTemp.put("taskAssigneeId", assigneeIds);
+                        mapTemp.put("taskAssignee", assigneeNames);
+                        mapTemp.put(SysVariables.LEVEL, level);
+                        mapTemp.put(SysVariables.NUMBER, number);
+                        mapTemp.put("isReminder", isReminder);
+                        mapTemp.put("chaosongNum", 0);
+                        mapTemp.put("status", 1);
+                        mapTemp.put("taskDueDate", "");
+                        mapTemp.put("speakInfoNum", 0);
+
+                        mapTemp.put("meeting", false);
+                        if ("gongwenguanli".equals(item.getSystemName())) {
+                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
+                                .findByProcessInstanceId(tenantId, processInstanceId).getData();
+                            mapTemp.put("meeting",
+                                officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    }
+                    mapTemp.put("serialNumber", serialNumber + 1);
+                    serialNumber += 1;
+                    items.add(mapTemp);
+                }
             }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取会议列表失败", e);
+            LOGGER.error("获取待办列表失败", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @Override
-    public Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageDoneList(String itemId, String searchItemId, String searchTerm, Integer page,
+        Integer rows) {
+        Y9Page<OfficeDoneInfoModel> y9Page;
+        String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+        if (StringUtils.isNotBlank(searchItemId)) {
+            y9Page = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, searchItemId, "", "",
+                page, rows);
+        } else {
+            y9Page = officeDoneInfo4PositionApi.searchByPositionIdAndSystemName(tenantId, userId, searchTerm,
+                item.getSystemName(), "", "", page, rows);
+        }
+        List<Map<String, Object>> items = new ArrayList<>();
+        List<OfficeDoneInfoModel> list = y9Page.getRows();
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
+        int serialNumber = (page - 1) * rows;
+        Map<String, Object> mapTemp;
+        String processInstanceId;
+        for (OfficeDoneInfoModel hpim : hpiModelList) {
+            mapTemp = new HashMap<>(16);
+            processInstanceId = hpim.getProcessInstanceId();
+            try {
+                String processDefinitionId = hpim.getProcessDefinitionId();
+                String startTime = hpim.getStartTime().substring(0, 16), endTime = hpim.getEndTime().substring(0, 16);
+                String processSerialNumber = hpim.getProcessSerialNumber();
+                String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
+                String level = hpim.getUrgency();
+                String number = hpim.getDocNumber();
+                String completer = StringUtils.isBlank(hpim.getUserComplete()) ? "无" : hpim.getUserComplete();
+                mapTemp.put("itemId", hpim.getItemId());
+                mapTemp.put("itemName", hpim.getItemName());
+                mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                mapTemp.put("title", documentTitle);
+                mapTemp.put("processDefinitionId", processDefinitionId);
+                mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionId());
+                mapTemp.put("startTime", startTime);
+                mapTemp.put("endTime", endTime);
+                mapTemp.put("taskDefinitionKey", "");
+                mapTemp.put("user4Complete", completer);
+                mapTemp.put("level", level);
+                mapTemp.put("number", number);
+                mapTemp.put("chaosongNum", 0);
+                mapTemp.put("processInstanceId", processInstanceId);
+                mapTemp.put("meeting", false);
+                if (item.getSystemName().equals("gongwenguanli")) {
+                    mapTemp.put("meeting", hpim.getMeeting() != null && hpim.getMeeting().equals("1"));
+                }
+            } catch (Exception e) {
+                LOGGER.error("获取待办列表失败" + processInstanceId, e);
+            }
+            mapTemp.put("serialNumber", serialNumber + 1);
+            serialNumber += 1;
+            items.add(mapTemp);
+        }
+        return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+    }
+
+    @Override
+    public Y9Page<OfficeFollowModel> pageFollowList(String itemId, String searchTerm, Integer page, Integer rows) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+        return officeFollow4PositionApi.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(),
+            item.getSystemName(), searchTerm, page, rows);
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> pageHomeDoingList(Integer page, Integer rows) {
         try {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -631,7 +552,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> homeDoneList(Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageHomeDoneList(Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -692,8 +613,87 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     }
 
     @Override
-    public Y9Page<net.risesoft.model.ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName,
-        String state, String year, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageMeetingList(String userName, String deptName, String title,
+        String meetingType, Integer page, Integer rows) {
+        Y9Page<OfficeDoneInfoModel> y9Page;
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            y9Page =
+                officeDoneInfo4PositionApi.getMeetingList(tenantId, userName, deptName, title, meetingType, page, rows);
+            List<Map<String, Object>> items = new ArrayList<>();
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp;
+            String processInstanceId;
+            for (OfficeDoneInfoModel hpim : hpiList) {
+                mapTemp = new HashMap<>(16);
+                processInstanceId = hpim.getProcessInstanceId();
+                try {
+                    String processDefinitionId = hpim.getProcessDefinitionId();
+                    String startTime = hpim.getStartTime().substring(0, 10);
+                    String processSerialNumber = hpim.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
+                    String level = hpim.getUrgency();
+                    String number = hpim.getDocNumber();
+                    String completer = hpim.getUserComplete();
+                    mapTemp.put("itemName", hpim.getItemName());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("startTime", startTime);
+                    mapTemp.put("endTime",
+                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put("taskDefinitionKey", "");
+                    mapTemp.put("taskAssignee", completer);
+
+                    mapTemp.put("deptName", hpim.getDeptName());
+                    mapTemp.put("meetingType", hpim.getMeetingType());
+
+                    mapTemp.put("creatUserName", hpim.getCreatUserName());
+                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("level", level == null ? "" : level);
+                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                            assigneeNames = listTemp.get(2);
+                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put("taskId",
+                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskAssigneeId", assigneeIds);
+                        mapTemp.put("taskAssignee", assigneeNames);
+                        mapTemp.put("itembox", listTemp.get(3));
+                    }
+                    mapTemp.put("beizhu", "");
+                    Map<String, Object> formDataMap =
+                        formDataApi.getData(tenantId, hpim.getItemId(), processSerialNumber).getData();
+                    if (formDataMap.get("beizhu") != null) {
+                        mapTemp.put("beizhu", formDataMap.get("beizhu"));
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("获取会议列表失败" + processInstanceId, e);
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取会议列表失败", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
+    @Override
+    public Y9Page<net.risesoft.model.ChaoSongModel> pageMyChaoSongList(String searchName, String itemId,
+        String userName, String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Y9Page<ChaoSongModel> y9page = chaoSong4PositionApi.myChaoSongList(tenantId, positionId, searchName, itemId,
             userName, state, year, page, rows);
@@ -733,7 +733,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> todoList(String itemId, String searchItemId, String searchTerm, Integer page,
+    public Y9Page<Map<String, Object>> pageTodoList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");

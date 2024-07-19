@@ -19,8 +19,8 @@ public interface MonitorService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> deptList(String itemId, String searchName, String userName, String state, String year,
-        Integer page, Integer rows);
+    Y9Page<Map<String, Object>> pageDeptList(String itemId, String searchName, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * 监控办件
@@ -34,7 +34,7 @@ public interface MonitorService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> monitorBanjianList(String searchName, String itemId, String userName, String state,
+    Y9Page<Map<String, Object>> pageMonitorBanjianList(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows);
 
     /**
@@ -50,7 +50,7 @@ public interface MonitorService {
      * @param rows
      * @return
      */
-    Y9Page<ChaoSongModel> monitorChaosongList(String searchName, String itemId, String senderName, String userName,
+    Y9Page<ChaoSongModel> pageMonitorChaosongList(String searchName, String itemId, String senderName, String userName,
         String state, String year, Integer page, Integer rows);
 
     /**
@@ -62,30 +62,31 @@ public interface MonitorService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> monitorDoingList(String processDefinitionKey, String searchTerm, Integer page,
+    Y9Page<Map<String, Object>> pageMonitorDoingList(String processDefinitionKey, String searchTerm, Integer page,
         Integer rows);
 
     /**
      * 获取监控办结列表
      *
-     * @param itemId
+     * @param processDefinitionKey
      * @param searchTerm 搜索词
      * @param page
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> monitorDoneList(String processDefinitionKey, String searchTerm, Integer page,
+    Y9Page<Map<String, Object>> pageMonitorDoneList(String processDefinitionKey, String searchTerm, Integer page,
         Integer rows);
 
     /**
      * 获取回收列表
      *
-     * @param itemId
+     * @param processDefinitionKey
      * @param searchTerm 搜索词
      * @param page
      * @param rows
      * @return
      */
-    Map<String, Object> monitorRecycleList(String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> pageMonitorRecycleList(String processDefinitionKey, String searchTerm, Integer page,
+        Integer rows);
 
 }

@@ -118,7 +118,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     }
 
     @Override
-    public List<Map<String, Object>> assigneeList4Parallel(String processInstanceId) {
+    public List<Map<String, Object>> listAssignee4Parallel(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<Map<String, Object>> listMap = new ArrayList<>();
@@ -150,7 +150,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<Map<String, Object>> assigneeList4Sequential(String taskId) {
+    public List<Map<String, Object>> listAssignee4Sequential(String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         String currentAssignee = taskModel.getAssignee();

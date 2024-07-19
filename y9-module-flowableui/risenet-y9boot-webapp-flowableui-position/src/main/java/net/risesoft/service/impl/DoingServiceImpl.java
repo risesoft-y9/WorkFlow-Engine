@@ -152,8 +152,8 @@ public class DoingServiceImpl implements DoingService {
     }
 
     @Override
-    public Map<String, Object> list(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<>(16);
+    public Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
@@ -270,18 +270,16 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             }
-            retMap.put("rows", items);
-            retMap.put("currpage", page);
-            retMap.put("totalpages", piPage.getTotalPages());
-            retMap.put("total", piPage.getTotal());
+            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办列表失败", e);
         }
-        return retMap;
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @Override
-    public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageNewByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
@@ -442,8 +440,8 @@ public class DoingServiceImpl implements DoingService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
-        Integer rows) {
+    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr,
+        Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();

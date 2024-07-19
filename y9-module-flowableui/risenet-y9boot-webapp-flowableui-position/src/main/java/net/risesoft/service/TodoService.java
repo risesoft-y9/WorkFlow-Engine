@@ -15,7 +15,8 @@ public interface TodoService {
      * @param rows 行数
      * @return Map<String, Object>
      */
-    Map<String, Object> list(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 获取待办列表
@@ -26,7 +27,8 @@ public interface TodoService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> pageNewByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 待办列表
@@ -38,6 +40,6 @@ public interface TodoService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
+    Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr, Integer page,
         Integer rows);
 }

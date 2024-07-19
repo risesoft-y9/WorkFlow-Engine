@@ -67,7 +67,7 @@ public class DdyjsRestController {
     public Y9Page<Map<String, Object>> getMeetingList(@RequestParam(required = false) String meetingType,
         @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
         @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.getMeetingList(userName, deptName, title, meetingType, page, rows);
+        return workList4ddyjsService.pageMeetingList(userName, deptName, title, meetingType, page, rows);
     }
 
     /**

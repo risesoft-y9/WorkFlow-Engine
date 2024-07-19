@@ -87,7 +87,7 @@ public class MobileV1MonitorController {
     @RequestMapping(value = "/monitorDoingList")
     public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows) {
-        return monitorService.monitorDoingList(itemId, title, page, rows);
+        return monitorService.pageMonitorDoingList(itemId, title, page, rows);
     }
 
     /**
@@ -123,7 +123,7 @@ public class MobileV1MonitorController {
     @RequestMapping(value = "/monitorDoneList")
     public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows) {
-        return monitorService.monitorDoneList(itemId, title, page, rows);
+        return monitorService.pageMonitorDoneList(itemId, title, page, rows);
     }
 
     /**
