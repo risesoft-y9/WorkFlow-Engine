@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -69,7 +68,6 @@ public class VueNTKOController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping("/showFile")
-    @ResponseBody
     public Y9Result<Map<String, Object>> showFile(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
         @RequestParam(required = false) String browser, @RequestParam(required = false) String fileId,
@@ -114,7 +112,6 @@ public class VueNTKOController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping("/showWord")
-    @ResponseBody
     public Y9Result<Y9WordInfo> showWord(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam String itemId,
         @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
@@ -122,13 +119,15 @@ public class VueNTKOController {
         @RequestParam(required = false) String positionId, @RequestParam String tenantId, @RequestParam String userId,
         Model model) {
         try {
-            Y9WordInfo map = transactionWordApi
+            Y9WordInfo wordInfo = transactionWordApi
                 .showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, bindValue).getData();
-            Object documentTitle;
+            String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model1 =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model1.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 String[] pInstanceId = processInstanceId.split(",");
                 ProcessParamModel processModel =
@@ -136,16 +135,16 @@ public class VueNTKOController {
                 documentTitle = processModel.getTitle();
                 processInstanceId = pInstanceId[0];
             }
-            map.setDocumentTitle((documentTitle != null ? documentTitle.toString() : "正文"));
-            map.setBrowser(browser);
-            map.setProcessInstanceId(processInstanceId);
-            map.setTenantId(tenantId);
-            map.setUserId(userId);
-            map.setPositionId(positionId);
+            wordInfo.setDocumentTitle(StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文");
+            wordInfo.setBrowser(browser);
+            wordInfo.setProcessInstanceId(processInstanceId);
+            wordInfo.setTenantId(tenantId);
+            wordInfo.setUserId(userId);
+            wordInfo.setPositionId(positionId);
             Position position = positionApi.get(tenantId, positionId).getData();
             OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
-            map.setCurrentBureauGuid(currentBureau != null ? currentBureau.getId() : "");
-            return Y9Result.success(map, "获取信息成功");
+            wordInfo.setCurrentBureauGuid(currentBureau != null ? currentBureau.getId() : "");
+            return Y9Result.success(wordInfo, "获取信息成功");
         } catch (Exception e) {
             LOGGER.error("获取信息失败", e);
         }

@@ -22,8 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,23 +111,25 @@ public class FormNTKOController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            Object documentTitle;
+            String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
+                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
@@ -174,23 +176,25 @@ public class FormNTKOController {
             TransactionWordModel word =
                 transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = word.getFileStoreId();
-            Object documentTitle;
+            String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
+                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
@@ -245,20 +249,22 @@ public class FormNTKOController {
             // String fileName = y9FileStore.getFileName();
             String userAgent = request.getHeader("User-Agent");
             String title;
-            Object documentTitle;
+            String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             title = ToolUtil.replaceSpecialStr(title);
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
+                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
@@ -303,25 +309,27 @@ public class FormNTKOController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            String documentTitle;
+            String documentTitle = "";
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? documentTitle : "正文";
+            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
+                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
@@ -596,9 +604,7 @@ public class FormNTKOController {
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = transactionWordApi.openPdf(tenantId, userId, processSerialNumber).getData();
 
-        ServletOutputStream out = null;
-        try {
-            out = response.getOutputStream();
+        try (ServletOutputStream out = response.getOutputStream();) {
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
@@ -624,14 +630,6 @@ public class FormNTKOController {
             }
         } catch (IOException e) {
             LOGGER.error("打开正文失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
     }
 
@@ -752,17 +750,19 @@ public class FormNTKOController {
         String title;
         String result = "success:false";
         try {
-            Object documentTitle;
+            String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
@@ -814,13 +814,15 @@ public class FormNTKOController {
         @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
         @RequestParam(required = false) String browser, @RequestParam(required = false) String positionId,
         @RequestParam String tenantId, @RequestParam(required = false) String userId, Model model) {
-        Y9WordInfo map =
+        Y9WordInfo wordInfo =
             transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
-        Object documentTitle;
+        String documentTitle = "";
         if (StringUtils.isBlank(processInstanceId)) {
             DraftModel model1 =
                 draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            documentTitle = model1.getTitle();
+            if (model1 != null) {
+                documentTitle = model1.getTitle();
+            }
         } else {
             String[] pInstanceId = processInstanceId.split(",");
             ProcessParamModel processModel =
@@ -828,13 +830,13 @@ public class FormNTKOController {
             documentTitle = processModel.getTitle();
             processInstanceId = pInstanceId[0];
         }
-        map.setDocumentTitle((documentTitle != null ? documentTitle.toString() : "正文"));
-        map.setBrowser(browser);
-        map.setProcessInstanceId(processInstanceId);
-        map.setTenantId(tenantId);
-        map.setUserId(userId);
-        map.setPositionId(positionId);
-        model.addAttribute("wordInfo", map);
+        wordInfo.setDocumentTitle(StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文");
+        wordInfo.setBrowser(browser);
+        wordInfo.setProcessInstanceId(processInstanceId);
+        wordInfo.setTenantId(tenantId);
+        wordInfo.setUserId(userId);
+        wordInfo.setPositionId(positionId);
+        model.addAttribute("wordInfo", wordInfo);
         model.addAttribute("documentTitle", documentTitle != null ? documentTitle : "正文");
         model.addAttribute("browser", browser);
         model.addAttribute("processInstanceId", processInstanceId);
@@ -858,11 +860,9 @@ public class FormNTKOController {
         @RequestParam String tenantId, @RequestParam(required = false) String userId,
         @RequestParam(required = false) String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        if (StringUtils.isBlank(currentBureauGuid)) {
-            if (StringUtils.isNotBlank(positionId)) {
-                Position position = positionApi.get(tenantId, positionId).getData();
-                currentBureauGuid = position.getParentId();
-            }
+        if (StringUtils.isBlank(currentBureauGuid) && StringUtils.isNotBlank(positionId)) {
+            Position position = positionApi.get(tenantId, positionId).getData();
+            currentBureauGuid = position.getParentId();
         }
         return transactionWordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
     }
@@ -878,7 +878,7 @@ public class FormNTKOController {
      * @param file 文件
      * @return Map<String, Object>
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @PostMapping(value = "/upload")
     public Map<String, Object> upload(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam MultipartFile file) {
@@ -915,17 +915,19 @@ public class FormNTKOController {
                     isTaoHong = "0";
                 }
             }
-            Object documentTitle;
+            String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             Boolean result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
@@ -956,7 +958,7 @@ public class FormNTKOController {
      * @param userId 人员id
      * @return String
      */
-    @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
+    @PostMapping(value = "/uploadWord")
     public String uploadWord(@RequestParam(required = false) String fileType,
         @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String docCategory,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
@@ -970,18 +972,19 @@ public class FormNTKOController {
         String title;
         String result = "success:false";
         try {
-            Object documentTitle;
+            String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-
-            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
