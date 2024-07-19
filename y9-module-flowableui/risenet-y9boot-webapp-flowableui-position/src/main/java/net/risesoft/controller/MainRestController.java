@@ -373,8 +373,9 @@ public class MainRestController {
                                 allCount = allCount + todoCount1;
                             } else if (StringUtils.isNotBlank(systemName)) {
                                 // 单个事项获取待办数量
-                                todoCount1 = processTodoApi.getTodoCountByUserIdAndSystemName(tenantId,
-                                    position.getId(), systemName).getData();
+                                todoCount1 = processTodoApi
+                                    .getTodoCountByUserIdAndSystemName(tenantId, position.getId(), systemName)
+                                    .getData();
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {

@@ -36,7 +36,7 @@ public interface MultiInstanceService {
      * @param processInstanceId 流程实例id
      * @return List<Map < String, Object>>
      */
-    List<Map<String, Object>> assigneeList4Parallel(String processInstanceId);
+    List<Map<String, Object>> listAssignee4Parallel(String processInstanceId);
 
     /**
      * 串行时获取办理人列表
@@ -44,7 +44,7 @@ public interface MultiInstanceService {
      * @param taskId 任务id
      * @return List<Map < String, Object>>
      */
-    List<Map<String, Object>> assigneeList4Sequential(String taskId);
+    List<Map<String, Object>> listAssignee4Sequential(String taskId);
 
     /**
      * 减签

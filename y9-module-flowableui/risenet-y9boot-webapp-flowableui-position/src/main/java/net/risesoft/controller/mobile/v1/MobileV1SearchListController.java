@@ -57,7 +57,7 @@ public class MobileV1SearchListController {
     public Y9Result<Map<String, Object>> getLastFormData(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String tableName) {
         Map<String, Object> map = new HashMap<>();
-        Y9Page<Map<String, Object>> y9Page = this.searchService.getSearchList("", itemId, "", "", "", "", "", 1, 1);
+        Y9Page<Map<String, Object>> y9Page = this.searchService.pageSearchList("", itemId, "", "", "", "", "", 1, 1);
         if ((y9Page.getRows() != null) && (!y9Page.getRows().isEmpty())) {
             Map<String, Object> m = y9Page.getRows().get(0);
             String processSerialNumber = (String)m.get("processSerialNumber");
@@ -122,7 +122,7 @@ public class MobileV1SearchListController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return searchService.getSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
+        return searchService.pageSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 
 }

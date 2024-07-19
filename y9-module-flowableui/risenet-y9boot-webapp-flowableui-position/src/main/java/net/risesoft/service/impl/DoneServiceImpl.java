@@ -54,7 +54,8 @@ public class DoneServiceImpl implements DoneService {
     private final ProcessParamApi processParamApi;
 
     @Override
-    public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
@@ -105,7 +106,8 @@ public class DoneServiceImpl implements DoneService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageNewByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
@@ -174,8 +176,8 @@ public class DoneServiceImpl implements DoneService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
-        Integer rows) {
+    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr,
+        Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();

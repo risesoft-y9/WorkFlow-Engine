@@ -75,19 +75,10 @@ public class MobileV1WorkListController {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/doingList")
     public Y9Page<Map<String, Object>> doingList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
-        try {
-            Map<String, Object> retMap = doingService.list(itemId, title, page, rows);
-            List<Map<String, Object>> doingList = (List<Map<String, Object>>)retMap.get("rows");
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), doingList, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取在办件列表异常：");
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return doingService.page4MobileByItemIdAndSearchTerm(itemId, title, page, rows);
     }
 
     /**
@@ -103,7 +94,7 @@ public class MobileV1WorkListController {
     public Y9Page<Map<String, Object>> doneList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         try {
-            return doneService.list(itemId, title, page, rows);
+            return doneService.page4MobileByItemIdAndSearchTerm(itemId, title, page, rows);
         } catch (Exception e) {
             LOGGER.error("办结件列表异常：", e);
         }
@@ -139,11 +130,13 @@ public class MobileV1WorkListController {
                     String itemId = url.split("itemId=")[1];
                     ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     String processDefinitionKey = item.getWorkflowGuid();
-                    long todoCount = processTodoApi.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId,
-                        positionId, processDefinitionKey).getData();
+                    long todoCount = processTodoApi
+                        .getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
+                        .getData();
                     Map<String, Object> m = new HashMap<>(16);
-                    Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
-                    List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
+                    Y9Page<Map<String, Object>> resMap =
+                        todoService.page4MobileByItemIdAndSearchTerm(item.getId(), "", 1, 1);
+                    List<Map<String, Object>> todoList = resMap.getRows();
                     if (todoList != null && !todoList.isEmpty()) {
                         Map<String, Object> todo = todoList.get(0);
                         m.put("title", todo.get(SysVariables.DOCUMENTTITLE));
@@ -217,15 +210,6 @@ public class MobileV1WorkListController {
     @RequestMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
         @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
-        try {
-            Map<String, Object> retMap = todoService.list(itemId, title, page, rows);
-            List<Map<String, Object>> todoList = (List<Map<String, Object>>)retMap.get("rows");
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), todoList, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("手机端待办件列表异常", e);
-
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return todoService.page4MobileByItemIdAndSearchTerm(itemId, title, page, rows);
     }
 }

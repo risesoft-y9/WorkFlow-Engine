@@ -128,7 +128,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state,
+    public Y9Page<Map<String, Object>> pageSearchList(String searchTerm, String itemId, String userName, String state,
         String year, String startDate, String endDate, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
@@ -170,7 +170,8 @@ public class SearchServiceImpl implements SearchService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
@@ -201,7 +202,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> getYuejianList(String searchName, String itemId, String userName, String state,
+    public Y9Page<ChaoSongModel> pageYuejianList(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows) {
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();

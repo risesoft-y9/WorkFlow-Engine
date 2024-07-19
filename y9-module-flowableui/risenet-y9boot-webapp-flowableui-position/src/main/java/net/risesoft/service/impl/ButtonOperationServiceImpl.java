@@ -130,8 +130,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
-            HistoricTaskInstanceModel hisTaskModelTemp =
-                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
+            HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi
+                .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             /*
               2、添加流程的历程

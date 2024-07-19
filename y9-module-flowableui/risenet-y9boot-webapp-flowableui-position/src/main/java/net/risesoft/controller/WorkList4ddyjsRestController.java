@@ -60,7 +60,7 @@ public class WorkList4ddyjsRestController {
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.myChaoSongList(searchName, itemId, userName, state, year, page, rows);
+        return workList4ddyjsService.pageMyChaoSongList(searchName, itemId, userName, state, year, page, rows);
     }
 
     /**
@@ -76,7 +76,7 @@ public class WorkList4ddyjsRestController {
     public Y9Page<Map<String, Object>> doingList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.doingList(itemId, searchItemId, searchTerm, page, rows);
+        return workList4ddyjsService.pageDoingList(itemId, searchItemId, searchTerm, page, rows);
     }
 
     /**
@@ -92,7 +92,7 @@ public class WorkList4ddyjsRestController {
     public Y9Page<Map<String, Object>> doneList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.doneList(itemId, searchItemId, searchTerm, page, rows);
+        return workList4ddyjsService.pageDoneList(itemId, searchItemId, searchTerm, page, rows);
     }
 
     /**
@@ -125,7 +125,7 @@ public class WorkList4ddyjsRestController {
     @GetMapping(value = "/followList")
     public Y9Page<OfficeFollowModel> followList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.followList(itemId, searchTerm, page, rows);
+        return workList4ddyjsService.pageFollowList(itemId, searchTerm, page, rows);
     }
 
     /**
@@ -137,7 +137,7 @@ public class WorkList4ddyjsRestController {
      */
     @GetMapping(value = "/homeChaosongList")
     public Y9Page<ChaoSongModel> homeChaosongList(@RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.myChaoSongList("", "", "", "", "", page, rows);
+        return workList4ddyjsService.pageMyChaoSongList("", "", "", "", "", page, rows);
     }
 
     /**
@@ -149,7 +149,7 @@ public class WorkList4ddyjsRestController {
      */
     @GetMapping(value = "/homeDoingList")
     public Y9Page<Map<String, Object>> homeDoingList(@RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.homeDoingList(page, rows);
+        return workList4ddyjsService.pageHomeDoingList(page, rows);
     }
 
     /**
@@ -161,7 +161,7 @@ public class WorkList4ddyjsRestController {
      */
     @GetMapping(value = "/homeDoneList")
     public Y9Page<Map<String, Object>> homeDoneList(@RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.homeDoneList(page, rows);
+        return workList4ddyjsService.pageHomeDoneList(page, rows);
     }
 
     /**
@@ -181,7 +181,7 @@ public class WorkList4ddyjsRestController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return queryListService.queryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
+        return queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -197,7 +197,7 @@ public class WorkList4ddyjsRestController {
     public Y9Page<Map<String, Object>> todoList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4ddyjsService.todoList(itemId, searchItemId, searchTerm, page, rows);
+        return workList4ddyjsService.pageTodoList(itemId, searchItemId, searchTerm, page, rows);
     }
 
 }

@@ -81,8 +81,8 @@ public class TodoServiceImpl implements TodoService {
     private final TaskApi taskApi;
 
     @Override
-    public Map<String, Object> list(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<>(16);
+    public Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -149,8 +149,8 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
                     mapTemp.put(SysVariables.LEVEL, level);
                     mapTemp.put(SysVariables.NUMBER, number);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(),
-                        task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
@@ -184,17 +184,16 @@ public class TodoServiceImpl implements TodoService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            retMap.put("rows", items);
-            retMap.put("totalpages", taskPage.getTotalPages());
-            retMap.put("total", taskPage.getTotal());
+            return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("查询待办任务出错", e);
         }
-        return retMap;
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @Override
-    public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageNewByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -256,8 +255,8 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
                     mapTemp.put(SysVariables.NUMBER, number);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(),
-                        task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
@@ -344,8 +343,8 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
-        Integer rows) {
+    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr,
+        Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -403,8 +402,8 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.TASKSENDER, taskSender);
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(),
-                        task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
