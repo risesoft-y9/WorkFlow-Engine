@@ -168,7 +168,7 @@ public class FileNTKOController {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
             String fullPath =
-                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, file.getName());
             result = attachment4PositionApi.updateFile(tenantId, userId, positionId, fileId,
                 y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId()).getData();

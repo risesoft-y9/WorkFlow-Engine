@@ -69,25 +69,27 @@ public class FormNTKOPrintController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            String documentTitle;
+            String documentTitle = "";
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
+                DraftModel draftModel =
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? documentTitle : "正文";
+            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
+                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
