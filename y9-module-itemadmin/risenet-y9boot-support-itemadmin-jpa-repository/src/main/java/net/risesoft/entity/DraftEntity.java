@@ -16,6 +16,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -115,6 +117,7 @@ public class DraftEntity implements Serializable {
      */
     @Comment("起草时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "DRAFTTIME")
     private Date draftTime;

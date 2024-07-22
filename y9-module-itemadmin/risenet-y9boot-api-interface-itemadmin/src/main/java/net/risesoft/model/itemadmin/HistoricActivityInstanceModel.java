@@ -3,11 +3,13 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 
 /**
  * 历史活动实例
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -60,10 +62,12 @@ public class HistoricActivityInstanceModel implements Serializable {
     /**
      * 开始时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
     /**
      * 结束时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
     /**
      * 持续市场

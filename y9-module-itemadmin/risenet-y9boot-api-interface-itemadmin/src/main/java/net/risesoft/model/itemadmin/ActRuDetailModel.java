@@ -3,11 +3,13 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 
 /**
  * 流转详细信息
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -94,11 +96,13 @@ public class ActRuDetailModel implements Serializable {
     /**
      * 生成的时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
      * 最后一次的办理时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastTime;
 
     /**
