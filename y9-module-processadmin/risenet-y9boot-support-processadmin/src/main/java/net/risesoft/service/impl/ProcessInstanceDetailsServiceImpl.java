@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -85,6 +86,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             if (StringUtils.isNotBlank(sponsorGuid) && sponsorGuid.equals(assigneeId)) {
                 assigneeName = assigneeName + "(主办)";
             }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
                 + "&type=fromCplane";
             ProcessInstanceDetailsModel processInstanceDetails = new ProcessInstanceDetailsModel();
@@ -97,7 +99,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             processInstanceDetails.setSenderId(userId);
             processInstanceDetails.setSenderName(senderName);
             processInstanceDetails.setSerialNumber(number);
-            processInstanceDetails.setStartTime(task.getCreateTime());
+            processInstanceDetails.setStartTime(sdf.parse(sdf.format(task.getCreateTime())));
             processInstanceDetails.setSystemCnName(systemCnName);
             processInstanceDetails.setSystemName(systemName);
             processInstanceDetails.setTaskId(task.getId());
