@@ -146,6 +146,36 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                 }
             }
         }
+        // 复制手机端表单绑定信息
+        copyMobileBindForm(previouspdId, latestpdId, itemId, tenantId, nodes);
+    }
+
+    public void copyMobileBindForm(String previouspdId, String latestpdId, String itemId, String tenantId,
+        List<TargetModel> nodes) {
+        List<Y9FormItemMobileBind> previouseibList =
+            y9FormItemMobileBindRepository.findByItemIdAndProcDefId(itemId, previouspdId);
+        for (Y9FormItemMobileBind eibm : previouseibList) {
+            String taskDefKey = eibm.getTaskDefKey();
+            String formId = eibm.getFormId();
+            if (StringUtils.isEmpty(taskDefKey)) {
+                Y9FormItemMobileBind eibTemp = y9FormItemMobileBindRepository
+                    .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
+                if (null == eibTemp) {
+                    save(eibm, latestpdId, formId, itemId, taskDefKey, tenantId);
+                }
+            } else {
+                for (TargetModel targetModel : nodes) {
+                    if (targetModel.getTaskDefKey().equals(taskDefKey)) {
+                        Y9FormItemMobileBind eibTemp = y9FormItemMobileBindRepository
+                            .findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, taskDefKey, formId);
+                        if (null == eibTemp) {
+                            save(eibTemp, latestpdId, formId, itemId, taskDefKey, tenantId);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -355,6 +385,20 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         eibTemp.setTaskDefKey(taskDefKey);
         eibTemp.setTenantId(tenantId);
         y9FormItemBindRepository.save(eibTemp);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(Y9FormItemMobileBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
+        String tenantId) {
+        Y9FormItemMobileBind eibTemp = new Y9FormItemMobileBind();
+        eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        eibTemp.setProcessDefinitionId(latestpdId);
+        eibTemp.setFormName(eib.getFormName());
+        eibTemp.setFormId(formId);
+        eibTemp.setItemId(itemId);
+        eibTemp.setTaskDefKey(taskDefKey);
+        eibTemp.setTenantId(tenantId);
+        y9FormItemMobileBindRepository.save(eibTemp);
     }
 
     @Override
