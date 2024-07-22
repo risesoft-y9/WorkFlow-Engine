@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.controller.vo.ProcessInstanceVO;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
@@ -91,9 +92,9 @@ public class VariableVueController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/getAllVariable")
-    public Y9Page<Map<String, Object>> getAllVariable(@RequestParam(required = false) String processInstanceId,
+    public Y9Page<ProcessInstanceVO> getAllVariable(@RequestParam(required = false) String processInstanceId,
         @RequestParam int page, @RequestParam int rows) {
-        List<Map<String, Object>> items = new ArrayList<>();
+        List<ProcessInstanceVO> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         long totalCount;
         List<ProcessInstance> list;
@@ -108,35 +109,34 @@ public class VariableVueController {
         }
         Position position;
         OrgUnit orgUnit;
-        Map<String, Object> mapTemp;
         for (ProcessInstance processInstance : list) {
-            mapTemp = new HashMap<>(16);
-            mapTemp.put("businessKey", processInstance.getBusinessKey());
-            mapTemp.put("processInstanceId", processInstance.getId());
-            mapTemp.put("processDefName", processInstance.getProcessDefinitionName());
-            mapTemp.put("suspended", processInstance.isSuspended());
-            mapTemp.put("startTime", DateFormatUtils.format(processInstance.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
-            mapTemp.put("startUserName", "无");
+            ProcessInstanceVO process = new ProcessInstanceVO();
+            process.setBusinessKey(processInstance.getBusinessKey());
+            process.setProcessInstanceId(processInstance.getId());
+            process.setProcessDefName(processInstance.getProcessDefinitionName());
+            process.setSuspended(processInstance.isSuspended());
+            process.setStartTime(DateFormatUtils.format(processInstance.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+            process.setStartUserName("无");
             if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                 String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                 if (userIdAndDeptId.length == 1) {
                     position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                     orgUnit = orgUnitManager.getParent(tenantId, position.getId()).getData();
-                    mapTemp.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
+                    process.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
                 } else {
                     position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                     if (null != position) {
                         orgUnit = orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
                             .getData();
                         if (null == orgUnit) {
-                            mapTemp.put("startUserName", position.getName());
+                            process.setStartUserName(position.getName());
                         } else {
-                            mapTemp.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
+                            process.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
                         }
                     }
                 }
             }
-            items.add(mapTemp);
+            items.add(process);
         }
         int totalPages = (int)totalCount / rows + 1;
         return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");

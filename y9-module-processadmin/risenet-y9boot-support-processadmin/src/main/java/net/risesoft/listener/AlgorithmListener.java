@@ -26,6 +26,12 @@ import net.risesoft.y9.util.RemoteCallUtil;
 @Slf4j
 public class AlgorithmListener implements ExecutionListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7305379571931231426L;
+
+    @SuppressWarnings("unchecked")
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void notify(DelegateExecution execution) {

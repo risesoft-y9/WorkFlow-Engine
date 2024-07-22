@@ -120,9 +120,8 @@ public class ProcessModelVueController {
      * @return Y9Result<List<Map<String, Object>>>
      */
     @GetMapping(value = "/getModelList")
-    public Y9Result<List<Map<String, Object>>> getModelList() {
-        List<Map<String, Object>> items = new ArrayList<>();
-
+    public Y9Result<List<ModelVO>> getModelList() {
+        List<ModelVO> items = new ArrayList<>();
         return Y9Result.success(items, "获取成功");
     }
 
@@ -147,12 +146,8 @@ public class ProcessModelVueController {
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/import")
-    public Map<String, Object> importProcessModel(MultipartFile file) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("success", false);
-        map.put("msg", "导入失败");
-
-        return map;
+    public Y9Result<Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
+        return Y9Result.failure("导入流程模板失败");
     }
 
     /**
