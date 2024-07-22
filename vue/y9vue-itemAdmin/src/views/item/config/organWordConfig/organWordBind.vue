@@ -203,7 +203,7 @@
 		organWordArr.value = [];
 		getOrganWordList(props.currTreeNodeInfo.id,props.processDefinitionId).then(res =>{
 			if(res.success){
-				oFTableConfig.value.tableData = res.data.rows;
+				oFTableConfig.value.tableData = res.data;
 			}
 		});
 	}
