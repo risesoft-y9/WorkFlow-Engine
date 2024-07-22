@@ -148,6 +148,7 @@ public class Y9FieldPermController {
                 map.put("writeRoleName", y9FieldPerm != null ? y9FieldPerm.getWriteRoleName() : "");
                 map.put("id", y9FieldPerm != null ? y9FieldPerm.getId() : "");
                 map.put("taskDefKey", targetModel.getTaskDefKey());
+                map.put("taskDefName", targetModel.getTaskDefName());
                 resList.add(map);
             }
         }
