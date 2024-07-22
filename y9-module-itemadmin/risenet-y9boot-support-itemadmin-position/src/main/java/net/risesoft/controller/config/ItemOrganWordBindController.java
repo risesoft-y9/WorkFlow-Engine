@@ -1,9 +1,7 @@
 package net.risesoft.controller.config;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -68,9 +66,8 @@ public class ItemOrganWordBindController {
      * @return
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+    public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
-        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         List<ItemOrganWordBind> bindList;
@@ -87,14 +84,12 @@ public class ItemOrganWordBindController {
             }
             targetModel.setBindNames(bindNames.toString());
         }
-        resMap.put("rows", list);
-        return Y9Result.success(resMap, "获取成功");
+        return Y9Result.success(list, "获取成功");
     }
 
     @GetMapping(value = "/getOrganWordList")
-    public Y9Result<Map<String, Object>> getOrganWordList(@RequestParam String itemId,
+    public Y9Result<List<OrganWord>> getOrganWordList(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
-        Map<String, Object> map = new HashMap<>(16);
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
             .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<OrganWord> owList = organWordService.listAll();
@@ -115,8 +110,7 @@ public class ItemOrganWordBindController {
                 }
             }
         }
-        map.put("rows", owListTemp);
-        return Y9Result.success(map, "获取成功");
+        return Y9Result.success(owListTemp, "获取成功");
     }
 
     /**

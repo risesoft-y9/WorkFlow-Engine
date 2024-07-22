@@ -57,10 +57,9 @@ public class ItemTaskConfRestController {
      * @return
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<Map<String, Object>> resList = new ArrayList<>();
-        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         Map<String, Object> map;
@@ -86,8 +85,7 @@ public class ItemTaskConfRestController {
                 resList.add(map);
             }
         }
-        resMap.put("rows", resList);
-        return Y9Result.success(resMap, "获取成功");
+        return Y9Result.success(resList, "获取成功");
     }
 
     /**

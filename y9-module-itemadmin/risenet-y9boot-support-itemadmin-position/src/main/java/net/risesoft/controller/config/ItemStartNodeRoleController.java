@@ -51,9 +51,8 @@ public class ItemStartNodeRoleController {
      * @return
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
-        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
             itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
@@ -96,8 +95,7 @@ public class ItemStartNodeRoleController {
             mapTemp.put("roleIds", roleIdList);
             rows.add(mapTemp);
         }
-        resMap.put("rows", rows);
-        return Y9Result.success(resMap, "获取成功");
+        return Y9Result.success(rows, "获取成功");
     }
 
     @GetMapping(value = "/getNodeList")

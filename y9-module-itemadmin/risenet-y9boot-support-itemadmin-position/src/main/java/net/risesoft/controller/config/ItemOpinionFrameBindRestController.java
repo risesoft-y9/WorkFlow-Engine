@@ -180,10 +180,9 @@ public class ItemOpinionFrameBindRestController {
      * @return
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
+    public Y9Result<List<TargetModel>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
         List<TargetModel> list;
-        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         for (TargetModel targetModel : list) {
@@ -200,8 +199,7 @@ public class ItemOpinionFrameBindRestController {
             }
             targetModel.setOpinionFrameNames(opinionFrameNames.toString());
         }
-        resMap.put("rows", list);
-        return Y9Result.success(resMap, "获取成功");
+        return Y9Result.success(list, "获取成功");
     }
 
     /**
