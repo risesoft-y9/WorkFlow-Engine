@@ -261,16 +261,15 @@ public class SendReceiveRestController {
     }
 
     @RequestMapping(value = "/orderDeptList")
-    public Map<String, Object> orderDeptList() {
-        Map<String, Object> map = new HashMap<>(16);
+    public Y9Result<List<ReceiveDepartment>> orderDeptList() {
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAllOrderByTabIndex();
         for (ReceiveDepartment receiveDeptAndPerson : list) {
             Department department =
                 departmentManager.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
             receiveDeptAndPerson.setDeptName(department.getName());
         }
-        map.put("rows", list);
-        return map;
+        // map.put("rows", list);
+        return Y9Result.success(list);
     }
 
     /**
