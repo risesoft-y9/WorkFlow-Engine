@@ -157,10 +157,10 @@ public class ItemRestController {
      * @return
      */
     @RequestMapping(value = "/getDept")
-    public String getDept(@RequestParam String id) {
+    public Y9Result<String> getDept(@RequestParam String id) {
         StringBuilder sb = new StringBuilder();
         getJson(sb, id);
-        return "[" + sb.substring(0, sb.lastIndexOf(",")) + "]";
+        return Y9Result.success("[" + sb.substring(0, sb.lastIndexOf(",")) + "]");
     }
 
     public void getJson(StringBuilder sb, String deptId) {

@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,20 +37,15 @@ public class ExtendedContentController {
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/checkSignContent")
-    public Map<String, Object> checkSignContent(@RequestParam(required = false) String category,
+    public Y9Result<Boolean> checkSignContent(@RequestParam(required = false) String category,
         @RequestParam(required = false) String processSerialNumber) {
-        Map<String, Object> map = new HashMap<>(16);
         try {
             int count = extendedContentService.countByProcSerialNumberAndCategory(processSerialNumber, category);
-            if (count > 0) {
-                map.put("checkSignContent", true);
-            } else {
-                map.put("checkSignContent", false);
-            }
+            return Y9Result.success(count > 0);
         } catch (Exception e) {
             LOGGER.error("是否填写内容", e);
+            return Y9Result.failure("是否填写内容");
         }
-        return map;
     }
 
     /**
@@ -64,9 +58,11 @@ public class ExtendedContentController {
      * @return List<Map < String, Object>>
      */
     @RequestMapping(value = "/contentList")
-    public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox,
-        @RequestParam String taskId, @RequestParam String category) {
-        return extendedContentService.listContents(processSerialNumber, taskId, itembox, category);
+    public Y9Result<List<Map<String, Object>>> contentList(@RequestParam String processSerialNumber,
+        @RequestParam String itembox, @RequestParam String taskId, @RequestParam String category) {
+        List<Map<String, Object>> contentList =
+            extendedContentService.listContents(processSerialNumber, taskId, itembox, category);
+        return Y9Result.success(contentList);
     }
 
     /**
