@@ -58,7 +58,7 @@ public class Task4ActRuDetaillService {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Position position = positionApi.get(tenantId, assignee).getData();
                 ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
-                actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
+                actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                 actRuDetailModel.setAssignee(assignee);
                 actRuDetailModel.setAssigneeName(position.getName());
                 actRuDetailModel.setDeptId(position.getParentId());
