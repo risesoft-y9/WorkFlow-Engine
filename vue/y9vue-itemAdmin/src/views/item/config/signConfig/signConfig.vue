@@ -83,7 +83,7 @@
 	signTableConfig.value.tableData = [];
     let res = await getBpmList(props.currTreeNodeInfo.processDefinitionId,props.currTreeNodeInfo.id);
     if(res.success){
-		signTableConfig.value.tableData = res.data.rows;
+		signTableConfig.value.tableData = res.data;
     }
   }
 

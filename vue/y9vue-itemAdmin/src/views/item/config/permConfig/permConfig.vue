@@ -130,7 +130,7 @@
 	permListTableConfig.value.tableData = [];
     let res = await getBpmList(props.currTreeNodeInfo.processDefinitionId,props.currTreeNodeInfo.id);
     if(res.success){
-      permListTableConfig.value.tableData = res.data.rows;
+      permListTableConfig.value.tableData = res.data;
     }
   }
 

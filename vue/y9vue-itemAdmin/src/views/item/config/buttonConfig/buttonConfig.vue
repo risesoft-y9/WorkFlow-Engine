@@ -113,7 +113,7 @@
 	buttonTableConfig.value.tableData = [];
     let res = await getBpmList(props.currTreeNodeInfo.processDefinitionId,props.currTreeNodeInfo.id);
     if(res.success){
-      buttonTableConfig.value.tableData = res.data.rows;
+      buttonTableConfig.value.tableData = res.data;
     }
   }
 

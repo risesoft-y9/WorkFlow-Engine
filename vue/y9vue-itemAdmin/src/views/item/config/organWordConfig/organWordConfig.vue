@@ -115,7 +115,7 @@
 	organWordListTableConfig.value.tableData = [];
     let res = await getBpmList(props.currTreeNodeInfo.processDefinitionId,props.currTreeNodeInfo.id);
     if(res.success){
-      organWordListTableConfig.value.tableData = res.data.rows;
+      organWordListTableConfig.value.tableData = res.data;
     }
   }
 
