@@ -31,7 +31,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 绑定按钮管理
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -121,10 +121,9 @@ public class ItemButtonBindRestController {
      * @return Y9Result<Map<String, Object>>
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+    public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<TargetModel> list;
-        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         List<ItemButtonBind> cbList, sbList;
@@ -152,9 +151,7 @@ public class ItemButtonBindRestController {
             targetModel.setCommonButtonNames(commonButtonNames);
             targetModel.setSendButtonNames(sendButtonNames);
         }
-        resMap.put("rows", list);
-        // TODO
-        return Y9Result.success(resMap, "获取成功");
+        return Y9Result.success(list, "获取成功");
     }
 
     /**

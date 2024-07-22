@@ -2,6 +2,7 @@ package net.risesoft.service.form.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -201,8 +202,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    public Map<String, Object> getAllTables(String name) {
-        Map<String, Object> map = new HashMap<>(16);
+    public List<Map<String, String>> getAllTables(String name) {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         try {
             DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
@@ -225,11 +225,11 @@ public class Y9TableServiceImpl implements Y9TableService {
                     list.addAll(list1);
                 }
             }
-            map.put("rows", list);
+            return list;
         } catch (Exception e) {
             LOGGER.error("获取所有表失败", e);
         }
-        return map;
+        return Collections.emptyList();
     }
 
     /**

@@ -21,7 +21,9 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemWordTemplateBind;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.WordTemplate;
+import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.WordTemplateService;
@@ -86,9 +88,8 @@ public class ItemWordTemplateBindController {
      * @return
      */
     @GetMapping(value = "/getBindWordTemplateList")
-    public Y9Result<Map<String, Object>> getBindWordTemplateList(@RequestParam(required = false) String itemId,
-        int page, int rows) {
-        Map<String, Object> retMap = new HashMap<>();
+    public Y9Page<Map<String, Object>> getBindWordTemplateList(@RequestParam(required = false) String itemId, int page,
+        int rows) {
         try {
             List<Map<String, Object>> listMap = new ArrayList<>();
             SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -109,15 +110,11 @@ public class ItemWordTemplateBindController {
                     listMap.add(map);
                 }
             }
-            retMap.put("rows", listMap);
-            retMap.put("currpage", page);
-            retMap.put("totalpages", list.size() / rows);
-            retMap.put("total", list.size());
+            return Y9Page.success(page, list.size() / rows, list.size(), listMap);
         } catch (Exception e) {
             LOGGER.error("获取失败", e);
-            Y9Result.failure("获取失败");
         }
-        return Y9Result.success(retMap, "获取成功");
+        return Y9Page.failure(page, 0, 0, new ArrayList<>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
     /**
@@ -162,9 +159,8 @@ public class ItemWordTemplateBindController {
      * @return
      */
     @GetMapping(value = "/getWordTemplateList")
-    public Y9Result<Map<String, Object>> getWordTemplateList(@RequestParam(required = false) String fileName, int page,
+    public Y9Page<Map<String, Object>> getWordTemplateList(@RequestParam(required = false) String fileName, int page,
         int rows) {
-        Map<String, Object> retMap = new HashMap<>();
         try {
             List<Map<String, Object>> items = new ArrayList<>();
             String personId = Y9LoginUserHolder.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -184,15 +180,11 @@ public class ItemWordTemplateBindController {
                 map.put("personName", wordTemplate.getPersonName());
                 items.add(map);
             }
-            retMap.put("rows", items);
-            retMap.put("currpage", page);
-            retMap.put("totalpages", list.size() / rows);
-            retMap.put("total", list.size());
+            return Y9Page.success(page, list.size() / rows, list.size(), items);
         } catch (Exception e) {
             LOGGER.error("获取失败", e);
-            Y9Result.failure("获取失败");
         }
-        return Y9Result.success(retMap, "获取成功");
+        return Y9Page.failure(page, 0, 0, new ArrayList<>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
     /**

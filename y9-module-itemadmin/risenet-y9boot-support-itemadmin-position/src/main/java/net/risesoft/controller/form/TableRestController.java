@@ -99,8 +99,10 @@ public class TableRestController {
      */
     @GetMapping(value = "/getAllTables")
     public Y9Result<Map<String, Object>> getAllTables(@RequestParam(required = false) String name) {
-        Map<String, Object> map = y9TableService.getAllTables(name);
+        Map<String, Object> map = new HashMap<>();
+        List<Map<String, String>> list = y9TableService.getAllTables(name);
         String tableNames = y9TableService.getAlltableName();
+        map.put("rows", list);
         map.put("tableNames", tableNames);
         return Y9Result.success(map, "获取成功");
     }

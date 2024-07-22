@@ -73,9 +73,8 @@ public class ItemPermissionRestController {
      * @return
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+    public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
-        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
         String freeFlowKey = y9Conf.getApp().getItemAdmin().getFreeFlowKey();
@@ -102,8 +101,7 @@ public class ItemPermissionRestController {
             }
             targetModel.setRoleNames(roleNames);
         }
-        resMap.put("rows", list);
-        return Y9Result.success(resMap, "获取成功");
+        return Y9Result.success(list, "获取成功");
     }
 
     /**

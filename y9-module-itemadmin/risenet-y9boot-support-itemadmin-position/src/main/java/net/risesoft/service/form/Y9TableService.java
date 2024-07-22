@@ -70,7 +70,7 @@ public interface Y9TableService {
      * @param name
      * @return
      */
-    Map<String, Object> getAllTables(String name);
+    List<Map<String, String>> getAllTables(String name);
 
     /**
      * 获取所有表
