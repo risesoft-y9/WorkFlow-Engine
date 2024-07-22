@@ -114,7 +114,7 @@
 	opinionFrameListTableConfig.value.tableData = [];
     let res = await getBpmList(props.currTreeNodeInfo.processDefinitionId,props.currTreeNodeInfo.id);
     if(res.success){
-      opinionFrameListTableConfig.value.tableData = res.data.rows;
+      opinionFrameListTableConfig.value.tableData = res.data;
     }
   }
 

@@ -166,7 +166,7 @@
 	startNodeTableConfig.value.tableData = [];
     let res = await getBpmList(props.currTreeNodeInfo.processDefinitionId,props.currTreeNodeInfo.id);
     if(res.success){
-      startNodeTableConfig.value.tableData = res.data.rows;
+      startNodeTableConfig.value.tableData = res.data;
     }
   }
 
