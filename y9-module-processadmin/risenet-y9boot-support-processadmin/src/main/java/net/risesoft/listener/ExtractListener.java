@@ -15,12 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ExtractListener implements ExecutionListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7803204966451312248L;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void notify(DelegateExecution execution) {
         try {
-            System.out.printf("==========processSerialNumber" + execution.getVariable("processSerialNumber"));
-            System.out.printf("==========processInstanceId" + execution.getProcessInstanceId());
+            LOGGER.info("==========processSerialNumber" + execution.getVariable("processSerialNumber"));
+            LOGGER.info("==========processInstanceId" + execution.getProcessInstanceId());
         } catch (Exception e) {
             throw new RuntimeException("调用提取接口失败");
         }

@@ -425,6 +425,10 @@ public class InterfaceUtilService {
             processInstanceId = flow.getProcessInstanceId();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            if (processParamModel == null) {// 起草第一步的线，processParamModel为null，不需要调用接口
+                LOGGER.info("*********************流程实例ID:{}", processInstanceId);
+                return;
+            }
             itemId = processParamModel.getItemId();
             processSerialNumber = processParamModel.getProcessSerialNumber();
             y9Result =

@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.controller.vo.ModelVO;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -172,34 +174,29 @@ public class ProcessModelVueController {
      * @return Y9Result<List<Map<String, Object>>>
      */
     @GetMapping(value = "/getModelList")
-    public Y9Result<List<Map<String, Object>>> getModelList() {
-        List<Map<String, Object>> items = new ArrayList<>();
+    public Y9Result<List<ModelVO>> getModelList() {
+        List<ModelVO> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
-        Map<String, Object> mapTemp;
         for (AbstractModel model : list) {
-            mapTemp = new HashMap<>(16);
-            mapTemp.put("id", model.getId());
-            mapTemp.put("key", model.getKey());
-            mapTemp.put("name", model.getName());
-            mapTemp.put("version", 0);
+            ModelVO mapTemp = new ModelVO();
+            mapTemp.setId(model.getId());
+            mapTemp.setKey(model.getKey());
+            mapTemp.setName(model.getName());
+            mapTemp.setVersion(0);
             processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
                 .latestVersion().singleResult();
             if (null != processDefinition) {
-                mapTemp.put("version", processDefinition.getVersion());
+                mapTemp.setVersion(processDefinition.getVersion());
             }
-            mapTemp.put("createTime", sdf.format(model.getCreated()));
-            mapTemp.put("sortTime", model.getCreated().getTime());
-            mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
+            mapTemp.setCreateTime(sdf.format(model.getCreated()));
+            mapTemp.setSortTime(model.getCreated().getTime());
+            mapTemp.setLastUpdateTime(sdf.format(model.getLastUpdated()));
             items.add(mapTemp);
         }
-        items.sort((o1, o2) -> {
-            long startTime1 = (long)o1.get("sortTime");
-            long startTime2 = (long)o2.get("sortTime");
-            return Long.compare(startTime2, startTime1);
-        });
+        Collections.sort(items);
         return Y9Result.success(items, "获取成功");
     }
 
@@ -233,10 +230,7 @@ public class ProcessModelVueController {
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/import")
-    public Map<String, Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("success", false);
-        map.put("msg", "导入失败");
+    public Y9Result<Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -252,12 +246,10 @@ public class ProcessModelVueController {
             if (!errors.isEmpty()) {
                 StringBuilder es = new StringBuilder();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                map.put("msg", "导入失败：模板验证失败，原因: " + es);
-                return map;
+                return Y9Result.failure("导入失败：模板验证失败，原因: " + es);
             }
             if (bpmnModel.getProcesses().isEmpty()) {
-                map.put("msg", "导入失败： 上传的文件中不存在流程的信息");
-                return map;
+                return Y9Result.failure("导入失败： 上传的文件中不存在流程的信息");
             }
             if (bpmnModel.getLocationMap().isEmpty()) {
                 BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
@@ -294,13 +286,12 @@ public class ProcessModelVueController {
             newModel.setTenantId(tenantId);
             String createdBy = SecurityUtils.getCurrentUserId();
             modelService.createModel(newModel, createdBy);
-            map.put("success", true);
-            map.put("msg", "导入成功");
-            return map;
+            return Y9Result.successMsg("导入成功");
         } catch (Exception e) {
             LOGGER.error("导入流程模板失败,异常：{}", e.getMessage());
+
         }
-        return map;
+        return Y9Result.failure("导入流程模板失败");
     }
 
     /**

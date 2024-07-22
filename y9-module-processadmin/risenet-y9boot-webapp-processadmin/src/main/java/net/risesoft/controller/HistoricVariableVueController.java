@@ -1,9 +1,7 @@
 package net.risesoft.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.controller.vo.HistoricVariableInstanceVO;
 import net.risesoft.pojo.Y9Page;
 
 /**
@@ -35,23 +34,23 @@ public class HistoricVariableVueController {
      *
      */
     @RequestMapping(value = "/getAllHistoricVariable")
-    public Y9Page<Map<String, Object>> pageAllHistoricVariable(@RequestParam int page, @RequestParam int rows) {
-        List<Map<String, Object>> items = new ArrayList<>();
+    public Y9Page<HistoricVariableInstanceVO> pageAllHistoricVariable(@RequestParam int page, @RequestParam int rows) {
+        List<HistoricVariableInstanceVO> items = new ArrayList<>();
         long totalCount = historyService.createHistoricVariableInstanceQuery().count();
         List<HistoricVariableInstance> hviList =
             historyService.createHistoricVariableInstanceQuery().listPage((page - 1) * rows, rows);
-        for (HistoricVariableInstance var : hviList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("processInstanceId", var.getProcessInstanceId());
-            map.put("taskId", var.getTaskId());
-            map.put("name", var.getVariableName());
-            if (var.getValue() == null) {
-                map.put("value", "");
+        for (HistoricVariableInstance variable : hviList) {
+            HistoricVariableInstanceVO varInstance = new HistoricVariableInstanceVO();
+            varInstance.setProcessInstanceId(variable.getProcessInstanceId());
+            varInstance.setTaskId(variable.getTaskId());
+            varInstance.setName(variable.getVariableName());
+            if (variable.getValue() == null) {
+                varInstance.setValue("");
             } else {
-                map.put("value", var.getValue());
+                varInstance.setValue(variable.getValue());
             }
-            map.put("type", var.getVariableTypeName());
-            items.add(map);
+            varInstance.setType(variable.getVariableTypeName());
+            items.add(varInstance);
         }
         int totalPages = (int)totalCount / rows + 1;
         return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");
@@ -68,10 +67,10 @@ public class HistoricVariableVueController {
      * @return Y9Page<Map<String, Object>>
      */
     @GetMapping(value = "/searchHistoricVariable")
-    public Y9Page<Map<String, Object>> searchHistoricVariable(@RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) String variableName,
-        @RequestParam int page, @RequestParam int rows) {
-        List<Map<String, Object>> items = new ArrayList<>();
+    public Y9Page<HistoricVariableInstanceVO> searchHistoricVariable(
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String variableName, @RequestParam int page, @RequestParam int rows) {
+        List<HistoricVariableInstanceVO> items = new ArrayList<>();
         long totalCount;
         List<HistoricVariableInstance> hviList;
         if (StringUtils.isBlank(processInstanceId)) {
@@ -99,18 +98,18 @@ public class HistoricVariableVueController {
                     .taskId(taskId).variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
             }
         }
-        for (HistoricVariableInstance var : hviList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("processInstanceId", var.getProcessInstanceId());
-            map.put("taskId", var.getTaskId());
-            map.put("name", var.getVariableName());
-            if (var.getValue() == null) {
-                map.put("value", "");
+        for (HistoricVariableInstance variable : hviList) {
+            HistoricVariableInstanceVO varInstance = new HistoricVariableInstanceVO();
+            varInstance.setProcessInstanceId(variable.getProcessInstanceId());
+            varInstance.setTaskId(variable.getTaskId());
+            varInstance.setName(variable.getVariableName());
+            if (variable.getValue() == null) {
+                varInstance.setValue("");
             } else {
-                map.put("value", var.getValue());
+                varInstance.setValue(variable.getValue());
             }
-            map.put("type", var.getVariableTypeName());
-            items.add(map);
+            varInstance.setType(variable.getVariableTypeName());
+            items.add(varInstance);
         }
         int totalPages = (int)totalCount / rows + 1;
         return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");

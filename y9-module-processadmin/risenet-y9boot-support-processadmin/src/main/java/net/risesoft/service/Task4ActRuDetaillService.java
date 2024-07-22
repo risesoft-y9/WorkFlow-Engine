@@ -108,11 +108,12 @@ public class Task4ActRuDetaillService {
                 String assignee = taskEntity.getAssignee();
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
                     Position position = positionApi.get(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
-                    actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
+                    actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
                     actRuDetailModel.setAssignee(userId);
                     actRuDetailModel.setAssigneeName(position.getName());
                     actRuDetailModel.setDeptId(position.getParentId());
@@ -158,11 +159,12 @@ public class Task4ActRuDetaillService {
 
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
                     Position position = positionApi.get(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
-                    actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
+                    actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
                     actRuDetailModel.setAssignee(userId);
                     actRuDetailModel.setAssigneeName(position.getName());
                     actRuDetailModel.setDeptId(position.getParentId());
@@ -205,11 +207,12 @@ public class Task4ActRuDetaillService {
 
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
                     Position position = positionApi.get(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
-                    actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
+                    actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
                     actRuDetailModel.setAssignee(userId);
                     actRuDetailModel.setAssigneeName(position.getName());
                     actRuDetailModel.setDeptId(position.getParentId());

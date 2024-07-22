@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkflowProcessDefinitionService;
 import net.risesoft.util.SysVariables;
 
@@ -39,8 +40,9 @@ public class ProcessDefinitionController {
      * @return List<Map<String, Object>>
      */
     @RequestMapping(value = "/getBpmList")
-    public List<Map<String, Object>> getBpmList(String processDefinitionId, Boolean isFilter) {
-        return workflowProcessDefinitionService.getBpmList(processDefinitionId, isFilter);
+    public Y9Result<List<Map<String, Object>>> getBpmList(String processDefinitionId, Boolean isFilter) {
+        List<Map<String, Object>> bpmList = workflowProcessDefinitionService.getBpmList(processDefinitionId, isFilter);
+        return Y9Result.success(bpmList);
     }
 
     /**
@@ -50,8 +52,10 @@ public class ProcessDefinitionController {
      * @return List<Map<String, Object>>
      */
     @RequestMapping(value = "/getBpmListContainStart")
-    public List<Map<String, Object>> getBpmListContainStart(String processDefinitionId) {
-        return workflowProcessDefinitionService.getBpmListContainStart(processDefinitionId);
+    public Y9Result<List<Map<String, Object>>> getBpmListContainStart(String processDefinitionId) {
+        List<Map<String, Object>> bpmList =
+            workflowProcessDefinitionService.getBpmListContainStart(processDefinitionId);
+        return Y9Result.success(bpmList);
     }
 
     /**
@@ -61,8 +65,9 @@ public class ProcessDefinitionController {
      * @return List<String>
      */
     @GetMapping(value = "/getProcDefIds")
-    public List<String> getProcDefIds(@RequestParam(required = false) String processDefinitionKey) {
-        return workflowProcessDefinitionService.getProcessDefinitionIds(processDefinitionKey);
+    public Y9Result<List<String>> getProcDefIds(@RequestParam(required = false) String processDefinitionKey) {
+        List<String> definitionIds = workflowProcessDefinitionService.getProcessDefinitionIds(processDefinitionKey);
+        return Y9Result.success(definitionIds);
     }
 
     /**
@@ -72,8 +77,9 @@ public class ProcessDefinitionController {
      * @return List<Integer>
      */
     @GetMapping(value = "/getProcDefVersions")
-    public List<Integer> getProcDefVersions(@RequestParam(required = false) String processDefinitionKey) {
-        return workflowProcessDefinitionService.getProcessDefinitionVersions(processDefinitionKey);
+    public Y9Result<List<Integer>> getProcDefVersions(@RequestParam(required = false) String processDefinitionKey) {
+        List<Integer> versions = workflowProcessDefinitionService.getProcessDefinitionVersions(processDefinitionKey);
+        return Y9Result.success(versions);
     }
 
     /**
@@ -83,8 +89,7 @@ public class ProcessDefinitionController {
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/getTaskList")
-    public Map<String, Object> getTaskByProcDef(@RequestParam String processDefinitionId) {
-        Map<String, Object> taskMap = new HashMap<>(16);
+    public Y9Result<List<Map<String, Object>>> getTaskByProcDef(@RequestParam String processDefinitionId) {
         List<Map<String, Object>> list = new ArrayList<>();
         List<FlowElement> activitieList =
             workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId);
@@ -94,9 +99,8 @@ public class ProcessDefinitionController {
             tempMap.put("taskDefName", activity.getName());
             list.add(tempMap);
         }
-        taskMap.put("items", list);
-        taskMap.put("success", true);
-        return taskMap;
+        // taskMap.put("items", list);
+        return Y9Result.success(list);
     }
 
     /**
@@ -106,7 +110,7 @@ public class ProcessDefinitionController {
      * @return Map<String, Object>
      */
     @GetMapping(value = "/getTaskMap")
-    public Map<String, Object> getTaskMap(@RequestParam(required = false) String processDefinitionId) {
+    public Y9Result<Map<String, Object>> getTaskMap(@RequestParam(required = false) String processDefinitionId) {
         Map<String, Object> taskMap = new LinkedHashMap<>();
         taskMap.put("", "--");
         if (StringUtils.isNotBlank(processDefinitionId)) {
@@ -118,7 +122,7 @@ public class ProcessDefinitionController {
                 taskMap.put(activity.getId(), activity.getName());
             }
         }
-        return taskMap;
+        return Y9Result.success(taskMap);
     }
 
     /**
@@ -127,8 +131,9 @@ public class ProcessDefinitionController {
      * @return Map<String, String>
      */
     @GetMapping(value = "/map")
-    public Map<String, String> runningShow() {
+    public Y9Result<Map<String, String>> runningShow() {
         // 获取流程定义对象ID和流程定义对象名称
-        return workflowProcessDefinitionService.procDefIdMap();
+        Map<String, String> defIdMap = workflowProcessDefinitionService.procDefIdMap();
+        return Y9Result.success(defIdMap);
     }
 }
