@@ -24,6 +24,11 @@ import net.risesoft.y9.util.RemoteCallUtil;
 @Slf4j
 public class PublishListener implements ExecutionListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 2167630401758040586L;
+
     @SuppressWarnings("unchecked")
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -37,6 +42,7 @@ public class PublishListener implements ExecutionListener {
             params.add(new NameValuePair("tenantId", tenantId));
             params.add(new NameValuePair("processSerialNumber", processSerialNumber));
             Y9Result<Boolean> y9Result = RemoteCallUtil.postCallRemoteService(requestUrl, params, Y9Result.class);
+            LOGGER.info("调用发布接口完成！");
             assert y9Result != null;
             if (!y9Result.isSuccess()) {
                 throw new RuntimeException("调用发布接口失败：" + y9Result.getMsg());
