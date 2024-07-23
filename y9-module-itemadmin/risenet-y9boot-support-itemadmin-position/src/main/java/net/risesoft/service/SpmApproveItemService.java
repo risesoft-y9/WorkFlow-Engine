@@ -22,7 +22,7 @@ public interface SpmApproveItemService {
      * @param id
      * @return
      */
-    Map<String, Object> copyItem(String id);
+    Y9Result<String> copyItem(String id);
 
     /**
      * Description:

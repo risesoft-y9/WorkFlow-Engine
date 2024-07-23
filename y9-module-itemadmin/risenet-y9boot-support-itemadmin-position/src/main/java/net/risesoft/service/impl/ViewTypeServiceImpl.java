@@ -68,7 +68,7 @@ public class ViewTypeServiceImpl implements ViewTypeService {
         return viewTypeRepository.findAll(new Specification<ViewType>() {
             @Override
             public Predicate toPredicate(Root<ViewType> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
                 return builder.and(predicates);
@@ -144,7 +144,7 @@ public class ViewTypeServiceImpl implements ViewTypeService {
         return viewTypeRepository.findAll(new Specification<ViewType>() {
             @Override
             public Predicate toPredicate(Root<ViewType> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 Path<String> nameExp = root.get("name");
                 if (StringUtils.isNotEmpty(keyword)) {
                     list.add(builder.like(nameExp, "%" + keyword + "%"));

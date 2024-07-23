@@ -20,7 +20,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @author qinman
  * 
  * @author zhangchongjie
- * 
+ *
  * @date 2022/12/20
  */
 @Service
@@ -42,7 +42,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS).getData();
         List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
         users.add(elementUser);
-        Map<String, Object> val = new HashMap<String, Object>();
+        Map<String, Object> val = new HashMap<>();
         val.put("val", users);
         variableManager.setVariable(tenantId, taskId, SysVariables.USERS, val);
         /*

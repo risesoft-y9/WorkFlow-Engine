@@ -123,9 +123,10 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             byte[] b = y9FileStoreService.downloadFileToBytes(printTemplate.getFilePath());
             int length = b.length;
             String filename = "", userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
-            if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
-                filename = new String(printTemplate.getFileName().getBytes(StandardCharsets.UTF_8), "ISO8859-1");
-            } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
+            if (request.getHeader(userAgent).toLowerCase().contains(firefox)) {
+                filename = new String(printTemplate.getFileName().getBytes(StandardCharsets.UTF_8),
+                    StandardCharsets.ISO_8859_1);
+            } else if (request.getHeader(userAgent).toUpperCase().contains(msie)) {
                 filename = URLEncoder.encode(printTemplate.getFileName(), "UTF-8");
             } else {
                 filename = URLEncoder.encode(printTemplate.getFileName(), "UTF-8");
@@ -152,7 +153,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
 
     @Override
     public List<ItemPrintTemplateBind> listTemplateBindByItemId(String itemId) {
-        List<ItemPrintTemplateBind> list = new ArrayList<ItemPrintTemplateBind>();
+        List<ItemPrintTemplateBind> list = new ArrayList<>();
         try {
             ItemPrintTemplateBind itemPrintTemplateBind = printTemplateItemBindRepository.findByItemId(itemId);
             if (itemPrintTemplateBind != null) {
@@ -249,8 +250,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             }
             printTemplate.setFileName(fileName);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), "/printTemplate/", sdf.format(new Date()));
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "printTemplate", sdf.format(new Date()));
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             printTemplate.setPersonId(person.getPersonId());
             printTemplate.setPersonName(person.getName());

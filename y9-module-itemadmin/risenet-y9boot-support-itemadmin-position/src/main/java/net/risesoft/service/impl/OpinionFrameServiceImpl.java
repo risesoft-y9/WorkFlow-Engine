@@ -172,7 +172,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
 
             @Override
             public Predicate toPredicate(Root<OpinionFrame> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 Path<String> nameExp = root.get("name");
                 if (StringUtils.isNotEmpty(keyword)) {
                     list.add(builder.like(nameExp, "%" + keyword + "%"));

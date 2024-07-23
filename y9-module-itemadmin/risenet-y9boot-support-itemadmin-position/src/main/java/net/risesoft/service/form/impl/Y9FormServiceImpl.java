@@ -156,8 +156,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public Y9Form findById(String id) {
-        Y9Form c = y9FormRepository.findById(id).orElse(null);
-        return c;
+        return y9FormRepository.findById(id).orElse(null);
     }
 
     @Override

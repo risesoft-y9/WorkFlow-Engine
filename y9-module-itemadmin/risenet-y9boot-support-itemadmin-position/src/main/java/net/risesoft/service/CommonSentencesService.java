@@ -44,7 +44,7 @@ public class CommonSentencesService {
     }
 
     public List<CommonSentences> getByUserId(String userId) {
-        List<CommonSentences> resList = new ArrayList<CommonSentences>();
+        List<CommonSentences> resList = new ArrayList<>();
         if (StringUtils.isNotBlank(userId)) {
             resList = commonSentencesRepository.findByUserId(userId);
         }
@@ -131,7 +131,7 @@ public class CommonSentencesService {
     public void save(String id, String content) {
         if (StringUtils.isNotBlank(id)) {
             Optional<CommonSentences> commonSentences = commonSentencesRepository.findById(id);
-            if (commonSentences != null && commonSentences.get().getId() != null) {
+            if (commonSentences.isPresent() && commonSentences.get().getId() != null) {
                 commonSentences.get().setContent(content);
                 commonSentencesRepository.save(commonSentences.get());
             }

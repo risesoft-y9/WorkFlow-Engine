@@ -81,10 +81,12 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             assert wordTemplate != null;
             byte[] b = y9FileStoreService.downloadFileToBytes(wordTemplate.getFilePath());
             int length = b.length;
-            String filename = "", userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
-            if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
-                filename = new String(wordTemplate.getFileName().getBytes(StandardCharsets.UTF_8), "ISO8859-1");
-            } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
+            String filename = "", firefox = "firefox", msie = "MSIE";
+            String userAgent = request.getHeader("User-Agent").toLowerCase();
+            if (userAgent.contains(firefox)) {
+                filename = new String(wordTemplate.getFileName().getBytes(StandardCharsets.UTF_8),
+                    StandardCharsets.ISO_8859_1);
+            } else if (userAgent.contains(msie)) {
                 filename = URLEncoder.encode(wordTemplate.getFileName(), "UTF-8");
             } else {
                 filename = URLEncoder.encode(wordTemplate.getFileName(), "UTF-8");

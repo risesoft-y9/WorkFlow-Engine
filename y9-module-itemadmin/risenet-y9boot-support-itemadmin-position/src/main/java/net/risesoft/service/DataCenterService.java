@@ -348,7 +348,7 @@ public class DataCenterService {
             String processSerialNumber = processParam.getProcessSerialNumber();
             String systemCnName = processParam.getSystemCnName();
             String systemName = processParam.getSystemName();
-            String infoOvert = list0.size() == 0 ? "" : (String)(list0.get(0).get("TEXT_"));
+            String infoOvert = list0.isEmpty() ? "" : (String)(list0.get(0).get("TEXT_"));
 
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processParam.getStartor();
@@ -370,7 +370,7 @@ public class DataCenterService {
 
             // 获取附件
             List<TransactionFile> fileList = transactionFileService.listByProcessSerialNumber(processSerialNumber);
-            List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
+            List<AttachmentInfo> aList = new ArrayList<>();
             for (TransactionFile file : fileList) {
                 AttachmentInfo info = new AttachmentInfo();
                 info.setFileContent(null);

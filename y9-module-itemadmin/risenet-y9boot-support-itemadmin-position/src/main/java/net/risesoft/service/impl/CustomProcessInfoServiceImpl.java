@@ -41,7 +41,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                 if (isnext) {
                     return info;
                 }
-                if (info.getCurrentTask()) {
+                if (Boolean.TRUE.equals(info.getCurrentTask())) {
                     isnext = true;
                 }
             }
@@ -104,7 +104,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
             /*
              * 找到当前运行节点,设为false,下次循环更新下一个节点结束
              */
-            if (info.getCurrentTask()) {
+            if (Boolean.TRUE.equals(info.getCurrentTask())) {
                 isSet = true;
                 info.setCurrentTask(false);
                 customProcessInfoRepository.save(info);

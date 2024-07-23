@@ -32,7 +32,7 @@ public interface OfficeDoneInfoService {
     /**
      * 根据系统名称统计个人办结件
      *
-     * @param userId
+     * @param positionId
      * @param systemName
      * @return
      */

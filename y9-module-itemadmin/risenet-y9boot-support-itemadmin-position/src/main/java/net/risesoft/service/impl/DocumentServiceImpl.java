@@ -1081,9 +1081,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> reposition(String taskId, String userChoice) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
+    public Y9Result<String> reposition(String taskId, String userChoice) {
         try {
             // 在一个事务中保存。taskId为空则创建新流程。
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -1137,11 +1135,11 @@ public class DocumentServiceImpl implements DocumentService {
                 task.setAssignee(userChoice);
                 taskManager.saveTask(tenantId, task);
             }
+            return Y9Result.successMsg("重定位成功");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("重定位失败！", e);
+            return Y9Result.failure("重定位失败！");
         }
-        return map;
     }
 
     /*

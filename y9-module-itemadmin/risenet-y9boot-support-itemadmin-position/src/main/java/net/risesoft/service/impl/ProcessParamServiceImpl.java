@@ -95,14 +95,11 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             String processInstanceId = processParam.getProcessInstanceId();
             try {
                 if (StringUtils.isNotBlank(processInstanceId)) {
-                    boolean update = false;
+                    boolean update = oldpp.getSearchTerm() != null && processParam.getSearchTerm() != null
+                        && !oldpp.getSearchTerm().equals(processParam.getSearchTerm());
                     // 搜索字段不一样才修改
-                    if (oldpp.getSearchTerm() != null && processParam.getSearchTerm() != null
-                        && !oldpp.getSearchTerm().equals(processParam.getSearchTerm())) {
-                        update = true;
-                    }
                     if (update) {
-                        Map<String, Object> val = new HashMap<String, Object>();
+                        Map<String, Object> val = new HashMap<>();
                         val.put("val", processParam.getSearchTerm());
                         variableManager.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
                     }
@@ -161,7 +158,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         if (null != pp) {
             pp.setProcessInstanceId(processInstanceId);
             processParamRepository.save(pp);
-            Map<String, Object> val = new HashMap<String, Object>();
+            Map<String, Object> val = new HashMap<>();
             val.put("val", pp.getSearchTerm());
             variableManager.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
                 "searchTerm", val);

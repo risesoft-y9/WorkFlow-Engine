@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
@@ -55,6 +57,7 @@ import net.risesoft.y9.util.Y9Util;
  *
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -239,6 +242,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 try {
                     iList = identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
                 } catch (Exception e) {
+                    LOGGER.error("获取任务的用户信息失败", e);
                 }
                 if (null != iList && !iList.isEmpty()) {
                     StringBuilder assignees = new StringBuilder();
@@ -484,7 +488,6 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             Date endTime1 = hai.getEndTime();
             List<ProcessTrack> ptList = this.listByTaskId(taskId);
             if (ptList.size() >= 1) {
-
                 history.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
                 history.setTime(longTime(hai.getStartTime(), endTime1));
             } else {
@@ -575,8 +578,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             int m = (int)(time / 60 % 60);
             int h = (int)(time / 3600 % 24);
             int d = (int)(time / 86400);
-            String str = d + "天" + h + "小时" + m + "分" + s + "秒";
-            return str;
+            return d + "天" + h + "小时" + m + "分" + s + "秒";
         }
     }
 
@@ -586,10 +588,13 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = pt.getId();
         if (StringUtils.isNotEmpty(id)) {
-            ProcessTrack oldpt = processTrackRepository.findById(id).orElse(null);
-            oldpt.setEndTime(sdf.format(new Date()));
-            oldpt.setDescribed(pt.getDescribed());
-            return processTrackRepository.save(oldpt);
+            Optional<ProcessTrack> oldptOption = processTrackRepository.findById(id);
+            if (oldptOption.isPresent()) {
+                ProcessTrack oldpt = oldptOption.get();
+                oldpt.setEndTime(sdf.format(new Date()));
+                oldpt.setDescribed(pt.getDescribed());
+                return processTrackRepository.save(oldpt);
+            }
         }
         ProcessTrack newpt = new ProcessTrack();
         newpt.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
