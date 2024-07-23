@@ -133,21 +133,10 @@ public class ItemRestController {
      * @return
      */
     @GetMapping(value = "/getBindItemList")
-    public Y9Result<List<Map<String, Object>>> getBindItemList(@RequestParam(required = true) String itemId,
+    public Y9Result<List<SpmApproveItem>> getBindItemList(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String itemName) {
-        List<Map<String, Object>> listMap = new ArrayList<>();
         List<SpmApproveItem> itemList = spmApproveItemService.listByIdNotAndNameLike(itemId, itemName);
-        for (SpmApproveItem item : itemList) {
-            if (!item.getId().equals(itemId)) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", item.getId());
-                map.put("itemName", item.getName());
-                map.put("workflowGuid", item.getWorkflowGuid());
-                map.put("systemName", item.getSystemName());
-                listMap.add(map);
-            }
-        }
-        return Y9Result.success(listMap, "获取成功");
+        return Y9Result.success(itemList, "获取成功");
     }
 
     /**

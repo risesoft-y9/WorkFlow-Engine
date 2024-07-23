@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
-import net.risesoft.controller.vo.RoleTreeVO;
+import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.enums.platform.RoleTypeEnum;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.Role;
@@ -46,13 +46,13 @@ public class RoleRestController {
      * @return
      */
     @GetMapping(value = "/findRole")
-    public Y9Result<List<RoleTreeVO>> findAll(@RequestParam(required = false) String id) {
-        List<RoleTreeVO> listMap = new ArrayList<>();
+    public Y9Result<List<NodeTreeVO>> findAll(@RequestParam(required = false) String id) {
+        List<NodeTreeVO> listMap = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
             List<App> appList = appApi.listBySystemId(system.getId()).getData();
             for (App app : appList) {
-                RoleTreeVO map = new RoleTreeVO();
+                NodeTreeVO map = new NodeTreeVO();
                 map.setId(app.getId());
                 map.setName(app.getName());
                 map.setParentId(app.getId());
@@ -64,7 +64,7 @@ public class RoleRestController {
             List<Role> listRole = roleManager.listRoleByParentId(id).getData();
             if (listRole != null) {
                 for (Role role : listRole) {
-                    RoleTreeVO map = new RoleTreeVO();
+                    NodeTreeVO map = new NodeTreeVO();
                     map.setId(role.getId());
                     map.setName(role.getName());
                     map.setParentId(id);

@@ -11,7 +11,7 @@ import lombok.Data;
  * @date 2024/07/15
  */
 @Data
-public class RoleTreeVO implements Serializable {
+public class NodeTreeVO implements Serializable {
     private static final long serialVersionUID = 2072767321247540184L;
 
     /** 主键 */
@@ -19,6 +19,12 @@ public class RoleTreeVO implements Serializable {
 
     /** 名称 */
     private String name;
+
+    /** 性别 */
+    private Integer sex;
+
+    /** 职务 */
+    private String duty;
 
     /** 父节点 */
     private String parentId;
@@ -37,5 +43,10 @@ public class RoleTreeVO implements Serializable {
      * 是否禁用
      */
     private Boolean chkDisabled;
+
+    /**
+     * 是否选中
+     */
+    private Boolean nocheck;
 
 }
