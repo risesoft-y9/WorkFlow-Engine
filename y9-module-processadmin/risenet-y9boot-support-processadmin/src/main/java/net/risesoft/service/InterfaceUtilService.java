@@ -375,7 +375,7 @@ public class InterfaceUtilService {
         String positionId = Y9LoginUserHolder.getPositionId();
         Y9Result<List<InterfaceModel>> y9Result = null;
         try {
-            tenantId = (String)variables.get("tenantId");
+            tenantId = FlowableTenantInfoHolder.getTenantId();
             processSerialNumber = (String)variables.get("processSerialNumber");
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
@@ -474,7 +474,7 @@ public class InterfaceUtilService {
         String positionId = task.getAssignee();
         Y9Result<List<InterfaceModel>> y9Result = null;
         try {
-            tenantId = (String)variables.get("tenantId");
+            tenantId = FlowableTenantInfoHolder.getTenantId();
             processSerialNumber = (String)variables.get("processSerialNumber");
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();

@@ -11,6 +11,7 @@ import org.flowable.common.engine.api.delegate.event.FlowableEvent;
 import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImpl;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,11 +31,12 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
     @Override
     public boolean isFailOnException() {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void onEvent(FlowableEvent event) {
         FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
         switch (type) {
