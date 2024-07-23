@@ -1,9 +1,7 @@
 package net.risesoft.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DynamicRoleService;
@@ -56,18 +55,18 @@ public class DynamicRoleRestController {
     /**
      * 获取动态角色树
      *
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return Y9Result<List<NodeTreeVO>>
      */
     @GetMapping(value = "/list")
-    public Y9Result<List<Map<String, Object>>> list() {
-        List<Map<String, Object>> listMap = new ArrayList<>();
+    public Y9Result<List<NodeTreeVO>> list() {
+        List<NodeTreeVO> listMap = new ArrayList<>();
         List<DynamicRole> dynamicRoleList = dynamicRoleService.listAll();
         for (DynamicRole dynamicRole : dynamicRoleList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", dynamicRole.getId());
-            map.put("name", dynamicRole.getName());
-            map.put("isParent", "false");
-            map.put("orgType", "dynamicRole");
+            NodeTreeVO map = new NodeTreeVO();
+            map.setId(dynamicRole.getId());
+            map.setName(dynamicRole.getName());
+            map.setIsParent(false);
+            map.setOrgType("dynamicRole");
             listMap.add(map);
         }
         return Y9Result.success(listMap, "获取成功");

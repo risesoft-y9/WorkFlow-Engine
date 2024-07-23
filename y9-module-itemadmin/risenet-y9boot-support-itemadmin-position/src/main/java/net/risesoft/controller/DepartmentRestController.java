@@ -1,9 +1,7 @@
 package net.risesoft.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -17,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
+import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
@@ -44,34 +43,34 @@ public class DepartmentRestController {
      * 查找部门及部门下的岗位
      *
      * @param id 部门表中的主键Id
-     * @return Y9Result<List<Map<String, Object>>>
+     * @return Y9Result<List<NodeTreeVO>>
      */
     @GetMapping(value = "/findDeptAndUserById")
-    public Y9Result<List<Map<String, Object>>> findDeptAndUserById(@RequestParam(required = false) String id) {
+    public Y9Result<List<NodeTreeVO>> findDeptAndUserById(@RequestParam(required = false) String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> items = new ArrayList<>();
+        List<NodeTreeVO> items = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             List<Organization> list = organizationApi.list(tenantId).getData();
             for (Organization orgUnit : list) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", orgUnit.getId());
-                map.put("parentId", orgUnit.getParentId());
-                map.put("name", orgUnit.getName());
-                map.put("orgType", orgUnit.getOrgType());
-                map.put("isParent", true);
-                map.put("nocheck", true);
+                NodeTreeVO map = new NodeTreeVO();
+                map.setId(orgUnit.getId());
+                map.setParentId(orgUnit.getParentId());
+                map.setName(orgUnit.getName());
+                map.setOrgType(orgUnit.getOrgType().getValue());
+                map.setIsParent(true);
+                map.setNocheck(true);
                 items.add(map);
             }
         }
         List<OrgUnit> employees = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
         for (OrgUnit employee : employees) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", employee.getId());
-            map.put("parentId", employee.getParentId());
-            map.put("name", employee.getName());
-            map.put("orgType", employee.getOrgType());
-            map.put("isParent", false);
-            map.put("nocheck", false);
+            NodeTreeVO map = new NodeTreeVO();
+            map.setId(employee.getId());
+            map.setParentId(employee.getParentId());
+            map.setName(employee.getName());
+            map.setOrgType(employee.getOrgType().getValue());
+            map.setIsParent(false);
+            map.setNocheck(false);
             items.add(map);
         }
         return Y9Result.success(items, "获取成功");
@@ -84,8 +83,8 @@ public class DepartmentRestController {
      * @return Y9Result<List<Map<String, Object>>>
      */
     @GetMapping(value = "/findDeptById")
-    public Y9Result<List<Map<String, Object>>> findDeptById(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> items = findDeptById(id, false);
+    public Y9Result<List<NodeTreeVO>> findDeptById(@RequestParam(required = false) String id) {
+        List<NodeTreeVO> items = findDeptById(id, false);
         return Y9Result.success(items, "获取成功");
     }
 
@@ -96,44 +95,37 @@ public class DepartmentRestController {
      * @param isBureau 如果为true则只查找委办局，如果为false则查找部门
      * @return List<Map<String, Object>>
      */
-    public List<Map<String, Object>> findDeptById(String id, boolean isBureau) {
+    public List<NodeTreeVO> findDeptById(String id, boolean isBureau) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> items = new ArrayList<>();
+        List<NodeTreeVO> items = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             List<Organization> list = organizationApi.list(tenantId).getData();
             for (Organization orgUnit : list) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", orgUnit.getId());
-                map.put("parentId", orgUnit.getParentId());
-                map.put("name", orgUnit.getName());
-                map.put("orgType", orgUnit.getOrgType());
-                map.put("isParent", true);
-                map.put("nocheck", true);
-                items.add(map);
+                NodeTreeVO node = new NodeTreeVO();
+                node.setId(orgUnit.getId());
+                node.setParentId(orgUnit.getParentId());
+                node.setName(orgUnit.getName());
+                node.setOrgType(orgUnit.getOrgType().getValue());
+                node.setIsParent(true);
+                node.setNocheck(true);
+                items.add(node);
             }
         }
         List<Department> departments = departmentManager.listByParentId(tenantId, id).getData();
         for (Department department : departments) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", department.getId());
-            map.put("parentId", department.getParentId());
-            map.put("name", department.getName());
-            map.put("orgType", department.getOrgType());
-            map.put("nocheck", false);
+            NodeTreeVO node = new NodeTreeVO();
+            node.setId(department.getId());
+            node.setParentId(department.getParentId());
+            node.setName(department.getName());
+            node.setOrgType(department.getOrgType().getValue());
+            node.setNocheck(false);
+
             if (isBureau) {
-                if (department.isBureau()) {
-                    map.put("isParent", false);
-                } else {
-                    map.put("isParent", true);
-                }
+                node.setIsParent(!department.isBureau());
             } else {
-                if (!departmentManager.listByParentId(tenantId, department.getId()).getData().isEmpty()) {
-                    map.put("isParent", true);
-                } else {
-                    map.put("isParent", false);
-                }
+                node.setIsParent(!departmentManager.listByParentId(tenantId, department.getId()).getData().isEmpty());
             }
-            items.add(map);
+            items.add(node);
         }
         return items;
     }
@@ -158,38 +150,38 @@ public class DepartmentRestController {
     }
 
     @GetMapping(value = "/searchDept")
-    public Y9Result<List<Map<String, Object>>> searchDept(@RequestParam(required = false) String name) {
-        List<Map<String, Object>> items = new ArrayList<>();
+    public Y9Result<List<NodeTreeVO>> searchDept(@RequestParam(required = false) String name) {
+        List<NodeTreeVO> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> employees = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
         for (OrgUnit employee : employees) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", employee.getId());
-            map.put("parentId", employee.getParentId());
-            map.put("name", employee.getName());
-            map.put("orgType", employee.getOrgType());
-            map.put("isParent", false);
-            map.put("nocheck", false);
-            items.add(map);
+            NodeTreeVO node = new NodeTreeVO();
+            node.setId(employee.getId());
+            node.setParentId(employee.getParentId());
+            node.setName(employee.getName());
+            node.setOrgType(employee.getOrgType().getValue());
+            node.setIsParent(false);
+            node.setNocheck(false);
+            items.add(node);
         }
         return Y9Result.success(items, "获取成功");
     }
 
     @GetMapping(value = "/searchDeptAndPosition")
-    public Y9Result<List<Map<String, Object>>> searchDeptAndPosition(@RequestParam(required = false) String name) {
-        List<Map<String, Object>> items = new ArrayList<>();
+    public Y9Result<List<NodeTreeVO>> searchDeptAndPosition(@RequestParam(required = false) String name) {
+        List<NodeTreeVO> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> employees =
             orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
         for (OrgUnit employee : employees) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", employee.getId());
-            map.put("parentId", employee.getParentId());
-            map.put("name", employee.getName());
-            map.put("orgType", employee.getOrgType());
-            map.put("isParent", false);
-            map.put("nocheck", false);
-            items.add(map);
+            NodeTreeVO node = new NodeTreeVO();
+            node.setId(employee.getId());
+            node.setParentId(employee.getParentId());
+            node.setName(employee.getName());
+            node.setOrgType(employee.getOrgType().getValue());
+            node.setIsParent(false);
+            node.setNocheck(false);
+            items.add(node);
         }
         return Y9Result.success(items, "获取成功");
     }

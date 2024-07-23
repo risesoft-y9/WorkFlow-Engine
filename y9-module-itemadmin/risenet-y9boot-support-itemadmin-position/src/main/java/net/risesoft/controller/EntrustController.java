@@ -20,6 +20,7 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.Entrust;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
@@ -63,9 +64,9 @@ public class EntrustController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @GetMapping(value = "/deptTreeSearch")
-    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam String name) {
+    public Y9Result<List<NodeTreeVO>> deptTreeSearch(@RequestParam String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<NodeTreeVO> item = new ArrayList<>();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
@@ -80,17 +81,17 @@ public class EntrustController {
             orgUnitList = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
         }
         for (OrgUnit orgUnit0 : orgUnitList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", orgUnit0.getId());
-            map.put("name", orgUnit0.getName());
-            map.put("orgType", orgUnit0.getOrgType());
-            map.put("parentID", orgUnit0.getParentId());
-            map.put("isParent", true);
+            NodeTreeVO map = new NodeTreeVO();
+            map.setId(orgUnit0.getId());
+            map.setName(orgUnit0.getName());
+            map.setOrgType(orgUnit0.getOrgType().getValue());
+            map.setParentId(orgUnit0.getParentId());
+            map.setIsParent(true);
             if (OrgTypeEnum.PERSON.equals(orgUnit0.getOrgType())) {
                 Person per = personManager.get(Y9LoginUserHolder.getTenantId(), orgUnit0.getId()).getData();
-                map.put("sex", per.getSex());
-                map.put("duty", per.getDuty());
-                map.put("isParent", false);
+                map.setSex(per.getSex().getValue());
+                map.setDuty(per.getDuty());
+                map.setIsParent(false);
             }
             item.add(map);
         }
@@ -101,22 +102,22 @@ public class EntrustController {
      * 获取部门树
      *
      * @param id 部门id
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < NodeTreeVO>>
      */
     @GetMapping(value = "/getDeptTree")
-    public Y9Result<List<Map<String, Object>>> getDeptTree(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> item = new ArrayList<>();
+    public Y9Result<List<NodeTreeVO>> getDeptTree(@RequestParam(required = false) String id) {
+        List<NodeTreeVO> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
             OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
             if (orgUnit != null && orgUnit.getId() != null) {
-                Map<String, Object> map = new HashMap<>(16);
+                NodeTreeVO map = new NodeTreeVO();
                 id = orgUnit.getId();
-                map.put("id", orgUnit.getId());
-                map.put("parentID", orgUnit.getParentId());
-                map.put("name", orgUnit.getName());
-                map.put("isParent", true);
-                map.put("orgType", orgUnit.getOrgType());
+                map.setId(id);
+                map.setName(orgUnit.getName());
+                map.setOrgType(orgUnit.getOrgType().getValue());
+                map.setParentId(orgUnit.getParentId());
+                map.setIsParent(true);
                 item.add(map);
             }
         }
@@ -124,18 +125,20 @@ public class EntrustController {
             List<OrgUnit> orgList;
             orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
             for (OrgUnit orgunit : orgList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", orgunit.getId());
-                map.put("parentID", id);
-                map.put("name", orgunit.getName());
-                map.put("orgType", orgunit.getOrgType());
+                NodeTreeVO map = new NodeTreeVO();
+
+                map.setId(orgunit.getId());
+                map.setName(orgunit.getName());
+                map.setOrgType(orgunit.getOrgType().getValue());
+                map.setParentId(orgunit.getParentId());
+
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                    map.put("isParent", true);
+                    map.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
                     Person person = personManager.get(tenantId, orgunit.getId()).getData();
-                    map.put("isParent", false);
-                    map.put("sex", person.getSex());
-                    map.put("duty", person.getDuty());
+                    map.setSex(person.getSex().getValue());
+                    map.setDuty(person.getDuty());
+                    map.setIsParent(false);
                 } else {
                     continue;
                 }
