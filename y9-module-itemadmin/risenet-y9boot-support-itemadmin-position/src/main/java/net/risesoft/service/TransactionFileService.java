@@ -1,13 +1,13 @@
 package net.risesoft.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -149,8 +149,8 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId,
-        String processSerialNumber, String describes, String fileSource);
+    Y9Result<Object> upload(MultipartFile filename, String processInstanceId, String taskId, String processSerialNumber,
+        String describes, String fileSource);
 
     /**
      * Description: 上传附件

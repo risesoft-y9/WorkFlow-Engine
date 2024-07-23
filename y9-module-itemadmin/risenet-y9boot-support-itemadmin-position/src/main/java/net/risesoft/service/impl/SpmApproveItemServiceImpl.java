@@ -1,7 +1,6 @@
 package net.risesoft.service.impl;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,10 +87,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     @Transactional
-    public Map<String, Object> copyItem(String id) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("success", false);
-        map.put("msg", "复制失败");
+    public Y9Result<String> copyItem(String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SpmApproveItem item = this.findById(id);
@@ -110,6 +106,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 ProcessDefinitionModel latestpd =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
                 String latestpdId = latestpd.getId();
+                @SuppressWarnings("unused")
                 List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
                 // 复制表单绑定信息
                 y9FormItemBindService.copyBindInfo(id, newItemId, latestpdId);
@@ -146,13 +143,13 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
                 // 复制视图配置绑定信息
                 itemViewConfService.copyBindInfo(id, newItemId);
-                map.put("success", true);
-                map.put("msg", "复制成功");
+                return Y9Result.successMsg("复制成功");
             }
+            return Y9Result.failure("复制事项异常,事项不存在");
         } catch (Exception e) {
             LOGGER.error("复制事项异常", e);
+            return Y9Result.failure("复制事项异常");
         }
-        return map;
     }
 
     @Override

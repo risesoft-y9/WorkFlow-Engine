@@ -24,7 +24,6 @@ import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.resource.AppIconApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -71,11 +70,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/copyItem")
     public Y9Result<String> copyItem(@RequestParam(required = true) String id) {
-        Map<String, Object> map = spmApproveItemService.copyItem(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
+        return spmApproveItemService.copyItem(id);
     }
 
     /**

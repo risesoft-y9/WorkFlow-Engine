@@ -4,7 +4,6 @@ import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.id.IdType;
@@ -31,6 +29,7 @@ import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.TransactionFileRepository;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.y9.Y9Context;
@@ -249,10 +248,9 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Transactional
     @Override
-    public Map<String, Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId,
+    public Y9Result<Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId,
         String processSerialNumber, String describes, String fileSource) {
-        Map<String, Object> map = new HashMap<>(16);
-        TransactionFile transactionFile = new TransactionFile();
+
         try {
             SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdfymd = new SimpleDateFormat("yyyy-MM-dd");
@@ -268,9 +266,9 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "transaction", sdfymd.format(nowDate),
                 sdfhms.format(nowDate), processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, fileName);
-
             UserInfo person = Y9LoginUserHolder.getUserInfo();
 
+            TransactionFile transactionFile = new TransactionFile();
             if (StringUtils.isNotBlank(processSerialNumber)) {
                 transactionFile.setProcessSerialNumber(processSerialNumber);
             }
@@ -291,14 +289,11 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setDeptId(Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFileRepository.save(transactionFile);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "上传附件成功");
+            return Y9Result.success(y9FileStore.getId(), "上传附件成功");
         } catch (Exception e) {
             e.printStackTrace();
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "上传附件失败");
+            return Y9Result.failure("上传附件失败");
         }
-        return map;
     }
 
     @Transactional

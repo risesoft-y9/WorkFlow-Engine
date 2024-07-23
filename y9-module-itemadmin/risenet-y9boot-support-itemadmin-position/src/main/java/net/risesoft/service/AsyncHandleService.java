@@ -511,7 +511,7 @@ public class AsyncHandleService {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             try {
-                Map<String, Object> val = new HashMap<String, Object>();
+                Map<String, Object> val = new HashMap<>();
                 val.put("val", searchTerm);
                 variableManager.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
             } catch (Exception e) {
@@ -539,7 +539,7 @@ public class AsyncHandleService {
     public void weiXinRemind(final String tenantId, final String userId, final String processSerialNumber,
         final List<ChaoSong> list) {
         Boolean weiXinSwitch = y9Conf.getApp().getItemAdmin().getWeiXinSwitch();
-        if (!weiXinSwitch) {
+        if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
         }
@@ -592,7 +592,7 @@ public class AsyncHandleService {
     public void weiXinRemind4ChaoSongInfo(final String tenantId, final String userId, final String processSerialNumber,
         final List<ChaoSongInfo> list) {
         Boolean weiXinSwitch = y9Conf.getApp().getItemAdmin().getWeiXinSwitch();
-        if (!weiXinSwitch) {
+        if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
         }

@@ -88,8 +88,8 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     }
 
     @Override
-    public List<ItemWordTemplateBind> listByItemIdOrderByBindValueAsc(String ItemId) {
-        return wordTemplateBindRepository.findByItemIdOrderByBindValueAsc(ItemId);
+    public List<ItemWordTemplateBind> listByItemIdOrderByBindValueAsc(String itemId) {
+        return wordTemplateBindRepository.findByItemIdOrderByBindValueAsc(itemId);
     }
 
     @Override

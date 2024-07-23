@@ -56,10 +56,10 @@ public interface ItemWordTemplateBindService {
     /**
      * 根据事项Id获取绑定的正文模板
      *
-     * @param ItemId
+     * @param itemId
      * @return
      */
-    List<ItemWordTemplateBind> listByItemIdOrderByBindValueAsc(String ItemId);
+    List<ItemWordTemplateBind> listByItemIdOrderByBindValueAsc(String itemId);
 
     /**
      * Description: 绑定正文模板

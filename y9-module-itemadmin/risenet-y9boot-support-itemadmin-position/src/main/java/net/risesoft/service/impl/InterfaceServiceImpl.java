@@ -61,7 +61,7 @@ public class InterfaceServiceImpl implements InterfaceService {
             @Override
             public Predicate toPredicate(Root<ItemInterfaceBind> root, CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("interfaceId"), id));
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -82,7 +82,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         return interfaceInfoRepository.findAll(new Specification<InterfaceInfo>() {
             @Override
             public Predicate toPredicate(Root<InterfaceInfo> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("interfaceName"), "%" + name + "%"));
                 }
@@ -107,7 +107,7 @@ public class InterfaceServiceImpl implements InterfaceService {
             @Override
             public Predicate toPredicate(Root<InterfaceRequestParams> root, CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
                 }
@@ -132,7 +132,7 @@ public class InterfaceServiceImpl implements InterfaceService {
             @Override
             public Predicate toPredicate(Root<InterfaceResponseParams> root, CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
                 }

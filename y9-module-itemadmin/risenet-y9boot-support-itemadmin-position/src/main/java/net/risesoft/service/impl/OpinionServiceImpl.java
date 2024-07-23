@@ -370,7 +370,7 @@ public class OpinionServiceImpl implements OpinionService {
                     if (!roleIds.isEmpty()) {
                         for (String roleId : roleIds) {
                             Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                            if (hasRole) {
+                            if (Boolean.TRUE.equals(hasRole)) {
                                 model.setAddable(true);
                                 break;
                             }
@@ -510,14 +510,14 @@ public class OpinionServiceImpl implements OpinionService {
                                               }
                                               } else {*/
                                     hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                                    if (hasRole) {
+                                    if (Boolean.TRUE.equals(hasRole)) {
                                         model.setAddable(true);
                                         continue;
                                     }
                                     // }
                                 } else {
                                     hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                                    if (hasRole) {
+                                    if (Boolean.TRUE.equals(hasRole)) {
                                         model.setAddable(true);
                                         continue;
                                     }
@@ -613,7 +613,7 @@ public class OpinionServiceImpl implements OpinionService {
                  * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
                  */
                 Boolean addableTemp = model.getAddable();
-                if (addableTemp) {
+                if (Boolean.TRUE.equals(addableTemp)) {
                     model.setAddable(false);
                     TaskModel task = taskManager.findById(tenantId, taskId).getData();
                     ItemOpinionFrameBind bind =
@@ -626,7 +626,7 @@ public class OpinionServiceImpl implements OpinionService {
                         } else {
                             for (String roleId : roleIds) {
                                 Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                                if (hasRole) {
+                                if (Boolean.TRUE.equals(hasRole)) {
                                     model.setAddable(true);
                                     continue;
                                 }
@@ -689,7 +689,7 @@ public class OpinionServiceImpl implements OpinionService {
                 try {
                     List<ProcessTrack> list = processTrackService.listByTaskIdAndEndTimeIsNull(entity.getTaskId());
                     // 处理恢复待办后,填写意见错位问题,意见显示在自定义历程上
-                    if (list.size() > 0) {
+                    if (!list.isEmpty()) {
                         o.setProcessTrackId(list.get(0).getId());
                     }
                 } catch (Exception e1) {

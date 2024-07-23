@@ -147,7 +147,7 @@ public interface DocumentService {
      * @param userChoice
      * @return
      */
-    Map<String, Object> reposition(String taskId, String userChoice);
+    Y9Result<String> reposition(String taskId, String userChoice);
 
     /**
      * Description: 启动流程并发送

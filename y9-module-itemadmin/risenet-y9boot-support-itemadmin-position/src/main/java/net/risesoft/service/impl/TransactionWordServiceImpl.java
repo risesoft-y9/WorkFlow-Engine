@@ -74,9 +74,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
 
     @Override
     public List<TransactionWord> listByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong) {
-        List<TransactionWord> list =
-            transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
-        return list;
+        return transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
     }
 
     @Override

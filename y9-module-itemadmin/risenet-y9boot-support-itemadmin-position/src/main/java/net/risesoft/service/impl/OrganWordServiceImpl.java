@@ -733,7 +733,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     public Map<String, Object> saveNumberString(String custom, String numberString, String itemId,
         String processSerialNumber) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String, Object> retMap = new HashMap<String, Object>();
+        Map<String, Object> retMap = new HashMap<>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -772,7 +772,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     } else {
                         replaceStr = str;
                     }
-                    int number = Integer.valueOf(replaceStr);
+                    Integer number = Integer.valueOf(replaceStr);
                     OrganWordDetail oldDetail =
                         organWordDetailService.findByCustomAndCharacterValueAndItemId(custom, characterValue, itemId);
                     if (null == oldDetail) {

@@ -220,19 +220,11 @@ public class ProcInstanceRelationshipService {
         if (count > 0) {
             return true;
         } else {
-            List<String> list = new ArrayList<>();
             List<HistoricProcessInstanceModel> hpiModelTemp =
                 historicProcessManager.getBySuperProcessInstanceId(tenantId, processInstanceId).getData();
-            for (HistoricProcessInstanceModel hpi : hpiModelTemp) {
-                list.add(hpi.getId());
-            }
-
-            if (list != null) {
-                count = list.size();
-                return count > 0;
-            }
+            count = hpiModelTemp.size();
+            return count > 0;
         }
-        return false;
     }
 
     /**

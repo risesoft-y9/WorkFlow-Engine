@@ -35,7 +35,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 /*
  * @author qinman
- * 
+ *
  * @author zhangchongjie
  *
  * @date 2022/12/20
@@ -154,14 +154,6 @@ public class RoleServiceImpl implements RoleService {
         return item;
     }
 
-    /*
-     * Description:
-     *
-     * @param name
-     * @param principalType
-     * @param processInstanceId
-     * @return
-     */
     /*
      * Description:
      *

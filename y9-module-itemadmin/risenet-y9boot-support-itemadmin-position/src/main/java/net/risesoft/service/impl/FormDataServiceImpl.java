@@ -255,7 +255,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     public List<Y9FormFieldModel> listFormFieldByItemId(String itemId) {
-        List<Y9FormFieldModel> list = new ArrayList<Y9FormFieldModel>();
+        List<Y9FormFieldModel> list = new ArrayList<>();
         try {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();

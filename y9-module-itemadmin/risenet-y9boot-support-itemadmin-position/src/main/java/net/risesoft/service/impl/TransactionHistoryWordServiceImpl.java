@@ -53,8 +53,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     @Transactional
     @Override
     public void deleteHistoryWordByIsTaoHong(String processSerialNumber, String isTaoHong) {
-        List<TransactionHistoryWord> list = new ArrayList<TransactionHistoryWord>();
-
+        List<TransactionHistoryWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
             list =
                 transactionHistoryWordRepository.findByProcessSerialNumberAndIsTaoHong(processSerialNumber, isTaoHong);
@@ -139,11 +138,9 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
             if (StringUtils.isNotBlank(processSerialNumber)) {
                 List<TransactionHistoryWord> list =
                     transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
-                if (!list.isEmpty()) {
-                    if (StringUtils.isNotBlank(taskId)) {
-                        transactionHistoryWordRepository.update(taskId, processSerialNumber);
-                        return 1;
-                    }
+                if (!list.isEmpty() && StringUtils.isNotBlank(taskId)) {
+                    transactionHistoryWordRepository.update(taskId, processSerialNumber);
+                    return 1;
                 }
             }
         } catch (Exception e) {

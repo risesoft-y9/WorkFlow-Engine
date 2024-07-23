@@ -119,7 +119,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
         try {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(model.getItemId());
             model.setAppCnName(spmApproveItem != null ? spmApproveItem.getName() : "");
-            model.setAppName(spmApproveItem.getSystemName());
+            model.setAppName(spmApproveItem != null ? spmApproveItem.getSystemName() : "");
 
             ProcessInstanceDetails details = new ProcessInstanceDetails();
             Y9BeanUtil.copyProperties(model, details);

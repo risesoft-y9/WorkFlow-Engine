@@ -91,7 +91,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
             taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
-        if (taskList.size() > 0) {
+        if (!taskList.isEmpty()) {
             for (TaskModel task : taskList) {
                 if (StringUtils.isEmpty(taskIds)) {
                     taskIds = task.getId();
@@ -202,7 +202,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<OfficeFollowModel> list = new ArrayList<OfficeFollowModel>();
+        List<OfficeFollowModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
         Page<OfficeFollow> followList = null;
         if (StringUtils.isBlank(searchName)) {
@@ -266,12 +266,12 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
             List<OfficeFollow> list = officeFollowRepository.findByProcessInstanceId(processInstanceId);
-            List<OfficeFollow> newList = new ArrayList<OfficeFollow>();
+            List<OfficeFollow> newList = new ArrayList<>();
             for (OfficeFollow follow : list) {
                 follow.setDocumentTitle(documentTitle);
                 newList.add(follow);
             }
-            if (newList.size() > 0) {
+            if (!newList.isEmpty()) {
                 officeFollowRepository.saveAll(newList);
             }
         } catch (Exception e) {

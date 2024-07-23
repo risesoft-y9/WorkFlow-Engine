@@ -8,13 +8,14 @@ import java.util.Map;
  * @date 2022/12/20
  */
 public interface ItemDataCopyService {
+
     /**
      * Description:
      * 
      * @param sourceTenantId
      * @param targetTenantId
      */
-    public void copyCalendarConfig(String sourceTenantId, String targetTenantId);
+    void copyCalendarConfig(String sourceTenantId, String targetTenantId);
 
     /**
      * Description:
@@ -23,7 +24,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyCommonButton(String sourceTenantId, String targetTenantId, String itemId);
+    void copyCommonButton(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -31,16 +32,7 @@ public interface ItemDataCopyService {
      * @param sourceTenantId
      * @param targetTenantId
      */
-    public void copyDynamicRole(String sourceTenantId, String targetTenantId);
-
-    /**
-     * Description:
-     * 
-     * @param sourceTenantId
-     * @param targetTenantId
-     * @param itemId
-     */
-    public void copyForm(String sourceTenantId, String targetTenantId, String itemId);
+    void copyDynamicRole(String sourceTenantId, String targetTenantId);
 
     /**
      * Description:
@@ -49,7 +41,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyItem(String sourceTenantId, String targetTenantId, String itemId);
+    void copyForm(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -58,7 +50,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyItemViewConf(String sourceTenantId, String targetTenantId, String itemId);
+    void copyItem(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -67,7 +59,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyOpinionFrame(String sourceTenantId, String targetTenantId, String itemId);
+    void copyItemViewConf(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -76,7 +68,16 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyOrganWord(String sourceTenantId, String targetTenantId, String itemId);
+    void copyOpinionFrame(String sourceTenantId, String targetTenantId, String itemId);
+
+    /**
+     * Description:
+     * 
+     * @param sourceTenantId
+     * @param targetTenantId
+     * @param itemId
+     */
+    void copyOrganWord(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -86,7 +87,7 @@ public interface ItemDataCopyService {
      * @param itemId
      * @param roleIdMap
      */
-    public void copyPerm(String sourceTenantId, String targetTenantId, String itemId, Map<String, String> roleIdMap);
+    void copyPerm(String sourceTenantId, String targetTenantId, String itemId, Map<String, String> roleIdMap);
 
     /**
      * Description:
@@ -95,7 +96,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyPrintTemplate(String sourceTenantId, String targetTenantId, String itemId);
+    void copyPrintTemplate(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -104,7 +105,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copySendButton(String sourceTenantId, String targetTenantId, String itemId);
+    void copySendButton(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -113,7 +114,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyTabEntity(String sourceTenantId, String targetTenantId, String itemId);
+    void copyTabEntity(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -121,7 +122,7 @@ public interface ItemDataCopyService {
      * @param sourceTenantId
      * @param targetTenantId
      */
-    public void copyTaoHongTemplate(String sourceTenantId, String targetTenantId);
+    void copyTaoHongTemplate(String sourceTenantId, String targetTenantId);
 
     /**
      * Description:
@@ -131,7 +132,7 @@ public interface ItemDataCopyService {
      * @param itemId
      * @return
      */
-    public Map<String, String> copyTenantRole(String sourceTenantId, String targetTenantId, String itemId);
+    Map<String, String> copyTenantRole(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description:
@@ -140,7 +141,7 @@ public interface ItemDataCopyService {
      * @param targetTenantId
      * @param itemId
      */
-    public void copyWordTemplate(String sourceTenantId, String targetTenantId, String itemId);
+    void copyWordTemplate(String sourceTenantId, String targetTenantId, String itemId);
 
     /**
      * Description: 从源租户复制事项相关的数据到目标租户
@@ -150,7 +151,7 @@ public interface ItemDataCopyService {
      * @param itemId
      * @throws Exception
      */
-    public void dataCopy(String sourceTenantId, String targetTenantId, String itemId) throws Exception;
+    void dataCopy(String sourceTenantId, String targetTenantId, String itemId) throws Exception;
 
     /**
      * Description: 从源租户复制事项相关的数据到目标租户
@@ -160,5 +161,5 @@ public interface ItemDataCopyService {
      * @param systemName
      * @throws Exception
      */
-    public void dataCopy4System(String sourceTenantId, String targetTenantId, String systemName) throws Exception;
+    void dataCopy4System(String sourceTenantId, String targetTenantId, String systemName) throws Exception;
 }

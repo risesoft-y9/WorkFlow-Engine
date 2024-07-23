@@ -90,7 +90,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     @Override
     public ExtendedContent getNewConentByProcessSerialNumber(String processSerialNumber, String category) {
         List<ExtendedContent> list = extendedContentRepository.findByPsnAndCategory(processSerialNumber, category);
-        if (list != null && list.size() > 0) {
+        if (list != null && !list.isEmpty()) {
             return list.get(list.size() - 1);
         }
         return null;
@@ -114,7 +114,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
             if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
-                if (list != null && list.size() > 0) {
+                if (list != null && !list.isEmpty()) {
                     for (ExtendedContent content : list) {
                         Map<String, Object> map = new HashMap<>(16);
                         map.put("content", content);
@@ -130,7 +130,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
             } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
                 addableMap.put("addable", false);
-                if (list.size() > 0) {
+                if (!list.isEmpty()) {
                     for (ExtendedContent content : list) {
                         Map<String, Object> map = new HashMap<>(16);
                         map.put("content", content);

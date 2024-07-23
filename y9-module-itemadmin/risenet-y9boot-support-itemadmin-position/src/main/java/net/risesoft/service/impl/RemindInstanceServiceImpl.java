@@ -76,7 +76,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
             RemindInstance remindInstance =
                 remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);
             // 删除
-            if (StringUtils.isBlank(taskIds) && !process && StringUtils.isBlank(arriveTaskKey)
+            if (StringUtils.isBlank(taskIds) && !Boolean.TRUE.equals(process) && StringUtils.isBlank(arriveTaskKey)
                 && StringUtils.isBlank(completeTaskKey)) {
                 if (remindInstance != null) {
                     remindInstanceRepository.delete(remindInstance);
@@ -93,7 +93,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
             if (StringUtils.isNotBlank(completeTaskKey)) {
                 remindType = Y9Util.genCustomStr(remindType, ItemRemindTypeEnum.NODECOMPLETE.getValue());
             }
-            if (process) {
+            if (Boolean.TRUE.equals(process)) {
                 remindType = Y9Util.genCustomStr(remindType, ItemRemindTypeEnum.PROCESSCOMPLETE.getValue());
             }
             if (remindInstance != null) {
