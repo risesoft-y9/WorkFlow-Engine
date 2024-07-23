@@ -5,6 +5,7 @@ import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
 import org.flowable.common.engine.api.delegate.event.FlowableEvent;
 import org.flowable.engine.delegate.event.impl.FlowableEntityEventImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,10 +27,11 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
     @Override
     public boolean isFailOnException() {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void onEvent(FlowableEvent event) {
         FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
         switch (type) {
