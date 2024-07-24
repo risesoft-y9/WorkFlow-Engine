@@ -308,12 +308,12 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             if (StringUtils.isNotEmpty(item.getAppUrl())) {
                 item.setTodoTaskUrlPrefix(item.getAppUrl().split("\\?")[0]);
             }
-            Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
-            if (tabIndex == null) {
-                item.setTabIndex(1);
-            } else {
-                SpmApproveItem olditem = spmApproveItemRepository.findById(item.getId()).orElse(null);
-                if (olditem == null) {
+            SpmApproveItem olditem = spmApproveItemRepository.findById(item.getId()).orElse(null);
+            if (olditem == null) {
+                Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
+                if (tabIndex == null) {
+                    item.setTabIndex(1);
+                } else {
                     item.setTabIndex(tabIndex + 1);
                 }
             }
