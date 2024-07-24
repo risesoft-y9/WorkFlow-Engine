@@ -243,6 +243,9 @@ public class DocumentRestController {
                 Y9LoginUserHolder.getPositionId(), processInstanceId, taskId, sponsorHandle, itemId,
                 processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             if (y9Result.isSuccess()) {
+                // 异步循环发送
+                asyncUtilService.loopSending(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId,
+                    processSerialNumber, processDefinitionKey, y9Result.getData());
                 map.put("processInstanceId", y9Result.getData());
                 return Y9Result.success(map, y9Result.getMsg());
             } else {

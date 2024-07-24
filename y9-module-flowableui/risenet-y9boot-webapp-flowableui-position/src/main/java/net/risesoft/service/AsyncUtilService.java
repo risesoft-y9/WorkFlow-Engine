@@ -77,7 +77,7 @@ public class AsyncUtilService {
                             userChoice = Y9Util.genCustomStr(userChoice, "6:" + userId, ";");
                         }
                         Y9Result<String> y9Result1 = document4PositionApi.saveAndForwarding(tenantId, positionId,
-                            processInstanceId, taskId, "", itemId, processSerialNumber, processDefinitionKey,
+                            processInstanceId, taskId, "true", itemId, processSerialNumber, processDefinitionKey,
                             userChoice, "", routeToTaskId, new HashMap<>());
                         if (y9Result1.isSuccess()) {
                             // 异步循环发送
