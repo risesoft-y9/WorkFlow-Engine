@@ -140,6 +140,9 @@ public interface DocumentService {
      */
     List<String> parseUserChoice(String userChoice);
 
+    Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId,
+        String routeToTaskName, String processInstanceId, String multiInstance);
+
     /**
      * 重定位
      *

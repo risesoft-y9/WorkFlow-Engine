@@ -958,6 +958,45 @@ public class DocumentServiceImpl implements DocumentService {
         return model;
     }
 
+    @Override
+    public List<String> parseUserChoice(String userChoice) {
+        String users = "";
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        if (StringUtils.isNotBlank(userChoice)) {
+            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+            for (String s : userChoices) {
+                String[] s2 = s.split(SysVariables.COLON);
+                int principalType = Integer.parseInt(s2[0]);
+                String userIdTemp = s2[1];
+                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
+                    Position position = positionManager.get(tenantId, s2[1]).getData();
+                    if (null == position) {
+                        continue;
+                    }
+                    users = this.addUserId(users, userIdTemp);
+                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
+                    List<Position> employeeList = new ArrayList<>();
+                    this.getAllPosition(employeeList, s2[1]);
+                    for (Position pTemp : employeeList) {
+                        users = this.addUserId(users, pTemp.getId());
+                    }
+                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
+                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
+                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
+                    for (CustomGroupMember pTemp : list) {
+                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
+                        if (position != null && StringUtils.isNotBlank(position.getId())) {
+                            users = this.addUserId(users, position.getId());
+                        }
+                    }
+                }
+            }
+        }
+        List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
+        ListUtil.removeDuplicateWithOrder(result);
+        return result;
+    }
+
     public Y9Result<TargetModel> parserRouteToTaskId(String itemId, String processSerialNumber,
         String processDefinitionId, String taskDefKey, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -1019,6 +1058,7 @@ public class DocumentServiceImpl implements DocumentService {
         return result;
     }
 
+    @Override
     public Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId,
         String routeToTaskName, String processInstanceId, String multiInstance) {
         Y9Result<List<String>> result = Y9Result.failure("解析人员失败");
@@ -1038,45 +1078,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
         result.setData(userList);
         result.setSuccess(true);
-        return result;
-    }
-
-    @Override
-    public List<String> parseUserChoice(String userChoice) {
-        String users = "";
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        if (StringUtils.isNotBlank(userChoice)) {
-            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-            for (String s : userChoices) {
-                String[] s2 = s.split(SysVariables.COLON);
-                int principalType = Integer.parseInt(s2[0]);
-                String userIdTemp = s2[1];
-                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionManager.get(tenantId, s2[1]).getData();
-                    if (null == position) {
-                        continue;
-                    }
-                    users = this.addUserId(users, userIdTemp);
-                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                    List<Position> employeeList = new ArrayList<>();
-                    this.getAllPosition(employeeList, s2[1]);
-                    for (Position pTemp : employeeList) {
-                        users = this.addUserId(users, pTemp.getId());
-                    }
-                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
-                    for (CustomGroupMember pTemp : list) {
-                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
-                        if (position != null && StringUtils.isNotBlank(position.getId())) {
-                            users = this.addUserId(users, position.getId());
-                        }
-                    }
-                }
-            }
-        }
-        List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
-        ListUtil.removeDuplicateWithOrder(result);
         return result;
     }
 
