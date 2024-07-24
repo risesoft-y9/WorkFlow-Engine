@@ -312,7 +312,10 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             if (tabIndex == null) {
                 item.setTabIndex(1);
             } else {
-                item.setTabIndex(tabIndex + 1);
+                SpmApproveItem olditem = spmApproveItemRepository.findById(item.getId()).orElse(null);
+                if (olditem == null) {
+                    item.setTabIndex(tabIndex + 1);
+                }
             }
             spmApproveItemRepository.save(item);
             ItemMappingConf itemMappingConf =
