@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +31,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/sign")
+@RequestMapping(value = "/vue/sign", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class SignController {
 
@@ -125,11 +126,9 @@ public class SignController {
             dayStr = calendarConfig.getEveryYearHoliday();
             switch (type) {
                 case "天": {
-                    boolean isdel = true;
-                    if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假")
-                        || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
-                        isdel = false;
-                    }
+                    boolean isdel = !StringUtils.isNotBlank(leaveType) || (!leaveType.equals("离京报备")
+                        && !leaveType.equals("产假") && !leaveType.equals("婚假") && !leaveType.equals("陪产假"));
+                    // 产假不排除节假日，直接算天数
                     if (leaveStartTime.equals(leaveEndTime)) {
                         if (isdel && dayStr.contains(leaveStartTime)) {
                             return Y9Result.success("0", "获取成功");

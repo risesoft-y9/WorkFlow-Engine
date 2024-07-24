@@ -314,7 +314,6 @@ public class MobileWorkListController {
      * @param page 页码
      * @param rows 行数
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/todoList")
     public void todoList(@RequestHeader("auth-tenantId") String tenantId,
         @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId,
