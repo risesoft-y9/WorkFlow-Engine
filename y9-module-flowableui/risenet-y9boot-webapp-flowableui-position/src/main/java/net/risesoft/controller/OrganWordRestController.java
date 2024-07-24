@@ -6,9 +6,11 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +33,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping(value = "/vue/organWord")
+@RequestMapping(value = "/vue/organWord", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrganWordRestController {
 
     private final OrganWordApi organWordApi;
@@ -48,7 +50,7 @@ public class OrganWordRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/checkNumber", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/checkNumber")
     public Y9Result<Map<String, Object>> checkNumber(@RequestParam @NotBlank String characterValue,
         @RequestParam @NotBlank String custom, @RequestParam Integer year,
         @RequestParam(required = false) Integer number, @RequestParam @NotBlank String itemId,
@@ -85,7 +87,7 @@ public class OrganWordRestController {
      * @param taskDefKey 任务节点
      * @return Y9Result<List < OrganWordPropertyModel>>
      */
-    @RequestMapping(value = "/findByCustom", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findByCustom")
     public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam @NotBlank String custom,
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
@@ -96,13 +98,13 @@ public class OrganWordRestController {
 
     /**
      * 获取有权限的特殊编号配置
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
      * @return
      */
-    @RequestMapping(value = "/findByCustomNumber", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findByCustomNumber")
     public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -119,7 +121,7 @@ public class OrganWordRestController {
      * @param common 是否公共
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getNumber", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getNumber")
     public Y9Result<Map<String, Object>> getNumber(@RequestParam @NotBlank String custom,
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String characterValue,
         @RequestParam Integer year, @RequestParam(required = false) Integer common) {
@@ -139,12 +141,12 @@ public class OrganWordRestController {
 
     /**
      * 获取最新编号
-     * 
+     *
      * @param itemId
      * @param custom
      * @return
      */
-    @RequestMapping(value = "/getTempNumber", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTempNumber")
     public Y9Result<String> getTempNumber(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String custom, @RequestParam @NotBlank String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -160,13 +162,13 @@ public class OrganWordRestController {
 
     /**
      * 保存编号
-     * 
+     *
      * @param numberString
      * @param itemId
      * @param processSerialNumber
      * @return
      */
-    @RequestMapping(value = "/saveNumberString", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveNumberString")
     public Y9Result<Map<String, Object>> saveNumberString(@RequestParam String custom,
         @RequestParam String numberString, @RequestParam String itemId, @RequestParam String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();

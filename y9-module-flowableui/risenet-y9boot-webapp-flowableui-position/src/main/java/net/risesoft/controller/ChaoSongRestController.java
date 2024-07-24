@@ -9,9 +9,11 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,7 +48,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/chaoSong")
+@RequestMapping(value = "/vue/chaoSong", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChaoSongRestController {
 
     private final ChaoSong4PositionApi chaoSong4PositionApi;
@@ -72,7 +74,7 @@ public class ChaoSongRestController {
      * @param type 意见状态
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/changeChaoSongState", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/changeChaoSongState")
     public Y9Result<String> changeChaoSongState(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String type) {
         try {
@@ -90,7 +92,7 @@ public class ChaoSongRestController {
      * @param ids 抄送id,逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/changeStatus", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/changeStatus")
     public Y9Result<String> changeStatus(@RequestParam String[] ids) {
         try {
             chaoSong4PositionApi.changeStatus(Y9LoginUserHolder.getTenantId(), ids);
@@ -107,7 +109,7 @@ public class ChaoSongRestController {
      * @param ids 抄送ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteList", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteList")
     public Y9Result<String> deleteList(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -128,7 +130,7 @@ public class ChaoSongRestController {
      * @param status 抄送状态
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/detail")
     public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) Boolean openNotRead,
         @RequestParam Integer status) {
@@ -184,7 +186,7 @@ public class ChaoSongRestController {
      * @param page 页码
      * @return Y9Page<ChaoSongModel>
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Page<ChaoSongModel> list(@RequestParam @NotBlank String type,
         @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId,
         @RequestParam int rows, @RequestParam int page) {
@@ -217,7 +219,7 @@ public class ChaoSongRestController {
      * @param processDefinitionKey 流程定义key
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/save")
     public Y9Result<Map<String, Object>> save(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms,
         @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent,
@@ -262,7 +264,7 @@ public class ChaoSongRestController {
      * @param page 页码
      * @return Y9Page<ChaoSongModel>
      */
-    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/search")
     public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle,
         @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();

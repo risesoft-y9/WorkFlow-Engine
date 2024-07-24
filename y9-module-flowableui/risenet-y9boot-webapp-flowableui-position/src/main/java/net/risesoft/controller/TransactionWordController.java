@@ -18,6 +18,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
@@ -60,7 +61,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/transactionWord")
+@RequestMapping(value = "/transactionWord", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TransactionWordController {
 
     private final Y9FileStoreService y9FileStoreService;
@@ -613,7 +614,6 @@ public class TransactionWordController {
      * @param taskId 任务id
      * @return String
      */
-    @SuppressWarnings("unused")
     @RequestMapping(value = "/saveAsPDFFile")
     public String saveAsPDFFile(@RequestParam(required = false) String fileType,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,

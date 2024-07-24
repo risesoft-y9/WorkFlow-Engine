@@ -22,9 +22,11 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,7 +56,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/vue/attachment")
+@RequestMapping(value = "/vue/attachment", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AttachmentRestController {
 
     private final Y9FileStoreService y9FileStoreService;
@@ -66,7 +68,7 @@ public class AttachmentRestController {
      *
      * @param id 附件id
      */
-    @RequestMapping(value = "/attachmentDownload", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/attachmentDownload")
     public void attachmentDownload(@RequestParam @NotBlank String id, HttpServletResponse response,
         HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -98,7 +100,7 @@ public class AttachmentRestController {
      * @param ids 附件ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/delFile", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delFile")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         attachment4PositionApi.delFile(tenantId, ids);
@@ -114,7 +116,7 @@ public class AttachmentRestController {
      * @param rows 条数
      * @return Y9Page<AttachmentModel>
      */
-    @RequestMapping(value = "/getAttachmentList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getAttachmentList")
     public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -127,7 +129,7 @@ public class AttachmentRestController {
      * @param processSerialNumber 流程编号
      * @param fileSource 附件来源
      */
-    @RequestMapping(value = "/packDownload", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/packDownload")
     public void packDownload(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -209,7 +211,7 @@ public class AttachmentRestController {
      * @param fileSource 文件来源
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/upload")
     public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource) {

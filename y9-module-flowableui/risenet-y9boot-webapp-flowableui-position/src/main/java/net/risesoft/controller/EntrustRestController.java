@@ -2,9 +2,11 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +34,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/vue/entrust")
+@RequestMapping(value = "/vue/entrust", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EntrustRestController {
 
     private final Entrust4PositionApi entrust4PositionApi;
@@ -47,7 +49,7 @@ public class EntrustRestController {
      * @param id 委托id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteEntrust", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteEntrust")
     public Y9Result<String> deleteEntrust(@RequestParam String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -64,7 +66,7 @@ public class EntrustRestController {
      *
      * @return Y9Result<List < EntrustModel>>
      */
-    @RequestMapping(value = "/getEntrustList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getEntrustList")
     public Y9Result<List<EntrustModel>> getEntrustList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return entrust4PositionApi.getEntrustList(tenantId, Y9LoginUserHolder.getPositionId());
@@ -75,7 +77,7 @@ public class EntrustRestController {
      *
      * @return Y9Result<List < Organization>>
      */
-    @RequestMapping(value = "/getOrgList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOrgList")
     public Y9Result<List<Organization>> getOrgList() {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -94,7 +96,7 @@ public class EntrustRestController {
      * @param treeType 树类型
      * @return Y9Result<List < OrgUnit>>
      */
-    @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOrgTree")
     public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam(required = false) String id, OrgTreeTypeEnum treeType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -112,7 +114,7 @@ public class EntrustRestController {
      * @param jsonData json数据
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam String jsonData) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -132,7 +134,7 @@ public class EntrustRestController {
      * @param treeType 树类型
      * @return Y9Result<List < OrgUnit>>
      */
-    @RequestMapping(value = "/treeSearch", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/treeSearch")
     public Y9Result<List<OrgUnit>> treeSearch(@RequestParam(required = false) String name, OrgTreeTypeEnum treeType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();

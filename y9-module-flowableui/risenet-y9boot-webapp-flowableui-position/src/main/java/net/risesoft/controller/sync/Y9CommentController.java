@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.sync;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,8 +21,9 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
 
 import y9.dbcomment.Y9CommentUtil;
 
+@Deprecated
 @RestController
-@RequestMapping("/admin/comment")
+@RequestMapping(value = "/admin/comment", produces = MediaType.APPLICATION_JSON_VALUE)
 public class Y9CommentController {
 
     @Autowired
@@ -74,9 +76,9 @@ public class Y9CommentController {
             Y9LoginUserHolder.setTenantId(tenantId);
             DataSource ds = y9TenantDS.determineTargetDataSource();
             dbType = DbUtil.getDbTypeString(ds);
-            if (dbType != null && "mysql".equals(dbType)) {
+            if ("mysql".equals(dbType)) {
                 Y9CommentUtil.scanner4Mysql(jdbcTemplate4Tenant, packageEntity.split(","));
-            } else if (dbType != null && "oracle".equals(dbType)) {
+            } else if ("oracle".equals(dbType)) {
                 Y9CommentUtil.scanner4Oracle(jdbcTemplate4Tenant, packageEntity.split(","));
             }
         }

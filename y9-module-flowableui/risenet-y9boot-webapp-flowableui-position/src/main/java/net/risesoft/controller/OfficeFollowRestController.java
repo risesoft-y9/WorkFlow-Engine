@@ -6,9 +6,11 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,7 +44,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/vue/officeFollow")
+@RequestMapping(value = "/vue/officeFollow", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OfficeFollowRestController {
 
     private final OrgUnitApi orgUnitApi;
@@ -61,7 +63,7 @@ public class OfficeFollowRestController {
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/delOfficeFollow", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delOfficeFollow")
     public Y9Result<String> delOfficeFollow(@RequestParam String processInstanceIds) {
         try {
             Y9Result<Object> y9Result;
@@ -85,7 +87,7 @@ public class OfficeFollowRestController {
      * @param searchName 搜索词
      * @return Y9Page<OfficeFollowModel>
      */
-    @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/followList")
     public Y9Page<OfficeFollowModel> followList(@RequestParam Integer page, @RequestParam Integer rows,
         @RequestParam(required = false) String searchName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -98,7 +100,7 @@ public class OfficeFollowRestController {
      *
      * @return Y9Result<Integer>
      */
-    @RequestMapping(value = "/getFollowCount", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getFollowCount")
     public Y9Result<Integer> getFollowCount() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         int followCount =
@@ -112,7 +114,7 @@ public class OfficeFollowRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOfficeFollow", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOfficeFollow")
     public Y9Result<String> saveOfficeFollow(@RequestParam @NotBlank String processInstanceId) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

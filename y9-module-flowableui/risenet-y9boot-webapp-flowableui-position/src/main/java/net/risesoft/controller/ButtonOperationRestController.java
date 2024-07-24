@@ -12,7 +12,9 @@ import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,7 +64,7 @@ import net.risesoft.y9.util.Y9Util;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/vue/buttonOperation")
+@RequestMapping(value = "/vue/buttonOperation", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ButtonOperationRestController {
 
     private final ButtonOperation4PositionApi buttonOperation4PositionApi;
@@ -88,7 +90,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/claim", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/claim")
     public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
         try {
             Position position = Y9LoginUserHolder.getPosition();
@@ -113,7 +115,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/completeTask", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/completeTask")
     public Y9Result<String> completeTask(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -132,7 +134,7 @@ public class ButtonOperationRestController {
      * @param userChoice 收件人
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/consult", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/consult")
     public Y9Result<String> consult(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -158,7 +160,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/customProcessHandle", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/customProcessHandle")
     public Y9Result<String> customProcessHandle(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String multiInstance, @RequestParam @NotBlank Boolean nextNode,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
@@ -251,7 +253,7 @@ public class ButtonOperationRestController {
      * @param routeToTask 任务key
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/directSend", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/directSend")
     public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -481,7 +483,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/handleParallel", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/handleParallel")
     public Y9Result<String> handleParallel(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -525,7 +527,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/handleSerial", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/handleSerial")
     public Y9Result<String> handleSerial(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -547,7 +549,7 @@ public class ButtonOperationRestController {
      * @param userChoice 收件人
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/reAssign", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/reAssign")
     public Y9Result<String> reAssign(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -566,7 +568,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/refuseClaim", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/refuseClaim")
     public Y9Result<String> refuseClaim(@RequestParam @NotBlank String taskId) {
         String activitiUser = "";
         try {
@@ -601,7 +603,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/refuseClaimRollback", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/refuseClaimRollback")
     public Y9Result<String> refuseClaimRollback(@RequestParam @NotBlank String taskId) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -629,7 +631,7 @@ public class ButtonOperationRestController {
      * @param smsContent 短信内容
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/reposition", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/reposition")
     public Y9Result<String> reposition(@RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String sponsorGuid,
@@ -670,7 +672,7 @@ public class ButtonOperationRestController {
      * @param reason 退回原因
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/rollback", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/rollback")
     public Y9Result<String> rollback(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
@@ -716,7 +718,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/rollbackToSender", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/rollbackToSender")
     public Y9Result<String> rollbackToSender(@RequestParam @NotBlank String taskId) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -736,7 +738,7 @@ public class ButtonOperationRestController {
      * @param reason 原因
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/rollbackToStartor", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/rollbackToStartor")
     public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
@@ -760,7 +762,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/saveCustomProcess", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveCustomProcess")
     public Y9Result<String> saveCustomProcess(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam @NotBlank String jsonData) {
@@ -802,7 +804,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/sendToSender", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/sendToSender")
     public Y9Result<String> sendToSender(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
@@ -820,7 +822,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/sendToStartor", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/sendToStartor")
     public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
@@ -859,7 +861,7 @@ public class ButtonOperationRestController {
      * @param reason 特殊办结原因
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/specialComplete", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/specialComplete")
     public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
@@ -907,7 +909,7 @@ public class ButtonOperationRestController {
      * @param reason 收回原因
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/takeback", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/takeback")
     public Y9Result<String> takeback(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
@@ -927,7 +929,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/unclaim", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/unclaim")
     public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();

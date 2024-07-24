@@ -6,9 +6,10 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +35,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/vue/rolePerson")
+@RequestMapping(value = "/vue/rolePerson", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoleRestController {
 
     private final ItemRole4PositionApi itemRole4PositionApi;
@@ -57,7 +58,7 @@ public class RoleRestController {
      * @param name 搜索词
      * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
-    @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getOrgTree")
     public Y9Result<List<ItemRoleOrgUnitModel>> findAll(@RequestParam(required = false) String id,
         @RequestParam OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
         return itemRole4PositionApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id,
@@ -72,7 +73,7 @@ public class RoleRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/findCsUser", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findCsUser")
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(required = false) String id,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId) {
         return itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
@@ -87,7 +88,7 @@ public class RoleRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
-    @RequestMapping(value = "/findCsUserSearch", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findCsUserSearch")
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam(required = false) String name,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId) {
         return itemRole4PositionApi.findCsUserSearch(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
@@ -105,7 +106,7 @@ public class RoleRestController {
      * @param id 父节点id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/findAllPermUser", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findAllPermUser")
     public Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId,
@@ -129,7 +130,7 @@ public class RoleRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
-    @RequestMapping(value = "/findPermUserByName", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/findPermUserByName")
     public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(@RequestParam(required = false) String name,
         @RequestParam Integer principalType, @RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
@@ -152,7 +153,7 @@ public class RoleRestController {
      * @param userChoice 人员id
      * @return Y9Result<Integer>
      */
-    @RequestMapping(value = "/getUserCount", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getUserCount")
     public Y9Result<Integer> getUserCount(@RequestParam @NotBlank String userChoice) {
         List<String> userIds = new ArrayList<>();
         if (StringUtils.isNotBlank(userChoice)) {

@@ -5,9 +5,11 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +33,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/vue/associatedFile")
+@RequestMapping(value = "/vue/associatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AssociatedFileRestController {
 
     private final SearchService searchService;
@@ -45,7 +47,7 @@ public class AssociatedFileRestController {
      * @param processInstanceIds 要删除的流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/delAssociatedFile", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delAssociatedFile")
     public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -67,7 +69,7 @@ public class AssociatedFileRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<List<AssociatedFileModel>>
      */
-    @RequestMapping(value = "/getAssociatedFileList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getAssociatedFileList")
     public Y9Result<List<AssociatedFileModel>>
         getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -84,7 +86,7 @@ public class AssociatedFileRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/getDoneList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getDoneList")
     public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String itemId,
         @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.pageSearchList(title, itemId, "", "", "", "", "", page, rows);
@@ -97,7 +99,7 @@ public class AssociatedFileRestController {
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveAssociatedFile", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveAssociatedFile")
     public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String processInstanceIds) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();

@@ -6,9 +6,11 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +31,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/speakInfo")
+@RequestMapping(value = "/vue/speakInfo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SpeakInfoRestController {
 
     private final SpeakInfoApi speakInfoApi;
@@ -40,7 +42,7 @@ public class SpeakInfoRestController {
      * @param id 信息id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteById")
     public Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
@@ -54,7 +56,7 @@ public class SpeakInfoRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String content,
         @RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -72,7 +74,7 @@ public class SpeakInfoRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/speakInfoList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/speakInfoList")
     public Y9Result<Map<String, Object>> speakInfoList(@RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = person.getTenantId();

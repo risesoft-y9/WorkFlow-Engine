@@ -8,9 +8,11 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +41,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping(value = "/vue/multiInstance")
+@RequestMapping(value = "/vue/multiInstance", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MultiInstanceRestController {
 
     private final MultiInstanceService multiInstanceService;
@@ -66,7 +68,7 @@ public class MultiInstanceRestController {
      * @param smsContent 短信内容
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/addExecutionId", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/addExecutionId")
     public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId,
         @RequestParam(required = false) String executionId, @RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String selectUserId,
@@ -95,7 +97,7 @@ public class MultiInstanceRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getAddOrDeleteMultiInstance", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getAddOrDeleteMultiInstance")
     public Y9Result<Map<String, Object>> getAddOrDeleteMultiInstance(@RequestParam @NotBlank String processInstanceId) {
         Map<String, Object> map = new HashMap<>(16);
         Position position = Y9LoginUserHolder.getPosition();
@@ -132,7 +134,7 @@ public class MultiInstanceRestController {
      * @param elementUser 减签人员
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/removeExecution", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeExecution")
     public Y9Result<String> removeExecution(@RequestParam @NotBlank String executionId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser) {
         try {
@@ -153,7 +155,7 @@ public class MultiInstanceRestController {
      * @param num 减签序号
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/removeExecution4Sequential", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeExecution4Sequential")
     public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser,
         @RequestParam(required = false) int num) {
@@ -172,7 +174,7 @@ public class MultiInstanceRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/setSponsor", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/setSponsor")
     public Y9Result<String> setSponsor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();

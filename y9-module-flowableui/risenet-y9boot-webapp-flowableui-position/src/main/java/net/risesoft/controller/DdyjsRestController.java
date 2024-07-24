@@ -4,9 +4,11 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +29,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/ddyjs")
+@RequestMapping(value = "/vue/ddyjs", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DdyjsRestController {
 
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
@@ -40,7 +42,7 @@ public class DdyjsRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/cancelMeeting", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/cancelMeeting")
     public Y9Result<String> cancelMeeting(@RequestParam @NotBlank String processInstanceId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -63,7 +65,7 @@ public class DdyjsRestController {
      * @param rows 每页条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/getMeetingList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getMeetingList")
     public Y9Page<Map<String, Object>> getMeetingList(@RequestParam(required = false) String meetingType,
         @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
         @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
@@ -77,7 +79,7 @@ public class DdyjsRestController {
      * @param meetingType 会议类型
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/setMeeting", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/setMeeting")
     public Y9Result<String> setMeeting(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String meetingType) {
         try {

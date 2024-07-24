@@ -10,9 +10,11 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,7 +47,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/vue/opinion")
+@RequestMapping(value = "/vue/opinion", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OpinionRestController {
 
     private final Opinion4PositionApi opinion4PositionApi;
@@ -84,7 +86,7 @@ public class OpinionRestController {
      * @param opinionFrameMark 意见框标识
      * @return Y9Result<Integer>
      */
-    @RequestMapping(value = "/countOpinionHistory", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/countOpinionHistory")
     public Y9Result<Integer> countOpinionHistory(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -99,7 +101,7 @@ public class OpinionRestController {
      * @param id 意见id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam @NotBlank String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -117,7 +119,7 @@ public class OpinionRestController {
      * @param name 人员名称
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/bureauTreeSearch", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/bureauTreeSearch")
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<>();
@@ -155,7 +157,7 @@ public class OpinionRestController {
      * @param processDefinitionId 流程定义id
      * @return Y9Result<List < String>>
      */
-    @RequestMapping(value = "/getBindOpinionFrame", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBindOpinionFrame")
     public Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -168,7 +170,7 @@ public class OpinionRestController {
      * @param id 父节点id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/getBureauTree", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBureauTree")
     public Y9Result<List<Map<String, Object>>> getBureauTree(@RequestParam(required = false) String id) {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -216,35 +218,11 @@ public class OpinionRestController {
      * @param opinionFrameMark 意见框标识
      * @return Y9Result<List < OpinionHistoryModel>>
      */
-    @RequestMapping(value = "/opinionHistoryList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/opinionHistoryList")
     public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return opinion4PositionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
-    }
-
-    /**
-     * 获取意见列表
-     *
-     * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param itembox 办件状态
-     * @param opinionFrameMark 意见框标识
-     * @param itemId 事项id
-     * @param taskDefinitionKey 任务key
-     * @param activitiUser 办理人
-     * @return Y9Result<List < OpinionListModel>>
-     */
-    @RequestMapping(value = "/personCommentList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
-        @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String orderByUser) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = person.getTenantId();
-        return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
     }
 
     /**
@@ -253,7 +231,7 @@ public class OpinionRestController {
      * @param id 意见id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/newOrModify/personalComment", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/newOrModify/personalComment")
     public Y9Result<Map<String, Object>> personalComment(@RequestParam(required = false) String id) {
         Map<String, Object> map = new HashMap<>(16);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -268,12 +246,36 @@ public class OpinionRestController {
     }
 
     /**
+     * 获取意见列表
+     *
+     * @param processSerialNumber 流程编号
+     * @param taskId 任务id
+     * @param itembox 办件状态
+     * @param opinionFrameMark 意见框标识
+     * @param itemId 事项id
+     * @param taskDefinitionKey 任务key
+     * @param activitiUser 办理人
+     * @return Y9Result<List < OpinionListModel>>
+     */
+    @GetMapping(value = "/personCommentList")
+    public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
+        @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
+        @RequestParam(required = false) String orderByUser) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), tenantId = person.getTenantId();
+        return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
+            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+    }
+
+    /**
      * 保存意见
      *
      * @param jsonData 意见实体json
      * @return Y9Result<OpinionModel>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<OpinionModel> save(@RequestParam @NotBlank String jsonData) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -296,7 +298,7 @@ public class OpinionRestController {
      * @param id 意见id
      * @return Y9Result<Object>
      */
-    @RequestMapping(value = "/updateOpinion", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/updateOpinion")
     public Y9Result<Object> updateOpinion(@RequestParam @NotBlank String content, @RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return opinion4PositionApi.updateOpinion(tenantId, id, content);

@@ -12,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -167,7 +166,7 @@ public class DraftRestController {
      * @param id 草稿id
      * @return Y9Result<Object>
      */
-    @RequestMapping(value = "/reduction", method = RequestMethod.POST)
+    @PostMapping(value = "/reduction")
     public Y9Result<Object> reduction(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return draft4PositionApi.reduction(tenantId, id);
@@ -179,7 +178,7 @@ public class DraftRestController {
      * @param ids 草稿ids，逗号隔开
      * @return Y9Result<Object>
      */
-    @RequestMapping(value = "/removeDraft", method = RequestMethod.POST)
+    @PostMapping(value = "/removeDraft")
     public Y9Result<Object> removeDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return draft4PositionApi.removeDraft(tenantId, ids);
@@ -196,7 +195,7 @@ public class DraftRestController {
      * @param title 标题
      * @return Y9Result<Object>
      */
-    @RequestMapping(value = "/saveDraft", method = RequestMethod.POST)
+    @PostMapping(value = "/saveDraft")
     public Y9Result<Object> saveDraft(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam(required = false) String number, @RequestParam(required = false) String level,

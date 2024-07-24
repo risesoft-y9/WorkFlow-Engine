@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +32,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/search")
+@RequestMapping(value = "/vue/search", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SearchRestController {
 
     private final SearchService searchService;
@@ -43,7 +44,7 @@ public class SearchRestController {
      *
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/getMyItemList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getMyItemList")
     public Y9Result<List<ItemListModel>> getMyItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
@@ -55,7 +56,7 @@ public class SearchRestController {
      *
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/getMyItemSystemList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getMyItemSystemList")
     public Y9Result<List<Map<String, Object>>> getMyItemSystemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId).getData();
@@ -83,7 +84,7 @@ public class SearchRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/getSearchList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getSearchList")
     public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
@@ -104,7 +105,7 @@ public class SearchRestController {
      * @param rows 条数
      * @return Y9Page<ChaoSongModel>
      */
-    @RequestMapping(value = "/getYuejianList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getYuejianList")
     public Y9Page<ChaoSongModel> getYuejianList(@RequestParam(required = false) String searchName,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,

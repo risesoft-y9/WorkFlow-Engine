@@ -7,9 +7,11 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +42,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping(value = "/vue/monitor")
+@RequestMapping(value = "/vue/monitor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MonitorRestController {
 
     private final MonitorService monitorService;
@@ -67,7 +69,7 @@ public class MonitorRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/deptList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/deptList")
     public Y9Page<Map<String, Object>> deptList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchName, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
@@ -80,7 +82,7 @@ public class MonitorRestController {
      *
      * @return Y9Result<List < ItemModel>>
      */
-    @RequestMapping(value = "/getAllItemList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getAllItemList")
     public Y9Result<List<ItemModel>> getAllItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return item4PositionApi.getAllItemList(tenantId);
@@ -98,7 +100,7 @@ public class MonitorRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/monitorBanjianList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/monitorBanjianList")
     public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam(required = false) String searchName,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
@@ -119,7 +121,7 @@ public class MonitorRestController {
      * @param rows 条数
      * @return Y9Page<ChaoSongModel>
      */
-    @RequestMapping(value = "/monitorChaosongList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/monitorChaosongList")
     public Y9Page<ChaoSongModel> monitorChaosongList(@RequestParam(required = false) String searchName,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName,
         @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
@@ -137,7 +139,7 @@ public class MonitorRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/monitorDoingList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/monitorDoingList")
     public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.pageMonitorDoingList(itemId, searchTerm, page, rows);
@@ -152,7 +154,7 @@ public class MonitorRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @RequestMapping(value = "/monitorDoneList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/monitorDoneList")
     public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.pageMonitorDoneList(itemId, searchTerm, page, rows);
@@ -164,7 +166,7 @@ public class MonitorRestController {
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/removeProcess", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeProcess")
     public Y9Result<String> removeProcess(@RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParamModel processParamModel;

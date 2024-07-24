@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +31,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/commonSentences")
+@RequestMapping(value = "/vue/commonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSentencesRestController {
 
     private final CommonSentencesApi commonSentencesApi;
@@ -39,7 +41,7 @@ public class CommonSentencesRestController {
      *
      * @return Y9Result<List<CommonSentencesModel>>
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/list")
     public Y9Result<List<CommonSentencesModel>> listSentencesService() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
@@ -52,7 +54,7 @@ public class CommonSentencesRestController {
      * @param tabIndex 序号
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam int tabIndex) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -69,7 +71,7 @@ public class CommonSentencesRestController {
      *
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/removeUseNumber", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/removeUseNumber")
     public Y9Result<String> removeUseNumber() {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -87,7 +89,7 @@ public class CommonSentencesRestController {
      * @param content 内容
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/save")
     public Y9Result<String> save(@RequestParam @NotBlank String content) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -107,7 +109,7 @@ public class CommonSentencesRestController {
      * @param tabIndex 序号
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveEdit", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveEdit")
     public Y9Result<String> saveEdit(@RequestParam @NotBlank String content, @RequestParam @NotBlank String tabIndex) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
@@ -127,7 +129,7 @@ public class CommonSentencesRestController {
      * @param id 常用语id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/updateUseNumber", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/updateUseNumber")
     public Y9Result<String> updateUseNumber(@RequestParam @NotBlank String id) {
         try {
             commonSentencesApi.updateUseNumber(Y9LoginUserHolder.getTenantId(), id);

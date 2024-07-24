@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/quickSend")
+@RequestMapping(value = "/vue/quickSend", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QuickSendRestController {
 
     private final QuickSendApi quickSendApi;

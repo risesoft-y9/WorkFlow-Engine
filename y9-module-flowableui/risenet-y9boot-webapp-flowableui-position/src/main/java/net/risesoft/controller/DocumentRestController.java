@@ -8,9 +8,11 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,7 +61,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/document")
+@RequestMapping(value = "/vue/document", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentRestController {
 
     private final Item4PositionApi item4PositionApi;
@@ -100,7 +102,7 @@ public class DocumentRestController {
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/add", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/add")
     public Y9Result<Map<String, Object>> add(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
@@ -129,7 +131,7 @@ public class DocumentRestController {
      * @param infoOvert 办结数据是否在数据中心公开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/complete", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/complete")
     public Y9Result<String> complete(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String infoOvert) {
         try {
@@ -150,7 +152,7 @@ public class DocumentRestController {
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/edit", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/edit")
     public Y9Result<Map<String, Object>> edit(@RequestParam @NotBlank String itembox,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String itemId) {
@@ -216,7 +218,7 @@ public class DocumentRestController {
      * @param smsContent 短信内容
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/forwarding", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/forwarding")
     public Y9Result<Map<String, Object>> forwarding(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processDefinitionKey,
@@ -254,7 +256,7 @@ public class DocumentRestController {
      *
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getItemList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getItemList")
     public Y9Result<Map<String, Object>> getItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
@@ -288,7 +290,7 @@ public class DocumentRestController {
      *
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getItemSystemList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getItemSystemList")
     public Y9Result<Map<String, Object>> getItemSystemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
@@ -342,7 +344,7 @@ public class DocumentRestController {
      * @param taskId 任务id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getParallelNames", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getParallelNames")
     public Y9Result<Map<String, Object>> getParallelNames(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         String parallelDoing = "";
@@ -388,7 +390,7 @@ public class DocumentRestController {
      * @param desc 原因
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/multipleResumeToDo", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/multipleResumeToDo")
     public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceIds,
         @RequestParam(required = false) String desc) {
         try {
@@ -409,7 +411,7 @@ public class DocumentRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/signTaskConfig", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/signTaskConfig")
     public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
         @RequestParam @NotBlank String processSerialNumber) {
@@ -426,7 +428,7 @@ public class DocumentRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Object>
      */
-    @RequestMapping(value = "/submitTo", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/submitTo")
     public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
         return document4PositionApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
@@ -443,7 +445,7 @@ public class DocumentRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<DocUserChoiseModel>
      */
-    @RequestMapping(value = "/userChoiseData", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/userChoiseData")
     public Y9Result<DocUserChoiseModel> userChoiseData(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String routeToTask, @RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {

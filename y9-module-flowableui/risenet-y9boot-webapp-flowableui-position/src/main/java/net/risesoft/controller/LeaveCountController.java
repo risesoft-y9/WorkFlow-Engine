@@ -18,10 +18,11 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +40,7 @@ import net.risesoft.pojo.Y9Result;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/leaveCount")
+@RequestMapping(value = "/vue/leaveCount", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class LeaveCountController {
 
@@ -58,7 +59,7 @@ public class LeaveCountController {
      * @param endTime 结束时间
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/countList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/countList")
     public Y9Result<List<Map<String, Object>>> countList(@RequestParam(required = false) String leaveType,
         @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
         @RequestParam(required = false) String startTime, @RequestParam(required = false) String endTime) {
@@ -106,7 +107,7 @@ public class LeaveCountController {
      * @param endTime 结束时间
      */
     @SuppressWarnings("resource")
-    @RequestMapping(value = "/exportExcel", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/exportExcel")
     public void exportExcel(@RequestParam(required = false) String leaveType,
         @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
         @RequestParam(required = false) String startTime, @RequestParam(required = false) String endTime,

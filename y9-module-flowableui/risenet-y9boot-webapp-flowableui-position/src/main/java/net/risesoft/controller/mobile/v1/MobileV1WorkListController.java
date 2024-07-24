@@ -106,7 +106,6 @@ public class MobileV1WorkListController {
      *
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAppCount")
     public Y9Result<List<Map<String, Object>>> getAppCount() {
         try {

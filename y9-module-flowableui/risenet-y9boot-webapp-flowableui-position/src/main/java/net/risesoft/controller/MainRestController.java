@@ -8,9 +8,10 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,7 +53,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/mian")
+@RequestMapping(value = "/vue/mian", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MainRestController {
 
     private final Item4PositionApi item4PositionApi;
@@ -84,7 +85,7 @@ public class MainRestController {
      *
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/geAllItemList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/geAllItemList")
     public Y9Result<Map<String, Object>> geAllItemList() {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -230,7 +231,7 @@ public class MainRestController {
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getItem", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getItem")
     public Y9Result<Map<String, Object>> getItem(@RequestParam @NotBlank String itemId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -256,7 +257,7 @@ public class MainRestController {
      * @param systemName 系统名称
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getItemBySystemName", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getItemBySystemName")
     public Y9Result<Map<String, Object>> getItemBySystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> itemList = item4PositionApi.findAll(tenantId, systemName).getData();
@@ -282,7 +283,7 @@ public class MainRestController {
      *
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getMyCount", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getMyCount")
     public Y9Result<Map<String, Object>> getMyCount() {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -314,7 +315,7 @@ public class MainRestController {
      *
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getPositionList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getPositionList")
     public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -403,7 +404,7 @@ public class MainRestController {
      * @return Y9Result<Map < String, Object>>
      */
 
-    @RequestMapping(value = "/getReadCount", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getReadCount")
     public Y9Result<Map<String, Object>> getReadCount() {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
@@ -418,7 +419,7 @@ public class MainRestController {
      *
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getRole", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getRole")
     public Y9Result<Map<String, Object>> getRole() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -440,7 +441,7 @@ public class MainRestController {
      * @param type 类型
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getTaskOrProcessInfo", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getTaskOrProcessInfo")
     public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId,
         @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String type) {
         Map<String, Object> map = new HashMap<>(16);
