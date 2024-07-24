@@ -313,7 +313,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         List<TransactionWord> list = new ArrayList<>();
 
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            if (StringUtils.isNotBlank(bindValue)) {
+            if (StringUtils.isNotBlank(bindValue) && !"null".equals(bindValue)) {
                 list = transactionWordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
             } else {
                 list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
