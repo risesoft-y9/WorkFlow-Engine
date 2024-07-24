@@ -20,6 +20,18 @@ import net.risesoft.pojo.Y9Result;
 public interface ProcessTodoApi {
 
     /**
+     * 根据岗位id获取待办统计
+     *
+     * @param tenantId 租户Id
+     * @param positionId 岗位Id
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是办件统计
+     * @since 9.6.6
+     */
+    @GetMapping("/countByPositionId")
+    Y9Result<Long> countByPositionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
+
+    /**
      * 根据人员id，流程定义Key获取对应事项的办件统计（包括待办件，在办件，办结件）
      *
      * @param tenantId 租户Id
@@ -104,6 +116,21 @@ public interface ProcessTodoApi {
     @GetMapping("/getTodoCountByUserIdAndSystemName")
     Y9Result<Long> getTodoCountByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
+
+    /**
+     * 根据人员Id获取待办任务(分页)
+     *
+     * @param tenantId 租户Id
+     * @param positionId 岗位Id
+     * @param page 页码
+     * @param rows 行数
+     * @return {@code Y9Page<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
+     * @since 9.6.6
+     */
+    @GetMapping("/pageByUserId")
+    Y9Page<TaskModel> pageByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 根据流程定义Key条件搜索待办件

@@ -1,5 +1,6 @@
 package net.risesoft.api.itemadmin.position;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
@@ -95,6 +96,28 @@ public interface Document4PositionApi {
         @RequestParam(value = "taskId", required = false) String taskId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itemId") String itemId,
         @RequestParam("mobile") boolean mobile);
+
+    /**
+     * 解析用户
+     * 
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param routeToTaskId 任务key
+     * @param taskDefName 任务名称
+     * @param processInstanceId 流程实例id
+     * @param multiInstance 是否多实例
+     * @return {@code Y9Result<List<String>>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @GetMapping("/parserUser")
+    Y9Result<List<String>> parserUser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("taskDefName") String taskDefName,
+        @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam(value = "multiInstance", required = false) String multiInstance);
 
     /**
      * 带自定义变量发送

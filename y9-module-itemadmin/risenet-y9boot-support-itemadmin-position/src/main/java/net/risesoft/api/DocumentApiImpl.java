@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -138,6 +139,32 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setPosition(position);
         OpenDataModel model = documentService.edit(itembox, taskId, processInstanceId, itemId, mobile);
         return Y9Result.success(model);
+    }
+
+    /**
+     * 解析用户
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param routeToTaskId 任务key
+     * @param taskDefName 任务名称
+     * @param processInstanceId 流程实例id
+     * @param multiInstance 是否多实例
+     * @return {@code Y9Result<List<String>>} 通用请求返回对象 - data是解析后的人员id
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<String>> parserUser(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String routeToTaskId,
+        @RequestParam String taskDefName, @RequestParam String processInstanceId,
+        @RequestParam(required = false) String multiInstance) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Position position = positionManager.get(tenantId, positionId).getData();
+        Y9LoginUserHolder.setPosition(position);
+        return documentService.parserUser(itemId, processDefinitionId, routeToTaskId, taskDefName, processInstanceId,
+            multiInstance);
     }
 
     /**
