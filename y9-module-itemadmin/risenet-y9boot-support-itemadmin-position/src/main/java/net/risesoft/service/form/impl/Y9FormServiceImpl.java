@@ -35,7 +35,7 @@ import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.form.Y9TableService;
-import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -74,8 +74,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Transactional(readOnly = false)
     public Y9Result<Object> delChildTableRow(String formId, String tableId, String guid) {
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
             StringBuilder sqlStr = new StringBuilder();
@@ -131,8 +130,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Transactional(readOnly = false)
     public Y9Result<Object> delPreFormData(String formId, String guid) {
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {
                 StringBuilder sqlStr = new StringBuilder();
@@ -167,8 +165,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             if (StringUtils.isBlank(guid)) {
                 return map;
             }
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             String dataSql = "";
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 dataSql = "select * from \"" + tableName + "\" t where t.guid=?";
@@ -198,8 +195,7 @@ public class Y9FormServiceImpl implements Y9FormService {
         Map<String, Object> map = new HashMap<>(16);
         Map<String, Object> resMap = new HashMap<>(16);
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
@@ -240,8 +236,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     public Map<String, Object> getFormData4Var(String formId, String guid) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
@@ -293,8 +288,7 @@ public class Y9FormServiceImpl implements Y9FormService {
         throws Exception {
         List<Map<String, Object>> datamap = new ArrayList<>();
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
             StringBuilder sqlStr = new StringBuilder();
@@ -319,8 +313,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     public List<Map<String, Object>> listFormData(String formId) {
         List<Map<String, Object>> resList = new ArrayList<>();
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
@@ -412,8 +405,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     public Y9Result<Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
         String jsonData) {
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
@@ -623,8 +615,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Transactional
     public Y9Result<Object> saveFormData(String formdata) {
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formdata, List.class);
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
             String formId = (String)keyValue.get("form_Id");

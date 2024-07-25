@@ -21,7 +21,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.form.Y9TableFieldService;
-import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 
 /**
  * @author qinman
@@ -89,13 +89,12 @@ public class TableFieldRestController {
             map.put("id", id);
             map.put("field", field);
         }
-        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         try {
             List<Map<String, Object>> list =
-                dbMetaDataUtil.listTypes(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
+                Y9FormDbMetaDataUtil.listTypes(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
             map.put("typeList", list);
-            String databaseName =
-                dbMetaDataUtil.getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
+            String databaseName = Y9FormDbMetaDataUtil
+                .getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
             map.put("databaseName", databaseName);
         } catch (Exception e) {
             LOGGER.error("获取数据库类型失败", e);

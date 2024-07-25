@@ -28,12 +28,12 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
-import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.util.form.DdlKingbase;
 import net.risesoft.util.form.DdlMysql;
 import net.risesoft.util.form.DdlOracle;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9.sqlddl.DbColumn;
+import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
  * @author qinman
@@ -72,9 +72,8 @@ public class TableManagerService {
             String tableName = td.getTableName();
             String tableId = td.getId();
             // 修改表
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 DdlMysql ddLmysql = new DdlMysql();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
@@ -137,9 +136,8 @@ public class TableManagerService {
         StringBuilder createSql = new StringBuilder();
         try {
             // 创建表
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             String jsonDbColumns = Y9JsonUtil.writeValueAsString(dbcs);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 DdlMysql ddLmysql = new DdlMysql();
@@ -243,8 +241,7 @@ public class TableManagerService {
     public Map<String, Object> getDataSourceTableNames() {
         Map<String, Object> allNames = new HashMap<>(16);
         try {
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            allNames = dbMetaDataUtil.listAllTableNames(jdbcTemplate4Tenant.getDataSource());
+            allNames = Y9FormDbMetaDataUtil.listAllTableNames(jdbcTemplate4Tenant.getDataSource());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -274,8 +271,7 @@ public class TableManagerService {
 
             String sql = "show tables like '" + tableName + "'";
 
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
@@ -308,7 +304,7 @@ public class TableManagerService {
 
             /*
              * List<DbColumn> listMapTemp =
-             * DbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName,
+             * Y9FormDbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName,
              * null); for (DbColumn column : listMapTemp) { String fieldName =
              * column.getColumn_name().toLowerCase(); al.put(fieldName, fieldName); }
              */
@@ -341,11 +337,11 @@ public class TableManagerService {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public String getInsertSqlStatement(String tableName, ArrayList fieldList) {
-        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         boolean isHaveField = false;
         StringBuilder sqlStr = new StringBuilder();
         try {
-            List<DbColumn> list = dbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
+            List<DbColumn> list =
+                Y9FormDbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
             StringBuilder sqlStr1 = new StringBuilder(") values(");
             sqlStr.append("insert into " + tableName + " (");
             for (DbColumn column : list) {
@@ -403,11 +399,11 @@ public class TableManagerService {
      * @return
      */
     public String getUpdateSqlStatement(String tableName) {
-        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         boolean isHaveField = false;
         StringBuilder sqlStr = new StringBuilder();
         try {
-            List<DbColumn> list = dbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
+            List<DbColumn> list =
+                Y9FormDbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
             sqlStr.append("update " + tableName + " set ");
             StringBuilder sqlStr1 = new StringBuilder();
             for (DbColumn column : list) {
@@ -435,8 +431,7 @@ public class TableManagerService {
             if (StringUtils.isBlank(table.getId())) {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }

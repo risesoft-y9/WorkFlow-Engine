@@ -44,7 +44,7 @@ import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.jpa.AssociatedFileRepository;
 import net.risesoft.service.config.Y9FormItemBindService;
-import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -134,8 +134,7 @@ public class DataCenterService {
                 String fieldNames = "";
                 String fieldValues = "";
                 DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
-                DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-                String dialect = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+                String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
                 List<String> list = y9FormRepository.findBindTableName(y9Form.getFormId());
                 for (String tableName : list) {
                     StringBuilder sqlStr = new StringBuilder();

@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.DialectEnum;
-import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9FileUtil;
@@ -130,8 +130,7 @@ public class SyncYearTableService {
                 return map;
             }
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             String filePath = Y9Context.getWebRootRealPath() + "static" + File.separator + "yearTableSql"
                 + File.separator + dialectName + File.separator + "yearTable.sql";
             File file = new File(filePath);
@@ -171,13 +170,13 @@ public class SyncYearTableService {
                 s = s.replace("Year4Table", year);
                 List<String> sqlList = Y9FileUtil.loadSql(s);
                 if (DialectEnum.KINGBASE.getValue().equals(dialectName)) {
-                    dbMetaDataUtil.batchexecuteDdl4Kingbase(dataSource, sqlList);
+                    Y9FormDbMetaDataUtil.batchExecuteDdl4Kingbase(dataSource, sqlList);
                 } else if (DialectEnum.ORACLE.getValue().equals(dialectName)) {
-                    dbMetaDataUtil.batchexecuteDdl4Kingbase(dataSource, sqlList);
+                    Y9FormDbMetaDataUtil.batchExecuteDdl4Kingbase(dataSource, sqlList);
                 } else if (DialectEnum.DM.getValue().equals(dialectName)) {
-                    dbMetaDataUtil.batchexecuteDdl4Kingbase(dataSource, sqlList);
+                    Y9FormDbMetaDataUtil.batchExecuteDdl4Kingbase(dataSource, sqlList);
                 } else {
-                    dbMetaDataUtil.batchexecuteDdl(dataSource, sqlList);
+                    Y9FormDbMetaDataUtil.batchExecuteDdl(dataSource, sqlList);
                 }
                 LOGGER.info("************************年度表生成成功****************************");
             } else {

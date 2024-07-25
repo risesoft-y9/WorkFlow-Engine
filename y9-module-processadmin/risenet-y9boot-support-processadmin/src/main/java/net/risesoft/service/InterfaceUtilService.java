@@ -6,8 +6,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -55,10 +55,10 @@ import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.InterfaceParamsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.DbMetaDataUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 
 import cn.hutool.json.JSONObject;
 
@@ -130,7 +130,6 @@ public class InterfaceUtilService {
     public void dataHandling(String processSerialNumber, String processInstanceId, Map<String, Object> map,
         List<InterfaceParamsModel> paramsList, InterfaceModel info) throws Exception {
         if (map != null && paramsList != null && !paramsList.isEmpty()) {
-            Connection connection = null;
             try {
                 String tableName = "";
                 for (InterfaceParamsModel model : paramsList) {
@@ -139,9 +138,8 @@ public class InterfaceUtilService {
                         break;
                     }
                 }
-                connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-                DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-                String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+                DataSource database = Objects.requireNonNull(jdbcTemplate.getDataSource());
+                String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
                 StringBuilder sqlStr = new StringBuilder();
                 if ("oracle".equals(dialect)) {
                     sqlStr.append("update \"").append(tableName).append("\" set ");
@@ -179,14 +177,6 @@ public class InterfaceUtilService {
                     info.getInterfaceAddress(), msg);
                 if (info.getAbnormalStop().equals("1")) {
                     throw new Exception("调用接口失败_dataHandling：" + info.getInterfaceAddress());
-                }
-            } finally {
-                if (connection != null) {
-                    try {
-                        connection.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
 
@@ -304,7 +294,6 @@ public class InterfaceUtilService {
      */
     public List<Map<String, Object>> getRequestParams(List<InterfaceParamsModel> list, String processSerialNumber,
         String processInstanceId, InterfaceModel info) throws Exception {
-        Connection connection = null;
         try {
             String tableName = "";
             for (InterfaceParamsModel model : list) {
@@ -313,9 +302,8 @@ public class InterfaceUtilService {
                     break;
                 }
             }
-            connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            DataSource dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+            String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             StringBuilder sqlStr = getSqlStr(dialect, tableName);
             List<Map<String, Object>> listmap = jdbcTemplate.queryForList(sqlStr.toString(), processSerialNumber);
             LOGGER.info("*********************请求参数返回结果:listmap={}", Y9JsonUtil.writeValueAsString(listmap));
@@ -329,14 +317,6 @@ public class InterfaceUtilService {
                 info.getInterfaceAddress(), msg);
             if (info.getAbnormalStop().equals("1")) {
                 throw new Exception("调用接口失败_getRequestParams：" + info.getInterfaceAddress());
-            }
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
         }
         return new ArrayList<>();
