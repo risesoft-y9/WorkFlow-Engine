@@ -121,7 +121,7 @@ public class AsyncHandleService {
      * 异步发送
      *
      * @param tenantId
-     * @param person
+     * @param position
      * @param processInstanceId
      * @param processParam
      * @param sponsorHandle
