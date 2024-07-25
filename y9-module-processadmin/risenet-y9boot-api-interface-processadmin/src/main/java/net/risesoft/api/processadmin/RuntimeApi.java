@@ -167,7 +167,7 @@ public interface RuntimeApi {
     @PostMapping("/recovery4Completed")
     Y9Result<Object> recovery4Completed(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam(value = "year", required = false) String year);
+        @RequestParam(value = "year", required = false) String year) throws Exception;
 
     /**
      * 恢复流程实例为待办状态，其实是先激活，再设置流程实例的结束时间为null
