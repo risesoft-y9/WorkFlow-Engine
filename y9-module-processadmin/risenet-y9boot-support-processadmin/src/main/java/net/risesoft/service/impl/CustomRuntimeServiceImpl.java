@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.flowable.engine.HistoryService;
@@ -23,7 +22,6 @@ import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,8 +66,6 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final CustomProcessDefinitionService customProcessDefinitionService;
 
-    private final JdbcTemplate jdbcTemplate;
-
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     private final ErrorLogApi errorLogManager;
@@ -78,12 +74,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final ActRuDetailApi actRuDetailApi;
 
-    public CustomRuntimeServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        RuntimeService runtimeService, HistoryService historyService, IdentityService identityService,
-        ManagementService managementService, CustomProcessDefinitionService customProcessDefinitionService,
+    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
+
+    public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,
+        IdentityService identityService, ManagementService managementService,
+        CustomProcessDefinitionService customProcessDefinitionService,
         OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi, ErrorLogApi errorLogManager,
         DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
-        this.jdbcTemplate = jdbcTemplate;
         this.runtimeService = runtimeService;
         this.historyService = historyService;
         this.identityService = identityService;
@@ -206,7 +204,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
              * 1-恢复正在运行的流程实例
              */
             java.sql.Statement stmt = null;
-            try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
+            Connection connection = null;
+            try {
+                connection = jdbcTemplate.getDataSource().getConnection();
                 stmt = connection.createStatement();
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
                 stmt.addBatch(
@@ -218,6 +218,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 if (stmt != null) {
                     stmt.execute("SET FOREIGN_KEY_CHECKS=1");
                     stmt.close();
+                }
+                if (connection != null) {
+                    connection.close();
                 }
             }
             /*
@@ -427,7 +430,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
              * 1-恢复正在运行的流程实例
              */
             java.sql.Statement stmt = null;
-            try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
+            Connection connection = null;
+            try {
+                connection = jdbcTemplate.getDataSource().getConnection();
                 stmt = connection.createStatement();
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
                 stmt.addBatch(
@@ -439,6 +444,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 if (stmt != null) {
                     stmt.execute("SET FOREIGN_KEY_CHECKS=1");
                     stmt.close();
+                }
+                if (connection != null) {
+                    connection.close();
                 }
             }
 
