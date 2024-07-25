@@ -77,12 +77,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-mongo-public</artifactId>
-            <version>${project.version}</version>
-        </dependency> -->
-
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-health</artifactId>
@@ -91,6 +85,12 @@
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-dbcomment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-common-sqlddl</artifactId>
             <version>${project.version}</version>
         </dependency>
 

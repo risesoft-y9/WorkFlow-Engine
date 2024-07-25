@@ -25,9 +25,9 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.util.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -262,8 +262,7 @@ public class MobileSyncController {
                 + "	ACT_HI_PROCINST_2020 P" + " WHERE" + "	P .END_TIME_ IS NOT NULL" + " and P.DELETE_REASON_ is null"
                 + " ORDER BY" + "	P .END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql")) {
                 sql = "SELECT"
                     + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
@@ -376,8 +375,7 @@ public class MobileSyncController {
                 + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL" + " and P.DELETE_REASON_ is null"
                 + " ORDER BY" + "	P .END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql")) {
                 sql = "SELECT"
                     + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
@@ -497,8 +495,7 @@ public class MobileSyncController {
                 + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL"
                 + " and P.DELETE_REASON_ is null" + " ORDER BY" + "	P .END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql")) {
                 sql = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_" + " FROM"
                     + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL" + " and P.DELETE_REASON_ is null"

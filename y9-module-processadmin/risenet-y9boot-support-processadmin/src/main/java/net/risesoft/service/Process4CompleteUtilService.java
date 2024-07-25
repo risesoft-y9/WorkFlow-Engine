@@ -3,7 +3,6 @@ package net.risesoft.service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,10 +33,10 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.DbMetaDataUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -197,7 +196,6 @@ public class Process4CompleteUtilService {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Connection connection = null;
         try {
             ProcessParamModel processParamModel =
                 processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -215,9 +213,7 @@ public class Process4CompleteUtilService {
                 + " TO_CHAR(P .END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_" + " FROM"
                 + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            connection = dataSource.getConnection();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
+            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)
                 || DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                 sql0 = "SELECT"
@@ -332,14 +328,6 @@ public class Process4CompleteUtilService {
                 LOGGER.error("保存错误日志失败", e1);
             }
             LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

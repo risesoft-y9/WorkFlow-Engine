@@ -22,7 +22,7 @@ import net.risesoft.entity.form.Y9Table;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.form.Y9TableService;
-import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
@@ -80,10 +80,9 @@ public class TableRestController {
      */
     @GetMapping(value = "/checkTableExist")
     public Y9Result<String> checkTableExist(@RequestParam String tableName) {
-        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         try {
-            boolean msg =
-                dbMetaDataUtil.checkTableExist(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName);
+            boolean msg = Y9FormDbMetaDataUtil
+                .checkTableExist(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName);
             return Y9Result.success(msg ? "exist" : "isNotExist", "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取数据库表失败", e);
@@ -140,11 +139,10 @@ public class TableRestController {
      */
     @GetMapping(value = "/newOrModifyTable")
     public Y9Result<Map<String, Object>> newOrModifyTable(@RequestParam(required = false) String id) {
-        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         Map<String, Object> map = new HashMap<>(16);
         try {
-            String databaseName =
-                dbMetaDataUtil.getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
+            String databaseName = Y9FormDbMetaDataUtil
+                .getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
             map.put("databaseName", databaseName);
             if (StringUtils.isNotBlank(id) && !UtilConsts.NULL.equals(id)) {
                 Y9Table y9Table = y9TableService.findById(id);

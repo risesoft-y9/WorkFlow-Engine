@@ -39,7 +39,7 @@ import net.risesoft.service.DataCenterService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -100,9 +100,8 @@ public class Sync2DataCenterController {
                     + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
                     + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
                     + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE"
@@ -170,9 +169,8 @@ public class Sync2DataCenterController {
                     + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
                     + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql =
                     "SELECT  P .PROC_INST_ID_, SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST_"
@@ -304,9 +302,8 @@ public class Sync2DataCenterController {
                     + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
                     + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql =
                     "SELECT P .PROC_INST_ID_,  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST P WHERE P .DELETE_REASON_ IS NULL ORDER BY  P .START_TIME_ DESC";

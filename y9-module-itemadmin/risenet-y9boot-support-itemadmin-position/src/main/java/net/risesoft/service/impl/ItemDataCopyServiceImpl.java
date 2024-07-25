@@ -93,7 +93,7 @@ import net.risesoft.service.form.Y9TableFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.sqlddl.DbColumn;
+import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /*
  * @author qinman

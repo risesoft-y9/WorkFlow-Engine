@@ -41,7 +41,7 @@ import net.risesoft.service.SyncYearTableService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.sqlddl.DbColumn;
+import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
  * @author qinman

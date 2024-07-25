@@ -33,7 +33,7 @@ import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
-import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -77,8 +77,7 @@ public class Process4SearchService {
                 + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "	P .PROC_DEF_ID_" + " FROM"
                 + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-            String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)
                 || DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                 sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_"
@@ -173,8 +172,7 @@ public class Process4SearchService {
                     + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "	P .PROC_DEF_ID_" + " FROM"
                     + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
                 DataSource dataSource = jdbcTemplate.getDataSource();
-                DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
-                String dialectName = dbMetaDataUtil.getDatabaseDialectName(dataSource);
+                String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.MYSQL.getValue().equals(dialectName)
                     || DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                     sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_"
