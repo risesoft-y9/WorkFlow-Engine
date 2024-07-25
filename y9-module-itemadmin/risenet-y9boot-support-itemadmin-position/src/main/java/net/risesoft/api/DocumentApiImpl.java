@@ -17,6 +17,7 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.ProcessParam;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
@@ -24,7 +25,9 @@ import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.DocumentService;
+import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -46,6 +49,10 @@ public class DocumentApiImpl implements Document4PositionApi {
     private final PositionApi positionManager;
 
     private final VariableApi variableManager;
+
+    private final AsyncUtilService asyncUtilService;
+
+    private final ProcessParamService processParamService;
 
     /**
      * 新建
@@ -194,13 +201,18 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
+        Y9Result<String> y9Result;
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
-            return documentService.saveAndForwarding(itemId, processSerialNumber, processDefinitionKey, userChoice,
+            y9Result = documentService.saveAndForwarding(itemId, processSerialNumber, processDefinitionKey, userChoice,
                 sponsorGuid, routeToTaskId, variables);
         } else {
             variableManager.setVariables(tenantId, taskId, variables);
-            return documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
+            y9Result = documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
         }
+        if (y9Result.isSuccess()) {// 异步自动循环发送
+            asyncUtilService.loopSending(tenantId, positionId, itemId, y9Result.getData());
+        }
+        return y9Result;
     }
 
     /**
@@ -259,11 +271,17 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
+        Y9Result<Object> y9Result;
         if (StringUtils.isBlank(taskId) || UtilConsts.NULL.equals(taskId)) {
-            return documentService.saveAndSubmitTo(itemId, processSerialNumber);
+            y9Result = documentService.saveAndSubmitTo(itemId, processSerialNumber);
         } else {
-            return documentService.submitTo(processSerialNumber, taskId);
+            y9Result = documentService.submitTo(processSerialNumber, taskId);
         }
+        if (y9Result.isSuccess()) {// 异步自动循环发送
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+            asyncUtilService.loopSending(tenantId, positionId, itemId, processParam.getProcessInstanceId());
+        }
+        return y9Result;
     }
 
     /**

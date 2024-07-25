@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -38,14 +37,12 @@ import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AsyncUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
@@ -68,10 +65,6 @@ public class XxxRestController {
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     private final Document4PositionApi document4PositionApi;
-
-    private final AsyncUtilService asyncUtilService;
-
-    private final ProcessParamApi processParamApi;
 
     private final Item4PositionApi item4PositionApi;
 
@@ -395,16 +388,6 @@ public class XxxRestController {
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Y9Result<Object> y9Result =
-            document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
-        if (y9Result.isSuccess()) {
-            ProcessParamModel processParam =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, processParam.getItemId()).getData();
-            // 异步循环发送
-            asyncUtilService.loopSending(tenantId, positionId, itemId, processSerialNumber, item.getWorkflowGuid(),
-                processParam.getProcessInstanceId());
-        }
-        return y9Result;
+        return document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
     }
 }

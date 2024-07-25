@@ -45,7 +45,6 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -96,8 +95,6 @@ public class DocumentRestController {
     private final Y9Properties y9Config;
 
     private final ProcessTodoApi processTodoApi;
-
-    private final AsyncUtilService asyncUtilService;
 
     /**
      * 获取新建公文数据
@@ -243,9 +240,6 @@ public class DocumentRestController {
                 Y9LoginUserHolder.getPositionId(), processInstanceId, taskId, sponsorHandle, itemId,
                 processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             if (y9Result.isSuccess()) {
-                // 异步循环发送
-                asyncUtilService.loopSending(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId,
-                    processSerialNumber, processDefinitionKey, y9Result.getData());
                 map.put("processInstanceId", y9Result.getData());
                 return Y9Result.success(map, y9Result.getMsg());
             } else {
@@ -437,19 +431,8 @@ public class DocumentRestController {
     @PostMapping(value = "/submitTo")
     public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
-        Y9Result<Object> y9Result = document4PositionApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(),
-            Y9LoginUserHolder.getPositionId(), taskId, itemId, processSerialNumber);
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
-        if (y9Result.isSuccess()) {
-            ProcessParamModel processParam =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, processParam.getItemId()).getData();
-            // 异步循环发送
-            asyncUtilService.loopSending(tenantId, positionId, itemId, processSerialNumber, item.getWorkflowGuid(),
-                processParam.getProcessInstanceId());
-        }
-        return y9Result;
+        return document4PositionApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+            taskId, itemId, processSerialNumber);
     }
 
     /**

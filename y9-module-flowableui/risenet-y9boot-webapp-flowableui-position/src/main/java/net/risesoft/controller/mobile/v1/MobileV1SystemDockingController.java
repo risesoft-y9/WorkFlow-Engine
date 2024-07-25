@@ -33,7 +33,6 @@ import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
@@ -70,8 +69,6 @@ public class MobileV1SystemDockingController {
     private final Attachment4PositionApi attachment4PositionApi;
 
     private final TaskApi taskApi;
-
-    private final AsyncUtilService asyncUtilService;
 
     /**
      * 对接系统提交接口
@@ -144,9 +141,6 @@ public class MobileV1SystemDockingController {
             Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId,
                 taskId, "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, new HashMap<>());
             if (y9Result.isSuccess()) {
-                // 异步循环发送
-                asyncUtilService.loopSending(tenantId, positionId, itemId, guid, item.getWorkflowGuid(),
-                    y9Result.getData());
                 return Y9Result.success("操作成功");
             }
             return Y9Result.failure(y9Result.getMsg());
