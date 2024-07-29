@@ -108,7 +108,7 @@ public class MobileV1SearchListController {
      * @param searchName 文件编号，标题
      * @param itemId 事项id
      * @param userName 发起人
-     * @param state 状态，todo在办，done办结
+     * @param state 状态，todo(未办结)，done(办结)
      * @param year 年度
      * @param startDate 开始日期
      * @param endDate 结束日期
