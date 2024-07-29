@@ -193,20 +193,20 @@ public class DataCenterService {
             List<HistoryInfo> list = new ArrayList<>();
             for (int i = 0; i < listMap.size(); i++) {
                 HistoryProcessModel map = listMap.get(i);
-                String assignee = map.getAssignee();
+                String assignee = StringUtils.isNotBlank(map.getAssignee()) ? map.getAssignee() : "";
                 if (!undertaker.contains(assignee)) {
                     undertaker = Y9Util.genCustomStr(undertaker, assignee);
                 }
-                String userId = map.getUndertakerId();
+                String userId = StringUtils.isNotBlank(map.getUndertakerId()) ? map.getUndertakerId() : "";
                 if (StringUtils.isNotBlank(userId)) {
                     if (!userIds.contains(userId)) {
                         userIds = Y9Util.genCustomStr(userIds, userId);
                     }
                 }
-                String opinion = map.getOpinion();
-                String startTime = map.getStartTime();
-                String endTime = map.getEndTime();
-                String actionName = map.getName();
+                String opinion = StringUtils.isNotBlank(map.getOpinion()) ? map.getOpinion() : "";
+                String startTime = StringUtils.isNotBlank(map.getStartTime()) ? map.getStartTime() : "";
+                String endTime = StringUtils.isNotBlank(map.getEndTime()) ? map.getEndTime() : "";
+                String actionName = StringUtils.isNotBlank(map.getName()) ? map.getName() : "";
                 HistoryInfo historyInfo = new HistoryInfo();
                 historyInfo.setAssignee(assignee);
                 historyInfo.setActionName(actionName);

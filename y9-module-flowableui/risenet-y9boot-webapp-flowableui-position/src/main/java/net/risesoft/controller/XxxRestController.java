@@ -32,6 +32,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
@@ -40,6 +41,7 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -85,6 +87,8 @@ public class XxxRestController {
     private final ButtonOperation4PositionApi buttonOperation4PositionApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
+
+    private final VariableApi variableApi;
 
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -371,8 +375,54 @@ public class XxxRestController {
         String multiInstance = processDefinitionApi.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
         List<String> userChoiceList = document4PositionApi.parserUser(tenantId, positionId, itemId, processDefinitionId,
             routeToTaskId, routeToTaskId, processInstanceId, multiInstance).getData();
+        Map<String, Object> map = new HashMap<>();
+        map.put("val", false);
+        variableApi.setVariable(tenantId, taskId, "stopProcess", map);
         return buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, routeToTaskId, userChoiceList, "",
             "");
+    }
+
+    /**
+     * 开始流程
+     *
+     * @param taskId 任务id
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/startProcess")
+    public Y9Result<Object> startProcess(@RequestParam String taskId, @RequestParam String itemId,
+        @RequestParam String processSerialNumber) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        Map<String, Object> map = new HashMap<>();
+        map.put("val", false);
+        variableApi.setVariable(tenantId, taskId, "stopProcess", map);
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        List<TargetModel> targetModelList = processDefinitionApi
+            .getTargetNodes(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+        if (targetModelList.size() > 0) {// 有目标任务才执行提交
+            return document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
+        }
+        return Y9Result.success();
+    }
+
+    /**
+     * 停止流程
+     *
+     * @param taskId 任务id
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/stopProcess")
+    public Y9Result<Object> stopProcess(@RequestParam String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        if (task.getTaskDefinitionKey().contains("skip_")) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("val", true);
+            return variableApi.setVariable(tenantId, taskId, "stopProcess", map);
+        }
+        return Y9Result.success();
     }
 
     /**
@@ -388,6 +438,9 @@ public class XxxRestController {
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
+        Map<String, Object> map = new HashMap<>();
+        map.put("val", false);
+        variableApi.setVariable(tenantId, taskId, "stopProcess", map);
         return document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
     }
 }

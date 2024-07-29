@@ -5,9 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -178,7 +176,6 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             }
             String id = hai.getId();
             String taskId = hai.getId();
-            Map<String, Object> map = new HashMap<>(16);
 
             HistoryProcessModel model = new HistoryProcessModel();
             model.setId(id);
@@ -213,7 +210,6 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     if (StringUtils.isNotBlank(ownerId)) {
                         Position ownerUser = positionApi.get(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                         employeeName = ownerUser.getName();
-                        map.put("undertakerId", ownerUser.getId());
                         model.setUndertakerId(ownerUser.getId());
                     }
                     /*EntrustDetail entrustDetail = entrustDetailService.findByTaskId(taskId);
