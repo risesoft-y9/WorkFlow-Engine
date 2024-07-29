@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -51,6 +52,8 @@ public class AsyncUtilService {
 
     private final DocumentService documentService;
 
+    private final VariableApi variableApi;
+
     /**
      * 异步循环发送
      *
@@ -74,7 +77,9 @@ public class AsyncUtilService {
                 taskDefinitionKey = taskModel.getTaskDefinitionKey();
                 String processDefinitionId = taskModel.getProcessDefinitionId();
                 taskId = taskModel.getId();
-                if (taskDefinitionKey.contains("skip_")) {// 当前任务自动跳过
+                String stopProcess =
+                    variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "stopProcess").getData();
+                if (taskDefinitionKey.contains("skip_") && (stopProcess == null || "false".equals(stopProcess))) {// 当前任务不停止且自动跳过
                     List<TargetModel> targetModelList =
                         processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefinitionKey).getData();
                     if (targetModelList != null && !targetModelList.isEmpty()) {

@@ -265,27 +265,19 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     public Y9Result<Object> recovery4Completed(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processInstanceId, @RequestParam String year) {
+        @RequestParam String processInstanceId, @RequestParam String year) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         if (person != null && StringUtils.isNotBlank(person.getId())) {
             Y9LoginUserHolder.setPerson(person);
-            try {
-                customRuntimeService.recovery4Completed(processInstanceId, year);
-                return Y9Result.success();
-            } catch (Exception e) {
-                return Y9Result.failure("恢复待办失败");
-            }
+            customRuntimeService.recovery4Completed(processInstanceId, year);
+            return Y9Result.success();
         } else {
             Position position = positionManager.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPosition(position);
-            try {
-                customRuntimeService.recoveryCompleted4Position(processInstanceId, year);
-                return Y9Result.success();
-            } catch (Exception e) {
-                return Y9Result.failure("恢复待办失败");
-            }
+            customRuntimeService.recoveryCompleted4Position(processInstanceId, year);
+            return Y9Result.success();
         }
     }
 

@@ -33,7 +33,6 @@ import org.apache.http.util.EntityUtils;
 import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -71,17 +70,14 @@ import cn.hutool.json.JSONObject;
 @Service(value = "interfaceUtilService")
 public class InterfaceUtilService {
 
-    private final JdbcTemplate jdbcTemplate;
-
     private final ProcessParamApi processParamApi;
-
     private final ErrorLogApi errorLogApi;
-
     private final ItemInterfaceApi itemInterfaceApi;
+    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
 
-    public InterfaceUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        ProcessParamApi processParamApi, ErrorLogApi errorLogApi, ItemInterfaceApi itemInterfaceApi) {
-        this.jdbcTemplate = jdbcTemplate;
+    public InterfaceUtilService(ProcessParamApi processParamApi, ErrorLogApi errorLogApi,
+        ItemInterfaceApi itemInterfaceApi) {
         this.processParamApi = processParamApi;
         this.errorLogApi = errorLogApi;
         this.itemInterfaceApi = itemInterfaceApi;
