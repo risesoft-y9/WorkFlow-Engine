@@ -294,7 +294,7 @@ public class DataCenterService {
         officeInfo.setCompleteUserName(position.getName());
         officeInfo.setCreatDeptName(dept.getName());
         officeInfo.setCreatUserName(startProUser.getName());
-        officeInfo.setEndTime(processInstance.getEndTime());
+        officeInfo.setEndTime(processInstance.getEndTime() == null ? new Date() : processInstance.getEndTime());
         officeInfo.setStartTime(processInstance.getStartTime());
         officeInfo.setAppCnName(spmApproveItem != null ? spmApproveItem.getName() : "");
         officeInfo.setSystemCnName(systemCnName);
