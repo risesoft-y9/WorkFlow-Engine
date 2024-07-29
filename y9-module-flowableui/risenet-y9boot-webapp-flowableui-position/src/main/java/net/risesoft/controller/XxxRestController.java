@@ -282,10 +282,12 @@ public class XxxRestController {
             .parserUser(tenantId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskKey, "", "", "")
             .getData();
         String positionName = "";
-        for (String userChoice : userChoiceList) {
-            Position position = positionApi.get(tenantId, userChoice).getData();
-            if (position != null) {
-                positionName = Y9Util.genCustomStr(positionName, position.getName());
+        if (userChoiceList != null) {
+            for (String userChoice : userChoiceList) {
+                Position position = positionApi.get(tenantId, userChoice).getData();
+                if (position != null) {
+                    positionName = Y9Util.genCustomStr(positionName, position.getName());
+                }
             }
         }
         map.put("positionName", positionName);
@@ -378,6 +380,9 @@ public class XxxRestController {
         Map<String, Object> map = new HashMap<>();
         map.put("val", false);
         variableApi.setVariable(tenantId, taskId, "stopProcess", map);
+        if (userChoiceList == null || userChoiceList.size() == 0) {
+            return Y9Result.failure("目标节点未授权人员");
+        }
         return buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, routeToTaskId, userChoiceList, "",
             "");
     }

@@ -68,6 +68,7 @@ public class AsyncUtilService {
         String taskDefinitionKey = "";
         String taskId = "";
         try {
+            Thread.sleep(5000);// 延时5秒执行
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionManager.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
