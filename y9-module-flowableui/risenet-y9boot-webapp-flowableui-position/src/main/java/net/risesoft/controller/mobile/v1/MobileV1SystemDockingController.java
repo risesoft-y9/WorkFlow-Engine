@@ -26,6 +26,7 @@ import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
@@ -69,6 +70,8 @@ public class MobileV1SystemDockingController {
     private final Attachment4PositionApi attachment4PositionApi;
 
     private final TaskApi taskApi;
+
+    private final VariableApi variableApi;
 
     /**
      * 对接系统提交接口
@@ -119,6 +122,9 @@ public class MobileV1SystemDockingController {
                 } else {
                     processInstanceId = taskModel.getProcessInstanceId();
                 }
+                Map<String, Object> map = new HashMap<>();
+                map.put("val", false);
+                variableApi.setVariable(tenantId, taskId, "stopProcess", map);
             }
             Y9Result<String> map1 =
                 processParamService.saveOrUpdate(itemId, guid, processInstanceId, title, number, level, false);
