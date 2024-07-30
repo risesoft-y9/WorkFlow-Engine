@@ -44,7 +44,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Service(value = "todoTaskService")
 public class TodoTaskServiceImpl implements TodoTaskService {
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final TodoTaskApi todoTaskManager;
 
@@ -160,13 +160,13 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             String itemName = processParamModel.getItemName();
             if (StringUtils.isNotBlank(tenantId)) {
                 String senderDepartmentId, receiverDepartmentId, assigneeName;
-                OrgUnit receiverPerson = orgUnitManager.getOrgUnit(tenantId, assignee).getData();
-                OrgUnit senderPerson = orgUnitManager.getOrgUnit(tenantId, taskSenderId).getData();
+                OrgUnit receiverPerson = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                OrgUnit senderPerson = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskSenderId).getData();
                 senderDepartmentId = senderPerson.getParentId();
                 receiverDepartmentId = receiverPerson.getParentId();
                 assigneeName = receiverPerson.getName();
-                OrgUnit senderOrgUnit = orgUnitManager.getOrgUnit(tenantId, senderDepartmentId).getData();
-                OrgUnit receiverOrgUnit = orgUnitManager.getOrgUnit(tenantId, receiverDepartmentId).getData();
+                OrgUnit senderOrgUnit = orgUnitApi.getOrgUnit(tenantId, senderDepartmentId).getData();
+                OrgUnit receiverOrgUnit = orgUnitApi.getOrgUnit(tenantId, receiverDepartmentId).getData();
                 String systemName = processParamModel.getSystemName();
                 String systemCnName = processParamModel.getSystemCnName();
                 String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();

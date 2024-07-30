@@ -28,16 +28,16 @@ public class JumpSubProcessCommand implements Command<Void> {
 
     protected Map<String, Object> vars;
 
-    protected String positionId;
+    protected String orgUnitId;
 
     protected List<String> users;
 
-    public JumpSubProcessCommand(String taskId, String positionId, Map<String, Object> vars, String targetNodeId,
+    public JumpSubProcessCommand(String taskId, String orgUnitId, Map<String, Object> vars, String targetNodeId,
         List<String> users) {
         this.taskId = taskId;
         this.targetNodeId = targetNodeId;
         this.vars = vars;
-        this.positionId = positionId;
+        this.orgUnitId = orgUnitId;
         this.users = users;
     }
 

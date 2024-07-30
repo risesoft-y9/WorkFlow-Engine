@@ -59,76 +59,47 @@ public interface TaskApi {
     Y9Result<Object> completeTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
 
     /**
-     * 完成按钮的任务完结/岗位
+     * 完成按钮的任务完结
      *
      * @param tenantId 租户id
-     * @param positionId 岗位Id
+     * @param orgUnitId 人员、岗位Id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/completeTaskWithoutAssignee")
     Y9Result<Object> completeTaskWithoutAssignee(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 完成任务（设置流程变量）
      *
      * @param tenantId 租户id
-     * @param taskId 任务id
-     * @param map 变量map
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @PostMapping(value = "/completeWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> completeWithVariables(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId, @RequestBody Map<String, Object> map);
-
-    /**
-     * 完成任务（设置流程变量）岗位
-     *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位Id
      * @param taskId 任务id
      * @param vars 变量map
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
-    @PostMapping(value = "/completeWithVariables4Position", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> completeWithVariables4Position(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId, @RequestParam("positionId") String positionId,
+    @PostMapping(value = "/completeWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> completeWithVariables(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId, @RequestParam("orgUnitId") String orgUnitId,
         @RequestBody Map<String, Object> vars);
 
     /**
      * 创建变量
      *
      * @param tenantId 租户id
-     * @param personId 人员id
+     * @param orgUnitId 人员、岗位Id
      * @param routeToTaskId 任务id
      * @param vars 变量map
-     * @param userIdList 人员ids
+     * @param orgUnitIdList 人员、岗位ids
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping(value = "/createWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createWithVariables(String tenantId, String personId, String routeToTaskId,
-        Map<String, Object> vars, List<String> userIdList);
-
-    /**
-     * 创建变量/岗位
-     *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
-     * @param personId 人员id
-     * @param routeToTaskId 任务id
-     * @param vars 变量map
-     * @param positionIdList 岗位ids
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @PostMapping(value = "/createWithVariables4Position", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createWithVariables4Position(String tenantId, String positionId, String personId,
-        String routeToTaskId, Map<String, Object> vars, List<String> positionIdList);
+    Y9Result<Object> createWithVariables(String tenantId, String orgUnitId, String routeToTaskId,
+        Map<String, Object> vars, List<String> orgUnitIdList);
 
     /**
      * 设置任务代理

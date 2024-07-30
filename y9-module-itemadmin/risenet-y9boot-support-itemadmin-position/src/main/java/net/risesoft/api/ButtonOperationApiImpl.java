@@ -156,7 +156,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSECLAIMROLLBACK);
             variableManager.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
-            taskManager.completeWithVariables4Position(tenantId, taskId, positionId, variables);
+            taskManager.completeWithVariables(tenantId, taskId, positionId, variables);
             /*
              * 如果上一任务是并行，则回退时设置主办人
              */
@@ -196,8 +196,8 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
         @RequestParam String taskId, @RequestParam String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, userChoice,
-            reason, sponsorGuid);
+        specialOperationManager.reposition(tenantId, positionId, taskId, repositionToTaskId, userChoice, reason,
+            sponsorGuid);
         return Y9Result.success();
     }
 
@@ -215,8 +215,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     public Y9Result<Object> rollBack(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result
-            .success(specialOperationManager.rollBack4Position(tenantId, positionId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationManager.rollBack(tenantId, positionId, taskId, reason).isSuccess());
     }
 
     /**
@@ -232,8 +231,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     public Y9Result<Object> rollbackToSender(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result
-            .success(specialOperationManager.rollbackToSender4Position(tenantId, positionId, taskId).isSuccess());
+        return Y9Result.success(specialOperationManager.rollbackToSender(tenantId, positionId, taskId).isSuccess());
     }
 
     /**
@@ -250,8 +248,8 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     public Y9Result<Object> rollbackToStartor(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(
-            specialOperationManager.rollbackToStartor4Position(tenantId, positionId, taskId, reason).isSuccess());
+        return Y9Result
+            .success(specialOperationManager.rollbackToStartor(tenantId, positionId, taskId, reason).isSuccess());
     }
 
     /**
@@ -268,8 +266,8 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     public Y9Result<Object> specialComplete(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(
-            specialOperationManager.specialComplete4Position(tenantId, positionId, taskId, reason).isSuccess());
+        return Y9Result
+            .success(specialOperationManager.specialComplete(tenantId, positionId, taskId, reason).isSuccess());
     }
 
     /**
@@ -286,7 +284,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     public Y9Result<Object> takeback(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result
-            .success(specialOperationManager.takeBack4Position(tenantId, positionId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationManager.takeBack(tenantId, positionId, taskId, reason).isSuccess());
     }
 }

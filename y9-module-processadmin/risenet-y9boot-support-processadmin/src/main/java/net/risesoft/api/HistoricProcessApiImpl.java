@@ -39,7 +39,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     private final CustomTaskService customTaskService;
 
-    private final TodoTaskApi rpcTodoTaskManager;
+    private final TodoTaskApi todoTaskApi;
 
     private final ProcessInstanceApi processInstance4PositionApi;
 
@@ -64,7 +64,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
             if (list != null && !list.isEmpty()) {
                 for (org.flowable.task.api.Task task : list) {
                     try {
-                        boolean msg1 = rpcTodoTaskManager.deleteTodoTaskByTaskId(tenantId, task.getId());
+                        boolean msg1 = todoTaskApi.deleteTodoTaskByTaskId(tenantId, task.getId());
                         LOGGER.error("##############################统一待办删除：{}#################################", msg1);
                     } catch (Exception e) {
                         LOGGER.error("##############################统一待办删除失败：{}#", e.getMessage());
@@ -180,7 +180,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         if (b && (list != null && !list.isEmpty())) {
             for (org.flowable.task.api.Task task : list) {
                 try {
-                    boolean msg1 = rpcTodoTaskManager.recoveryTodoTaskByTaskId(tenantId, task.getId());
+                    boolean msg1 = todoTaskApi.recoveryTodoTaskByTaskId(tenantId, task.getId());
                     LOGGER.info("##############################统一待办还原：{}#################################", msg1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -203,22 +203,6 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(customHistoricProcessService.removeProcess(processInstanceId));
-    }
-
-    /**
-     * 彻底删除流程实例，岗位
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> removeProcess4Position(@RequestParam String tenantId,
-        @RequestParam String processInstanceId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(customHistoricProcessService.removeProcess4Position(processInstanceId));
     }
 
     /**

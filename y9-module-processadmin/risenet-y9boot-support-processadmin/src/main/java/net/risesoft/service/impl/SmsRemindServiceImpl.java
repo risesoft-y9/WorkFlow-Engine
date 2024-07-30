@@ -12,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.sms.SmsHttpApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.SmsRemindService;
 import net.risesoft.util.SysVariables;
@@ -32,7 +34,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Service(value = "smsRemindService")
 public class SmsRemindServiceImpl implements SmsRemindService {
 
-    private final PersonApi personManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final PositionApi positionApi;
 
@@ -84,18 +86,18 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             }
             List<String> list = new ArrayList<>();
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            Person user = personManager.get(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
             if (UtilConsts.TRUE.equals(isShuMing)) {
-                smsContent = smsContent + "--" + user.getName();
+                smsContent = smsContent + "--" + orgUnit.getName();
             }
-            Person person = personManager.get(tenantId, assignee).getData();
-            if (person == null || StringUtils.isBlank(person.getId())) {
+            OrgUnit orgUnit0 = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+            if (orgUnit0.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 List<Person> plist = positionApi.listPersonsByPositionId(tenantId, assignee).getData();
                 for (Person p : plist) {
                     list.add(p.getMobile());
                 }
             } else {
-                list.add(person.getMobile());
+                list.add(((Person)orgUnit0).getMobile());
             }
             smsHttpManager.sendSmsHttpList(tenantId, userId, list, smsContent, processParamModel.getSystemCnName());
         } catch (Exception e) {

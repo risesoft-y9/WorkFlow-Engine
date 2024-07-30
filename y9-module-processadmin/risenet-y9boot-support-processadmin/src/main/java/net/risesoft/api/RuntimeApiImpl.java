@@ -19,12 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
@@ -52,15 +48,9 @@ public class RuntimeApiImpl implements RuntimeApi {
 
     private final RuntimeService runtimeService;
 
-    private final PersonApi personManager;
-
-    private final PositionApi positionManager;
-
     private final CustomTaskService customTaskService;
 
     private final OrgUnitApi orgUnitApi;
-
-    private final PositionApi positionApi;
 
     /**
      * 加签
@@ -81,54 +71,24 @@ public class RuntimeApiImpl implements RuntimeApi {
     }
 
     /**
-     * 真办结/岗位
-     *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
-     * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> complete4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String processInstanceId, @RequestParam String taskId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
-        try {
-            customTaskService.complete4Position(processInstanceId, taskId);
-            return Y9Result.success();
-        } catch (Exception e) {
-            return Y9Result.failure("办结异常");
-        }
-    }
-
-    /**
      * 真办结
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> completed(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processInstanceId, @RequestParam String taskId) {
+    public Y9Result<Object> complete(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String processInstanceId, @RequestParam String taskId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        try {
-            customTaskService.complete(processInstanceId, taskId);
-            return Y9Result.success();
-        } catch (Exception e) {
-            return Y9Result.failure("办结异常");
-        }
-
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        customTaskService.complete(processInstanceId, taskId);
+        return Y9Result.success();
     }
 
     /**
@@ -257,28 +217,21 @@ public class RuntimeApiImpl implements RuntimeApi {
      * 真办结后恢复流程实例为待办状态
      *
      * @param tenantId 租户id
-     * @param userId 用户id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param year 年份
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> recovery4Completed(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<Object> recovery4Completed(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceId, @RequestParam String year) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
-        if (person != null && StringUtils.isNotBlank(person.getId())) {
-            Y9LoginUserHolder.setPerson(person);
-            customRuntimeService.recovery4Completed(processInstanceId, year);
-            return Y9Result.success();
-        } else {
-            Position position = positionManager.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPosition(position);
-            customRuntimeService.recoveryCompleted4Position(processInstanceId, year);
-            return Y9Result.success();
-        }
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        customRuntimeService.recoveryCompleted(processInstanceId, year);
+        return Y9Result.success();
     }
 
     /**
@@ -323,7 +276,6 @@ public class RuntimeApiImpl implements RuntimeApi {
             processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
                 .orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
-        Position position;
         OrgUnit orgUnit;
         ProcessInstanceModel piModel;
         for (ProcessInstance processInstance : processInstanceList) {
@@ -342,18 +294,18 @@ public class RuntimeApiImpl implements RuntimeApi {
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                     String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                     if (userIdAndDeptId.length == 1) {
-                        position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                        orgUnit = orgUnitApi.getParent(tenantId, position.getId()).getData();
-                        piModel.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
+                        orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
+                        OrgUnit parent = orgUnitApi.getParent(tenantId, orgUnit.getId()).getData();
+                        piModel.setStartUserName(orgUnit.getName() + "(" + parent.getName() + ")");
                     } else {
-                        position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                        if (null != position) {
-                            orgUnit = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
-                                .getData();
-                            if (null == orgUnit) {
-                                piModel.setStartUserName(position.getName());
+                        orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
+                        if (null != orgUnit) {
+                            OrgUnit parent = orgUnitApi
+                                .getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
+                            if (null == parent) {
+                                piModel.setStartUserName(orgUnit.getName());
                             } else {
-                                piModel.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
+                                piModel.setStartUserName(orgUnit.getName() + "(" + parent.getName() + ")");
                             }
                         }
                     }
@@ -422,7 +374,7 @@ public class RuntimeApiImpl implements RuntimeApi {
      * 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是人员Id
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @param processDefinitionKey 流程定义key
      * @param systemName 系统名称
      * @param map 变量map
@@ -431,21 +383,14 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     public Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam String systemName,
+        @RequestParam String orgUnitId, @RequestParam String processDefinitionKey, @RequestParam String systemName,
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
-        if (person != null && StringUtils.isNotBlank(person.getId())) {
-            Y9LoginUserHolder.setPerson(person);
-            ProcessInstance pi = customRuntimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
-            return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
-        } else {
-            Y9LoginUserHolder.setPositionId(userId);
-            ProcessInstance pi =
-                customRuntimeService.startProcessInstanceByKey4Position(processDefinitionKey, systemName, map);
-            return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
-        }
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        ProcessInstance pi = customRuntimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
+        return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
     }
 
     /**

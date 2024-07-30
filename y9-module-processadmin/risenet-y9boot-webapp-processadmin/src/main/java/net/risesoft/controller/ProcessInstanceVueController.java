@@ -30,13 +30,11 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
@@ -62,8 +60,6 @@ public class ProcessInstanceVueController {
     private final RuntimeService runtimeService;
 
     private final OrgUnitApi orgUnitApi;
-
-    private final PositionApi positionApi;
 
     private final TransactionWordApi transactionWordApi;
 
@@ -95,7 +91,7 @@ public class ProcessInstanceVueController {
             if (processParamModel != null) {
                 list.add(processParamModel.getProcessSerialNumber());
             }
-            boolean b = customHistoricProcessService.removeProcess4Position(processInstanceId);
+            boolean b = customHistoricProcessService.removeProcess(processInstanceId);
             if (b) {
                 // 批量删除附件表
                 attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);
@@ -123,9 +119,9 @@ public class ProcessInstanceVueController {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.get(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = personTemp.getName();
+                        OrgUnit orgUnitTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (orgUnitTemp != null) {
+                            assigneeNames = orgUnitTemp.getName();
                         }
                         i += 1;
                         if (assignee.contains(userId)) {
@@ -138,8 +134,8 @@ public class ProcessInstanceVueController {
                             int j = 0;
                             for (IdentityLink identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -156,9 +152,9 @@ public class ProcessInstanceVueController {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionApi.get(tenantId, assignee).getData();
-                            if (personTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                            OrgUnit orgUnitTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                            if (orgUnitTemp != null) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, orgUnitTemp.getName(), "、");
                             }
                             i += 1;
                         }
@@ -293,8 +289,8 @@ public class ProcessInstanceVueController {
             processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
                 .orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
-        Position position;
         OrgUnit orgUnit;
+        OrgUnit parent;
         Map<String, Object> map;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (ProcessInstance processInstance : processInstanceList) {
@@ -314,18 +310,18 @@ public class ProcessInstanceVueController {
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                     String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                     if (userIdAndDeptId.length == 1) {
-                        position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                        orgUnit = orgUnitApi.getParent(tenantId, position.getId()).getData();
-                        map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
+                        orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
+                        parent = orgUnitApi.getParent(tenantId, orgUnit.getId()).getData();
+                        map.put("startUserName", orgUnit.getName() + "(" + parent.getName() + ")");
                     } else {
-                        position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                        if (null != position) {
-                            orgUnit = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
+                        orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
+                        if (null != orgUnit) {
+                            parent = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
                                 .getData();
-                            if (null == orgUnit) {
-                                map.put("startUserName", position.getName());
+                            if (null == parent) {
+                                map.put("startUserName", orgUnit.getName());
                             } else {
-                                map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
+                                map.put("startUserName", orgUnit.getName() + "(" + parent.getName() + ")");
                             }
                         }
                     }

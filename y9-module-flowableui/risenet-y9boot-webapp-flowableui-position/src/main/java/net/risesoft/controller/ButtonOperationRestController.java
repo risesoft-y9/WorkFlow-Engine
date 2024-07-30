@@ -226,7 +226,7 @@ public class ButtonOperationRestController {
                     Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
                     vars.put(SysVariables.TASKSENDER, position.getName());
                     vars.put(SysVariables.TASKSENDERID, position.getId());
-                    taskApi.completeWithVariables4Position(tenantId, taskId, positionId, vars);
+                    taskApi.completeWithVariables(tenantId, taskId, positionId, vars);
                     List<TaskModel> taskNextList =
                         taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
                     for (TaskModel taskNext : taskNextList) {
@@ -533,7 +533,7 @@ public class ButtonOperationRestController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
-            taskApi.completeWithVariables4Position(tenantId, taskId, Y9LoginUserHolder.getPositionId(), vars);
+            taskApi.completeWithVariables(tenantId, taskId, Y9LoginUserHolder.getPositionId(), vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {

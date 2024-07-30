@@ -106,18 +106,6 @@ public interface HistoricProcessApi {
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 彻底删除流程实例，岗位
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @PostMapping("/removeProcess4Position")
-    Y9Result<Object> removeProcess4Position(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
-
-    /**
      * 设置流程优先级
      *
      * @param tenantId 租户id

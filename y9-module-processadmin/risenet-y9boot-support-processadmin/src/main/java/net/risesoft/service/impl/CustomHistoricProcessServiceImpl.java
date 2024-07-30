@@ -173,32 +173,6 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricProcessInstance his =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-            // 未办结件删除
-            if (his != null && his.getEndTime() == null) {
-                runtimeService.deleteProcessInstance(processInstanceId, "已删除");
-                historyService.deleteHistoricProcessInstance(his.getId());
-            } else {
-                // 数据中心办结件
-                if (his == null) {
-                } else {
-                    // 办结件
-                    historyService.deleteHistoricProcessInstance(his.getId());
-                }
-            }
-            deleteProcessUtilService.deleteProcess(tenantId, processInstanceId);
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("删除流程实例失败", e);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean removeProcess4Position(String processInstanceId) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            HistoricProcessInstance his =
-                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             String year = "";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             // 未办结件删除

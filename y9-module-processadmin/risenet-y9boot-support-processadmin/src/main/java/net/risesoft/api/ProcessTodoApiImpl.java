@@ -37,21 +37,21 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
      * 根据岗位id获取待办数量
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是待办数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Long> countByPositionId(String tenantId, String positionId) {
+    public Y9Result<Long> countByOrgUnitId(String tenantId, String orgUnitId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return Y9Result.success(customTodoService.getCountByUserId(positionId));
+        return Y9Result.success(customTodoService.getCountByUserId(orgUnitId));
     }
 
     /**
-     * 根据人员id，流程定义Key获取对应事项的办件统计（包括待办件，在办件，办结件）
+     * 根据人员、岗位id，流程定义Key获取对应事项的办件统计（包括待办件，在办件，办结件）
      *
      * @param tenantId 租户Id
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param processDefinitionKey 流程定义Key
      * @return {@code Y9Result<Y9FlowableCountModel>} 通用请求返回对象 - data 是办件统计
      * @since 9.6.6
@@ -68,10 +68,10 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
     }
 
     /**
-     * 根据人员id，系统标识获取对应事项的办件统计（包括待办件，在办件，办结件）
+     * 根据人员、岗位id，系统标识获取对应事项的办件统计（包括待办件，在办件，办结件）
      *
      * @param tenantId 租户Id
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param systemName 系统名称
      * @return {@code Y9Result<Y9FlowableCountModel>} 通用请求返回对象 - data 是办件统计
      * @since 9.6.6
@@ -88,10 +88,10 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
     }
 
     /**
-     * 根据人员Id，流程定义Key获取用户的待办任务(分页)
+     * 根据人员、岗位id，流程定义Key获取用户的待办任务(分页)
      *
      * @param tenantId 租户Id
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数
@@ -107,10 +107,10 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
     }
 
     /**
-     * 根据人员Id,系统标识获取用户的待办任务(分页)
+     * 根据人员、岗位id,系统标识获取用户的待办任务(分页)
      *
      * @param tenantId 租户Id
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param systemName 系统名称
      * @param page 页码
      * @param rows 行数
@@ -126,27 +126,27 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
     }
 
     /**
-     * 根据岗位id,流程定义key获取对应事项的待办数量
+     * 根据人员、岗位id,流程定义key获取对应事项的待办数量
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param userId 人员、岗位id
      * @param processDefinitionKey 流程定义key
      * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是待办数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Long> getTodoCountByPositionIdAndProcessDefinitionKey(@RequestParam String tenantId,
-        @RequestParam String positionId, @RequestParam String processDefinitionKey) {
+    public Y9Result<Long> getTodoCountByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result
-            .success(customTodoService.getCountByUserIdAndProcessDefinitionKey(positionId, processDefinitionKey));
+            .success(customTodoService.getCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey));
     }
 
     /**
-     * 根据人员id，系统标识获取对应事项的待办数量
+     * 根据人员、岗位id，系统标识获取对应事项的待办数量
      *
      * @param tenantId 租户Id
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param systemName 系统名称
      * @return {@code Y9Result<Long>} 通用请求返回对象 - data 是待办数量
      * @since 9.6.6
@@ -159,27 +159,27 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
     }
 
     /**
-     * 根据人员id获取用户的待办任务(分页)
+     * 根据人员、岗位id获取用户的待办任务(分页)
      *
      * @param tenantId 租户Id
-     * @param positionId 岗位Id
+     * @param userId 人员、岗位id
      * @param page 页码
      * @param rows 行数
      * @return {@code Y9Page<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<TaskModel> pageByUserId(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Page<TaskModel> pageByUserId(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customTodoService.pageByUserId(positionId, page, rows);
+        return customTodoService.pageByUserId(userId, page, rows);
     }
 
     /**
      * 根据流程定义Key条件搜索待办件
      *
      * @param tenantId 租户Id
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param processDefinitionKey 流程定义Key
      * @param searchTerm 搜索词
      * @param page 页码
@@ -200,7 +200,7 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
      * 根据系统英文名称条件搜索待办件
      *
      * @param tenantId 租户Id
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param systemName 系统英文名称
      * @param searchTerm 搜索词
      * @param page 页码

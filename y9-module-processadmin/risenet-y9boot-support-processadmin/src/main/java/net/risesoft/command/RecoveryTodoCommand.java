@@ -19,7 +19,7 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
 
-import net.risesoft.model.user.UserInfo;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -57,8 +57,8 @@ public class RecoveryTodoCommand implements Command<Void> {
         HistoricProcessInstanceEntityManager historicProcessInstanceEntityManager =
             CommandContextUtil.getHistoricProcessInstanceEntityManager();
 
-        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String userId = userInfo.getPersonId();
+        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
+        String userId = orgUnit.getId();
 
         String processInstanceId = hisTask.getProcessInstanceId(), taskId = hisTask.getId();
         String assignee = hisTask.getAssignee();
@@ -109,7 +109,6 @@ public class RecoveryTodoCommand implements Command<Void> {
         /*
          * 2-设置历史任务办结时间为null
          */
-
         /*
          * 3-历史act_hi_procInst结束时间改为null
          */

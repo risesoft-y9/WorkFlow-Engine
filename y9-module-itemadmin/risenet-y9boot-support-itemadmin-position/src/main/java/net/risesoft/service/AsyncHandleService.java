@@ -226,7 +226,7 @@ public class AsyncHandleService {
         processParam.setSended("true");
         processParam.setSponsorGuid(sponsorGuid);
         processParamService.saveOrUpdate(processParam);
-        taskManager.completeWithVariables4Position(tenantId, taskId, positionId, variables);
+        taskManager.completeWithVariables(tenantId, taskId, positionId, variables);
 
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);

@@ -246,11 +246,10 @@ public class DocumentServiceImpl implements DocumentService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = taskManager.findById(tenantId, taskId).getData();
         String processInstanceId = task.getProcessInstanceId();
-
         /*
          * 1办结流程
          */
-        runtimeManager.complete4Position(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId, taskId);
+        runtimeManager.complete(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId, taskId);
     }
 
     @Override
@@ -688,7 +687,7 @@ public class DocumentServiceImpl implements DocumentService {
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
                     model.setName(spmApproveitem.getName());
                     model.setItemName(spmApproveitem.getName());
-                    todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId,
+                    todoCount = todoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         spmApproveitem.getWorkflowGuid()).getData();
                     model.setTodoCount((int)todoCount);
                     model.setAppIcon(
@@ -1358,8 +1357,7 @@ public class DocumentServiceImpl implements DocumentService {
             } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put("parentTaskId", taskId);
-                taskManager.createWithVariables4Position(tenantId, position.getId(), Y9LoginUserHolder.getPersonId(),
-                    routeToTaskId, vars, userList);
+                taskManager.createWithVariables(tenantId, position.getId(), routeToTaskId, vars, userList);
             } else {
                 assert processParam != null;
                 asyncHandleService.forwarding4Task(processInstanceId, processParam, "", sponsorGuid, taskId,

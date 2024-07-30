@@ -23,11 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.controller.vo.ProcessInstanceVO;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomTaskService;
@@ -52,9 +50,7 @@ public class VariableVueController {
 
     private final RuntimeService runtimeService;
 
-    private final PositionApi positionApi;
-
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
     /**
      * 删除流程变量
@@ -107,8 +103,8 @@ public class VariableVueController {
             list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime()
                 .desc().listPage((page - 1) * rows, rows);
         }
-        Position position;
         OrgUnit orgUnit;
+        OrgUnit parent;
         for (ProcessInstance processInstance : list) {
             ProcessInstanceVO process = new ProcessInstanceVO();
             process.setBusinessKey(processInstance.getBusinessKey());
@@ -120,18 +116,18 @@ public class VariableVueController {
             if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                 String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                 if (userIdAndDeptId.length == 1) {
-                    position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                    orgUnit = orgUnitManager.getParent(tenantId, position.getId()).getData();
-                    process.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
+                    orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
+                    parent = orgUnitApi.getParent(tenantId, orgUnit.getId()).getData();
+                    process.setStartUserName(orgUnit.getName() + "(" + orgUnit.getName() + ")");
                 } else {
-                    position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                    if (null != position) {
-                        orgUnit = orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
-                            .getData();
-                        if (null == orgUnit) {
-                            process.setStartUserName(position.getName());
+                    orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
+                    if (null != orgUnit) {
+                        parent =
+                            orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
+                        if (null == parent) {
+                            process.setStartUserName(orgUnit.getName());
                         } else {
-                            process.setStartUserName(position.getName() + "(" + orgUnit.getName() + ")");
+                            process.setStartUserName(orgUnit.getName() + "(" + parent.getName() + ")");
                         }
                     }
                 }
@@ -188,9 +184,9 @@ public class VariableVueController {
             mapTemp.put("userName", "无");
             String personId = task.getAssignee();
             if (StringUtils.isNotBlank(personId)) {
-                Position position = positionApi.get(tenantId, personId).getData();
-                if (position != null && StringUtils.isNotBlank(position.getId())) {
-                    mapTemp.put("userName", position.getName());
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, personId).getData();
+                if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
+                    mapTemp.put("userName", orgUnit.getName());
                 }
             }
             taskList.add(mapTemp);
@@ -270,8 +266,8 @@ public class VariableVueController {
             List<String> userList = new ArrayList<>();
             String[] users = value.split(",");
             for (String user : users) {
-                Position position = positionApi.get(tenantId, user).getData();
-                if (null != position && null != position.getId()) {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+                if (null != orgUnit && null != orgUnit.getId()) {
                     userList.add(user);
                 } else {
                     if (StringUtils.isBlank(userTemp)) {
@@ -287,8 +283,8 @@ public class VariableVueController {
                 return Y9Result.failure(key + "中[" + userTemp + "]对应的人员不存在。");
             }
         } else if (SysVariables.USER.equals(key) || SysVariables.TASKSENDERID.equals(key)) {
-            Position position = positionApi.get(tenantId, value).getData();
-            if (null != position && null != position.getId()) {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
+            if (null != orgUnit && null != orgUnit.getId()) {
                 runtimeService.setVariable(processInstanceId, key, value);
             } else {
                 return Y9Result.failure(key + "[" + value + "]对应的人员不存在。");
@@ -323,8 +319,8 @@ public class VariableVueController {
             List<String> userList = new ArrayList<>();
             String[] users = value.split(",");
             for (String user : users) {
-                Position position = positionApi.get(tenantId, user).getData();
-                if (null != position && null != position.getId()) {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+                if (null != orgUnit && null != orgUnit.getId()) {
                     userList.add(user);
                 } else {
                     if (StringUtils.isBlank(userTemp)) {
@@ -340,8 +336,8 @@ public class VariableVueController {
                 return Y9Result.failure(key + "中[" + userTemp + "]对应的人员不存在。");
             }
         } else if (SysVariables.USER.equals(key) || SysVariables.TASKSENDERID.equals(key)) {
-            Position position = positionApi.get(tenantId, value).getData();
-            if (null != position && null != position.getId()) {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
+            if (null != orgUnit && null != orgUnit.getId()) {
                 customVariableService.setVariableLocal(taskId, key, value);
             } else {
                 return Y9Result.failure(key + "[" + value + "]对应的人员不存在。");

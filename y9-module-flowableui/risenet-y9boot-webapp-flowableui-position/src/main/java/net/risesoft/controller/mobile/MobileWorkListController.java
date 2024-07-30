@@ -174,7 +174,7 @@ public class MobileWorkListController {
                     ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     String processDefinitionKey = item.getWorkflowGuid();
                     long todoCount = processTodoApi
-                        .getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
+                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
                         .getData();
                     Map<String, Object> m = new HashMap<>(16);
                     Y9Page<Map<String, Object>> resMap =
