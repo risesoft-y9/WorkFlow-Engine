@@ -16,12 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.service.WeiXinRemindService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -37,7 +38,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @Service(value = "weiXinRemindService")
 public class WeiXinRemindServiceImpl implements WeiXinRemindService {
 
-    private final PersonApi personManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final PositionApi positionApi;
 
@@ -79,10 +80,9 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
             if (StringUtils.isBlank(send) || UtilConsts.FALSE.equals(send)) {
                 return;
             }
-            Person person = personManager.get(tenantId, userId).getData();
-            if (person == null || StringUtils.isBlank(person.getId())) {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 List<Person> list = positionApi.listPersonsByPositionId(tenantId, assignee).getData();
-                Position position = positionApi.get(tenantId, userId).getData();
                 String url = y9Conf.getApp().getProcessAdmin().getWeiXinUrl();
                 for (Person p : list) {
                     try {
@@ -92,7 +92,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
                         PostMethod method = new PostMethod();
                         method.addParameter("userId", p.getId());
                         method.addParameter("title", documentTitle);
-                        method.addParameter("taskSender", position.getName());
+                        method.addParameter("taskSender", orgUnit.getName());
                         method.addParameter("taskName", itemName + "-" + task.getName());
                         method.addParameter("processSerialNumber", processSerialNumber);
                         method.addParameter("processDefinitionKey",
@@ -120,7 +120,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
                 PostMethod method = new PostMethod();
                 method.addParameter("userId", assignee);
                 method.addParameter("title", documentTitle);
-                method.addParameter("taskSender", person.getName());
+                method.addParameter("taskSender", orgUnit.getName());
                 method.addParameter("taskName", itemName + "-" + task.getName());
                 method.addParameter("processSerialNumber", processSerialNumber);
                 method.addParameter("processDefinitionKey", task.getProcessDefinitionId().split(SysVariables.COLON)[0]);

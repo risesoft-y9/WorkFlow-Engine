@@ -41,15 +41,6 @@ public interface CustomTaskService {
     void complete(String processInstanceId, String taskId) throws Exception;
 
     /**
-     * Description:
-     *
-     * @param processInstanceId
-     * @param taskId
-     * @throws Exception
-     */
-    void complete4Position(String processInstanceId, String taskId) throws Exception;
-
-    /**
      * 岗位使用
      *
      * @param processInstanceId
@@ -65,26 +56,16 @@ public interface CustomTaskService {
     void completeWithVariables(String taskId, Map<String, Object> map);
 
     /**
-     * Description:
+     * 创建变量
      *
+     * @param orgUnitId
      * @param vars
      * @param routeToTaskId
-     * @param positionIdList
+     * @param orgUnitIdList
      * @return
      */
-    TaskModel createWithVariables(Map<String, Object> vars, String routeToTaskId, List<String> positionIdList);
-
-    /**
-     * 岗位使用
-     *
-     * @param positionId
-     * @param vars
-     * @param routeToTaskId
-     * @param positionIdList
-     * @return
-     */
-    TaskModel createWithVariables(String positionId, Map<String, Object> vars, String routeToTaskId,
-        List<String> positionIdList);
+    TaskModel createWithVariables(String orgUnitId, Map<String, Object> vars, String routeToTaskId,
+        List<String> orgUnitIdList);
 
     /**
      * 设置任务代理

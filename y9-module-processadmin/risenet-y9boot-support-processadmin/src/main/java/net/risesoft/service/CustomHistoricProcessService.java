@@ -129,20 +129,12 @@ public interface CustomHistoricProcessService {
     boolean recoveryProcessInstance(String processInstanceId);
 
     /**
-     * 彻底删除流程实例
-     *
-     * @param processInstanceId
-     * @return
-     */
-    boolean removeProcess(String processInstanceId);
-
-    /**
      * 彻底删除流程实例，岗位
      *
      * @param processInstanceId
      * @return
      */
-    boolean removeProcess4Position(String processInstanceId);
+    boolean removeProcess(String processInstanceId);
 
     /**
      * Description:

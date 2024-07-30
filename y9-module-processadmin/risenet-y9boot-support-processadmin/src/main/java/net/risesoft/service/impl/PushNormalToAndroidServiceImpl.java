@@ -13,10 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.Y9Push;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.PushNormalToAndroidService;
 import net.risesoft.util.SysVariables;
@@ -36,7 +38,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
 
     private final Y9Properties y9Conf;
 
-    private final PersonApi personManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final PositionApi positionApi;
 
@@ -60,8 +62,8 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             String title = processParamModel.getTitle();
             String itemName = processParamModel.getItemName();
             List<String> list = new ArrayList<>();
-            Person person = personManager.get(tenantId, assignee).getData();
-            if (person == null || StringUtils.isBlank(person.getId())) {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 List<Person> plist = positionApi.listPersonsByPositionId(tenantId, assignee).getData();
                 for (Person p : plist) {
                     list.add(p.getId());

@@ -232,7 +232,7 @@ public class XxxRestController {
         long doingCount;
         int doneCount;
         // 统计待办
-        todoCount = processTodoApi.countByPositionId(tenantId, positionId).getData();
+        todoCount = processTodoApi.countByOrgUnitId(tenantId, positionId).getData();
         // 统计流程在办件
         Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "",
             "", "", "todo", "", "", "", 1, 1);

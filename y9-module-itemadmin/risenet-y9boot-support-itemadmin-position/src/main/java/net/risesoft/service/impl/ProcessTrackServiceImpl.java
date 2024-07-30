@@ -260,7 +260,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             Integer newToDo = 0;
             if (hai.getEndTime() == null) {
                 TaskModel taskModel = taskManager.findById(tenantId, taskId).getData();
-                newToDo = StringUtils.isBlank(taskModel.getFormKey()) ? 1 : (Integer.parseInt(taskModel.getFormKey()));
+                newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
+                    : (Integer.parseInt(taskModel.getFormKey()));
             }
 
             model.setNewToDo(newToDo);

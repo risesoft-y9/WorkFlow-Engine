@@ -224,7 +224,7 @@ public class MobileV1ButtonOperationController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
-            taskApi.completeWithVariables4Position(tenantId, task.getId(), Y9LoginUserHolder.getPositionId(), vars);
+            taskApi.completeWithVariables(tenantId, task.getId(), Y9LoginUserHolder.getPositionId(), vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
@@ -322,7 +322,7 @@ public class MobileV1ButtonOperationController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             if (StringUtils.isNotBlank(taskId)) {
-                specialOperationApi.reposition4Position(tenantId, positionId, taskId, repositionToTaskId,
+                specialOperationApi.reposition(tenantId, positionId, taskId, repositionToTaskId,
                     Y9Util.stringToList(userChoice, ","), "重定向", "");
             }
             return Y9Result.successMsg("重定向成功");

@@ -333,8 +333,9 @@ public class MainRestController {
                 // 单个事项获取待办数量
                 if (StringUtils.isNotBlank(itemId)) {
                     ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
-                    todoCount = processTodoApi.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, p.getId(),
-                        itemModel.getWorkflowGuid()).getData();
+                    todoCount = processTodoApi
+                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(), itemModel.getWorkflowGuid())
+                        .getData();
                     allCount = allCount + todoCount;
                 } else if (StringUtils.isNotBlank(systemName)) {
                     // 单个事项获取待办数量
@@ -369,7 +370,7 @@ public class MainRestController {
                             if (StringUtils.isNotBlank(itemId)) {
                                 // 单个事项获取待办数量
                                 ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
-                                todoCount1 = processTodoApi.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId,
+                                todoCount1 = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId,
                                     position.getId(), itemModel.getWorkflowGuid()).getData();
                                 allCount = allCount + todoCount1;
                             } else if (StringUtils.isNotBlank(systemName)) {

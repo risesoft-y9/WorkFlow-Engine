@@ -16,16 +16,14 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
@@ -46,9 +44,7 @@ public class Process4MsgRemindService {
 
     private final ProcessParamApi processParamManager;
 
-    private final PersonApi personManager;
-
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final RemindInstanceApi remindInstanceManager;
 
@@ -128,14 +124,8 @@ public class Process4MsgRemindService {
             String taskKey = task.getTaskDefinitionKey();
             String taskName = task.getName();
             String processInstanceId = task.getProcessInstanceId();
-            Person person = personManager.get(tenantId, assignee).getData();
-            String userName;
-            if (person == null || StringUtils.isBlank(person.getId())) {
-                Position position = positionApi.get(tenantId, assignee).getData();
-                userName = position.getName();
-            } else {
-                userName = person.getName();
-            }
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+            String userName = orgUnit.getName();
             Date date = new Date();
             String allUserId = "";
             // 节点到达
@@ -199,13 +189,8 @@ public class Process4MsgRemindService {
             String taskName = task.getName();
             String processInstanceId = task.getProcessInstanceId();
             String userName;
-            Person person = personManager.get(tenantId, assignee).getData();
-            if (person == null || StringUtils.isBlank(person.getId())) {
-                Position position = positionApi.get(tenantId, assignee).getData();
-                userName = position.getName();
-            } else {
-                userName = person.getName();
-            }
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+            userName = orgUnit.getName();
             Date date = new Date();
             String allUserId = "";
             String title = processParamModel.getTitle();

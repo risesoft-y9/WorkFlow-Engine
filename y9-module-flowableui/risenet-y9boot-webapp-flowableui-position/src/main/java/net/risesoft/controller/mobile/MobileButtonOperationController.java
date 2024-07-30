@@ -257,7 +257,7 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
-            taskApi.completeWithVariables4Position(tenantId, task.getId(), positionId, vars);
+            taskApi.completeWithVariables(tenantId, task.getId(), positionId, vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "办理成功!");
@@ -381,8 +381,8 @@ public class MobileButtonOperationController {
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "重定向失败");
         try {
-            Y9Result<Object> result = specialOperationApi.reposition4Position(tenantId, positionId, taskId,
-                repositionToTaskId, Y9Util.stringToList(userChoice, ","), "重定向", "");
+            Y9Result<Object> result = specialOperationApi.reposition(tenantId, positionId, taskId, repositionToTaskId,
+                Y9Util.stringToList(userChoice, ","), "重定向", "");
             if (result.isSuccess()) {
                 map.put("msg", "重定向成功");
                 map.put(UtilConsts.SUCCESS, true);

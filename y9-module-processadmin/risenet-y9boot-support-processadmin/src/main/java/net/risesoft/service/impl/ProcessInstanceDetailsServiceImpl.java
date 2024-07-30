@@ -13,13 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -34,9 +32,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Service(value = "processInstanceDetailsService")
 public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetailsService {
 
-    private final PersonApi personManager;
-
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final ProcessParamApi processParamManager;
 
@@ -67,18 +63,14 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
 
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            String assigneeName, senderName;
-            Person person = personManager.get(tenantId, assigneeId).getData();
-            if (person == null || StringUtils.isBlank(person.getId())) {
-                Position position = positionApi.get(tenantId, assigneeId).getData();
-                assigneeName = position.getName();
-
-                position = positionApi.get(tenantId, userId).getData();
-                senderName = position.getName();
-            } else {
-                assigneeName = person.getName();
-                person = personManager.get(tenantId, userId).getData();
-                senderName = person.getName();
+            String assigneeName = "", senderName = "";
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assigneeId).getData();
+            OrgUnit sendOrgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
+                assigneeName = orgUnit.getName();
+            }
+            if (sendOrgUnit != null && StringUtils.isNotBlank(sendOrgUnit.getId())) {
+                senderName = sendOrgUnit.getName();
             }
             String processInstanceId = task.getProcessInstanceId();
             String sponsorGuid = processParamModel.getSponsorGuid();

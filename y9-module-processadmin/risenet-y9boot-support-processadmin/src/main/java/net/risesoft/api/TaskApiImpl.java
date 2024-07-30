@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -43,9 +42,7 @@ public class TaskApiImpl implements TaskApi {
 
     private final CustomTaskService customTaskService;
 
-    private final PersonApi personManager;
-
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     /**
      * 签收任务
@@ -101,21 +98,21 @@ public class TaskApiImpl implements TaskApi {
     }
 
     /**
-     * 完成按钮的任务完结/岗位
+     * 完成按钮的任务完结
      *
      * @param tenantId 租户id
-     * @param positionId 岗位Id
+     * @param orgUnitId 人员、岗位Id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> completeTaskWithoutAssignee(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> completeTaskWithoutAssignee(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         customTaskService.completeTaskWithoutAssignee(processInstanceId);
         return Y9Result.success();
     }
@@ -124,37 +121,19 @@ public class TaskApiImpl implements TaskApi {
      * 完成任务（设置流程变量）
      *
      * @param tenantId 租户id
-     * @param taskId 任务id
-     * @param map 变量map
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> completeWithVariables(@RequestParam String tenantId, @RequestParam String taskId,
-        @RequestBody Map<String, Object> map) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        customTaskService.completeWithVariables(taskId, map);
-        return Y9Result.success();
-    }
-
-    /**
-     * 完成任务（设置流程变量）岗位
-     *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位Id
      * @param taskId 任务id
      * @param vars 变量map
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> completeWithVariables4Position(@RequestParam String tenantId, @RequestParam String taskId,
-        @RequestParam String positionId, @RequestBody Map<String, Object> vars) {
+    public Y9Result<Object> completeWithVariables(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestParam String orgUnitId, @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         customTaskService.completeWithVariables(taskId, vars);
         return Y9Result.success();
     }
@@ -163,46 +142,22 @@ public class TaskApiImpl implements TaskApi {
      * 创建变量
      *
      * @param tenantId 租户id
-     * @param personId 人员id
+     * @param orgUnitId 人员、岗位Id
      * @param routeToTaskId 任务id
      * @param vars 变量map
-     * @param userIdList 人员ids
+     * @param orgUnitIdList 人员、岗位ids
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> createWithVariables(@RequestParam String tenantId, @RequestParam String personId,
+    public Y9Result<Object> createWithVariables(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
-        @RequestBody List<String> userIdList) {
+        @RequestBody List<String> orgUnitIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(personManager.get(tenantId, personId).getData());
-        customTaskService.createWithVariables(vars, routeToTaskId, userIdList);
-        return Y9Result.success();
-    }
-
-    /**
-     * 创建变量/岗位
-     *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
-     * @param personId 人员id
-     * @param routeToTaskId 任务id
-     * @param vars 变量map
-     * @param positionIdList 岗位ids
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> createWithVariables4Position(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String personId, @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
-        @RequestBody List<String> positionIdList) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
-        Y9LoginUserHolder.setPerson(personManager.get(tenantId, personId).getData());
-        customTaskService.createWithVariables(positionId, vars, routeToTaskId, positionIdList);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        customTaskService.createWithVariables(orgUnitId, vars, routeToTaskId, orgUnitIdList);
         return Y9Result.success();
     }
 

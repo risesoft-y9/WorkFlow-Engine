@@ -37,13 +37,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessModelApi;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 流程设计相关接口
@@ -64,7 +63,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
 
     private final ModelRepository modelRepository;
 
-    private final PersonApi personApi;
+    private final OrgUnitApi orgUnitApi;
 
     /**
      * 删除模型
@@ -167,8 +166,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
         MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
@@ -209,11 +207,11 @@ public class ProcessModelApiImpl implements ProcessModelApi {
             newModel.setKey(process.getId());
             newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
             newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(person.getName());
+            newModel.setCreatedBy(orgUnit.getName());
             newModel.setDescription(description);
             newModel.setModelEditorJson(modelNode.toString());
             newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(person.getName());
+            newModel.setLastUpdatedBy(orgUnit.getName());
             newModel.setTenantId(tenantId);
             String createdBy = SecurityUtils.getCurrentUserId();
             modelService.createModel(newModel, createdBy);

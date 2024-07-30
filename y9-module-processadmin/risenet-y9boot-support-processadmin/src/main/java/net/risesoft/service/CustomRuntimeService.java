@@ -71,15 +71,6 @@ public interface CustomRuntimeService {
     List<ProcessInstance> listProcessInstancesByKey(String processDefinitionKey);
 
     /**
-     * Description: 真办结后恢复设置办结的件
-     *
-     * @param processInstanceId
-     * @param year
-     * @throws Exception
-     */
-    void recovery4Completed(String processInstanceId, String year) throws Exception;
-
-    /**
      * Description: 恢复设置办结的件，其实是先激活流程，再设置流程的结束时间为null
      *
      * @param processInstanceId
@@ -93,7 +84,7 @@ public interface CustomRuntimeService {
      * @param year
      * @throws Exception
      */
-    void recoveryCompleted4Position(String processInstanceId, String year) throws Exception;
+    void recoveryCompleted(String processInstanceId, String year) throws Exception;
 
     /**
      * 设置流程实例为办结的状态，其实是先暂停，再设置流程结束时间为当前时间
@@ -122,16 +113,6 @@ public interface CustomRuntimeService {
     void setVariables(String executionId, Map<String, Object> map);
 
     /**
-     * Description: 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是userId:deptId
-     *
-     * @param processDefinitionKey
-     * @param systemName
-     * @param map
-     * @return
-     */
-    ProcessInstance startProcessInstanceByKey(String processDefinitionKey, String systemName, Map<String, Object> map);
-
-    /**
      * Description:
      *
      * @param processDefinitionKey
@@ -139,8 +120,7 @@ public interface CustomRuntimeService {
      * @param map
      * @return
      */
-    ProcessInstance startProcessInstanceByKey4Position(String processDefinitionKey, String systemName,
-        Map<String, Object> map);
+    ProcessInstance startProcessInstanceByKey(String processDefinitionKey, String systemName, Map<String, Object> map);
 
     /**
      * 挂起或者激活流程实例
