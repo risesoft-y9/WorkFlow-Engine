@@ -1,4 +1,4 @@
-package y9.client.rest.itemadmin.position;
+package y9.client.rest.itemadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
@@ -12,6 +12,6 @@ import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 @FeignClient(contextId = "Entrust4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/entrust4Position")
-public interface Entrust4PositionApiClient extends Entrust4PositionApi {
+public interface EntrustApiClient extends Entrust4PositionApi {
 
 }

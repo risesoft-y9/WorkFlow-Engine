@@ -1,4 +1,4 @@
-package y9.client.rest.itemadmin.position;
+package y9.client.rest.itemadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
@@ -12,6 +12,6 @@ import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 @FeignClient(contextId = "ButtonOperation4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/buttonOperation4Position")
-public interface ButtonOperation4PositionApiClient extends ButtonOperation4PositionApi {
+public interface ButtonOperationApiClient extends ButtonOperation4PositionApi {
 
 }
