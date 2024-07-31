@@ -15,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -40,7 +40,7 @@ public class VueNTKOController {
 
     private final ProcessParamApi processParamApi;
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
     private final TransactionWordApi transactionWordApi;
 
@@ -48,7 +48,7 @@ public class VueNTKOController {
 
     private final PositionApi positionApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final Y9Properties y9Config;
 
@@ -76,7 +76,7 @@ public class VueNTKOController {
             Map<String, Object> map = new HashMap<>();
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
+            AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
             String downloadUrl =
                 y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
             map.put("fileName", file.getName());
@@ -123,8 +123,7 @@ public class VueNTKOController {
                 .showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, bindValue).getData();
             String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }

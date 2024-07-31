@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.pojo.Y9Page;
@@ -48,7 +48,7 @@ public class MobileAttachmentController {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final TransactionWordApi transactionWordApi;
 
@@ -63,7 +63,7 @@ public class MobileAttachmentController {
         HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            AttachmentModel model = attachment4PositionApi.findById(tenantId, id).getData();
+            AttachmentModel model = attachmentApi.findById(tenantId, id).getData();
             String filename = model.getName();
             String fileStoreId = model.getFileStoreId();
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -98,7 +98,7 @@ public class MobileAttachmentController {
         @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, int page,
         int rows, HttpServletResponse response) {
         Y9Page<AttachmentModel> y9Page =
-            attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
+            attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Page));
     }
 
@@ -136,7 +136,7 @@ public class MobileAttachmentController {
         try {
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             Y9Result<String> y9Result =
-                attachment4PositionApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(),
+                attachmentApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(),
                     processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
         } catch (Exception e) {
@@ -155,7 +155,7 @@ public class MobileAttachmentController {
     public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        attachment4PositionApi.delFile(tenantId, ids);
+        attachmentApi.delFile(tenantId, ids);
     }
 
     /**

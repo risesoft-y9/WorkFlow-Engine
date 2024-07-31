@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ButtonOperationApi;
+import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -60,11 +60,11 @@ public class MobileV1ButtonOperationController {
 
     private final TaskApi taskApi;
 
-    private final ButtonOperation4PositionApi buttonOperation4PositionApi;
+    private final ButtonOperationApi buttonOperationApi;
 
     private final HistoricProcessApi historicProcessApi;
 
-    private final Document4PositionApi document4PositionApi;
+    private final DocumentApi documentApi;
 
     private final SpecialOperationApi specialOperationApi;
 
@@ -80,7 +80,7 @@ public class MobileV1ButtonOperationController {
 
     private final MultiInstanceService multiInstanceService;
 
-    private final ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrackApi processTrackApi;
 
     /**
      * 签收：抢占式办理时，签收后，其他人不可再签收办理
@@ -271,8 +271,7 @@ public class MobileV1ButtonOperationController {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             if (isLastPerson4RefuseClaim) {// 最后一人拒签，退回
                 try {
-                    Y9Result<Object> y9Result =
-                        buttonOperation4PositionApi.refuseClaimRollback(tenantId, userId, taskId);
+                    Y9Result<Object> y9Result = buttonOperationApi.refuseClaimRollback(tenantId, userId, taskId);
                     if (!y9Result.isSuccess()) {
                         return Y9Result.failure("拒签失败");
                     }
@@ -346,8 +345,8 @@ public class MobileV1ButtonOperationController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
-            buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, "",
-                Y9Util.stringToList(userChoice, ","), "重定向", "");
+            buttonOperationApi.reposition(tenantId, positionId, taskId, "", Y9Util.stringToList(userChoice, ","), "重定向",
+                "");
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("重定位成功");
         } catch (Exception e) {
@@ -383,7 +382,7 @@ public class MobileV1ButtonOperationController {
                 variableApi.setVariableLocal(tenantId, taskId, "rollBackReason", val);
                 multiInstanceService.removeExecution(task.getExecutionId(), taskId, task.getAssignee());
             } else {
-                buttonOperation4PositionApi.rollBack(tenantId, positionId, taskId, reason);
+                buttonOperationApi.rollBack(tenantId, positionId, taskId, reason);
             }
             return Y9Result.successMsg("退回成功");
         } catch (Exception e) {
@@ -403,7 +402,7 @@ public class MobileV1ButtonOperationController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            buttonOperation4PositionApi.rollbackToStartor(tenantId, positionId, taskId, "");
+            buttonOperationApi.rollbackToStartor(tenantId, positionId, taskId, "");
             return Y9Result.successMsg("返回发起人成功");
         } catch (Exception e) {
             LOGGER.error("返回发起人失败", e);
@@ -422,7 +421,7 @@ public class MobileV1ButtonOperationController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            buttonOperation4PositionApi.rollbackToSender(tenantId, positionId, taskId);
+            buttonOperationApi.rollbackToSender(tenantId, positionId, taskId);
             return Y9Result.successMsg("返回发送人成功");
         } catch (Exception e) {
             LOGGER.error("返回发送人失败", e);
@@ -460,8 +459,8 @@ public class MobileV1ButtonOperationController {
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 sponsorHandle = "true";
             }
-            document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle,
-                itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
+            documentApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId,
+                processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
             return Y9Result.successMsg("发送拟稿人成功");
         } catch (Exception e) {
             LOGGER.error("发送拟稿人失败", e);
@@ -485,13 +484,13 @@ public class MobileV1ButtonOperationController {
             Position position = Y9LoginUserHolder.getPosition();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-            buttonOperation4PositionApi.specialComplete(tenantId, positionId, taskId, reason);
+            buttonOperationApi.specialComplete(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
-            List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId).getData();
+            List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(tenantId, taskId).getData();
             for (ProcessTrackModel ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
                     try {
-                        processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
+                        processTrackApi.saveOrUpdate(tenantId, ptModel);
                     } catch (Exception e) {
                         LOGGER.error("更新自定义历程结束时间失败", e);
                     }
@@ -510,7 +509,7 @@ public class MobileV1ButtonOperationController {
             ptModel.setTaskDefName("特殊办结");
             ptModel.setTaskId(taskId);
             ptModel.setId("");
-            processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
+            processTrackApi.saveOrUpdate(tenantId, ptModel);
             return Y9Result.successMsg("特殊办结成功");
         } catch (Exception e) {
             LOGGER.error("特殊办结失败", e);
@@ -529,7 +528,7 @@ public class MobileV1ButtonOperationController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            buttonOperation4PositionApi.takeback(tenantId, positionId, taskId, "收回");
+            buttonOperationApi.takeback(tenantId, positionId, taskId, "收回");
             return Y9Result.successMsg("收回成功");
         } catch (Exception e) {
             LOGGER.error("收回失败", e);

@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.AssociatedFileApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.DocumentApi;
+import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -64,19 +64,19 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/vue/document", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentRestController {
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
-    private final Document4PositionApi document4PositionApi;
+    private final DocumentApi documentApi;
 
     private final ButtonOperationService buttonOperationService;
 
     private final ProcessParamApi processParamApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final TransactionWordApi transactionWordApi;
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
     private final TaskApi taskApi;
 
@@ -88,9 +88,9 @@ public class DocumentRestController {
 
     private final SpeakInfoApi speakInfoApi;
 
-    private final AssociatedFile4PositionApi associatedFile4PositionApi;
+    private final AssociatedFileApi associatedFileApi;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
     private final Y9Properties y9Config;
 
@@ -107,8 +107,7 @@ public class DocumentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
-            OpenDataModel model =
-                document4PositionApi.add(tenantId, Y9LoginUserHolder.getPositionId(), itemId, false).getData();
+            OpenDataModel model = documentApi.add(tenantId, Y9LoginUserHolder.getPositionId(), itemId, false).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
             map.put("tenantId", tenantId);
@@ -163,13 +162,13 @@ public class DocumentRestController {
             itembox = ItemBoxTypeEnum.DONE.getValue();
         }
         try {
-            OpenDataModel model = document4PositionApi.edit(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPositionId(), itembox, taskId, processInstanceId, itemId, false).getData();
+            OpenDataModel model = documentApi.edit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                itembox, taskId, processInstanceId, itemId, false).getData();
 
             String str = Y9JsonUtil.writeValueAsString(model);
             Map<String, Object> map = Y9JsonUtil.readHashMap(str);
             String processSerialNumber = model.getProcessSerialNumber();
-            Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
+            Integer fileNum = attachmentApi.fileCounts(tenantId, processSerialNumber).getData();
             int docNum = 0;
             // 是否正文正常
             TransactionWordModel wordMap =
@@ -178,8 +177,7 @@ public class DocumentRestController {
                 docNum = 1;
             }
             int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, userId, processInstanceId).getData();
-            int associatedFileNum =
-                associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
+            int associatedFileNum = associatedFileApi.countAssociatedFile(tenantId, processSerialNumber).getData();
             map.put("speakInfoNum", speakInfoNum);
             map.put("associatedFileNum", associatedFileNum);
             map.put("docNum", docNum);
@@ -191,7 +189,7 @@ public class DocumentRestController {
             map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
             map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
-            int follow = officeFollow4PositionApi
+            int follow = officeFollowApi
                 .countByProcessInstanceId(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
             map.put("follow", follow > 0);
             return Y9Result.success(map, "获取成功");
@@ -236,7 +234,7 @@ public class DocumentRestController {
             processParamModel.setSmsContent(smsContent);
             processParamModel.setSmsPersonId("");
             processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
-            Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(Y9LoginUserHolder.getTenantId(),
+            Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9LoginUserHolder.getTenantId(),
                 Y9LoginUserHolder.getPositionId(), processInstanceId, taskId, sponsorHandle, itemId,
                 processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             if (y9Result.isSuccess()) {
@@ -261,11 +259,11 @@ public class DocumentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         try {
-            List<ItemListModel> listMap = item4PositionApi
-                .getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+            List<ItemListModel> listMap =
+                itemApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
             map.put("itemMap", listMap);
-            map.put("notReadCount", chaoSong4PositionApi
-                .getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
+            map.put("notReadCount",
+                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
             // int followCount = officeFollow4PositionApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
             // map.put("followCount", followCount);
             // 公共角色
@@ -297,7 +295,7 @@ public class DocumentRestController {
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             List<Map<String, Object>> list = new ArrayList<>();
-            List<ItemModel> listMap = item4PositionApi.getAllItem(Y9LoginUserHolder.getTenantId()).getData();
+            List<ItemModel> listMap = itemApi.getAllItem(Y9LoginUserHolder.getTenantId()).getData();
             for (ItemModel itemModel : listMap) {
                 Map<String, Object> newmap = new HashMap<>(16);
                 newmap.put("systemName", itemModel.getSystemName());
@@ -320,8 +318,8 @@ public class DocumentRestController {
             }
 
             map.put("systemList", list);
-            map.put("notReadCount", chaoSong4PositionApi
-                .getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
+            map.put("notReadCount",
+                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
             // 公共角色
             boolean b = positionRoleApi
                 .hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId())
@@ -416,8 +414,8 @@ public class DocumentRestController {
         @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
         @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return document4PositionApi.signTaskConfig(tenantId, Y9LoginUserHolder.getPositionId(), itemId,
-            processDefinitionId, taskDefinitionKey, processSerialNumber);
+        return documentApi.signTaskConfig(tenantId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId,
+            taskDefinitionKey, processSerialNumber);
     }
 
     /**
@@ -431,8 +429,8 @@ public class DocumentRestController {
     @PostMapping(value = "/submitTo")
     public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
-        return document4PositionApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-            taskId, itemId, processSerialNumber);
+        return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId,
+            itemId, processSerialNumber);
     }
 
     /**
@@ -449,7 +447,7 @@ public class DocumentRestController {
     public Y9Result<DocUserChoiseModel> userChoiseData(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String routeToTask, @RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
-        return document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+        return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
     }
 

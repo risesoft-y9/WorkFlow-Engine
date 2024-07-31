@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.entity.OfficeFollow;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.pojo.Y9Page;
@@ -26,8 +26,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/officeFollow4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
+@RequestMapping(value = "/services/rest/officeFollow", produces = MediaType.APPLICATION_JSON_VALUE)
+public class OfficeFollowApiImpl implements OfficeFollowApi {
 
     private final OfficeFollowService officeFollowService;
 
@@ -50,22 +50,6 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
     }
 
     /**
-     * 根据流程实例id删除关注
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> deleteByProcessInstanceId(@RequestParam String tenantId,
-        @RequestParam String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        officeFollowService.deleteByProcessInstanceId(processInstanceId);
-        return Y9Result.successMsg("删除关注成功");
-    }
-
-    /**
      * 取消关注
      *
      * @param tenantId 租户id
@@ -81,6 +65,22 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
         Y9LoginUserHolder.setPositionId(positionId);
         officeFollowService.delOfficeFollow(processInstanceIds);
         return Y9Result.successMsg("取消关注成功");
+    }
+
+    /**
+     * 根据流程实例id删除关注
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> deleteByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        officeFollowService.deleteByProcessInstanceId(processInstanceId);
+        return Y9Result.successMsg("删除关注成功");
     }
 
     /**

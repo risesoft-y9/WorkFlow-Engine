@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.TransactionFile;
@@ -42,8 +42,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/attachment4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class AttachmentApiImpl implements Attachment4PositionApi {
+@RequestMapping(value = "/services/rest/attachment", produces = MediaType.APPLICATION_JSON_VALUE)
+public class AttachmentApiImpl implements AttachmentApi {
 
     private final TransactionFileService transactionFileService;
 

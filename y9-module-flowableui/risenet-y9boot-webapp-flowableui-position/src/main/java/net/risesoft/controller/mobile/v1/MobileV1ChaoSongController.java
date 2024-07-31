@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
@@ -39,9 +39,9 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping("/mobile/v1/chaosong")
 public class MobileV1ChaoSongController {
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
-    private final ItemRole4PositionApi itemRole4PositionApi;
+    private final ItemRoleApi itemRoleApi;
 
     /**
      * 抄送件收回
@@ -54,7 +54,7 @@ public class MobileV1ChaoSongController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String[] id = ids.split(",");
-            chaoSong4PositionApi.deleteByIds(tenantId, id);
+            chaoSongApi.deleteByIds(tenantId, id);
             return Y9Result.successMsg("收回成功");
         } catch (Exception e) {
             LOGGER.error("手机端跟踪抄送件收回", e);
@@ -78,7 +78,7 @@ public class MobileV1ChaoSongController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             OpenDataModel model =
-                chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, false, true).getData();
+                chaoSongApi.detail(tenantId, positionId, id, processInstanceId, status, false, true).getData();
             String processSerialNumber = model.getProcessSerialNumber();
             String activitiUser = model.getActivitiUser();
             String processDefinitionId = model.getProcessDefinitionId();
@@ -117,8 +117,8 @@ public class MobileV1ChaoSongController {
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            return itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id,
-                principalType, processInstanceId);
+            return itemRoleApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id, principalType,
+                processInstanceId);
         } catch (Exception e) {
             LOGGER.error("手机端跟踪获取抄送选人", e);
         }
@@ -141,8 +141,7 @@ public class MobileV1ChaoSongController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            return itemRole4PositionApi.findCsUserSearch(tenantId, userId, positionId, name, principalType,
-                processInstanceId);
+            return itemRoleApi.findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId);
         } catch (Exception e) {
             LOGGER.error("手机端跟踪选人搜索", e);
         }
@@ -165,11 +164,10 @@ public class MobileV1ChaoSongController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             if (type.equals("my")) {
-                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId,
-                    processInstanceId, "", rows, page);
-            } else {
-                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "",
+                return chaoSongApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "",
                     rows, page);
+            } else {
+                return chaoSongApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("手机端跟踪办件抄送列表", e);
@@ -193,9 +191,9 @@ public class MobileV1ChaoSongController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             if (status == 0) {
-                return chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 1) {
-                return chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("手机端跟踪查看抄送件列表", e);
@@ -221,8 +219,8 @@ public class MobileV1ChaoSongController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            return chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms,
-                isShuMing, smsContent, "");
+            return chaoSongApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing,
+                smsContent, "");
         } catch (Exception e) {
             LOGGER.error("手机端跟踪查看抄送件发送", e);
         }

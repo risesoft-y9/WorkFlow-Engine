@@ -34,7 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.user.UserInfo;
@@ -61,7 +61,7 @@ public class AttachmentRestController {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     /**
      * 附件下载
@@ -73,7 +73,7 @@ public class AttachmentRestController {
         HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            AttachmentModel model = attachment4PositionApi.findById(tenantId, id).getData();
+            AttachmentModel model = attachmentApi.findById(tenantId, id).getData();
             String filename = model.getName();
             String filePath = model.getFileStoreId();
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -103,7 +103,7 @@ public class AttachmentRestController {
     @PostMapping(value = "/delFile")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        attachment4PositionApi.delFile(tenantId, ids);
+        attachmentApi.delFile(tenantId, ids);
         return Y9Result.successMsg("删除成功");
     }
 
@@ -120,7 +120,7 @@ public class AttachmentRestController {
     public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
+        return attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
     }
 
     /**
@@ -135,7 +135,7 @@ public class AttachmentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Y9Page<AttachmentModel> y9Page =
-                attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
+                attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
             List<AttachmentModel> list = y9Page.getRows();
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
@@ -229,8 +229,8 @@ public class AttachmentRestController {
             String storeId = y9FileStore.getId();
             String fileSize =
                 Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
-            return attachment4PositionApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName,
-                fileSize, processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
+            return attachmentApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize,
+                processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
         }

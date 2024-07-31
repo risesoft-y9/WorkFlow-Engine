@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -29,7 +29,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Transactional(readOnly = true)
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -58,7 +58,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());
             actRuDetailModel.setEnded(false);

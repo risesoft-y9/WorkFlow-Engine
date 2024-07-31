@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -37,7 +37,7 @@ public class SearchRestController {
 
     private final SearchService searchService;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     /**
      * 获取我的事项列表
@@ -48,7 +48,7 @@ public class SearchRestController {
     public Y9Result<List<ItemListModel>> getMyItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        return item4PositionApi.getMyItemList(tenantId, userId);
+        return itemApi.getMyItemList(tenantId, userId);
     }
 
     /**
@@ -59,7 +59,7 @@ public class SearchRestController {
     @GetMapping(value = "/getMyItemSystemList")
     public Y9Result<List<Map<String, Object>>> getMyItemSystemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId).getData();
+        List<ItemModel> listMap = itemApi.getAllItemList(tenantId).getData();
         List<Map<String, Object>> list = new ArrayList<>();
         for (ItemModel itemModel : listMap) {
             Map<String, Object> newmap = new HashMap<>(16);

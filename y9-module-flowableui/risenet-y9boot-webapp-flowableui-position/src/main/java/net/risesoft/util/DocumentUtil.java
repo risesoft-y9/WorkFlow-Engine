@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
+import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
@@ -52,8 +52,8 @@ public class DocumentUtil {
             Map<String, Object> opinionMap = new HashMap<>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
             List<OpinionListModel> listMap =
-                Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId, processSerialNumber,
-                    taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, "").getData();
+                Y9Context.getBean(OpinionApi.class).personCommentList(tenantId, userId, processSerialNumber, taskId,
+                    itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, "").getData();
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
             opinionMap.put("opinionList", listMap);
@@ -64,8 +64,8 @@ public class DocumentUtil {
         map.put("opinioListMap", opinioListMap);
 
         // 附件
-        Y9Page<AttachmentModel> y9Page = Y9Context.getBean(Attachment4PositionApi.class).getAttachmentList(tenantId,
-            processSerialNumber, "", 1, 100);
+        Y9Page<AttachmentModel> y9Page =
+            Y9Context.getBean(AttachmentApi.class).getAttachmentList(tenantId, processSerialNumber, "", 1, 100);
         map.put("fileAttachment", y9Page);
 
         // 正文

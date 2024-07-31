@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.AssociatedFileApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.DocumentApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
@@ -51,19 +51,19 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/vue/chaoSong", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChaoSongRestController {
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final TransactionWordApi transactionWordApi;
 
     private final SpeakInfoApi speakInfoApi;
 
-    private final AssociatedFile4PositionApi associatedFile4PositionApi;
+    private final AssociatedFileApi associatedFileApi;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
-    private final Document4PositionApi document4PositionApi;
+    private final DocumentApi documentApi;
 
     private final Y9Properties y9Config;
 
@@ -78,7 +78,7 @@ public class ChaoSongRestController {
     public Y9Result<String> changeChaoSongState(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String type) {
         try {
-            chaoSong4PositionApi.changeChaoSongState(Y9LoginUserHolder.getTenantId(), id, type);
+            chaoSongApi.changeChaoSongState(Y9LoginUserHolder.getTenantId(), id, type);
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
             LOGGER.error("changeChaoSongState error", e);
@@ -95,7 +95,7 @@ public class ChaoSongRestController {
     @PostMapping(value = "/changeStatus")
     public Y9Result<String> changeStatus(@RequestParam String[] ids) {
         try {
-            chaoSong4PositionApi.changeStatus(Y9LoginUserHolder.getTenantId(), ids);
+            chaoSongApi.changeStatus(Y9LoginUserHolder.getTenantId(), ids);
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
             LOGGER.error("changeStatus error", e);
@@ -113,7 +113,7 @@ public class ChaoSongRestController {
     public Y9Result<String> deleteList(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            chaoSong4PositionApi.deleteByIds(tenantId, ids);
+            chaoSongApi.deleteByIds(tenantId, ids);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             LOGGER.error("deleteList error", e);
@@ -138,7 +138,7 @@ public class ChaoSongRestController {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
-            OpenDataModel model = chaoSong4PositionApi
+            OpenDataModel model = chaoSongApi
                 .detail(person.getTenantId(), positionId, id, processInstanceId, status, openNotRead, false).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
@@ -147,7 +147,7 @@ public class ChaoSongRestController {
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
             map.put("jsVersion", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             String processSerialNumber = model.getProcessSerialNumber();
-            Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
+            Integer fileNum = attachmentApi.fileCounts(tenantId, processSerialNumber).getData();
             int docNum = 0;
             // 是否正文正常
             TransactionWordModel wordMap =
@@ -157,8 +157,7 @@ public class ChaoSongRestController {
             }
             int speakInfoNum =
                 speakInfoApi.getNotReadCount(tenantId, person.getPersonId(), processInstanceId).getData();
-            int associatedFileNum =
-                associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
+            int associatedFileNum = associatedFileApi.countAssociatedFile(tenantId, processSerialNumber).getData();
             map.put("userName", Y9LoginUserHolder.getUserInfo().getName());
             map.put("docNum", docNum);
             map.put("speakInfoNum", speakInfoNum);
@@ -166,8 +165,7 @@ public class ChaoSongRestController {
             map.put("fileNum", fileNum);
             map.put("tenantId", tenantId);
             map.put("userId", person.getPersonId());
-            int follow =
-                officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+            int follow = officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
             map.put("follow", follow > 0);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
@@ -193,11 +191,11 @@ public class ChaoSongRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), senderId = Y9LoginUserHolder.getPositionId();
         try {
             if (type.equals("my")) {
-                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId,
+                return chaoSongApi.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId,
                     userName, rows, page);
             } else {
-                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName,
-                    rows, page);
+                return chaoSongApi.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows,
+                    page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送信息", e);
@@ -231,9 +229,8 @@ public class ChaoSongRestController {
         try {
             Map<String, Object> resMap = new HashMap<>(16);
             if (StringUtils.isBlank(processInstanceId)) {
-                Y9Result<StartProcessResultModel> y9Result =
-                    document4PositionApi.startProcess(Y9LoginUserHolder.getTenantId(),
-                        Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
+                Y9Result<StartProcessResultModel> y9Result = documentApi.startProcess(Y9LoginUserHolder.getTenantId(),
+                    Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
                 if (y9Result.isSuccess()) {
                     processInstanceId = y9Result.getData().getProcessInstanceId();
                     String taskId = y9Result.getData().getTaskId();
@@ -244,8 +241,8 @@ public class ChaoSongRestController {
                 }
             }
             Y9Result<Object> y9Result =
-                chaoSong4PositionApi.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+                chaoSongApi.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    users, isSendSms, isShuMing, smsContent, smsPersonId);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(resMap, "抄送成功");
             }
@@ -270,11 +267,11 @@ public class ChaoSongRestController {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (status == 0) {
-                return chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 1) {
-                return chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 2) {
-                return chaoSong4PositionApi.getOpinionChaosongByUserId(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getOpinionChaosongByUserId(tenantId, positionId, documentTitle, rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送信息", e);

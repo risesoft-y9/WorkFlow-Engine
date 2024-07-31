@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -25,7 +25,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping("/mobile/v1/item")
 public class MobileV1ItemController {
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     /**
      * 获取事项列表
@@ -36,6 +36,6 @@ public class MobileV1ItemController {
     public Y9Result<List<ItemListModel>> getItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        return item4PositionApi.getItemList(tenantId, positionId);
+        return itemApi.getItemList(tenantId, positionId);
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
+import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -38,8 +38,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/itemRole4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ItemRoleApiImpl implements ItemRole4PositionApi {
+@RequestMapping(value = "/services/rest/itemRole", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ItemRoleApiImpl implements ItemRoleApi {
 
     private final RoleService roleService;
 

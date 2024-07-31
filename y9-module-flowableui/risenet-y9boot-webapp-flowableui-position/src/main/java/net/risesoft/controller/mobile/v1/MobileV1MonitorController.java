@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -44,7 +44,7 @@ public class MobileV1MonitorController {
 
     private final MonitorApi monitorApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final MonitorService monitorService;
 
@@ -52,7 +52,7 @@ public class MobileV1MonitorController {
 
     private final TransactionWordApi transactionWordApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     /**
      * 监控在办件统计
@@ -64,7 +64,7 @@ public class MobileV1MonitorController {
     public Y9Result<Long> monitorDoingCount(@RequestParam @NotBlank String itemId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             long monitorDoingCount =
                 monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();
@@ -100,7 +100,7 @@ public class MobileV1MonitorController {
     public Y9Result<Long> monitorDoneCount(@RequestParam @NotBlank String itemId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             long monitorDoneCount =
                 monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();
@@ -145,7 +145,7 @@ public class MobileV1MonitorController {
             boolean b = historicProcessApi.removeProcess(tenantId, processInstanceId).isSuccess();
             if (b) {
                 // 批量删除附件表
-                attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);
+                attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
                 transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
                 return Y9Result.successMsg("删除成功");

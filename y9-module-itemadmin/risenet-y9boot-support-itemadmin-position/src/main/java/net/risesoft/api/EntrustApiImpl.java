@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
+import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
@@ -29,8 +29,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/entrust4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class EntrustApiImpl implements Entrust4PositionApi {
+@RequestMapping(value = "/services/rest/entrust", produces = MediaType.APPLICATION_JSON_VALUE)
+public class EntrustApiImpl implements EntrustApi {
 
     private final EntrustService entrustService;
 

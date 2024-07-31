@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin.position;
+package net.risesoft.api.itemadmin;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface Draft4PositionApi {
+public interface DraftApi {
 
     /**
      * 根据系统名称计数

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -34,7 +34,7 @@ import net.risesoft.y9.util.Y9Util;
 @RequestMapping("/mobile/item")
 public class MobileItemController {
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     /**
      * 获取事项列表
@@ -49,7 +49,7 @@ public class MobileItemController {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            List<ItemListModel> listMap = item4PositionApi.getItemList(tenantId, positionId).getData();
+            List<ItemListModel> listMap = itemApi.getItemList(tenantId, positionId).getData();
             resMap.put(UtilConsts.SUCCESS, true);
             resMap.put("msg", "获取数据成功");
             resMap.put("itemList", listMap);

@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.model.ChaoSongModel;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -39,9 +39,9 @@ public class WorkList4ddyjsRestController {
 
     private final QueryListService queryListService;
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     /**
      * 我的传阅列表
@@ -108,9 +108,8 @@ public class WorkList4ddyjsRestController {
     public Y9Page<DraftModel> draftList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
-        return draft4PositionApi.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(),
-            false);
+        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+        return draftApi.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(), false);
     }
 
     /**

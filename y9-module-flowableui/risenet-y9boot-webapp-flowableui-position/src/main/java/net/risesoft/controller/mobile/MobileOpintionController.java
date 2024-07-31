@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
+import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
@@ -40,7 +40,7 @@ public class MobileOpintionController {
 
     private final CommonSentencesApi commonSentencesApi;
 
-    private final Opinion4PositionApi opinion4PositionApi;
+    private final OpinionApi opinionApi;
 
     /**
      * 保存意见
@@ -61,7 +61,7 @@ public class MobileOpintionController {
             if (opinionModel != null) {
                 opinionModel.setTenantId(tenantId + ":mobile");
             }
-            opinion4PositionApi.saveOrUpdate(tenantId, userId, positionId, opinionModel);
+            opinionApi.saveOrUpdate(tenantId, userId, positionId, opinionModel);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "添加成功");
         } catch (Exception e) {
@@ -86,7 +86,7 @@ public class MobileOpintionController {
         @RequestParam @NotBlank String processSerialNumber, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
+            boolean b = opinionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
             map.put("checkSignOpinion", b);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取成功");
@@ -110,7 +110,7 @@ public class MobileOpintionController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            opinion4PositionApi.delete(tenantId, id);
+            opinionApi.delete(tenantId, id);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "删除成功");
         } catch (Exception e) {
@@ -145,7 +145,7 @@ public class MobileOpintionController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
+            listMap = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
                 opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser).getData();
             map.put("opinionList", listMap);
             map.put(UtilConsts.SUCCESS, true);

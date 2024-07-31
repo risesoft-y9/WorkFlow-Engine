@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.DraftModel;
@@ -68,7 +68,7 @@ public class TransactionWordController {
 
     private final TransactionWordApi transactionWordApi;
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -90,6 +90,68 @@ public class TransactionWordController {
     }
 
     /**
+     * 下载历史正文
+     *
+     * @param taskId 任务id
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例id
+     * @param fileType 文件类型
+     */
+    @RequestMapping(value = "/downLoadHistoryDoc")
+    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType,
+        HttpServletResponse response, HttpServletRequest request) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        TransactionHistoryWordModel map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = map.getFileStoreId();
+
+        try (ServletOutputStream out = response.getOutputStream()) {
+            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
+            // String fileName = y9FileStore.getFileName();
+            String userAgent = request.getHeader("User-Agent");
+            String title;
+            Object documentTitle;
+            if (StringUtils.isBlank(processInstanceId)) {
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
+            } else {
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                documentTitle = processModel.getTitle();
+            }
+            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = ToolUtil.replaceSpecialStr(title);
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
+                title = new String(title.getBytes("gb2312"), "ISO8859-1");
+                response.reset();
+                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+                response.setHeader("Content-type", "text/html;charset=GBK");
+                response.setContentType("application/octet-stream");
+            } else {
+                if (userAgent.contains("Firefox")) {
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                        + "?=";
+                } else {
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
+                    title = StringUtils.replace(title, "+", "%20");// 替换空格
+                }
+                response.reset();
+                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+                response.setHeader("Content-type", "text/html;charset=UTF-8");
+                response.setContentType("application/octet-stream");
+            }
+            y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
+            out.flush();
+        } catch (Exception e) {
+            LOGGER.error("下载正文异常", e);
+        }
+    }
+
+    /**
      * 下载正文
      *
      * @param id 正文id
@@ -103,8 +165,7 @@ public class TransactionWordController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =
@@ -164,8 +225,7 @@ public class TransactionWordController {
             String fileStoreId = map.getFileStoreId();
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =
@@ -201,69 +261,6 @@ public class TransactionWordController {
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             out.flush();
             out.close();
-        } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
-        }
-    }
-
-    /**
-     * 下载历史正文
-     *
-     * @param taskId 任务id
-     * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
-     * @param fileType 文件类型
-     */
-    @RequestMapping(value = "/downLoadHistoryDoc")
-    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType,
-        HttpServletResponse response, HttpServletRequest request) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        TransactionHistoryWordModel map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
-        String fileStoreId = map.getFileStoreId();
-
-        try (ServletOutputStream out = response.getOutputStream()) {
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
-            // String fileName = y9FileStore.getFileName();
-            String userAgent = request.getHeader("User-Agent");
-            String title;
-            Object documentTitle;
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            title = documentTitle != null ? (String)documentTitle : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
-            y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
-            out.flush();
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
         }
@@ -631,8 +628,7 @@ public class TransactionWordController {
         try {
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =
@@ -689,8 +685,7 @@ public class TransactionWordController {
         model.addAttribute("word", map);
         Object documentTitle;
         if (StringUtils.isBlank(processInstanceId)) {
-            DraftModel model1 =
-                draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            DraftModel model1 = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
             documentTitle = model1.getTitle();
         } else {
             String[] pInstanceId = processInstanceId.split(",");
@@ -773,8 +768,7 @@ public class TransactionWordController {
             }
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =
@@ -826,8 +820,7 @@ public class TransactionWordController {
         try {
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =

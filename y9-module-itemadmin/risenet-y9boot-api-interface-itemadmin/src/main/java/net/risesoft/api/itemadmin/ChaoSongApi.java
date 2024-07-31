@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin.position;
+package net.risesoft.api.itemadmin;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface ChaoSong4PositionApi {
+public interface ChaoSongApi {
 
     /**
      * 改变抄送件意见状态

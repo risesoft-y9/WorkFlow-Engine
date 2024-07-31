@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
@@ -30,8 +30,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/chaoSong4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
+@RequestMapping(value = "/services/rest/chaoSong", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ChaoSongInfoApiImpl implements ChaoSongApi {
 
     private final ChaoSongInfoService chaoSongInfoService;
 

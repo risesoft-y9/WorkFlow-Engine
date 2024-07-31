@@ -17,11 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.id.IdType;
@@ -44,13 +44,13 @@ public class DeleteProcessUtilService {
 
     private final ProcessInstanceApi processInstanceApi;
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
     private final OfficeInfoApi officeInfoApi;
 
     private final ProcessParamApi processParamManager;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
     private final ErrorLogApi errorLogManager;
 
@@ -62,15 +62,15 @@ public class DeleteProcessUtilService {
     private JdbcTemplate jdbcTemplate;
 
     public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi,
-        ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager,
-        OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager,
-        MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
+        ChaoSongApi chaoSongApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager,
+        OfficeFollowApi officeFollowApi, ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager,
+        ActRuDetailApi actRuDetailApi) {
         this.rpcTodoTaskManager = rpcTodoTaskManager;
         this.processInstanceApi = processInstanceApi;
-        this.chaoSong4PositionApi = chaoSong4PositionApi;
+        this.chaoSongApi = chaoSongApi;
         this.officeInfoApi = officeInfoApi;
         this.processParamManager = processParamManager;
-        this.officeFollow4PositionApi = officeFollow4PositionApi;
+        this.officeFollowApi = officeFollowApi;
         this.errorLogManager = errorLogManager;
         this.msgRemindInfoManager = msgRemindInfoManager;
         this.actRuDetailApi = actRuDetailApi;
@@ -172,12 +172,12 @@ public class DeleteProcessUtilService {
             LOGGER.error("************************************删除协作状态数据失败", e1);
         }
         try {
-            chaoSong4PositionApi.deleteByProcessInstanceId(tenantId, processInstanceId);
+            chaoSongApi.deleteByProcessInstanceId(tenantId, processInstanceId);
         } catch (Exception e1) {
             LOGGER.error("************************************删除抄送数据失败", e1);
         }
         try {
-            officeFollow4PositionApi.deleteByProcessInstanceId(tenantId, processInstanceId);
+            officeFollowApi.deleteByProcessInstanceId(tenantId, processInstanceId);
         } catch (Exception e1) {
             LOGGER.error("************************************删除关注数据失败", e1);
         }

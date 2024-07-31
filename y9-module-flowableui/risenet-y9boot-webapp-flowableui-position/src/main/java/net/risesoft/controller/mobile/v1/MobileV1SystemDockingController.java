@@ -21,10 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.id.IdType;
@@ -59,15 +59,15 @@ public class MobileV1SystemDockingController {
 
     private final FormDataApi formDataApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
-    private final Document4PositionApi document4PositionApi;
+    private final DocumentApi documentApi;
 
     private final ProcessParamService processParamService;
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final TaskApi taskApi;
 
@@ -95,8 +95,7 @@ public class MobileV1SystemDockingController {
               1保存表单数据和流转参数数据
              */
             Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            List<ItemMappingConfModel> list =
-                item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
+            List<ItemMappingConfModel> list = itemApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
             Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
                 if (mapFormData != null && null != mapFormData.get(mapping.getMappingName())) {
@@ -131,9 +130,9 @@ public class MobileV1SystemDockingController {
             if (!map1.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
-            String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
+            String tempIds = itemApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
             if (StringUtils.isNotBlank(tempIds)) {
                 List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", bindFormJsonData);
@@ -144,8 +143,8 @@ public class MobileV1SystemDockingController {
             /*
               3启动流程并发送
              */
-            Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId,
-                taskId, "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, new HashMap<>());
+            Y9Result<String> y9Result = documentApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId,
+                "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, new HashMap<>());
             if (y9Result.isSuccess()) {
                 return Y9Result.success("操作成功");
             }
@@ -176,8 +175,7 @@ public class MobileV1SystemDockingController {
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
             Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            List<ItemMappingConfModel> list =
-                item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
+            List<ItemMappingConfModel> list = itemApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
             Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
                 if (mapFormData != null && null != mapFormData.get(mapping.getMappingName())) {
@@ -199,9 +197,9 @@ public class MobileV1SystemDockingController {
             if (!map1.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
-            String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
+            String tempIds = itemApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
             if (StringUtils.isNotBlank(tempIds)) {
                 List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", bindFormJsonData);
@@ -232,8 +230,8 @@ public class MobileV1SystemDockingController {
                         } else {
                             fileSizeString = df.format((double)fileSize / 1073741824) + "G";
                         }
-                        Y9Result<String> y9Result = attachment4PositionApi.upload(tenantId, userId, positionId,
-                            fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
+                        Y9Result<String> y9Result = attachmentApi.upload(tenantId, userId, positionId, fileName,
+                            fileSizeString, "", "", "", guid, "", y9FileStore.getId());
                         if (!y9Result.isSuccess()) {
                             LOGGER.info("***********************" + title + "**********保存附件失败");
                             return Y9Result.failure("保存附件失败");
@@ -241,8 +239,8 @@ public class MobileV1SystemDockingController {
                     }
                 }
             }
-            Y9Result<StartProcessResultModel> y9Result = document4PositionApi.startProcess(tenantId, positionId, itemId,
-                guid, item.getWorkflowGuid(), positionChoice);
+            Y9Result<StartProcessResultModel> y9Result =
+                documentApi.startProcess(tenantId, positionId, itemId, guid, item.getWorkflowGuid(), positionChoice);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(y9Result.getData(), "提交成功");
             }

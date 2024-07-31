@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ChaoSongModel;
@@ -48,9 +48,9 @@ import net.risesoft.y9.util.Y9Util;
 public class MobileChaoSongController {
     protected final Logger log = LoggerFactory.getLogger(MobileChaoSongController.class);
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
-    private final ItemRole4PositionApi itemRole4PositionApi;
+    private final ItemRoleApi itemRoleApi;
 
     private final PersonApi personApi;
 
@@ -68,7 +68,7 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String[] id = ids.split(",");
-            chaoSong4PositionApi.deleteByIds(tenantId, id);
+            chaoSongApi.deleteByIds(tenantId, id);
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
@@ -100,7 +100,7 @@ public class MobileChaoSongController {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             OpenDataModel model =
-                chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, false, true).getData();
+                chaoSongApi.detail(tenantId, positionId, id, processInstanceId, status, false, true).getData();
             String processSerialNumber = model.getProcessSerialNumber();
             String activitiUser = model.getActivitiUser();
             String processDefinitionId = model.getProcessDefinitionId();
@@ -143,7 +143,7 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         try {
-            item = itemRole4PositionApi
+            item = itemRoleApi
                 .findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id, principalType, processInstanceId)
                 .getData();
         } catch (Exception e) {
@@ -171,8 +171,8 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         try {
-            item = itemRole4PositionApi
-                .findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId).getData();
+            item = itemRoleApi.findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId)
+                .getData();
         } catch (Exception e) {
             LOGGER.error("获取抄送选人失败", e);
         }
@@ -199,11 +199,11 @@ public class MobileChaoSongController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (type.equals("my")) {
-                y9Page = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId,
-                    processInstanceId, "", rows, page);
-            } else {
-                y9Page = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "",
+                y9Page = chaoSongApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "",
                     rows, page);
+            } else {
+                y9Page =
+                    chaoSongApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送列表失败", e);
@@ -230,9 +230,9 @@ public class MobileChaoSongController {
         Y9Page<ChaoSongModel> y9Page = null;
         try {
             if (status == 0) {
-                y9Page = chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                y9Page = chaoSongApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 1) {
-                y9Page = chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                y9Page = chaoSongApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送列表失败", e);
@@ -262,8 +262,8 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9Result<Object> y9Result = null;
         try {
-            y9Result = chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms,
-                isShuMing, smsContent, "");
+            y9Result = chaoSongApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing,
+                smsContent, "");
         } catch (Exception e) {
             LOGGER.error("发送抄送失败", e);
         }

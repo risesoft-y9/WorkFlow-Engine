@@ -25,10 +25,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
@@ -63,13 +63,13 @@ public class ProcessInstanceVueController {
 
     private final TransactionWordApi transactionWordApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final ProcessParamApi processParamApi;
 
     private final CustomHistoricProcessService customHistoricProcessService;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final CustomIdentityService customIdentityService;
 
@@ -94,7 +94,7 @@ public class ProcessInstanceVueController {
             boolean b = customHistoricProcessService.removeProcess(processInstanceId);
             if (b) {
                 // 批量删除附件表
-                attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);
+                attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
                 transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
                 return Y9Result.successMsg("删除成功");
@@ -197,8 +197,7 @@ public class ProcessInstanceVueController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
-            y9Page = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
-                rows);
+            y9Page = officeDoneInfoApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

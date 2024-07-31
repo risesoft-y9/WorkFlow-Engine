@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
+import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -55,7 +55,7 @@ public class MobileV1OrgController {
 
     private final TodoTaskApi todoTaskApi;
 
-    private final Entrust4PositionApi entrust4PositionApi;
+    private final EntrustApi entrustApi;
 
     private void addUserIds(List<String> userIds, String userId) {
         if (!userIds.contains(userId)) {
@@ -178,7 +178,7 @@ public class MobileV1OrgController {
 
                 // 获取当前岗被委托记录
                 try {
-                    List<EntrustModel> list1 = entrust4PositionApi.getMyEntrustList(tenantId, p.getId()).getData();
+                    List<EntrustModel> list1 = entrustApi.getMyEntrustList(tenantId, p.getId()).getData();
                     for (EntrustModel model : list1) {
                         if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
                             Map<String, Object> map1 = new HashMap<>(16);

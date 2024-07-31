@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -71,7 +71,7 @@ public class FormNTKOController {
 
     private final ProcessParamApi processParamApi;
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
     private final TransactionWordApi transactionWordApi;
 
@@ -90,6 +90,74 @@ public class FormNTKOController {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
+    }
+
+    /**
+     * 下载历史正文
+     *
+     * @param taskId 任务id
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例id
+     * @param fileType 文件类型
+     * @param tenantId 租户id
+     * @param userId 人员id
+     */
+    @RequestMapping(value = "/downLoadHistoryDoc")
+    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType,
+        @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
+        HttpServletRequest request) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        TransactionHistoryWordModel map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = map.getFileStoreId();
+        ServletOutputStream out;
+        try {
+            out = response.getOutputStream();
+            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
+            // String fileName = y9FileStore.getFileName();
+            String userAgent = request.getHeader("User-Agent");
+            String title;
+            String documentTitle = null;
+            if (StringUtils.isBlank(processInstanceId)) {
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                if (draftModel != null) {
+                    documentTitle = draftModel.getTitle();
+                }
+            } else {
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                documentTitle = processModel.getTitle();
+            }
+            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
+            title = ToolUtil.replaceSpecialStr(title);
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
+                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
+                response.reset();
+                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+                response.setHeader("Content-type", "text/html;charset=GBK");
+                response.setContentType("application/octet-stream");
+            } else {
+                if (userAgent.contains("Firefox")) {
+                    title =
+                        "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
+                } else {
+                    title = URLEncoder.encode(title, StandardCharsets.UTF_8);
+                    title = StringUtils.replace(title, "+", "%20");// 替换空格
+                }
+                response.reset();
+                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+                response.setHeader("Content-type", "text/html;charset=UTF-8");
+                response.setContentType("application/octet-stream");
+            }
+            y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            LOGGER.error("下载历史正文失败", e);
+        }
     }
 
     /**
@@ -113,8 +181,7 @@ public class FormNTKOController {
             Y9LoginUserHolder.setPerson(person);
             String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }
@@ -178,8 +245,7 @@ public class FormNTKOController {
             String fileStoreId = word.getFileStoreId();
             String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }
@@ -222,75 +288,6 @@ public class FormNTKOController {
     }
 
     /**
-     * 下载历史正文
-     *
-     * @param taskId 任务id
-     * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
-     * @param fileType 文件类型
-     * @param tenantId 租户id
-     * @param userId 人员id
-     */
-    @RequestMapping(value = "/downLoadHistoryDoc")
-    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType,
-        @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
-        HttpServletRequest request) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        TransactionHistoryWordModel map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
-        String fileStoreId = map.getFileStoreId();
-        ServletOutputStream out;
-        try {
-            out = response.getOutputStream();
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
-            // String fileName = y9FileStore.getFileName();
-            String userAgent = request.getHeader("User-Agent");
-            String title;
-            String documentTitle = null;
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title =
-                        "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
-                } else {
-                    title = URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
-            y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            LOGGER.error("下载历史正文失败", e);
-        }
-    }
-
-    /**
      * 下载正文
      *
      * @param id 正文id
@@ -313,8 +310,7 @@ public class FormNTKOController {
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }
@@ -604,7 +600,7 @@ public class FormNTKOController {
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = transactionWordApi.openPdf(tenantId, userId, processSerialNumber).getData();
 
-        try (ServletOutputStream out = response.getOutputStream();) {
+        try (ServletOutputStream out = response.getOutputStream()) {
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
@@ -752,8 +748,7 @@ public class FormNTKOController {
         try {
             String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }
@@ -818,8 +813,7 @@ public class FormNTKOController {
             transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
         String documentTitle = "";
         if (StringUtils.isBlank(processInstanceId)) {
-            DraftModel model1 =
-                draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            DraftModel model1 = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
             if (model1 != null) {
                 documentTitle = model1.getTitle();
             }
@@ -917,8 +911,7 @@ public class FormNTKOController {
             }
             String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }
@@ -974,8 +967,7 @@ public class FormNTKOController {
         try {
             String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }

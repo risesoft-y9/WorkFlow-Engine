@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
@@ -37,8 +37,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/item4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ItemApiImpl implements Item4PositionApi {
+@RequestMapping(value = "/services/rest/item", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ItemApiImpl implements ItemApi {
 
     private final DocumentService documentService;
 

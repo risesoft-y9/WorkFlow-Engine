@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.DocumentWpsApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -123,7 +123,7 @@ public class DocumentWpsController {
      * 云文档路径
      */
     private static final String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
     private final OrgUnitApi orgUnitApi;
     private final ProcessParamApi processParamApi;
     private final DocumentWpsApi documentWpsApi;
@@ -337,8 +337,7 @@ public class DocumentWpsController {
                 model.addAttribute("id", documentWps.getId());
             } else {// 创建空文件，并获取文件编辑地址
                 if (StringUtils.isBlank(processInstanceId)) {
-                    DraftModel model1 =
-                        draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    DraftModel model1 = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     documentTitle = model1.getTitle();
                 } else {
                     ProcessParamModel processModel =
@@ -449,8 +448,7 @@ public class DocumentWpsController {
 
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
+import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Opinion;
@@ -37,8 +37,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/opinion4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class OpinionApiImpl implements Opinion4PositionApi {
+@RequestMapping(value = "/services/rest/opinion", produces = MediaType.APPLICATION_JSON_VALUE)
+public class OpinionApiImpl implements OpinionApi {
 
     private final OpinionService opinionService;
 

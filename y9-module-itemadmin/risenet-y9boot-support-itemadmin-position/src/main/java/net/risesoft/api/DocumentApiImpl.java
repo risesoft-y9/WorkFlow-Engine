@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
+import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.VariableApi;
@@ -39,8 +39,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/document4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DocumentApiImpl implements Document4PositionApi {
+@RequestMapping(value = "/services/rest/document", produces = MediaType.APPLICATION_JSON_VALUE)
+public class DocumentApiImpl implements DocumentApi {
 
     private final DocumentService documentService;
 

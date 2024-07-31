@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin.position;
+package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface ItemRole4PositionApi {
+public interface ItemRoleApi {
 
     /**
      * 获取抄送选人

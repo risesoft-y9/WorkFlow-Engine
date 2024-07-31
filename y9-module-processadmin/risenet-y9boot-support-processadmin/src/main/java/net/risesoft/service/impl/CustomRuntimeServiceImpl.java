@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.command.RecoveryTodoCommand;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.id.IdType;
@@ -64,7 +64,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final CustomProcessDefinitionService customProcessDefinitionService;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final ErrorLogApi errorLogManager;
 
@@ -77,15 +77,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,
         IdentityService identityService, ManagementService managementService,
-        CustomProcessDefinitionService customProcessDefinitionService,
-        OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi, ErrorLogApi errorLogManager,
-        DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
+        CustomProcessDefinitionService customProcessDefinitionService, OfficeDoneInfoApi officeDoneInfoApi,
+        ErrorLogApi errorLogManager, DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
         this.runtimeService = runtimeService;
         this.historyService = historyService;
         this.identityService = identityService;
         this.managementService = managementService;
         this.customProcessDefinitionService = customProcessDefinitionService;
-        this.officeDoneInfo4PositionApi = officeDoneInfo4PositionApi;
+        this.officeDoneInfoApi = officeDoneInfoApi;
         this.errorLogManager = errorLogManager;
         this.deleteProcessUtilService = deleteProcessUtilService;
         this.actRuDetailApi = actRuDetailApi;
@@ -367,11 +366,11 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
              */
             try {
                 // 修改ES办件信息数据
-                OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
+                OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi
                     .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setEndTime(null);
-                officeDoneInfo4PositionApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);
+                officeDoneInfoApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);
             } catch (Exception e) {
                 final Writer result = new StringWriter();
                 final PrintWriter print = new PrintWriter(result);

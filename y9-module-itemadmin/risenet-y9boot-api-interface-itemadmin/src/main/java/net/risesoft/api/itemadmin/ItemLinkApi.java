@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin.position;
+package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import net.risesoft.pojo.Y9Result;
  * @date 2022/12/19
  */
 @Validated
-public interface ItemLink4PositionApi {
+public interface ItemLinkApi {
 
     /**
      * 获取有权限的事项绑定链接

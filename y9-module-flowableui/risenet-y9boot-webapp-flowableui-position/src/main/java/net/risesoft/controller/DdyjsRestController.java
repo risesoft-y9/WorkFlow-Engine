@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkList4ddyjsService;
@@ -32,7 +32,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/ddyjs", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DdyjsRestController {
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final WorkList4ddyjsService workList4ddyjsService;
 
@@ -46,7 +46,7 @@ public class DdyjsRestController {
     public Y9Result<String> cancelMeeting(@RequestParam @NotBlank String processInstanceId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            officeDoneInfo4PositionApi.cancelMeeting(tenantId, processInstanceId);
+            officeDoneInfoApi.cancelMeeting(tenantId, processInstanceId);
             return Y9Result.successMsg("取消上会成功");
         } catch (Exception e) {
             LOGGER.error("取消上会失败", e);
@@ -84,7 +84,7 @@ public class DdyjsRestController {
         @RequestParam @NotBlank String meetingType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            officeDoneInfo4PositionApi.setMeeting(tenantId, processInstanceId, meetingType);
+            officeDoneInfoApi.setMeeting(tenantId, processInstanceId, meetingType);
             return Y9Result.successMsg("上会成功");
         } catch (Exception e) {
             LOGGER.error("上会失败", e);

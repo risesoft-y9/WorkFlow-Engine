@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.pojo.Y9Page;
@@ -46,7 +46,7 @@ public class MobileV1AttachmentController {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final TransactionWordApi transactionWordApi;
 
@@ -57,7 +57,7 @@ public class MobileV1AttachmentController {
      */
     @RequestMapping(value = "/delFile")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
-        attachment4PositionApi.delFile(Y9LoginUserHolder.getTenantId(), ids);
+        attachmentApi.delFile(Y9LoginUserHolder.getTenantId(), ids);
         return Y9Result.successMsg("删除成功");
     }
 
@@ -70,7 +70,7 @@ public class MobileV1AttachmentController {
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request)
         throws Exception {
         try {
-            AttachmentModel model = attachment4PositionApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+            AttachmentModel model = attachmentApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
             String filename = model.getName();
             String fileStoreId = model.getFileStoreId();
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -141,8 +141,8 @@ public class MobileV1AttachmentController {
     public Y9Page<AttachmentModel> list(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows)
         throws Exception {
-        return attachment4PositionApi.getAttachmentList(Y9LoginUserHolder.getTenantId(), processSerialNumber,
-            fileSource, page, rows);
+        return attachmentApi.getAttachmentList(Y9LoginUserHolder.getTenantId(), processSerialNumber, fileSource, page,
+            rows);
     }
 
     /**
@@ -173,7 +173,7 @@ public class MobileV1AttachmentController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), Y9LoginUserHolder.getTenantId(),
                 "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
-            return attachment4PositionApi.upload(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            return attachmentApi.upload(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
                 Y9LoginUserHolder.getPositionId(), fileName, y9FileStore.getDisplayFileSize(), processInstanceId,
                 taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
         } catch (Exception e) {

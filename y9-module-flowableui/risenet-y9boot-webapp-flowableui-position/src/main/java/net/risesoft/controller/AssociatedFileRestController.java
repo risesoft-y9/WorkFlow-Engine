@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
+import net.risesoft.api.itemadmin.AssociatedFileApi;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -38,7 +38,7 @@ public class AssociatedFileRestController {
 
     private final SearchService searchService;
 
-    private final AssociatedFile4PositionApi associatedFile4PositionApi;
+    private final AssociatedFileApi associatedFileApi;
 
     /**
      * 删除关联流程
@@ -53,7 +53,7 @@ public class AssociatedFileRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Y9Result<Object> y9Result =
-                associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
+                associatedFileApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -74,7 +74,7 @@ public class AssociatedFileRestController {
         getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        return associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
+        return associatedFileApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
     }
 
     /**
@@ -104,8 +104,8 @@ public class AssociatedFileRestController {
         @RequestParam @NotBlank String processInstanceIds) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Y9Result<Object> y9Result = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId,
-                processSerialNumber, processInstanceIds);
+            Y9Result<Object> y9Result =
+                associatedFileApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("保存成功");
             }

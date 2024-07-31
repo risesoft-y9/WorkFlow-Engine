@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin.position;
+package net.risesoft.api.itemadmin;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface OfficeFollow4PositionApi {
+public interface OfficeFollowApi {
 
     /**
      * 根据流程实例id获取是否有关注
@@ -33,18 +33,6 @@ public interface OfficeFollow4PositionApi {
         @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 根据流程实例id删除关注
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @PostMapping("/deleteByProcessInstanceId")
-    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
-
-    /**
      * 取消关注
      *
      * @param tenantId 租户id
@@ -56,6 +44,18 @@ public interface OfficeFollow4PositionApi {
     @PostMapping("/delOfficeFollow")
     Y9Result<Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("processInstanceIds") String processInstanceIds);
+
+    /**
+     * 根据流程实例id删除关注
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/deleteByProcessInstanceId")
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取我的关注数量

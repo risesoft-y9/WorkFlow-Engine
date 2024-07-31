@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin.position;
+package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface Opinion4PositionApi {
+public interface OpinionApi {
 
     /**
      * 检查当前taskId任务节点是否已经签写意见
