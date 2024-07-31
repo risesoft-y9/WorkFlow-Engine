@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -51,11 +51,11 @@ public class MonitorRestController {
 
     private final TransactionWordApi transactionWordApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final ProcessParamApi processParamApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     /**
      * 单位所有件
@@ -85,7 +85,7 @@ public class MonitorRestController {
     @GetMapping(value = "/getAllItemList")
     public Y9Result<List<ItemModel>> getAllItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return item4PositionApi.getAllItemList(tenantId);
+        return itemApi.getAllItemList(tenantId);
     }
 
     /**
@@ -185,7 +185,7 @@ public class MonitorRestController {
             boolean b = historicProcessApi.removeProcess(tenantId, processInstanceIds).isSuccess();
             if (b) {
                 // 批量删除附件表
-                attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);
+                attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
                 transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
                 return Y9Result.successMsg("删除成功");

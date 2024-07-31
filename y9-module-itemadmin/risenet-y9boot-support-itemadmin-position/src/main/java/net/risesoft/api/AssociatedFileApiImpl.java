@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
+import net.risesoft.api.itemadmin.AssociatedFileApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.model.platform.Position;
@@ -30,8 +30,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/associatedFile4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
+@RequestMapping(value = "/services/rest/associatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
+public class AssociatedFileApiImpl implements AssociatedFileApi {
 
     private final AssociatedFileService associatedFileService;
 

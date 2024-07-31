@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.consts.UtilConsts;
@@ -40,7 +40,7 @@ public class MobileMonitorController {
 
     private final MonitorApi monitorApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     /**
      * 删除流程实例
@@ -75,7 +75,7 @@ public class MobileMonitorController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             long monitorDoingCount =
                 monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();
@@ -129,7 +129,7 @@ public class MobileMonitorController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             long monitorDoneCount =
                 monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey).getData();

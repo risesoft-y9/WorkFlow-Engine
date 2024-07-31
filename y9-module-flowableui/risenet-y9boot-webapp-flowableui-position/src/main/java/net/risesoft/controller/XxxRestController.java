@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ButtonOperationApi;
+import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -64,11 +64,11 @@ public class XxxRestController {
 
     private final ProcessTodoApi processTodoApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final Document4PositionApi document4PositionApi;
+    private final DocumentApi documentApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final TaskApi taskApi;
 
@@ -76,7 +76,7 @@ public class XxxRestController {
 
     private final IdentityApi identityApi;
 
-    private final ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrackApi processTrackApi;
 
     private final FormDataApi formDataApi;
 
@@ -84,7 +84,7 @@ public class XxxRestController {
 
     private final HistoricTaskApi historicTaskApi;
 
-    private final ButtonOperation4PositionApi buttonOperation4PositionApi;
+    private final ButtonOperationApi buttonOperationApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
 
@@ -176,8 +176,8 @@ public class XxxRestController {
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId,
-            searchTerm, itemId, "", "todo", "", "", "", page, rows);
+        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByPositionId(tenantId, positionId, searchTerm,
+            itemId, "", "todo", "", "", "", page, rows);
         List<Map<String, Object>> list = new ArrayList<>();
         int serialNumber = (page - 1) * rows;
         for (OfficeDoneInfoModel task : y9Page.getRows()) {
@@ -234,11 +234,11 @@ public class XxxRestController {
         // 统计待办
         todoCount = processTodoApi.countByOrgUnitId(tenantId, positionId).getData();
         // 统计流程在办件
-        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "",
-            "", "", "todo", "", "", "", 1, 1);
+        Y9Page<OfficeDoneInfoModel> y9Page =
+            officeDoneInfoApi.searchAllByPositionId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
         doingCount = y9Page.getTotal();
         // 统计历史办结件
-        doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "").getData();
+        doneCount = officeDoneInfoApi.countByPositionId(tenantId, positionId, "").getData();
         map.put("todoCount", todoCount);
         map.put("doingCount", doingCount);
         map.put("doneCount", doneCount);
@@ -278,7 +278,7 @@ public class XxxRestController {
             formName = Y9Util.genCustomStr(formName, bindFormModel.getFormName());
         }
         map.put("formName", formName);
-        List<String> userChoiceList = document4PositionApi
+        List<String> userChoiceList = documentApi
             .parserUser(tenantId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskKey, "", "", "")
             .getData();
         String positionName = "";
@@ -305,7 +305,7 @@ public class XxxRestController {
      */
     @GetMapping(value = "/getTaskList")
     public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam @NotBlank String processInstanceId) {
-        return processTrack4PositionApi.getTaskList(Y9LoginUserHolder.getTenantId(), processInstanceId);
+        return processTrackApi.getTaskList(Y9LoginUserHolder.getTenantId(), processInstanceId);
     }
 
     /**
@@ -326,7 +326,7 @@ public class XxxRestController {
         if (StringUtils.isBlank(itemId)) {
             y9Page = processTodoApi.pageByUserId(tenantId, positionId, page, rows);
         } else {
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             y9Page = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId, item.getWorkflowGuid(),
                 page, rows);
         }
@@ -340,7 +340,7 @@ public class XxxRestController {
                 map.put("processInstanceId", task.getProcessInstanceId());
                 map.put("taskDefinitionKey", task.getTaskDefinitionKey());
                 OfficeDoneInfoModel doneInfo =
-                    officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
+                    officeDoneInfoApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
                 map.put("createTime", doneInfo.getStartTime());
                 map.put("processSerialNumber", doneInfo.getProcessSerialNumber());
                 map.put("title", doneInfo.getTitle());
@@ -371,11 +371,11 @@ public class XxxRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         OfficeDoneInfoModel officeDoneInfo =
-            officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         String itemId = officeDoneInfo.getItemId();
         String processDefinitionId = officeDoneInfo.getProcessDefinitionId();
         String multiInstance = processDefinitionApi.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
-        List<String> userChoiceList = document4PositionApi.parserUser(tenantId, positionId, itemId, processDefinitionId,
+        List<String> userChoiceList = documentApi.parserUser(tenantId, positionId, itemId, processDefinitionId,
             routeToTaskId, routeToTaskId, processInstanceId, multiInstance).getData();
         Map<String, Object> map = new HashMap<>();
         map.put("val", false);
@@ -383,8 +383,7 @@ public class XxxRestController {
         if (userChoiceList == null || userChoiceList.size() == 0) {
             return Y9Result.failure("目标节点未授权人员");
         }
-        return buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, routeToTaskId, userChoiceList, "",
-            "");
+        return buttonOperationApi.reposition(tenantId, positionId, taskId, routeToTaskId, userChoiceList, "", "");
     }
 
     /**
@@ -407,7 +406,7 @@ public class XxxRestController {
         List<TargetModel> targetModelList = processDefinitionApi
             .getTargetNodes(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
         if (targetModelList.size() > 0) {// 有目标任务才执行提交
-            return document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
+            return documentApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
         }
         return Y9Result.success();
     }
@@ -446,6 +445,6 @@ public class XxxRestController {
         Map<String, Object> map = new HashMap<>();
         map.put("val", false);
         variableApi.setVariable(tenantId, taskId, "stopProcess", map);
-        return document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
+        return documentApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
     }
 }

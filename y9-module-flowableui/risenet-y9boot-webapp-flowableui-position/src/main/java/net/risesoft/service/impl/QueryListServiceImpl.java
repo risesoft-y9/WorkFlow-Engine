@@ -16,10 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.QueryListApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -42,11 +42,11 @@ import net.risesoft.y9.util.Y9Util;
 @Transactional(readOnly = true)
 public class QueryListServiceImpl implements QueryListService {
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final FormDataApi formDataApi;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
     private final QueryListApi queryListApi;
 
@@ -56,7 +56,7 @@ public class QueryListServiceImpl implements QueryListService {
 
     private final IdentityApi identityApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfoApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -137,7 +137,7 @@ public class QueryListServiceImpl implements QueryListService {
         Y9Page<ActRuDetailModel> itemPage;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName,
                 searchMapStr, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
@@ -187,8 +187,8 @@ public class QueryListServiceImpl implements QueryListService {
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow = officeFollow4PositionApi
-                        .countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
+                    int countFollow =
+                        officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取流程实例信息失败" + processInstanceId, e);

@@ -17,14 +17,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ItemDoingApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDoingApi;
@@ -54,13 +54,13 @@ public class DoingServiceImpl implements DoingService {
 
     private final TaskApi taskApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final PositionApi positionApi;
 
     private final ProcessParamApi processParamApi;
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
     private final FormDataApi formDataApi;
 
@@ -68,7 +68,7 @@ public class DoingServiceImpl implements DoingService {
 
     private final RemindInstanceApi remindInstanceApi;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
     private final IdentityApi identityApi;
 
@@ -159,7 +159,7 @@ public class DoingServiceImpl implements DoingService {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 piPage = processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
@@ -205,7 +205,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi
+                        int chaosongNum = chaoSongApi
                             .countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
@@ -257,7 +257,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi
+                        int chaosongNum = chaoSongApi
                             .countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
@@ -285,7 +285,7 @@ public class DoingServiceImpl implements DoingService {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 piPage = processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
@@ -333,7 +333,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi
+                        int chaosongNum = chaoSongApi
                             .countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
@@ -361,8 +361,8 @@ public class DoingServiceImpl implements DoingService {
                             mapTemp.put("remindSetting", true);
                         }
 
-                        int countFollow = officeFollow4PositionApi
-                            .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                        int countFollow =
+                            officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("follow", countFollow > 0);
                     } catch (Exception e) {
                         LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -413,7 +413,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi
+                        int chaosongNum = chaoSongApi
                             .countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
@@ -447,7 +447,7 @@ public class DoingServiceImpl implements DoingService {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage =
@@ -487,7 +487,7 @@ public class DoingServiceImpl implements DoingService {
                     mapTemp.put("taskAssigneeId", assigneeIds);
                     mapTemp.put("taskAssignee", assigneeNames);
                     mapTemp.put("isReminder", isReminder);
-                    int chaosongNum = chaoSong4PositionApi
+                    int chaosongNum = chaoSongApi
                         .countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
                     mapTemp.put("status", 1);
@@ -513,8 +513,8 @@ public class DoingServiceImpl implements DoingService {
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
-                    int countFollow = officeFollow4PositionApi
-                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                    int countFollow =
+                        officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);

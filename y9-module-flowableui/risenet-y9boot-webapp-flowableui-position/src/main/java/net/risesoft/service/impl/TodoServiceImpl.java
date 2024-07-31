@@ -19,15 +19,15 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ItemTodoApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
@@ -54,7 +54,7 @@ public class TodoServiceImpl implements TodoService {
 
     private final ProcessTodoApi processTodoApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final VariableApi variableApi;
 
@@ -64,7 +64,7 @@ public class TodoServiceImpl implements TodoService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
     private final FormDataApi formDataApi;
 
@@ -74,7 +74,7 @@ public class TodoServiceImpl implements TodoService {
 
     private final RemindInstanceApi remindInstanceApi;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
     private final ItemTodoApi itemTodoApi;
 
@@ -86,7 +86,7 @@ public class TodoServiceImpl implements TodoService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             Y9Page<TaskModel> taskPage;
             if (StringUtils.isBlank(searchTerm)) {
@@ -170,7 +170,7 @@ public class TodoServiceImpl implements TodoService {
                             mapTemp.put("isZhuBan", "");
                         }
                     }
-                    int chaosongNum = chaoSong4PositionApi
+                    int chaosongNum = chaoSongApi
                         .countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
                     /*
@@ -197,7 +197,7 @@ public class TodoServiceImpl implements TodoService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             Y9Page<TaskModel> taskPage;
             if (StringUtils.isBlank(searchTerm)) {
@@ -306,8 +306,8 @@ public class TodoServiceImpl implements TodoService {
                         mapTemp.put("remindSetting", true);
                     }
 
-                    int countFollow = officeFollow4PositionApi
-                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                    int countFollow =
+                        officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
@@ -349,7 +349,7 @@ public class TodoServiceImpl implements TodoService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String systemName = item.getSystemName(), itemName = item.getName();
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, systemName, page, rows);
@@ -452,8 +452,8 @@ public class TodoServiceImpl implements TodoService {
                         mapTemp.put("remindSetting", true);
                     }
 
-                    int countFollow = officeFollow4PositionApi
-                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                    int countFollow =
+                        officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();

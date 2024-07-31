@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DataCenterApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -49,7 +49,7 @@ import net.risesoft.y9.util.Y9Util;
 @Slf4j
 public class Process4CompleteUtilService {
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -66,10 +66,10 @@ public class Process4CompleteUtilService {
     private final Process4MsgRemindService process4MsgRemindService;
 
     public Process4CompleteUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi, DataCenterApi dataCenterManager, OrgUnitApi orgUnitApi,
+        OfficeDoneInfoApi officeDoneInfoApi, DataCenterApi dataCenterManager, OrgUnitApi orgUnitApi,
         ProcessParamApi processParamManager, ErrorLogApi errorLogManager, Y9Properties y9Conf,
         Process4MsgRemindService process4MsgRemindService) {
-        this.officeDoneInfo4PositionApi = officeDoneInfo4PositionApi;
+        this.officeDoneInfoApi = officeDoneInfoApi;
         this.jdbcTemplate = jdbcTemplate;
         this.dataCenterManager = dataCenterManager;
         this.orgUnitApi = orgUnitApi;
@@ -297,7 +297,7 @@ public class Process4CompleteUtilService {
             officeDoneInfo.setTenantId(tenantId);
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);
+                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
             }
             String year0 = year;
             if (StringUtils.isBlank(year)) {

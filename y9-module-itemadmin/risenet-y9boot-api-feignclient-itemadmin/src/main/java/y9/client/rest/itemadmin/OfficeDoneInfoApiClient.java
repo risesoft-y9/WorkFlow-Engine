@@ -2,7 +2,7 @@ package y9.client.rest.itemadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 
 /**
  * 工作流办件信息列表接口
@@ -11,9 +11,9 @@ import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OfficeDoneInfo4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+@FeignClient(contextId = "OfficeDoneInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/officeDoneInfo4Position")
-public interface OfficeDoneInfoApiClient extends OfficeDoneInfo4PositionApi {
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/officeDoneInfo")
+public interface OfficeDoneInfoApiClient extends OfficeDoneInfoApi {
 
 }

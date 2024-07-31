@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.DraftModel;
@@ -46,7 +46,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequiredArgsConstructor
 public class WpsRestController {
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -260,8 +260,7 @@ public class WpsRestController {
             }
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =

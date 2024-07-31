@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.Person;
@@ -42,7 +42,7 @@ public class FileNTKOController {
 
     private final PersonApi personApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final Y9Properties y9Config;
 
@@ -55,7 +55,7 @@ public class FileNTKOController {
     public void openDoc(@RequestParam String fileId, @RequestParam String tenantId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
+        AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
         ServletOutputStream out = null;
         try {
             String agent = request.getHeader("USER-AGENT");
@@ -122,7 +122,7 @@ public class FileNTKOController {
         try {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
+            AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
             String downloadUrl =
                 y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
             model.addAttribute("fileName", file.getName());
@@ -164,14 +164,14 @@ public class FileNTKOController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
+            AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
             String fullPath =
                 Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, file.getName());
-            result = attachment4PositionApi.updateFile(tenantId, userId, positionId, fileId,
-                y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId()).getData();
+            result = attachmentApi.updateFile(tenantId, userId, positionId, fileId, y9FileStore.getDisplayFileSize(),
+                taskId, y9FileStore.getId()).getData();
         } catch (Exception e) {
             LOGGER.error("更新附件失败", e);
         }

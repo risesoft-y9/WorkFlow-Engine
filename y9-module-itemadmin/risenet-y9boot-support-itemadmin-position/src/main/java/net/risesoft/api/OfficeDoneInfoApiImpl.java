@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.Y9Page;
@@ -26,8 +26,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/officeDoneInfo4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
+@RequestMapping(value = "/services/rest/officeDoneInfo", produces = MediaType.APPLICATION_JSON_VALUE)
+public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 

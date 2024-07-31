@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.id.IdType;
@@ -48,7 +48,7 @@ public class Process4MsgRemindService {
 
     private final RemindInstanceApi remindInstanceManager;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoManager;
 
     private final Y9Properties y9Conf;
 

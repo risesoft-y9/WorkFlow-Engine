@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
+import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
@@ -50,7 +50,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/vue/opinion", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OpinionRestController {
 
-    private final Opinion4PositionApi opinion4PositionApi;
+    private final OpinionApi opinionApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -71,7 +71,7 @@ public class OpinionRestController {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
             Boolean checkSignOpinion =
-                opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
+                opinionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
             LOGGER.error("查询" + taskId + "是否签写意见失败！", e);
@@ -90,8 +90,7 @@ public class OpinionRestController {
     public Y9Result<Integer> countOpinionHistory(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Integer num =
-            opinion4PositionApi.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark).getData();
+        Integer num = opinionApi.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark).getData();
         return Y9Result.success(num, "获取成功");
     }
 
@@ -105,7 +104,7 @@ public class OpinionRestController {
     public Y9Result<String> delete(@RequestParam @NotBlank String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            opinion4PositionApi.delete(tenantId, id);
+            opinionApi.delete(tenantId, id);
             return Y9Result.successMsg("刪除成功");
         } catch (Exception e) {
             LOGGER.error("删除意见失败！", e);
@@ -161,7 +160,7 @@ public class OpinionRestController {
     public Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return opinion4PositionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
+        return opinionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
     }
 
     /**
@@ -222,27 +221,7 @@ public class OpinionRestController {
     public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return opinion4PositionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
-    }
-
-    /**
-     * 获取新增或编辑意见前数据
-     *
-     * @param id 意见id
-     * @return Y9Result<Map < String, Object>>
-     */
-    @GetMapping(value = "/newOrModify/personalComment")
-    public Y9Result<Map<String, Object>> personalComment(@RequestParam(required = false) String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        map.put("date", sdf.format(new Date()));
-        if (StringUtils.isNotBlank(id)) {
-            OpinionModel opinion = opinion4PositionApi.getById(tenantId, id).getData();
-            map.put("opinion", opinion);
-            map.put("date", opinion.getCreateDate());
-        }
-        return Y9Result.success(map, "获取成功");
+        return opinionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
     }
 
     /**
@@ -265,8 +244,28 @@ public class OpinionRestController {
         @RequestParam(required = false) String orderByUser) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
-        return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+        return opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark,
+            itemId, taskDefinitionKey, activitiUser, orderByUser);
+    }
+
+    /**
+     * 获取新增或编辑意见前数据
+     *
+     * @param id 意见id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/newOrModify/personalComment")
+    public Y9Result<Map<String, Object>> personalComment(@RequestParam(required = false) String id) {
+        Map<String, Object> map = new HashMap<>(16);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        map.put("date", sdf.format(new Date()));
+        if (StringUtils.isNotBlank(id)) {
+            OpinionModel opinion = opinionApi.getById(tenantId, id).getData();
+            map.put("opinion", opinion);
+            map.put("date", opinion.getCreateDate());
+        }
+        return Y9Result.success(map, "获取成功");
     }
 
     /**
@@ -282,8 +281,7 @@ public class OpinionRestController {
             String userId = person.getPersonId(), tenantId = person.getTenantId();
             OpinionModel opinion = Y9JsonUtil.readValue(jsonData, OpinionModel.class);
             String positionId = Y9LoginUserHolder.getPositionId();
-            OpinionModel opinionModel =
-                opinion4PositionApi.saveOrUpdate(tenantId, userId, positionId, opinion).getData();
+            OpinionModel opinionModel = opinionApi.saveOrUpdate(tenantId, userId, positionId, opinion).getData();
             return Y9Result.success(opinionModel, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存意见失败", e);
@@ -301,6 +299,6 @@ public class OpinionRestController {
     @PostMapping(value = "/updateOpinion")
     public Y9Result<Object> updateOpinion(@RequestParam @NotBlank String content, @RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return opinion4PositionApi.updateOpinion(tenantId, id, content);
+        return opinionApi.updateOpinion(tenantId, id, content);
     }
 }

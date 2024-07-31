@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
@@ -22,7 +22,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Transactional(readOnly = true)
 public class ProcessParamServiceImpl implements ProcessParamService {
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -33,7 +33,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         String documentTitle, String number, String level, Boolean customItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             if (StringUtils.isNotBlank(processInstanceId)) {

@@ -2,6 +2,8 @@ package net.risesoft.api;
 
 import java.util.List;
 
+
+import net.risesoft.api.itemadmin.ChaoSongApi;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
@@ -43,7 +44,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     private final ProcessInstanceApi processInstance4PositionApi;
 
-    private final ChaoSong4PositionApi chaoSongInfoManager;
+    private final ChaoSongApi chaoSongInfoManager;
 
     /**
      * 删除流程实例，在办件设为暂停，办结件加删除标识

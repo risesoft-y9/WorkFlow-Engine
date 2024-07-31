@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -40,7 +40,7 @@ import net.risesoft.y9.util.Y9Util;
 @RequiredArgsConstructor
 public class MobileSyncController {
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
     private final ProcessParamApi processParamApi;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
@@ -344,7 +344,7 @@ public class MobileSyncController {
                     officeDoneInfo.setProcessInstanceId(PROC_INST_ID_);
                     officeDoneInfo.setStartTime(START_TIME_);
                     officeDoneInfo.setTenantId(tenantId);
-                    officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);
+                    officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
                 } catch (Exception e) {
                     i = i + 1;
                     LOGGER.error("同步失败", e);
@@ -396,8 +396,7 @@ public class MobileSyncController {
                         processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
                     OfficeDoneInfoModel officeDoneInfo = new OfficeDoneInfoModel();
                     officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    officeDoneInfo =
-                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
+                    officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
                     if (officeDoneInfo == null) {
                         officeDoneInfo = new OfficeDoneInfoModel();
                         officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -462,7 +461,7 @@ public class MobileSyncController {
                     officeDoneInfo.setProcessInstanceId(PROC_INST_ID_);
                     officeDoneInfo.setStartTime(START_TIME_);
                     officeDoneInfo.setTenantId(tenantId);
-                    officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);
+                    officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
                     String year = START_TIME_.substring(0, 4);
                     this.saveYearData(year, PROC_INST_ID_);
                     this.deleteDoneData(PROC_INST_ID_);
@@ -511,7 +510,7 @@ public class MobileSyncController {
                     PROC_INST_ID_ = (String)map.get("PROC_INST_ID_");
                     String START_TIME_ = (String)map.get("START_TIME_");
                     String year = START_TIME_.substring(0, 4);
-                    officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
+                    officeDoneInfoApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
 
                     String sql3 =
                         "SELECT * FROM ACT_HI_TASKINST_" + year + " where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -30,7 +30,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping("/mobile/v1/draft")
 public class MobileV1DraftController {
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
     /**
      * 彻底删除草稿
@@ -42,7 +42,7 @@ public class MobileV1DraftController {
     public Y9Result<String> delDraft(@RequestParam @NotBlank String ids) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Y9Result<Object> y9Result = draft4PositionApi.deleteDraft(tenantId, ids);
+            Y9Result<Object> y9Result = draftApi.deleteDraft(tenantId, ids);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -62,7 +62,7 @@ public class MobileV1DraftController {
     public Y9Result<Integer> getDeleteDraftCount(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        return draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId);
+        return draftApi.getDeleteDraftCount(tenantId, positionId, itemId);
     }
 
     /**
@@ -81,7 +81,7 @@ public class MobileV1DraftController {
         @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        return draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
+        return draftApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
     }
 
     /**
@@ -94,7 +94,7 @@ public class MobileV1DraftController {
     public Y9Result<Integer> getDraftCount(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        return draft4PositionApi.getDraftCount(tenantId, positionId, itemId);
+        return draftApi.getDraftCount(tenantId, positionId, itemId);
     }
 
     /**
@@ -106,7 +106,7 @@ public class MobileV1DraftController {
     @RequestMapping(value = "/reduction")
     public Y9Result<Object> reduction(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return draft4PositionApi.reduction(tenantId, id);
+        return draftApi.reduction(tenantId, id);
     }
 
     /**
@@ -118,6 +118,6 @@ public class MobileV1DraftController {
     @RequestMapping(value = "/removeDraft")
     public Y9Result<Object> removeDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return draft4PositionApi.removeDraft(tenantId, ids);
+        return draftApi.removeDraft(tenantId, ids);
     }
 }

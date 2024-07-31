@@ -60,9 +60,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.BpmnModelApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -114,11 +114,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoManager;
 
     private final ProcessParamApi processParamManager;
 
-    private final ProcessTrack4PositionApi processTrackManager;
+    private final ProcessTrackApi processTrackManager;
 
     private final ModelService modelService;
 

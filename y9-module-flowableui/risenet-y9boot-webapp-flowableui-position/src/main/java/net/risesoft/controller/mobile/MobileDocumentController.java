@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.AssociatedFileApi;
+import net.risesoft.api.itemadmin.DocumentApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
+import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
-import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -89,17 +89,17 @@ public class MobileDocumentController {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final Document4PositionApi document4PositionApi;
+    private final DocumentApi documentApi;
 
     private final ItemOpinionFrameBindApi itemOpinionFrameBindApi;
 
     private final TaskApi taskApi;
 
-    private final AssociatedFile4PositionApi associatedFile4PositionApi;
+    private final AssociatedFileApi associatedFileApi;
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
-    private final ItemRole4PositionApi itemRole4PositionApi;
+    private final ItemRoleApi itemRoleApi;
 
     private final FormDataApi formDataApi;
 
@@ -128,8 +128,7 @@ public class MobileDocumentController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            OpenDataModel model =
-                document4PositionApi.add(Y9LoginUserHolder.getTenantId(), positionId, itemId, true).getData();
+            OpenDataModel model = documentApi.add(Y9LoginUserHolder.getTenantId(), positionId, itemId, true).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
 
@@ -191,7 +190,7 @@ public class MobileDocumentController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         Y9Result<Object> y9Result =
-            associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
+            associatedFileApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
         map.put(UtilConsts.SUCCESS, y9Result.isSuccess());
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
     }
@@ -221,11 +220,10 @@ public class MobileDocumentController {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotBlank(processInstanceId)) {// 打开办件
-                model = document4PositionApi
-                    .edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true).getData();
+                model =
+                    documentApi.edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true).getData();
             } else {// 打开草稿
-                model = draft4PositionApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, true)
-                    .getData();
+                model = draftApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, true).getData();
             }
             String activitiUser = model.getActivitiUser();
             String processDefinitionId = model.getProcessDefinitionId();
@@ -274,7 +272,7 @@ public class MobileDocumentController {
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
                     String itemId = processParamModel.getItemId();
-                    OpenDataModel model = document4PositionApi
+                    OpenDataModel model = documentApi
                         .edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true)
                         .getData();
                     String activitiUser = model.getActivitiUser();
@@ -330,7 +328,7 @@ public class MobileDocumentController {
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         } else {
-            item = itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
+            item = itemRoleApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
                 processDefinitionId, taskDefKey, principalType, id, processInstanceId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         }
@@ -361,7 +359,7 @@ public class MobileDocumentController {
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         } else {
-            item = itemRole4PositionApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name,
+            item = itemRoleApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name,
                 principalType, itemId, processDefinitionId, taskDefKey, processInstanceId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         }
@@ -417,8 +415,8 @@ public class MobileDocumentController {
             }
 
             if (StringUtils.isBlank(taskId)) {// 保存草稿
-                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey,
-                    number, level, title);
+                draftApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number,
+                    level, title);
             }
             Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId,
                 title, number, level, false);
@@ -436,9 +434,8 @@ public class MobileDocumentController {
                 }
             }
             Map<String, Object> variables = new HashMap<>(16);
-            y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId,
-                sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid,
-                routeToTaskId, variables);
+            y9Result = documentApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle,
+                itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "发送失败");
@@ -481,7 +478,7 @@ public class MobileDocumentController {
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9Result<List<AssociatedFileModel>> y9Result =
-            associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
+            associatedFileApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
     }
 
@@ -624,9 +621,8 @@ public class MobileDocumentController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         try {
-            DocUserChoiseModel model =
-                document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
-                    processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId).getData();
+            DocUserChoiseModel model = documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId,
+                itemId, processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
             map.put(UtilConsts.SUCCESS, true);
@@ -654,8 +650,8 @@ public class MobileDocumentController {
         @RequestParam @NotBlank String processInstanceIds, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        Y9Result<Object> y9Result = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId,
-            processSerialNumber, processInstanceIds);
+        Y9Result<Object> y9Result =
+            associatedFileApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
         map.put(UtilConsts.SUCCESS, y9Result.isSuccess());
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
     }
@@ -701,8 +697,8 @@ public class MobileDocumentController {
             }
 
             if (StringUtils.isBlank(processInstanceId)) {// 保存草稿
-                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey,
-                    number, level, title);
+                draftApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number,
+                    level, title);
             }
             Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId,
                 title, number, level, false);
@@ -769,8 +765,7 @@ public class MobileDocumentController {
 
             String processInstanceId = "";
             if (StringUtils.isBlank(taskId)) {// 保存草稿
-                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level,
-                    title);
+                draftApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level, title);
             } else {
                 TaskModel task = taskApi.findById(tenantId, taskId).getData();
                 if (null != task) {
@@ -792,7 +787,7 @@ public class MobileDocumentController {
                     formDataApi.saveFormData(tenantId, formId, formJsonData);
                 }
             }
-            y9Result = document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
+            y9Result = documentApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
             if (!y9Result.isSuccess()) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "发送失败");

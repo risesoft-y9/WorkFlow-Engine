@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.ItemLink4PositionApi;
+import net.risesoft.api.itemadmin.ItemLinkApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.ItemLinkRole;
@@ -30,8 +30,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/itemLink4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ItemLinkApiImpl implements ItemLink4PositionApi {
+@RequestMapping(value = "/services/rest/itemLink", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ItemLinkApiImpl implements ItemLinkApi {
 
     private final PositionRoleApi positionRoleApi;
 

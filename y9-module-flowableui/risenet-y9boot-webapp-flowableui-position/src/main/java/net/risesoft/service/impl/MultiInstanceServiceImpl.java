@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
+import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -38,7 +38,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final PositionApi positionApi;
 
-    private final ButtonOperation4PositionApi buttonOperation4PositionApi;
+    private final ButtonOperationApi buttonOperationApi;
 
     private final RuntimeApi runtimeApi;
 
@@ -67,8 +67,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             LOGGER.error("保存流程参数失败", e);
         }
         for (String user : users) {
-            buttonOperation4PositionApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId,
-                user);
+            buttonOperationApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId, user);
         }
         if (processParamModel != null) {
             process4SearchService.saveToDataCenter1(tenantId, taskId, processParamModel);
@@ -194,7 +193,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public void removeExecution(String executionId, String taskId, String elementUser) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        buttonOperation4PositionApi.deleteMultiInstanceExecution(tenantId, executionId, taskId, elementUser);
+        buttonOperationApi.deleteMultiInstanceExecution(tenantId, executionId, taskId, elementUser);
     }
 
     @SuppressWarnings("unchecked")

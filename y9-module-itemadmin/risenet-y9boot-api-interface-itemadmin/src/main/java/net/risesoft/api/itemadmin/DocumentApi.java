@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin.position;
+package net.risesoft.api.itemadmin;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface Document4PositionApi {
+public interface DocumentApi {
 
     /**
      * 新建

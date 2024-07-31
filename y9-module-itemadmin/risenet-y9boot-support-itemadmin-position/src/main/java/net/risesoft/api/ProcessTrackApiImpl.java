@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
@@ -34,8 +34,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/processTrack4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
+@RequestMapping(value = "/services/rest/processTrack", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ProcessTrackApiImpl implements ProcessTrackApi {
 
     private final ProcessTrackService processTrackService;
 

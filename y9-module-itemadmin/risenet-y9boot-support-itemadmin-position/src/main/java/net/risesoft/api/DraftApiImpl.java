@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemLeaveTypeEnum;
@@ -40,8 +40,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/draft4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DraftApiImpl implements Draft4PositionApi {
+@RequestMapping(value = "/services/rest/draft", produces = MediaType.APPLICATION_JSON_VALUE)
+public class DraftApiImpl implements DraftApi {
 
     private final DraftEntityService draftEntityService;
 

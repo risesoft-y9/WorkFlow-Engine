@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
+import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -42,8 +42,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/buttonOperation4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
+@RequestMapping(value = "/services/rest/buttonOperation", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ButtonOperationApiImpl implements ButtonOperationApi {
 
     private final DocumentService documentService;
 
