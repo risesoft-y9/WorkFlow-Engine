@@ -1,4 +1,4 @@
-package y9.client.rest.itemadmin.position;
+package y9.client.rest.itemadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
@@ -12,6 +12,6 @@ import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 @FeignClient(contextId = "ProcessTrack4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/processTrack4Position")
-public interface ProcessTrack4PositionApiClient extends ProcessTrack4PositionApi {
+public interface ProcessTrackApiClient extends ProcessTrack4PositionApi {
 
 }

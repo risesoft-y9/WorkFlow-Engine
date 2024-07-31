@@ -1,4 +1,4 @@
-package y9.client.rest.itemadmin.position;
+package y9.client.rest.itemadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
@@ -12,6 +12,6 @@ import net.risesoft.api.itemadmin.position.Document4PositionApi;
 @FeignClient(contextId = "Document4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/document4Position")
-public interface Document4PositionApiClient extends Document4PositionApi {
+public interface DocumentApiClient extends Document4PositionApi {
 
 }

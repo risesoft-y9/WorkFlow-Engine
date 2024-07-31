@@ -1,4 +1,4 @@
-package y9.client.rest.itemadmin.position;
+package y9.client.rest.itemadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
@@ -14,6 +14,6 @@ import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 @FeignClient(contextId = "OfficeDoneInfo4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/officeDoneInfo4Position")
-public interface OfficeDoneInfo4PositionApiClient extends OfficeDoneInfo4PositionApi {
+public interface OfficeDoneInfoApiClient extends OfficeDoneInfo4PositionApi {
 
 }
