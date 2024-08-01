@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.controller.vo.Y9FormItemBinVO;
+import net.risesoft.controller.vo.Y9FormItemBindVO;
 import net.risesoft.controller.vo.Y9FormVO;
 import net.risesoft.entity.ItemPrintTemplateBind;
 import net.risesoft.entity.SpmApproveItem;
@@ -185,17 +185,17 @@ public class Y9FormItemBindRestController {
      * @return Y9Result<Map<String, Object>>
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<List<Y9FormItemBinVO>> getBpmList(@RequestParam String processDefinitionId,
+    public Y9Result<List<Y9FormItemBindVO>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
-        List<Y9FormItemBinVO> list = new ArrayList<>();
+        List<Y9FormItemBindVO> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> targetModelList =
             processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
-        Y9FormItemBinVO map;
+        Y9FormItemBindVO map;
         List<Y9FormItemBind> pcBindList;
         List<Y9FormItemMobileBind> mobileBindList;
         for (TargetModel targetModel : targetModelList) {
-            map = new Y9FormItemBinVO();
+            map = new Y9FormItemBindVO();
             String eformNames = "";
             String mobileFormName = "";
             pcBindList = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId,

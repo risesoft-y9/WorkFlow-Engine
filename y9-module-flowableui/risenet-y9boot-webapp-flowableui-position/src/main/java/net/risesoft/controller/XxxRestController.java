@@ -23,6 +23,7 @@ import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.ItemLinkApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -37,6 +38,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.LinkInfoModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
@@ -89,6 +91,8 @@ public class XxxRestController {
     private final ProcessDefinitionApi processDefinitionApi;
 
     private final VariableApi variableApi;
+
+    private final ItemLinkApi itemLinkApi;
 
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -216,6 +220,22 @@ public class XxxRestController {
             list.add(map);
         }
         return Y9Page.success(page, rows, y9Page.getTotal(), list);
+    }
+
+    /**
+     * 获取节点绑定的链接信息
+     * 
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 节点key
+     * @return Y9Result<LinkInfoModel>
+     */
+    @GetMapping(value = "/getItemNodeLinkList")
+    public Y9Result<LinkInfoModel> getItemNodeLinkList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        return itemLinkApi.getItemNodeLinkList(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
     }
 
     /**

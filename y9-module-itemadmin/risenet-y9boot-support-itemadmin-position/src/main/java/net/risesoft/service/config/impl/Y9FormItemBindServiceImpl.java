@@ -49,7 +49,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     private final RepositoryApi repositoryManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -103,7 +103,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void copyEform(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
@@ -179,7 +179,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> delete(String id) {
         try {
             y9FormItemBindRepository.deleteById(id);
@@ -356,7 +356,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> save(Y9FormItemBind eformItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -369,7 +369,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         return Y9Result.failure("保存失败");
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
         String tenantId) {
         Y9FormItemBind eibTemp = new Y9FormItemBind();
@@ -387,7 +387,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         y9FormItemBindRepository.save(eibTemp);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void save(Y9FormItemMobileBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
         String tenantId) {
         Y9FormItemMobileBind eibTemp = new Y9FormItemMobileBind();
@@ -402,7 +402,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> save(Y9FormItemMobileBind eformItem) {
         try {
             if (StringUtils.isBlank(eformItem.getId())) {
