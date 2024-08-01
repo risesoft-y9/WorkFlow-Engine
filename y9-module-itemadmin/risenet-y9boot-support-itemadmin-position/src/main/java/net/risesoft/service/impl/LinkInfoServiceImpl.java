@@ -19,11 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.ItemLinkBind;
+import net.risesoft.entity.ItemNodeLinkBind;
 import net.risesoft.entity.LinkInfo;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemLinkBindRepository;
 import net.risesoft.repository.jpa.ItemLinkRoleRepository;
+import net.risesoft.repository.jpa.ItemNodeLinkBindRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
 import net.risesoft.service.LinkInfoService;
 
@@ -40,6 +42,8 @@ public class LinkInfoServiceImpl implements LinkInfoService {
     private final LinkInfoRepository linkInfoRepository;
 
     private final ItemLinkBindRepository itemLinkBindRepository;
+
+    private final ItemNodeLinkBindRepository itemNodeLinkBindRepository;
 
     private final ItemLinkRoleRepository itemLinkRoleRepository;
 
@@ -77,6 +81,11 @@ public class LinkInfoServiceImpl implements LinkInfoService {
         for (ItemLinkBind bind : list) {
             itemLinkBindRepository.delete(bind);
             itemLinkRoleRepository.deleteByItemLinkId(bind.getId());
+        }
+        List<ItemNodeLinkBind> list1 = itemNodeLinkBindRepository.findByLinkId(id);
+        for (ItemNodeLinkBind bind : list1) {
+            itemLinkRoleRepository.deleteByItemLinkId(bind.getId());
+            itemNodeLinkBindRepository.delete(bind);
         }
     }
 

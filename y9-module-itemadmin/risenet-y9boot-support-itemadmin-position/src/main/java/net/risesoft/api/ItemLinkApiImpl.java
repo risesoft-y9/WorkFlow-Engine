@@ -13,11 +13,13 @@ import net.risesoft.api.itemadmin.ItemLinkApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.ItemLinkRole;
+import net.risesoft.entity.ItemNodeLinkBind;
 import net.risesoft.entity.LinkInfo;
 import net.risesoft.model.itemadmin.LinkInfoModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemLinkBindRepository;
 import net.risesoft.repository.jpa.ItemLinkRoleRepository;
+import net.risesoft.repository.jpa.ItemNodeLinkBindRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -36,6 +38,8 @@ public class ItemLinkApiImpl implements ItemLinkApi {
     private final PositionRoleApi positionRoleApi;
 
     private final ItemLinkBindRepository itemLinkBindRepository;
+
+    private final ItemNodeLinkBindRepository itemNodeLinkBindRepository;
 
     private final LinkInfoRepository linkInfoRepository;
 
@@ -72,6 +76,46 @@ public class ItemLinkApiImpl implements ItemLinkApi {
             }
         }
         return Y9Result.success(linkList);
+    }
+
+    /**
+     * 获取有权限的节点绑定链接
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 节点id
+     * @return {@code Y9Result<LinkInfoModel>} 通用请求返回对象 - data 是节点绑定链接
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<LinkInfoModel> getItemNodeLinkList(String tenantId, String positionId, String itemId,
+        String processDefinitionId, String taskDefKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        LinkInfoModel model = null;
+        ItemNodeLinkBind bind = itemNodeLinkBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+            processDefinitionId, taskDefKey);
+        if (bind != null) {
+            List<ItemLinkRole> roleList = itemLinkRoleRepository.findByItemLinkId(bind.getId());
+            if (roleList.isEmpty()) {// 未配置角色，所有人权限
+                model = new LinkInfoModel();
+                LinkInfo linkInfo = linkInfoRepository.findById(bind.getLinkId()).orElse(null);
+                Y9BeanUtil.copyProperties(linkInfo, model);
+                return Y9Result.success(model);
+            }
+            for (ItemLinkRole linkRole : roleList) {
+                boolean b = positionRoleApi.hasRole(tenantId, linkRole.getRoleId(), positionId).getData();
+                if (b) {
+                    model = new LinkInfoModel();
+                    LinkInfo linkInfo = linkInfoRepository.findById(bind.getLinkId()).orElse(null);
+                    Y9BeanUtil.copyProperties(linkInfo, model);
+                    break;
+                }
+            }
+            return Y9Result.success(model);
+        }
+        return Y9Result.success();
     }
 
 }

@@ -38,6 +38,7 @@ import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemInterfaceBindService;
 import net.risesoft.service.config.ItemLinkBindService;
+import net.risesoft.service.config.ItemNodeLinkBindService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOrganWordBindService;
 import net.risesoft.service.config.ItemPermissionService;
@@ -74,6 +75,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final ItemPermissionService itemPermissionService;
     private final RelatedProcessService relatedProcessService;
     private final ItemLinkBindService itemLinkBindService;
+    private final ItemNodeLinkBindService itemNodeLinkBindService;
     private final ItemInterfaceBindService itemInterfaceBindService;
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
     private final Y9PreFormItemBindService y9PreFormItemBindService;
@@ -126,6 +128,9 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 // 复制链接配置信息
                 itemLinkBindService.copyBindInfo(id, newItemId);
 
+                // 复制链接节点配置信息
+                itemNodeLinkBindService.copyBindInfo(id, newItemId, latestpdId);
+
                 // 复制接口配置信息
                 itemInterfaceBindService.copyBindInfo(id, newItemId);
 
@@ -174,6 +179,8 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                     relatedProcessService.deleteBindInfo(s);
                     // 删除链接配置信息
                     itemLinkBindService.deleteBindInfo(s);
+                    // 删除链接节点配置信息
+                    itemNodeLinkBindService.deleteBindInfo(s);
                     // 删除接口配置信息
                     itemInterfaceBindService.deleteBindInfo(s);
                     // 删除正文模板绑定信息

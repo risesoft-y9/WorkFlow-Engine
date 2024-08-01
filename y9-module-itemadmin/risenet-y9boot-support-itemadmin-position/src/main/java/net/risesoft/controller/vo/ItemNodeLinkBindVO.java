@@ -11,7 +11,7 @@ import lombok.Data;
  * @date 2024/07/12
  */
 @Data
-public class Y9FormItemBinVO implements Serializable {
+public class ItemNodeLinkBindVO implements Serializable {
     private static final long serialVersionUID = 1692947675114605922L;
 
     /**
@@ -19,13 +19,19 @@ public class Y9FormItemBinVO implements Serializable {
      */
     private String taskDefName;
 
-    /** PC端表单绑定名称 */
-    private String eformNames;
-
-    /** 手机端绑定表单名称 */
-    private String mobileFormName;
-
     /** 节点key */
     private String taskDefKey;
+
+    /** 链接绑定id */
+    private String linkBindId;
+
+    /** 链接名称 */
+    private String linkName;
+
+    /** 角色名称 */
+    private String roleNames;
+
+    /** 角色绑定id */
+    private String roleBindIds;
 
 }
