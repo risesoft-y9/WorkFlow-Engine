@@ -35,7 +35,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     @Override
     public List<EntrustHistory> listByOwnerId(String ownerId) {
@@ -44,9 +44,9 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
         Person pTemp = null;
         SpmApproveItem itemTemp = null;
         for (EntrustHistory eh : ehList) {
-            pTemp = personManager.get(tenantId, eh.getAssigneeId()).getData();
+            pTemp = personApi.get(tenantId, eh.getAssigneeId()).getData();
             eh.setAssigneeName(pTemp.getName());
-            pTemp = personManager.get(tenantId, eh.getOwnerId()).getData();
+            pTemp = personApi.get(tenantId, eh.getOwnerId()).getData();
             eh.setOwnerName(pTemp.getName());
 
             String itemId = eh.getItemId();
@@ -76,9 +76,9 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
         }
 
         for (EntrustHistory eh : ehList) {
-            pTemp = personManager.get(tenantId, eh.getAssigneeId()).getData();
+            pTemp = personApi.get(tenantId, eh.getAssigneeId()).getData();
             eh.setAssigneeName(pTemp.getName());
-            pTemp = personManager.get(tenantId, eh.getOwnerId()).getData();
+            pTemp = personApi.get(tenantId, eh.getOwnerId()).getData();
             eh.setOwnerName(pTemp.getName());
             eh.setItemName(itemName);
         }

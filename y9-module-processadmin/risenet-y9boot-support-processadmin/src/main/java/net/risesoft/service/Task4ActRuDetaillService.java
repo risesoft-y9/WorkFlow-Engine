@@ -17,9 +17,9 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -30,14 +30,14 @@ public class Task4ActRuDetaillService {
 
     private final ActRuDetailApi actRuDetailApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public Task4ActRuDetaillService(ActRuDetailApi actRuDetailApi, PositionApi positionApi) {
+    public Task4ActRuDetaillService(ActRuDetailApi actRuDetailApi, OrgUnitApi orgUnitApi) {
         this.actRuDetailApi = actRuDetailApi;
-        this.positionApi = positionApi;
+        this.orgUnitApi = orgUnitApi;
     }
 
     public void saveOrUpdate(DelegateTask taskEntity, int status) {
@@ -56,12 +56,12 @@ public class Task4ActRuDetaillService {
                 String assignee = taskEntity.getAssignee();
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Position position = positionApi.get(tenantId, assignee).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                 ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                 actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                 actRuDetailModel.setAssignee(assignee);
-                actRuDetailModel.setAssigneeName(position.getName());
-                actRuDetailModel.setDeptId(position.getParentId());
+                actRuDetailModel.setAssigneeName(orgUnit.getName());
+                actRuDetailModel.setDeptId(orgUnit.getParentId());
                 actRuDetailModel.setLastTime(new Date());
                 actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
                 actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
@@ -111,12 +111,12 @@ public class Task4ActRuDetaillService {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.get(tenantId, userId).getData();
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
                     actRuDetailModel.setAssignee(userId);
-                    actRuDetailModel.setAssigneeName(position.getName());
-                    actRuDetailModel.setDeptId(position.getParentId());
+                    actRuDetailModel.setAssigneeName(orgUnit.getName());
+                    actRuDetailModel.setDeptId(orgUnit.getParentId());
                     actRuDetailModel.setLastTime(new Date());
                     actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
                     actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
@@ -162,12 +162,12 @@ public class Task4ActRuDetaillService {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.get(tenantId, userId).getData();
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
                     actRuDetailModel.setAssignee(userId);
-                    actRuDetailModel.setAssigneeName(position.getName());
-                    actRuDetailModel.setDeptId(position.getParentId());
+                    actRuDetailModel.setAssigneeName(orgUnit.getName());
+                    actRuDetailModel.setDeptId(orgUnit.getParentId());
                     actRuDetailModel.setLastTime(new Date());
                     actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
                     actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
@@ -210,12 +210,12 @@ public class Task4ActRuDetaillService {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.get(tenantId, userId).getData();
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
                     actRuDetailModel.setAssignee(userId);
-                    actRuDetailModel.setAssigneeName(position.getName());
-                    actRuDetailModel.setDeptId(position.getParentId());
+                    actRuDetailModel.setAssigneeName(orgUnit.getName());
+                    actRuDetailModel.setDeptId(orgUnit.getParentId());
                     actRuDetailModel.setLastTime(new Date());
                     actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
                     actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());

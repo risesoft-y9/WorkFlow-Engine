@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
+import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
@@ -36,7 +36,7 @@ public class MobileV1OpintionController {
 
     private final CommonSentencesApi commonSentencesApi;
 
-    private final Opinion4PositionApi opinion4PositionApi;
+    private final OpinionApi opinionApi;
 
     /**
      * 保存意见
@@ -54,7 +54,7 @@ public class MobileV1OpintionController {
             if (opinionModel != null) {
                 opinionModel.setTenantId(tenantId + ":mobile");
             }
-            opinion4PositionApi.saveOrUpdate(tenantId, userId, positionId, opinionModel);
+            opinionApi.saveOrUpdate(tenantId, userId, positionId, opinionModel);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存意见失败", e);
@@ -75,7 +75,7 @@ public class MobileV1OpintionController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String userId = Y9LoginUserHolder.getPersonId();
-            boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
+            boolean b = opinionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
             return Y9Result.success(b, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取意见失败", e);
@@ -93,7 +93,7 @@ public class MobileV1OpintionController {
     public Y9Result<String> deleteComment(@RequestParam @NotBlank String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            opinion4PositionApi.delete(tenantId, id);
+            opinionApi.delete(tenantId, id);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             LOGGER.error("删除意见失败", e);
@@ -121,8 +121,8 @@ public class MobileV1OpintionController {
         @RequestParam(required = false) String orderByUser) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+        return opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark,
+            itemId, taskDefinitionKey, activitiUser, orderByUser);
     }
 
     /**

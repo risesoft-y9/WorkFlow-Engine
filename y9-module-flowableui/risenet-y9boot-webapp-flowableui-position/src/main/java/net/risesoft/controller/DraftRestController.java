@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.api.itemadmin.AssociatedFileApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
@@ -45,15 +45,15 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/vue/draft", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DraftRestController {
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
     private final ItemViewConfApi itemViewConfApi;
 
-    private final Attachment4PositionApi attachment4PositionApi;
+    private final AttachmentApi attachmentApi;
 
     private final TransactionWordApi transactionWordApi;
 
-    private final AssociatedFile4PositionApi associatedFile4PositionApi;
+    private final AssociatedFileApi associatedFileApi;
 
     private final Y9Properties y9Config;
 
@@ -66,7 +66,7 @@ public class DraftRestController {
     @PostMapping(value = "/deleteDraft")
     public Y9Result<Object> deleteDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return draft4PositionApi.deleteDraft(tenantId, ids);
+        return draftApi.deleteDraft(tenantId, ids);
     }
 
     /**
@@ -82,7 +82,7 @@ public class DraftRestController {
     public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        return draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
+        return draftApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
     }
 
     /**
@@ -98,8 +98,7 @@ public class DraftRestController {
     public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return draft4PositionApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page, rows, title, itemId,
-            true);
+        return draftApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page, rows, title, itemId, true);
     }
 
     /**
@@ -132,8 +131,7 @@ public class DraftRestController {
         Map<String, Object> map = new HashMap<>(16);
         OpenDataModel model = null;
         if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
-            model = draft4PositionApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, false)
-                .getData();
+            model = draftApi.openDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
         }
         String str = Y9JsonUtil.writeValueAsString(model);
         map = Y9JsonUtil.readHashMap(str);
@@ -145,7 +143,7 @@ public class DraftRestController {
         map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
         map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
         map.put("userName", person.getName());
-        Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
+        Integer fileNum = attachmentApi.fileCounts(tenantId, processSerialNumber).getData();
         int docNum = 0;
         // 是否正文正常
         TransactionWordModel wordMap =
@@ -153,7 +151,7 @@ public class DraftRestController {
         if (wordMap != null && wordMap.getId() != null) {
             docNum = 1;
         }
-        int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
+        int associatedFileNum = associatedFileApi.countAssociatedFile(tenantId, processSerialNumber).getData();
         map.put("associatedFileNum", associatedFileNum);
         map.put("docNum", docNum);
         map.put("fileNum", fileNum);
@@ -169,7 +167,7 @@ public class DraftRestController {
     @PostMapping(value = "/reduction")
     public Y9Result<Object> reduction(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return draft4PositionApi.reduction(tenantId, id);
+        return draftApi.reduction(tenantId, id);
     }
 
     /**
@@ -181,7 +179,7 @@ public class DraftRestController {
     @PostMapping(value = "/removeDraft")
     public Y9Result<Object> removeDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return draft4PositionApi.removeDraft(tenantId, ids);
+        return draftApi.removeDraft(tenantId, ids);
     }
 
     /**
@@ -204,8 +202,8 @@ public class DraftRestController {
         if (StringUtils.isBlank(title)) {
             title = "未定义标题";
         }
-        return draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey,
-            number, level, title);
+        return draftApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number,
+            level, title);
     }
 
 }

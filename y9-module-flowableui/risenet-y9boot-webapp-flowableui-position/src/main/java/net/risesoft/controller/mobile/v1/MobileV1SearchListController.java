@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.pojo.Y9Page;
@@ -41,7 +41,7 @@ public class MobileV1SearchListController {
 
     private final SearchService searchService;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
@@ -87,11 +87,11 @@ public class MobileV1SearchListController {
             // 统计统一待办
             todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
-            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId,
-                "", "", "", "todo", "", "", "", 1, 1);
+            Y9Page<OfficeDoneInfoModel> y9Page =
+                officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
             doingCount = y9Page.getTotal();
             // 统计历史办结件
-            doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "").getData();
+            doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);

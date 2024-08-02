@@ -13,12 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ReminderApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.Reminder;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ReminderModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -44,7 +44,7 @@ public class ReminderApiImpl implements ReminderApi {
 
     private final ReminderService reminderService;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final TaskApi taskManager;
 
@@ -188,7 +188,7 @@ public class ReminderApiImpl implements ReminderApi {
      * 保存催办信息
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskIds taskIds
      * @param msgContent 催办信息
@@ -199,8 +199,8 @@ public class ReminderApiImpl implements ReminderApi {
     public Y9Result<String> saveReminder(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId, @RequestBody String[] taskIds, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         try {
             Reminder reminder;
             for (String taskId : taskIds) {
@@ -226,7 +226,7 @@ public class ReminderApiImpl implements ReminderApi {
      * 发送催办信息
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param remType 催办类型，"1":短信,"2":邮件",3":站内信",4":待办列表中
      * @param procInstId procInstId
      * @param processInstanceId 流程实例id
@@ -243,8 +243,8 @@ public class ReminderApiImpl implements ReminderApi {
         @RequestParam String documentTitle, @RequestParam String taskId, @RequestParam String taskAssigneeId,
         @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         try {
             // 催办信息处理
             String err = reminderService.handleReminder(URLDecoder.decode(msgContent, "utf-8"), procInstId, 1, remType,

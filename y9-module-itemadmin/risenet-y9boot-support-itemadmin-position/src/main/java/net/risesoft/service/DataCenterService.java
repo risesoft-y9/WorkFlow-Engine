@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.entity.AssociatedFile;
@@ -37,7 +36,6 @@ import net.risesoft.model.datacenter.HistoryInfo;
 import net.risesoft.model.datacenter.OfficeInfo;
 import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.repository.form.Y9FormFieldRepository;
@@ -75,8 +73,6 @@ public class DataCenterService {
 
     private final Y9FormRepository y9FormRepository;
 
-    private final PositionApi positionApi;
-
     private final OrgUnitApi orgUnitApi;
 
     private final Y9FormFieldRepository y9FormFieldRepository;
@@ -91,8 +87,8 @@ public class DataCenterService {
         SpmApproveItemService spmApproveitemService, TransactionWordService transactionWordService,
         TransactionFileService transactionFileService, ProcessTrackService processTrackService,
         Y9FormItemBindService y9FormItemBindService, AssociatedFileRepository associatedFileRepository,
-        ProcessParamService processParamService, Y9FormRepository y9FormRepository, PositionApi positionApi,
-        OrgUnitApi orgUnitApi, Y9FormFieldRepository y9FormFieldRepository, OfficeInfoApi officeInfoManager,
+        ProcessParamService processParamService, Y9FormRepository y9FormRepository, OrgUnitApi orgUnitApi,
+        Y9FormFieldRepository y9FormFieldRepository, OfficeInfoApi officeInfoManager,
         HistoricProcessApi historicProcessManager, HistoricVariableApi historicVariableManager) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.spmApproveitemService = spmApproveitemService;
@@ -103,7 +99,6 @@ public class DataCenterService {
         this.associatedFileRepository = associatedFileRepository;
         this.processParamService = processParamService;
         this.y9FormRepository = y9FormRepository;
-        this.positionApi = positionApi;
         this.orgUnitApi = orgUnitApi;
         this.y9FormFieldRepository = y9FormFieldRepository;
         this.officeInfoManager = officeInfoManager;
@@ -236,7 +231,7 @@ public class DataCenterService {
             "************************************itemAdmin保存办结数据到数据中心***********************************************");
         OfficeInfo officeInfo = new OfficeInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Position position = Y9LoginUserHolder.getPosition();
+        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         HistoricProcessInstanceModel processInstance =
             historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
         HistoricVariableInstanceModel vmap = historicVariableManager
@@ -255,7 +250,7 @@ public class DataCenterService {
         SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
         String startProUserId = processInstance.getStartUserId();
         String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-        Position startProUser = positionApi.get(tenantId, startUserId).getData();
+        OrgUnit startProUser = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, startUserId).getData();
         OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getParentId()).getData();
 
         // 获取历程
@@ -291,7 +286,7 @@ public class DataCenterService {
 
         officeInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         officeInfo.setTenantId(tenantId);
-        officeInfo.setCompleteUserName(position.getName());
+        officeInfo.setCompleteUserName(orgUnit.getName());
         officeInfo.setCreatDeptName(dept.getName());
         officeInfo.setCreatUserName(startProUser.getName());
         officeInfo.setEndTime(processInstance.getEndTime() == null ? new Date() : processInstance.getEndTime());
@@ -301,7 +296,7 @@ public class DataCenterService {
         officeInfo.setSystemName(systemName);
         officeInfo.setDocNature("");
         officeInfo.setFilingDept(dept.getName());
-        officeInfo.setFilingMan(position.getName());
+        officeInfo.setFilingMan(orgUnit.getName());
         officeInfo.setProcessInstanceId(processInstanceId);
         officeInfo.setProcessSerialNumber(processSerialNumber);
         officeInfo.setSecurityLevel("一般");
@@ -352,7 +347,7 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processParam.getStartor();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Position startProUser = positionApi.get(tenantId, startUserId).getData();
+            OrgUnit startProUser = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, startUserId).getData();
             OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getParentId()).getData();
 
             // 获取历程

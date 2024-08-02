@@ -60,19 +60,6 @@ public interface ItemPermissionService {
         String processInstanceId);
 
     /**
-     *
-     * Description: 判断当前taskDefKey所拥有的权限角色主体是否包含人员、部门、角色、岗位
-     *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @param processInstanceId
-     * @return
-     */
-    Map<String, Object> getTabMap4Position(String itemId, String processDefinitionId, String taskDefKey,
-        String processInstanceId);
-
-    /**
      * 根据事项Id，流程定义Id,和任务节点Key查找授权
      *
      * @param itemId

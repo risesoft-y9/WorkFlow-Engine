@@ -23,7 +23,6 @@ import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.flowable.variable.service.VariableService;
 
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -37,13 +36,14 @@ public class JumpCommand implements Command<Void> {
      * 当前任务id
      */
     protected String taskId;
+
     /**
      * 目标任务节点id
      */
     protected String targetNodeId;
 
     /**
-     * 办理人:如果是普通任务，users只能是一个人，否则会出现签收的情况
+     * 办理人:如果是普通任务，users只能是一个岗位，否则会出现多个岗位签收的情况
      */
     protected List<String> users;
 
@@ -90,9 +90,18 @@ public class JumpCommand implements Command<Void> {
             identityLinkService.deleteIdentityLinksByTaskId(taskId);
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
-            CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity, reason, new Date());
-            CommandContextUtil.getActivityInstanceEntityManager().recordActivityEnd(executionEntity, reason);
+            org.flowable.engine.impl.util.CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity,
+                executionEntity, reason, new Date());
+            org.flowable.engine.impl.util.CommandContextUtil.getActivityInstanceEntityManager()
+                .recordActivityEnd(executionEntity, reason);
         }
+        /**
+         * 触发任务删除事件
+         */
+        ProcessEngineConfigurationImpl processEngineConfiguration =
+            org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
+        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
+            TaskListener.EVENTNAME_DELETE);
 
         /**
          * 获取目标节点的信息，并设置目标节点为当前执行实体的当前节点
@@ -102,12 +111,11 @@ public class JumpCommand implements Command<Void> {
         /**
          * 设置新任务的发送人和办理人-开始
          */
-        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String taskSender = userInfo.getName(), userId = userInfo.getPersonId();
-        String taskSenderId = userId, user = null;
+        String user = null;
         Map<String, Object> vars = new HashMap<>(16);
-        vars.put(SysVariables.TASKSENDER, taskSender);
-        vars.put(SysVariables.TASKSENDERID, taskSenderId);
+        vars.put(SysVariables.TASKSENDER, Y9LoginUserHolder.getOrgUnit().getName());
+        vars.put(SysVariables.TASKSENDERID, Y9LoginUserHolder.getOrgUnitId());
+        vars.put(SysVariables.TASKSENDERPOSITIONID, Y9LoginUserHolder.getOrgUnitId());
         if (users.size() == 1) {
             user = users.get(0);
         }
@@ -117,7 +125,7 @@ public class JumpCommand implements Command<Void> {
          * 设置新任务的发送人和办理人-结束
          */
 
-        FlowableEngineAgenda flowableEngineAgenda = CommandContextUtil.getAgenda();
+        FlowableEngineAgenda flowableEngineAgenda = org.flowable.engine.impl.util.CommandContextUtil.getAgenda();
         if (currentBehavior instanceof MultiInstanceActivityBehavior) {
             ExecutionEntity parentExecutionEntity = executionEntity.getParent();
             parentExecutionEntity.setCurrentFlowElement(targetFlowElement);
@@ -131,13 +139,6 @@ public class JumpCommand implements Command<Void> {
             executionEntity.setVariables(vars);
             flowableEngineAgenda.planContinueProcessInCompensation(executionEntity);
         }
-        /**
-         * 触发退回任务删除事件
-         */
-        ProcessEngineConfigurationImpl processEngineConfiguration =
-            CommandContextUtil.getProcessEngineConfiguration(commandContext);
-        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
-            TaskListener.EVENTNAME_DELETE);
         return null;
     }
 }

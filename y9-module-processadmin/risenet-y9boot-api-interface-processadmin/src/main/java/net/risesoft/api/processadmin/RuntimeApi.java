@@ -39,33 +39,19 @@ public interface RuntimeApi {
         @RequestBody Map<String, Object> map);
 
     /**
-     * 真办结/岗位
-     *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
-     * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @PostMapping("/complete4Position")
-    Y9Result<Object> complete4Position(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("taskId") String taskId);
-
-    /**
      * 真办结
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
-    @PostMapping("/completed")
-    Y9Result<Object> completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId);
+    @PostMapping("/complete")
+    Y9Result<Object> complete(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId)
+        throws Exception;
 
     /**
      * 减签
@@ -158,7 +144,7 @@ public interface RuntimeApi {
      * 真办结后恢复流程实例为待办状态
      *
      * @param tenantId 租户id
-     * @param userId 用户id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param year 年份
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
@@ -166,7 +152,7 @@ public interface RuntimeApi {
      */
     @PostMapping("/recovery4Completed")
     Y9Result<Object> recovery4Completed(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam(value = "year", required = false) String year) throws Exception;
 
     /**
@@ -240,7 +226,7 @@ public interface RuntimeApi {
      * 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是人员Id
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @param processDefinitionKey 流程定义key
      * @param systemName 系统名称
      * @param map 变量map
@@ -249,7 +235,7 @@ public interface RuntimeApi {
      */
     @PostMapping(value = "/startProcessInstanceByKey", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processDefinitionKey") String processDefinitionKey,
         @RequestParam("systemName") String systemName, @RequestBody Map<String, Object> map);
 
     /**

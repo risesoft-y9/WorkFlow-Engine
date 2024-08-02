@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.itemadmin.PrintApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -46,7 +46,7 @@ public class FormNTKOPrintController {
 
     private final ProcessParamApi processParamApi;
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
 
     private final TransactionWordApi transactionWordApi;
 
@@ -73,8 +73,7 @@ public class FormNTKOPrintController {
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }
@@ -185,9 +184,7 @@ public class FormNTKOPrintController {
     public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = printApi.openDocument(tenantId, userId, itemId).getData();
+        String y9FileStoreId = printApi.openDocument(tenantId, itemId).getData();
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();

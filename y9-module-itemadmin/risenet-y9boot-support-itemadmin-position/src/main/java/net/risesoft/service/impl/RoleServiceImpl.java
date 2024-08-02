@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPermission;
@@ -26,7 +25,6 @@ import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
-import net.risesoft.model.platform.Position;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.RoleService;
@@ -50,9 +48,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleApi roleManager;
 
-    private final PositionApi positionManager;
-
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitManager;
 
@@ -130,15 +126,15 @@ public class RoleServiceImpl implements RoleService {
                         .getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position =
-                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
+                            OrgUnit user = orgUnitManager
+                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
                             ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                             model.setId(customGroupMember.getMemberId());
                             model.setParentId(id);
-                            model.setName(position.getName());
+                            model.setName(user.getName());
                             model.setIsParent(false);
-                            model.setOrgType(position.getOrgType().getValue());
-                            model.setPerson("6:" + position.getId() + ":" + position.getParentId());
+                            model.setOrgType(user.getOrgType().getValue());
+                            model.setPerson("6:" + user.getId() + ":" + user.getParentId());
                             model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
                             if (item.contains(model)) {
                                 continue;// 去重
@@ -169,7 +165,7 @@ public class RoleServiceImpl implements RoleService {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
             Organization organization = orgUnitManager.getOrganization(tenantId, userId).getData();
-            List<Department> deptList = departmentManager.listByParentId(tenantId, organization.getId()).getData();
+            List<Department> deptList = departmentApi.listByParentId(tenantId, organization.getId()).getData();
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
             for (OrgUnit orgUnitTemp : deptList) {
                 orgUnitListTemp.addAll(orgUnitManager
@@ -220,16 +216,16 @@ public class RoleServiceImpl implements RoleService {
                             customGroup.getId(), OrgTypeEnum.POSITION).getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position =
-                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
-                            if (position != null && position.getName().contains(name)) {
+                            OrgUnit user = orgUnitManager
+                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                            if (user != null && user.getName().contains(name)) {
                                 ItemRoleOrgUnitModel model0 = new ItemRoleOrgUnitModel();
                                 model0.setIsParent(false);
-                                model0.setPerson("6:" + position.getId() + ":" + position.getParentId());
+                                model0.setPerson("6:" + user.getId() + ":" + user.getParentId());
                                 model0.setId(customGroupMember.getMemberId());
-                                model0.setOrgType(position.getOrgType().getValue());
+                                model0.setOrgType(user.getOrgType().getValue());
                                 model0.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
-                                model0.setName(position.getName());
+                                model0.setName(user.getName());
                                 model0.setParentId(customGroup.getId());
                                 if (item.contains(model0)) {
                                     continue;// 去重
@@ -402,15 +398,15 @@ public class RoleServiceImpl implements RoleService {
                             Y9LoginUserHolder.getPersonId(), id, OrgTypeEnum.POSITION).getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position =
-                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
+                            OrgUnit user = orgUnitManager
+                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
                             ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                             model.setId(customGroupMember.getMemberId());
                             model.setParentId(id);
-                            model.setName(position.getName());
+                            model.setName(user.getName());
                             model.setIsParent(false);
-                            model.setOrgType(position.getOrgType().getValue());
-                            model.setPerson("6:" + position.getId());
+                            model.setOrgType(user.getOrgType().getValue());
+                            model.setPerson("6:" + user.getId());
                             model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
                             if (item.contains(model)) {
                                 continue;// 去重
@@ -506,7 +502,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 }
                 if (o.getRoleType() == 2) {
-                    Department dept = departmentManager.get(tenantId, o.getRoleId()).getData();
+                    Department dept = departmentApi.get(tenantId, o.getRoleId()).getData();
                     if (dept != null) {
                         deptList.add(dept);
                     }
@@ -624,15 +620,15 @@ public class RoleServiceImpl implements RoleService {
                             Y9LoginUserHolder.getPersonId(), customGroup.getId(), OrgTypeEnum.POSITION).getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position =
-                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
-                            if (position != null && position.getName().contains(name)) {
+                            OrgUnit user = orgUnitManager
+                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                            if (user != null && user.getName().contains(name)) {
                                 ItemRoleOrgUnitModel model1 = new ItemRoleOrgUnitModel();
                                 model1.setId(customGroupMember.getMemberId());
-                                model1.setName(position.getName());
-                                model1.setOrgType(position.getOrgType().getValue());
+                                model1.setName(user.getName());
+                                model1.setOrgType(user.getOrgType().getValue());
                                 model1.setParentId(customGroup.getId());
-                                model1.setPerson("6:" + position.getId() + ":" + position.getParentId());
+                                model1.setPerson("6:" + user.getId() + ":" + user.getParentId());
                                 model1.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
                                 model1.setIsParent(false);
                                 if (item.contains(model1)) {
@@ -662,7 +658,7 @@ public class RoleServiceImpl implements RoleService {
             if (StringUtils.isBlank(id)) {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -679,7 +675,7 @@ public class RoleServiceImpl implements RoleService {
             } else {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(id);
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }

@@ -43,10 +43,10 @@ public class AlgorithmListener implements ExecutionListener {
             String processInstanceId = execution.getProcessInstanceId();
             TaskService taskService = Y9Context.getBean(TaskService.class);
             List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
-            String positionId = tasks.get(0).getAssignee();
+            String orgUnitId = tasks.get(0).getAssignee();
             List<NameValuePair> params = new ArrayList<>();
             params.add(new NameValuePair("tenantId", tenantId));
-            params.add(new NameValuePair("positionId", positionId));
+            params.add(new NameValuePair("positionId", orgUnitId));
             params.add(new NameValuePair("processSerialNumber", processSerialNumber));
             Y9Result<Boolean> y9Result = RemoteCallUtil.postCallRemoteService(requestUrl, params, Y9Result.class);
             LOGGER.error("调用计算接口返回信息：" + y9Result.getMsg());

@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.resource.AppIconApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.SpmApproveItem;
@@ -29,8 +29,8 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.AppIcon;
 import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
@@ -56,11 +56,11 @@ public class ItemRestController {
 
     private final OrganizationApi organizationManager;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final AppIconApi appIconManager;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     /**
      * 复制事项
@@ -152,10 +152,9 @@ public class ItemRestController {
         if (StringUtils.isBlank(deptId)) {
             List<Organization> orgList = organizationManager.list(tenantId).getData();
             if (orgList != null && !orgList.isEmpty()) {
-                List<Department> deptList =
-                    departmentManager.listByParentId(tenantId, orgList.get(0).getId()).getData();
+                List<Department> deptList = departmentApi.listByParentId(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
-                    List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
+                    List<Department> subDeptList = departmentApi.listByParentId(tenantId, dept.getId()).getData();
                     boolean isParent = subDeptList != null && !subDeptList.isEmpty();
                     sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId())
                         .append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent)
@@ -163,9 +162,9 @@ public class ItemRestController {
                 }
             }
         } else {
-            List<Department> deptList = departmentManager.listByParentId(tenantId, deptId).getData();
+            List<Department> deptList = departmentApi.listByParentId(tenantId, deptId).getData();
             for (Department dept : deptList) {
-                List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
+                List<Department> subDeptList = departmentApi.listByParentId(tenantId, dept.getId()).getData();
                 boolean isParent = subDeptList != null && !subDeptList.isEmpty();
                 sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'")
                     .append(dept.getName()).append("', isParent: ").append(isParent).append("},");
@@ -196,15 +195,15 @@ public class ItemRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = new SpmApproveItem();
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        List<Position> manager = new ArrayList<>();
+        List<OrgUnit> manager = new ArrayList<>();
         if (StringUtils.isNotBlank(id)) {
             item = spmApproveItemService.findById(id);
             if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
                 String idStr = item.getNature();
-                for (String positionId : idStr.split(";")) {
-                    Position position = positionApi.get(tenantId, positionId).getData();
-                    if (position != null) {
-                        manager.add(position);
+                for (String userId : idStr.split(";")) {
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                    if (orgUnit != null) {
+                        manager.add(orgUnit);
                     }
                 }
             }

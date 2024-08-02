@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -43,7 +43,7 @@ import net.risesoft.y9.util.Y9Util;
 @Slf4j
 public class Process4SearchService {
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
     private final PositionApi positionApi;
     private final ErrorLogApi errorLogApi;
     private final ProcessParamApi processParamApi;
@@ -65,7 +65,7 @@ public class Process4SearchService {
             ProcessParamModel processParam =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             OfficeDoneInfoModel officeDoneInfo =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
                 officeDoneInfo.setUrgency(
@@ -112,7 +112,7 @@ public class Process4SearchService {
                 }
                 officeDoneInfo.setDeptId(deptIds);
                 officeDoneInfo.setAllUserId(allUserId);
-                officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
+                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -153,7 +153,7 @@ public class Process4SearchService {
         String processInstanceId = processParam.getProcessInstanceId();
         try {
             OfficeDoneInfoModel officeDoneInfo =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
                 officeDoneInfo.setUrgency(
@@ -200,7 +200,7 @@ public class Process4SearchService {
                 }
                 officeDoneInfo.setDeptId(deptIds);
                 officeDoneInfo.setAllUserId(allUserId);
-                officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
+                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();

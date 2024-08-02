@@ -37,14 +37,12 @@ public interface SpeakInfoApi {
      * 根据唯一标示获取发言信息
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param id 主键id
      * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发言信息
      * @since 9.6.6
      */
     @GetMapping(value = "/findById")
-    Y9Result<SpeakInfoModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("id") String id);
+    Y9Result<SpeakInfoModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
      * 根据流程实例查找某一个流程的所有发言信息，根据时间倒叙排列

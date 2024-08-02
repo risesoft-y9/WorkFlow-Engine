@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
+import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
@@ -37,7 +37,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/vue/entrust", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EntrustRestController {
 
-    private final Entrust4PositionApi entrust4PositionApi;
+    private final EntrustApi entrustApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -53,7 +53,7 @@ public class EntrustRestController {
     public Y9Result<String> deleteEntrust(@RequestParam String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            entrust4PositionApi.deleteEntrust(tenantId, id);
+            entrustApi.deleteEntrust(tenantId, id);
             return Y9Result.success("删除成功");
         } catch (Exception e) {
             LOGGER.error("删除委托出错", e);
@@ -69,7 +69,7 @@ public class EntrustRestController {
     @GetMapping(value = "/getEntrustList")
     public Y9Result<List<EntrustModel>> getEntrustList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return entrust4PositionApi.getEntrustList(tenantId, Y9LoginUserHolder.getPositionId());
+        return entrustApi.getEntrustList(tenantId, Y9LoginUserHolder.getPositionId());
     }
 
     /**
@@ -119,7 +119,7 @@ public class EntrustRestController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             EntrustModel model = Y9JsonUtil.readValue(jsonData, EntrustModel.class);
-            entrust4PositionApi.saveOrUpdate(tenantId, Y9LoginUserHolder.getPositionId(), model);
+            entrustApi.saveOrUpdate(tenantId, Y9LoginUserHolder.getPositionId(), model);
             return Y9Result.success("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存委托数据出错", e);

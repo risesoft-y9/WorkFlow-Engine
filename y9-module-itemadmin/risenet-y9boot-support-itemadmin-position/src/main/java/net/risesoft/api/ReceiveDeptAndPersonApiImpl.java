@@ -15,13 +15,11 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ReceiveDeptAndPersonApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.entity.ReceivePerson;
 import net.risesoft.model.itemadmin.ReceiveOrgUnit;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.repository.jpa.ReceivePersonRepository;
@@ -39,9 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/receiveDeptAndPerson", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
 
-    private final PersonApi personManager;
-
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -67,7 +63,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         name = "%" + name + "%";
         List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameLikeOrderByTabIndex(name);
         for (ReceiveDepartment receiveDepartment : list) {
-            Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+            Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
                 continue;
             }
@@ -99,7 +95,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
         for (ReceiveDepartment receiveDepartment : list) {
-            Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+            Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
                 continue;
             }
@@ -136,7 +132,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         if (StringUtils.isNotBlank(name)) {
             list = receiveDepartmentRepository.findByDeptNameContainingOrderByTabIndex(name);
             for (ReceiveDepartment receiveDepartment : list) {
-                Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }
@@ -161,7 +157,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             if (StringUtils.isBlank(orgUnitId)) {
                 list = receiveDepartmentRepository.findAll();
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -181,7 +177,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             } else {
                 list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(orgUnitId);
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -212,12 +208,12 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<Person>> getSendReceiveByDeptId(@RequestParam String tenantId, @RequestParam String deptId) {
+    public Y9Result<List<OrgUnit>> getSendReceiveByDeptId(@RequestParam String tenantId, @RequestParam String deptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ReceivePerson> list = receivePersonRepository.findByDeptId(deptId);
-        List<Person> users = new ArrayList<>();
+        List<OrgUnit> users = new ArrayList<>();
         for (ReceivePerson receivePerson : list) {
-            Person person = personManager.get(tenantId, receivePerson.getPersonId()).getData();
+            OrgUnit person = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
             if (person != null && StringUtils.isNotBlank(person.getId())
                 && !Boolean.TRUE.equals(person.getDisabled())) {
                 users.add(person);
@@ -227,29 +223,27 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     }
 
     /**
-     * 根据人员id,获取对应的收发单位
+     * 根据id,获取对应的收发单位
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
      * @since 9.6.6
      */
     @Override
     @GetMapping(value = "/getSendReceiveByUserId")
     public Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam String tenantId,
-        @RequestParam String userId) {
+        @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
-        Y9LoginUserHolder.setPerson(person);
-        if (StringUtils.isBlank(userId)) {
-            userId = "";
+        if (StringUtils.isBlank(orgUnitId)) {
+            orgUnitId = "";
         }
-        userId = "%" + userId + "%";
-        List<ReceivePerson> list = receivePersonRepository.findByPersonId(userId);
+        orgUnitId = "%" + orgUnitId + "%";
+        List<ReceivePerson> list = receivePersonRepository.findByPersonId(orgUnitId);
         if (!list.isEmpty()) {
             for (ReceivePerson receivePerson : list) {
-                Department department = departmentManager.get(tenantId, receivePerson.getDeptId()).getData();
+                Department department = departmentApi.get(tenantId, receivePerson.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }

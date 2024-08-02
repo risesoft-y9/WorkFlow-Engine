@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.permission.PersonRoleApi;
+import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
@@ -32,7 +32,6 @@ import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.form.Y9FormRepository;
@@ -75,7 +74,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     private final Y9FieldPermRepository y9FieldPermRepository;
 
-    private final PersonRoleApi personRoleApi;
+    private final PositionRoleApi positionRoleApi;
 
     private final Y9TableService y9TableService;
 
@@ -83,7 +82,7 @@ public class FormDataServiceImpl implements FormDataService {
         SpmApproveItemService spmApproveItemService, Y9FormItemBindService y9FormItemBindService,
         Y9PreFormItemBindService y9PreFormItemBindService, Y9FormFieldService y9FormFieldService,
         Y9FormService y9FormService, Y9FormRepository y9FormRepository, RepositoryApi repositoryManager,
-        Y9FieldPermRepository y9FieldPermRepository, PersonRoleApi personRoleApi, Y9TableService y9TableService) {
+        Y9FieldPermRepository y9FieldPermRepository, PositionRoleApi positionRoleApi, Y9TableService y9TableService) {
         this.jdbcTemplate = jdbcTemplate;
         this.spmApproveItemService = spmApproveItemService;
         this.y9FormItemBindService = y9FormItemBindService;
@@ -93,7 +92,7 @@ public class FormDataServiceImpl implements FormDataService {
         this.y9FormRepository = y9FormRepository;
         this.repositoryManager = repositoryManager;
         this.y9FieldPermRepository = y9FieldPermRepository;
-        this.personRoleApi = personRoleApi;
+        this.positionRoleApi = positionRoleApi;
         this.y9TableService = y9TableService;
     }
 
@@ -165,7 +164,6 @@ public class FormDataServiceImpl implements FormDataService {
     @Override
     public FieldPermModel getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Y9LoginUserHolder.setTenantId(tenantId);
         // 写权限
         FieldPermModel model = new FieldPermModel();
         model.setFieldName(fieldName);
@@ -189,7 +187,7 @@ public class FormDataServiceImpl implements FormDataService {
      */
     public FieldPermModel getFieldPerm(Y9FieldPerm y9FieldPerm) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = Y9LoginUserHolder.getOrgUnitId();
         // 绑定了角色
         FieldPermModel model = new FieldPermModel();
         model.setFieldName(y9FieldPerm.getFieldName());
@@ -198,7 +196,7 @@ public class FormDataServiceImpl implements FormDataService {
             String roleId = y9FieldPerm.getWriteRoleId();
             String[] roleIds = roleId.split(",");
             for (String id : roleIds) {
-                boolean b = personRoleApi.hasRole(tenantId, id, person.getPersonId()).getData();
+                boolean b = positionRoleApi.hasRole(tenantId, id, userId).getData();
                 if (b) {
                     model.setWritePerm(true);
                     break;

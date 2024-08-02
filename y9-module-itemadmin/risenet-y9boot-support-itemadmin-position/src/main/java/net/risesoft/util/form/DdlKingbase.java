@@ -197,7 +197,7 @@ public class DdlKingbase {
         DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
             TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
         //@formatter:off
-		sb.append("CREATE TABLE \"" + tableName + "\" (\r\n").append("GUID varchar2(38 char) NOT NULL, \r\n").append("PROCESSINSTANCEID varchar2(64 char) NOT NULL, \r\n");
+		sb.append("CREATE TABLE \"" + tableName + "\" (\r\n").append("GUID varchar2(38 char) NOT NULL, \r\n");
 		//@formatter:off
 		for (DbColumn dbc : dbcs) {
 			String columnName = dbc.getColumnName();

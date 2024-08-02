@@ -14,9 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -37,11 +37,11 @@ import net.risesoft.y9.util.Y9Util;
 @Service(value = "searchService")
 public class SearchServiceImpl implements SearchService {
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final TaskApi taskApi;
 
@@ -133,8 +133,8 @@ public class SearchServiceImpl implements SearchService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, searchTerm, itemId,
-                userName, state, year, startDate, endDate, page, rows);
+            y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm, itemId, userName, state,
+                year, startDate, endDate, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -182,8 +182,8 @@ public class SearchServiceImpl implements SearchService {
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
-                    int countFollow = officeFollow4PositionApi
-                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                    int countFollow =
+                        officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                     // ddyjs上会功能
                     mapTemp.put("meeting", hpim.getMeeting() != null && hpim.getMeeting().equals("1"));
@@ -206,8 +206,8 @@ public class SearchServiceImpl implements SearchService {
         String year, Integer page, Integer rows) {
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            return chaoSong4PositionApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state,
-                year, page, rows);
+            return chaoSongApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page,
+                rows);
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }

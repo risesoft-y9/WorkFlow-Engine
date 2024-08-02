@@ -15,14 +15,12 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.entity.ReceivePerson;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.repository.jpa.ReceivePersonRepository;
@@ -44,9 +42,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
     private final ReceivePersonRepository receivePersonRepository;
 
-    private final DepartmentApi departmentManager;
-
-    private final PositionApi positionApi;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -99,7 +95,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     public List<Object> getParentId(String deptId, List<Object> list) {
         ReceiveDepartment receiveDept = receiveDepartmentRepository.findByDeptId(deptId);
         if (receiveDept == null || receiveDept.getId() == null) {
-            Department dept = departmentManager.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
+            Department dept = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
             if (dept != null && dept.getId() != null) {
                 list = getParentId(dept.getParentId(), list);
             } else {
@@ -121,7 +117,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (ReceivePerson receivePerson : personList) {
             Map<String, Object> m = new HashMap<>(16);
-            Position person = positionApi.get(tenantId, receivePerson.getPersonId()).getData();
+            OrgUnit person = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
             if (person == null || person.getId() == null || Boolean.TRUE.equals(person.getDisabled())) {
                 receivePersonRepository.delete(receivePerson);
                 continue;
@@ -130,7 +126,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             m.put("userId", person.getId());
             m.put("parentId", receivePerson.getPersonDeptId());
             m.put("name", person.getName());
-            m.put("duty", StringUtils.isBlank(person.getJobName()) ? "" : person.getJobName());
+            m.put("duty", "");
             m.put("send", receivePerson.isSend() ? "是" : "否");
             m.put("receive", receivePerson.isReceive() ? "是" : "否");
             list.add(m);
@@ -156,7 +152,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                 receiveDeptAndPerson.setTabIndex(tabIndex == null ? 0 : tabIndex + 1);
             }
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Department dept = departmentManager.get(tenantId, id).getData();
+            Department dept = departmentApi.get(tenantId, id).getData();
             OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, id).getData();
             receiveDeptAndPerson.setBureauId(orgUnit.getId());
             receiveDeptAndPerson.setDeptName(dept.getName());
@@ -183,7 +179,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                     Optional<ReceiveDepartment> receiveDeptAndPersonOpt = receiveDepartmentRepository.findById(guid);
                     if (receiveDeptAndPersonOpt.isPresent()) {
                         ReceiveDepartment receiveDeptAndPerson = receiveDeptAndPersonOpt.get();
-                        Department dept = departmentManager
+                        Department dept = departmentApi
                             .get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
                         receiveDeptAndPerson.setDeptName(dept.getName());
                         receiveDeptAndPerson.setTabIndex(tabIndex);
@@ -208,9 +204,9 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
             String idsTemp = "";
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Department dept = departmentManager.get(tenantId, deptId).getData();
+            Department dept = departmentApi.get(tenantId, deptId).getData();
             for (String userId : id) {
-                Position user = positionApi.get(tenantId, userId).getData();
+                OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 List<ReceivePerson> list = receivePersonRepository.findByPersonId(userId);
                 if (list != null && !list.isEmpty()) {
                     boolean isAdd = true;
@@ -222,7 +218,8 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                         if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
                             isAdd = false;
                             // 同一个委办局，不能设置一个人为两个单位的收文员
-                            Position person = positionApi.get(Y9LoginUserHolder.getTenantId(), userId).getData();
+                            OrgUnit person = orgUnitApi
+                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), userId).getData();
                             msg.append("[" + person.getName() + "已是" + receivePerson.getDeptName() + "部门的收发员]<br>");
                         }
                     }
@@ -315,7 +312,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     @Transactional(readOnly = false)
     public void setParentId(String deptId, String parentId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Department> list = departmentManager.listByParentId(tenantId, deptId).getData();
+        List<Department> list = departmentApi.listByParentId(tenantId, deptId).getData();
         for (Department dept : list) {
             ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findByDeptId(dept.getId());
             if (receiveDeptAndPerson != null && receiveDeptAndPerson.getId() != null) {

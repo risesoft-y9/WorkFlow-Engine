@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.permission.PositionResourceApi;
 import net.risesoft.api.platform.resource.ResourceApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
@@ -63,10 +63,10 @@ public class MobileWorkListController {
     private final TodoService todoService;
     private final DoingService doingService;
     private final DoneService doneService;
-    private final ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrackApi processTrackApi;
     private final ProcessTodoApi processTodoApi;
-    private final Item4PositionApi item4PositionApi;
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final ItemApi itemApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
     private final ResourceApi resourceApi;
     private final PositionResourceApi positionResourceApi;
     protected Logger log = LoggerFactory.getLogger(MobileWorkListController.class);
@@ -171,10 +171,10 @@ public class MobileWorkListController {
                         continue;
                     }
                     String itemId = url.split("itemId=")[1];
-                    ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+                    ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
                     String processDefinitionKey = item.getWorkflowGuid();
                     long todoCount = processTodoApi
-                        .getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
+                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
                         .getData();
                     Map<String, Object> m = new HashMap<>(16);
                     Y9Page<Map<String, Object>> resMap =
@@ -262,13 +262,13 @@ public class MobileWorkListController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             Y9FlowableCountModel flowableCountModel = processTodoApi
                 .getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey).getData();
             int todoCount = (int)flowableCountModel.getTodoCount();
             int doingCount = (int)flowableCountModel.getDoingCount();
-            int doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId).getData();
+            int doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, itemId).getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);
@@ -294,7 +294,7 @@ public class MobileWorkListController {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             List<HistoryProcessModel> items =
-                processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId).getData();
+                processTrackApi.processTrackList(tenantId, positionId, processInstanceId).getData();
             retMap.put("rows", items);
             retMap.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {

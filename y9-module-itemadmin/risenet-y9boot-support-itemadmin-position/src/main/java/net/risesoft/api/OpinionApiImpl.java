@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
+import net.risesoft.api.itemadmin.OpinionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OpinionService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
@@ -37,16 +37,16 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/opinion4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class OpinionApiImpl implements Opinion4PositionApi {
+@RequestMapping(value = "/services/rest/opinion", produces = MediaType.APPLICATION_JSON_VALUE)
+public class OpinionApiImpl implements OpinionApi {
 
     private final OpinionService opinionService;
 
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     /**
      * 检查当前taskId任务节点是否已经签写意见
@@ -180,7 +180,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         @RequestParam String userId, @RequestParam String processSerialNumber, String taskId,
         @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId,
         String taskDefinitionKey, String activitiUser, String orderByUser) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<OpinionListModel> opinionList = opinionService.listPersonComment(processSerialNumber, taskId, itembox,
@@ -211,7 +211,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param opinionModel 意见信息
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @throws Exception Exception
@@ -219,12 +219,12 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      */
     @Override
     public Y9Result<OpinionModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String positionId, @RequestBody OpinionModel opinionModel) throws Exception {
-        Person person = personManager.get(tenantId, userId).getData();
+        @RequestParam String orgUnitId, @RequestBody OpinionModel opinionModel) throws Exception {
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         Opinion opinion = new Opinion();
         Y9BeanUtil.copyProperties(opinionModel, opinion);
         opinion = opinionService.saveOrUpdate(opinion);

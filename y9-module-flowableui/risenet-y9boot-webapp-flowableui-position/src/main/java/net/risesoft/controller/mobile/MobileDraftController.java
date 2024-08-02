@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -37,7 +37,7 @@ import net.risesoft.y9.util.Y9Util;
 @RequestMapping("/mobile/draft")
 public class MobileDraftController {
 
-    private final Draft4PositionApi draft4PositionApi;
+    private final DraftApi draftApi;
     protected Logger log = LoggerFactory.getLogger(MobileDraftController.class);
 
     /**
@@ -54,7 +54,7 @@ public class MobileDraftController {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9Result<Object> y9Result = draft4PositionApi.deleteDraft(tenantId, ids);
+            Y9Result<Object> y9Result = draftApi.deleteDraft(tenantId, ids);
             if (y9Result.isSuccess()) {
                 map.put(UtilConsts.SUCCESS, true);
                 map.put("msg", "删除成功");
@@ -81,7 +81,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Integer count = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId).getData();
+            Integer count = draftApi.getDeleteDraftCount(tenantId, positionId, itemId).getData();
             map.put("count", count);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
@@ -111,7 +111,7 @@ public class MobileDraftController {
         @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9Page<Map<String, Object>> y9Page =
-            draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
+            draftApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Page));
     }
 
@@ -129,7 +129,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Integer count = draft4PositionApi.getDraftCount(tenantId, positionId, itemId).getData();
+            Integer count = draftApi.getDraftCount(tenantId, positionId, itemId).getData();
             map.put("draftCount", count);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取草稿箱计数成功");
@@ -151,7 +151,7 @@ public class MobileDraftController {
     public void reduction(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String id,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9Result<Object> y9Result = draft4PositionApi.reduction(tenantId, id);
+        Y9Result<Object> y9Result = draftApi.reduction(tenantId, id);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
     }
 
@@ -165,7 +165,7 @@ public class MobileDraftController {
     public void removeDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9Result<Object> y9Result = draft4PositionApi.removeDraft(tenantId, ids);
+        Y9Result<Object> y9Result = draftApi.removeDraft(tenantId, ids);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
     }
 }

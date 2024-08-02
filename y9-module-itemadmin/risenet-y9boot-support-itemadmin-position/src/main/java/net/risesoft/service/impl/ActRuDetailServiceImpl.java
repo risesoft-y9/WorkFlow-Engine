@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -23,7 +23,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -57,7 +57,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     private final IdentityApi identityManager;
 
-    private final DepartmentApi departmentManager;
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     @Transactional
@@ -341,7 +341,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             return true;
         }
 
-        Department dept = departmentManager.get(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+        OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         ActRuDetail newActRuDetail = new ActRuDetail();
         newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newActRuDetail.setProcessSerialNumber(actRuDetail.getProcessSerialNumber());

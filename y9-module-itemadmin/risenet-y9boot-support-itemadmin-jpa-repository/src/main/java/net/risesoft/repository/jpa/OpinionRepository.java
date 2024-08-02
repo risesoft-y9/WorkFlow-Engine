@@ -18,6 +18,25 @@ import net.risesoft.entity.Opinion;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSpecificationExecutor<Opinion> {
 
+    /**
+     * 根据processSerialNumber查找意见，用于未启动流程发送前的是否填写意见校验
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    @Query("select count(*) from Opinion t where t.processSerialNumber = ?1")
+    int findByProcSerialNumber(String processSerialNumber);
+
+    /**
+     * 根据意见框id和流程唯一标示查找意见
+     *
+     * @param processSerialNumber
+     * @param opinionFrameMark
+     * @return
+     */
+    @Query("from Opinion t where t.processSerialNumber=?1 and t.opinionFrameMark=?2 order by t.createDate ASC")
+    List<Opinion> findByProcSerialNumberAndOpinionFrameMark(String processSerialNumber, String opinionFrameMark);
+
     @Query("from Opinion t where t.processInstanceId=?1 order by t.createDate ASC")
     List<Opinion> findByProcessInstanceId(String processInstanceId);
 
@@ -41,25 +60,6 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
     List<Opinion> findByProcessSerialNumberAndUserId(String processSerialNumber, String userId, String taskId);
 
     List<Opinion> findByProcessSerialNumberOrderByCreateDateDesc(String processSerialNumber);
-
-    /**
-     * 根据processSerialNumber查找意见，用于未启动流程发送前的是否填写意见校验
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    @Query("select count(*) from Opinion t where t.processSerialNumber = ?1")
-    int findByProcSerialNumber(String processSerialNumber);
-
-    /**
-     * 根据意见框id和流程唯一标示查找意见
-     *
-     * @param processSerialNumber
-     * @param opinionFrameMark
-     * @return
-     */
-    @Query("from Opinion t where t.processSerialNumber=?1 and t.opinionFrameMark=?2 order by t.createDate ASC")
-    List<Opinion> findByProcSerialNumberAndOpinionFrameMark(String processSerialNumber, String opinionFrameMark);
 
     /**
      *
@@ -94,8 +94,7 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
      * 流程未启动：为''或者null获取当前意见框的个人意见数量
      *
      * @param processSerialNumber
-     * @param taskId
-     * @param category
+     * @param opinionFrameMark
      * @param userId
      * @return
      */
@@ -107,7 +106,7 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
      *
      * @param processSerialNumber
      * @param taskId
-     * @param category
+     * @param opinionFrameMark
      * @param userId
      * @return
      */
@@ -120,7 +119,7 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
      * @param taskId
      * @return
      */
-    @Query("select count(id) from Opinion t where t.taskId=?1")
+    @Query("select count(t.id) from Opinion t where t.taskId=?1")
     int getCountByTaskId(String taskId);
 
     @Modifying

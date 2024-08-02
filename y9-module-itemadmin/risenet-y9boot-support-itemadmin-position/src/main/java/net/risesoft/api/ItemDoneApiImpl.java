@@ -178,7 +178,6 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
         @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setTenantId(tenantId);
         String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
         StringBuilder sql1 = new StringBuilder();
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);

@@ -27,34 +27,16 @@ public interface TaskApiClient extends TaskApi {
      * 创建变量
      *
      * @param tenantId 租户id
-     * @param personId 人员id
+     * @param orgUnitId 人员、岗位Id
      * @param routeToTaskId 任务id
      * @param vars 变量map
-     * @param userIdList 人员ids
+     * @param orgUnitIdList 人员、岗位ids
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      */
     @Override
     @PostMapping(value = "/createWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> createWithVariables(@RequestParam("tenantId") String tenantId,
-        @RequestParam("personId") String personId, @RequestParam("routeToTaskId") String routeToTaskId,
-        @SpringQueryMap Map<String, Object> vars, @RequestBody List<String> userIdList);
-
-    /**
-     * 创建变量/岗位
-     *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
-     * @param personId 人员id
-     * @param routeToTaskId 任务id
-     * @param vars 变量map
-     * @param positionIdList 岗位ids
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     */
-    @Override
-    @PostMapping(value = "/createWithVariables4Position", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createWithVariables4Position(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("personId") String personId,
-        @RequestParam("routeToTaskId") String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
-        @RequestBody List<String> positionIdList);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("routeToTaskId") String routeToTaskId,
+        @SpringQueryMap Map<String, Object> vars, @RequestBody List<String> orgUnitIdList);
 
 }

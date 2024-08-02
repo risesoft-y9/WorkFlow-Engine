@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.HistoryProcessModel;
@@ -38,9 +38,9 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/processTrack", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessTrackRestController {
 
-    private final ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrackApi processTrackApi;
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
     private final RepositoryApi repositoryApi;
 
@@ -73,7 +73,7 @@ public class ProcessTrackRestController {
     @GetMapping(value = "/getTaskList")
     public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam @NotBlank String processInstanceId) {
         try {
-            return processTrack4PositionApi.getTaskList(Y9LoginUserHolder.getTenantId(), processInstanceId);
+            return processTrackApi.getTaskList(Y9LoginUserHolder.getTenantId(), processInstanceId);
         } catch (Exception e) {
             LOGGER.error("获取流程图任务节点信息失败", e);
         }
@@ -93,11 +93,10 @@ public class ProcessTrackRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>();
         List<HistoryProcessModel> items =
-            processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId).getData();
+            processTrackApi.processTrackList(tenantId, positionId, processInstanceId).getData();
         int mychaosongNum =
-            chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-        int otherchaosongNum =
-            chaoSong4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+            chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+        int otherchaosongNum = chaoSongApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
         map.put("rows", items);
         map.put("mychaosongNum", mychaosongNum);
         map.put("otherchaosongNum", otherchaosongNum);
@@ -116,7 +115,7 @@ public class ProcessTrackRestController {
         String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            return processTrack4PositionApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
+            return processTrackApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
         } catch (Exception e) {
             LOGGER.error("获取简易历程数据失败", e);
 

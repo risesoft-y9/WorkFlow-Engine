@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.DocumentApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -34,19 +34,19 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ButtonOperationServiceImpl implements ButtonOperationService {
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private final Document4PositionApi document4PositionApi;
+    private final DocumentApi documentApi;
 
     private final TaskApi taskApi;
 
     private final VariableApi variableApi;
 
-    private final ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrackApi processTrackApi;
 
     private final RuntimeApi runtimeApi;
 
     private final HistoricTaskApi historictaskApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -66,16 +66,16 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         /*
           1办结
          */
-        document4PositionApi.complete(tenantId, positionId, taskId);
+        documentApi.complete(tenantId, positionId, taskId);
 
         /*
           2更新自定义历程结束时间
          */
-        List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId).getData();
+        List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(tenantId, taskId).getData();
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 ptModel.setEndTime(sdf.format(new Date()));
-                processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
+                processTrackApi.saveOrUpdate(tenantId, ptModel);
             }
         }
         /*
@@ -92,7 +92,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         ptModel.setTaskId(taskId);
         ptModel.setId("");
 
-        processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
+        processTrackApi.saveOrUpdate(tenantId, ptModel);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
@@ -146,7 +146,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setTaskDefName("恢复待办");
             ptm.setTaskId(hisTaskModelTemp.getId());
 
-            processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
+            processTrackApi.saveOrUpdate(tenantId, ptm);
 
             /*
               2、添加流程的历程
@@ -160,7 +160,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setEndTime("");
             ptm.setTaskDefName(hisTaskModelTemp.getName());
             ptm.setTaskId(hisTaskModelTemp.getId());
-            processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
+            processTrackApi.saveOrUpdate(tenantId, ptm);
         } catch (Exception e) {
             LOGGER.error("runtimeApi resumeToDo error", e);
             throw new Exception("runtimeApi resumeToDo error");

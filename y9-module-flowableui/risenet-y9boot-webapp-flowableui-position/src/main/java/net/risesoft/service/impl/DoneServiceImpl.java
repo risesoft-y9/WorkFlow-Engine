@@ -16,13 +16,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ItemDoneApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -39,15 +39,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Transactional(readOnly = true)
 public class DoneServiceImpl implements DoneService {
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
     private final FormDataApi formDataApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollowApi officeFollowApi;
 
     private final ItemDoneApi itemDoneApi;
 
@@ -58,10 +58,9 @@ public class DoneServiceImpl implements DoneService {
         Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        y9Page =
-            officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -92,8 +91,8 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSong4PositionApi
-                    .countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
+                int chaosongNum =
+                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("chaosongNum", chaosongNum);
             } catch (Exception e) {
                 LOGGER.error("获取列表失败", e);
@@ -110,10 +109,9 @@ public class DoneServiceImpl implements DoneService {
         Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        y9Page =
-            officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> list = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -146,8 +144,8 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSong4PositionApi
-                    .countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
+                int chaosongNum =
+                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("chaosongNum", chaosongNum);
                 formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                 if (formDataMap.get("leaveType") != null) {
@@ -163,7 +161,7 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("processInstanceId", processInstanceId);
 
                 int countFollow =
-                    officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
+                    officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("follow", countFollow > 0);
             } catch (Exception e) {
                 LOGGER.error("获取列表失败" + processInstanceId, e);
@@ -182,7 +180,7 @@ public class DoneServiceImpl implements DoneService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemDoneApi.findByUserIdAndSystemName(tenantId, userId, item.getSystemName(), page, rows);
@@ -219,8 +217,8 @@ public class DoneServiceImpl implements DoneService {
                         processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
 
                     mapTemp.put("user4Complete", processParam.getCompleter());
-                    int chaosongNum = chaoSong4PositionApi
-                        .countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
+                    int chaosongNum =
+                        chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     /*if (formDataMap.get("leaveType") != null) {
@@ -234,8 +232,8 @@ public class DoneServiceImpl implements DoneService {
                     }*/
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow = officeFollow4PositionApi
-                        .countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
+                    int countFollow =
+                        officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取列表失败" + processInstanceId, e);

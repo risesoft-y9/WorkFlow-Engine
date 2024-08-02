@@ -157,4 +157,23 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="1717137489499-10" author="zhangchongjie (generated)" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_node_linkbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项节点链接绑定表" tableName="ff_item_node_linkbind">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="linkId" remarks="链接id" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)"/>
+            <column name="processDefinitionId" remarks="流程定义Id" type="VARCHAR(100)"/>
+            <column name="taskDefKey" remarks="任务key" type="VARCHAR(100)"/>
+            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+
 </databaseChangeLog>

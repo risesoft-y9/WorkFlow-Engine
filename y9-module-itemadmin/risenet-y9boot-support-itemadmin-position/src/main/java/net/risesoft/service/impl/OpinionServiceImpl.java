@@ -100,7 +100,9 @@ public class OpinionServiceImpl implements OpinionService {
 
     private final OpinionHistoryRepository opinionHistoryRepository;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
+
+    private final PositionApi positionApi;
 
     private final VariableApi variableApi;
 
@@ -307,7 +309,7 @@ public class OpinionServiceImpl implements OpinionService {
             if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && list.size() > 1) {// 按岗位排序号排序
                 for (Opinion Opinion : list) {
                     String positionId = Opinion.getPositionId();
-                    Position position = positionManager.get(tenantId, positionId).getData();
+                    Position position = positionApi.get(tenantId, positionId).getData();
                     Opinion.setOrderStr(
                         (position != null && position.getOrderedPath() != null) ? position.getOrderedPath() : "");
                 }
@@ -330,8 +332,9 @@ public class OpinionServiceImpl implements OpinionService {
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
                         if (StringUtils.isNotBlank(opinion.getPositionId())
                             && StringUtils.isBlank(opinion.getPositionName())) {
-                            Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
-                            opinionModel.setPositionName(position != null ? position.getName() : "");
+                            OrgUnit user =
+                                orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+                            opinionModel.setPositionName(user != null ? user.getName() : "");
                         }
                         PersonExt personExt =
                             personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
@@ -407,8 +410,9 @@ public class OpinionServiceImpl implements OpinionService {
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
                         if (StringUtils.isNotBlank(opinion.getPositionId())
                             && StringUtils.isBlank(opinion.getPositionName())) {
-                            Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
-                            opinionModel.setPositionName(position != null ? position.getName() : "");
+                            OrgUnit user =
+                                orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+                            opinionModel.setPositionName(user != null ? user.getName() : "");
                         }
                         PersonExt personExt =
                             personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
@@ -433,8 +437,9 @@ public class OpinionServiceImpl implements OpinionService {
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
                     if (StringUtils.isNotBlank(opinion.getPositionId())
                         && StringUtils.isBlank(opinion.getPositionName())) {
-                        Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
-                        opinionModel.setPositionName(position != null ? position.getName() : "");
+                        OrgUnit user =
+                            orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+                        opinionModel.setPositionName(user != null ? user.getName() : "");
                     }
                     PersonExt personExt =
                         personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
@@ -554,8 +559,9 @@ public class OpinionServiceImpl implements OpinionService {
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
                     if (StringUtils.isNotBlank(opinion.getPositionId())
                         && StringUtils.isBlank(opinion.getPositionName())) {
-                        Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
-                        opinionModel.setPositionName(position != null ? position.getName() : "");
+                        OrgUnit user =
+                            orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+                        opinionModel.setPositionName(user != null ? user.getName() : "");
                     }
                     PersonExt personExt =
                         personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
@@ -595,8 +601,9 @@ public class OpinionServiceImpl implements OpinionService {
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
                     if (StringUtils.isNotBlank(opinion.getPositionId())
                         && StringUtils.isBlank(opinion.getPositionName())) {
-                        Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
-                        opinionModel.setPositionName(position != null ? position.getName() : "");
+                        OrgUnit user =
+                            orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+                        opinionModel.setPositionName(user != null ? user.getName() : "");
                     }
                     PersonExt personExt =
                         personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
@@ -662,8 +669,8 @@ public class OpinionServiceImpl implements OpinionService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Position position = Y9LoginUserHolder.getPosition();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        OrgUnit user = Y9LoginUserHolder.getOrgUnit();
+        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         String userName = person.getName();
         String personId = person.getPersonId();
         String id = entity.getId();
@@ -672,8 +679,8 @@ public class OpinionServiceImpl implements OpinionService {
             o.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             o.setUserId(personId);
             o.setUserName(userName);
-            o.setDeptId(position.getParentId());
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, position.getParentId()).getData();
+            o.setDeptId(user.getParentId());
+            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, user.getParentId()).getData();
             o.setDeptName(orgUnit.getName());
             o.setProcessSerialNumber(entity.getProcessSerialNumber());
             o.setProcessInstanceId(entity.getProcessInstanceId());
@@ -683,8 +690,8 @@ public class OpinionServiceImpl implements OpinionService {
             o.setContent(entity.getContent());
             o.setCreateDate(sdf.format(new Date()));
             o.setModifyDate(sdf.format(new Date()));
-            o.setPositionId(positionId);
-            o.setPositionName(position.getName());
+            o.setPositionId(orgUnitId);
+            o.setPositionName(user.getName());
             if (StringUtils.isNotBlank(entity.getTaskId())) {
                 try {
                     List<ProcessTrack> list = processTrackService.listByTaskIdAndEndTimeIsNull(entity.getTaskId());
@@ -701,7 +708,7 @@ public class OpinionServiceImpl implements OpinionService {
                     if (entrustDetail != null) {
                         if (historicTaskInstanceModel.getAssignee().contains(positionId)) {
                             String idTemp = entrustDetail.getOwnerId();
-                            Person p = personManager.getPerson(tenantId, idTemp);
+                            Person p = personApi.getPerson(tenantId, idTemp);
                             if (isAgent != 1) {
                                 o.setUserName(userName + "(" + p.getName() + "委托)");
                             } else {
@@ -714,8 +721,7 @@ public class OpinionServiceImpl implements OpinionService {
                 }*/
             }
             opinionRepository.save(o);
-            asyncHandleService.sendMsgRemind(tenantId, positionId, entity.getProcessSerialNumber(),
-                entity.getContent());
+            asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
             return o;
         }
         Opinion opinion = opinionRepository.findById(id).orElse(null);
@@ -728,11 +734,11 @@ public class OpinionServiceImpl implements OpinionService {
         opinion.setContent(entity.getContent());
         opinion.setProcessInstanceId(entity.getProcessInstanceId());
         opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        OrgUnit orgUnit0 = orgUnitManager.getOrgUnit(tenantId, position.getParentId()).getData();
-        opinion.setDeptId(position.getParentId());
+        OrgUnit orgUnit0 = orgUnitManager.getOrgUnit(tenantId, user.getParentId()).getData();
+        opinion.setDeptId(user.getParentId());
         opinion.setDeptName(orgUnit0.getName());
-        opinion.setPositionId(positionId);
-        opinion.setPositionName(position.getName());
+        opinion.setPositionId(orgUnitId);
+        opinion.setPositionName(user.getName());
         /*if (StringUtils.isNotBlank(entity.getTaskId())) {
             try {
                 HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskManager.getById(tenantId, entity.getTaskId());
@@ -740,7 +746,7 @@ public class OpinionServiceImpl implements OpinionService {
                 if (entrustDetail != null) {
                     if (historicTaskInstanceModel.getAssignee().contains(positionId)) {
                         String idTemp = entrustDetail.getOwnerId();
-                        Person p = personManager.getPerson(tenantId, idTemp);
+                        Person p = personApi.getPerson(tenantId, idTemp);
                         if (isAgent != 1) {
                             opinion.setUserName(userName + "(" + p.getName() + "委托)");
                         } else {
@@ -753,7 +759,7 @@ public class OpinionServiceImpl implements OpinionService {
             }
         }*/
         opinionRepository.save(opinion);
-        asyncHandleService.sendMsgRemind(tenantId, positionId, entity.getProcessSerialNumber(), entity.getContent());
+        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
         // 修改意见保存历史记录
         asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion, "1");
         return opinion;

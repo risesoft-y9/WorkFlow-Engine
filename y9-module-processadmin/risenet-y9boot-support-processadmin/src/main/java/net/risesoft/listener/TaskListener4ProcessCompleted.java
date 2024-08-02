@@ -48,8 +48,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 }
                 Process4CompleteUtilService process4CompleteUtilService =
                     Y9Context.getBean(Process4CompleteUtilService.class);
-                process4CompleteUtilService.saveToDataCenter(tenantId, "", Y9LoginUserHolder.getPositionId(),
-                    executionEntity.getProcessInstanceId(), Y9LoginUserHolder.getPosition().getName());
+                process4CompleteUtilService.saveToDataCenter(tenantId, "", Y9LoginUserHolder.getOrgUnitId(),
+                    executionEntity.getProcessInstanceId(), Y9LoginUserHolder.getOrgUnit().getName());
 
                 Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
                     executionEntity.getProcessInstanceId());

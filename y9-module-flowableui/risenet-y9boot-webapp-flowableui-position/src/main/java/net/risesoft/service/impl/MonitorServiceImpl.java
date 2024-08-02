@@ -16,10 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.MonitorApi;
@@ -49,15 +49,15 @@ public class MonitorServiceImpl implements MonitorService {
 
     private final TaskApi taskApi;
 
-    private final Item4PositionApi item4PositionApi;
+    private final ItemApi itemApi;
 
     private final PositionApi positionApi;
 
     private final ProcessParamApi processParamApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSongApi chaoSongApi;
 
     private final IdentityApi identityApi;
 
@@ -225,8 +225,8 @@ public class MonitorServiceImpl implements MonitorService {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page = officeDoneInfo4PositionApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId,
-                userName, state, year, page, rows);
+            y9Page = officeDoneInfoApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId, userName,
+                state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> list = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -291,8 +291,7 @@ public class MonitorServiceImpl implements MonitorService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
-                rows);
+            y9Page = officeDoneInfoApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -359,8 +358,8 @@ public class MonitorServiceImpl implements MonitorService {
         String userName, String state, String year, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            return chaoSong4PositionApi.searchAllList(tenantId, searchName, itemId, senderName, userName, state, year,
-                page, rows);
+            return chaoSongApi.searchAllList(tenantId, searchName, itemId, senderName, userName, state, year, page,
+                rows);
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
@@ -374,7 +373,7 @@ public class MonitorServiceImpl implements MonitorService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             // if (StringUtils.isBlank(searchTerm)) {
             // retMap = monitorApi.getDoingListByProcessDefinitionKey(tenantId, processDefinitionKey, page, rows);
@@ -382,8 +381,8 @@ public class MonitorServiceImpl implements MonitorService {
             // retMap = monitorApi.searchDoingListByProcessDefinitionKey(tenantId, processDefinitionKey,
             // searchTerm, page, rows);
             // }
-            y9Page = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId,
-                ItemBoxTypeEnum.DOING.getValue(), "", "", page, rows);
+            y9Page = officeDoneInfoApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.TODO.getValue(), "",
+                "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -451,10 +450,10 @@ public class MonitorServiceImpl implements MonitorService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-            y9Page = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId,
-                ItemBoxTypeEnum.DONE.getValue(), "", "", page, rows);
+            y9Page = officeDoneInfoApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.DONE.getValue(), "",
+                "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -508,7 +507,7 @@ public class MonitorServiceImpl implements MonitorService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             Y9Page<HistoricProcessInstanceModel> hpiPage;
             if (StringUtils.isBlank(searchTerm)) {

@@ -30,15 +30,6 @@ public interface OfficeDoneInfoService {
     int countByItemId(String itemId);
 
     /**
-     * 根据系统名称统计个人办结件
-     *
-     * @param positionId
-     * @param systemName
-     * @return
-     */
-    int countByPositionIdAndSystemName(String positionId, String systemName);
-
-    /**
      * 统计个人办结件
      *
      * @param userId
@@ -46,6 +37,15 @@ public interface OfficeDoneInfoService {
      * @return
      */
     int countByUserId(String userId, String itemId);
+
+    /**
+     * 根据系统名称统计个人办结件
+     *
+     * @param orgUnitId
+     * @param systemName
+     * @return
+     */
+    int countByUserIdAndSystemName(String orgUnitId, String systemName);
 
     /**
      * 监控在办统计
@@ -128,6 +128,24 @@ public interface OfficeDoneInfoService {
         String state, String year, String startDate, String endDate, Integer page, Integer rows);
 
     /**
+     * 根据系统，个人所有件搜索
+     *
+     * @param orgUnitId 人员、岗位id
+     * @param title 标题
+     * @param systemName 系统名称
+     * @param itemId 事项id
+     * @param state 状态
+     * @param year 年份
+     * @param startdate 开始日期
+     * @param enddate 结束日期
+     * @param page 页码
+     * @param rows 条数
+     * @return
+     */
+    Y9Page<OfficeDoneInfoModel> searchAllByUserIdAndSystemName(String orgUnitId, String title, String systemName,
+        String itemId, String state, String year, String startdate, String enddate, Integer page, Integer rows);
+
+    /**
      * 监控办件列表
      *
      * @param searchName
@@ -158,21 +176,6 @@ public interface OfficeDoneInfoService {
         String enddate, Integer page, Integer rows);
 
     /**
-     * 根据岗位id,系统名称，获取个人办结件列表
-     *
-     * @param positionId
-     * @param title
-     * @param systemName
-     * @param startdate
-     * @param enddate
-     * @param page
-     * @param rows
-     * @return
-     */
-    Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String positionId, String title, String systemName,
-        String startdate, String enddate, Integer page, Integer rows);
-
-    /**
      * 获取个人办结件列表
      *
      * @param userId
@@ -186,6 +189,21 @@ public interface OfficeDoneInfoService {
      */
     Y9Page<OfficeDoneInfoModel> searchByUserId(String userId, String title, String itemId, String startdate,
         String enddate, Integer page, Integer rows);
+
+    /**
+     * 根据岗位id,系统名称，获取个人办结件列表
+     *
+     * @param orgUnitId
+     * @param title
+     * @param systemName
+     * @param startdate
+     * @param enddate
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(String orgUnitId, String title, String systemName,
+        String startdate, String enddate, Integer page, Integer rows);
 
     /**
      * 上会，当代研究所

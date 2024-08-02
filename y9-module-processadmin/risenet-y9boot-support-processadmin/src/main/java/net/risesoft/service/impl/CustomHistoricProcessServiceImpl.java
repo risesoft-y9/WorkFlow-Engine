@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.DeleteProcessUtilService;
@@ -36,7 +36,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
 
     private final HistoryService historyService;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final DeleteProcessUtilService deleteProcessUtilService;
 
@@ -173,32 +173,6 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricProcessInstance his =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-            // 未办结件删除
-            if (his != null && his.getEndTime() == null) {
-                runtimeService.deleteProcessInstance(processInstanceId, "已删除");
-                historyService.deleteHistoricProcessInstance(his.getId());
-            } else {
-                // 数据中心办结件
-                if (his == null) {
-                } else {
-                    // 办结件
-                    historyService.deleteHistoricProcessInstance(his.getId());
-                }
-            }
-            deleteProcessUtilService.deleteProcess(tenantId, processInstanceId);
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("删除流程实例失败", e);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean removeProcess4Position(String processInstanceId) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            HistoricProcessInstance his =
-                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             String year = "";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             // 未办结件删除
@@ -210,7 +184,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 if (his == null) {
                     // 数据中心办结件
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     if (officeDoneInfoModel != null) {
                         year = officeDoneInfoModel.getStartTime().substring(0, 4);
                         // 删除年度数据
@@ -222,11 +196,11 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 }
             }
             try {
-                officeDoneInfo4PositionApi.deleteOfficeDoneInfo(tenantId, processInstanceId);
+                officeDoneInfoApi.deleteOfficeDoneInfo(tenantId, processInstanceId);
             } catch (Exception e1) {
                 LOGGER.warn("************************************删除数据中心办结件数据失败", e1);
             }
-            deleteProcessUtilService.deleteProcess4Position(tenantId, processInstanceId);
+            deleteProcessUtilService.deleteProcess(tenantId, processInstanceId);
             return true;
         } catch (Exception e) {
             LOGGER.error("删除流程实例失败", e);

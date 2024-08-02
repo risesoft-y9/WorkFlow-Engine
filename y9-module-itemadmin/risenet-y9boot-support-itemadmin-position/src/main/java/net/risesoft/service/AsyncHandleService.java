@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -46,6 +47,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
 import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
@@ -85,9 +87,11 @@ public class AsyncHandleService {
 
     private final Y9Properties y9Conf;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
+
+    private final PositionApi positionApi;
 
     private final ProcessParamService processParamService;
 
@@ -113,7 +117,7 @@ public class AsyncHandleService {
 
     private final Process4SearchService process4SearchService;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final ItemTaskConfService itemTaskConfService;
 
@@ -121,7 +125,7 @@ public class AsyncHandleService {
      * 异步发送
      *
      * @param tenantId
-     * @param position
+     * @param orgUnit
      * @param processInstanceId
      * @param processParam
      * @param sponsorHandle
@@ -133,10 +137,11 @@ public class AsyncHandleService {
      * @return
      */
     @Async
-    public void forwarding(final String tenantId, final Position position, final String processInstanceId,
+    public void forwarding(final String tenantId, final OrgUnit orgUnit, final String processInstanceId,
         final ProcessParam processParam, final String sponsorHandle, final String sponsorGuid, final String taskId,
         final String multiInstance, final Map<String, Object> variables, final List<String> userAndDeptIdList) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         try {
             this.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance,
                 variables, userAndDeptIdList);
@@ -179,8 +184,8 @@ public class AsyncHandleService {
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
         String sponsorGuid, String taskId, String multiInstance, Map<String, Object> variables, List<String> userList)
         throws Exception {
-        Position position = Y9LoginUserHolder.getPosition();
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = position.getId();
+        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
         TaskModel task = taskManager.findById(tenantId, taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
             processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
@@ -226,13 +231,12 @@ public class AsyncHandleService {
         processParam.setSended("true");
         processParam.setSponsorGuid(sponsorGuid);
         processParamService.saveOrUpdate(processParam);
-        taskManager.completeWithVariables4Position(tenantId, taskId, positionId, variables);
+        taskManager.completeWithVariables(tenantId, taskId, orgUnitId, variables);
 
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
 
-        this.forwardingHandle(tenantId, positionId, taskId, processInstanceId, multiInstance, sponsorGuid,
-            processParam);
+        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, multiInstance, sponsorGuid, processParam);
     }
 
     /**
@@ -246,14 +250,14 @@ public class AsyncHandleService {
      * @param processParam
      */
     @Async
-    public void forwardingHandle(final String tenantId, final String positionId, final String taskId,
+    public void forwardingHandle(final String tenantId, final String orgUnitId, final String taskId,
         final String processInstanceId, final String multiInstance, final String sponsorGuid,
         final ProcessParam processParam) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionManager.get(tenantId, positionId).getData();
-            Y9LoginUserHolder.setPosition(position);
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+            Y9LoginUserHolder.setOrgUnit(orgUnit);
             // 更新自定义历程结束时间
             List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(taskId);
             for (ProcessTrack ptModel : ptModelList) {
@@ -266,8 +270,8 @@ public class AsyncHandleService {
             List<TaskModel> nextTaskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
             for (TaskModel taskNext : nextTaskList) {
                 Map<String, Object> vars = new HashMap<>(16);
-                vars.put(SysVariables.TASKSENDER, position.getName());
-                vars.put(SysVariables.TASKSENDERID, positionId);
+                vars.put(SysVariables.TASKSENDER, orgUnit.getName());
+                vars.put(SysVariables.TASKSENDERID, orgUnitId);
                 /**
                  * 并行状态且区分主协办情况下，如果受让人是主办人，则将主办人guid设为任务变量
                  */
@@ -298,8 +302,8 @@ public class AsyncHandleService {
     }
 
     private String getSponsorPosition(String id, String deptId) {
-        List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
-        List<Position> list0 = positionManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Department> deptList = departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Position> list0 = positionApi.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             id = list0.get(0).getId();
         } else {
@@ -447,7 +451,7 @@ public class AsyncHandleService {
                 return;
             }
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionManager.get(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
             String personIds = msgRemindInfoManager.getRemindConfig(tenantId, userId, "opinionRemind");
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             if (StringUtils.isNotBlank(personIds) && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
@@ -484,7 +488,7 @@ public class AsyncHandleService {
                     info.setTitle(title);
                     info.setTenantId(tenantId);
                     info.setUrl(url);
-                    info.setUserName(position.getName());
+                    info.setUserName(orgUnit.getName());
                     info.setTime(date.getTime());
                     info.setReadUserId("");
                     info.setAllUserId(newPersonIds);
@@ -548,7 +552,7 @@ public class AsyncHandleService {
             String documentTitle = processParam.getTitle();
             String itemId = processParam.getItemId();
             String itemName = processParam.getItemName();
-            Person person = personManager.get(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             for (ChaoSong cs : list) {
                 String assignee = cs.getUserId();
                 HttpClient client = new HttpClient();
@@ -601,7 +605,7 @@ public class AsyncHandleService {
             String documentTitle = processParam.getTitle();
             String itemId = processParam.getItemId();
             String itemName = processParam.getItemName();
-            Person person = personManager.get(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             OfficeDoneInfo officeDoneInfo =
                 officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
             for (ChaoSongInfo cs : list) {

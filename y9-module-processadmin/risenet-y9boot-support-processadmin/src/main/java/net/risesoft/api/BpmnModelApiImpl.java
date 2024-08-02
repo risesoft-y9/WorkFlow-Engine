@@ -60,15 +60,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.BpmnModelApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.FlowNodeModel;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.model.processadmin.LinkNodeModel;
@@ -112,13 +112,13 @@ public class BpmnModelApiImpl implements BpmnModelApi {
 
     private final RepositoryService repositoryService;
 
-    private final PersonApi personManager;
+    private final OrgUnitApi orgUnitApi;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoManager;
 
     private final ProcessParamApi processParamManager;
 
-    private final ProcessTrack4PositionApi processTrackManager;
+    private final ProcessTrackApi processTrackManager;
 
     private final ModelService modelService;
 
@@ -388,7 +388,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     continue;
                 }
                 String userId = his.getAssignee();
-                Person person = personManager.get(tenantId, userId).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 if ("".equals(activityId) || activityId.equals(his.getActivityId())) {
 
                     HistoricVariableInstance historicVariableInstance = customHistoricVariableService
@@ -396,9 +396,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     Y9FlowChartModel flowChart = new Y9FlowChartModel();
                     flowChart.setId(taskId);
                     flowChart.setName(his.getActivityName());
-                    flowChart.setTitle(person != null ? person.getName() : "该用户不存在");
+                    flowChart.setTitle(orgUnit != null ? orgUnit.getName() : "该用户不存在");
                     if (historicVariableInstance != null) {
-                        flowChart.setTitle(person != null ? person.getName() + "(主办)" : "该用户不存在");
+                        flowChart.setTitle(orgUnit != null ? orgUnit.getName() + "(主办)" : "该用户不存在");
                     }
                     flowChart.setParentId(parentId);
                     flowChart.setClassName(his.getEndTime() != null ? "serverColor" : "specialColor");
@@ -415,9 +415,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     Y9FlowChartModel flowChart = new Y9FlowChartModel();
                     flowChart.setId(taskId);
                     flowChart.setName(his.getActivityName());
-                    flowChart.setTitle(person != null ? person.getName() : "该用户不存在");
+                    flowChart.setTitle(orgUnit != null ? orgUnit.getName() : "该用户不存在");
                     if (historicVariableInstance != null) {
-                        flowChart.setTitle(person != null ? person.getName() + "(主办)" : "该用户不存在");
+                        flowChart.setTitle(orgUnit != null ? orgUnit.getName() + "(主办)" : "该用户不存在");
                     }
                     flowChart.setParentId(parentId);
                     flowChart.setClassName(his.getEndTime() != null ? "serverColor" : "specialColor");
@@ -570,7 +570,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         @RequestParam MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            Person person = personManager.get(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
@@ -616,11 +616,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             newModel.setKey(process.getId());
             newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
             newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(person.getName());
+            newModel.setCreatedBy(orgUnit.getName());
             newModel.setDescription(description);
             newModel.setModelEditorJson(modelNode.toString());
             newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(person.getName());
+            newModel.setLastUpdatedBy(orgUnit.getName());
             newModel.setTenantId(tenantId);
             modelService.createModel(newModel, userId);
             return Y9Result.success();
@@ -645,7 +645,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         @RequestParam String modelId, @RequestParam MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            Person person = personManager.get(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
@@ -692,11 +692,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             newModel.setKey(model.getKey());
             newModel.setModelType(model.getModelType());
             newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(person.getName());
+            newModel.setCreatedBy(orgUnit.getName());
             newModel.setDescription(model.getDescription());
             newModel.setModelEditorJson(modelNode.toString());
             newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(person.getName());
+            newModel.setLastUpdatedBy(orgUnit.getName());
             newModel.setTenantId(tenantId);
             modelService.createModel(newModel, userId);
             return Y9Result.success();

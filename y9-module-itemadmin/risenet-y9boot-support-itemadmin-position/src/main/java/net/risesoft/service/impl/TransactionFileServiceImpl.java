@@ -18,15 +18,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.DepartmentApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.platform.Department;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -53,9 +51,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final DepartmentApi departmentManager;
-
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final Y9Properties y9Config;
 
@@ -165,9 +161,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 model.setPersonId(transactionFile.getPersonId());
                 model.setPersonName(transactionFile.getPersonName());
                 model.setPositionId(transactionFile.getPositionId());
-                Position position =
-                    positionManager.get(Y9LoginUserHolder.getTenantId(), transactionFile.getPositionId()).getData();
-                model.setPositionName(position != null ? position.getName() : "");
+                OrgUnit user = orgUnitApi
+                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), transactionFile.getPositionId())
+                    .getData();
+                model.setPositionName(user != null ? user.getName() : "");
                 model.setDeptId(transactionFile.getDeptId());
                 model.setDeptName(transactionFile.getDeptName());
                 model.setDescribes(transactionFile.getDescribes());
@@ -220,8 +217,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 file.setName(map.get("fileName").toString());
                 file.setPersonId(map.get("personId") == null ? "" : map.get("personId").toString());
                 file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
-                Department department =
-                    departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
+                OrgUnit department =
+                    orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
                 file.setDeptId(Y9LoginUserHolder.getDeptId());
                 file.setDeptName(department != null ? department.getName() : "");
                 file.setProcessSerialNumber(processSerialNumber);
@@ -284,8 +281,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setPersonId(person.getPersonId());
             transactionFile.setFileStoreId(y9FileStore.getId());
             transactionFile.setFileType(fileType);
-            Department department =
-                departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
+            OrgUnit department =
+                orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
             transactionFile.setDeptId(Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFileRepository.save(transactionFile);
@@ -315,9 +312,9 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         transactionFile.setDescribes(describes);
         transactionFile.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
         transactionFile.setPersonId(Y9LoginUserHolder.getPersonId());
-        transactionFile.setPositionId(Y9LoginUserHolder.getPositionId());
-        Department department = departmentManager
-            .get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPosition().getParentId()).getData();
+        transactionFile.setPositionId(Y9LoginUserHolder.getOrgUnitId());
+        OrgUnit department = orgUnitApi
+            .getOrgUnit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnit().getParentId()).getData();
         transactionFile.setDeptId(department != null ? department.getId() : "");
         transactionFile.setDeptName(department != null ? department.getName() : "");
         transactionFile.setFileStoreId(y9FileStoreId);

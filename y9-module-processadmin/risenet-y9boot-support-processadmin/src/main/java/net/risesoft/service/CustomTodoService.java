@@ -11,7 +11,7 @@ import net.risesoft.pojo.Y9Page;
 public interface CustomTodoService {
 
     /**
-     * 获取人员的待办任务数量
+     * 获取人员、岗位的待办任务数量
      *
      * @param userId
      * @return
@@ -28,7 +28,7 @@ public interface CustomTodoService {
     long getCountByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey);
 
     /**
-     * 根据人员Id,系统标识统计
+     * 根据人员、岗位id,系统标识统计
      *
      * @param userId
      * @param systemName
@@ -37,7 +37,7 @@ public interface CustomTodoService {
     long getCountByUserIdAndSystemName(String userId, String systemName);
 
     /**
-     * 根据人员Id获取用户的待办任务(分页)
+     * 根据人员、岗位id获取用户的待办任务(分页)
      *
      * @param userId
      * @param page
@@ -47,9 +47,9 @@ public interface CustomTodoService {
     Y9Page<TaskModel> pageByUserId(String userId, Integer page, Integer rows);
 
     /**
-     * 根据人员Id，事项id获取用户的待办任务(分页)
+     * 根据人员、岗位id，事项id获取用户的待办任务(分页)
      *
-     * @param userId 人员Id
+     * @param userId 人员、岗位id
      * @param processDefinitionKey 流程定义Key
      * @param page 页码
      * @param rows 行数

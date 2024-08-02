@@ -35,7 +35,7 @@ public class DepartmentRestController {
 
     private final OrgUnitApi orgUnitManager;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrganizationApi organizationApi;
 
@@ -111,7 +111,7 @@ public class DepartmentRestController {
                 items.add(node);
             }
         }
-        List<Department> departments = departmentManager.listByParentId(tenantId, id).getData();
+        List<Department> departments = departmentApi.listByParentId(tenantId, id).getData();
         for (Department department : departments) {
             NodeTreeVO node = new NodeTreeVO();
             node.setId(department.getId());
@@ -123,7 +123,7 @@ public class DepartmentRestController {
             if (isBureau) {
                 node.setIsParent(!department.isBureau());
             } else {
-                node.setIsParent(!departmentManager.listByParentId(tenantId, department.getId()).getData().isEmpty());
+                node.setIsParent(!departmentApi.listByParentId(tenantId, department.getId()).getData().isEmpty());
             }
             items.add(node);
         }

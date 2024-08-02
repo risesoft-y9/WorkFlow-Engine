@@ -47,9 +47,9 @@ public class SendReceiveRestController {
 
     private final OrgUnitApi orgUnitManager;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final ReceiveDepartmentRepository receiveDepartmentRepository;
 
@@ -92,11 +92,11 @@ public class SendReceiveRestController {
         @RequestParam String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<>();
-        List<Person> personList = personManager.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
+        List<Person> personList = personApi.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         for (Person person : personList) {
             orgUnitList.add(person);
-            Person p = personManager.get(tenantId, person.getId()).getData();
+            Person p = personApi.get(tenantId, person.getId()).getData();
             this.recursionUpToOrg(tenantId, deptId, p.getParentId(), orgUnitList, false);
         }
         for (OrgUnit orgUnit : orgUnitList) {
@@ -107,7 +107,7 @@ public class SendReceiveRestController {
             map.put("parentId", orgUnit.getParentId());
             map.put("isParent", true);
             if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                Person per = personManager.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 map.put("sex", per.getSex());
                 map.put("duty", per.getDuty());
                 map.put("isParent", false);
@@ -130,7 +130,7 @@ public class SendReceiveRestController {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(deptId)) {
-            Department dept = departmentManager.get(tenantId, deptId).getData();
+            Department dept = departmentApi.get(tenantId, deptId).getData();
             if (dept != null && dept.getId() != null) {
                 Map<String, Object> map = new HashMap<>(16);
                 map.put("id", dept.getId());
@@ -152,7 +152,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personManager.get(tenantId, orgunit.getId()).getData();
+                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
                     map.put("duty", person.getDuty());
@@ -199,7 +199,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personManager.get(tenantId, orgunit.getId()).getData();
+                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
                     map.put("duty", person.getDuty());
@@ -229,8 +229,8 @@ public class SendReceiveRestController {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList = departmentManager
-                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                List<Department> deptList =
+                    departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
@@ -257,7 +257,7 @@ public class SendReceiveRestController {
 
     public OrgUnit getParent(String tenantId, String parentId) {
         Organization parent = organizationManager.get(tenantId, parentId).getData();
-        return parent.getId() != null ? parent : departmentManager.get(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
     }
 
     @RequestMapping(value = "/orderDeptList")
@@ -265,7 +265,7 @@ public class SendReceiveRestController {
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAllOrderByTabIndex();
         for (ReceiveDepartment receiveDeptAndPerson : list) {
             Department department =
-                departmentManager.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
+                departmentApi.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
             receiveDeptAndPerson.setDeptName(department.getName());
         }
         // map.put("rows", list);
@@ -288,8 +288,8 @@ public class SendReceiveRestController {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList = departmentManager
-                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                List<Department> deptList =
+                    departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ReceiveOrgUnit;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -58,22 +58,22 @@ public interface ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @param deptId 部门id
-     * @return {@code Y9Result<List<Person>>} 通用请求返回对象 - data 是人员集合
+     * @return {@code Y9Result<List<OrgUnit>>} 通用请求返回对象 - data 是人员集合
      * @since 9.6.6
      */
     @GetMapping("/getSendReceiveByDeptId")
-    Y9Result<List<Person>> getSendReceiveByDeptId(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<OrgUnit>> getSendReceiveByDeptId(@RequestParam("tenantId") String tenantId,
         @RequestParam("deptId") String deptId);
 
     /**
-     * 根据人员id,获取对应的收发单位
+     * 根据id,获取对应的收发单位
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
      * @since 9.6.6
      */
     @GetMapping("/getSendReceiveByUserId")
     Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId);
+        @RequestParam("orgUnitId") String orgUnitId);
 }

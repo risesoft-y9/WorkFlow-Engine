@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemLeaveTypeEnum;
@@ -40,8 +40,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/draft4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DraftApiImpl implements Draft4PositionApi {
+@RequestMapping(value = "/services/rest/draft", produces = MediaType.APPLICATION_JSON_VALUE)
+public class DraftApiImpl implements DraftApi {
 
     private final DraftEntityService draftEntityService;
 
@@ -55,17 +55,17 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 根据系统名称计数
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param systemName 系统id
      * @return {@code Y9Result<Integer>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countBySystemName(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Integer> countBySystemName(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
-        int num = draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        int num = draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, orgUnitId);
         return Y9Result.success(num);
     }
 
@@ -88,20 +88,20 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 根据岗位id和事项id获取删除草稿统计
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<Integer>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDeleteDraftCount(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Integer> getDeleteDraftCount(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int count = 0;
         if (StringUtils.isEmpty(itemId)) {
-            count = draftEntityRepository.countByCreaterIdAndDelFlagTrue(positionId);
+            count = draftEntityRepository.countByCreaterIdAndDelFlagTrue(orgUnitId);
         } else {
-            count = draftEntityRepository.countByItemIdAndCreaterIdAndDelFlagTrue(itemId, positionId);
+            count = draftEntityRepository.countByItemIdAndCreaterIdAndDelFlagTrue(itemId, orgUnitId);
         }
         return Y9Result.success(count);
     }
@@ -131,21 +131,21 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 根据岗位id和事项id获取草稿统计
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<Integer>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDraftCount(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Integer> getDraftCount(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         int count = 0;
         if (StringUtils.isEmpty(itemId)) {
-            count = draftEntityRepository.countByCreaterIdAndDelFlagFalse(positionId);
+            count = draftEntityRepository.countByCreaterIdAndDelFlagFalse(orgUnitId);
         } else {
-            count = draftEntityRepository.countByItemIdAndCreaterIdAndDelFlagFalse(itemId, positionId);
+            count = draftEntityRepository.countByItemIdAndCreaterIdAndDelFlagFalse(itemId, orgUnitId);
         }
         return Y9Result.success(count);
     }
@@ -154,7 +154,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 获取草稿列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param page 页码
      * @param rows 条数
      * @param title 标题
@@ -164,14 +164,14 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<Map<String, Object>> getDraftList(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Page<Map<String, Object>> getDraftList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam int page, @RequestParam int rows, String title, @RequestParam String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         if (StringUtils.isEmpty(title)) {
             title = "";
         }
-        Page<DraftEntity> pageList = draftEntityService.pageDraftList(itemId, positionId, page, rows, title, delFlag);
+        Page<DraftEntity> pageList = draftEntityService.pageDraftList(itemId, orgUnitId, page, rows, title, delFlag);
         List<Map<String, Object>> draftList = new ArrayList<>();
         Map<String, Object> formDataMap = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -221,7 +221,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 获取系统名称对应的草稿列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param page 页码
      * @param rows 条数
      * @param title 标题
@@ -231,16 +231,16 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<DraftModel> getDraftListBySystemName(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Page<DraftModel> getDraftListBySystemName(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam int page, @RequestParam int rows, String title, @RequestParam String systemName,
         @RequestParam boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         if (StringUtils.isEmpty(title)) {
             title = "";
         }
         Page<DraftEntity> pageList =
-            draftEntityService.pageDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
+            draftEntityService.pageDraftListBySystemName(systemName, orgUnitId, page, rows, title, delFlag);
         int number = (page - 1) * rows;
         List<DraftModel> list = new ArrayList<>();
         for (DraftEntity draftEntity : pageList) {
@@ -264,7 +264,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 编辑草稿
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param mobile 是否手机端
@@ -272,10 +272,10 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> openDraft4Position(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<OpenDataModel> openDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         OpenDataModel model = null;
         if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
             model = draftEntityService.openDraft(processSerialNumber, itemId, mobile);
@@ -317,7 +317,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 保存草稿
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
@@ -328,11 +328,11 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveDraft(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> saveDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String processSerialNumber,
         @RequestParam String processDefinitionKey, String number, String level, @RequestParam String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, "");
         return Y9Result.successMsg("保存成功");
     }
