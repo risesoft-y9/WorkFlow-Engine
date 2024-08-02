@@ -155,7 +155,7 @@ public class DdlMysql {
             Y9JsonUtil.objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, DbColumn.class));
         StringBuilder sb = new StringBuilder();
         //@formatter:off
-		sb.append("CREATE TABLE " + tableName + " (\r\n").append("guid varchar(38) NOT NULL, \r\n").append("processInstanceId varchar(64) NOT NULL, \r\n");
+		sb.append("CREATE TABLE " + tableName + " (\r\n").append("guid varchar(38) NOT NULL, \r\n");
 		//@formatter:off
 		for (DbColumn dbc : dbcs) {
 			String columnName = dbc.getColumnName();

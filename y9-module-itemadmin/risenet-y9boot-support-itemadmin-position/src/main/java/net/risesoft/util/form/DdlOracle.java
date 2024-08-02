@@ -188,7 +188,7 @@ public class DdlOracle {
         DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
             TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
         //@formatter:off
-		sb.append("CREATE TABLE \"" + tableName + "\" (\r\n").append("GUID varchar2(38) NOT NULL, \r\n").append("PROCESSINSTANCEID nvarchar2(64) NOT NULL, \r\n");
+		sb.append("CREATE TABLE \"" + tableName + "\" (\r\n").append("GUID varchar2(38) NOT NULL, \r\n");
 		//@formatter:off
 		for (DbColumn dbc : dbcs) {
 			String columnName = dbc.getColumnName();
