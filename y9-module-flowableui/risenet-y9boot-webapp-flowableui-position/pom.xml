@@ -2,18 +2,15 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>risenet-y9boot-webapp-flowableui-position</artifactId>
-    <packaging>war</packaging>
-
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-module-flowableui</artifactId>
         <version>v9.7.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
+    <artifactId>risenet-y9boot-webapp-flowableui-position</artifactId>
+    <packaging>war</packaging>
+    
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -87,7 +84,7 @@
             <artifactId>risenet-y9boot-starter-dbcomment</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-sqlddl</artifactId>
