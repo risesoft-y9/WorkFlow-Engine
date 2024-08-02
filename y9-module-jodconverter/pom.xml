@@ -12,7 +12,7 @@
     <groupId>net.risesoft</groupId>
     <artifactId>y9-module-jodconverter</artifactId>
     <packaging>pom</packaging>
-    <version>v9.6.7-SNAPSHOT</version>
+    <version>v9.7.0-SNAPSHOT</version>
 
     <modules>
         <module>risenet-y9boot-webapp-jodconverter</module>

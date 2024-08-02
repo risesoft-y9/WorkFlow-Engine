@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>risenet-y9boot-api-feignclient-itemadmin</artifactId>
-    <version>v9.6.7-SNAPSHOT</version>
+    <version>v9.7.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>risenet-y9boot-api-feignclient-itemadmin</name>
     <description>RiseSoft/WorkFlow Engine itemadmin feignclient</description>
