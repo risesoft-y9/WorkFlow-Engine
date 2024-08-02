@@ -153,7 +153,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final PositionRoleApi positionRoleApi;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final PositionResourceApi positionResourceApi;
 
@@ -565,7 +565,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private void getAllPosition(List<Position> list, String deptId) {
-        List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Department> deptList = departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         List<Position> list0 = positionApi.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             list.addAll(list0);

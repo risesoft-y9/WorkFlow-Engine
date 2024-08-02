@@ -42,7 +42,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
     private final ReceivePersonRepository receivePersonRepository;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -95,7 +95,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     public List<Object> getParentId(String deptId, List<Object> list) {
         ReceiveDepartment receiveDept = receiveDepartmentRepository.findByDeptId(deptId);
         if (receiveDept == null || receiveDept.getId() == null) {
-            Department dept = departmentManager.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
+            Department dept = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
             if (dept != null && dept.getId() != null) {
                 list = getParentId(dept.getParentId(), list);
             } else {
@@ -152,7 +152,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                 receiveDeptAndPerson.setTabIndex(tabIndex == null ? 0 : tabIndex + 1);
             }
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Department dept = departmentManager.get(tenantId, id).getData();
+            Department dept = departmentApi.get(tenantId, id).getData();
             OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, id).getData();
             receiveDeptAndPerson.setBureauId(orgUnit.getId());
             receiveDeptAndPerson.setDeptName(dept.getName());
@@ -179,7 +179,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                     Optional<ReceiveDepartment> receiveDeptAndPersonOpt = receiveDepartmentRepository.findById(guid);
                     if (receiveDeptAndPersonOpt.isPresent()) {
                         ReceiveDepartment receiveDeptAndPerson = receiveDeptAndPersonOpt.get();
-                        Department dept = departmentManager
+                        Department dept = departmentApi
                             .get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
                         receiveDeptAndPerson.setDeptName(dept.getName());
                         receiveDeptAndPerson.setTabIndex(tabIndex);
@@ -204,7 +204,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
             String idsTemp = "";
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Department dept = departmentManager.get(tenantId, deptId).getData();
+            Department dept = departmentApi.get(tenantId, deptId).getData();
             for (String userId : id) {
                 OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 List<ReceivePerson> list = receivePersonRepository.findByPersonId(userId);
@@ -312,7 +312,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     @Transactional(readOnly = false)
     public void setParentId(String deptId, String parentId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Department> list = departmentManager.listByParentId(tenantId, deptId).getData();
+        List<Department> list = departmentApi.listByParentId(tenantId, deptId).getData();
         for (Department dept : list) {
             ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findByDeptId(dept.getId());
             if (receiveDeptAndPerson != null && receiveDeptAndPerson.getId() != null) {

@@ -49,7 +49,7 @@ public class SendReceiveRestController {
 
     private final PersonApi personApi;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final ReceiveDepartmentRepository receiveDepartmentRepository;
 
@@ -130,7 +130,7 @@ public class SendReceiveRestController {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(deptId)) {
-            Department dept = departmentManager.get(tenantId, deptId).getData();
+            Department dept = departmentApi.get(tenantId, deptId).getData();
             if (dept != null && dept.getId() != null) {
                 Map<String, Object> map = new HashMap<>(16);
                 map.put("id", dept.getId());
@@ -229,8 +229,8 @@ public class SendReceiveRestController {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList = departmentManager
-                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                List<Department> deptList =
+                    departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
@@ -257,7 +257,7 @@ public class SendReceiveRestController {
 
     public OrgUnit getParent(String tenantId, String parentId) {
         Organization parent = organizationManager.get(tenantId, parentId).getData();
-        return parent.getId() != null ? parent : departmentManager.get(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
     }
 
     @RequestMapping(value = "/orderDeptList")
@@ -265,7 +265,7 @@ public class SendReceiveRestController {
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAllOrderByTabIndex();
         for (ReceiveDepartment receiveDeptAndPerson : list) {
             Department department =
-                departmentManager.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
+                departmentApi.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
             receiveDeptAndPerson.setDeptName(department.getName());
         }
         // map.put("rows", list);
@@ -288,8 +288,8 @@ public class SendReceiveRestController {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList = departmentManager
-                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                List<Department> deptList =
+                    departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");

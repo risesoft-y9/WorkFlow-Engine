@@ -51,7 +51,7 @@ public class EntrustController {
 
     private final PersonApi personApi;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitManager;
 
@@ -188,7 +188,7 @@ public class EntrustController {
 
     public OrgUnit getParent(String tenantId, String parentId) {
         Organization parent = organizationManager.get(tenantId, parentId).getData();
-        return parent.getId() != null ? parent : departmentManager.get(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
     }
 
     /**
