@@ -1,17 +1,55 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>risenet-y9boot-support-processadmin</artifactId>
-    <!-- <version>v9.6.7-SNAPSHOT</version> -->
-
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-flowable</artifactId>
         <version>v9.6.7-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+    <artifactId>risenet-y9boot-support-processadmin</artifactId>
+    <!-- <version>v9.6.7-SNAPSHOT</version> -->
+    <name>risenet-y9boot-support-processadmin</name>
+    <description>RiseSoft/WorkFlow Engine processadmin support</description>
+    <url>https://gitee.com/risesoft-y9/y9-flowable</url>
 
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL) version 3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>qinman</name>
+            <email>qinman@risesoft.net</email>
+            <organization>risesoft</organization>
+            <organizationUrl>https://www.risesoft.net</organizationUrl>
+        </developer>
+
+        <developer>
+            <name>yihong</name>
+            <email>yihong@risesoft.net</email>
+            <organization>risesoft</organization>
+            <organizationUrl>https://www.risesoft.net</organizationUrl>
+        </developer>
+
+        <developer>
+            <name>zhangchongjie</name>
+            <email>zhangchongjie@risesoft.net</email>
+            <organization>risesoft</organization>
+            <organizationUrl>https://www.risesoft.net</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://gitee.com/risesoft-y9/y9-flowable</url>
+        <connection>https://gitee.com/risesoft-y9/y9-flowable</connection>
+        <developerConnection>https://gitee.com/risesoft-y9/y9-flowable</developerConnection>
+    </scm>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -73,7 +111,7 @@
             <artifactId>risenet-y9boot-common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-sqlddl</artifactId>
