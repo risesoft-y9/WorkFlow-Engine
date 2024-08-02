@@ -38,6 +38,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.LinkInfoModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.platform.Position;
@@ -171,17 +172,20 @@ public class XxxRestController {
      * 获取在办列表
      *
      * @param itemId 事项id
+     * @param searchTerm 搜索条件
+     * @param systemName 系统名称
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map<String, Object>>
      */
     @GetMapping(value = "/getDoingList")
-    public Y9Page<Map<String, Object>> getDoingList(@RequestParam(required = false) String itemId,
-        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> getDoingList(@RequestParam(required = false) String systemName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String searchTerm,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm,
-            itemId, "", "todo", "", "", "", page, rows);
+        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserIdAndSystemName(tenantId, positionId,
+            searchTerm, systemName, itemId, ItemBoxTypeEnum.TODO.getValue(), "", "", "", page, rows);
         List<Map<String, Object>> list = new ArrayList<>();
         int serialNumber = (page - 1) * rows;
         for (OfficeDoneInfoModel task : y9Page.getRows()) {
@@ -211,6 +215,12 @@ public class XxxRestController {
                     map.put("taskAssigneeId", assigneeIds);
                     map.put("taskAssignee", assigneeNames);
                     map.put("itembox", listTemp.get(3));
+                    map.put("stopProcess", false);
+                    String stopProcess = variableApi
+                        .getVariableByProcessInstanceId(tenantId, task.getProcessInstanceId(), "stopProcess").getData();
+                    if (StringUtils.isNotBlank(stopProcess) && "true".equals(stopProcess)) {
+                        map.put("stopProcess", true);
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.error("获取在办列表失败{}", e, task.getProcessInstanceId());
@@ -236,6 +246,17 @@ public class XxxRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         return itemLinkApi.getItemNodeLinkList(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
+    }
+
+    /**
+     * 获取事项系统列表
+     *
+     * @return Y9Result<List<ItemListModel>>
+     */
+    @GetMapping(value = "/getItemSystem")
+    public Y9Result<List<ItemSystemListModel>> getItemSystem() {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return itemApi.getItemSystem(tenantId);
     }
 
     /**
@@ -332,23 +353,28 @@ public class XxxRestController {
      * 获取待办列表
      *
      * @param itemId 事项id
+     * @param systemName 系统名称
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map<String, Object>>
      */
     @GetMapping(value = "/getTodoList")
-    public Y9Page<Map<String, Object>> getTodoList(@RequestParam(required = false) String itemId,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> getTodoList(@RequestParam(required = false) String systemName,
+        @RequestParam(required = false) String itemId, @RequestParam Integer page, @RequestParam Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         int serialNumber = (page - 1) * rows;
         Y9Page<TaskModel> y9Page;
-        if (StringUtils.isBlank(itemId)) {
+        if (StringUtils.isBlank(systemName) && StringUtils.isBlank(itemId)) {
             y9Page = processTodoApi.pageByUserId(tenantId, positionId, page, rows);
         } else {
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            y9Page = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId, item.getWorkflowGuid(),
-                page, rows);
+            if (StringUtils.isNotBlank(itemId)) {
+                ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+                y9Page = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    item.getWorkflowGuid(), page, rows);
+            } else {
+                y9Page = processTodoApi.getListByUserIdAndSystemName(tenantId, positionId, systemName, page, rows);
+            }
         }
         List<Map<String, Object>> list = new ArrayList<>();
         for (TaskModel task : y9Page.getRows()) {
