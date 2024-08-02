@@ -12,11 +12,9 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.OrganWordApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.OrganWordModel;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OrganWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -34,8 +32,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class OrganWordApiImpl implements OrganWordApi {
 
     private final OrganWordService organWordService;
-
-    private final PositionApi positionApi;
 
     private final PersonApi personApi;
 
@@ -93,7 +89,7 @@ public class OrganWordApiImpl implements OrganWordApi {
      * 查找有权限的机构代字
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @param custom 机关代字标志
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
@@ -103,10 +99,9 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String custom, @RequestParam String itemId,
+        @RequestParam String orgUnitId, @RequestParam String custom, @RequestParam String itemId,
         @RequestParam String processDefinitionId, String taskDefKey) {
-        Position position = positionApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.listByCustom(itemId, processDefinitionId, taskDefKey, custom));
     }
@@ -115,7 +110,7 @@ public class OrganWordApiImpl implements OrganWordApi {
      * 查找有权限的机构代字
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
@@ -124,10 +119,9 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processDefinitionId,
         String taskDefKey) {
-        Position position = positionApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.listByCustomNumber(itemId, processDefinitionId, taskDefKey));
     }
@@ -156,27 +150,6 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
-     * 获取临时编号
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param custom 机关代字标志
-     * @param characterValue 机关代字
-     * @param itemId 事项id
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号的数字
-     * @since 9.6.6
-     *
-     */
-    @Override
-    public Y9Result<String> getTempNumber(String tenantId, String userId, String custom, String characterValue,
-        String itemId) {
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(organWordService.getTempNumber(custom, characterValue, itemId));
-    }
-
-    /**
      * 获取编号的数字
      *
      * @param tenantId 租户id
@@ -198,6 +171,27 @@ public class OrganWordApiImpl implements OrganWordApi {
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.getNumberOnly(custom, characterValue, year, common, itemId));
+    }
+
+    /**
+     * 获取临时编号
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param custom 机关代字标志
+     * @param characterValue 机关代字
+     * @param itemId 事项id
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号的数字
+     * @since 9.6.6
+     *
+     */
+    @Override
+    public Y9Result<String> getTempNumber(String tenantId, String userId, String custom, String characterValue,
+        String itemId) {
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return Y9Result.success(organWordService.getTempNumber(custom, characterValue, itemId));
     }
 
     /**

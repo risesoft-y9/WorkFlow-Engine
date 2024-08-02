@@ -60,7 +60,7 @@ public class DoneServiceImpl implements DoneService {
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        y9Page = officeDoneInfoApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -111,7 +111,7 @@ public class DoneServiceImpl implements DoneService {
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        y9Page = officeDoneInfoApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> list = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();

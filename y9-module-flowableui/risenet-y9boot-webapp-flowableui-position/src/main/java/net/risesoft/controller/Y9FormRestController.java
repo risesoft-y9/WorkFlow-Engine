@@ -116,7 +116,7 @@ public class Y9FormRestController {
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
+        String userId = Y9LoginUserHolder.getPositionId();
         return formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
     }
 
@@ -166,7 +166,7 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
+        String userId = Y9LoginUserHolder.getPositionId();
         return formDataApi.getFieldPerm(tenantId, userId, formId, fieldName, taskDefKey, processDefinitionId);
     }
 

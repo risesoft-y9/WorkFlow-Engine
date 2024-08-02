@@ -28,29 +28,28 @@ public interface DocumentApi {
      * 新建
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param mobile 是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
      * @since 9.6.6
      */
     @GetMapping("/add")
-    Y9Result<OpenDataModel> add(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
-        @RequestParam("mobile") boolean mobile);
+    Y9Result<OpenDataModel> add(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
 
     /**
      * 办件办结
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      * @since 9.6.6
      */
     @PostMapping("/complete")
-    Y9Result<Object> complete(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
+    Y9Result<Object> complete(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam("taskId") String taskId) throws Exception;
 
     /**
@@ -58,7 +57,7 @@ public interface DocumentApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionKey 流程定义key
      * @param processDefinitionId 流程定义Id
@@ -70,7 +69,7 @@ public interface DocumentApi {
      */
     @GetMapping("/docUserChoise")
     Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionKey") String processDefinitionKey,
         @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam(value = "taskId", required = false) String taskId,
@@ -81,7 +80,7 @@ public interface DocumentApi {
      * 编辑文档
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @param taskId 任务id
      * @param processInstanceId 流程实例id
@@ -91,9 +90,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/edit")
-    Y9Result<OpenDataModel> edit(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("itembox") String itembox,
-        @RequestParam(value = "taskId", required = false) String taskId,
+    Y9Result<OpenDataModel> edit(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam("itembox") String itembox, @RequestParam(value = "taskId", required = false) String taskId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itemId") String itemId,
         @RequestParam("mobile") boolean mobile);
 
@@ -101,7 +99,7 @@ public interface DocumentApi {
      * 解析用户
      * 
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param routeToTaskId 任务key
@@ -113,17 +111,18 @@ public interface DocumentApi {
      */
     @GetMapping("/parserUser")
     Y9Result<List<String>> parserUser(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
         @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("taskDefName") String taskDefName,
-        @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("routeToTaskId") String routeToTaskId,
+        @RequestParam(value = "taskDefName", required = false) String taskDefName,
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
         @RequestParam(value = "multiInstance", required = false) String multiInstance);
 
     /**
      * 带自定义变量发送
      *
      * @param tenantId 租户id
-     * @param positionId 岗位 id
+     * @param orgUnitId 人员、岗位 id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @param sponsorHandle 是否主办人办理
@@ -139,7 +138,7 @@ public interface DocumentApi {
      */
     @PostMapping(value = "/saveAndForwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<String> saveAndForwarding(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId,
+        @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
         @RequestParam(value = "taskId", required = false) String taskId,
         @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
@@ -153,7 +152,7 @@ public interface DocumentApi {
      * 指定任务节点发送
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @param sponsorHandle 是否主办人办理
@@ -170,7 +169,7 @@ public interface DocumentApi {
      */
     @PostMapping(value = "/saveAndForwardingByTaskKey", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<String> saveAndForwardingByTaskKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId,
+        @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
         @RequestParam(value = "taskId", required = false) String taskId,
         @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
@@ -185,7 +184,7 @@ public interface DocumentApi {
      * 带自定义变量发送
      *
      * @param tenantId 租户id
-     * @param positionId 岗位 id
+     * @param orgUnitId 人员、岗位 id
      * @param taskId 任务id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
@@ -194,14 +193,14 @@ public interface DocumentApi {
      */
     @PostMapping(value = "/saveAndSubmitTo", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveAndSubmitTo(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam(value = "taskId", required = false) String taskId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "taskId", required = false) String taskId,
         @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取签收任务配置
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务key
@@ -211,7 +210,7 @@ public interface DocumentApi {
      */
     @GetMapping("/signTaskConfig")
     Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
         @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefinitionKey") String taskDefinitionKey,
         @RequestParam("processSerialNumber") String processSerialNumber);
@@ -220,7 +219,7 @@ public interface DocumentApi {
      * 启动流程
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
@@ -230,7 +229,7 @@ public interface DocumentApi {
      */
     @PostMapping("/startProcess")
     Y9Result<StartProcessResultModel> startProcess(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processDefinitionKey") String processDefinitionKey) throws Exception;
 
@@ -238,20 +237,20 @@ public interface DocumentApi {
      * 启动流程，多人
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @param positionIds 岗位ids
+     * @param userIds 人员、岗位ids
      * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
      * @throws Exception Exception
      * @since 9.6.6
      */
     @PostMapping("/startProcess1")
     Y9Result<StartProcessResultModel> startProcess(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
         @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("positionIds") String positionIds) throws Exception;
+        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("userIds") String userIds)
+        throws Exception;
 
 }

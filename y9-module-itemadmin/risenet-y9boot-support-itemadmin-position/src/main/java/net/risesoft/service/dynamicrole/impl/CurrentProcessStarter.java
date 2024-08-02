@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -26,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 public class CurrentProcessStarter extends AbstractDynamicRoleMember {
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final RuntimeApi runtimeManager;
 
@@ -40,7 +40,7 @@ public class CurrentProcessStarter extends AbstractDynamicRoleMember {
             String userIdAndDeptId = processInstance.getStartUserId();
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];
-                OrgUnit orgUnit = positionManager.get(tenantId, userId).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 orgUnitList.add(orgUnit);
             }
         }

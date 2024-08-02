@@ -409,11 +409,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         if (StringUtils.isNotBlank(searchItemId)) {
-            y9Page =
-                officeDoneInfoApi.searchByPositionId(tenantId, userId, searchTerm, searchItemId, "", "", page, rows);
+            y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, searchItemId, "", "", page, rows);
         } else {
-            y9Page = officeDoneInfoApi.searchByPositionIdAndSystemName(tenantId, userId, searchTerm,
-                item.getSystemName(), "", "", page, rows);
+            y9Page = officeDoneInfoApi.searchByUserIdAndSystemName(tenantId, userId, searchTerm, item.getSystemName(),
+                "", "", page, rows);
         }
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> list = y9Page.getRows();
@@ -557,8 +556,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page = officeDoneInfoApi.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", "", "", page,
-                rows);
+            y9Page =
+                officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "done", "", "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

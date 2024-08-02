@@ -381,8 +381,8 @@ public class MonitorServiceImpl implements MonitorService {
             // retMap = monitorApi.searchDoingListByProcessDefinitionKey(tenantId, processDefinitionKey,
             // searchTerm, page, rows);
             // }
-            y9Page = officeDoneInfoApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.DOING.getValue(),
-                "", "", page, rows);
+            y9Page = officeDoneInfoApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.TODO.getValue(), "",
+                "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

@@ -49,7 +49,7 @@ public class EntrustController {
 
     private final SpmApproveItemRepository spmApproveItemRepository;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     private final DepartmentApi departmentManager;
 
@@ -71,10 +71,10 @@ public class EntrustController {
         OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
             List<Person> personList =
-                personManager.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
+                personApi.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
             for (Person person : personList) {
                 orgUnitList.add(person);
-                Person p = personManager.get(tenantId, person.getId()).getData();
+                Person p = personApi.get(tenantId, person.getId()).getData();
                 this.recursionUpToOrg(tenantId, orgUnit.getId(), p.getParentId(), orgUnitList, false);
             }
         } else {
@@ -88,7 +88,7 @@ public class EntrustController {
             map.setParentId(orgUnit0.getParentId());
             map.setIsParent(true);
             if (OrgTypeEnum.PERSON.equals(orgUnit0.getOrgType())) {
-                Person per = personManager.get(Y9LoginUserHolder.getTenantId(), orgUnit0.getId()).getData();
+                Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit0.getId()).getData();
                 map.setSex(per.getSex().getValue());
                 map.setDuty(per.getDuty());
                 map.setIsParent(false);
@@ -135,7 +135,7 @@ public class EntrustController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personManager.get(tenantId, orgunit.getId()).getData();
+                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     map.setSex(person.getSex().getValue());
                     map.setDuty(person.getDuty());
                     map.setIsParent(false);

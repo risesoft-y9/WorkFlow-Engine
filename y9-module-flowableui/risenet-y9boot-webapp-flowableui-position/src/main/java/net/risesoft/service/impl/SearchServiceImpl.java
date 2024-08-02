@@ -133,7 +133,7 @@ public class SearchServiceImpl implements SearchService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page = officeDoneInfoApi.searchAllByPositionId(tenantId, positionId, searchTerm, itemId, userName, state,
+            y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm, itemId, userName, state,
                 year, startDate, endDate, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();

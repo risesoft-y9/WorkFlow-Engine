@@ -90,7 +90,7 @@ public interface RemindInstanceApi {
      * 根据流程实例id获取个人消息提醒设置
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<RemindInstanceModel>} 通用请求返回对象 - data 是消息提醒对象
      * @since 9.6.6
@@ -103,7 +103,7 @@ public interface RemindInstanceApi {
      * 保存消息提醒
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskIds 任务ids
      * @param process 是否流程办结提醒

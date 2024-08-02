@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.DraftEntity;
@@ -25,7 +25,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpenDataModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -72,7 +72,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final ItemStartNodeRoleService itemStartNodeRoleService;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     @Transactional
     @Override
@@ -109,7 +109,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     @Override
     @Transactional
     public OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OpenDataModel model = new OpenDataModel();
         SpmApproveItem item = spmApproveitemService.findById(itemId);
         model.setItemId(itemId);
@@ -139,7 +139,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         model.setProcessSerialNumber(processSerialNumber);
         model.setTaskDefKey(taskDefKey);
         model.setTitle(draft.getTitle());
-        model.setActivitiUser(positionId);
+        model.setActivitiUser(orgUnitId);
         model.setItembox(ItemBoxTypeEnum.DRAFT.getValue());
         return model;
     }
@@ -239,10 +239,11 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 draft.setProcessSerialNumber(processSerialNumber);
                 draft.setItemId(itemId);
                 draft.setProcessDefinitionKey(processDefinitionKey);
-                draft.setCreaterId(Y9LoginUserHolder.getPositionId());
-                Position position =
-                    positionManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
-                draft.setCreater(position.getName());
+                draft.setCreaterId(Y9LoginUserHolder.getOrgUnitId());
+                OrgUnit orgUnit = orgUnitApi
+                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId())
+                    .getData();
+                draft.setCreater(orgUnit.getName());
                 draft.setDelFlag(false);
                 draft.setDraftTime(new Date());
                 draft.setUrgency(urgency);

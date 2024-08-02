@@ -106,7 +106,7 @@ public interface ReminderApi {
      * 保存催办信息
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskIds taskIds
      * @param msgContent 催办信息
@@ -122,7 +122,7 @@ public interface ReminderApi {
      * 发送催办信息
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param remType 催办类型，"1":短信,"2":邮件",3":站内信",4":待办列表中
      * @param procInstId procInstId
      * @param processInstanceId 流程实例id

@@ -78,7 +78,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
 
     private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -153,12 +153,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         TransactionWordModel word = new TransactionWordModel();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.get(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             List<TransactionWord> list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
             if (list != null && !list.isEmpty()) {
                 TransactionWord transactionWord = list.get(0);
-                Person user = personManager.get(tenantId, transactionWord.getUserId()).getData();
+                Person user = personApi.get(tenantId, transactionWord.getUserId()).getData();
                 word = getTransactionWord(transactionWord);
                 word.setFileName(transactionWord.getTitle() + transactionWord.getFileType());
                 word.setUserName(user.getName());
@@ -183,7 +183,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<TransactionHistoryWordModel> findHistoryVersionDoc(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<TransactionHistoryWord> historyWordList = transactionHistoryWordService.listByTaskId(taskId);
         TransactionHistoryWordModel history = new TransactionHistoryWordModel();
@@ -279,7 +279,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         List<TransactionWordModel> retList = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.get(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
             for (TransactionWord word : list) {
@@ -308,7 +308,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<String> openDocument(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String itemId, String bindValue) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<TransactionWord> list = new ArrayList<>();
 
@@ -410,7 +410,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<String> openDocumentTemplate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String templateGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         LOGGER.debug("call /ntko/openTaohongTemplate");
         byte[] buf;
@@ -477,7 +477,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<String> openPdf(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
@@ -510,7 +510,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<String> openRevokePdfAfterDocument(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String isTaoHong) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
@@ -542,7 +542,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<String> openTaoHong(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String activitiUser) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         LOGGER.debug("call /ntko/openTaoHong");
         // 当前人员的委办局GUID
@@ -565,7 +565,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<Boolean> saveImportTransationWord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String docjson, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean checkSave = false;
         try {
@@ -613,7 +613,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         String bindValue) {
         Y9WordInfo retMap = new Y9WordInfo();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String fileDocumentId = "";
         String wordReadOnly = "";
@@ -730,7 +730,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<List<TaoHongTemplateModel>> taoHongTemplateList(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String currentBureauGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         LOGGER.debug("call /ntko/list");
         List<TaoHongTemplateModel> retList = new ArrayList<>();
@@ -774,7 +774,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         @RequestParam String documentTitle, @RequestParam String fileType, @RequestParam String processSerialNumber,
         String isTaoHong, String docCategory, String taskId, String fileSizeString, @RequestParam String fileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         try {
             if (StringUtils.isNotBlank(processSerialNumber)) {

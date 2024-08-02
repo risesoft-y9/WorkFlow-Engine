@@ -153,7 +153,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * 根据流程实例id获取个人消息提醒设置
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<RemindInstanceModel>} 通用请求返回对象 - data 是消息提醒对象
      * @since 9.6.6
@@ -162,7 +162,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     public Y9Result<RemindInstanceModel> getRemindInstance(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(userId);
+        Y9LoginUserHolder.setOrgUnitId(userId);
         RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
         RemindInstanceModel remindInstanceModel = null;
         if (remindInstance != null) {
@@ -176,7 +176,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * 保存消息提醒
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskIds 任务ids
      * @param process 是否流程办结提醒
@@ -190,7 +190,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
         @RequestParam String processInstanceId, @RequestParam String taskIds, @RequestParam Boolean process,
         @RequestParam String arriveTaskKey, @RequestParam String completeTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(userId);
+        Y9LoginUserHolder.setOrgUnitId(userId);
         return remindInstanceService.saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey,
             completeTaskKey);
     }

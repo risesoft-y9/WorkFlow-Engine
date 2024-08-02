@@ -20,7 +20,6 @@ public class CommonOpt {
      * @param taskSender 发送人的中文名称，即是由谁发送的
      * @param routeToTaskId 目标节点的Id
      * @param users
-     * @param documentTitle
      * @param multiInstance 串行、并行标志
      * @return
      */
@@ -55,7 +54,6 @@ public class CommonOpt {
      * @param taskSender 发送人的中文名称，即是由谁发送的
      * @param routeToTaskId 目标节点的Id
      * @param users
-     * @param documentTitle
      * @param multiInstance 串行、并行标志
      * @return
      */

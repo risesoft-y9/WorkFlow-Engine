@@ -264,7 +264,7 @@ public class DocumentRestController {
             map.put("itemMap", listMap);
             map.put("notReadCount",
                 chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
-            // int followCount = officeFollow4PositionApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
+            // int followCount = officeFollowApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
             // map.put("followCount", followCount);
             // 公共角色
             boolean b = positionRoleApi

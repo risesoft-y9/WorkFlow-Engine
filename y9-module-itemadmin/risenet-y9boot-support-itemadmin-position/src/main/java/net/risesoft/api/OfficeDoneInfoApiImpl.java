@@ -65,16 +65,16 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * 统计个人办结件
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是个人办结件数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countByPositionId(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Integer> countByUserId(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int count = officeDoneInfoService.countByUserId(positionId, itemId);
+        int count = officeDoneInfoService.countByUserId(orgUnitId, itemId);
         return Y9Result.success(count);
     }
 
@@ -82,16 +82,16 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * 根据系统名称统计个人办结件
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param systemName 系统名称
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是个人办结件数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countByPositionIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String positionId, String systemName) {
+    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int count = officeDoneInfoService.countByPositionIdAndSystemName(positionId, systemName);
+        int count = officeDoneInfoService.countByUserIdAndSystemName(orgUnitId, systemName);
         return Y9Result.success(count);
     }
 
@@ -213,7 +213,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * 个人所有件搜索
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param title 标题
      * @param itemId 事项id
      * @param userName 人员名称
@@ -227,11 +227,11 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<OfficeDoneInfoModel> searchAllByPositionId(@RequestParam String tenantId,
-        @RequestParam String positionId, String title, String itemId, String userName, String state, String year,
-        String startDate, String endDate, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<OfficeDoneInfoModel> searchAllByUserId(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        String title, String itemId, String userName, String state, String year, String startDate, String endDate,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.searchAllByUserId(positionId, title, itemId, userName, state, year, startDate,
+        return officeDoneInfoService.searchAllByUserId(orgUnitId, title, itemId, userName, state, year, startDate,
             endDate, page, rows);
     }
 
@@ -281,7 +281,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * 获取个人办结件列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param title 搜索词
      * @param itemId 事项id
      * @param startdate 开始日期
@@ -292,18 +292,18 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<OfficeDoneInfoModel> searchByPositionId(@RequestParam String tenantId,
-        @RequestParam String positionId, String title, String itemId, String startdate, String enddate,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<OfficeDoneInfoModel> searchByUserId(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        String title, String itemId, String startdate, String enddate, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.searchByUserId(positionId, title, itemId, startdate, enddate, page, rows);
+        return officeDoneInfoService.searchByUserId(orgUnitId, title, itemId, startdate, enddate, page, rows);
     }
 
     /**
-     * 根据岗位id,系统名称，获取个人办结件列表
+     * 根据id,系统名称，获取个人办结件列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param title 搜索词
      * @param systemName 系统名称
      * @param startdate 开始日期
@@ -314,12 +314,12 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String positionId, String title, String systemName, String startdate, String enddate,
+    public Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String orgUnitId, String title, String systemName, String startdate, String enddate,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.searchByPositionIdAndSystemName(positionId, title, systemName, startdate, enddate,
-            page, rows);
+        return officeDoneInfoService.searchByUserIdAndSystemName(orgUnitId, title, systemName, startdate, enddate, page,
+            rows);
     }
 
     /**

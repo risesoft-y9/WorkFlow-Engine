@@ -203,22 +203,6 @@ public class ItemAdminModelConvertUtil {
         return opinion;
     }
 
-    public static Opinion opinionModel2Opinion4Position(OpinionModel om) {
-        Opinion opinion = new Opinion();
-        opinion.setId(om.getId());
-        opinion.setContent(om.getContent());
-        opinion.setCreateDate(om.getCreateDate());
-        opinion.setModifyDate(om.getModifyDate());
-        opinion.setOpinionFrameMark(om.getOpinionFrameMark());
-        opinion.setProcessInstanceId(om.getProcessInstanceId());
-        opinion.setProcessSerialNumber(om.getProcessSerialNumber());
-        opinion.setTaskId(om.getTaskId());
-        opinion.setTenantId(om.getTenantId());
-        opinion.setUserId(om.getUserId());
-        opinion.setUserName(om.getUserName());
-        return opinion;
-    }
-
     public static ProcessTrackModel processTrack2Model(ProcessTrack processTrack) {
         ProcessTrackModel ptModel = new ProcessTrackModel();
         ptModel.setId(processTrack.getId());

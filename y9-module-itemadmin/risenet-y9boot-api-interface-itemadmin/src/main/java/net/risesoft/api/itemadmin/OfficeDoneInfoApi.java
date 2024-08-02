@@ -47,27 +47,27 @@ public interface OfficeDoneInfoApi {
      * 统计个人办结件
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是个人办结件数量
      * @since 9.6.6
      */
-    @GetMapping("/countByPositionId")
-    Y9Result<Integer> countByPositionId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam(value = "itemId", required = false) String itemId);
+    @GetMapping("/countByUserId")
+    Y9Result<Integer> countByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "itemId", required = false) String itemId);
 
     /**
      * 根据系统名称统计个人办结件
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param systemName 系统名称
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是个人办结件数量
      * @since 9.6.6
      */
-    @GetMapping("/countByPositionIdAndSystemName")
-    Y9Result<Integer> countByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId,
+    @GetMapping("/countByUserIdAndSystemName")
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "systemName", required = false) String systemName);
 
     /**
@@ -168,7 +168,7 @@ public interface OfficeDoneInfoApi {
      * 个人所有件搜索
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param title 标题
      * @param itemId 事项id
      * @param userName 人员名称
@@ -181,9 +181,9 @@ public interface OfficeDoneInfoApi {
      * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      * @since 9.6.6
      */
-    @GetMapping("/searchAllByPositionId")
-    Y9Page<OfficeDoneInfoModel> searchAllByPositionId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam(value = "title", required = false) String title,
+    @GetMapping("/searchAllByUserId")
+    Y9Page<OfficeDoneInfoModel> searchAllByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "title", required = false) String title,
         @RequestParam(value = "itemId", required = false) String itemId,
         @RequestParam(value = "userName", required = false) String userName,
         @RequestParam(value = "state", required = false) String state,
@@ -242,7 +242,7 @@ public interface OfficeDoneInfoApi {
      * 获取个人办结件列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param title 搜索词
      * @param itemId 事项id
      * @param startdate 开始日期
@@ -252,9 +252,9 @@ public interface OfficeDoneInfoApi {
      * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      * @since 9.6.6
      */
-    @GetMapping("/searchByPositionId")
-    Y9Page<OfficeDoneInfoModel> searchByPositionId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam(value = "title", required = false) String title,
+    @GetMapping("/searchByUserId")
+    Y9Page<OfficeDoneInfoModel> searchByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "title", required = false) String title,
         @RequestParam(value = "itemId", required = false) String itemId,
         @RequestParam(value = "startdate", required = false) String startdate,
         @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
@@ -264,7 +264,7 @@ public interface OfficeDoneInfoApi {
      * 根据岗位id,系统名称，获取个人办结件列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param title 搜索词
      * @param systemName 系统名称
      * @param startdate 开始日期
@@ -274,9 +274,9 @@ public interface OfficeDoneInfoApi {
      * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
      * @since 9.6.6
      */
-    @GetMapping("/searchByPositionIdAndSystemName")
-    Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam(value = "title", required = false) String title,
+    @GetMapping("/searchByUserIdAndSystemName")
+    Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "title", required = false) String title,
         @RequestParam(value = "systemName", required = false) String systemName,
         @RequestParam(value = "startdate", required = false) String startdate,
         @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,

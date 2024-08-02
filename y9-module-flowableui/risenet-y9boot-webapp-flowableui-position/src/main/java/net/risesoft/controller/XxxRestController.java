@@ -180,7 +180,7 @@ public class XxxRestController {
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByPositionId(tenantId, positionId, searchTerm,
+        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm,
             itemId, "", "todo", "", "", "", page, rows);
         List<Map<String, Object>> list = new ArrayList<>();
         int serialNumber = (page - 1) * rows;
@@ -255,10 +255,10 @@ public class XxxRestController {
         todoCount = processTodoApi.countByOrgUnitId(tenantId, positionId).getData();
         // 统计流程在办件
         Y9Page<OfficeDoneInfoModel> y9Page =
-            officeDoneInfoApi.searchAllByPositionId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
+            officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
         doingCount = y9Page.getTotal();
         // 统计历史办结件
-        doneCount = officeDoneInfoApi.countByPositionId(tenantId, positionId, "").getData();
+        doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
         map.put("todoCount", todoCount);
         map.put("doingCount", doingCount);
         map.put("doneCount", doneCount);

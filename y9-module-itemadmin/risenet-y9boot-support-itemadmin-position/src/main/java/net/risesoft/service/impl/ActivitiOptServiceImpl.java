@@ -35,8 +35,8 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
         Map<String, Object> map) {
         TaskModel task = new TaskModel();
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
-            map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getPosition().getName(), "",
+            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+            map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getOrgUnit().getName(), "",
                 Collections.singletonList(userId), processSerialNumber, "", map);
             ProcessInstanceModel piModel = runtimeManager
                 .startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map).getData();

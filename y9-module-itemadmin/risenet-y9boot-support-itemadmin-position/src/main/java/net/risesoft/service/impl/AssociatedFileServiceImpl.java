@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.AssociatedFile;
@@ -20,7 +20,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
@@ -48,7 +48,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     private final TaskApi taskApi;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final IdentityApi identityManager;
 
@@ -102,7 +102,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPositionId();
+        String userId = Y9LoginUserHolder.getOrgUnitId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
             taskId = "";
         List<String> list = new ArrayList<>();
@@ -114,9 +114,10 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.get(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = personTemp.getName();
+
+                        OrgUnit orgUnitTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (orgUnitTemp != null) {
+                            assigneeNames = orgUnitTemp.getName();
                         }
                         i += 1;
                         if (assignee.contains(userId)) {
@@ -130,8 +131,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser =
+                                    orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -148,9 +149,9 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionManager.get(tenantId, assignee).getData();
-                            if (personTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                            OrgUnit orgUnitTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                            if (orgUnitTemp != null) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, orgUnitTemp.getName(), "、");
                             }
                             i += 1;
                         }
@@ -266,8 +267,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(processInstanceIds);
             associatedFile.setProcessSerialNumber(processSerialNumber);
-            associatedFile.setUserId(Y9LoginUserHolder.getPositionId());
-            associatedFile.setUserName(Y9LoginUserHolder.getPosition().getName());
+            associatedFile.setUserId(Y9LoginUserHolder.getOrgUnitId());
+            associatedFile.setUserName(Y9LoginUserHolder.getOrgUnit().getName());
             associatedFile.setTenantId(Y9LoginUserHolder.getTenantId());
         } else {
             String associatedId = associatedFile.getAssociatedId();
@@ -283,8 +284,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                 newAssociatedId = processInstanceIds;
             }
             newAssociatedId = Y9Util.genCustomStr(associatedId, newAssociatedId);
-            associatedFile.setUserId(Y9LoginUserHolder.getPositionId());
-            associatedFile.setUserName(Y9LoginUserHolder.getPosition().getName());
+            associatedFile.setUserId(Y9LoginUserHolder.getOrgUnitId());
+            associatedFile.setUserName(Y9LoginUserHolder.getOrgUnit().getName());
             associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(newAssociatedId);
         }

@@ -76,67 +76,8 @@ public class DeleteProcessUtilService {
         this.actRuDetailApi = actRuDetailApi;
     }
 
-    /**
-     * 彻底删除流程实例相关数据，包括，流程自定义变量，统一待办，协作状态，抄送件，关注件，数据中心全文检索数据
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     */
     @Async
     public void deleteProcess(final String tenantId, final String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        try {
-            processParamManager.deleteByPprocessInstanceId(tenantId, processInstanceId);
-        } catch (Exception e3) {
-            LOGGER.warn("**********删除流程实例", e3);
-        }
-        try {
-            rpcTodoTaskManager.deleteByProcessInstanceId(tenantId, processInstanceId);
-        } catch (Exception e1) {
-            LOGGER.warn("************************************删除待办事宜数据失败", e1);
-            final Writer result = new StringWriter();
-            final PrintWriter print = new PrintWriter(result);
-            e1.printStackTrace(print);
-            String msg = result.toString();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
-            ErrorLogModel errorLogModel = new ErrorLogModel();
-            errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
-            errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_DELETE_TODO);
-            errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
-            errorLogModel.setExtendField("删除流程实例，删除统一待办失败");
-            errorLogModel.setProcessInstanceId(processInstanceId);
-            errorLogModel.setTaskId("");
-            errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
-            errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
-        }
-        try {
-            processInstanceApi.deleteProcessInstance(tenantId, processInstanceId);
-        } catch (Exception e1) {
-            LOGGER.warn("************************************删除协作状态数据失败", e1);
-        }
-        try {
-            officeInfoApi.deleteOfficeInfo(tenantId, processInstanceId);
-        } catch (Exception e) {
-            LOGGER.warn("************************************删除数据中心数据失败", e);
-        }
-        try {
-            actRuDetailApi.removeByProcessInstanceId(tenantId, processInstanceId);
-        } catch (Exception e) {
-            LOGGER.warn("************************************删除办理情况数据失败", e);
-        }
-        try {
-            msgRemindInfoManager.deleteMsgRemindInfo(tenantId, processInstanceId);
-        } catch (Exception e) {
-            LOGGER.warn("************************************删除消息提醒数据失败", e);
-        }
-    }
-
-    @Async
-    public void deleteProcess4Position(final String tenantId, final String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {

@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
@@ -46,7 +46,7 @@ public class ItemApiImpl implements ItemApi {
 
     private final SpmApproveItemRepository spmApproveItemRepository;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final ItemMappingConfRepository itemMappingConfRepository;
 
@@ -150,15 +150,15 @@ public class ItemApiImpl implements ItemApi {
      * 获取有权限的首个事项id
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是事项id
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getFirstItem(@RequestParam String tenantId, @RequestParam String positionId) {
+    public Y9Result<String> getFirstItem(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         String itemId = documentService.getFirstItem();
         return Y9Result.success(itemId);
     }
@@ -184,15 +184,15 @@ public class ItemApiImpl implements ItemApi {
      * 获取新建事项列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是事项列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemListModel>> getItemList(@RequestParam String tenantId, @RequestParam String positionId) {
+    public Y9Result<List<ItemListModel>> getItemList(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         List<ItemListModel> list = documentService.listItems();
         return Y9Result.success(list);
     }
@@ -246,15 +246,15 @@ public class ItemApiImpl implements ItemApi {
      * 获取个人有权限事项列表
      *
      * @param tenantId 租户Id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是新建事项列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemListModel>> getMyItemList(@RequestParam String tenantId, @RequestParam String positionId) {
+    public Y9Result<List<ItemListModel>> getMyItemList(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         List<ItemListModel> list = documentService.listMyItems();
         return Y9Result.success(list);
     }

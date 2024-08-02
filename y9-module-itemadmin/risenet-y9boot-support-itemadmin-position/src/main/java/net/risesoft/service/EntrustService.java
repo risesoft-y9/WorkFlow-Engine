@@ -98,10 +98,10 @@ public interface EntrustService {
     /**
      * 获取委托列表
      *
-     * @param positionId
+     * @param orgUnitId
      * @return
      */
-    List<EntrustModel> listEntrustByPositionId(String positionId);
+    List<EntrustModel> listEntrustByUserId(String orgUnitId);
 
     /**
      * 获取事项列表
@@ -116,10 +116,10 @@ public interface EntrustService {
     /**
      * 获取当前岗被委托记录
      *
-     * @param positionId
+     * @param orgUnitId
      * @return
      */
-    List<EntrustModel> listMyEntrust(String positionId);
+    List<EntrustModel> listMyEntrust(String orgUnitId);
 
     /**
      * 逻辑删除委托对象

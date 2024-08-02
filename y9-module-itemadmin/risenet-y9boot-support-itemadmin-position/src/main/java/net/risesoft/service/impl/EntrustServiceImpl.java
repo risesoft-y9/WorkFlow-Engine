@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.Entrust;
 import net.risesoft.entity.EntrustHistory;
 import net.risesoft.entity.SpmApproveItem;
@@ -21,7 +21,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.EntrustItemModel;
 import net.risesoft.model.itemadmin.EntrustModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.repository.jpa.EntrustHistoryRepository;
 import net.risesoft.repository.jpa.EntrustRepository;
 import net.risesoft.service.EntrustService;
@@ -49,7 +49,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     @Transactional
@@ -161,9 +161,9 @@ public class EntrustServiceImpl implements EntrustService {
         Entrust entrust = entrustRepository.findById(id).orElse(null);
         if (null != entrust) {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Position pTemp = positionApi.get(tenantId, entrust.getAssigneeId()).getData();
+            OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = positionApi.get(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -215,12 +215,12 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> list(String ownerId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(ownerId);
-        Position pTemp = null;
+        OrgUnit pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = positionApi.get(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = positionApi.get(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -267,12 +267,12 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> listAll() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll();
-        Position pTemp;
+        OrgUnit pTemp;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = positionApi.get(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = positionApi.get(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -319,12 +319,12 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> listByAssigneeId(String assigneeId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId);
-        Position pTemp = null;
+        OrgUnit pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = positionApi.get(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = positionApi.get(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -368,15 +368,15 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    public List<EntrustModel> listEntrustByPositionId(String positionId) {
+    public List<EntrustModel> listEntrustByUserId(String orgUnitId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Entrust> entrustList = entrustRepository.findAll(positionId);
+        List<Entrust> entrustList = entrustRepository.findAll(orgUnitId);
         List<EntrustModel> list = new ArrayList<>();
-        Position pTemp = null;
+        OrgUnit pTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = positionApi.get(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = positionApi.get(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
             entrust.setUsed(Entrust.NOTUSED);// 判断是否使用
             String startTime = entrust.getStartTime();
@@ -443,8 +443,8 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    public List<EntrustModel> listMyEntrust(String positionId) {
-        List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(positionId);
+    public List<EntrustModel> listMyEntrust(String orgUnitId) {
+        List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(orgUnitId);
         List<EntrustModel> list = new ArrayList<>();
         for (Entrust entrust : entrustList) {
             entrust.setUsed(Entrust.NOTUSED);// 判断是否使用
@@ -498,7 +498,7 @@ public class EntrustServiceImpl implements EntrustService {
         Entrust newEntrust = new Entrust();
         newEntrust.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newEntrust.setItemId(entrust.getItemId());
-        newEntrust.setOwnerId(Y9LoginUserHolder.getPositionId());
+        newEntrust.setOwnerId(Y9LoginUserHolder.getOrgUnitId());
         newEntrust.setAssigneeId(entrust.getAssigneeId());
         newEntrust.setStartTime(entrust.getStartTime());
         newEntrust.setEndTime(entrust.getEndTime());

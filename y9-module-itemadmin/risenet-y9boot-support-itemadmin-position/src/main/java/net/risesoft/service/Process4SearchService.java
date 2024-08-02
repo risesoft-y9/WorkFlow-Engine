@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.DialectEnum;
@@ -31,7 +30,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -50,8 +48,6 @@ public class Process4SearchService {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
-    private final PositionApi positionManager;
-
     private final DepartmentApi departmentManager;
 
     private final OrgUnitApi orgUnitApi;
@@ -66,10 +62,11 @@ public class Process4SearchService {
      *
      * @param tenantId
      * @param processParam
-     * @param position
+     * @param orgUnit
      */
-    public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final Position position) {
+    public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final OrgUnit orgUnit) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = processParam.getProcessInstanceId();
         try {
@@ -115,10 +112,10 @@ public class Process4SearchService {
                     StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
             }
             officeDoneInfo.setUserComplete("");
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
-            officeDoneInfo.setDeptId(position.getParentId());
-            Department dept = departmentManager.get(tenantId, position.getParentId()).getData();
+            officeDoneInfo.setDeptId(orgUnit.getParentId());
+            Department dept = departmentManager.get(tenantId, orgUnit.getParentId()).getData();
             officeDoneInfo.setDeptName(dept != null ? dept.getName() : "");
             officeDoneInfo.setEntrustUserId("");
             officeDoneInfo.setAllUserId(processParam.getStartor());
@@ -241,10 +238,10 @@ public class Process4SearchService {
                     allUserId = Y9Util.genCustomStr(allUserId, userId);
                 }
                 if (StringUtils.isNotEmpty(userId)) {
-                    Position position = positionManager.get(tenantId, userId).getData();
-                    if (position != null && position.getId() != null) {
-                        if (!deptIds.contains(position.getParentId())) {
-                            deptIds = Y9Util.genCustomStr(deptIds, position.getParentId());
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                    if (orgUnit != null && orgUnit.getId() != null) {
+                        if (!deptIds.contains(orgUnit.getParentId())) {
+                            deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
                         }
                     }
                 }

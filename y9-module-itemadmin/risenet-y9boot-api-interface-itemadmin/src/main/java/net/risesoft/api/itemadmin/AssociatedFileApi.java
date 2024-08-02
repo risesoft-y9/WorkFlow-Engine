@@ -65,28 +65,28 @@ public interface AssociatedFileApi {
      * 获取关联流程列表,包括未办结件
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<List<AssociatedFileModel>>} 通用请求返回对象 - data是关联流程列表
      * @since 9.6.6
      */
     @GetMapping("/getAssociatedFileAllList")
     Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("positionId") @NotBlank String positionId,
+        @RequestParam("orgUnitId") @NotBlank String orgUnitId,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存关联流程
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 关联的流程实例ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/saveAssociatedFile")
     Y9Result<Object> saveAssociatedFile(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("positionId") @NotBlank String positionId,
+        @RequestParam("orgUnitId") @NotBlank String orgUnitId,
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processInstanceIds") String processInstanceIds);
 

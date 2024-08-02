@@ -150,7 +150,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Override
     public String getStartTaskDefKey(String itemId) {
         String startTaskDefKey = "", tenantId = Y9LoginUserHolder.getTenantId(),
-            positionId = Y9LoginUserHolder.getPositionId();
+            userId = Y9LoginUserHolder.getOrgUnitId();
         SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
@@ -166,7 +166,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                     if (StringUtils.isNotEmpty(roleIds)) {
                         String[] roleIdArr = roleIds.split(";");
                         for (String roleId : roleIdArr) {
-                            boolean has = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
+                            boolean has = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
                             if (has) {
                                 startTaskDefKey = isnr.getTaskDefKey();
                                 break list;
