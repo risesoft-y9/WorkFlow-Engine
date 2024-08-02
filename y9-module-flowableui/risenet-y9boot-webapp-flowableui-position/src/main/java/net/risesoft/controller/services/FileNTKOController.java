@@ -170,8 +170,9 @@ public class FileNTKOController {
             String fullPath =
                 Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, file.getName());
-            result = attachmentApi.updateFile(tenantId, userId, positionId, fileId, y9FileStore.getDisplayFileSize(),
-                taskId, y9FileStore.getId()).getData();
+            result = attachmentApi
+                .updateFile(tenantId, positionId, fileId, y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId())
+                .getData();
         } catch (Exception e) {
             LOGGER.error("更新附件失败", e);
         }

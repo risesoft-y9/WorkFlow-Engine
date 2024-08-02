@@ -30,15 +30,6 @@ public interface OfficeDoneInfoService {
     int countByItemId(String itemId);
 
     /**
-     * 根据系统名称统计个人办结件
-     *
-     * @param positionId
-     * @param systemName
-     * @return
-     */
-    int countByPositionIdAndSystemName(String positionId, String systemName);
-
-    /**
      * 统计个人办结件
      *
      * @param userId
@@ -46,6 +37,15 @@ public interface OfficeDoneInfoService {
      * @return
      */
     int countByUserId(String userId, String itemId);
+
+    /**
+     * 根据系统名称统计个人办结件
+     *
+     * @param orgUnitId
+     * @param systemName
+     * @return
+     */
+    int countByUserIdAndSystemName(String orgUnitId, String systemName);
 
     /**
      * 监控在办统计
@@ -158,21 +158,6 @@ public interface OfficeDoneInfoService {
         String enddate, Integer page, Integer rows);
 
     /**
-     * 根据岗位id,系统名称，获取个人办结件列表
-     *
-     * @param positionId
-     * @param title
-     * @param systemName
-     * @param startdate
-     * @param enddate
-     * @param page
-     * @param rows
-     * @return
-     */
-    Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String positionId, String title, String systemName,
-        String startdate, String enddate, Integer page, Integer rows);
-
-    /**
      * 获取个人办结件列表
      *
      * @param userId
@@ -186,6 +171,21 @@ public interface OfficeDoneInfoService {
      */
     Y9Page<OfficeDoneInfoModel> searchByUserId(String userId, String title, String itemId, String startdate,
         String enddate, Integer page, Integer rows);
+
+    /**
+     * 根据岗位id,系统名称，获取个人办结件列表
+     *
+     * @param orgUnitId
+     * @param title
+     * @param systemName
+     * @param startdate
+     * @param enddate
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(String orgUnitId, String title, String systemName,
+        String startdate, String enddate, Integer page, Integer rows);
 
     /**
      * 上会，当代研究所

@@ -38,7 +38,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
 
     private final SignaturePictureService signaturePictureService;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     /**
      * 删除签名图片
@@ -106,7 +106,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     @Override
     public Y9Result<SignaturePictureModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String spJson) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 

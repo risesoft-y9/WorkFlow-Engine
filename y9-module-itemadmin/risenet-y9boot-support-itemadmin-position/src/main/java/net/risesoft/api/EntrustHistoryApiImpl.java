@@ -35,7 +35,7 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
      * 获取某个用户的某个事项委托历史对象集合
      *
      * @param tenantId 租户id
-     * @param userId 人员滴
+     * @param userId 人员id
      * @param ownerId 委托人id
      * @param itemId 事项id
      * @return {@code Y9Result<List<EntrustHistoryModel>>} 通用请求返回对象 - data 是委托历史列表

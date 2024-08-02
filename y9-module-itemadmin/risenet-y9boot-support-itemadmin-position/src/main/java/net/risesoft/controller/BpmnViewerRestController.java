@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.entity.Opinion;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
@@ -47,7 +47,7 @@ public class BpmnViewerRestController {
 
     private final OpinionRepository opinionRepository;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final HistoricVariableApi historicVariableApi;
 
@@ -77,7 +77,7 @@ public class BpmnViewerRestController {
                     List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
                         task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
                     task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
-                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
+                    OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                     if (employee != null) {
                         String employeeName = employee.getName();
                         HistoricVariableInstanceModel zhuBan = null;

@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.AssociatedFileApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -35,7 +35,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
 
     private final AssociatedFileService associatedFileService;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     /**
      * 关联流程计数
@@ -91,17 +91,17 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
      * 获取关联流程列表,包括未办结件
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<List<AssociatedFileModel>>} 通用请求返回对象 - data是关联流程列表
      * @since 9.6.6
      */
     @Override
     public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam String tenantId,
-        @RequestParam String positionId, @RequestParam String processSerialNumber) {
+        @RequestParam String orgUnitId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         List<AssociatedFileModel> list = associatedFileService.listAssociatedFileAll(processSerialNumber);
         return Y9Result.success(list, "获取成功");
     }
@@ -110,18 +110,18 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
      * 保存关联流程
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 关联的流程实例ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processSerialNumber, @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         associatedFileService.saveAssociatedFile(processSerialNumber, processInstanceIds);
         return Y9Result.success();
     }

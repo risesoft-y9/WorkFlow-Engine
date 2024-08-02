@@ -25,20 +25,20 @@ public interface ItemLinkApi {
      * 获取有权限的事项绑定链接
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<List<LinkInfoModel>>} 通用请求返回对象 - data 是事项绑定链接
      * @since 9.6.6
      */
     @GetMapping("/getItemLinkList")
     Y9Result<List<LinkInfoModel>> getItemLinkList(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId);
+        @RequestParam("orgUnitId") @NotBlank String orgUnitId, @RequestParam("itemId") @NotBlank String itemId);
 
     /**
      * 获取有权限的节点绑定链接
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 流程节点id
@@ -47,7 +47,7 @@ public interface ItemLinkApi {
      */
     @GetMapping("/getItemNodeLinkList")
     Y9Result<LinkInfoModel> getItemNodeLinkList(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId,
+        @RequestParam("orgUnitId") @NotBlank String orgUnitId, @RequestParam("itemId") @NotBlank String itemId,
         @RequestParam("processDefinitionId") @NotBlank String processDefinitionId,
         @RequestParam("taskDefKey") @NotBlank String taskDefKey);
 

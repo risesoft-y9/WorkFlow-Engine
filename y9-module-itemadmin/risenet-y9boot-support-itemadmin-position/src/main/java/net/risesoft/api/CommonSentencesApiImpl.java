@@ -34,7 +34,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
 
     private final CommonSentencesService commonSentencesService;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     /**
      * 删除常用语
@@ -62,7 +62,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<List<CommonSentencesModel>> listSentencesService(@RequestParam String tenantId,
         @RequestParam String userId) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<CommonSentences> list = commonSentencesService.listSentencesService();
@@ -87,7 +87,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<Object> removeCommonSentences(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam int tabIndex) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.removeCommonSentences(tabIndex);
@@ -123,7 +123,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String id,
         @RequestParam String content) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.save(id, content);
@@ -143,7 +143,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<Object> saveCommonSentences(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String content, @RequestParam int tabIndex) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.saveCommonSentences(userId, content, tabIndex);

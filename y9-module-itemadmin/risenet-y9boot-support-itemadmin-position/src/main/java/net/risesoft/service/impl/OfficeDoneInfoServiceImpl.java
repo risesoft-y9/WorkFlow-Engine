@@ -94,12 +94,12 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public int countByPositionIdAndSystemName(String positionId, String systemName) {
+    public int countByUserId(String userId, String itemId) {
         try {
             Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(positionId);
-            if (StringUtils.isNotBlank(systemName)) {
-                criteria.subCriteria(new Criteria("systemName").is(systemName));
+                .and("allUserId").contains(userId);
+            if (StringUtils.isNotBlank(itemId)) {
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchTemplate.count(query, INDEX);
@@ -111,12 +111,12 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public int countByUserId(String userId, String itemId) {
+    public int countByUserIdAndSystemName(String orgUnitId, String systemName) {
         try {
             Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(userId);
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
+                .and("allUserId").contains(orgUnitId);
+            if (StringUtils.isNotBlank(systemName)) {
+                criteria.subCriteria(new Criteria("systemName").is(systemName));
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchTemplate.count(query, INDEX);
@@ -459,8 +459,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String positionId, String title,
-        String systemName, String startdate, String enddate, Integer page, Integer rows) {
+    public Y9Page<OfficeDoneInfoModel> searchByUserId(String userId, String title, String itemId, String startdate,
+        String enddate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
@@ -470,14 +470,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.Direction.DESC, "endTime");
 
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-            .contains(positionId).and("endTime").exists();
+            .contains(userId).and("endTime").exists();
         if (StringUtils.isNotBlank(title)) {
             criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
         }
-        if (StringUtils.isNotBlank(systemName)) {
-            criteria.subCriteria(new Criteria("systemName").is(systemName));
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
         }
-
         if (StringUtils.isNotBlank(startdate)) {
             criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
         }
@@ -504,8 +503,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Y9Page<OfficeDoneInfoModel> searchByUserId(String userId, String title, String itemId, String startdate,
-        String enddate, Integer page, Integer rows) {
+    public Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(String orgUnitId, String title, String systemName,
+        String startdate, String enddate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
@@ -515,13 +514,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "endTime"));
 
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-            .contains(userId).and("endTime").exists();
+            .contains(orgUnitId).and("endTime").exists();
         if (StringUtils.isNotBlank(title)) {
             criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
         }
-        if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        if (StringUtils.isNotBlank(systemName)) {
+            criteria.subCriteria(new Criteria("systemName").is(systemName));
         }
+
         if (StringUtils.isNotBlank(startdate)) {
             criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
         }

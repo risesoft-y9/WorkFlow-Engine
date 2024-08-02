@@ -15,14 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.OfficeFollow;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.RemindInstance;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.Y9Page;
@@ -50,7 +50,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     private final TaskApi taskManager;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final ProcessParamService processParamService;
 
@@ -61,13 +61,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public int countByProcessInstanceId(String processInstanceId) {
         return officeFollowRepository.countByProcessInstanceIdAndUserId(processInstanceId,
-            Y9LoginUserHolder.getPositionId());
-    }
-
-    @Override
-    @Transactional
-    public void deleteByProcessInstanceId(String processInstanceId) {
-        officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
+            Y9LoginUserHolder.getOrgUnitId());
     }
 
     @Override
@@ -75,8 +69,14 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     public void delOfficeFollow(String processInstanceIds) {
         String[] ids = processInstanceIds.split(",");
         for (String processInstanceId : ids) {
-            officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9LoginUserHolder.getPositionId());
+            officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9LoginUserHolder.getOrgUnitId());
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteByProcessInstanceId(String processInstanceId) {
+        officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
     }
 
     /**
@@ -86,7 +86,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
      */
     private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
             taskId = "";
         List<String> list = new ArrayList<>();
@@ -98,12 +98,12 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position position = positionManager.get(tenantId, assignee).getData();
-                        if (position != null) {
-                            assigneeNames = position.getName();
+                        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (orgUnit != null) {
+                            assigneeNames = orgUnit.getName();
                         }
                         i += 1;
-                        if (assignee.contains(positionId)) {
+                        if (assignee.contains(orgUnitId)) {
                             itembox = ItemBoxTypeEnum.TODO.getValue();
                             taskId = task.getId();
                         }
@@ -113,13 +113,13 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position position = positionManager.get(tenantId, assignee).getData();
-                            if (position != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, position.getName(), "、");
+                            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                            if (orgUnit != null) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, orgUnit.getName(), "、");
                             }
                             i += 1;
                         }
-                        if (assignee.contains(positionId)) {
+                        if (assignee.contains(orgUnitId)) {
                             itembox = ItemBoxTypeEnum.TODO.getValue();
                             taskId = task.getId();
                         }
@@ -141,22 +141,22 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     @Override
     public int getFollowCount() {
-        return officeFollowRepository.countByUserId(Y9LoginUserHolder.getPositionId());
+        return officeFollowRepository.countByUserId(Y9LoginUserHolder.getOrgUnitId());
     }
 
     @Override
     public Y9Page<OfficeFollowModel> pageBySearchName(String searchName, int page, int rows) {
-        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
         SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
         Page<OfficeFollow> followList = null;
         if (StringUtils.isBlank(searchName)) {
-            followList = officeFollowRepository.findByUserId(positionId, pageable);
+            followList = officeFollowRepository.findByUserId(userId, pageable);
         } else {
             searchName = "%" + searchName + "%";
-            followList = officeFollowRepository.findByParamsLike(positionId, searchName, pageable);
+            followList = officeFollowRepository.findByParamsLike(userId, searchName, pageable);
         }
         for (OfficeFollow officeFollow : followList.getContent()) {
             try {
@@ -199,18 +199,17 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public Y9Page<OfficeFollowModel> pageBySystemNameAndSearchName(String systemName, String searchName, int page,
         int rows) {
-        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
         SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
         Page<OfficeFollow> followList = null;
         if (StringUtils.isBlank(searchName)) {
-            followList = officeFollowRepository.findBySystemNameAndUserId(systemName, positionId, pageable);
+            followList = officeFollowRepository.findBySystemNameAndUserId(systemName, userId, pageable);
         } else {
             searchName = "%" + searchName + "%";
-            followList =
-                officeFollowRepository.findBySystemNameAndParamsLike(systemName, positionId, searchName, pageable);
+            followList = officeFollowRepository.findBySystemNameAndParamsLike(systemName, userId, searchName, pageable);
         }
         for (OfficeFollow officeFollow : followList.getContent()) {
             try {

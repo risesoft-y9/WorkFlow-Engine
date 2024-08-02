@@ -15,14 +15,12 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.entity.ReceivePerson;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.repository.jpa.ReceivePersonRepository;
@@ -45,8 +43,6 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     private final ReceivePersonRepository receivePersonRepository;
 
     private final DepartmentApi departmentManager;
-
-    private final PositionApi positionApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -121,7 +117,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (ReceivePerson receivePerson : personList) {
             Map<String, Object> m = new HashMap<>(16);
-            Position person = positionApi.get(tenantId, receivePerson.getPersonId()).getData();
+            OrgUnit person = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
             if (person == null || person.getId() == null || Boolean.TRUE.equals(person.getDisabled())) {
                 receivePersonRepository.delete(receivePerson);
                 continue;
@@ -130,7 +126,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             m.put("userId", person.getId());
             m.put("parentId", receivePerson.getPersonDeptId());
             m.put("name", person.getName());
-            m.put("duty", StringUtils.isBlank(person.getJobName()) ? "" : person.getJobName());
+            m.put("duty", "");
             m.put("send", receivePerson.isSend() ? "是" : "否");
             m.put("receive", receivePerson.isReceive() ? "是" : "否");
             list.add(m);
@@ -210,7 +206,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             String tenantId = Y9LoginUserHolder.getTenantId();
             Department dept = departmentManager.get(tenantId, deptId).getData();
             for (String userId : id) {
-                Position user = positionApi.get(tenantId, userId).getData();
+                OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 List<ReceivePerson> list = receivePersonRepository.findByPersonId(userId);
                 if (list != null && !list.isEmpty()) {
                     boolean isAdd = true;
@@ -222,7 +218,8 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                         if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
                             isAdd = false;
                             // 同一个委办局，不能设置一个人为两个单位的收文员
-                            Position person = positionApi.get(Y9LoginUserHolder.getTenantId(), userId).getData();
+                            OrgUnit person = orgUnitApi
+                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), userId).getData();
                             msg.append("[" + person.getName() + "已是" + receivePerson.getDeptName() + "部门的收发员]<br>");
                         }
                     }

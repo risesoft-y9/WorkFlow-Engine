@@ -79,13 +79,13 @@ public interface ItemApi {
      * 获取有权限的首个事项id
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是事项id
      * @since 9.6.6
      */
     @GetMapping("/getFirstItem")
     Y9Result<String> getFirstItem(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId);
+        @RequestParam("orgUnitId") String orgUnitId);
 
     /**
      * 根据事项id获取绑定的表单id
@@ -104,13 +104,13 @@ public interface ItemApi {
      * 获取新建事项列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是事项列表
      * @since 9.6.6
      */
     @GetMapping("/getItemList")
     Y9Result<List<ItemListModel>> getItemList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId);
+        @RequestParam("orgUnitId") String orgUnitId);
 
     /**
      * 获取事项系统字段映射配置
@@ -139,13 +139,13 @@ public interface ItemApi {
      * 获取个人有权限事项列表
      *
      * @param tenantId 租户Id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<ItemListModel>>} 通用请求返回对象 - data 是新建事项列表
      * @since 9.6.6
      */
     @GetMapping("/getMyItemList")
     Y9Result<List<ItemListModel>> getMyItemList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId);
+        @RequestParam("orgUnitId") String orgUnitId);
 
     /**
      * 判断该租户是否有流程定义

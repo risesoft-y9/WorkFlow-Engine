@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.ProcessCooperationModel;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessInstanceDetailsService;
@@ -32,8 +30,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ProcessInstanceApiImpl implements ProcessInstanceApi {
 
     private final ProcessInstanceDetailsService processInstanceDetailsService;
-
-    private final PositionApi positionApi;
 
     /**
      * 删除协作状态
@@ -100,8 +96,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
         @RequestParam String assigneeId, @RequestParam String processInstanceId, @RequestParam String taskId,
         @RequestParam String itembox, @RequestParam Date endTime) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, assigneeId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        Y9LoginUserHolder.setOrgUnitId(assigneeId);
         return Y9Result.success(
             processInstanceDetailsService.updateProcessInstanceDetails(processInstanceId, taskId, itembox, endTime));
     }

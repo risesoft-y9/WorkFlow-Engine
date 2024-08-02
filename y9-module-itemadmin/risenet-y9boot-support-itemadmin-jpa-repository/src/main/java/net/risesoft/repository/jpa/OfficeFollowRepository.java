@@ -43,11 +43,11 @@ public interface OfficeFollowRepository
     OfficeFollow findByProcessInstanceIdAndUserId(String processInstanceId, String userId);
 
     @Query("from OfficeFollow h where h.systemName = ?1 and h.userId = ?2 and (h.documentTitle like ?3 or h.numbers like ?3) ")
-    Page<OfficeFollow> findBySystemNameAndParamsLike(String systemName, String positionId, String searchName,
+    Page<OfficeFollow> findBySystemNameAndParamsLike(String systemName, String userId, String searchName,
         Pageable pageable);
 
     @Query("from OfficeFollow h where h.systemName = ?1 and h.userId = ?2")
-    Page<OfficeFollow> findBySystemNameAndUserId(String systemName, String positionId, Pageable pageable);
+    Page<OfficeFollow> findBySystemNameAndUserId(String systemName, String userId, Pageable pageable);
 
     @Query("from OfficeFollow h where h.userId = ?1")
     Page<OfficeFollow> findByUserId(String userId, Pageable pageable);

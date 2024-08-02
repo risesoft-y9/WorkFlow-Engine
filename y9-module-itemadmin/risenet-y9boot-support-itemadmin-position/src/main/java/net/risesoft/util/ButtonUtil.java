@@ -61,7 +61,7 @@ public class ButtonUtil {
 
     @SuppressWarnings({"unused", "unchecked"})
     public Map<String, Object> showButton(String itemId, String taskId, String itembox) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Map<String, Object> map = new HashMap<>(16);
         String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
             "16", "17", "18", "19", "20", "21"};
@@ -143,7 +143,7 @@ public class ButtonUtil {
                         runtimeManager.setVariables(tenantId, task.getExecutionId(), varMapTemp);
                     }
                     if (nrOfInstances == (nrOfCompletedInstances + 1)
-                        && positionId.equals(varsUsers.get(varsUsers.size() - 1))) {
+                        && orgUnitId.equals(varsUsers.get(varsUsers.size() - 1))) {
                         isLastSequential = true;
                     }
                 } else {
@@ -163,7 +163,7 @@ public class ButtonUtil {
             // 在并行状态下且还有用户未办理完成，isParallel为true
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 isParallel = true;
-                if (StringUtils.isNotBlank(varsSponsorGuid) && positionId.equals(varsSponsorGuid)) {
+                if (StringUtils.isNotBlank(varsSponsorGuid) && orgUnitId.equals(varsSponsorGuid)) {
                     isParallelSponsor = true;
                 }
                 nrOfInstances = (Integer)vars.get(SysVariables.NROFINSTANCES);
@@ -315,7 +315,7 @@ public class ButtonUtil {
                             isButtonShow[3] = true;
                         } else {
                             // 当前任务不是退出任务且发送人不等于当前人的时候才可以显示退回
-                            if (!taskSenderId.equals(positionId)) {
+                            if (!taskSenderId.equals(orgUnitId)) {
                                 isButtonShow[3] = true;
                             }
                         }
@@ -424,7 +424,7 @@ public class ButtonUtil {
                         int size = 2;
                         if (identityLinkList.size() > size) {
                             for (IdentityLinkModel i : identityLinkList) {
-                                if (i.getUserId().contains(positionId) && "candidate".equals(i.getType())) {
+                                if (i.getUserId().contains(orgUnitId) && "candidate".equals(i.getType())) {
                                     isButtonShow[10] = true;
                                     break;
                                 }
@@ -493,8 +493,8 @@ public class ButtonUtil {
 
             // 下面是加减签按钮,待办件，自己发的件，可加减签，主办可加减签。
             boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
-                && !customItem && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(positionId)
-                || (StringUtils.isNotBlank(varsSponsorGuid) && positionId.equals(varsSponsorGuid));
+                && !customItem && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId)
+                || (StringUtils.isNotBlank(varsSponsorGuid) && orgUnitId.equals(varsSponsorGuid));
             if (b) {
                 isButtonShow[18] = true;
             }
@@ -509,14 +509,14 @@ public class ButtonUtil {
             String repositionObj =
                 variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
             // 下面是收回按钮
-            if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(positionId) && takeBackObj == null
+            if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
                 && rollbackObj == null && repositionObj == null) {
                 isButtonShow[12] = true;
             }
             // 上面是收回按钮
             // 下面是加减签按钮
             boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
-                && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(positionId);
+                && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId);
             if (b) {
                 isButtonShow[18] = true;
             }
@@ -526,7 +526,7 @@ public class ButtonUtil {
                 runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
             // 重定向按钮
             isButtonShow[15] = true;
-            if (positionId.equals(processInstanceModel.getStartUserId())) {
+            if (orgUnitId.equals(processInstanceModel.getStartUserId())) {
                 // 重定向
                 // isButtonShow[15] = true;
                 // 特殊办结

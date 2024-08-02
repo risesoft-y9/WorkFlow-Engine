@@ -25,10 +25,9 @@ public interface DraftEntityRepository
      * 获取草稿箱计数
      *
      * @param userId
-     * @param itemId
      * @return
      */
-    public Integer countByCreaterIdAndDelFlagFalse(String userId);
+    Integer countByCreaterIdAndDelFlagFalse(String userId);
 
     /**
      * 获取删除的草稿箱
@@ -36,7 +35,7 @@ public interface DraftEntityRepository
      * @param userId
      * @return
      */
-    public Integer countByCreaterIdAndDelFlagTrue(String userId);
+    Integer countByCreaterIdAndDelFlagTrue(String userId);
 
     /**
      * 根据事项id获取草稿箱计数
@@ -45,7 +44,7 @@ public interface DraftEntityRepository
      * @param itemId
      * @return
      */
-    public Integer countByItemIdAndCreaterIdAndDelFlagFalse(String itemId, String userId);
+    Integer countByItemIdAndCreaterIdAndDelFlagFalse(String itemId, String userId);
 
     /**
      * 草稿箱回收站计数
@@ -54,25 +53,25 @@ public interface DraftEntityRepository
      * @param userId
      * @return
      */
-    public Integer countByItemIdAndCreaterIdAndDelFlagTrue(String itemId, String userId);
+    Integer countByItemIdAndCreaterIdAndDelFlagTrue(String itemId, String userId);
 
     /**
      * 根据事项id获取草稿箱计数
      *
      * @param userId
-     * @param itemId
+     * @param systemName
      * @return
      */
-    public Integer countByTypeAndCreaterIdAndDelFlagFalse(String systemName, String userId);
+    Integer countByTypeAndCreaterIdAndDelFlagFalse(String systemName, String userId);
 
     /**
-     * 回收站数量（岗位）
+     * 回收站数量
      *
      * @param systemName
-     * @param positionId
+     * @param userId
      * @return
      */
-    public Integer countByTypeAndCreaterIdAndDelFlagTrue(String systemName, String positionId);
+    Integer countByTypeAndCreaterIdAndDelFlagTrue(String systemName, String userId);
 
     /**
      * 根据流程编号删除
@@ -82,7 +81,7 @@ public interface DraftEntityRepository
     @Transactional(readOnly = false)
     @Modifying
     @Query("delete DraftEntity t where t.processSerialNumber =?1")
-    public void deleteByProcessSerialNumber(String processSerialNumber);
+    void deleteByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据用户Id获取未删除草稿
@@ -91,7 +90,7 @@ public interface DraftEntityRepository
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByCreaterIdAndDelFlagFalse(String userId, Pageable pageable);
+    Page<DraftEntity> findByCreaterIdAndDelFlagFalse(String userId, Pageable pageable);
 
     /**
      * 根据用户Id获取搜索的未删除草稿
@@ -101,7 +100,7 @@ public interface DraftEntityRepository
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByCreaterIdAndTitleLikeAndDelFlagFalse(String userId, String title, Pageable pageable);
+    Page<DraftEntity> findByCreaterIdAndTitleLikeAndDelFlagFalse(String userId, String title, Pageable pageable);
 
     /**
      * 根据获取删除草稿
@@ -111,7 +110,7 @@ public interface DraftEntityRepository
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByCreaterIdAndTitleLikeAndDelFlagTrue(String userId, String title, Pageable pageable);
+    Page<DraftEntity> findByCreaterIdAndTitleLikeAndDelFlagTrue(String userId, String title, Pageable pageable);
 
     /**
      * 根据事项Id获取未删除草稿
@@ -121,19 +120,17 @@ public interface DraftEntityRepository
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByItemIdAndCreaterIdAndDelFlagFalse(String itemId, String userId, Pageable pageable);
+    Page<DraftEntity> findByItemIdAndCreaterIdAndDelFlagFalse(String itemId, String userId, Pageable pageable);
 
     /**
      * 获取回收站（岗位）
      *
-     * @param systemName
-     * @param positionId
-     * @param title
+     * @param itemId
+     * @param userId
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByItemIdAndCreaterIdAndDelFlagTrue(String itemId, String positionId,
-        Pageable pageable);
+    Page<DraftEntity> findByItemIdAndCreaterIdAndDelFlagTrue(String itemId, String userId, Pageable pageable);
 
     /**
      * 根据事项Id获取搜索的未删除草稿
@@ -144,8 +141,8 @@ public interface DraftEntityRepository
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(String itemId, String userId,
-        String title, Pageable pageable);
+    Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(String itemId, String userId, String title,
+        Pageable pageable);
 
     /**
      * 根据获取删除草稿
@@ -156,8 +153,8 @@ public interface DraftEntityRepository
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(String itemId, String userId,
-        String title, Pageable pageable);
+    Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(String itemId, String userId, String title,
+        Pageable pageable);
 
     /**
      * 根据processSerialNumber获取草稿
@@ -166,19 +163,19 @@ public interface DraftEntityRepository
      * @return
      */
     @Query("from DraftEntity t where t.processSerialNumber=?1")
-    public DraftEntity findByProcessSerialNumber(String processSerialNumber);
+    DraftEntity findByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据事项Id获取搜索的未删除草稿
      *
      * @param userId
      * @param title
-     * @param itemId
+     * @param systemName
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagFalse(String systemName, String userId,
-        String title, Pageable pageable);
+    Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagFalse(String systemName, String userId, String title,
+        Pageable pageable);
 
     /**
      * 根据获取删除草稿
@@ -189,7 +186,7 @@ public interface DraftEntityRepository
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(String systemName, String userId,
-        String title, Pageable pageable);
+    Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(String systemName, String userId, String title,
+        Pageable pageable);
 
 }

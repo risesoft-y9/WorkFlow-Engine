@@ -35,36 +35,36 @@ public interface EntrustApi {
      * 获取委托列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
      * @since 9.6.6
      */
     @GetMapping(value = "/getEntrustList")
     Y9Result<List<EntrustModel>> getEntrustList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId);
+        @RequestParam("orgUnitId") String orgUnitId);
 
     /**
      * 获取我的委托列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
      * @since 9.6.6
      */
     @GetMapping(value = "/getMyEntrustList")
     Y9Result<List<EntrustModel>> getMyEntrustList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId);
+        @RequestParam("orgUnitId") String orgUnitId);
 
     /**
      * 保存或更新委托
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param entrustModel 实体类（EntrustModel）
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestBody EntrustModel entrustModel);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestBody EntrustModel entrustModel);
 }

@@ -19,11 +19,11 @@ public interface DataCenterApi {
      *
      * @param processInstanceId 流程实例id
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/saveToDateCenter")
     Y9Result<Object> saveToDateCenter(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+        @RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId);
 }

@@ -34,7 +34,7 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
 
     private final SpeakInfoService speakInfoService;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     /**
      * 逻辑删除发言信息
@@ -56,14 +56,12 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * 根据唯一标示获取发言信息
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param id 主键id
      * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发言信息
      * @since 9.6.6
      */
     @Override
-    public Y9Result<SpeakInfoModel> findById(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String id) {
+    public Y9Result<SpeakInfoModel> findById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SpeakInfo speakInfo = speakInfoService.findById(id);
         return Y9Result.success(ItemAdminModelConvertUtil.speakInfo2Model(speakInfo));
@@ -81,7 +79,7 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     @Override
     public Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processInstanceId) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 
@@ -117,7 +115,7 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     @Override
     public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestBody SpeakInfoModel speakInfoModel) {
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 

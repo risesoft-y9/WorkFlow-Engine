@@ -223,7 +223,7 @@ public class MobileDocumentController {
                 model =
                     documentApi.edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true).getData();
             } else {// 打开草稿
-                model = draftApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, true).getData();
+                model = draftApi.openDraft(tenantId, positionId, itemId, processSerialNumber, true).getData();
             }
             String activitiUser = model.getActivitiUser();
             String processDefinitionId = model.getProcessDefinitionId();

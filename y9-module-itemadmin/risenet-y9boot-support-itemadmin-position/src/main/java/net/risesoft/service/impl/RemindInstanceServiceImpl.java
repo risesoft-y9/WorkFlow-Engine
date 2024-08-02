@@ -35,7 +35,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     @Override
     public RemindInstance getRemindInstance(String processInstanceId) {
         return remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId,
-            Y9LoginUserHolder.getPositionId());
+            Y9LoginUserHolder.getOrgUnitId());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     public Y9Result<String> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
         String arriveTaskKey, String completeTaskKey) {
         try {
-            String userId = Y9LoginUserHolder.getPositionId();
+            String userId = Y9LoginUserHolder.getOrgUnitId();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             RemindInstance remindInstance =
                 remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);

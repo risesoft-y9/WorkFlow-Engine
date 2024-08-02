@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ItemViewConfApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.AssociatedFileApi;
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.itemadmin.DraftApi;
+import net.risesoft.api.itemadmin.ItemViewConfApi;
+import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
@@ -131,7 +131,7 @@ public class DraftRestController {
         Map<String, Object> map = new HashMap<>(16);
         OpenDataModel model = null;
         if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
-            model = draftApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, false).getData();
+            model = draftApi.openDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
         }
         String str = Y9JsonUtil.writeValueAsString(model);
         map = Y9JsonUtil.readHashMap(str);

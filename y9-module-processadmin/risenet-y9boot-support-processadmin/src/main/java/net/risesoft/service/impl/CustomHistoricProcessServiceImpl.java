@@ -200,7 +200,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             } catch (Exception e1) {
                 LOGGER.warn("************************************删除数据中心办结件数据失败", e1);
             }
-            deleteProcessUtilService.deleteProcess4Position(tenantId, processInstanceId);
+            deleteProcessUtilService.deleteProcess(tenantId, processInstanceId);
             return true;
         } catch (Exception e) {
             LOGGER.error("删除流程实例失败", e);

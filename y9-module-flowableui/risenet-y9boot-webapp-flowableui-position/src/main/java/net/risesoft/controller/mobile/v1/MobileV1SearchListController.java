@@ -88,10 +88,10 @@ public class MobileV1SearchListController {
             todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
             Y9Page<OfficeDoneInfoModel> y9Page =
-                officeDoneInfoApi.searchAllByPositionId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
+                officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
             doingCount = y9Page.getTotal();
             // 统计历史办结件
-            doneCount = officeDoneInfoApi.countByPositionId(tenantId, positionId, "").getData();
+            doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);

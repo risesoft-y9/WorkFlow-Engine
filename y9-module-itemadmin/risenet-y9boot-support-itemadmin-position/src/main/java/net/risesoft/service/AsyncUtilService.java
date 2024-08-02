@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
@@ -23,7 +23,7 @@ import net.risesoft.entity.ErrorLog;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
@@ -44,7 +44,7 @@ public class AsyncUtilService {
 
     private final ErrorLogService errorLogService;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final TaskApi taskApi;
 
@@ -58,20 +58,20 @@ public class AsyncUtilService {
      * 异步循环发送
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processInstanceId 流程实例id
      */
     @Async
-    public void loopSending(final String tenantId, final String positionId, final String itemId,
+    public void loopSending(final String tenantId, final String orgUnitId, final String itemId,
         final String processInstanceId) {
         String taskDefinitionKey = "";
         String taskId = "";
         try {
             Thread.sleep(5000);// 延时5秒执行
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionManager.get(tenantId, positionId).getData();
-            Y9LoginUserHolder.setPosition(position);
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+            Y9LoginUserHolder.setOrgUnit(orgUnit);
             List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (taskModelList != null && !taskModelList.isEmpty()) {
                 TaskModel taskModel = taskModelList.get(0);
@@ -101,7 +101,7 @@ public class AsyncUtilService {
                                 documentService.forwarding(taskId, "true", userChoice, routeToTaskId, "");
                             if (y9Result1.isSuccess()) {
                                 // 异步循环发送
-                                this.loopSending(tenantId, positionId, itemId, processInstanceId);
+                                this.loopSending(tenantId, orgUnitId, itemId, processInstanceId);
                             }
                         }
                     }

@@ -13,12 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
@@ -38,8 +36,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ProcessTrackApiImpl implements ProcessTrackApi {
 
     private final ProcessTrackService processTrackService;
-
-    private final PositionApi positionManager;
 
     /**
      * 根据唯一标示删除历程数据
@@ -119,17 +115,16 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
      * 获取历程列表(包含每个任务节点的特殊操作的历程)
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象- data 是历程信息
      * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam String tenantId,
-        @RequestParam String positionId, @RequestParam String processInstanceId) {
+        @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         try {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId(processInstanceId);
             return Y9Result.success(items);
@@ -143,18 +138,16 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
      * 获取历程信息
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象 - data 是历程信息列表
      * @since 9.6.6
      */
     @Override
     public Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam String tenantId,
-        @RequestParam String positionId, @RequestParam String processInstanceId) {
+        @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
-
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         try {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId4Simple(processInstanceId);
             return Y9Result.success(items);

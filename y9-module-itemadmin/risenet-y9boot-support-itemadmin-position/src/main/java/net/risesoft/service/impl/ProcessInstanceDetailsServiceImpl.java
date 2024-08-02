@@ -174,7 +174,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
                 processInstanceDetailsRepository.findByProcessInstanceIdAndTaskId(processInstanceId, taskId);
             if (details != null && details.getId() != null) {
                 List<Opinion> opinion = opinionService.listByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId,
-                    Y9LoginUserHolder.getPositionId());
+                    Y9LoginUserHolder.getOrgUnitId());
                 String opinionStr = !opinion.isEmpty() ? opinion.get(0).getContent() : "";
                 details.setEndTime(endTime);
                 details.setItembox(itembox);

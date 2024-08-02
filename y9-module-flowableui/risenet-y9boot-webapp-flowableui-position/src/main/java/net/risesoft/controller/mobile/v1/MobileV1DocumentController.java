@@ -202,7 +202,7 @@ public class MobileV1DocumentController {
                 model =
                     documentApi.edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true).getData();
             } else {// 打开草稿
-                model = draftApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, true).getData();
+                model = draftApi.openDraft(tenantId, positionId, itemId, processSerialNumber, true).getData();
             }
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
@@ -416,7 +416,7 @@ public class MobileV1DocumentController {
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
+        String userId = Y9LoginUserHolder.getPositionId();
         return formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
     }
 

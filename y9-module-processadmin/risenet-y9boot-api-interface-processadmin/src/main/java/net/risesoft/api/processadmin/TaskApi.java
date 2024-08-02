@@ -27,7 +27,7 @@ public interface TaskApi {
      * 签收任务
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param userId 人员、岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6

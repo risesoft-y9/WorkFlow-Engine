@@ -147,7 +147,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final RepositoryApi repositoryManager;
 
-    private final PositionApi positionManager;
+    private final PositionApi positionApi;
 
     private final RoleApi roleManager;
 
@@ -195,7 +195,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public OpenDataModel add(String itemId, boolean mobile) {
-        String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
         OpenDataModel model = new OpenDataModel();
         if (StringUtils.isNotBlank(itemId)) {
             SpmApproveItem item = spmApproveitemService.findById(itemId);
@@ -212,7 +212,7 @@ public class DocumentServiceImpl implements DocumentService {
             model.setProcessDefinitionId(processDefinitionId);
             model.setTaskDefKey(taskDefKey);
             model.setActivitiUser(userId);
-            model.setCurrentUser(Y9LoginUserHolder.getPosition().getName());
+            model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
             model.setItembox(ItemBoxTypeEnum.ADD.getValue());
             model.setProcessSerialNumber(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             model.setProcessInstanceId("");
@@ -249,7 +249,7 @@ public class DocumentServiceImpl implements DocumentService {
         /*
          * 1办结流程
          */
-        runtimeManager.complete(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId, taskId);
+        runtimeManager.complete(tenantId, Y9LoginUserHolder.getOrgUnitId(), processInstanceId, taskId);
     }
 
     @Override
@@ -360,7 +360,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTitle(processParam.getTitle());
         model.setStartor(startor);
         model.setItembox(itembox);
-        model.setCurrentUser(Y9LoginUserHolder.getPosition().getName());
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
         model.setProcessSerialNumber(processSerialNumber);
         model.setProcessDefinitionKey(processDefinitionKey);
         model.setProcessDefinitionId(processDefinitionId);
@@ -391,7 +391,7 @@ public class DocumentServiceImpl implements DocumentService {
         String sponsorGuid) {
         String processInstanceId = "";
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
             TaskModel task = taskManager.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -401,12 +401,12 @@ public class DocumentServiceImpl implements DocumentService {
             if (tooMuch) {
                 return Y9Result.failure("发送人数过多");
             }
-            Position position = Y9LoginUserHolder.getPosition();
+            OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             String multiInstance =
                 processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+                CommonOpt.setVariables(orgUnitId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             /*
              * 并行发送超过20人时，启用异步后台处理。
@@ -426,12 +426,12 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setUpdateTime(sdf.format(date));
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
-                asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, sponsorHandle,
+                asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
                     sponsorGuid, taskId, multiInstance, variables, userList);
             } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put("parentTaskId", taskId);
-                taskManager.createWithVariables(tenantId, positionId, routeToTaskId, vars, userList);
+                taskManager.createWithVariables(tenantId, orgUnitId, routeToTaskId, vars, userList);
             } else {
                 // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
                 if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
@@ -456,8 +456,8 @@ public class DocumentServiceImpl implements DocumentService {
                         taskVariable.setUpdateTime(sdf.format(date));
                         taskVariable.setText("true:" + num);
                         taskVariableRepository.save(taskVariable);
-                        asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam,
-                            sponsorHandle, sponsorGuid, taskId, multiInstance, variables, userList);
+                        asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
+                            sponsorGuid, taskId, multiInstance, variables, userList);
                     } else {
                         asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid,
                             taskId, multiInstance, variables, userList);
@@ -566,7 +566,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private void getAllPosition(List<Position> list, String deptId) {
         List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
-        List<Position> list0 = positionManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Position> list0 = positionApi.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             list.addAll(list0);
         }
@@ -578,10 +578,10 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public String getFirstItem() {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
             String resourceId = "";
             List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+                positionResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
             String url;
             for (Resource r : list) {
                 url = r.getUrl();
@@ -640,9 +640,9 @@ public class DocumentServiceImpl implements DocumentService {
                     processSerialNumber);
                 for (OrgUnit orgUnit : ouList) {
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        Position position = positionManager.get(tenantId, orgUnit.getId()).getData();
-                        if (position != null && !position.getDisabled()) {
-                            orgUnitList.add(orgUnit);
+                        OrgUnit user = orgUnitManager.getOrgUnitPersonOrPosition(tenantId, orgUnit.getId()).getData();
+                        if (user != null && !user.getDisabled()) {
+                            orgUnitList.add(user);
                         }
                     } else {
                         orgUnitList.add(orgUnit);
@@ -657,12 +657,12 @@ public class DocumentServiceImpl implements DocumentService {
     public List<ItemListModel> listItems() {
         List<ItemListModel> listMap = new ArrayList<>();
         try {
-            String positionId = Y9LoginUserHolder.getPositionId();
+            String userId = Y9LoginUserHolder.getOrgUnitId();
             String tenantId = Y9LoginUserHolder.getTenantId();
             String resourceId = "";
             //////////////////////////////////
             List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+                positionResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
             ItemListModel model;
             String url;
             long todoCount;
@@ -687,8 +687,9 @@ public class DocumentServiceImpl implements DocumentService {
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
                     model.setName(spmApproveitem.getName());
                     model.setItemName(spmApproveitem.getName());
-                    todoCount = todoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                        spmApproveitem.getWorkflowGuid()).getData();
+                    todoCount = todoManager
+                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, spmApproveitem.getWorkflowGuid())
+                        .getData();
                     model.setTodoCount((int)todoCount);
                     model.setAppIcon(
                         StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
@@ -706,10 +707,10 @@ public class DocumentServiceImpl implements DocumentService {
     public List<ItemListModel> listMyItems() {
         List<ItemListModel> listMap = new ArrayList<>();
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
             String resourceId = "";
             List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+                positionResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
             ItemListModel model;
             String url;
             for (Resource r : list) {
@@ -747,7 +748,7 @@ public class DocumentServiceImpl implements DocumentService {
     public OpenDataModel menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId,
         OpenDataModel model, String itembox) {
         ButtonUtil buttonUtil = new ButtonUtil();
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Map<String, Object> map = buttonUtil.showButton(itemId, taskId, itembox);
         String[] buttonIds = (String[])map.get("buttonIds");
         String[] buttonNames = (String[])map.get("buttonNames");
@@ -786,7 +787,7 @@ public class DocumentServiceImpl implements DocumentService {
                             menuMap.add(mapTemp);
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
+                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
                                 if (hasRole) {
                                     Map<String, Object> mapTemp = new HashMap<>(16);
                                     mapTemp.put("menuName", buttonName);
@@ -829,7 +830,7 @@ public class DocumentServiceImpl implements DocumentService {
                             break;
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
+                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
                                 if (hasrole) {
                                     Map<String, Object> mapTemp = new HashMap<>(16);
                                     mapTemp.put("menuName", bib.getButtonName());
@@ -888,7 +889,7 @@ public class DocumentServiceImpl implements DocumentService {
                             sendMap.add(mapTemp);
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
+                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
                                 if (hasrole) {
                                     Map<String, Object> mapTemp = new HashMap<>(16);
                                     sendName = Y9Util.genCustomStr(sendName, buttonName);
@@ -968,8 +969,8 @@ public class DocumentServiceImpl implements DocumentService {
                 int principalType = Integer.parseInt(s2[0]);
                 String userIdTemp = s2[1];
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionManager.get(tenantId, s2[1]).getData();
-                    if (null == position) {
+                    OrgUnit orgUnit = orgUnitManager.getOrgUnitPersonOrPosition(tenantId, s2[1]).getData();
+                    if (null == orgUnit) {
                         continue;
                     }
                     users = this.addUserId(users, userIdTemp);
@@ -983,9 +984,10 @@ public class DocumentServiceImpl implements DocumentService {
                     List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
                         Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list) {
-                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
-                        if (position != null && StringUtils.isNotBlank(position.getId())) {
-                            users = this.addUserId(users, position.getId());
+                        OrgUnit orgUnit =
+                            orgUnitManager.getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
+                        if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
+                            users = this.addUserId(users, orgUnit.getId());
                         }
                     }
                 }
@@ -1194,8 +1196,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Y9Result<Object> saveAndSubmitTo(String itemId, String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Position position = Y9LoginUserHolder.getPosition();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         try {
             SpmApproveItem item = spmApproveitemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
@@ -1222,7 +1224,7 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+                CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
             asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance,
                 variables, userList);
             return Y9Result.successMsg("提交成功");
@@ -1317,8 +1319,8 @@ public class DocumentServiceImpl implements DocumentService {
         List<String> userList) {
         String processInstanceId = "";
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            Position position = Y9LoginUserHolder.getPosition();
+            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+            OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             TaskModel task = taskManager.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -1326,7 +1328,7 @@ public class DocumentServiceImpl implements DocumentService {
             String multiInstance =
                 processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+                CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
             // 子流程信息
             if (multiInstance.equals(SysVariables.CALLACTIVITY)) {
                 Map<String, Object> initDataMap = new HashMap<>(16);
@@ -1352,12 +1354,12 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setUpdateTime(sdf.format(date));
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
-                asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", sponsorGuid,
+                asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, "", sponsorGuid,
                     taskId, multiInstance, variables, userList);
             } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put("parentTaskId", taskId);
-                taskManager.createWithVariables(tenantId, position.getId(), routeToTaskId, vars, userList);
+                taskManager.createWithVariables(tenantId, orgUnit.getId(), routeToTaskId, vars, userList);
             } else {
                 assert processParam != null;
                 asyncHandleService.forwarding4Task(processInstanceId, processParam, "", sponsorGuid, taskId,
@@ -1432,11 +1434,11 @@ public class DocumentServiceImpl implements DocumentService {
                 activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
-            processParam.setStartor(Y9LoginUserHolder.getPositionId());
-            processParam.setStartorName(Y9LoginUserHolder.getPosition().getName());
+            processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
+            processParam.setStartorName(Y9LoginUserHolder.getOrgUnit().getName());
             processParam.setSended("true");
             // 保存流程信息到ES
-            process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getPosition());
+            process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
 
             processParamService.saveOrUpdate(processParam);
 
@@ -1458,22 +1460,22 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public StartProcessResultModel startProcess(String itemId, String processSerialNumber, String processDefinitionKey,
-        String positionIds) {
+        String userIds) {
         StartProcessResultModel model = null;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Position position = Y9LoginUserHolder.getPosition();
+            OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             Map<String, Object> vars = new HashMap<>(16);
             SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
 
-            vars = CommonOpt.setVariables(position.getId(), position.getName(), "",
-                Arrays.asList(positionIds.split(",")), processSerialNumber, "", vars);
+            vars = CommonOpt.setVariables(orgUnit.getId(), orgUnit.getName(), "", Arrays.asList(userIds.split(",")),
+                processSerialNumber, "", vars);
             assert item != null;
             ProcessInstanceModel piModel = runtimeManager
-                .startProcessInstanceByKey(tenantId, position.getId(), processDefinitionKey, item.getSystemName(), vars)
+                .startProcessInstanceByKey(tenantId, orgUnit.getId(), processDefinitionKey, item.getSystemName(), vars)
                 .getData();
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
@@ -1481,11 +1483,11 @@ public class DocumentServiceImpl implements DocumentService {
 
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
-            processParam.setStartor(Y9LoginUserHolder.getPositionId());
-            processParam.setStartorName(Y9LoginUserHolder.getPosition().getName());
+            processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
+            processParam.setStartorName(Y9LoginUserHolder.getOrgUnit().getName());
             processParam.setSended("true");
             // 保存流程信息到ES
-            process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getPosition());
+            process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
 
             processParamService.saveOrUpdate(processParam);
 
@@ -1527,11 +1529,11 @@ public class DocumentServiceImpl implements DocumentService {
 
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
-            processParam.setStartor(Y9LoginUserHolder.getPositionId());
-            processParam.setStartorName(Y9LoginUserHolder.getPosition().getName());
+            processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
+            processParam.setStartorName(Y9LoginUserHolder.getOrgUnit().getName());
             processParam.setSended("true");
             // 保存流程信息到ES
-            process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getPosition());
+            process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
 
             processParamService.saveOrUpdate(processParam);
 
@@ -1549,8 +1551,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Y9Result<Object> submitTo(String processSerialNumber, String taskId) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            Position position = Y9LoginUserHolder.getPosition();
+            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+            OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             String itemId = processParam.getItemId();
             TaskModel task = taskManager.findById(tenantId, taskId).getData();
@@ -1576,7 +1578,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+                CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
             asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance,
                 variables, userList);
             return Y9Result.successMsg("提交成功");

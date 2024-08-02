@@ -15,14 +15,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AttachmentModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.TransactionFileRepository;
@@ -49,9 +49,9 @@ public class AttachmentApiImpl implements AttachmentApi {
 
     private final TransactionFileRepository transactionFileRepository;
 
-    private final PositionApi positionManager;
+    private final OrgUnitApi orgUnitApi;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     /**
      * 根据流程编号删除附件
@@ -199,7 +199,7 @@ public class AttachmentApiImpl implements AttachmentApi {
      * 保存附件信息
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param attachjson 附件信息
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
@@ -207,11 +207,11 @@ public class AttachmentApiImpl implements AttachmentApi {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Result<Object> saveAttachment(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> saveAttachment(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String attachjson, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Map<String, Object> attachmentJson = Y9JsonUtil.readValue(attachjson, Map.class);
         assert attachmentJson != null;
@@ -238,7 +238,7 @@ public class AttachmentApiImpl implements AttachmentApi {
      * 保存附件信息
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param userId 人员、岗位id
      * @param fileName 文件名称
      * @param fileType 文件类型
      * @param fileSizeString 文件大小
@@ -251,13 +251,13 @@ public class AttachmentApiImpl implements AttachmentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveOrUpdateUploadInfo(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<String> saveOrUpdateUploadInfo(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String fileName, String fileType, String fileSizeString, String fileSource,
         String processInstanceId, String processSerialNumber, String taskId, @RequestParam String y9FileStoreId) {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             TransactionFile attachment = transactionFileService.getFileInfoByFileName(fileName, processSerialNumber);
@@ -266,8 +266,8 @@ public class AttachmentApiImpl implements AttachmentApi {
                 attachment.setName(fileName);
                 attachment.setFileSize(fileSizeString);
                 attachment.setTaskId(taskId);
-                attachment.setPersonId(positionId);
-                attachment.setPersonName(position.getName());
+                attachment.setPersonId(orgUnitId);
+                attachment.setPersonName(orgUnit.getName());
                 attachment.setUploadTime(sdf.format(new Date()));
                 transactionFileRepository.save(attachment);
             } else {
@@ -278,8 +278,8 @@ public class AttachmentApiImpl implements AttachmentApi {
                 fileAttachment.setFileSize(fileSizeString);
                 fileAttachment.setFileType(fileType);
                 fileAttachment.setUploadTime(sdf.format(new Date()));
-                fileAttachment.setPersonId(positionId);
-                fileAttachment.setPersonName(position.getName());
+                fileAttachment.setPersonId(orgUnitId);
+                fileAttachment.setPersonName(orgUnit.getName());
                 fileAttachment.setProcessInstanceId(processInstanceId);
                 fileAttachment.setProcessSerialNumber(processSerialNumber);
                 fileAttachment.setTaskId(taskId);
@@ -299,8 +299,7 @@ public class AttachmentApiImpl implements AttachmentApi {
      * 更新附件
      *
      * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param fileId 文件id
      * @param fileSize 文件大小
      * @param taskId 任务id
@@ -309,15 +308,12 @@ public class AttachmentApiImpl implements AttachmentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> updateFile(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String positionId, @RequestParam String fileId, String fileSize, String taskId,
-        @RequestParam String y9FileStoreId) {
+    public Y9Result<String> updateFile(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String fileId, String fileSize, String taskId, @RequestParam String y9FileStoreId) {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
-        Person person = personManager.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             TransactionFile attachment = transactionFileRepository.findById(fileId).orElse(null);
@@ -340,7 +336,7 @@ public class AttachmentApiImpl implements AttachmentApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param fileName 文件名
      * @param fileSize 文件大小
      * @param processInstanceId 流程实例id
@@ -354,13 +350,13 @@ public class AttachmentApiImpl implements AttachmentApi {
      */
     @Override
     public Y9Result<String> upload(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String positionId, @RequestParam String fileName, String fileSize, String processInstanceId,
+        @RequestParam String orgUnitId, @RequestParam String fileName, String fileSize, String processInstanceId,
         String taskId, String describes, String processSerialNumber, String fileSource,
         @RequestParam String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
-        Person person = personManager.get(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes,
             fileSource, y9FileStoreId);
@@ -371,17 +367,17 @@ public class AttachmentApiImpl implements AttachmentApi {
      * 上传附件(model)
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param attachmentModel 附件实体信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> uploadModel(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> uploadModel(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestBody AttachmentModel attachmentModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         TransactionFile transactionFile = ItemAdminModelConvertUtil.attachmentModel2TransactionFile(attachmentModel);
         transactionFileService.uploadRestModel(transactionFile);
         return Y9Result.success();

@@ -144,7 +144,7 @@ public interface OpinionApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param opinionModel 意见信息
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @throws Exception Exception
@@ -152,7 +152,7 @@ public interface OpinionApi {
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<OpinionModel> saveOrUpdate(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
         @RequestBody OpinionModel opinionModel) throws Exception;
 
     /**

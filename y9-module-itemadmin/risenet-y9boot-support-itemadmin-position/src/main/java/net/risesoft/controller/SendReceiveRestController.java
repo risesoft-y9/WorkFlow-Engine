@@ -47,7 +47,7 @@ public class SendReceiveRestController {
 
     private final OrgUnitApi orgUnitManager;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     private final DepartmentApi departmentManager;
 
@@ -92,11 +92,11 @@ public class SendReceiveRestController {
         @RequestParam String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<>();
-        List<Person> personList = personManager.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
+        List<Person> personList = personApi.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         for (Person person : personList) {
             orgUnitList.add(person);
-            Person p = personManager.get(tenantId, person.getId()).getData();
+            Person p = personApi.get(tenantId, person.getId()).getData();
             this.recursionUpToOrg(tenantId, deptId, p.getParentId(), orgUnitList, false);
         }
         for (OrgUnit orgUnit : orgUnitList) {
@@ -107,7 +107,7 @@ public class SendReceiveRestController {
             map.put("parentId", orgUnit.getParentId());
             map.put("isParent", true);
             if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                Person per = personManager.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 map.put("sex", per.getSex());
                 map.put("duty", per.getDuty());
                 map.put("isParent", false);
@@ -152,7 +152,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personManager.get(tenantId, orgunit.getId()).getData();
+                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
                     map.put("duty", person.getDuty());
@@ -199,7 +199,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personManager.get(tenantId, orgunit.getId()).getData();
+                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
                     map.put("duty", person.getDuty());

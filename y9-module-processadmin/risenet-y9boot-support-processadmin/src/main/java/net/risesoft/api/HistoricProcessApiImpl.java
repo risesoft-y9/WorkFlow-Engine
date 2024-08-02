@@ -2,8 +2,6 @@ package net.risesoft.api;
 
 import java.util.List;
 
-
-import net.risesoft.api.itemadmin.ChaoSongApi;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.todo.TodoTaskApi;
@@ -42,7 +41,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     private final TodoTaskApi todoTaskApi;
 
-    private final ProcessInstanceApi processInstance4PositionApi;
+    private final ProcessInstanceApi processInstanceApi;
 
     private final ChaoSongApi chaoSongInfoManager;
 
@@ -79,7 +78,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
                 LOGGER.error("##########抄送件删除失败：{}#", e.getMessage());
             }
             try {
-                boolean msg2 = processInstance4PositionApi.deleteProcessInstance(tenantId, processInstanceId).getData();
+                boolean msg2 = processInstanceApi.deleteProcessInstance(tenantId, processInstanceId).getData();
                 LOGGER.error("##############################协作状态删除：{}#################################", msg2);
             } catch (Exception e) {
                 LOGGER.error("##########协作状态删除失败：{}#", e.getMessage());

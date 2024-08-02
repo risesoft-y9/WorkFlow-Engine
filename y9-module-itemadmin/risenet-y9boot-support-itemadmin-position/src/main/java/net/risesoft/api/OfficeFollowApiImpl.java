@@ -35,16 +35,16 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * 根据流程实例id获取是否有关注
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是关注数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countByProcessInstanceId(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Integer> countByProcessInstanceId(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         int count = officeFollowService.countByProcessInstanceId(processInstanceId);
         return Y9Result.success(count);
     }
@@ -53,16 +53,16 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * 取消关注
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceIds 流程实例id列表
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delOfficeFollow(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<Object> delOfficeFollow(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         officeFollowService.delOfficeFollow(processInstanceIds);
         return Y9Result.successMsg("取消关注成功");
     }
@@ -87,14 +87,14 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * 获取我的关注数量
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是我的关注数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getFollowCount(@RequestParam String tenantId, @RequestParam String positionId) {
+    public Y9Result<Integer> getFollowCount(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         int count = officeFollowService.getFollowCount();
         return Y9Result.success(count);
     }
@@ -103,7 +103,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * 根据系统名称获取关注列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param systemName 系统名称
      * @param searchName 搜索词
      * @param page 页码
@@ -113,10 +113,10 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      */
     @Override
     public Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam String tenantId,
-        @RequestParam String positionId, @RequestParam String systemName, String searchName, @RequestParam int page,
+        @RequestParam String orgUnitId, @RequestParam String systemName, String searchName, @RequestParam int page,
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         return officeFollowService.pageBySystemNameAndSearchName(systemName, searchName, page, rows);
     }
 
@@ -124,7 +124,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * 获取关注列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param searchName 搜索词
      * @param page 页码
      * @param rows 条数
@@ -132,10 +132,10 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String searchName, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         return officeFollowService.pageBySearchName(searchName, page, rows);
     }
 

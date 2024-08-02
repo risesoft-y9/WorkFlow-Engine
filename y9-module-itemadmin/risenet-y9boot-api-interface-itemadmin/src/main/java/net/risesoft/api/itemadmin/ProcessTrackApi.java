@@ -75,27 +75,27 @@ public interface ProcessTrackApi {
      * 获取历程列表(包含每个任务节点的特殊操作的历程)
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象- data 是历程信息
      * @since 9.6.6
      */
     @GetMapping("/processTrackList")
     Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取历程信息
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象 - data 是历程信息列表
      * @since 9.6.6
      */
     @GetMapping("/processTrackList4Simple")
     Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 保存或更新历程

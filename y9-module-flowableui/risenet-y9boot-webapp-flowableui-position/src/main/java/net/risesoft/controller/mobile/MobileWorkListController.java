@@ -268,7 +268,7 @@ public class MobileWorkListController {
                 .getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey).getData();
             int todoCount = (int)flowableCountModel.getTodoCount();
             int doingCount = (int)flowableCountModel.getDoingCount();
-            int doneCount = officeDoneInfoApi.countByPositionId(tenantId, positionId, itemId).getData();
+            int doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, itemId).getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);

@@ -28,7 +28,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
 
     private final RejectReasonService rejectReasonService;
 
-    private final PersonApi personManager;
+    private final PersonApi personApi;
 
     /**
      * 保存驳回原因
@@ -45,7 +45,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
     public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam Integer action, @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.get(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         rejectReasonService.save(reason, taskId, action);

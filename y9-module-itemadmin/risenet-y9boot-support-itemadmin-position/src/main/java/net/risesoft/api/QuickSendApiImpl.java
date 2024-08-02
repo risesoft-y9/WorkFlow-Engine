@@ -31,17 +31,17 @@ public class QuickSendApiImpl implements QuickSendApi {
      * 获取快速发送设置
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是快捷发送人
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getAssignee(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<String> getAssignee(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         return Y9Result.success(quickSendService.getAssignee(itemId, taskKey));
     }
 
@@ -49,7 +49,7 @@ public class QuickSendApiImpl implements QuickSendApi {
      * 保存快速发送设置
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
      * @param assignee 发送人
@@ -57,10 +57,10 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String positionId,
+    public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String taskKey, @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);
         return Y9Result.success();
     }

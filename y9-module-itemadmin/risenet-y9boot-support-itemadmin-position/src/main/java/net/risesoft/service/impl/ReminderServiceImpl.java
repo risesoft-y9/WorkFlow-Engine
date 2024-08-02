@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.Reminder;
@@ -24,10 +24,9 @@ import net.risesoft.enums.ItemUrgeTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ReminderModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.ReminderRepository;
 import net.risesoft.service.ReminderService;
@@ -49,7 +48,7 @@ public class ReminderServiceImpl implements ReminderService {
 
     private final ReminderRepository reminderRepository;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final TaskApi taskManager;
 
@@ -86,7 +85,7 @@ public class ReminderServiceImpl implements ReminderService {
         String taskId, String taskAssigneeId, String documentTitle) {
         String smsErr = "";
         String emailErr = "";
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        OrgUnit person = Y9LoginUserHolder.getOrgUnit();
         String[] procInstIds = procInstId.split(SysVariables.COMMA);
         String[] taskIds = taskId.split(SysVariables.COMMA);
         // String[] taskAssigneeIds = taskAssigneeId.split(SysVariables.COMMA);
@@ -98,7 +97,7 @@ public class ReminderServiceImpl implements ReminderService {
             reminder.setProcInstId(procInstIds[i]);
             reminder.setReminderMakeTyle(reminderAutomatic);
             reminder.setReminderSendType(ItemUrgeTypeEnum.TODOINFO.getValue());
-            reminder.setSenderId(person.getPersonId());
+            reminder.setSenderId(person.getId());
             reminder.setSenderName(person.getName());
             reminder.setTaskId(taskIds[i]);
             reminder.setCreateTime(new Date());
@@ -115,7 +114,7 @@ public class ReminderServiceImpl implements ReminderService {
                 try {
                 } catch (Exception e) {
                     LOGGER.error("email error", e.getMessage());
-                    // Person errEmployee = personManager.getPerson(Y9LoginUserHolder.getTenantId(),taskAssigneeIds[i]);
+                    // Person errEmployee = personApi.getPerson(Y9LoginUserHolder.getTenantId(),taskAssigneeIds[i]);
                     // emailErr += errEmployee.getName() + "、";
                 }
             }
@@ -158,7 +157,7 @@ public class ReminderServiceImpl implements ReminderService {
         int num = (page - 1) * rows;
         List<ReminderModel> listMap = new ArrayList<>();
         HistoricTaskInstanceModel historicTaskTemp = null;
-        Position pTemp = null;
+        OrgUnit pTemp = null;
         for (Reminder reminder : reminderList) {
             ReminderModel model = new ReminderModel();
             model.setId(reminder.getId());
@@ -177,7 +176,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != historicTaskTemp) {
                 model.setTaskName(historicTaskTemp.getName());
                 if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
-                    pTemp = positionApi.get(tenantId, historicTaskTemp.getAssignee()).getData();
+                    pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, historicTaskTemp.getAssignee()).getData();
                     if (null != pTemp) {
                         model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
                     }
@@ -206,7 +205,7 @@ public class ReminderServiceImpl implements ReminderService {
         int num = (page - 1) * rows;
         List<ReminderModel> listMap = new ArrayList<>();
         TaskModel taskTemp = null;
-        Position pTemp = null;
+        OrgUnit pTemp = null;
         for (Reminder reminder : reminderList) {
             ReminderModel model = new ReminderModel();
             model.setId(reminder.getId());
@@ -224,7 +223,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != taskTemp) {
                 model.setTaskName(taskTemp.getName());
                 if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
-                    pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
+                    pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskTemp.getAssignee()).getData();
                     if (null != pTemp) {
                         model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
                     }
@@ -248,7 +247,7 @@ public class ReminderServiceImpl implements ReminderService {
         int num = (page - 1) * rows;
         List<ReminderModel> listMap = new ArrayList<>();
         TaskModel taskTemp = taskManager.findById(tenantId, taskId).getData();
-        Position pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
+        OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
             ReminderModel model = new ReminderModel();
             model.setId(reminder.getId());
@@ -282,15 +281,15 @@ public class ReminderServiceImpl implements ReminderService {
             return r;
         }
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Position position = Y9LoginUserHolder.getPosition();
+        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         Reminder r = new Reminder();
         r.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         r.setCreateTime(new Date());
         r.setModifyTime(new Date());
         r.setReminderMakeTyle(1);
         r.setReminderSendType(ItemUrgeTypeEnum.TODOINFO.getValue());
-        r.setSenderId(position.getId());
-        r.setSenderName(position.getName());
+        r.setSenderId(orgUnit.getId());
+        r.setSenderName(orgUnit.getName());
         r.setTenantId(tenantId);
         r.setTaskId(reminder.getTaskId());
         r.setProcInstId(reminder.getProcInstId());

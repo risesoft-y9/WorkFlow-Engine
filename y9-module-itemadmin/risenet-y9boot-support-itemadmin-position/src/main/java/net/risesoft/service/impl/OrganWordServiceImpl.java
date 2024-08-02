@@ -612,7 +612,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 } else {
                     for (String roleId : roleIds) {
                         hasPermission =
-                            positionRoleApi.hasRole(tenantId, roleId, Y9LoginUserHolder.getPositionId()).getData();
+                            positionRoleApi.hasRole(tenantId, roleId, Y9LoginUserHolder.getOrgUnitId()).getData();
                         if (hasPermission) {
                             break;
                         }
@@ -651,7 +651,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     public List<OrganWordPropertyModel> listByCustomNumber(String itemId, String processDefinitionId,
         String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPosition().getId();
+        String userId = Y9LoginUserHolder.getOrgUnitId();
 
         List<OrganWordPropertyModel> retList = new ArrayList<>();
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
@@ -665,7 +665,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     editMap.setHasPermission(true);
                 } else {
                     for (String roleId : roleIds) {
-                        hasPermission = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
+                        hasPermission = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
                         if (hasPermission) {
                             break;
                         }

@@ -49,13 +49,13 @@ public class ItemLinkApiImpl implements ItemLinkApi {
      * 获取有权限的事项绑定链接
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<List<LinkInfoModel>>} 通用请求返回对象 - data 是事项绑定链接
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<LinkInfoModel>> getItemLinkList(String tenantId, String positionId, String itemId) {
+    public Y9Result<List<LinkInfoModel>> getItemLinkList(String tenantId, String orgUnitId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<LinkInfoModel> linkList = new ArrayList<>();
         List<ItemLinkBind> list = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
@@ -65,7 +65,7 @@ public class ItemLinkApiImpl implements ItemLinkApi {
                 continue;
             }
             for (ItemLinkRole linkRole : roleList) {
-                boolean b = positionRoleApi.hasRole(tenantId, linkRole.getRoleId(), positionId).getData();
+                boolean b = positionRoleApi.hasRole(tenantId, linkRole.getRoleId(), orgUnitId).getData();
                 if (b) {
                     LinkInfo linkInfo = linkInfoRepository.findById(bind.getLinkId()).orElse(null);
                     LinkInfoModel model = new LinkInfoModel();
@@ -82,7 +82,7 @@ public class ItemLinkApiImpl implements ItemLinkApi {
      * 获取有权限的节点绑定链接
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 节点id
@@ -90,7 +90,7 @@ public class ItemLinkApiImpl implements ItemLinkApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<LinkInfoModel> getItemNodeLinkList(String tenantId, String positionId, String itemId,
+    public Y9Result<LinkInfoModel> getItemNodeLinkList(String tenantId, String orgUnitId, String itemId,
         String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         LinkInfoModel model = null;
@@ -105,7 +105,7 @@ public class ItemLinkApiImpl implements ItemLinkApi {
                 return Y9Result.success(model);
             }
             for (ItemLinkRole linkRole : roleList) {
-                boolean b = positionRoleApi.hasRole(tenantId, linkRole.getRoleId(), positionId).getData();
+                boolean b = positionRoleApi.hasRole(tenantId, linkRole.getRoleId(), orgUnitId).getData();
                 if (b) {
                     model = new LinkInfoModel();
                     LinkInfo linkInfo = linkInfoRepository.findById(bind.getLinkId()).orElse(null);

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.DataCenterApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.model.platform.Position;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DataCenterService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -26,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/dataCenter", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DataCenterApiImpl implements DataCenterApi {
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final DataCenterService dataCenterService;
 
@@ -35,16 +35,16 @@ public class DataCenterApiImpl implements DataCenterApi {
      *
      * @param processInstanceId 流程实例id
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
     public Y9Result<Object> saveToDateCenter(@RequestParam String processInstanceId, @RequestParam String tenantId,
-        @RequestParam String userId) {
+        @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPosition(position);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         dataCenterService.saveToDateCenter(processInstanceId);
         return Y9Result.success();
     }

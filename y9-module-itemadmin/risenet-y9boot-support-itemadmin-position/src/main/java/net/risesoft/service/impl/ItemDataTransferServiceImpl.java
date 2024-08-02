@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -46,18 +46,18 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
 
     private final RepositoryApi repositoryManager;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final ProcessParamService processParamService;
 
     public ItemDataTransferServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
-        RuntimeApi runtimeManager, TaskApi taskManager, RepositoryApi repositoryManager, PositionApi positionApi,
+        RuntimeApi runtimeManager, TaskApi taskManager, RepositoryApi repositoryManager, OrgUnitApi orgUnitApi,
         ProcessParamService processParamService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.runtimeManager = runtimeManager;
         this.taskManager = taskManager;
         this.repositoryManager = repositoryManager;
-        this.positionApi = positionApi;
+        this.orgUnitApi = orgUnitApi;
         this.processParamService = processParamService;
     }
 
@@ -138,7 +138,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        Position personTemp = positionApi.get(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             // 并行时，领导选取时存在顺序，因此这里也存在顺序
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");

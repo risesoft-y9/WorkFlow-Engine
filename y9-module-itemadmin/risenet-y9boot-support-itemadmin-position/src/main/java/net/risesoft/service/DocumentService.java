@@ -221,11 +221,11 @@ public interface DocumentService {
      * @param itemId 事项id
      * @param processSerialNumber 流程序列号
      * @param processDefinitionKey 流程定义key
-     * @param positionIds
+     * @param userIds
      * @return
      */
     StartProcessResultModel startProcess(String itemId, String processSerialNumber, String processDefinitionKey,
-        String positionIds);
+        String userIds);
 
     /**
      * 启动流程，指定任务节点

@@ -23,27 +23,27 @@ public interface OfficeFollowApi {
      * 根据流程实例id获取是否有关注
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是关注数量
      * @since 9.6.6
      */
     @GetMapping("/countByProcessInstanceId")
     Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 取消关注
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param processInstanceIds 流程实例id列表
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/delOfficeFollow")
     Y9Result<Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceIds") String processInstanceIds);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceIds") String processInstanceIds);
 
     /**
      * 根据流程实例id删除关注
@@ -61,19 +61,19 @@ public interface OfficeFollowApi {
      * 获取我的关注数量
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是我的关注数量
      * @since 9.6.6
      */
     @GetMapping("/getFollowCount")
     Y9Result<Integer> getFollowCount(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId);
+        @RequestParam("orgUnitId") String orgUnitId);
 
     /**
      * 根据系统名称获取关注列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param systemName 系统名称
      * @param searchName 搜索词
      * @param page 页码
@@ -83,7 +83,7 @@ public interface OfficeFollowApi {
      */
     @GetMapping("/getFollowListBySystemName")
     Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("systemName") String systemName,
         @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("page") int page,
         @RequestParam("rows") int rows);
 
@@ -91,7 +91,7 @@ public interface OfficeFollowApi {
      * 获取关注列表
      *
      * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param orgUnitId 人员、岗位id
      * @param searchName 搜索词
      * @param page 页码
      * @param rows 条数
@@ -100,7 +100,7 @@ public interface OfficeFollowApi {
      */
     @GetMapping("/getOfficeFollowList")
     Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId,
+        @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("page") int page,
         @RequestParam("rows") int rows);
 

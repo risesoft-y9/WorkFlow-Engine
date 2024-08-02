@@ -183,54 +183,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    public Map<String, Object> getTabMap4Position(String itemId, String processDefinitionId, String taskDefKey,
-        String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> objectPermList =
-            listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
-        Map<String, Object> map = new HashMap<>(16);
-        boolean existDepartment = false;
-        boolean existPosition = false;
-        for (ItemPermission o : objectPermList) {
-            if (existPosition && existDepartment) {
-                break;
-            }
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
-                int positionSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData().size();
-                if (positionSize > 0) {
-                    existPosition = true;
-                }
-                int departmentSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
-                if (departmentSize > 0) {
-                    existDepartment = true;
-                }
-                continue;
-            }
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
-                List<OrgUnit> orgUnitList =
-                    dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
-                for (OrgUnit orgUnit : orgUnitList) {
-                    if (existPosition && existDepartment) {
-                        break;
-                    }
-                    if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        existPosition = true;
-                        continue;
-                    }
-                    if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                        existDepartment = true;
-                    }
-                }
-            }
-        }
-        map.put("existDepartment", existDepartment);
-        map.put("existPosition", existPosition);
-        return map;
-    }
-
-    @Override
     public List<ItemPermission> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
         String processDefinitionId, String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
