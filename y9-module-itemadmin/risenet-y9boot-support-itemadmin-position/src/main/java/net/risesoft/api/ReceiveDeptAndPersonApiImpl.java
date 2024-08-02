@@ -37,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/receiveDeptAndPerson", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -63,7 +63,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         name = "%" + name + "%";
         List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameLikeOrderByTabIndex(name);
         for (ReceiveDepartment receiveDepartment : list) {
-            Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+            Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
                 continue;
             }
@@ -95,7 +95,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
         for (ReceiveDepartment receiveDepartment : list) {
-            Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+            Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
                 continue;
             }
@@ -132,7 +132,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         if (StringUtils.isNotBlank(name)) {
             list = receiveDepartmentRepository.findByDeptNameContainingOrderByTabIndex(name);
             for (ReceiveDepartment receiveDepartment : list) {
-                Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }
@@ -157,7 +157,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             if (StringUtils.isBlank(orgUnitId)) {
                 list = receiveDepartmentRepository.findAll();
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -177,7 +177,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             } else {
                 list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(orgUnitId);
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -243,7 +243,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceivePerson> list = receivePersonRepository.findByPersonId(orgUnitId);
         if (!list.isEmpty()) {
             for (ReceivePerson receivePerson : list) {
-                Department department = departmentManager.get(tenantId, receivePerson.getDeptId()).getData();
+                Department department = departmentApi.get(tenantId, receivePerson.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }

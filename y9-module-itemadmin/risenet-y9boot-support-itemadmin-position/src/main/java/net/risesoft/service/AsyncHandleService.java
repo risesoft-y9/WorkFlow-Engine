@@ -117,7 +117,7 @@ public class AsyncHandleService {
 
     private final Process4SearchService process4SearchService;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final ItemTaskConfService itemTaskConfService;
 
@@ -302,7 +302,7 @@ public class AsyncHandleService {
     }
 
     private String getSponsorPosition(String id, String deptId) {
-        List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Department> deptList = departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         List<Position> list0 = positionApi.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             id = list0.get(0).getId();

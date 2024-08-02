@@ -56,7 +56,7 @@ public class ItemRestController {
 
     private final OrganizationApi organizationManager;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final AppIconApi appIconManager;
 
@@ -152,10 +152,9 @@ public class ItemRestController {
         if (StringUtils.isBlank(deptId)) {
             List<Organization> orgList = organizationManager.list(tenantId).getData();
             if (orgList != null && !orgList.isEmpty()) {
-                List<Department> deptList =
-                    departmentManager.listByParentId(tenantId, orgList.get(0).getId()).getData();
+                List<Department> deptList = departmentApi.listByParentId(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
-                    List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
+                    List<Department> subDeptList = departmentApi.listByParentId(tenantId, dept.getId()).getData();
                     boolean isParent = subDeptList != null && !subDeptList.isEmpty();
                     sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId())
                         .append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent)
@@ -163,9 +162,9 @@ public class ItemRestController {
                 }
             }
         } else {
-            List<Department> deptList = departmentManager.listByParentId(tenantId, deptId).getData();
+            List<Department> deptList = departmentApi.listByParentId(tenantId, deptId).getData();
             for (Department dept : deptList) {
-                List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
+                List<Department> subDeptList = departmentApi.listByParentId(tenantId, dept.getId()).getData();
                 boolean isParent = subDeptList != null && !subDeptList.isEmpty();
                 sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'")
                     .append(dept.getName()).append("', isParent: ").append(isParent).append("},");

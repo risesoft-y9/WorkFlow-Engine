@@ -24,7 +24,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 public class CurrentDeptLeaders extends AbstractDynamicRoleMember {
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -33,7 +33,7 @@ public class CurrentDeptLeaders extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        return departmentManager
+        return departmentApi
             .listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(), DepartmentPropCategoryEnum.LEADER.getValue())
             .getData();
     }

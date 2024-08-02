@@ -32,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
-import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -52,7 +51,6 @@ import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.CustomGroupMember;
-import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
@@ -94,8 +92,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     private final TaskApi taskManager;
 
     private final HistoricProcessApi historicProcessManager;
-
-    private final DepartmentApi departmentManager;
 
     private final OrganizationApi organizationManager;
 
@@ -792,7 +788,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 }
             }
             // 保存抄送
-            OrgUnit dept = departmentManager.get(tenantId, currOrgUnit.getParentId()).getData();
+            OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, currOrgUnit.getParentId()).getData();
             if (null == dept || null == dept.getId()) {
                 dept = organizationManager.get(tenantId, currOrgUnit.getParentId()).getData();
             }
@@ -812,7 +808,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 cs.setTitle(title);
                 cs.setUserId(orgUnit.getId());
                 cs.setUserName(orgUnit.getName());
-                Department department = departmentManager.get(tenantId, orgUnit.getParentId()).getData();
+                OrgUnit department = orgUnitApi.getOrgUnit(tenantId, orgUnit.getParentId()).getData();
                 cs.setUserDeptId(department.getId());
                 cs.setUserDeptName(department.getName());
                 cs.setItemId(itemId);

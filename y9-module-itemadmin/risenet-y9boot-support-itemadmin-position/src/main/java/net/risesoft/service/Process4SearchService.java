@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
@@ -28,7 +27,6 @@ import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
@@ -47,8 +45,6 @@ import net.risesoft.y9.util.Y9Util;
 public class Process4SearchService {
 
     private final OfficeDoneInfoService officeDoneInfoService;
-
-    private final DepartmentApi departmentManager;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -115,7 +111,7 @@ public class Process4SearchService {
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
             officeDoneInfo.setDeptId(orgUnit.getParentId());
-            Department dept = departmentManager.get(tenantId, orgUnit.getParentId()).getData();
+            OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, orgUnit.getParentId()).getData();
             officeDoneInfo.setDeptName(dept != null ? dept.getName() : "");
             officeDoneInfo.setEntrustUserId("");
             officeDoneInfo.setAllUserId(processParam.getStartor());

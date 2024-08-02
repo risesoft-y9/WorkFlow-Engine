@@ -48,7 +48,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleApi roleManager;
 
-    private final DepartmentApi departmentManager;
+    private final DepartmentApi departmentApi;
 
     private final OrgUnitApi orgUnitManager;
 
@@ -165,7 +165,7 @@ public class RoleServiceImpl implements RoleService {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
             Organization organization = orgUnitManager.getOrganization(tenantId, userId).getData();
-            List<Department> deptList = departmentManager.listByParentId(tenantId, organization.getId()).getData();
+            List<Department> deptList = departmentApi.listByParentId(tenantId, organization.getId()).getData();
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
             for (OrgUnit orgUnitTemp : deptList) {
                 orgUnitListTemp.addAll(orgUnitManager
@@ -502,7 +502,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 }
                 if (o.getRoleType() == 2) {
-                    Department dept = departmentManager.get(tenantId, o.getRoleId()).getData();
+                    Department dept = departmentApi.get(tenantId, o.getRoleId()).getData();
                     if (dept != null) {
                         deptList.add(dept);
                     }
@@ -658,7 +658,7 @@ public class RoleServiceImpl implements RoleService {
             if (StringUtils.isBlank(id)) {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -675,7 +675,7 @@ public class RoleServiceImpl implements RoleService {
             } else {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(id);
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
