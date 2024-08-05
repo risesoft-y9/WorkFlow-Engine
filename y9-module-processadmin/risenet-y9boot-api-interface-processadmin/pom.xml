@@ -2,12 +2,16 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
+        <groupId>net.risesoft</groupId>
+        <artifactId>y9-flowable</artifactId>
+        <version>v9.6.7-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
     <!-- <groupId>net.risesoft</groupId> -->
     <artifactId>risenet-y9boot-api-interface-processadmin</artifactId>
     <version>v9.6.7-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <name>risenet-y9boot-api-interface-processadmin</name>
     <description>RiseSoft/WorkFlow Engine processadmin interface</description>
     <url>https://gitee.com/risesoft-y9/y9-flowable</url>
@@ -43,23 +47,16 @@
         </developer>
     </developers>
 
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
     <scm>
         <url>https://gitee.com/risesoft-y9/y9-flowable</url>
         <connection>https://gitee.com/risesoft-y9/y9-flowable</connection>
         <developerConnection>https://gitee.com/risesoft-y9/y9-flowable</developerConnection>
     </scm>
-
-    <parent>
-        <groupId>net.risesoft</groupId>
-        <artifactId>y9-flowable</artifactId>
-        <version>v9.6.7-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
+ 
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>

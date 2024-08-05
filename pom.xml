@@ -60,4 +60,27 @@
         <module>y9-module-flowableui</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <configuration>
+                            <excludeArtifacts>
+                                <artifact>y9-module-flowableui</artifact>
+                                <artifact>risenet-y9boot-webapp-flowableui-position</artifact>
+                                <artifact>y9-module-jodconverter</artifact>
+                                <artifact>risenet-y9boot-webapp-jodconverter</artifact>
+                                <artifact>risenet-y9boot-webapp-processadmin</artifact>
+                                <artifact>risenet-y9boot-webapp-itemadmin</artifact>
+                            </excludeArtifacts>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

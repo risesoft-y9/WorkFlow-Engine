@@ -44,12 +44,6 @@
         </developer>
     </developers>
 
-    <scm>
-        <url>https://gitee.com/risesoft-y9/y9-flowable</url>
-        <connection>https://gitee.com/risesoft-y9/y9-flowable</connection>
-        <developerConnection>https://gitee.com/risesoft-y9/y9-flowable</developerConnection>
-    </scm>
- 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -58,6 +52,12 @@
 
         <java.version>1.8</java.version>
     </properties>
+
+    <scm>
+        <url>https://gitee.com/risesoft-y9/y9-flowable</url>
+        <connection>https://gitee.com/risesoft-y9/y9-flowable</connection>
+        <developerConnection>https://gitee.com/risesoft-y9/y9-flowable</developerConnection>
+    </scm>
 
     <dependencies>
         <dependency>
