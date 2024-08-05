@@ -277,7 +277,7 @@ public class ReminderApiImpl implements ReminderApi {
     }
 
     /**
-     * 设置为查看状态
+     * 设置催办阅读时间
      *
      * @param tenantId 租户id
      * @param ids 催办ids
@@ -288,7 +288,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Y9Result<Object> setReadTime(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         reminderService.setReadTime(ids);
-        return Y9Result.successMsg("设置为查看状态成功!");
+        return Y9Result.successMsg("设置催办阅读时间成功!");
     }
 
     /**

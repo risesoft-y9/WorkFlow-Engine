@@ -48,7 +48,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     private final OrganizationApi organizationManager;
 
     /**
-     * 获取抄送选人
+     * 获取抄送选人组织机构数据
      *
      * @param tenantId 租户id
      * @param userId 人员id
