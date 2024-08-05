@@ -21,6 +21,5 @@ public interface WordTemplateRepository
 
     List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId);
 
-    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,
-                                                                                String fileName);
+    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName);
 }
