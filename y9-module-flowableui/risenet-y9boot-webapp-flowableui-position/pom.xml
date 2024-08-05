@@ -298,7 +298,7 @@
             </build>
         </profile>
         <profile>
-            <id>api-doc</id>
+            <id>build-api-doc</id>
             <build>
                 <plugins>
                     <plugin>
