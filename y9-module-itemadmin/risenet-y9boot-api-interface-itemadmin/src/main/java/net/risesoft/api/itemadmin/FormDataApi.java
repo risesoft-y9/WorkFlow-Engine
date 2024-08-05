@@ -95,6 +95,22 @@ public interface FormDataApi {
         @RequestParam("itemId") String itemId);
 
     /**
+     * 获取子表数据，一个表单是一个子表
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @param userId 人员、岗位id
+     * @param parentProcessSerialNumber 父流程编号
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是子表数据
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @GetMapping("/getChildFormData")
+    Y9Result<List<Map<String, Object>>> getChildFormData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("formId") String formId,
+        @RequestParam("parentProcessSerialNumber") String parentProcessSerialNumber) throws Exception;
+
+    /**
      * 获取子表数据
      *
      * @param tenantId 租户id
@@ -217,6 +233,20 @@ public interface FormDataApi {
     Y9Result<Object> saveChildTableData(@RequestParam("tenantId") String tenantId,
         @RequestParam("formId") String formId, @RequestParam("tableId") String tableId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestBody String jsonData) throws Exception;
+
+    /**
+     * 保存子表单数据，一个表单是一个子表
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @param formJsonData json表数据
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @PostMapping("/saveChildTableData1")
+    Y9Result<Object> saveChildTableData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("formId") String formId, @RequestBody String formJsonData) throws Exception;
 
     /**
      * 保存表单数据

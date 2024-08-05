@@ -133,6 +133,26 @@ public class Y9FormRestController {
     }
 
     /**
+     * 根据人员、获取子表单数据
+     *
+     * @param formId 表单id
+     * @param parentProcessSerialNumber 父流程编号
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @GetMapping(value = "/getChildFormData")
+    public Y9Result<List<Map<String, Object>>> getChildFormData(@RequestParam @NotBlank String formId,
+        @RequestParam @NotBlank String parentProcessSerialNumber) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            return formDataApi.getChildFormData(tenantId, Y9LoginUserHolder.getPositionId(), formId,
+                parentProcessSerialNumber);
+        } catch (Exception e) {
+            LOGGER.error("获取子表单数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
      * 获取子表单数据
      *
      * @param formId 表单id
@@ -283,6 +303,26 @@ public class Y9FormRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return formDataApi.getPreFormDataByFormId(tenantId, formId);
 
+    }
+
+    /**
+     * 保存子表单数据，一个表单是一个子表
+     *
+     * @param formId 表单id
+     * @param jsonData 表数据
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/saveChildFormData")
+    public Y9Result<String> saveChildFormData(@RequestParam @NotBlank String formId,
+        @RequestParam @NotBlank String jsonData) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            formDataApi.saveChildTableData(tenantId, formId, jsonData);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            LOGGER.error("保存子表单数据失败", e);
+        }
+        return Y9Result.failure("保存失败");
     }
 
     /**

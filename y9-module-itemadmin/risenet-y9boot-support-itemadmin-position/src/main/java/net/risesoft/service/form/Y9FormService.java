@@ -25,6 +25,15 @@ public interface Y9FormService {
     Y9Result<Object> delChildTableRow(String formId, String tableId, String guid);
 
     /**
+     * 删除表单数据
+     *
+     * @param formId
+     * @param guid
+     * @return
+     */
+    Y9Result<Object> delPreFormData(String formId, String guid);
+
+    /**
      * 根据id删除表单
      *
      * @param id
@@ -40,15 +49,6 @@ public interface Y9FormService {
      * @return
      */
     boolean deleteByGuid(String y9TableId, String guid);
-
-    /**
-     * 删除表单数据
-     *
-     * @param formId
-     * @param guid
-     * @return
-     */
-    Y9Result<Object> delPreFormData(String formId, String guid);
 
     /**
      * 根据id获取表单信息
@@ -101,6 +101,16 @@ public interface Y9FormService {
     List<Y9Form> listAll();
 
     /**
+     * Description: 获取子表数据，一个表单是一个子表
+     *
+     * @param formId
+     * @param parentProcessSerialNumber
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listChildFormData(String formId, String parentProcessSerialNumber);
+
+    /**
      * Description: 获取子表数据
      *
      * @param formId
@@ -141,6 +151,15 @@ public interface Y9FormService {
      * @return
      */
     Y9Result<Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData);
+
+    /**
+     * 保存子表数据，一个表单是一个子表
+     *
+     * @param formId
+     * @param jsonData
+     * @return
+     */
+    Y9Result<Object> saveChildTableData(String formId, String jsonData);
 
     /**
      * 保存表单数据

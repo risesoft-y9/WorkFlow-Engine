@@ -246,6 +246,11 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    public List<Map<String, Object>> listChildFormData(String formId, String parentProcessSerialNumber) {
+        return y9FormService.listChildFormData(formId, parentProcessSerialNumber);
+    }
+
+    @Override
     public List<Map<String, Object>> listChildTableData(String formId, String tableId, String processSerialNumber)
         throws Exception {
         return y9FormService.listChildTableData(formId, tableId, processSerialNumber);
@@ -379,11 +384,45 @@ public class FormDataServiceImpl implements FormDataService {
         try {
             Y9Result<Object> map = y9FormService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
             if (!map.isSuccess()) {
-                throw new Exception("FormDataService saveFormData error");
+                throw new Exception("FormDataService saveChildTableData error");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("FormDataService saveFormData error");
+            throw new Exception("FormDataService saveChildTableData error");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void saveChildTableData(String formId, String formdata) throws Exception {
+        try {
+            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
+            List<Map<String, Object>> listMap = new ArrayList<>();
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("name", "form_Id");
+            map.put("value", formId);
+            listMap.add(map);
+            for (String columnName : mapFormJsonData.keySet()) {
+                // 根据数据库表名获取列名
+                String value = mapFormJsonData.get(columnName).toString();
+                map = new HashMap<>(16);
+                map.put("name", columnName);
+                map.put("value", value);
+                listMap.add(map);
+            }
+            formdata = Y9JsonUtil.writeValueAsString(listMap);
+            Y9Result<Object> y9Result = y9FormService.saveChildTableData(formId, formdata);
+            if (!y9Result.isSuccess()) {
+                throw new Exception("FormDataService saveChildTableData error0");
+            }
+        } catch (Exception e) {
+            LOGGER.error("****************************formdata:" + formdata);
+            final Writer result = new StringWriter();
+            final PrintWriter print = new PrintWriter(result);
+            e.printStackTrace(print);
+            String msg = result.toString();
+            LOGGER.error(msg);
+            throw new Exception("FormDataService saveChildTableData error1");
         }
     }
 
