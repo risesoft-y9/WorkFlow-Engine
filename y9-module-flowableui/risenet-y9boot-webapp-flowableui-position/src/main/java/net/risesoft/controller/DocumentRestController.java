@@ -97,7 +97,7 @@ public class DocumentRestController {
     private final ProcessTodoApi processTodoApi;
 
     /**
-     * 获取新建公文数据
+     * 获取新建办件初始化数据
      *
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
@@ -118,7 +118,7 @@ public class DocumentRestController {
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
-            LOGGER.error("获取新建公文数据失败", e);
+            LOGGER.error("获取新建办件数据失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -143,9 +143,9 @@ public class DocumentRestController {
     }
 
     /**
-     * 获取编辑文档数据
+     * 获取编辑办件数据
      *
-     * @param itembox 文档状态
+     * @param itembox 办件状态
      * @param taskId 任务id
      * @param processInstanceId 流程实例id
      * @param itemId 事项id
@@ -194,7 +194,7 @@ public class DocumentRestController {
             map.put("follow", follow > 0);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
-            LOGGER.error("获取编辑文档数据失败", e);
+            LOGGER.error("获取编辑办件数据失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -250,7 +250,7 @@ public class DocumentRestController {
     }
 
     /**
-     * 获取事项列表
+     * 获取事项列表（含抄送未阅数量、监控管理权限、人事统计权限）
      *
      * @return Y9Result<Map < String, Object>>
      */
@@ -284,7 +284,7 @@ public class DocumentRestController {
     }
 
     /**
-     * 获取事项系统列表
+     * 获取事项和事项对应的系统列表（含抄送未阅数量、监控管理权限、人事统计权限）
      *
      * @return Y9Result<Map < String, Object>>
      */
@@ -337,7 +337,7 @@ public class DocumentRestController {
     }
 
     /**
-     * 查询协办人员办理情况
+     * 获取协办人员办理情况
      *
      * @param taskId 任务id
      * @return Y9Result<Map < String, Object>>
@@ -382,7 +382,7 @@ public class DocumentRestController {
     }
 
     /**
-     * 恢复待办
+     * 批量恢复待办
      *
      * @param processInstanceIds 流程实例ids ，逗号隔开
      * @param desc 原因
@@ -401,7 +401,7 @@ public class DocumentRestController {
     }
 
     /**
-     * 获取签收任务配置,判断是否直接发送
+     * 获取签收任务配置（用于判断是否直接发送）
      *
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
@@ -434,7 +434,7 @@ public class DocumentRestController {
     }
 
     /**
-     * 获取用户选取界面数据
+     * 获取用户选人发送界面数据
      *
      * @param itemId 事项id
      * @param routeToTask 任务路由

@@ -78,7 +78,7 @@ public class AssociatedFileRestController {
     }
 
     /**
-     * 获取历史文件
+     * 获取历史文件列表
      *
      * @param itemId 事项id
      * @param title 搜索标题
@@ -93,7 +93,7 @@ public class AssociatedFileRestController {
     }
 
     /**
-     * 保存关联流程
+     * 保存关联的流程
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 流程实例ids，逗号隔开

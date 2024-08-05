@@ -173,7 +173,7 @@ public class Y9FormRestController {
     }
 
     /**
-     * 获取表单字段权限
+     * 获取当前流程任务绑定的表单字段权限
      *
      * @param formId 表单id
      * @param fieldName 表单字段

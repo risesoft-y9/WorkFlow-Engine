@@ -54,6 +54,12 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
+/**
+ * 正文相关接口
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -288,7 +294,7 @@ public class FormNTKOController {
     }
 
     /**
-     * 下载正文
+     * 下载正文文件
      *
      * @param id 正文id
      * @param fileType 文件类型
@@ -417,7 +423,7 @@ public class FormNTKOController {
     }
 
     /**
-     * 打开正文
+     * 打开正文文件
      *
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
@@ -481,7 +487,7 @@ public class FormNTKOController {
     }
 
     /**
-     * 套红模板
+     * 打开套红模板文件
      *
      * @param templateGUID 模板id
      * @param processSerialNumber 流程编号
@@ -524,7 +530,7 @@ public class FormNTKOController {
     }
 
     /**
-     * 打开历史正文
+     * 打开历史版本正文文件
      *
      * @param taskId 任务id
      * @param tenantId 租户id
@@ -697,7 +703,7 @@ public class FormNTKOController {
     }
 
     /**
-     * 选择套红
+     * 选择套红模板（后端页面调用）
      *
      * @param activitiUser 人员id
      * @param tenantId 租户id
@@ -771,26 +777,18 @@ public class FormNTKOController {
         return result;
     }
 
+    /**
+     * 打开下载PDF转换工具页面（后端页面调用）
+     *
+     * @return
+     */
     @RequestMapping("/showDownPdfTool")
     public String showDownPdfTool() {
         return "intranet/downPdfTool";
     }
 
-    @RequestMapping(value = "/showHistoryDoc")
-    public String showHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam(required = false) String historyFileType, ModelMap model) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        TransactionHistoryWordModel map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
-        model.addAttribute("taskId", taskId);
-        model.addAttribute("history", map);
-        model.addAttribute("historyFileType", historyFileType);
-        return "history/openHistoryDoc";
-    }
-
     /**
-     * 获取正文
+     * 获取正文文件信息（用于后端页面调用）
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
@@ -862,7 +860,7 @@ public class FormNTKOController {
     }
 
     /**
-     * 上传正文
+     * 上传正文文件
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
@@ -939,7 +937,7 @@ public class FormNTKOController {
     }
 
     /**
-     * 草稿箱保存正文
+     * 办件保存正文
      *
      * @param fileType 文件类型
      * @param isTaoHong 是否套红

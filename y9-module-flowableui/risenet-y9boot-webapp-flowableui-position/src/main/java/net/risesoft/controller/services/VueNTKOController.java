@@ -31,6 +31,12 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 
+/**
+ * 正文前端接口
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -98,7 +104,7 @@ public class VueNTKOController {
     }
 
     /**
-     * 获取正文
+     * 获取办件正文信息
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id

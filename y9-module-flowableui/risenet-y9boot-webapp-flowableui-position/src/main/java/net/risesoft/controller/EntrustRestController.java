@@ -44,7 +44,7 @@ public class EntrustRestController {
     private final OrganizationApi organizationApi;
 
     /**
-     * 删除委托
+     * 删除委托信息
      *
      * @param id 委托id
      * @return Y9Result<String>
@@ -62,7 +62,7 @@ public class EntrustRestController {
     }
 
     /**
-     * 获取委托列表
+     * 获取当前人的委托列表
      *
      * @return Y9Result<List < EntrustModel>>
      */

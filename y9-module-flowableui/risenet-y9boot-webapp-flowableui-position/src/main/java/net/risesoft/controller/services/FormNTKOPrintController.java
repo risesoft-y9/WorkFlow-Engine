@@ -31,6 +31,12 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
+/**
+ * 正文打印相关接口
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -51,7 +57,7 @@ public class FormNTKOPrintController {
     private final TransactionWordApi transactionWordApi;
 
     /**
-     * 下载正文
+     * 下载正文文件
      *
      * @param id 正文id
      * @param fileType 文件类型
@@ -117,7 +123,7 @@ public class FormNTKOPrintController {
     }
 
     /**
-     * 打开正文
+     * 打开正文文件
      *
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
@@ -180,6 +186,15 @@ public class FormNTKOPrintController {
         }
     }
 
+    /**
+     * 打开打印模板文件
+     * 
+     * @param itemId
+     * @param tenantId
+     * @param userId
+     * @param response
+     * @param request
+     */
     @RequestMapping(value = "/openDocument")
     public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
         HttpServletRequest request) {

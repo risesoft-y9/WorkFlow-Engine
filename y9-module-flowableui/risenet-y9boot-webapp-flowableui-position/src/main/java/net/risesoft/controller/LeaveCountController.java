@@ -50,7 +50,7 @@ public class LeaveCountController {
     private JdbcTemplate jdbcTemplate4Tenant = null;
 
     /**
-     * 请假统计
+     * 人员请假统计列表
      *
      * @param leaveType 请假类型
      * @param userName 人员名称
@@ -98,7 +98,7 @@ public class LeaveCountController {
     }
 
     /**
-     * 导出Excel
+     * 导出人事办件数据至Excel文件
      *
      * @param leaveType 请假类型
      * @param userName 人员名称

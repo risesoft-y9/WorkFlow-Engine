@@ -24,7 +24,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 编号
+ * 办件编号
  *
  * @author zhangchongjie
  * @date 2024/06/05
@@ -39,7 +39,7 @@ public class OrganWordRestController {
     private final OrganWordApi organWordApi;
 
     /**
-     * 检查编号
+     * 验证并获取最新编号
      *
      * @param characterValue 机关代字
      * @param custom 编号标识
@@ -140,7 +140,7 @@ public class OrganWordRestController {
     }
 
     /**
-     * 获取最新编号
+     * 获取最新临时编号
      *
      * @param itemId
      * @param custom
@@ -161,7 +161,7 @@ public class OrganWordRestController {
     }
 
     /**
-     * 保存编号
+     * 保存编号的占用信息
      *
      * @param numberString
      * @param itemId

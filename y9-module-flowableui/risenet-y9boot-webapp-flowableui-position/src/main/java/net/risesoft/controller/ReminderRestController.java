@@ -66,7 +66,7 @@ public class ReminderRestController {
     }
 
     /**
-     * 获取催办列表信息
+     * 根据类型和流程实例id获取催办列表信息
      *
      * @param type 类型
      * @param processInstanceId 流程实例id
@@ -106,7 +106,7 @@ public class ReminderRestController {
     }
 
     /**
-     * 设置阅读时间
+     * 批量设置催办阅读时间
      *
      * @param ids 催办id
      * @return Y9Result<String>
@@ -119,7 +119,7 @@ public class ReminderRestController {
     }
 
     /**
-     * 获取催办任务
+     * 获取催办任务列表
      *
      * @param processInstanceId 流程实例id
      * @param page 页码

@@ -87,7 +87,7 @@ public class ChaoSongRestController {
     }
 
     /**
-     * 批量已阅
+     * 批量设置抄送状态为已阅
      *
      * @param ids 抄送id,逗号隔开
      * @return Y9Result<String>
@@ -104,7 +104,7 @@ public class ChaoSongRestController {
     }
 
     /**
-     * 收回抄送件
+     * 批量删除抄送件
      *
      * @param ids 抄送ids，逗号隔开
      * @return Y9Result<String>
@@ -122,7 +122,7 @@ public class ChaoSongRestController {
     }
 
     /**
-     * 获取打开抄送件数据
+     * 获取抄送件详情数据
      *
      * @param id 抄送id
      * @param processInstanceId 流程实例id
@@ -175,7 +175,7 @@ public class ChaoSongRestController {
     }
 
     /**
-     * 获取抄送信息
+     * 获取抄送信息列表
      *
      * @param type 类型，my为我的抄送
      * @param userName 收件人
@@ -204,7 +204,7 @@ public class ChaoSongRestController {
     }
 
     /**
-     * 抄送
+     * 保存抄送信息
      *
      * @param processInstanceId 流程实例id
      * @param users 收件人
@@ -253,7 +253,7 @@ public class ChaoSongRestController {
     }
 
     /**
-     * 获取抄送列表
+     * 搜索抄送列表（标题、列表类型）
      *
      * @param documentTitle 搜索词
      * @param status 列表类型：0为未阅件，1为已阅件，2为批阅件

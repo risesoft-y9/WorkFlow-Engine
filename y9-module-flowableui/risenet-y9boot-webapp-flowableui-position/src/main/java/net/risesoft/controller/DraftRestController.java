@@ -34,7 +34,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
- * 草稿
+ * 草稿箱
  *
  * @author zhangchongjie
  * @date 2024/06/05
@@ -70,7 +70,7 @@ public class DraftRestController {
     }
 
     /**
-     * 获取草稿列表
+     * 获取草稿箱列表
      *
      * @param page 页码
      * @param rows 条数
@@ -102,7 +102,7 @@ public class DraftRestController {
     }
 
     /**
-     * 获取草稿列表视图配置
+     * 获取草稿列表视图配置信息
      *
      * @param itemId 事项id
      * @return Y9Result<List < ItemViewConfModel>>
@@ -116,7 +116,7 @@ public class DraftRestController {
     }
 
     /**
-     * 打开草稿,获取草稿信息
+     * 获取草稿详细信息（打开草稿时调用）
      *
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
@@ -171,7 +171,7 @@ public class DraftRestController {
     }
 
     /**
-     * 删除草稿
+     * 批量删除草稿
      *
      * @param ids 草稿ids，逗号隔开
      * @return Y9Result<Object>
@@ -183,7 +183,7 @@ public class DraftRestController {
     }
 
     /**
-     * 保存草稿
+     * 保存草稿信息
      *
      * @param itemId 事项id
      * @param processSerialNumber 流程编号

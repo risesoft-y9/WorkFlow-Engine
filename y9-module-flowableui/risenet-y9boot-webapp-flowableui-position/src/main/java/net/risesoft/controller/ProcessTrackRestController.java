@@ -45,7 +45,7 @@ public class ProcessTrackRestController {
     private final RepositoryApi repositoryApi;
 
     /**
-     * 获取流程图
+     * 获取流程图数据
      *
      * @param resourceType 类型
      * @param processInstanceId 流程实例id
@@ -81,7 +81,7 @@ public class ProcessTrackRestController {
     }
 
     /**
-     * 获取历程数据
+     * 获取历史任务数据
      *
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
@@ -104,7 +104,7 @@ public class ProcessTrackRestController {
     }
 
     /**
-     * 获取简易历程数据
+     * 获取简易历史任务数据
      *
      * @param processInstanceId 流程实例id
      * @return Y9Result<List < Map < String, Object>>>

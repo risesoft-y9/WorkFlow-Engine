@@ -49,7 +49,7 @@ public class QuickSendRestController {
     private final CustomGroupApi customGroupApi;
 
     /**
-     * 获取快捷发送人
+     * 获取快捷发送人数据
      *
      * @param itemId 事项id
      * @param taskKey 任务key
@@ -95,7 +95,7 @@ public class QuickSendRestController {
     }
 
     /**
-     * 保存快捷发送人
+     * 保存快捷发送人信息
      *
      * @param itemId 事项id
      * @param taskKey 任务key
