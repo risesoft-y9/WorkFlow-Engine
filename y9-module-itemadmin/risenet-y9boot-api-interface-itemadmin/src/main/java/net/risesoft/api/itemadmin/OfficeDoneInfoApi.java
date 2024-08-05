@@ -221,6 +221,36 @@ public interface OfficeDoneInfoApi {
         @RequestParam("rows") Integer rows);
 
     /**
+     * 根据系统，个人所有件搜索,xxx使用
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param title 搜索词
+     * @param systemName 系统名称
+     * @param itemId 事项id
+     * @param target 目标
+     * @param state 状态
+     * @param year 年份
+     * @param startdate 开始日期
+     * @param enddate 结束日期
+     * @param page 页码
+     * @param rows 条数
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 办件信息
+     * @since 9.6.6
+     */
+    @GetMapping("/searchAllByUserIdAndSystemName4xxx")
+    Y9Page<OfficeDoneInfoModel> searchAllByUserIdAndSystemName4xxx(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "title", required = false) String title,
+        @RequestParam(value = "systemName", required = false) String systemName,
+        @RequestParam(value = "itemId", required = false) String itemId,
+        @RequestParam(value = "target", required = false) String target,
+        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "year", required = false) String year,
+        @RequestParam(value = "startdate", required = false) String startdate,
+        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
+
+    /**
      * 监控办件列表
      *
      * @param tenantId 租户id

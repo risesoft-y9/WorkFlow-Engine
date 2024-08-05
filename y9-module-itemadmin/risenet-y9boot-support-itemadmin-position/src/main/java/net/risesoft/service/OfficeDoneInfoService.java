@@ -146,6 +146,26 @@ public interface OfficeDoneInfoService {
         String itemId, String state, String year, String startdate, String enddate, Integer page, Integer rows);
 
     /**
+     * 根据系统，个人所有件搜索
+     *
+     * @param orgUnitId 人员、岗位id
+     * @param title 标题
+     * @param systemName 系统名称
+     * @param itemId 事项id
+     * @param target 目标
+     * @param state 状态
+     * @param year 年份
+     * @param startdate 开始日期
+     * @param enddate 结束日期
+     * @param page 页码
+     * @param rows 条数
+     * @return
+     */
+    Y9Page<OfficeDoneInfoModel> searchAllByUserIdAndSystemName4xxx(String orgUnitId, String title, String systemName,
+        String itemId, String target, String state, String year, String startdate, String enddate, Integer page,
+        Integer rows);
+
+    /**
      * 监控办件列表
      *
      * @param searchName

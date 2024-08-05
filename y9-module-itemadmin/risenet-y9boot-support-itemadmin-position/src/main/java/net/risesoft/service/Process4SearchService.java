@@ -122,6 +122,7 @@ public class Process4SearchService {
             officeDoneInfo.setProcessInstanceId(processInstanceId);
             officeDoneInfo.setStartTime(startTime);
             officeDoneInfo.setTenantId(tenantId);
+            officeDoneInfo.setTarget("");
             officeDoneInfoService.saveOfficeDone(officeDoneInfo);
         } catch (Exception e) {
             final Writer result = new StringWriter();

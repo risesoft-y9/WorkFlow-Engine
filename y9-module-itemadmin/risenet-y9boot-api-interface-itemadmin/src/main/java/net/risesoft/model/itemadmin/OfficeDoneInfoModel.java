@@ -135,7 +135,7 @@ public class OfficeDoneInfoModel implements Serializable {
     private String userComplete;
 
     /**
-     * 是否上会，1为上会,当代研究所使用
+     * 是否上会，1为上会,ddyjs使用
      */
     private String meeting = "0";
 
@@ -143,4 +143,9 @@ public class OfficeDoneInfoModel implements Serializable {
      * 会议类型，党组会，办公会，专题会,当代研究所使用
      */
     private String meetingType;
+
+    /**
+     * 目标，xxx使用
+     */
+    private String target;
 }
