@@ -145,6 +145,27 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     /**
+     * 获取子表数据，一个表单是一个子表
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @param userId 人员、岗位id
+     * @param parentProcessSerialNumber 父流程编号
+     * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是子表数据
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<Map<String, Object>>> getChildFormData(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String formId, @RequestParam String parentProcessSerialNumber)
+        throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setOrgUnitId(userId);
+        List<Map<String, Object>> list = formDataService.listChildFormData(formId, parentProcessSerialNumber);
+        return Y9Result.success(list);
+    }
+
+    /**
      * 获取子表数据
      *
      * @param tenantId 租户id
@@ -305,6 +326,24 @@ public class FormDataApiImpl implements FormDataApi {
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
+        return Y9Result.success();
+    }
+
+    /**
+     * 保存子表数据，一个表单是一个子表
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @param formJsonData json表数据
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> saveChildTableData(@RequestParam String tenantId, @RequestParam String formId,
+        @RequestBody String formJsonData) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        formDataService.saveChildTableData(formId, formJsonData);
         return Y9Result.success();
     }
 

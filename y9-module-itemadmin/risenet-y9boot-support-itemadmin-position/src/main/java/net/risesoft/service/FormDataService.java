@@ -91,6 +91,16 @@ public interface FormDataService {
     List<FieldPermModel> listAllFieldPerm(String formId, String taskDefKey, String processDefinitionId);
 
     /**
+     * Description: 获取子表数据，一个表单是一个子表
+     *
+     * @param formId
+     * @param parentProcessSerialNumber
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listChildFormData(String formId, String parentProcessSerialNumber) throws Exception;
+
+    /**
      * Description: 获取子表数据
      *
      * @param formId
@@ -146,6 +156,15 @@ public interface FormDataService {
      */
     void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData)
         throws Exception;
+
+    /**
+     * Description: 保存子表数据，一个表单是一个子表
+     *
+     * @param formId
+     * @param jsonData
+     * @throws Exception
+     */
+    void saveChildTableData(String formId, String jsonData) throws Exception;
 
     /**
      * 保存表单数据
