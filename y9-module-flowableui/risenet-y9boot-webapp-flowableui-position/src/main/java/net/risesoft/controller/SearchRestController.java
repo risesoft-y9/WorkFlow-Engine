@@ -40,7 +40,7 @@ public class SearchRestController {
     private final ItemApi itemApi;
 
     /**
-     * 获取我的事项列表
+     * 获取当前人有权限的事项列表
      *
      * @return Y9Result<List < Map < String, Object>>>
      */
@@ -52,12 +52,12 @@ public class SearchRestController {
     }
 
     /**
-     * 获取我的事项系统列表
+     * 获取所有事项系统列表
      *
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @GetMapping(value = "/getMyItemSystemList")
-    public Y9Result<List<Map<String, Object>>> getMyItemSystemList() {
+    @GetMapping(value = "/getAllItemSystemList")
+    public Y9Result<List<Map<String, Object>>> getAllItemSystemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> listMap = itemApi.getAllItemList(tenantId).getData();
         List<Map<String, Object>> list = new ArrayList<>();
@@ -73,7 +73,7 @@ public class SearchRestController {
     }
 
     /**
-     * 获取个人所有件
+     * 获取个人所有件综合搜索列表
      *
      * @param searchName 搜索词
      * @param itemId 事项id
@@ -94,7 +94,7 @@ public class SearchRestController {
     }
 
     /**
-     * 获取阅件列表
+     * 获取个人阅件综合搜索列表
      *
      * @param searchName 搜索词
      * @param itemId 事项id

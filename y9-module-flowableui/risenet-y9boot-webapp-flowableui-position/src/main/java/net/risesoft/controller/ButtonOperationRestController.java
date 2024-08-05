@@ -55,7 +55,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
- * 按钮方法
+ * 操作按钮方法
  *
  * @author zhangchongjie
  * @date 2024/06/05
@@ -85,7 +85,7 @@ public class ButtonOperationRestController {
     protected Logger log = LoggerFactory.getLogger(ButtonOperationRestController.class);
 
     /**
-     * 签收功能
+     * 任务签收
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -110,7 +110,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 完成任务. 在协办的时候使用，例如A点击协办按钮，将公文发给B，此时B协办完成后仍然要把流程返给A，这里解决这个问题
+     * 任务完成（在协办的时候使用，例如A点击协办按钮，将公文发给B，此时B协办完成后仍然要把流程返给A，此方法解决这个问题）
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -128,7 +128,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 协商：协商是把任务转给其他人操作，被协商人会在待办任务列表里看到这条任务，正常处理任务后，任务会返回给原执行人，流程不会发生变化。
+     * 任务协商（协商是把任务转给其他人操作，被协商人会在待办任务列表里看到这条任务，正常处理任务后，任务会返回给原执行人，流程不会发生变化）
      *
      * @param taskId 任务id
      * @param userChoice 收件人
@@ -270,7 +270,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 获取有办结权限的UserTask
+     * 获取有办结权限的用户任务集合
      *
      * @param processDefinitionId 流程定义id
      * @return Y9Result<List<TargetModel>>
@@ -323,7 +323,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 获取目标任务节点
+     * 获取目标任务节点集合
      *
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
@@ -357,7 +357,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 退回收回任务列表
+     * 获取退回或收回的任务列表
      *
      * @param taskId 任务id
      * @return Y9Result<Map < String, Object>>
@@ -477,7 +477,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 办理完成，并行处理时使用
+     * 办理完成（并行处理时使用）
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -522,7 +522,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 送下一人，串行时使用
+     * 送下一人（串行时使用）
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -543,7 +543,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 委托. 委托是把任务转给其他人操作，被委托人会在待办任务列表里看到这条任务，正常处理任务后，流程会继续向下运行。
+     * 任务委托（委托是把任务转给其他人操作，被委托人会在待办任务列表里看到这条任务，正常处理任务后，流程会继续向下运行）
      *
      * @param taskId 任务id
      * @param userChoice 收件人
@@ -562,7 +562,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 拒签
+     * 任务拒签
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -598,7 +598,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 最后一人拒签退回
+     * 最后一人拒签退回任务
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -619,7 +619,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 重定向(选择任意流程节点重定向)
+     * 重定向（选择任意流程节点重定向）
      *
      * @param taskId 任务Id
      * @param routeToTaskId 流程节点Id
@@ -666,7 +666,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 实现回退功能，使任务退回到上一个任务。
+     * 任务退回（实现回退功能，使任务退回到上一个任务）
      *
      * @param taskId 任务id
      * @param reason 退回原因
@@ -735,7 +735,7 @@ public class ButtonOperationRestController {
      * 退回拟稿人
      *
      * @param taskId 任务id
-     * @param reason 原因
+     * @param reason 退回原因
      * @return Y9Result<String>
      */
     @PostMapping(value = "/rollbackToStartor")
@@ -758,7 +758,7 @@ public class ButtonOperationRestController {
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @param jsonData 数据
+     * @param jsonData 任务数据
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
@@ -799,7 +799,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 返回任务发送人，不用选人，直接发送
+     * 返回任务发送人（不用选人，直接发送）
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -817,7 +817,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 返回拟稿人，不用选人，直接发送
+     * 返回拟稿人（不用选人，直接发送）
      *
      * @param taskId 任务id
      * @return Y9Result<String>
@@ -903,7 +903,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 收回
+     * 任务收回
      *
      * @param taskId 任务id
      * @param reason 收回原因
@@ -924,7 +924,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 撤销签收功能：用户签收后，可以进行撤销签收，撤销签收后，重新进行抢占式办理
+     * 撤销签收的任务（用户签收后，可以进行撤销签收，撤销签收后，重新进行抢占式办理）
      *
      * @param taskId 任务id
      * @return Y9Result<String>

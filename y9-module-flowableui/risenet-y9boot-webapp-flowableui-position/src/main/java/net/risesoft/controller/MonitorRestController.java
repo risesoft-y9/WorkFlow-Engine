@@ -33,7 +33,7 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 监控列表
+ * 监控办件
  *
  * @author zhangchongjie
  * @date 2024/06/05
@@ -58,7 +58,7 @@ public class MonitorRestController {
     private final ItemApi itemApi;
 
     /**
-     * 单位所有件
+     * 获取单位所有件列表
      *
      * @param itemId 事项id
      * @param searchName 搜索词
@@ -78,7 +78,7 @@ public class MonitorRestController {
     }
 
     /**
-     * 获取所有事项
+     * 获取所有事项信息
      *
      * @return Y9Result<List < ItemModel>>
      */
@@ -89,7 +89,7 @@ public class MonitorRestController {
     }
 
     /**
-     * 监控办件列表
+     * 获取监控办件列表
      *
      * @param searchName 搜索词
      * @param itemId 事项id
@@ -109,7 +109,7 @@ public class MonitorRestController {
     }
 
     /**
-     * 监控阅件列表
+     * 获取监控阅件列表
      *
      * @param searchName 搜索词
      * @param itemId 事项id
@@ -161,7 +161,7 @@ public class MonitorRestController {
     }
 
     /**
-     * 彻底删除流程实例
+     * 批量彻底删除流程实例
      *
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>

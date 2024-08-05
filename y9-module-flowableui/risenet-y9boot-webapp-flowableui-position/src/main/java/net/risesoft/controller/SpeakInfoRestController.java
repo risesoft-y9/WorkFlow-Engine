@@ -69,7 +69,7 @@ public class SpeakInfoRestController {
     }
 
     /**
-     * 获取沟通交流列表
+     * 获取沟通交流信息列表
      *
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>

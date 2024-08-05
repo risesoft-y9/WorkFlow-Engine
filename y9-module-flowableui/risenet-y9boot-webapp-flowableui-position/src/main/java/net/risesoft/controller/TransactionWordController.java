@@ -20,7 +20,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +51,7 @@ import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
 /**
- * 正文
+ * 正文（后端调用实现）
  *
  * @author zhangchongjie
  * @date 2024/06/05
@@ -90,7 +89,7 @@ public class TransactionWordController {
     }
 
     /**
-     * 下载历史正文
+     * 下载历史版本正文
      *
      * @param taskId 任务id
      * @param processSerialNumber 流程编号
@@ -207,7 +206,7 @@ public class TransactionWordController {
     }
 
     /**
-     * 下载正文（抄送）
+     * 下载正文（抄送件）
      *
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
@@ -267,7 +266,7 @@ public class TransactionWordController {
     }
 
     /**
-     * 获取正文
+     * 获取正文信息
      *
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
@@ -391,7 +390,7 @@ public class TransactionWordController {
     }
 
     /**
-     * 套红模板
+     * 获取套红模板
      *
      * @param templateGUID 模板GUID
      */
@@ -532,7 +531,7 @@ public class TransactionWordController {
     }
 
     /**
-     * *打开撤销PDF后的正文
+     * 打开撤销PDF后的正文
      *
      * @param processSerialNumber 流程实编号
      * @param istaohong 是否套红
@@ -589,7 +588,7 @@ public class TransactionWordController {
     }
 
     /**
-     * 选择套红
+     * 选择套红模板
      *
      * @param activitiUser 人员id
      * @return String
@@ -654,21 +653,8 @@ public class TransactionWordController {
         return "intranet/downPdfTool";
     }
 
-    @RequestMapping(value = "/showHistoryDoc")
-    public String showHistoryDoc(@RequestParam String taskId, @RequestParam(required = false) String historyFileType,
-        ModelMap model) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        TransactionHistoryWordModel map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
-        model.addAttribute("taskId", taskId);
-        model.addAttribute("history", map);
-        model.addAttribute("historyFileType", historyFileType);
-        return "history/openHistoryDoc";
-    }
-
     /**
-     * 获取正文
+     * 获取正文详细信息
      *
      * @return String
      */
@@ -794,7 +780,7 @@ public class TransactionWordController {
     }
 
     /**
-     * 草稿箱保存正文
+     * 办件保存正文
      *
      * @param fileType 文件类型
      * @param isTaoHong 套红

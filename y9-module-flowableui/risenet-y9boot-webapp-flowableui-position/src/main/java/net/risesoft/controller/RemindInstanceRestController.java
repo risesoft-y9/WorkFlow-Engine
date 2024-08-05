@@ -110,7 +110,7 @@ public class RemindInstanceRestController {
     }
 
     /**
-     * 保存消息提醒
+     * 保存消息提醒数据
      *
      * @param processInstanceId 流程实例id
      * @param taskIds 任务ids 逗号隔开
@@ -130,7 +130,7 @@ public class RemindInstanceRestController {
     }
 
     /**
-     * 获取未办理任务
+     * 获取未办理任务列表
      *
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>

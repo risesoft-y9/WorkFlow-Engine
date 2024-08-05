@@ -81,7 +81,7 @@ public class MainRestController {
     private final EntrustApi entrustApi;
 
     /**
-     * 获取所有事项
+     * 获取所有事项集合（包含监控管理员权限）
      *
      * @return Y9Result<Map < String, Object>>
      */
@@ -99,7 +99,7 @@ public class MainRestController {
     }
 
     /**
-     * 根据事项id获取事项统计
+     * 根据事项id获取事项办件分类的统计数量
      *
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
@@ -173,7 +173,7 @@ public class MainRestController {
     }
 
     /**
-     * 根据系统名称获取事项统计
+     * 根据系统名称获取事项统计数量
      *
      * @param systemName 系统名称
      * @return Y9Result<Map < String, Object>>
@@ -225,7 +225,7 @@ public class MainRestController {
     }
 
     /**
-     * 获取事项
+     * 获取事项详情信息（含监控管理员权限、租户管理员权限、重定向权限）
      *
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
@@ -251,7 +251,7 @@ public class MainRestController {
     }
 
     /**
-     * 根据系统名称获取事项
+     * 根据系统名称获取事项（含监控管理员权限、重定向权限、发文权限、收文权限）
      *
      * @param systemName 系统名称
      * @return Y9Result<Map < String, Object>>
@@ -278,7 +278,7 @@ public class MainRestController {
     }
 
     /**
-     * 获取个人所有件统计
+     * 获取个人所有件统计数量
      *
      * @return Y9Result<Map < String, Object>>
      */
@@ -310,7 +310,7 @@ public class MainRestController {
     }
 
     /**
-     * 获取个人所有岗位
+     * 获取当前人所有的岗位信息和当前岗被委托的记录
      *
      * @return Y9Result<Map < String, Object>>
      */
@@ -399,7 +399,7 @@ public class MainRestController {
     }
 
     /**
-     * 获取阅件左侧菜单数字
+     * 获取阅件左侧菜单数量
      *
      * @return Y9Result<Map < String, Object>>
      */
@@ -415,7 +415,7 @@ public class MainRestController {
     }
 
     /**
-     * 获取角色权限
+     * 获取当前人的角色权限
      *
      * @return Y9Result<Map < String, Object>>
      */

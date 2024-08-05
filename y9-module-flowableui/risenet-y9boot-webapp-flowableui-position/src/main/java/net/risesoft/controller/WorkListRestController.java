@@ -49,7 +49,7 @@ public class WorkListRestController {
     private final QueryListService queryListService;
 
     /**
-     * 获取已办件列表
+     * 获取在办件列表
      *
      * @param itemId 事项id
      * @param searchTerm 搜索词
@@ -127,7 +127,7 @@ public class WorkListRestController {
     }
 
     /**
-     * 获取已办件列表
+     * 获取已办件多条件查询列表
      *
      * @param itemId 事项id
      * @param tableName 表名
@@ -144,7 +144,7 @@ public class WorkListRestController {
     }
 
     /**
-     * 获取办结件列表
+     * 获取办结件多条件查询列表
      *
      * @param itemId 事项id
      * @param tableName 表名
@@ -161,7 +161,7 @@ public class WorkListRestController {
     }
 
     /**
-     * 获取待办件列表
+     * 获取待办件多条件查询列表
      *
      * @param itemId 事项id
      * @param tableName 表名
@@ -207,7 +207,7 @@ public class WorkListRestController {
     }
 
     /**
-     * 获取视图配置
+     * 根据事项id和视图类型获取视图配置
      *
      * @param itemId 事项id
      * @param viewType 视图类型

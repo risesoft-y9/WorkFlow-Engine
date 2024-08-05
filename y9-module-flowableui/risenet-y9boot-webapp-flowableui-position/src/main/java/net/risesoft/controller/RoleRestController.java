@@ -51,7 +51,7 @@ public class RoleRestController {
     }
 
     /**
-     * 获取组织机构树
+     * 获取组织机构数据
      *
      * @param id 父节点id
      * @param treeType 架构树类型
@@ -66,7 +66,7 @@ public class RoleRestController {
     }
 
     /**
-     * 获取抄送选人
+     * 获取抄送选人组织机构数据
      *
      * @param id 父节点id
      * @param principalType 架构类型
@@ -81,7 +81,7 @@ public class RoleRestController {
     }
 
     /**
-     * 抄送选人搜索
+     * 抄送选人组织机构搜索
      *
      * @param name 搜索词
      * @param principalType 架构类型
@@ -96,7 +96,7 @@ public class RoleRestController {
     }
 
     /**
-     * 获取发送选人
+     * 获取发送选人组织机构数据
      *
      * @param itemId 事项id
      * @param processDefinitionId 流程定义key
@@ -120,7 +120,7 @@ public class RoleRestController {
     }
 
     /**
-     * 发送选人搜索
+     * 获取发送选人组织机构搜索
      *
      * @param name 搜索词
      * @param itemId 事项id
@@ -148,7 +148,7 @@ public class RoleRestController {
     }
 
     /**
-     * 获取发送人数
+     * 获取发送选择人数
      *
      * @param userChoice 人员id
      * @return Y9Result<Integer>

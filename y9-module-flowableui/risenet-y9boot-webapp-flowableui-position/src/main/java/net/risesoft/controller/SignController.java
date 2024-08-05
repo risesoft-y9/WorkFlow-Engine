@@ -37,7 +37,7 @@ public class SignController {
 
     private final CalendarConfigApi calendarConfigApi;
 
-    // 两个日期时间相隔天数
+    // 获取两个日期时间的相隔天数
     public String daysBetween(String startTime, String endTime) {
         String day = "0";
         try {
@@ -52,7 +52,7 @@ public class SignController {
         return day;
     }
 
-    // 两个日期之间相隔天数，去除节假日
+    // 获取两个日期之间相隔天数，去除节假日
     public String daysBetween(String startTime, String endTime, String everyYearHoliday) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         int days = 0;
@@ -75,6 +75,8 @@ public class SignController {
     }
 
     /**
+     * 获取两个日期之间相隔天数（有节假日的情况去除节假日）
+     * 
      * @param startDate 开始时间
      * @param endDate 结束时间
      * @return Y9Result<String>
@@ -102,7 +104,7 @@ public class SignController {
     }
 
     /**
-     * 有生云请假办件，计算请假天数和小时
+     * 获取请假办件，计算请假天数和小时
      *
      * @param type 计算类型
      * @param leaveStartTime 开始日期

@@ -94,7 +94,7 @@ public class OfficeFollowRestController {
     }
 
     /**
-     * 获取左侧关注菜单数字
+     * 获取左侧关注菜单数量
      *
      * @return Y9Result<Integer>
      */
@@ -106,7 +106,7 @@ public class OfficeFollowRestController {
     }
 
     /**
-     * 保存关注
+     * 保存关注的办件信息
      *
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>

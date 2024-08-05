@@ -31,6 +31,12 @@ import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
+/**
+ * 附件在线编辑
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -47,7 +53,7 @@ public class FileNTKOController {
     private final Y9Properties y9Config;
 
     /**
-     * 打开正文
+     * 附件中打开正文文件
      *
      * @param fileId 正文id
      */
@@ -100,7 +106,7 @@ public class FileNTKOController {
     }
 
     /**
-     * 获取文件
+     * 获取附件列表文件信息
      *
      * @param processSerialNumber 流程编号
      * @param itembox 状态
@@ -143,7 +149,7 @@ public class FileNTKOController {
     }
 
     /**
-     * 更新附件
+     * 更新附件列表文件内容
      *
      * @param fileId 文件id
      * @param processSerialNumber 流程编号
