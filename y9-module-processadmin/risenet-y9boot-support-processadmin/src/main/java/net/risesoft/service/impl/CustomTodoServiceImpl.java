@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.TaskService;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,46 @@ public class CustomTodoServiceImpl implements CustomTodoService {
         long totalCount = this.getCountByUserIdAndSystemName(userId, systemName);
         List<Task> taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
             .orderByTaskPriority().desc().orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
+        List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
+        return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, taskModelList);
+    }
+
+    @Override
+    public Y9Page<TaskModel> pageByUserIdAndSystemName4xxx(String userId, String systemName,
+        String processDefinitionKey, String target, Integer page, Integer rows) {
+        long totalCount;
+        List<Task> taskList;
+        if (StringUtils.isNotBlank(processDefinitionKey) && StringUtils.isNotBlank(target)
+            && StringUtils.isNotBlank(systemName)) {
+            totalCount = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
+                .processDefinitionKey(processDefinitionKey).processVariableValueEquals("target", target).count();
+            taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
+                .processDefinitionKey(processDefinitionKey).processVariableValueEquals("target", target)
+                .orderByTaskPriority().desc().orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
+        } else {
+            if (StringUtils.isNotBlank(processDefinitionKey)) {
+                totalCount = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
+                    .processDefinitionKey(processDefinitionKey).count();
+                taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
+                    .processDefinitionKey(processDefinitionKey).orderByTaskPriority().desc().orderByTaskCreateTime()
+                    .desc().listPage((page - 1) * rows, rows);
+            } else if (StringUtils.isNotBlank(target)) {
+                totalCount = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
+                    .processVariableValueEquals("target", target).count();
+                taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
+                    .processVariableValueEquals("target", target).orderByTaskPriority().desc().orderByTaskCreateTime()
+                    .desc().listPage((page - 1) * rows, rows);
+            } else if (StringUtils.isNotBlank(systemName)) {
+                totalCount =
+                    taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName).count();
+                taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().taskCategory(systemName)
+                    .orderByTaskPriority().desc().orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
+            } else {
+                totalCount = taskService.createTaskQuery().taskInvolvedUser(userId).active().count();
+                taskList = taskService.createTaskQuery().taskInvolvedUser(userId).active().orderByTaskPriority().desc()
+                    .orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
+            }
+        }
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, taskModelList);
     }

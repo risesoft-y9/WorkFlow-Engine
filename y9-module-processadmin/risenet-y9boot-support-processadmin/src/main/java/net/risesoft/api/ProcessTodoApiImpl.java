@@ -42,7 +42,7 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Long> countByOrgUnitId(String tenantId, String orgUnitId) {
+    public Y9Result<Long> countByOrgUnitId(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customTodoService.getCountByUserId(orgUnitId));
     }
@@ -123,6 +123,27 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
         @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customTodoService.pageByUserIdAndSystemName(userId, systemName, page, rows);
+    }
+
+    /**
+     * 获取待办件列表
+     *
+     * @param tenantId 租户id
+     * @param userId 人员、岗位id
+     * @param systemName 系统名称
+     * @param processDefinitionKey 流程定义key
+     * @param target 目标
+     * @param page 页码
+     * @param rows 行数
+     * @return {@code Y9Page<TaskModel>} 通用请求返回对象 - rows 是待办任务列表
+     */
+    @Override
+    public Y9Page<TaskModel> getListByUserIdAndSystemName4xxx(@RequestParam String tenantId,
+        @RequestParam String userId, String systemName, String processDefinitionKey, String target,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return customTodoService.pageByUserIdAndSystemName4xxx(userId, systemName, processDefinitionKey, target, page,
+            rows);
     }
 
     /**
