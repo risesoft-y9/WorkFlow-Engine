@@ -180,12 +180,12 @@ public class XxxRestController {
      */
     @GetMapping(value = "/getDoingList")
     public Y9Page<Map<String, Object>> getDoingList(@RequestParam(required = false) String systemName,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String searchTerm,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String target, @RequestParam(required = false) String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserIdAndSystemName(tenantId, positionId,
-            searchTerm, systemName, itemId, ItemBoxTypeEnum.TODO.getValue(), "", "", "", page, rows);
+        Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserIdAndSystemName4xxx(tenantId, positionId,
+            searchTerm, systemName, itemId, target, ItemBoxTypeEnum.TODO.getValue(), "", "", "", page, rows);
         List<Map<String, Object>> list = new ArrayList<>();
         int serialNumber = (page - 1) * rows;
         for (OfficeDoneInfoModel task : y9Page.getRows()) {
@@ -201,6 +201,7 @@ public class XxxRestController {
                 map.put("itemName", task.getItemName());
                 map.put("systemName", task.getSystemName());
                 map.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                map.put("target", task.getTarget());
                 map.put("taskAssignee", task.getUserComplete());
                 map.put("endTime", StringUtils.isBlank(task.getEndTime()) ? "--" : task.getEndTime().substring(0, 16));
                 if (StringUtils.isBlank(task.getEndTime())) {
@@ -360,22 +361,18 @@ public class XxxRestController {
      */
     @GetMapping(value = "/getTodoList")
     public Y9Page<Map<String, Object>> getTodoList(@RequestParam(required = false) String systemName,
-        @RequestParam(required = false) String itemId, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String target,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         int serialNumber = (page - 1) * rows;
         Y9Page<TaskModel> y9Page;
-        if (StringUtils.isBlank(systemName) && StringUtils.isBlank(itemId)) {
-            y9Page = processTodoApi.pageByUserId(tenantId, positionId, page, rows);
-        } else {
-            if (StringUtils.isNotBlank(itemId)) {
-                ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-                y9Page = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    item.getWorkflowGuid(), page, rows);
-            } else {
-                y9Page = processTodoApi.getListByUserIdAndSystemName(tenantId, positionId, systemName, page, rows);
-            }
+        ItemModel item = new ItemModel();
+        if (StringUtils.isNotBlank(itemId)) {
+            item = itemApi.getByItemId(tenantId, itemId).getData();
         }
+        y9Page = processTodoApi.getListByUserIdAndSystemName4xxx(tenantId, positionId, systemName,
+            StringUtils.isNotBlank(item.getId()) ? item.getWorkflowGuid() : "", target, page, rows);
         List<Map<String, Object>> list = new ArrayList<>();
         for (TaskModel task : y9Page.getRows()) {
             Map<String, Object> map = new HashMap<>(16);
@@ -393,6 +390,12 @@ public class XxxRestController {
                 map.put("itemId", doneInfo.getItemId());
                 map.put("itemName", doneInfo.getItemName());
                 map.put("systemName", doneInfo.getSystemName());
+                map.put("target", "");
+                String targetStr = variableApi
+                    .getVariableByProcessInstanceId(tenantId, task.getProcessInstanceId(), "target").getData();
+                if (StringUtils.isNotBlank(target)) {
+                    map.put("target", targetStr);
+                }
             } catch (Exception e) {
                 LOGGER.error("获取待办列表失败{}", e, task.getProcessInstanceId());
             }

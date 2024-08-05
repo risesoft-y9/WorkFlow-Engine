@@ -166,7 +166,7 @@ public class OfficeDoneInfo implements Serializable {
     private String userComplete;
 
     /**
-     * 是否上会，1为上会,当代研究所使用
+     * 是否上会，1为上会,ddyjs使用
      */
     @Field(type = FieldType.Keyword, index = true, store = true)
     private String meeting = "0";
@@ -176,5 +176,11 @@ public class OfficeDoneInfo implements Serializable {
      */
     @Field(type = FieldType.Keyword, index = true, store = true)
     private String meetingType;
+
+    /**
+     * 目标，xxx使用
+     */
+    @Field(type = FieldType.Keyword, index = true, store = true)
+    private String target = "";
 
 }
