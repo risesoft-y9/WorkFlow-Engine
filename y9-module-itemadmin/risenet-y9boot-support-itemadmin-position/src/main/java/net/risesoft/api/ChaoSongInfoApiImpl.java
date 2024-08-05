@@ -56,7 +56,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 抄送件状态设为已阅
+     * 批量设置抄送件状态为已阅
      *
      * @param tenantId 租户id
      * @param ids 抄送件ids
@@ -71,7 +71,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据抄送ID修改状态
+     * 根据抄送ID修改状态为已阅
      *
      * @param tenantId 租户id
      * @param chaoSongId 抄送id
@@ -120,7 +120,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 删除抄送件
+     * 批量删除抄送件
      *
      * @param tenantId 租户id
      * @param ids 抄送件ids
@@ -151,7 +151,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 展开抄送件
+     * 抄送件详情
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -180,11 +180,11 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 获取批阅件计数
+     * 获取批阅件数量（签写过意见的阅件）
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是批阅件计数
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是批阅件数量
      * @since 9.6.6
      */
     @Override
@@ -196,11 +196,11 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据人员id获取抄送未阅件统计
+     * 获取未阅件数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是抄送未阅件统计
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是抄送未阅件数量
      * @since 9.6.6
      */
     @Override
@@ -211,7 +211,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 获取抄送已阅件列表
+     * 获取已阅件列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -229,7 +229,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据流程实例获取除当前人外的其他抄送件
+     * 根据流程实例id获取除当前人外的其他抄送件
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -250,7 +250,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据流程实例获取当前人的抄送件
+     * 根据流程实例id获取当前人的抄送件
      *
      * @param tenantId 租户id
      * @param senderId 用户id
@@ -271,7 +271,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 批阅件
+     * 获取批阅件列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -289,7 +289,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据人员id获取抄送已阅件统计
+     * 根据岗位id获取已阅件数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -304,7 +304,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 获取抄送未阅件列表
+     * 获取未阅件列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -322,7 +322,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 我的抄送列表
+     * 获取我的抄送列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -373,7 +373,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 个人阅件搜索
+     * 个人阅件综合搜索列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -384,7 +384,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是个人阅件搜索列表
+     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是个人阅件综合搜索列表
      * @since 9.6.6
      */
     @Override
@@ -397,7 +397,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 监控阅件列表
+     * 获取监控阅件列表
      *
      * @param tenantId 租户id
      * @param searchName 搜索词
