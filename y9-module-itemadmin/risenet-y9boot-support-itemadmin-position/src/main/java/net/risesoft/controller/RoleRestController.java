@@ -12,16 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.controller.vo.NodeTreeVO;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.enums.platform.RoleTypeEnum;
 import net.risesoft.model.platform.App;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.platform.System;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -34,6 +39,8 @@ import net.risesoft.y9.Y9Context;
 public class RoleRestController {
 
     private final RoleApi roleManager;
+
+    private final OrgUnitApi orgUnitManager;
 
     private final SystemApi systemEntityManager;
 
@@ -90,4 +97,68 @@ public class RoleRestController {
         }
         return Y9Result.success(listMap, "获取成功");
     }
+
+    @GetMapping(value = "/findRoleMember")
+    public Y9Result<List<NodeTreeVO>> findRoleMember(@RequestParam String roleId) {
+        List<NodeTreeVO> listMap = new ArrayList<>();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<OrgUnit> list = roleManager.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
+        for (OrgUnit orgUnit : list) {
+            NodeTreeVO map = new NodeTreeVO();
+            map.setId(orgUnit.getId());
+            map.setName(orgUnit.getName());
+            map.setParentId(roleId);
+            map.setGuidPath(orgUnit.getGuidPath());
+            map.setOrgType(orgUnit.getOrgType().getValue());
+            map.setIsParent(false);
+            if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
+                || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
+                map.setIsParent(true);
+            }
+            listMap.add(map);
+        }
+        return Y9Result.success(listMap, "获取成功");
+    }
+
+    @GetMapping(value = "/findRoleMember1")
+    public Y9Result<List<NodeTreeVO>> findRoleMember1(@RequestParam(required = false) String roleId,
+        @RequestParam(required = false) String id, @RequestParam(required = false) OrgTreeTypeEnum treeType) {
+        List<NodeTreeVO> listMap = new ArrayList<>();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        if (StringUtils.isNotBlank(roleId) && StringUtils.isBlank(id)) {
+            List<OrgUnit> list = roleManager.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.PERSON).getData();
+            for (OrgUnit orgUnit : list) {
+                NodeTreeVO map = new NodeTreeVO();
+                map.setId(orgUnit.getId());
+                map.setName(orgUnit.getName());
+                map.setParentId(roleId);
+                map.setGuidPath(orgUnit.getGuidPath());
+                map.setOrgType(orgUnit.getOrgType().getValue());
+                map.setIsParent(false);
+                if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
+                    || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
+                    map.setIsParent(true);
+                }
+                listMap.add(map);
+            }
+        } else {
+            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
+            for (OrgUnit orgUnit : list) {
+                NodeTreeVO map = new NodeTreeVO();
+                map.setId(orgUnit.getId());
+                map.setName(orgUnit.getName());
+                map.setParentId(id);
+                map.setGuidPath(orgUnit.getGuidPath());
+                map.setOrgType(orgUnit.getOrgType().getValue());
+                map.setIsParent(false);
+                if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
+                    || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
+                    map.setIsParent(true);
+                }
+                listMap.add(map);
+            }
+        }
+        return Y9Result.success(listMap, "获取成功");
+    }
+
 }
