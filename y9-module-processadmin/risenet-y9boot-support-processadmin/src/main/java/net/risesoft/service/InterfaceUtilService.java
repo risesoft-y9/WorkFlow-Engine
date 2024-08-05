@@ -17,6 +17,8 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
+import jakarta.annotation.Resource;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -73,7 +75,7 @@ public class InterfaceUtilService {
     private final ProcessParamApi processParamApi;
     private final ErrorLogApi errorLogApi;
     private final ItemInterfaceApi itemInterfaceApi;
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public InterfaceUtilService(ProcessParamApi processParamApi, ErrorLogApi errorLogApi,

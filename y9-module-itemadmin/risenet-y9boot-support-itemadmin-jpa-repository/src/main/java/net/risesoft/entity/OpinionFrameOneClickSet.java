@@ -2,11 +2,11 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_OPINIONFRAME_ONECLICKSET")
-@org.hibernate.annotations.Table(comment = "意见框一键设置表", appliesTo = "FF_OPINIONFRAME_ONECLICKSET")
+@Comment("意见框一键设置表")
 public class OpinionFrameOneClickSet implements Serializable {
 
     private static final long serialVersionUID = -8789316082610929817L;

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.annotation.Resource;
+
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.IdentityService;
 import org.flowable.engine.ManagementService;
@@ -72,7 +74,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final ActRuDetailApi actRuDetailApi;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.controller.vo.ModelVO;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -146,7 +147,7 @@ public class ProcessModelVueController {
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/import")
-    public Y9Result<Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
+    public Y9Result<Object> importProcessModel(MultipartFile file) {
         return Y9Result.failure("导入流程模板失败");
     }
 
