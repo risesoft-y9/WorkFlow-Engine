@@ -139,8 +139,9 @@ public class MobileV1WorkListController {
                     String itemId = url.split("itemId=")[1];
                     ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     String processDefinitionKey = item.getWorkflowGuid();
-                    long todoCount = processTodoApi.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId,
-                        positionId, processDefinitionKey).getData();
+                    long todoCount = processTodoApi
+                        .getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
+                        .getData();
                     Map<String, Object> m = new HashMap<>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
                     List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");

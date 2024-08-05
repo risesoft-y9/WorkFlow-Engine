@@ -72,8 +72,9 @@ public class Process4MsgRemindService {
         String processInstanceId = processParamModel.getProcessInstanceId();
         Date date = new Date();
         String allUserId = "";
-        List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(
-            tenantId, processInstanceId, RemindInstanceModel.processComplete).getData();
+        List<RemindInstanceModel> list =
+            remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(tenantId, processInstanceId,
+                RemindInstanceModel.processComplete).getData();
         if (!list.isEmpty()) {
             for (RemindInstanceModel remind : list) {
                 if (!allUserId.contains(remind.getUserId())) {

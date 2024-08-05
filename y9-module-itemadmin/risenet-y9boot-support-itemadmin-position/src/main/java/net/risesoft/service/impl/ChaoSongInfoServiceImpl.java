@@ -253,8 +253,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         model.setTaskId(taskId);
         model.setActivitiUser(activitiUser);
 
-        model = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey,
-            processDefinitionId,
+        model = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId,
             taskDefinitionKey, mobile, model);
         String menuName = "打印,抄送,关注,返回";
         String menuKey = "17,18,follow,03";

@@ -149,8 +149,8 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
                     mapTemp.put(SysVariables.LEVEL, level);
                     mapTemp.put(SysVariables.NUMBER, number);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(),
-                        task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
@@ -256,8 +256,8 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
                     mapTemp.put(SysVariables.NUMBER, number);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(),
-                        task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
@@ -403,8 +403,8 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.TASKSENDER, taskSender);
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(),
-                        task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");

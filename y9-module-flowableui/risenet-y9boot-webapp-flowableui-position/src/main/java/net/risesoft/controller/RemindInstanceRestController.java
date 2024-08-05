@@ -74,8 +74,7 @@ public class RemindInstanceRestController {
         HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId).getData();
         List<TargetModel> list0 =
             processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId(), false).getData();
-        RemindInstanceModel remindInstance =
-            remindInstanceApi
+        RemindInstanceModel remindInstance = remindInstanceApi
             .getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
         retMap.put("remindType", "");
         retMap.put("completeTaskKey", "");
@@ -126,8 +125,8 @@ public class RemindInstanceRestController {
         @RequestParam(required = false) String arriveTaskKey, @RequestParam(required = false) String completeTaskKey) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         return remindInstanceApi.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process,
-                arriveTaskKey, completeTaskKey);
-            
+            arriveTaskKey, completeTaskKey);
+
     }
 
     /**
@@ -150,8 +149,7 @@ public class RemindInstanceRestController {
             Map<String, Object> mapTemp;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentTime = new Date();
-            RemindInstanceModel remindInstance =
-                remindInstanceApi
+            RemindInstanceModel remindInstance = remindInstanceApi
                 .getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
             // TODO
             // retMap.put("remindType", "");

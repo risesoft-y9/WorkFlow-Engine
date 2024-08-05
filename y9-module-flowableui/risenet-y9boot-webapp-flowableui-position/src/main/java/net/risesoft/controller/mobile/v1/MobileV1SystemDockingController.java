@@ -236,8 +236,7 @@ public class MobileV1SystemDockingController {
                 }
             }
             Y9Result<StartProcessResultModel> y9Result = document4PositionApi.startProcess(tenantId, positionId, itemId,
-                guid,
-                item.getWorkflowGuid(), positionChoice);
+                guid, item.getWorkflowGuid(), positionChoice);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(y9Result.getData(), "提交成功");
             }

@@ -1,6 +1,13 @@
 package net.risesoft.service.impl;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.id.IdType;
@@ -11,11 +18,6 @@ import net.risesoft.repository.jpa.TaoHongTemplateTypeRepository;
 import net.risesoft.service.TaoHongTemplateTypeService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @author qinman

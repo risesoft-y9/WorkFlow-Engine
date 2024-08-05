@@ -112,8 +112,7 @@ public class DocumentApiImpl implements Document4PositionApi {
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         DocUserChoiseModel model = documentService.docUserChoise(itemId, processDefinitionKey, processDefinitionId,
-            taskId, routeToTask,
-            processInstanceId);
+            taskId, routeToTask, processInstanceId);
         return Y9Result.success(model);
     }
 

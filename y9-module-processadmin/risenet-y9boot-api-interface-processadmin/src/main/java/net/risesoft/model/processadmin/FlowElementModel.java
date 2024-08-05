@@ -36,5 +36,5 @@ public class FlowElementModel implements Serializable {
 
     private boolean bind;
 
-    private  String condition;
+    private String condition;
 }

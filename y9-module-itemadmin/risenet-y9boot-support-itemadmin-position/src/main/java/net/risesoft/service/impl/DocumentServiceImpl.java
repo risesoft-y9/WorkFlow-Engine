@@ -202,15 +202,14 @@ public class DocumentServiceImpl implements DocumentService {
             model.setItemId(itemId);
             model.setProcessDefinitionKey(item.getWorkflowGuid());
             String processDefinitionKey = item.getWorkflowGuid();
-                ProcessDefinitionModel pdModel =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-                String processDefinitionId = pdModel.getId();
-                String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
+            ProcessDefinitionModel pdModel =
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            String processDefinitionId = pdModel.getId();
+            String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             model = this.genDocumentModel(itemId, processDefinitionKey, "", taskDefKey, mobile, model);
             model =
-                this.menuControl(itemId, processDefinitionId, taskDefKey, "", model,
-                    ItemBoxTypeEnum.ADD.getValue());
-                model.setProcessDefinitionId(processDefinitionId);
+                this.menuControl(itemId, processDefinitionId, taskDefKey, "", model, ItemBoxTypeEnum.ADD.getValue());
+            model.setProcessDefinitionId(processDefinitionId);
             model.setTaskDefKey(taskDefKey);
             model.setActivitiUser(userId);
             model.setCurrentUser(Y9LoginUserHolder.getPosition().getName());
@@ -258,12 +257,11 @@ public class DocumentServiceImpl implements DocumentService {
     public DocUserChoiseModel docUserChoise(String itemId, String processDefinitionKey, String processDefinitionId,
         String taskId, String taskDefKey, String processInstanceId) {
         DocUserChoiseModel model = new DocUserChoiseModel();
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String multiInstance =
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String multiInstance =
             processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefKey).getData();
-            Map<String, Object> tabMap =
-                itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
-            
+        Map<String, Object> tabMap =
+            itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
 
         model.setExistDepartment((Boolean)tabMap.get("existDepartment"));
         model.setExistPosition((Boolean)tabMap.get("existPosition"));
@@ -283,8 +281,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public OpenDataModel edit(String itembox, String taskId, String processInstanceId, String itemId,
-        boolean mobile) {
+    public OpenDataModel edit(String itembox, String taskId, String processInstanceId, String itemId, boolean mobile) {
         OpenDataModel model = new OpenDataModel();
         String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
             activitiUser = "";
@@ -374,8 +371,8 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
 
-        model = this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile,
-            model);
+        model =
+            this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
         model = this.menuControl(itemId, processDefinitionId, taskDefinitionKey, taskId, model, itemboxStr);
         return model;
     }
@@ -1222,8 +1219,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return Y9Result.failure(userResult.getMsg());
             }
             StartProcessResultModel model = this.startProcess(itemId, processSerialNumber, processDefinitionKey);
-            String taskId = model.getTaskId(),
-                processInstanceId = model.getProcessInstanceId();
+            String taskId = model.getTaskId(), processInstanceId = model.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             List<String> userList = userResult.getData();
             Map<String, Object> variables =

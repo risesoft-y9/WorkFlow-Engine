@@ -261,8 +261,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable =
-                PageRequest.of((page < 1) ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
+        Pageable pageable = PageRequest.of((page < 1) ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
 
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
         if (StringUtils.isNotBlank(title)) {

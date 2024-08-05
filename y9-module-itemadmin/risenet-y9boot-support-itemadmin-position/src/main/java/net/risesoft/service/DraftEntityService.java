@@ -97,8 +97,7 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    void saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
-        String level,
+    void saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number, String level,
         String title, String type);
 
     /**

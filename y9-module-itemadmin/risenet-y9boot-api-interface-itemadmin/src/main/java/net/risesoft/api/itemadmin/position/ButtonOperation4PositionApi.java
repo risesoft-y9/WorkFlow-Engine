@@ -29,9 +29,9 @@ public interface ButtonOperation4PositionApi {
      * @since 9.6.6
      */
     @PostMapping("/addMultiInstanceExecution")
-    Y9Result<Object> addMultiInstanceExecution(@RequestParam("tenantId") String tenantId, @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId")String parentExecutionId,
-       @RequestParam("taskId") String taskId,@RequestParam("elementUser") String elementUser)
-        ;
+    Y9Result<Object> addMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
+        @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId,
+        @RequestParam("taskId") String taskId, @RequestParam("elementUser") String elementUser);
 
     /**
      * 减签
@@ -44,8 +44,9 @@ public interface ButtonOperation4PositionApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteMultiInstanceExecution")
-    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId, @RequestParam("taskId")String taskId,
-       @RequestParam("elementUser") String elementUser);
+    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
+        @RequestParam("executionId") String executionId, @RequestParam("taskId") String taskId,
+        @RequestParam("elementUser") String elementUser);
 
     /**
      * 直接发送至流程启动人
@@ -61,8 +62,7 @@ public interface ButtonOperation4PositionApi {
     @PostMapping("/directSend")
     Y9Result<Object> directSend(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
-        @RequestParam("routeToTask")String routeToTask,
-       @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam("routeToTask") String routeToTask, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 最后一人拒签退回
@@ -91,9 +91,12 @@ public interface ButtonOperation4PositionApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/reposition", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> reposition(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("repositionToTaskId")String repositionToTaskId,
-       @RequestParam("userChoice") List<String> userChoice,
-        @RequestParam(value = "reason", required = false) String reason, @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
+    Y9Result<Object> reposition(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
+        @RequestParam("repositionToTaskId") String repositionToTaskId,
+        @RequestParam("userChoice") List<String> userChoice,
+        @RequestParam(value = "reason", required = false) String reason,
+        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
 
     /**
      * 退回操作
@@ -135,8 +138,7 @@ public interface ButtonOperation4PositionApi {
     @PostMapping("/rollbackToStartor")
     Y9Result<Object> rollbackToStartor(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason)
-        ;
+        @RequestParam(value = "reason", required = false) String reason);
 
     /**
      * 特殊办结

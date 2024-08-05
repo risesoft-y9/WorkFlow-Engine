@@ -275,8 +275,7 @@ public class MobileDocumentController {
                         processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
                     String itemId = processParamModel.getItemId();
                     OpenDataModel model = document4PositionApi
-                        .edit(tenantId, positionId, itembox, taskId,
-                        taskModel.getProcessInstanceId(), itemId, true)
+                        .edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true)
                         .getData();
                     String activitiUser = model.getActivitiUser();
                     String processDefinitionId = model.getProcessDefinitionId();
@@ -438,8 +437,7 @@ public class MobileDocumentController {
             }
             Map<String, Object> variables = new HashMap<>(16);
             y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId,
-                sponsorHandle,
-                itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid,
+                sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid,
                 routeToTaskId, variables);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
@@ -518,7 +516,8 @@ public class MobileDocumentController {
                     } else {
                         taskId = "";
                         map.put("itembox", new HashMap<String, String>(16));
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         for (TaskModel task : taskList) {
                             taskId = Y9Util.genCustomStr(taskId, task.getId(), SysVariables.COMMA);
                         }
@@ -625,8 +624,9 @@ public class MobileDocumentController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         try {
-            DocUserChoiseModel model = document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
-                processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId).getData();
+            DocUserChoiseModel model =
+                document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
+                    processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
             map.put(UtilConsts.SUCCESS, true);

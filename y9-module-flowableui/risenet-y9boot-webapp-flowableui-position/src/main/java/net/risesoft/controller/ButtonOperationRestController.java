@@ -188,8 +188,7 @@ public class ButtonOperationRestController {
                     String userChoice = customProcessInfo.getOrgId();
                     String routeToTaskId = customProcessInfo.getTaskKey();
                     Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId,
-                        processInstanceId, taskId, "",
-                        itemId, processSerialNumber, processDefinitionKey, userChoice,
+                        processInstanceId, taskId, "", itemId, processSerialNumber, processDefinitionKey, userChoice,
                         "", routeToTaskId, variables);
                     if (!y9Result.isSuccess()) {
                         return Y9Result.failure("发送失败");
@@ -377,8 +376,8 @@ public class ButtonOperationRestController {
             Map<String, Object> variables = variableApi.getVariables(tenantId, taskId).getData();
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
-            String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
-                taskModel.getTaskDefinitionKey()).getData();
+            String multiInstance = processDefinitionApi
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey()).getData();
             List<String> users = (List<String>)variables.get("users");
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (String user : users) {
@@ -679,8 +678,8 @@ public class ButtonOperationRestController {
         try {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
-            String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            String type = processDefinitionApi
+                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
                     reason = "未填写。";
@@ -784,8 +783,7 @@ public class ButtonOperationRestController {
                 userChoice = Y9Util.genCustomStr(userChoice, (String)org.get("id"), ";");
             }
             Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "", "", itemId,
-                processSerialNumber,
-                processDefinitionKey, userChoice, "", routeToTaskId, variables);
+                processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
             if (!y9Result.isSuccess()) {
                 return Y9Result.failure("保存成功,发送失败");
             }

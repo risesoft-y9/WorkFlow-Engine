@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
+import java.util.Map;
+
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
-
-import java.util.Map;
 
 /**
  * @author qinman
@@ -105,6 +105,6 @@ public interface CustomTodoService {
      * @param rows
      * @return
      */
-    Y9Page<TaskModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
-        Integer page, Integer rows);
+    Y9Page<TaskModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm, Integer page,
+        Integer rows);
 }

@@ -104,8 +104,8 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     }
 
     @Override
-    public Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
-        Integer page, Integer rows) {
+    public Y9Page<ProcessInstanceModel> searchListByUserIdAndSystemName(String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) {
         long totalCount =
             runtimeService.createProcessInstanceQuery().involvedUser(userId).active().variableNotExists(userId)
                 .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();

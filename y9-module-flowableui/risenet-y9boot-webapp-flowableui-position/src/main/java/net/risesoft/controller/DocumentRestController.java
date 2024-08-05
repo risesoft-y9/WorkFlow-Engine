@@ -305,8 +305,8 @@ public class DocumentRestController {
                 }
             }
             for (Map<String, Object> nmap : list) {
-                long todoCount = processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, positionId,
-                    (String)nmap.get("systemName")).getData();
+                long todoCount = processTodoApi
+                    .getTodoCountByUserIdAndSystemName(tenantId, positionId, (String)nmap.get("systemName")).getData();
                 nmap.put("todoCount", todoCount);
                 List<ItemModel> itemList = new ArrayList<>();
                 for (ItemModel itemModel : listMap) {
@@ -352,8 +352,8 @@ public class DocumentRestController {
         List<TaskModel> list = null;
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-            String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
-                taskModel.getTaskDefinitionKey()).getData();
+            String multiInstance = processDefinitionApi
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey()).getData();
             if (multiInstance.equals(SysVariables.PARALLEL)) {// 并行
                 map.put("isParallel", true);
                 list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true).getData();

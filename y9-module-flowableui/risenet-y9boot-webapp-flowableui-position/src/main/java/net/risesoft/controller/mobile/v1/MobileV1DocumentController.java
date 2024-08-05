@@ -248,8 +248,7 @@ public class MobileV1DocumentController {
                         processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
                     String itemId = processParamModel.getItemId();
                     model = document4PositionApi
-                        .edit(tenantId, positionId, itembox, taskId,
-                        taskModel.getProcessInstanceId(), itemId, true)
+                        .edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true)
                         .getData();
                     String str = Y9JsonUtil.writeValueAsString(model);
                     map = Y9JsonUtil.readHashMap(str);
@@ -394,8 +393,7 @@ public class MobileV1DocumentController {
             }
             Map<String, Object> variables = new HashMap<>(16);
             Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId,
-                taskId, sponsorHandle,
-                itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid,
+                taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid,
                 routeToTaskId, variables);
             if (y9Result.isSuccess()) {
                 map.put("processInstanceId", y9Result.getData());
@@ -467,7 +465,8 @@ public class MobileV1DocumentController {
                     } else {
                         taskId = "";
                         map.put("itembox", new HashMap<String, String>(16));
-                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         for (TaskModel task : taskList) {
                             taskId = Y9Util.genCustomStr(taskId, task.getId(), SysVariables.COMMA);
                         }

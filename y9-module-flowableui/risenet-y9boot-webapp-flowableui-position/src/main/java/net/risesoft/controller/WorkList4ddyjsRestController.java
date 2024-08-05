@@ -109,8 +109,7 @@ public class WorkList4ddyjsRestController {
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
-        return draft4PositionApi.getDraftListBySystemName(tenantId, positionId, page, rows, title,
-            item.getSystemName(), 
+        return draft4PositionApi.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(),
             false);
     }
 

@@ -1,11 +1,12 @@
 package net.risesoft.controller.form;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.form.Y9TableField;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.form.Y9TableFieldService;
-import net.risesoft.util.form.DbMetaDataUtil;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -16,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.form.Y9TableField;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.form.Y9TableFieldService;
+import net.risesoft.util.form.DbMetaDataUtil;
 
 /**
  * @author qinman

@@ -72,8 +72,8 @@ public interface AssociatedFile4PositionApi {
      */
     @GetMapping("/getAssociatedFileAllList")
     Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("positionId")@NotBlank String positionId,
-       @RequestParam("processSerialNumber") String processSerialNumber);
+        @RequestParam("positionId") @NotBlank String positionId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存关联流程
@@ -85,7 +85,8 @@ public interface AssociatedFile4PositionApi {
      * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/saveAssociatedFile")
-    Y9Result<Object> saveAssociatedFile(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId,
-        @RequestParam("processSerialNumber")String processSerialNumber,
-       @RequestParam("processInstanceIds") String processInstanceIds);
+    Y9Result<Object> saveAssociatedFile(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("positionId") @NotBlank String positionId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processInstanceIds") String processInstanceIds);
 }
