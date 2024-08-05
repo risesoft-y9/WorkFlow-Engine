@@ -70,6 +70,20 @@ public interface CustomTodoService {
     Y9Page<TaskModel> pageByUserIdAndSystemName(String userId, String systemName, Integer page, Integer rows);
 
     /**
+     * 根据人员Id,系统标识,流程定义Key获取用户的待办任务(分页)
+     * 
+     * @param userId
+     * @param systemName
+     * @param processDefinitionKey
+     * @param target
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<TaskModel> pageByUserIdAndSystemName4xxx(String userId, String systemName, String processDefinitionKey,
+        String target, Integer page, Integer rows);
+
+    /**
      * 条件搜索待办件
      *
      * @param userId
