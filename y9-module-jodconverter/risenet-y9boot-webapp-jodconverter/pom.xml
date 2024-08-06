@@ -15,9 +15,6 @@
     <packaging>war</packaging>
     
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>21</java.version>
         <logging.path>${basedir}/target/classes/logs</logging.path>
         <appName>file-preview-new</appName>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -324,33 +321,10 @@
 
     <build>
         <finalName>jodconverter</finalName>
-        <!--        <resources>-->
-        <!--            <resource>-->
-        <!--                <directory>src/main/resources</directory>-->
-        <!--                <includes>-->
-        <!--                    <include>**/*</include>-->
-        <!--                </includes>-->
-        <!--                <filtering>false</filtering>-->
-        <!--            </resource>-->
-        <!--            <resource>-->
-        <!--                <directory>src/main/config</directory>-->
-        <!--                <filtering>true</filtering>-->
-        <!--            </resource>-->
-        <!--        </resources>-->
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.7.10</version>
                 <configuration>
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
