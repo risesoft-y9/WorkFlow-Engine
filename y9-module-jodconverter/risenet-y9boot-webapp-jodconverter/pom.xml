@@ -6,18 +6,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.risesoft</groupId>
-        <artifactId>y9-flowable</artifactId>
+        <artifactId>y9-module-jodconverter</artifactId>
         <version>v9.6.7-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <version>v9.6.7-SNAPSHOT</version>
     <artifactId>risenet-y9boot-webapp-jodconverter</artifactId>
     <packaging>war</packaging>
     
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
         <logging.path>${basedir}/target/classes/logs</logging.path>
         <appName>file-preview-new</appName>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -324,33 +321,10 @@
 
     <build>
         <finalName>jodconverter</finalName>
-        <!--        <resources>-->
-        <!--            <resource>-->
-        <!--                <directory>src/main/resources</directory>-->
-        <!--                <includes>-->
-        <!--                    <include>**/*</include>-->
-        <!--                </includes>-->
-        <!--                <filtering>false</filtering>-->
-        <!--            </resource>-->
-        <!--            <resource>-->
-        <!--                <directory>src/main/config</directory>-->
-        <!--                <filtering>true</filtering>-->
-        <!--            </resource>-->
-        <!--        </resources>-->
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.7.10</version>
                 <configuration>
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
