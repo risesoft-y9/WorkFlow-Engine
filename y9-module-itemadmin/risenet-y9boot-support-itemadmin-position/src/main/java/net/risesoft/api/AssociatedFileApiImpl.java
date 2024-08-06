@@ -38,7 +38,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     private final OrgUnitApi orgUnitApi;
 
     /**
-     * 关联流程计数
+     * 关联流程数量
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -54,7 +54,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     }
 
     /**
-     * 删除关联流程
+     * 批量删除关联流程
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -88,7 +88,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     }
 
     /**
-     * 获取关联流程列表,包括未办结件
+     * 获取关联流程列表（包括未办结件）
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -107,7 +107,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     }
 
     /**
-     * 保存关联流程
+     * 保存关联流程信息
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id

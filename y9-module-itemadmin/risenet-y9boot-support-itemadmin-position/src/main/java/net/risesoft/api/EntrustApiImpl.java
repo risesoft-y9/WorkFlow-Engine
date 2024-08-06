@@ -52,7 +52,7 @@ public class EntrustApiImpl implements EntrustApi {
     }
 
     /**
-     * 获取委托列表
+     * 获取我委托的列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -67,7 +67,7 @@ public class EntrustApiImpl implements EntrustApi {
     }
 
     /**
-     * 获取我的委托列表
+     * 获取委托我的列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id

@@ -39,7 +39,7 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
     }
 
     /**
-     * 根据模板和流程序列号查询模板的书签对应的值
+     * 根据模板id和流程编号查询模板的书签对应的值
      *
      * @param tenantId 租户id
      * @param wordTemplateId 模板id

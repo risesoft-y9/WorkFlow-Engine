@@ -70,7 +70,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 删除附件
+     * 删除附件（物理删除，包含具体文件）
      *
      * @param tenantId 租户id
      * @param ids 附件ids
@@ -85,7 +85,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 附件数
+     * 根据流程编号获取附件数量
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -100,7 +100,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 附件下载
+     * 根据附件id获取附件信息
      *
      * @param tenantId 租户id
      * @param id 附件id
@@ -120,7 +120,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 获取附件数
+     * 根据流程编号、附件来源、文件类型获取附件数量
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -139,7 +139,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 获取附件列表
+     * 获取附件分页列表
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -157,7 +157,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 获取附件列表(model)
+     * 获取附件列表
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -176,7 +176,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 获取附件
+     * 获取附件文件信息
      *
      * @param tenantId 租户id
      * @param fileId 附件id
@@ -235,10 +235,10 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 保存附件信息
+     * 保存或更新附件上传信息
      *
      * @param tenantId 租户id
-     * @param userId 人员、岗位id
+     * @param orgUnitId 人员、岗位id
      * @param fileName 文件名称
      * @param fileType 文件类型
      * @param fileSizeString 文件大小
@@ -296,7 +296,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 更新附件
+     * 更新附件信息
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -364,7 +364,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 上传附件(model)
+     * 更新附件信息(model)
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id

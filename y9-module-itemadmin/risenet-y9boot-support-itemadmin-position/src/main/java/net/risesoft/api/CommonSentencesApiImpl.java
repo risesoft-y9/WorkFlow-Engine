@@ -52,7 +52,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     }
 
     /**
-     * 获取常用语
+     * 获取常用语列表
      *
      * @param tenantId 租户id
      * @param userId 人员id
