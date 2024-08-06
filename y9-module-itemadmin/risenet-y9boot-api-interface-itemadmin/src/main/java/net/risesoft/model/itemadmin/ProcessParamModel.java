@@ -122,4 +122,9 @@ public class ProcessParamModel implements Serializable {
      * 是否定制流程
      */
     private Boolean customItem;
+
+    /**
+     * 目标，xxx使用
+     */
+    private String target;
 }

@@ -126,6 +126,8 @@ public class MobileSyncWeiBanJieController {
                             ? processParamModel.getStartor() : "");
                         officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName())
                             ? processParamModel.getStartorName() : "");
+                        officeDoneInfo.setTarget(
+                            StringUtils.isNotBlank(processParamModel.getTarget()) ? processParamModel.getTarget() : "");
                     }
 
                     // 处理委托人
@@ -258,6 +260,8 @@ public class MobileSyncWeiBanJieController {
                             ? processParamModel.getStartor() : "");
                         officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName())
                             ? processParamModel.getStartorName() : "");
+                        officeDoneInfo.setTarget(
+                            StringUtils.isNotBlank(processParamModel.getTarget()) ? processParamModel.getTarget() : "");
                     }
 
                     // 处理委托人

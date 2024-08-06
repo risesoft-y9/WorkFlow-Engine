@@ -1,5 +1,6 @@
 package net.risesoft.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -174,6 +175,7 @@ public class XxxRestController {
      * @param itemId 事项id
      * @param searchTerm 搜索条件
      * @param systemName 系统名称
+     * @param target 目标
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map<String, Object>>
@@ -355,6 +357,7 @@ public class XxxRestController {
      *
      * @param itemId 事项id
      * @param systemName 系统名称
+     * @param target 目标
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map<String, Object>>
@@ -374,6 +377,7 @@ public class XxxRestController {
         y9Page = processTodoApi.getListByUserIdAndSystemName4xxx(tenantId, positionId, systemName,
             StringUtils.isNotBlank(item.getId()) ? item.getWorkflowGuid() : "", target, page, rows);
         List<Map<String, Object>> list = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (TaskModel task : y9Page.getRows()) {
             Map<String, Object> map = new HashMap<>(16);
             try {
@@ -384,7 +388,7 @@ public class XxxRestController {
                 map.put("taskDefinitionKey", task.getTaskDefinitionKey());
                 OfficeDoneInfoModel doneInfo =
                     officeDoneInfoApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
-                map.put("createTime", doneInfo.getStartTime());
+                map.put("createTime", sdf.format(task.getCreateTime()));
                 map.put("processSerialNumber", doneInfo.getProcessSerialNumber());
                 map.put("title", doneInfo.getTitle());
                 map.put("itemId", doneInfo.getItemId());
