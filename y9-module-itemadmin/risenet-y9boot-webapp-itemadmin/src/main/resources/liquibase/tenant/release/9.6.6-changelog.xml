@@ -173,4 +173,17 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1702001405829-1-11" author="zhangchongjie" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_PROCESS_PARAM" columnName="TARGET"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="FF_PROCESS_PARAM">
+            <column name="TARGET" remarks="目标" type="VARCHAR(100)">
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

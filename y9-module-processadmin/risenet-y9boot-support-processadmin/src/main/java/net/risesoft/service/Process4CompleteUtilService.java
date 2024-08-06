@@ -276,6 +276,8 @@ public class Process4CompleteUtilService {
                     StringUtils.isNotBlank(processParamModel.getStartor()) ? processParamModel.getStartor() : "");
                 officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName())
                     ? processParamModel.getStartorName() : "");
+                officeDoneInfo
+                    .setTarget(StringUtils.isBlank(processParamModel.getTarget()) ? "" : processParamModel.getTarget());
             }
             // 处理参与人
             String sql =

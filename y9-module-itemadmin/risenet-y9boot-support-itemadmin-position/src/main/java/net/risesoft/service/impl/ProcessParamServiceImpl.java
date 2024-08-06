@@ -90,6 +90,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             oldpp.setStartorName(processParam.getStartorName());
             oldpp.setSponsorGuid(processParam.getSponsorGuid());
             oldpp.setSended(processParam.getSended());
+            oldpp.setTarget(processParam.getTarget());
             processParamRepository.save(oldpp);
             String tenantId = Y9LoginUserHolder.getTenantId();
             String processInstanceId = processParam.getProcessInstanceId();
@@ -136,6 +137,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newpp.setSended(processParam.getSended());
         newpp.setCreateTime(sdf.format(new Date()));
         newpp.setCustomItem(processParam.getCustomItem());
+        newpp.setTarget(processParam.getTarget());
         processParamRepository.save(newpp);
         return newpp;
     }
