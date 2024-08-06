@@ -36,7 +36,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     private final ActRuDetailService actRuDetailService;
 
     /**
-     * 根据流程实例id标记流程为办结
+     * 根据流程实例id标记流程为办结状态
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -52,7 +52,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 根据流程编号标记流程为办结
+     * 根据流程编号标记流程为办结状态
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -68,7 +68,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 根据流程实例和状态查找正在办理的人员信息
+     * 根据流程实例和办件状态查找正在办理的流转详细信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -93,7 +93,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 根据流程序列号查找正在办理的人员信息
+     * 根据流程编号查找正在办理的流转详细信息
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -116,7 +116,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 根据流程序列号查找正在办理的人员信息
+     * 根据流程编号和办理人id查找办理的流转信息
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -136,7 +136,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 根据流程序列号查找正在办理的人员信息
+     * 根据流程编号查找正在办理的流转详细信息
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -161,7 +161,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 恢复整个流程的办件详情
+     * 恢复整个流程的流转信息（通过改变流程是否结束状态恢复）
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -209,7 +209,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 删除某个参与人的办件详情
+     * 删除指定办理人的办件详情
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -226,7 +226,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 保存或者更新
+     * 保存或者更新流转信息
      *
      * @param tenantId 租户id
      * @param actRuDetailModel 详情对象
@@ -244,7 +244,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 恢复整个流程的办件详情
+     * 恢复整个流程的流转信息（通过改变流程是否结束状态恢复）
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id

@@ -54,7 +54,7 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * 根据流程编号查询WPS正文
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return {@code Y9Result<DocumentWpsModel>} 通用请求返回对象- data 是wps文档
      * @since 9.6.6
      */
@@ -93,7 +93,7 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * 保存WPS正文内容
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param hasContent 是否有内容
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6

@@ -145,7 +145,7 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     /**
-     * 获取子表数据，一个表单是一个子表
+     * 获取子表数据（一个表单为一个子表）
      *
      * @param tenantId 租户id
      * @param formId 表单id
@@ -186,7 +186,7 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     /**
-     * 根据事项id和流程序列号获取数据
+     * 根据事项id和流程编号获取数据
      *
      * @param tenantId 租户id
      * @param itemId 事项id

@@ -52,7 +52,7 @@ public class DraftApiImpl implements DraftApi {
     private final FormDataService formDataService;
 
     /**
-     * 根据系统名称计数
+     * 根据系统名称和组织id获取草稿数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -85,7 +85,7 @@ public class DraftApiImpl implements DraftApi {
     }
 
     /**
-     * 根据岗位id和事项id获取删除草稿统计
+     * 根据岗位id和事项id获取删除草稿数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -107,10 +107,10 @@ public class DraftApiImpl implements DraftApi {
     }
 
     /**
-     * 根据流程序列号获取草稿
+     * 根据流程编号获取草稿详情信息
      *
      * @param tenantId 租户id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return {@code Y9Result<DraftModel>} 通用请求返回对象
      * @since 9.6.6
      */
@@ -128,7 +128,7 @@ public class DraftApiImpl implements DraftApi {
     }
 
     /**
-     * 根据岗位id和事项id获取草稿统计
+     * 根据岗位id和事项id获取草稿箱数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -151,7 +151,7 @@ public class DraftApiImpl implements DraftApi {
     }
 
     /**
-     * 获取草稿列表
+     * 获取草稿箱列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -218,7 +218,7 @@ public class DraftApiImpl implements DraftApi {
     }
 
     /**
-     * 获取系统名称对应的草稿列表
+     * 获取系统名称对应的草稿箱列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -299,7 +299,7 @@ public class DraftApiImpl implements DraftApi {
     }
 
     /**
-     * 删除草稿
+     * 删除草稿（标记删除）
      *
      * @param tenantId 租户id
      * @param ids 草稿ids

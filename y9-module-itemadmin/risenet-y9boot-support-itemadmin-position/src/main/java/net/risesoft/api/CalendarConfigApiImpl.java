@@ -30,7 +30,7 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
     private final CalendarConfigService calendarConfigService;
 
     /**
-     * 获取年节假日配置信息
+     * 获取指定年节假日配置信息
      *
      * @param tenantId 租户id
      * @param year 年份

@@ -55,7 +55,7 @@ public class DocumentApiImpl implements DocumentApi {
     private final ProcessParamService processParamService;
 
     /**
-     * 新建
+     * 新建办件
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -125,7 +125,7 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
-     * 编辑文档
+     * 编辑办件
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -149,7 +149,7 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
-     * 解析用户
+     * 解析当前任务节点配置的用户数据
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -255,7 +255,7 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
-     * 带自定义变量发送
+     * 提交并发送
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位 id
@@ -332,7 +332,7 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
-     * 启动流程，多人
+     * 启动流程（多人）
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id

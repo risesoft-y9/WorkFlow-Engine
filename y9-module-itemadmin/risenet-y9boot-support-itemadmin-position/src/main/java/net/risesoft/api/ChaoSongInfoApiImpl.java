@@ -86,12 +86,12 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据流程实例id统计除当前人外是否有抄送件
+     * 根据流程实例id统计除当前人外的抄送件数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人外是否有抄送件的数量
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人外的抄送件数量
      * @since 9.6.6
      */
     @Override
@@ -103,12 +103,12 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据流程实例id统计当前人是否有抄送件
+     * 根据流程实例id统计当前人抄送件数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人是否有抄送件的数量
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是除当前人抄送件的数量
      * @since 9.6.6
      */
     @Override
@@ -229,7 +229,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据流程实例id获取除当前人外的其他抄送件
+     * 根据流程实例id获取除当前人外的其他抄送件列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -250,7 +250,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     }
 
     /**
-     * 根据流程实例id获取当前人的抄送件
+     * 根据流程实例id获取当前人的抄送件列表
      *
      * @param tenantId 租户id
      * @param senderId 用户id
