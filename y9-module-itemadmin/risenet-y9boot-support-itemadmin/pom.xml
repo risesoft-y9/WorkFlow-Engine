@@ -8,8 +8,8 @@
         <version>v9.6.7-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>risenet-y9boot-support-itemadmin-position</artifactId>
-    <name>risenet-y9boot-support-itemadmin-position</name>
+    <artifactId>risenet-y9boot-support-itemadmin</artifactId>
+    <name>risenet-y9boot-support-itemadmin</name>
     <description>RiseSoft/WorkFlow Engine parent itemadmin web</description>
     <url>https://gitee.com/risesoft-y9/y9-flowable</url>
 

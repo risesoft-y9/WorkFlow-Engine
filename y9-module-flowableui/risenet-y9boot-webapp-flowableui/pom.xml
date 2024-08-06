@@ -8,7 +8,7 @@
         <version>v9.6.7-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>risenet-y9boot-webapp-flowableui-position</artifactId>
+    <artifactId>risenet-y9boot-webapp-flowableui</artifactId>
     <packaging>war</packaging>
     
     <properties>

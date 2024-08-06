@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-itemadmin-position</artifactId>
+            <artifactId>risenet-y9boot-support-itemadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
