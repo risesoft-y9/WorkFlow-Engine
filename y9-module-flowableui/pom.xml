@@ -13,9 +13,9 @@
     <artifactId>y9-module-flowableui</artifactId>
     <packaging>pom</packaging>
     <version>v9.6.7-SNAPSHOT</version>
-    
+
     <modules>
-        <module>risenet-y9boot-webapp-flowableui-position</module>
+        <module>risenet-y9boot-webapp-flowableui</module>
     </modules>
 
 </project>
