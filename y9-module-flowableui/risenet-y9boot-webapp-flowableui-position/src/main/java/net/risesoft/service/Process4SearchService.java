@@ -112,6 +112,7 @@ public class Process4SearchService {
                 }
                 officeDoneInfo.setDeptId(deptIds);
                 officeDoneInfo.setAllUserId(allUserId);
+                officeDoneInfo.setTarget(processParam.getTarget());
                 officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
             }
         } catch (Exception e) {
@@ -200,6 +201,7 @@ public class Process4SearchService {
                 }
                 officeDoneInfo.setDeptId(deptIds);
                 officeDoneInfo.setAllUserId(allUserId);
+                officeDoneInfo.setTarget(processParam.getTarget());
                 officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
             }
         } catch (Exception e) {

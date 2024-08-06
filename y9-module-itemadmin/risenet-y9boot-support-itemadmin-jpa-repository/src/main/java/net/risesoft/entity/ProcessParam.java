@@ -141,4 +141,11 @@ public class ProcessParam implements Serializable {
     @ColumnDefault("0")
     private Boolean customItem = false;
 
+    /**
+     * 目标，xxx使用
+     */
+    @Comment("目标")
+    @Column(name = "TARGET", length = 100)
+    private String target;
+
 }
