@@ -156,7 +156,7 @@ public interface DocumentService {
      * Description: 启动流程并发送
      *
      * @param itemId 事项id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param userChoice
      * @param sponsorGuid
@@ -171,7 +171,7 @@ public interface DocumentService {
      * Description: 启动流程并发送(指定)
      *
      * @param itemId 事项id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param userChoice
      * @param sponsorGuid
@@ -188,7 +188,7 @@ public interface DocumentService {
      * Description: 启动流程并提交
      *
      * @param itemId 事项id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return
      */
     Y9Result<Object> saveAndSubmitTo(String itemId, String processSerialNumber);
@@ -199,7 +199,7 @@ public interface DocumentService {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务节点key
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @return
      */
     SignTaskConfigModel signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey,
@@ -209,7 +209,7 @@ public interface DocumentService {
      * 启动流程，用于当前人启动本租户的流程，启动者是人
      *
      * @param itemId 事项id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @return
      */
@@ -219,7 +219,7 @@ public interface DocumentService {
      * 启动流程，多人
      *
      * @param itemId 事项id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param userIds
      * @return
@@ -231,7 +231,7 @@ public interface DocumentService {
      * 启动流程，指定任务节点
      *
      * @param itemId 事项id
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param startRouteToTaskId
      * @return
@@ -242,7 +242,7 @@ public interface DocumentService {
     /**
      * Description: 启动流程并提交
      *
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param taskId 任务id
      * @return
      */

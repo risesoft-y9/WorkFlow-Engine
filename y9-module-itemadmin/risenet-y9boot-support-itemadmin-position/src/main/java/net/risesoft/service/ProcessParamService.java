@@ -55,7 +55,7 @@ public interface ProcessParamService {
     void setUpCompleter(String processInstanceId);
 
     /**
-     * 根据流程序列号设置流程实例
+     * 根据流程编号设置流程实例
      *
      * @param processSerialNumber
      * @param processInstanceId

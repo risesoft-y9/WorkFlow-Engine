@@ -32,7 +32,7 @@ public class ExtendedContentController {
     /**
      * 是否填写内容
      *
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param category 分类
      * @return Map<String, Object>
      */
@@ -51,7 +51,7 @@ public class ExtendedContentController {
     /**
      * 获取内容列表
      *
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param itembox 列表类型
      * @param taskId 任务ID
      * @param category 分类

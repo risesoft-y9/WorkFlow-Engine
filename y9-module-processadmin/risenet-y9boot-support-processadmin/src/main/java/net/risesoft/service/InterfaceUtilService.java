@@ -118,7 +118,7 @@ public class InterfaceUtilService {
     /**
      * 接口响应数据处理
      *
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id 流程实例ID
      * @param map
      * @param paramsList

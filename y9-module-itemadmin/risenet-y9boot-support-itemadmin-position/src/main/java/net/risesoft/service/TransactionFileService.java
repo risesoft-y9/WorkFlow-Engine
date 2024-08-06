@@ -32,7 +32,7 @@ public interface TransactionFileService {
     void delFile(String ids);
 
     /**
-     * (软航附件控件) 根据流程序列号查询附件数量
+     * (软航附件控件) 根据流程编号查询附件数量
      *
      * @param processSerialNumber
      * @return

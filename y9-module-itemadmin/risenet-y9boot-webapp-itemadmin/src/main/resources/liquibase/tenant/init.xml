@@ -1227,7 +1227,7 @@
             <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PROCESSSERIALNUMBER" remarks="工作流流程序列号" type="VARCHAR(50)">
+            <column name="PROCESSSERIALNUMBER" remarks="工作流流程编号" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="sendDept" remarks="来文单位/拟稿单位" type="VARCHAR(150)"/>
@@ -1442,7 +1442,7 @@
             <column name="NUMBERSTRING" remarks="编号" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PROCESSSERIALNUMBER" remarks="流程序列号" type="VARCHAR(50)">
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
@@ -2204,5 +2204,5 @@
             <column name="PROCESSSERIALNUMBER"/>
         </createIndex>
     </changeSet>
-    
+
 </databaseChangeLog>

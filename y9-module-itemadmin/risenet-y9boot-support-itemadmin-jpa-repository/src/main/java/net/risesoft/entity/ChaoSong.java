@@ -68,7 +68,7 @@ public class ChaoSong implements Serializable {
     private String processInstanceId;
 
     /**
-     * 抄送的流程序列号
+     * 抄送的流程编号
      */
     @Comment("抄送的流程实例")
     @Column(name = "PROCESSSERIALNUMBER", length = 50)

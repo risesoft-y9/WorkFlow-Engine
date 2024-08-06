@@ -112,7 +112,7 @@ public interface ActRuDetailService {
 
     /**
      *
-     * Description: 根据流程序列号和是否结束查找
+     * Description: 根据流程编号和是否结束查找
      *
      * @param processSerialNumber
      * @param ended

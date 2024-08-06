@@ -55,7 +55,7 @@ public class ChaoSongInfo implements Serializable {
     private String processInstanceId;
 
     /**
-     * 抄送的流程序列号
+     * 抄送的流程编号
      */
     @Field(type = FieldType.Keyword, index = true, store = true)
     private String processSerialNumber;

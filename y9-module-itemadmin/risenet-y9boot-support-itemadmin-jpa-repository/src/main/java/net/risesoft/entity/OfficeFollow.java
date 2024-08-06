@@ -37,9 +37,9 @@ public class OfficeFollow implements Serializable {
     private String guid;
 
     /**
-     * 工作流流程序列号
+     * 工作流流程编号
      */
-    @Comment("工作流流程序列号")
+    @Comment("工作流流程编号")
     @Column(name = "PROCESSSERIALNUMBER", length = 50, nullable = false)
     private String processSerialNumber;
 

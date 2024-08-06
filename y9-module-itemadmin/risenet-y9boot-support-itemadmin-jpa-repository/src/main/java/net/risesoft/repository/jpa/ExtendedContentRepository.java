@@ -80,7 +80,7 @@ public interface ExtendedContentRepository
     Integer getCountPersonal(String processSerialNumber, String taskId, String category, String personId);
 
     /**
-     * 根据人员Id和流程序列号获取办理信息
+     * 根据人员Id和流程编号获取办理信息
      * 
      * @param processSerialNumber
      * @param userid
