@@ -63,9 +63,9 @@ public class OrganWordUseHistory implements Serializable {
     private String itemId;
 
     /**
-     * 流程序列号
+     * 流程编号
      */
-    @Comment("流程序列号")
+    @Comment("流程编号")
     @Column(name = "PROCESSSERIALNUMBER", length = 50, nullable = false)
     private String processSerialNumber;
 

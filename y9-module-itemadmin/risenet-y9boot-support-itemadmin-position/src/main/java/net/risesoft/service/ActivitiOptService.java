@@ -14,7 +14,7 @@ public interface ActivitiOptService {
     /**
      * 启动流程,用户任务基于人员时
      *
-     * @param processSerialNumber 流程序列号
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param systemName 系统名称
      * @param map 流程变量

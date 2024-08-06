@@ -90,7 +90,7 @@ public interface ExtendedContentService {
     ExtendedContent getNewConentByProcessSerialNumber(String processSerialNumber, String category);
 
     /**
-     * 根据人员Id和流程序列号获取办理信息
+     * 根据人员Id和流程编号获取办理信息
      *
      * @param userid
      * @param processSerialNumber

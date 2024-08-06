@@ -43,7 +43,7 @@ public interface FormDataService {
     Map<String, Object> getBindPreFormByItemId(String itemId);
 
     /**
-     * 根据事项id和流程序列号获取数据
+     * 根据事项id和流程编号获取数据
      *
      * @param tenantId
      * @param itemId
