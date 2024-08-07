@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
     <name>y9-flowable</name>
     <description>RiseSoft/WorkFlow Engine parent pom.xml file</description>
-    <url>https://gitee.com/risesoft-y9/y9-flowable</url>
+    <url>https://gitee.com/risesoft-y9/y9-flowable/</url>
 
     <licenses>
         <license>
@@ -22,6 +22,12 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <scm>
+        <url>${gitee.url}</url>
+        <connection>${gitee.connection}</connection>
+        <developerConnection>${gitee.developerConnection}</developerConnection>
+    </scm>
 
     <developers>
         <developer>
@@ -45,12 +51,12 @@
             <organizationUrl>https://www.risesoft.net</organizationUrl>
         </developer>
     </developers>
-
-    <scm>
-        <url>https://gitee.com/risesoft-y9/y9-flowable</url>
-        <connection>https://gitee.com/risesoft-y9/y9-flowable</connection>
-        <developerConnection>https://gitee.com/risesoft-y9/y9-flowable</developerConnection>
-    </scm>
+    
+    <properties>
+        <gitee.url>https://gitee.com/risesoft-y9/y9-flowable</gitee.url>
+        <gitee.connection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.connection>
+        <gitee.developerConnection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.developerConnection>
+    </properties>
 
     <modules>
         <module>../y9-digitalbase</module>
