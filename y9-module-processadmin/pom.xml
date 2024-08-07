@@ -13,46 +13,13 @@
     <artifactId>y9-module-processadmin</artifactId>
     <packaging>pom</packaging>
     <version>v9.6.7-SNAPSHOT</version>
-
     <name>y9-module-processadmin</name>
     <description>RiseSoft/WorkFlow Engine processadmin parent pom.xml file</description>
-    <url>https://gitee.com/risesoft-y9/y9-flowable</url>
-
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL) version 3.0</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>qinman</name>
-            <email>qinman@risesoft.net</email>
-            <organization>risesoft</organization>
-            <organizationUrl>https://www.risesoft.net</organizationUrl>
-        </developer>
-
-        <developer>
-            <name>yihong</name>
-            <email>yihong@risesoft.net</email>
-            <organization>risesoft</organization>
-            <organizationUrl>https://www.risesoft.net</organizationUrl>
-        </developer>
-
-        <developer>
-            <name>zhangchongjie</name>
-            <email>zhangchongjie@risesoft.net</email>
-            <organization>risesoft</organization>
-            <organizationUrl>https://www.risesoft.net</organizationUrl>
-        </developer>
-    </developers>
 
     <scm>
-        <url>https://gitee.com/risesoft-y9/y9-flowable</url>
-        <connection>https://gitee.com/risesoft-y9/y9-flowable</connection>
-        <developerConnection>https://gitee.com/risesoft-y9/y9-flowable</developerConnection>
+        <url>${gitee.url}</url>
+        <connection>${gitee.connection}</connection>
+        <developerConnection>${gitee.developerConnection}</developerConnection>
     </scm>
 
     <modules>
