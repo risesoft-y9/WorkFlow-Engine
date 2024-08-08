@@ -318,10 +318,13 @@ public class XxxRestController {
         List<BindFormModel> list =
             formDataApi.findFormItemBind(tenantId, itemId, processDefinitionId, taskKey).getData();
         String formName = "";
+        String formId = "";
         for (BindFormModel bindFormModel : list) {
             formName = Y9Util.genCustomStr(formName, bindFormModel.getFormName());
+            formId = Y9Util.genCustomStr(formId, bindFormModel.getFormId());
         }
         map.put("formName", formName);
+        map.put("formId", formId);
         List<String> userChoiceList = documentApi
             .parserUser(tenantId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskKey, "", "", "")
             .getData();
