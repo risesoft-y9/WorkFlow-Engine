@@ -33,8 +33,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="1702001405829-1-3"
-               author="yihong">
+    <changeSet id="1702001405829-1-3" author="yihong" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="FF_ITEM_RELATEDPROCESS"/>
@@ -62,8 +61,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1702001405829-1-4"
-               author="yihong">
+    <changeSet id="1702001405829-1-4" author="yihong" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="FF_OPINIONFRAME_ONECLICKSET"/>
@@ -90,7 +88,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1702001405829-1-5" author="yihong">
+    <changeSet id="1702001405829-1-5" author="yihong" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_y9preformbind"/>
