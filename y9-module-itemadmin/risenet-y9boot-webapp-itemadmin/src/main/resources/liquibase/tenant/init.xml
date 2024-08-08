@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="1704700547152-1" author="mengjuhua">
+    <changeSet id="1704700547152-1" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_act_ru_detail"/>
@@ -37,7 +37,7 @@
             <column name="TASKID" remarks="任务Id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-2" author="mengjuhua">
+    <changeSet id="1704700547152-2" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_act_ru_execution_backup"/>
@@ -83,7 +83,7 @@
             <column name="VAR_COUNT_" remarks="流程变量数量" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-3" author="mengjuhua">
+    <changeSet id="1704700547152-3" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_approveitem"/>
@@ -151,7 +151,7 @@
             <column name="USERNAME" remarks="创建人姓名" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-5" author="mengjuhua">
+    <changeSet id="1704700547152-5" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_attachment"/>
@@ -186,7 +186,7 @@
             <column name="UPLOADTIME" remarks="上传时间" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-6" author="mengjuhua">
+    <changeSet id="1704700547152-6" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_autoformsequence"/>
@@ -205,7 +205,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-7" author="mengjuhua">
+    <changeSet id="1704700547152-7" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_bookmarkbind"/>
@@ -240,7 +240,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-8" author="mengjuhua">
+    <changeSet id="1704700547152-8" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_calendarconfig"/>
@@ -256,7 +256,7 @@
             <column name="year" remarks="年份" type="VARCHAR(10)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-9" author="mengjuhua">
+    <changeSet id="1704700547152-9" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_chaosong"/>
@@ -310,7 +310,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-10" author="mengjuhua">
+    <changeSet id="1704700547152-10" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_commonbutton"/>
@@ -335,7 +335,7 @@
             <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-11" author="mengjuhua">
+    <changeSet id="1704700547152-11" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_commonsentences"/>
@@ -358,7 +358,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-12" author="mengjuhua">
+    <changeSet id="1704700547152-12" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_commonsentencesinit"/>
@@ -373,7 +373,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-13" author="mengjuhua">
+    <changeSet id="1704700547152-13" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_customprocessinfo"/>
@@ -405,7 +405,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-14" author="mengjuhua">
+    <changeSet id="1704700547152-14" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_documentnumberdetail"/>
@@ -425,7 +425,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-15" author="mengjuhua">
+    <changeSet id="1704700547152-15" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_documentword"/>
@@ -453,7 +453,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-16" author="mengjuhua">
+    <changeSet id="1704700547152-16" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_documentword_his"/>
@@ -483,7 +483,7 @@
             <column name="VERSION" remarks="版本" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-17" author="mengjuhua">
+    <changeSet id="1704700547152-17" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_documentwps"/>
@@ -514,7 +514,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-18" author="mengjuhua">
+    <changeSet id="1704700547152-18" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_draftentity"/>
@@ -541,7 +541,7 @@
             <column name="URGENCY" remarks="紧急程度" type="VARCHAR(20)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-19" author="mengjuhua">
+    <changeSet id="1704700547152-19" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_dynamicrole"/>
@@ -563,7 +563,7 @@
             <column defaultValueNumeric="0" name="USEPROCESSINSTANCEID" remarks="是否使用流程实例" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-20" author="mengjuhua">
+    <changeSet id="1704700547152-20" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_entrust"/>
@@ -596,7 +596,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-21" author="mengjuhua">
+    <changeSet id="1704700547152-21" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_entrust_history"/>
@@ -629,7 +629,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-22" author="mengjuhua">
+    <changeSet id="1704700547152-22" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_entrustdetail"/>
@@ -650,7 +650,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-23" author="mengjuhua">
+    <changeSet id="1704700547152-23" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_errorlog"/>
@@ -674,7 +674,7 @@
             <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-24" author="mengjuhua">
+    <changeSet id="1704700547152-24" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_extended_content"/>
@@ -709,7 +709,7 @@
             <column name="USERNAME" remarks="人员姓名" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-25" author="mengjuhua">
+    <changeSet id="1704700547152-25" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_extraneteformitembind"/>
@@ -734,7 +734,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-26" author="mengjuhua">
+    <changeSet id="1704700547152-26" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_button_role"/>
@@ -752,7 +752,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-27" author="mengjuhua">
+    <changeSet id="1704700547152-27" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_buttonbind"/>
@@ -821,7 +821,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-29" author="mengjuhua">
+    <changeSet id="1704700547152-29" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_mappingconf"/>
@@ -853,7 +853,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-30" author="mengjuhua">
+    <changeSet id="1704700547152-30" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_opinionframe"/>
@@ -886,7 +886,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-31" author="mengjuhua">
+    <changeSet id="1704700547152-31" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_opinionframe_role"/>
@@ -904,7 +904,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-32" author="mengjuhua">
+    <changeSet id="1704700547152-32" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_organword"/>
@@ -928,7 +928,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-33" author="mengjuhua">
+    <changeSet id="1704700547152-33" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_organword_role"/>
@@ -946,7 +946,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-34" author="mengjuhua">
+    <changeSet id="1704700547152-34" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_permission"/>
@@ -970,7 +970,7 @@
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-35" author="mengjuhua">
+    <changeSet id="1704700547152-35" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_printtemplate_bind"/>
@@ -998,7 +998,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-36" author="mengjuhua">
+    <changeSet id="1704700547152-36" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_startnode_role"/>
@@ -1024,7 +1024,7 @@
             <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-37" author="mengjuhua">
+    <changeSet id="1704700547152-37" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_tabbind"/>
@@ -1053,7 +1053,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-38" author="mengjuhua">
+    <changeSet id="1704700547152-38" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_taskconf"/>
@@ -1082,7 +1082,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-39" author="mengjuhua">
+    <changeSet id="1704700547152-39" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_viewconf"/>
@@ -1125,7 +1125,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-40" author="mengjuhua">
+    <changeSet id="1704700547152-40" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_wordtemplate_bind"/>
@@ -1177,7 +1177,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-42" author="mengjuhua">
+    <changeSet id="1704700547152-42" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_y9formbind_mobile"/>
@@ -1205,7 +1205,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-43" author="mengjuhua">
+    <changeSet id="1704700547152-43" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_office_follow"/>
@@ -1241,7 +1241,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-44" author="mengjuhua">
+    <changeSet id="1704700547152-44" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_opinion"/>
@@ -1280,7 +1280,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-45" author="mengjuhua">
+    <changeSet id="1704700547152-45" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_opinion_history"/>
@@ -1323,7 +1323,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-46" author="mengjuhua">
+    <changeSet id="1704700547152-46" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_opinionframe"/>
@@ -1347,7 +1347,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-47" author="mengjuhua">
+    <changeSet id="1704700547152-47" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_organword"/>
@@ -1367,7 +1367,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-48" author="mengjuhua">
+    <changeSet id="1704700547152-48" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_organword_detail"/>
@@ -1400,7 +1400,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-49" author="mengjuhua">
+    <changeSet id="1704700547152-49" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_organword_propty"/>
@@ -1420,7 +1420,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-50" author="mengjuhua">
+    <changeSet id="1704700547152-50" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_organword_usehistory"/>
@@ -1456,7 +1456,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-51" author="mengjuhua">
+    <changeSet id="1704700547152-51" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_printtemplate"/>
@@ -1476,7 +1476,7 @@
             <column name="UPLOADTIME" remarks="上传时间" type="datetime"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-52" author="mengjuhua">
+    <changeSet id="1704700547152-52" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_process_param"/>
@@ -1528,7 +1528,7 @@
             <column name="TODOTASKURLPREFIX" remarks="统一待办url前缀" type="VARCHAR(200)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-53" author="mengjuhua">
+    <changeSet id="1704700547152-53" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_processinstance"/>
@@ -1555,7 +1555,7 @@
             <column name="USERNAME" remarks="发起人" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-54" author="mengjuhua">
+    <changeSet id="1704700547152-54" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_processinstance_details"/>
@@ -1588,7 +1588,7 @@
             <column name="USERNAME" remarks="发起人" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-55" author="mengjuhua">
+    <changeSet id="1704700547152-55" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_processtrack"/>
@@ -1614,7 +1614,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-56" author="mengjuhua">
+    <changeSet id="1704700547152-56" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_procinstancerelationship"/>
@@ -1628,7 +1628,7 @@
             <column name="PROCDEFINITIONKEY" remarks="流程实例Key" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-57" author="mengjuhua">
+    <changeSet id="1704700547152-57" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_quick_send"/>
@@ -1645,7 +1645,7 @@
             <column name="UPDATETIME" remarks="生成时间" type="datetime"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-58" author="mengjuhua">
+    <changeSet id="1704700547152-58" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_receivedepartment"/>
@@ -1667,7 +1667,7 @@
             <column name="TABINDEX" remarks="x序号" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-59" author="mengjuhua">
+    <changeSet id="1704700547152-59" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_receiveperson"/>
@@ -1690,7 +1690,7 @@
             <column name="SEND" remarks="是否可以发送" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-60" author="mengjuhua">
+    <changeSet id="1704700547152-60" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_rejectreason"/>
@@ -1708,7 +1708,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-61" author="mengjuhua">
+    <changeSet id="1704700547152-61" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_remind_instance"/>
@@ -1738,7 +1738,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-62" author="mengjuhua">
+    <changeSet id="1704700547152-62" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_reminder"/>
@@ -1781,7 +1781,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-63" author="mengjuhua">
+    <changeSet id="1704700547152-63" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_sendbutton"/>
@@ -1806,7 +1806,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-64" author="mengjuhua">
+    <changeSet id="1704700547152-64" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_signaturepicture"/>
@@ -1830,7 +1830,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-65" author="mengjuhua">
+    <changeSet id="1704700547152-65" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_speakinfo"/>
@@ -1852,7 +1852,7 @@
             <column name="USERNAME" remarks="发言人名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-66" author="mengjuhua">
+    <changeSet id="1704700547152-66" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_tabentity"/>
@@ -1871,7 +1871,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-67" author="mengjuhua">
+    <changeSet id="1704700547152-67" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_taohongtemplate"/>
@@ -1896,7 +1896,7 @@
             <column name="USERID" remarks="上传人" type="VARCHAR(38)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-68" author="mengjuhua">
+    <changeSet id="1704700547152-68" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_taohongtemplatetype"/>
@@ -1913,7 +1913,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-69" author="mengjuhua">
+    <changeSet id="1704700547152-69" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_taskvariable"/>
@@ -1937,7 +1937,7 @@
             <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-70" author="mengjuhua">
+    <changeSet id="1704700547152-70" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_viewtype"/>
@@ -1958,7 +1958,7 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-71" author="mengjuhua">
+    <changeSet id="1704700547152-71" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_wordtemplate"/>
@@ -1978,7 +1978,7 @@
             <column name="UPLOADTIME" remarks="上传时间" type="datetime"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-89" author="mengjuhua">
+    <changeSet id="1704700547152-89" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9_form_workorder"/>
@@ -2011,7 +2011,7 @@
             <column name="workOrderType" remarks="工单类型" type="VARCHAR(20)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-95" author="mengjuhua">
+    <changeSet id="1704700547152-95" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_define"/>
@@ -2039,7 +2039,7 @@
             <column name="UPDATETIME" remarks="修改时间" type="datetime"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-96" author="mengjuhua">
+    <changeSet id="1704700547152-96" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_field"/>
@@ -2060,7 +2060,7 @@
             <column name="TABLENAME" remarks="对应的表名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-97" author="mengjuhua">
+    <changeSet id="1704700547152-97" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_field_perm"/>
@@ -2078,7 +2078,7 @@
             <column name="WRITEROLENAME" remarks="写权限角色名称" type="VARCHAR(200)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-98" author="mengjuhua">
+    <changeSet id="1704700547152-98" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_optionclass"/>
@@ -2093,7 +2093,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-99" author="mengjuhua">
+    <changeSet id="1704700547152-99" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_optionvalue"/>
@@ -2119,7 +2119,7 @@
             <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-100" author="mengjuhua">
+    <changeSet id="1704700547152-100" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_table"/>
@@ -2140,7 +2140,7 @@
             <column name="TABLETYPE" remarks="表类型" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-101" author="mengjuhua">
+    <changeSet id="1704700547152-101" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_table_field"/>
@@ -2164,7 +2164,7 @@
             <column name="TABLENAME" remarks="表名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-102" author="mengjuhua">
+    <changeSet id="1704700547152-102" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="y9form_validtype"/>
@@ -2184,7 +2184,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1704700547152-104" author="mengjuhua">
+    <changeSet id="1704700547152-104" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <indexExists tableName="ff_process_param" columnNames="PROCESSINSTANCEID"/>
@@ -2194,7 +2194,7 @@
             <column name="PROCESSINSTANCEID"/>
         </createIndex>
     </changeSet>
-    <changeSet id="1704700547152-105" author="mengjuhua">
+    <changeSet id="1704700547152-105" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <indexExists tableName="ff_process_param" columnNames="PROCESSSERIALNUMBER"/>

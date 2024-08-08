@@ -3,8 +3,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="1717137489499-1" author="zhangchongjie (generated)">
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1717137489499-1" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_interface_info"/>
@@ -22,7 +23,7 @@
             <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-2" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-2" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_interface_request_params"/>
@@ -39,7 +40,7 @@
             <column name="remark" remarks="参数备注" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-3" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-3" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_interface_response_params"/>
@@ -55,7 +56,7 @@
             <column name="remark" remarks="参数备注" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-4" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-4" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_interface_bind"/>
@@ -70,7 +71,7 @@
             <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-5" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-5" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_interface_params_bind"/>
@@ -90,7 +91,7 @@
             <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-6" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-6" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_interface_task_bind"/>
@@ -108,7 +109,7 @@
             <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-7" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-7" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_link_role"/>
@@ -126,7 +127,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-8" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-8" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_linkbind"/>
@@ -141,7 +142,7 @@
             <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1717137489499-9" author="zhangchongjie (generated)">
+    <changeSet id="1717137489499-9" author="zhangchongjie (generated)" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_link_info"/>
@@ -174,6 +175,5 @@
             <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-
-
+ 
 </databaseChangeLog>
