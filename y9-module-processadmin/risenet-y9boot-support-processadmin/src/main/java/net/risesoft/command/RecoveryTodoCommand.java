@@ -120,6 +120,10 @@ public class RecoveryTodoCommand implements Command<Void> {
             historicProcessInstanceEntity.setEndActivityId(null);
             historicProcessInstanceEntity.setDeleteReason(null);
             historicProcessInstanceEntityManager.update(historicProcessInstanceEntity);
+
+            // 更新系统名称
+            taskEntity.setCategory(historicProcessInstanceEntity.getBusinessKey());
+            taskService.updateTask(taskEntity, false);
         }
         /*
          * 4-copy participant(流程实例) candidate(单实例任务节点生成的任务会有)
