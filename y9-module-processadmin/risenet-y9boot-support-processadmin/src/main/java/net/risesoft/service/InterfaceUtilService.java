@@ -55,6 +55,7 @@ import net.risesoft.model.itemadmin.InterfaceParamsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
@@ -73,6 +74,7 @@ public class InterfaceUtilService {
     private final ProcessParamApi processParamApi;
     private final ErrorLogApi errorLogApi;
     private final ItemInterfaceApi itemInterfaceApi;
+    // private final Y9FileStoreService y9FileStoreService;
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
@@ -149,11 +151,17 @@ public class InterfaceUtilService {
                 boolean isHaveField = false;
                 for (InterfaceParamsModel model : paramsList) {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
+                        String fieldName = model.getColumnName();
+                        String parameterName = model.getParameterName();
+
+                        if (model.getIsFile().equals("1") && StringUtils.isNotBlank((String)map.get(parameterName))) {
+                            LOGGER.info("********************文件字段处理:" + model.getParameterName());
+                            String fileStoreId = this.saveFile(processSerialNumber, (String)map.get(parameterName));
+                        }
                         if (isHaveField) {
                             sqlStr.append(",");
                         }
-                        String fieldName = model.getColumnName();
-                        String parameterName = model.getParameterName();
+
                         sqlStr.append(fieldName).append("=");
                         sqlStr.append(StringUtils.isNotBlank((String)map.get(parameterName))
                             ? "'" + map.get(parameterName) + "'" : "''");
@@ -623,6 +631,14 @@ public class InterfaceUtilService {
             LOGGER.error("保存错误日志失败", e);
         }
         return new AsyncResult<>(false);
+    }
+
+    private String saveFile(String processSerialNumber, String fileStr) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String fullPath =
+            "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+        // Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+        return "";
     }
 
     /**
