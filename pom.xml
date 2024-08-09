@@ -6,12 +6,13 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-digitalbase</artifactId>
-        <version>${revision}</version>
+        <version>v9.6.7-SNAPSHOT</version>
         <relativePath>../y9-digitalbase/pom.xml</relativePath>
     </parent>
     <artifactId>y9-flowable</artifactId>
     <packaging>pom</packaging>
     <name>y9-flowable</name>
+    <version>${revision}</version>
     <description>RiseSoft/WorkFlow Engine parent pom.xml file</description>
     <url>https://gitee.com/risesoft-y9/y9-flowable/tree/main/</url>
 
@@ -51,7 +52,7 @@
             <organizationUrl>https://www.risesoft.net</organizationUrl>
         </developer>
     </developers>
-    
+
     <properties>
         <gitee.url>https://gitee.com/risesoft-y9/y9-flowable</gitee.url>
         <gitee.connection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.connection>
