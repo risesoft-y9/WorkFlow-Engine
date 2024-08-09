@@ -6,13 +6,13 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-flowable</artifactId>
-        <version>v9.6.7-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>net.risesoft</groupId>
     <artifactId>y9-module-itemadmin</artifactId>
     <packaging>pom</packaging>
-    <version>v9.6.7-SNAPSHOT</version>
+    <version>${revision}</version>
     <name>y9-module-itemadmin</name>
     <description>RiseSoft/WorkFlow Engine itemadmin parent pom.xml file</description>
 

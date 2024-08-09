@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.risesoft</groupId>
-        <artifactId>y9-digitalbase-parent</artifactId>
-        <version>v9.6.7-SNAPSHOT</version>
-        <relativePath>../y9-digitalbase/y9-digitalbase-parent/pom.xml</relativePath>
+        <artifactId>y9-digitalbase</artifactId>
+        <version>${revision}</version>
+        <relativePath>../y9-digitalbase/pom.xml</relativePath>
     </parent>
     <artifactId>y9-flowable</artifactId>
     <packaging>pom</packaging>
     <name>y9-flowable</name>
     <description>RiseSoft/WorkFlow Engine parent pom.xml file</description>
-    <url>https://gitee.com/risesoft-y9/y9-flowable/</url>
+    <url>https://gitee.com/risesoft-y9/y9-flowable/tree/main/</url>
 
     <licenses>
         <license>
@@ -56,6 +56,8 @@
         <gitee.url>https://gitee.com/risesoft-y9/y9-flowable</gitee.url>
         <gitee.connection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.connection>
         <gitee.developerConnection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.developerConnection>
+
+        <revision>v9.6.7-SNAPSHOT</revision>
     </properties>
 
     <modules>
@@ -77,7 +79,7 @@
                         <configuration>
                             <excludeArtifacts>
                                 <artifact>y9-module-flowableui</artifact>
-                                <artifact>risenet-y9boot-webapp-flowableui-position</artifact>
+                                <artifact>risenet-y9boot-webapp-flowableui</artifact>
                                 <artifact>y9-module-jodconverter</artifact>
                                 <artifact>risenet-y9boot-webapp-jodconverter</artifact>
                                 <artifact>risenet-y9boot-webapp-processadmin</artifact>

@@ -7,10 +7,10 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-module-jodconverter</artifactId>
-        <version>v9.6.7-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <version>v9.6.7-SNAPSHOT</version>
+    <version>${revision}</version>
     <artifactId>risenet-y9boot-webapp-jodconverter</artifactId>
     <packaging>war</packaging>
     
@@ -126,7 +126,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.redisson</groupId>
@@ -167,7 +166,6 @@
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
-            <version>${commons-net.version}</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>

@@ -5,12 +5,12 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-module-processadmin</artifactId>
-        <version>v9.6.7-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <!-- <groupId>net.risesoft</groupId> -->
     <artifactId>risenet-y9boot-api-interface-processadmin</artifactId>
-    <version>v9.6.7-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
     <name>risenet-y9boot-api-interface-processadmin</name>
     <description>RiseSoft/WorkFlow Engine processadmin interface</description>

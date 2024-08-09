@@ -4,11 +4,11 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-module-processadmin</artifactId>
-        <version>v9.6.7-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>risenet-y9boot-support-processadmin</artifactId>
-    <!-- <version>v9.6.7-SNAPSHOT</version> -->
+    <!-- <version>${revision}</version> -->
     <name>risenet-y9boot-support-processadmin</name>
     <description>RiseSoft/WorkFlow Engine processadmin support</description>
 
