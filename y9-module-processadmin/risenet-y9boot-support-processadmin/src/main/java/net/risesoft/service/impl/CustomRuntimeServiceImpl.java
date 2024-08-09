@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.IdentityService;
 import org.flowable.engine.ManagementService;
@@ -43,6 +45,7 @@ import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.DeleteProcessUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 
 /**
  * @author qinman
@@ -213,10 +216,15 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
              */
             java.sql.Statement stmt = null;
             Connection connection = null;
+            String dialectName = "";
             try {
+                DataSource dataSource = jdbcTemplate.getDataSource();
+                dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
                 connection = jdbcTemplate.getDataSource().getConnection();
                 stmt = connection.createStatement();
-                stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
+                if (!"kingbase".equals(dialectName)) {
+                    stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
+                }
                 stmt.addBatch(
                     "INSERT INTO ACT_RU_EXECUTION (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ FROM FF_ACT_RU_EXECUTION_"
                         + year + " T WHERE T.PROC_INST_ID_ = '" + processInstanceId + "'");
@@ -224,7 +232,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 LOGGER.info("**************复制数据到ACT_RU_EXECUTION成功****************");
             } finally {
                 if (stmt != null) {
-                    stmt.execute("SET FOREIGN_KEY_CHECKS=1");
+                    if (!"kingbase".equals(dialectName)) {
+                        stmt.execute("SET FOREIGN_KEY_CHECKS=1");
+                    }
                     stmt.close();
                 }
                 if (connection != null) {
