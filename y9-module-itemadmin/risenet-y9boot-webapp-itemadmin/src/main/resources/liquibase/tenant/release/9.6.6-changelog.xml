@@ -184,4 +184,17 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1702001405829-1-12" author="zhangchongjie" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_INTERFACE_RESPONSE_PARAMS" columnName="isFile"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="FF_INTERFACE_RESPONSE_PARAMS">
+            <column name="isFile" remarks="是否文件类型" defaultValue="0" type="VARCHAR(10)">
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

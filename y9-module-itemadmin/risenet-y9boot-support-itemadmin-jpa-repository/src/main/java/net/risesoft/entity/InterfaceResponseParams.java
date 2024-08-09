@@ -46,6 +46,10 @@ public class InterfaceResponseParams implements Serializable {
     @Column(name = "parameterName", length = 50)
     private String parameterName;
 
+    @Comment("是否文件类型")
+    @Column(name = "isFile", length = 10)
+    private String isFile = "0";
+
     @Comment("参数备注")
     @Column(name = "remark", length = 100)
     private String remark;

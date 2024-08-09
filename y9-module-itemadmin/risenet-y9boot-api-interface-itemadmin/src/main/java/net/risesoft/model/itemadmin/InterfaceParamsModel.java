@@ -27,6 +27,12 @@ public class InterfaceParamsModel implements Serializable {
      * 参数类型
      */
     private String parameterType;
+
+    /**
+     * 是否文件
+     */
+    private String isFile = "0";
+
     /**
      * 绑定类型
      */

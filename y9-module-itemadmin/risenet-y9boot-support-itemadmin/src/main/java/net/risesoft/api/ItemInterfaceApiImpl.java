@@ -12,12 +12,15 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.entity.InterfaceInfo;
+import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.ItemInterfaceTaskBind;
+import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.InterfaceParamsModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.InterfaceInfoRepository;
+import net.risesoft.repository.jpa.InterfaceResponseParamsRepository;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -36,6 +39,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
 
     private final InterfaceInfoRepository interfaceInfoRepository;
+
+    private final InterfaceResponseParamsRepository interfaceResponseParamsRepository;
 
     private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
@@ -99,6 +104,14 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
             model.setParameterName(bind.getParameterName());
             model.setParameterType(bind.getParameterType());
             model.setTableName(bind.getTableName());
+            model.setIsFile("0");
+            if (ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue().equals(bind.getBindType())) {
+                List<InterfaceResponseParams> plist =
+                    interfaceResponseParamsRepository.findByParameterName(bind.getParameterName());
+                if (plist != null && plist.size() > 0) {
+                    model.setIsFile(plist.get(0).getIsFile());
+                }
+            }
             resList.add(model);
 
         }
