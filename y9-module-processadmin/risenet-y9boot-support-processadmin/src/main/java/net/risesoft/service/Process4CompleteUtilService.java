@@ -305,6 +305,7 @@ public class Process4CompleteUtilService {
             if (StringUtils.isBlank(year)) {
                 year0 = startTime.substring(0, 4);
             }
+            Thread.sleep(3000);// 延时3秒执行截转和删除数据
             this.saveYearData(year0, processInstanceId);
             this.deleteDoneData(processInstanceId);
             LOGGER.info("#################保存办结件数据到数据中心成功#################");
