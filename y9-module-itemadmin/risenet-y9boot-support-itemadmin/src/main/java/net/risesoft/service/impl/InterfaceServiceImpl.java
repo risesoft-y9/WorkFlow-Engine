@@ -253,7 +253,7 @@ public class InterfaceServiceImpl implements InterfaceService {
                 item.setInterfaceId(info.getInterfaceId());
                 item.setParameterName(info.getParameterName());
                 item.setRemark(info.getRemark());
-                item.setIsFile(info.getIsFile());
+                item.setFileType(info.getFileType());
                 return;
             }
         }
@@ -263,7 +263,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setParameterName(info.getParameterName());
         item.setCreateTime(sdf.format(new Date()));
         item.setRemark(info.getRemark());
-        item.setIsFile(info.getIsFile());
+        item.setFileType(info.getFileType());
         interfaceResponseParamsRepository.saveAndFlush(item);
     }
 

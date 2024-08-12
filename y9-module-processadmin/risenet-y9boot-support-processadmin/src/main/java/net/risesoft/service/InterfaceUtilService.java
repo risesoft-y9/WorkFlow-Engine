@@ -8,6 +8,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,8 @@ import javax.sql.DataSource;
 
 import jakarta.annotation.Resource;
 
+import net.risesoft.y9public.entity.Y9FileStore;
+import net.risesoft.y9public.service.Y9FileStoreService;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -76,15 +79,16 @@ public class InterfaceUtilService {
     private final ProcessParamApi processParamApi;
     private final ErrorLogApi errorLogApi;
     private final ItemInterfaceApi itemInterfaceApi;
-    // private final Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public InterfaceUtilService(ProcessParamApi processParamApi, ErrorLogApi errorLogApi,
-        ItemInterfaceApi itemInterfaceApi) {
+        ItemInterfaceApi itemInterfaceApi,Y9FileStoreService y9FileStoreService) {
         this.processParamApi = processParamApi;
         this.errorLogApi = errorLogApi;
         this.itemInterfaceApi = itemInterfaceApi;
+        this.y9FileStoreService = y9FileStoreService;
     }
 
     /**
@@ -155,17 +159,18 @@ public class InterfaceUtilService {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
                         String fieldName = model.getColumnName();
                         String parameterName = model.getParameterName();
-
-                        if (model.getIsFile().equals("1") && StringUtils.isNotBlank((String)map.get(parameterName))) {
+                        String value = (String)map.get(parameterName);
+                        //处理文件，保存文件，表单存fileStoreId
+                        if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
                             LOGGER.info("********************文件字段处理:" + model.getParameterName());
-                            String fileStoreId = this.saveFile(processSerialNumber, (String)map.get(parameterName));
+                            String fileStoreId = this.saveFile(processSerialNumber, value,model.getFileType());
+                            value = fileStoreId;
                         }
                         if (isHaveField) {
                             sqlStr.append(",");
                         }
-
                         sqlStr.append(fieldName).append("=");
-                        sqlStr.append(StringUtils.isNotBlank((String)map.get(parameterName))
+                        sqlStr.append(StringUtils.isNotBlank(value)
                             ? "'" + map.get(parameterName) + "'" : "''");
                         isHaveField = true;
                     }
@@ -635,12 +640,14 @@ public class InterfaceUtilService {
         return new AsyncResult<>(false);
     }
 
-    private String saveFile(String processSerialNumber, String fileStr) {
+    private String saveFile(String processSerialNumber, String fileStr,String fileType) throws Exception{
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String fullPath =
             "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
-        // Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
-        return "";
+         byte[] file = Base64.getDecoder().decode(fileStr);
+         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, processSerialNumber + sdf.format(new Date()) + "." + fileType);
+        return y9FileStore != null ? y9FileStore.getId() : "";
     }
 
     /**

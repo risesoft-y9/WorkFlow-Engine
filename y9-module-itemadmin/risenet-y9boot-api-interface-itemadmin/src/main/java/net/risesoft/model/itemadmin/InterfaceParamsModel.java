@@ -31,7 +31,7 @@ public class InterfaceParamsModel implements Serializable {
     /**
      * 是否文件
      */
-    private String isFile = "0";
+    private String fileType;
 
     /**
      * 绑定类型
