@@ -193,7 +193,7 @@
         </preConditions>
 
         <addColumn tableName="FF_INTERFACE_RESPONSE_PARAMS">
-            <column name="fileType" remarks="是否文件类型" defaultValue="0" type="VARCHAR(10)">
+            <column name="fileType" remarks="是否文件类型" type="VARCHAR(10)">
             </column>
         </addColumn>
     </changeSet>
