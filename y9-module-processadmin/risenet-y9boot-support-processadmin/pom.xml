@@ -71,7 +71,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-file-service-ftp</artifactId>
+            <artifactId>risenet-y9boot-support-file-service-local</artifactId>
             <version>${project.version}</version>
         </dependency>
 

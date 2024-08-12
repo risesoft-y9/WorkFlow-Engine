@@ -648,12 +648,12 @@ public class InterfaceUtilService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String fullPath =
-            "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            "/" + Y9Context.getSystemName() + "/" + processSerialNumber;
         byte[] file = Base64.getDecoder().decode(fileStr);
         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, processSerialNumber + sdf.format(new Date()) + "." + fileType);
         String downloadUrl = "";
         if (y9FileStore != null){
-            downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + y9FileStore.getId() + "." + fileType;
+            downloadUrl = y9Config.getCommon().getProcessAdminBaseUrl() + "/s/" + y9FileStore.getId() + "." + fileType;
         }
         return downloadUrl;
     }
