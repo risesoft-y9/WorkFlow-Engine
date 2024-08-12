@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 
+import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 import org.apache.commons.httpclient.HttpClient;
@@ -79,15 +80,17 @@ public class InterfaceUtilService {
     private final ErrorLogApi errorLogApi;
     private final ItemInterfaceApi itemInterfaceApi;
     private final Y9FileStoreService y9FileStoreService;
+    private final Y9Properties y9Config;
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public InterfaceUtilService(ProcessParamApi processParamApi, ErrorLogApi errorLogApi,
-        ItemInterfaceApi itemInterfaceApi,Y9FileStoreService y9FileStoreService) {
+        ItemInterfaceApi itemInterfaceApi,Y9FileStoreService y9FileStoreService,Y9Properties y9Config) {
         this.processParamApi = processParamApi;
         this.errorLogApi = errorLogApi;
         this.itemInterfaceApi = itemInterfaceApi;
         this.y9FileStoreService = y9FileStoreService;
+        this.y9Config = y9Config;
     }
 
     /**
@@ -162,21 +165,20 @@ public class InterfaceUtilService {
                         //处理文件，保存文件，表单存fileStoreId
                         if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
                             LOGGER.info("********************文件字段处理:" + model.getParameterName());
-                            String fileStoreId = this.saveFile(processSerialNumber, value,model.getFileType());
-                            value = fileStoreId;
+                            String downloadUrl = this.saveFile(processSerialNumber, value,model.getFileType());
+                            value = downloadUrl;
                         }
                         if (isHaveField) {
                             sqlStr.append(",");
                         }
                         sqlStr.append(fieldName).append("=");
                         sqlStr.append(StringUtils.isNotBlank(value)
-                            ? "'" + map.get(parameterName) + "'" : "''");
+                            ? "'" + value + "'" : "''");
                         isHaveField = true;
                     }
                 }
                 sqlStr.append(" where guid ='").append(processSerialNumber).append("'");
                 String sql = sqlStr.toString();
-                System.out.println("******************************sql:" + sql);
                 jdbcTemplate.execute(sql);
             } catch (Exception e) {
                 final Writer msgResult = new StringWriter();
@@ -271,7 +273,7 @@ public class InterfaceUtilService {
                 } else {
                     dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info);
                 }
-                LOGGER.info("*********************接口返回结果:response={}", response);
+//                LOGGER.info("*********************接口返回结果:response={}", response);
             } else {
                 saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
                     info.getInterfaceAddress(), "httpCode:" + httpCode);
@@ -312,11 +314,14 @@ public class InterfaceUtilService {
                     break;
                 }
             }
-            DataSource dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
-            String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
-            StringBuilder sqlStr = getSqlStr(dialect, tableName);
-            List<Map<String, Object>> listmap = jdbcTemplate.queryForList(sqlStr.toString(), processSerialNumber);
-            LOGGER.info("*********************请求参数返回结果:listmap={}", Y9JsonUtil.writeValueAsString(listmap));
+            List<Map<String, Object>> listmap = new ArrayList<>();
+            if(!tableName.isEmpty()){
+                DataSource dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+                String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
+                StringBuilder sqlStr = getSqlStr(dialect, tableName);
+                listmap = jdbcTemplate.queryForList(sqlStr.toString(), processSerialNumber);
+                LOGGER.info("*********************请求参数返回结果:listmap={}", Y9JsonUtil.writeValueAsString(listmap));
+            }
             return listmap;
         } catch (Exception e) {
             final Writer msgResult = new StringWriter();
@@ -575,7 +580,7 @@ public class InterfaceUtilService {
                 } else {
                     dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info);
                 }
-                LOGGER.info("*********************接口返回结果:response={}", resp);
+//                LOGGER.info("*********************接口返回结果:response={}", resp);
             } else {
                 saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
                     info.getInterfaceAddress(), "httpCode:" + httpCode);
@@ -644,9 +649,13 @@ public class InterfaceUtilService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String fullPath =
             "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
-         byte[] file = Base64.getDecoder().decode(fileStr);
-         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, processSerialNumber + sdf.format(new Date()) + "." + fileType);
-        return y9FileStore != null ? y9FileStore.getId() : "";
+        byte[] file = Base64.getDecoder().decode(fileStr);
+        Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, processSerialNumber + sdf.format(new Date()) + "." + fileType);
+        String downloadUrl = "";
+        if (y9FileStore != null){
+            downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + y9FileStore.getId() + "." + fileType;
+        }
+        return downloadUrl;
     }
 
     /**
