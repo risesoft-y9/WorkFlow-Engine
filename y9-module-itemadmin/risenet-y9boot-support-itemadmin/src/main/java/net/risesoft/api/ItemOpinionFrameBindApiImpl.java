@@ -37,7 +37,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     private final OpinionFrameService opinionFrameService;
 
     /**
-     * 根据事项id获取所有绑定意见框
+     * 根据事项id获取所有绑定意见框列表
      *
      * @param tenantId 租户id
      * @param itemId 事项id
@@ -61,7 +61,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     }
 
     /**
-     * 根据事项id和流程定义id获取所有绑定意见框
+     * 根据事项id和流程定义id获取所有绑定意见框列表
      *
      * @param tenantId 租户id
      * @param itemId 事项id
@@ -87,7 +87,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     }
 
     /**
-     * 根据事项id和任务id获取绑定意见框
+     * 根据事项id和任务id获取绑定意见框列表
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -116,7 +116,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     }
 
     /**
-     * 根据事项id和任务id获取绑定意见框（包含角色信息）
+     * 根据事项id和任务id获取绑定的意见框（包含角色信息）
      *
      * @param tenantId 租户id
      * @param userId 人员id

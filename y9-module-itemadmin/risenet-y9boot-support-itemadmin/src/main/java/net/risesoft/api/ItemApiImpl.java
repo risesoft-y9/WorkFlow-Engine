@@ -51,7 +51,7 @@ public class ItemApiImpl implements ItemApi {
     private final ItemMappingConfRepository itemMappingConfRepository;
 
     /**
-     * 根据系统名称获取事项
+     * 根据系统名称获取事项列表
      *
      * @param tenantId 租户id
      * @param systemName 系统名称
@@ -72,7 +72,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 根据流程的定义Key查找对应的事项
+     * 根据流程的定义Key查找对应的事项信息
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
@@ -88,7 +88,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 获取所有事项列表
+     * 获取当前租户所有事项列表
      *
      * @param tenantId 租户id
      * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
@@ -108,7 +108,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 获取所有事项
+     * 获取所有事项信息
      *
      * @param tenantId 租户id
      * @return {@code Y9Result<List<ItemModel>>} 通用请求返回对象 - data 是事项列表
@@ -128,7 +128,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 根据事项id获取事项
+     * 根据事项id获取事项信息
      *
      * @param tenantId 租户id
      * @param itemId 事项id
@@ -147,7 +147,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 获取有权限的首个事项id
+     * 获取有权限的第一个事项id
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -181,7 +181,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 获取新建事项列表
+     * 获取有权限的事项列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -222,7 +222,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 获取事项系统
+     * 获取事项系统列表
      *
      * @param tenantId 租户id
      * @return {@code Y9Result<List<ItemSystemListModel>>} 通用请求返回对象 - data 是事项系统列表
@@ -260,7 +260,7 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
-     * 判断该租户是否有流程定义
+     * 判断流程定义key是否绑定事项
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key

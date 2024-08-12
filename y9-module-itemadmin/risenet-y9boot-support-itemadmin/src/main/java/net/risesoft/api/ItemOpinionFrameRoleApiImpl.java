@@ -32,7 +32,7 @@ public class ItemOpinionFrameRoleApiImpl implements ItemOpinionFrameRoleApi {
     private final ItemOpinionFrameRoleService itemOpinionFrameRoleService;
 
     /**
-     * 获取意见框绑定角色
+     * 获取意见框绑定角色列表
      *
      * @param tenantId 租户id
      * @param itemOpinionFrameId 意见框绑定id

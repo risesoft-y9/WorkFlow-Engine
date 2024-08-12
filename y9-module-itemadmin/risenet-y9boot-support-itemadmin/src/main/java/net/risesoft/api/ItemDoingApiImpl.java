@@ -46,7 +46,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     private final ActRuDetailService actRuDetailService;
 
     /**
-     * 根据系统名称查询在办数量
+     * 根据系统名称查询当前人的在办数量
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -89,7 +89,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     }
 
     /**
-     * 根据用户id和系统名称查询在办列表
+     * 根据用户id和系统名称查询当前人的在办列表
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -159,7 +159,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     }
 
     /**
-     * 根据用户id、系统名称、表名称、搜索内容查询在办列表
+     * 根据用户id、系统名称、表名称、搜索内容查询当前人的在办列表
      *
      * @param tenantId 租户id
      * @param userId 用户id
