@@ -87,7 +87,7 @@ public class ItemDoneApiImpl implements ItemDoneApi {
     }
 
     /**
-     * 根据用户id和系统名称查询办结列表
+     * 根据用户id和系统名称查询当前人办结列表
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -161,7 +161,7 @@ public class ItemDoneApiImpl implements ItemDoneApi {
     }
 
     /**
-     * 根据用户id、系统名称、表名称、搜索内容查询办结列表
+     * 根据用户id、系统名称、表名称、搜索内容查询当前人办结列表
      *
      * @param tenantId 租户id
      * @param userId 用户id

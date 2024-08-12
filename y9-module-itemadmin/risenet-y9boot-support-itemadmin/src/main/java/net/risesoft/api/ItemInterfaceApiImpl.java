@@ -45,7 +45,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
     /**
-     * 获取事项接口信息
+     * 获取事项绑定的接口信息
      *
      * @param tenantId 租户id
      * @param itemId 事项id
@@ -81,7 +81,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     }
 
     /**
-     * 获取事项接口参数信息
+     * 获取事项绑定的接口参数信息
      *
      * @param tenantId 租户id
      * @param itemId 事项id

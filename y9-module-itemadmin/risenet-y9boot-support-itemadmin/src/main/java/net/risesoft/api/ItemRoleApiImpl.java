@@ -72,7 +72,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     }
 
     /**
-     * 获取委办局
+     * 获取委办局组织机构数据
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
