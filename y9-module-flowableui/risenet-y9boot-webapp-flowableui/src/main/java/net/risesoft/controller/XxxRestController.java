@@ -435,9 +435,14 @@ public class XxxRestController {
             routeToTaskId, routeToTaskId, processInstanceId, multiInstance).getData();
         Map<String, Object> map = new HashMap<>();
         map.put("val", false);
-        variableApi.setVariable(tenantId, taskId, "stopProcess", map);
+        variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId, "stopProcess", map);
         if (userChoiceList == null || userChoiceList.size() == 0) {
             return Y9Result.failure("目标节点未授权人员");
+        }
+        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+        if(taskModel == null){
+            List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            taskId= list.get(0).getId();
         }
         return buttonOperationApi.reposition(tenantId, positionId, taskId, routeToTaskId, userChoiceList, "", "");
     }
@@ -470,17 +475,20 @@ public class XxxRestController {
     /**
      * 停止流程
      *
-     * @param taskId 任务id
+     * @param processInstanceId 流程实例id
      * @return Y9Result<Object>
      */
     @PostMapping(value = "/stopProcess")
-    public Y9Result<Object> stopProcess(@RequestParam String taskId) {
+    public Y9Result<Object> stopProcess(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        if (task.getTaskDefinitionKey().contains("skip_")) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("val", true);
-            return variableApi.setVariable(tenantId, taskId, "stopProcess", map);
+        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        if(list.size() == 1){
+            TaskModel task = list.get(0);
+            if (task.getTaskDefinitionKey().contains("skip_")) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("val", true);
+                return variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId, "stopProcess", map);
+            }
         }
         return Y9Result.success();
     }
