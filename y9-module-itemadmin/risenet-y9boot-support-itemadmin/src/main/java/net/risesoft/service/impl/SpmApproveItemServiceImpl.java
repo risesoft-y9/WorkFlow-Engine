@@ -47,6 +47,7 @@ import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.service.config.ItemWordTemplateBindService;
 import net.risesoft.service.config.RelatedProcessService;
+import net.risesoft.service.config.TaskTimeConfService;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.config.Y9PreFormItemBindService;
 import net.risesoft.util.SysVariables;
@@ -86,6 +87,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final ItemStartNodeRoleService itemStartNodeRoleService;
     private final ItemButtonBindService itemButtonBindService;
     private final ItemViewConfService itemViewConfService;
+    private final TaskTimeConfService taskTimeConfService;
 
     @Override
     @Transactional
@@ -143,6 +145,9 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 // 复制签收配置绑定信息
                 itemTaskConfService.copyBindInfo(id, newItemId, latestpdId);
 
+                // 复制任务时间配置
+                taskTimeConfService.copyBindInfo(id, newItemId, latestpdId);
+
                 // 复制按钮配置的绑定信息
                 itemButtonBindService.copyBindInfo(id, newItemId, latestpdId);
 
@@ -189,6 +194,8 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                     printTemplateService.deleteBindInfo(s);
                     // 删除签收配置绑定信息
                     itemTaskConfService.deleteBindInfo(s);
+                    // 删除任务时间配置
+                    taskTimeConfService.deleteBindInfo(s);
                     // 删除路由配置的绑定信息
                     itemStartNodeRoleService.deleteBindInfo(s);
                     // 删除按钮配置的绑定信息
