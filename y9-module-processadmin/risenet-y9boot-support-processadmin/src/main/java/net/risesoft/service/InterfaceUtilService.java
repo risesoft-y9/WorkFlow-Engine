@@ -18,10 +18,6 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9public.entity.Y9FileStore;
-import net.risesoft.y9public.service.Y9FileStoreService;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -58,12 +54,16 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.InterfaceParamsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.TaskTimeConfModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
+import net.risesoft.y9public.entity.Y9FileStore;
+import net.risesoft.y9public.service.Y9FileStoreService;
 
 import cn.hutool.json.JSONObject;
 
@@ -85,7 +85,7 @@ public class InterfaceUtilService {
     private JdbcTemplate jdbcTemplate;
 
     public InterfaceUtilService(ProcessParamApi processParamApi, ErrorLogApi errorLogApi,
-        ItemInterfaceApi itemInterfaceApi,Y9FileStoreService y9FileStoreService,Y9Properties y9Config) {
+        ItemInterfaceApi itemInterfaceApi, Y9FileStoreService y9FileStoreService, Y9Properties y9Config) {
         this.processParamApi = processParamApi;
         this.errorLogApi = errorLogApi;
         this.itemInterfaceApi = itemInterfaceApi;
@@ -96,25 +96,30 @@ public class InterfaceUtilService {
     /**
      * 异步调用接口
      *
-     * @param tenantId 租户id 租户ID
-     * @param processInstanceId 流程实例id 流程实例ID
-     * @param itemId 接口ID
+     * @param tenantId 租户id
+     * @param orgUnitId 组织id
+     * @param processSerialNumber 流程编号
+     * @param itemId 流程id
      * @param info 接口信息
-     * @return Boolean
+     * @param processInstanceId 流程实例id
+     * @param processDefinitionId 流程定义id
+     * @param taskId 任务id
+     * @param taskKey 任务key
+     * @return
      */
     @Async
     public Future<Boolean> asynInterface(final String tenantId, final String orgUnitId,
         final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String taskId, final String taskKey) {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         try {
             if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
-                getMethod(processSerialNumber, itemId, info, processInstanceId, taskId, taskKey);
+                getMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
 
             } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST.getValue())) {
-                postMethod(processSerialNumber, itemId, info, processInstanceId, taskId, taskKey);
+                postMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
             }
             return new AsyncResult<>(true);
         } catch (Exception e) {
@@ -127,7 +132,7 @@ public class InterfaceUtilService {
      * 接口响应数据处理
      *
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id 流程实例ID
+     * @param processInstanceId 流程实例id
      * @param map
      * @param paramsList
      * @param info
@@ -162,18 +167,17 @@ public class InterfaceUtilService {
                         String fieldName = model.getColumnName();
                         String parameterName = model.getParameterName();
                         String value = (String)map.get(parameterName);
-                        //处理文件，保存文件，表单存fileStoreId
+                        // 处理文件，保存文件，表单存fileStoreId
                         if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
                             LOGGER.info("********************文件字段处理:" + model.getParameterName());
-                            String downloadUrl = this.saveFile(processSerialNumber, value,model.getFileType());
+                            String downloadUrl = this.saveFile(processSerialNumber, value, model.getFileType());
                             value = downloadUrl;
                         }
                         if (isHaveField) {
                             sqlStr.append(",");
                         }
                         sqlStr.append(fieldName).append("=");
-                        sqlStr.append(StringUtils.isNotBlank(value)
-                            ? "'" + value + "'" : "''");
+                        sqlStr.append(StringUtils.isNotBlank(value) ? "'" + value + "'" : "''");
                         isHaveField = true;
                     }
                 }
@@ -196,11 +200,11 @@ public class InterfaceUtilService {
     }
 
     /**
-     * get方法调用接口
+     * get请求
      *
-     * @param processSerialNumber
-     * @param itemId
-     * @param info
+     * @param processSerialNumber 流程编号
+     * @param itemId 流程id
+     * @param info 接口信息
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @param taskKey 任务key
@@ -208,7 +212,8 @@ public class InterfaceUtilService {
      */
     @SuppressWarnings("unchecked")
     public void getMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String taskId, final String taskKey) throws Exception {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey)
+        throws Exception {
         try {
             HttpClient client = new HttpClient();
             GetMethod method = new GetMethod();
@@ -253,10 +258,17 @@ public class InterfaceUtilService {
             if (!nameValuePairs.isEmpty()) {
                 method.setQueryString(nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]));
             }
+            int time = 10000;
+            TaskTimeConfModel taskTimeConf = itemInterfaceApi
+                .getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey).getData();
+            if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
+                && taskTimeConf.getTimeoutInterrupt() > 0) {
+                time = taskTimeConf.getTimeoutInterrupt();
+            }
             // 设置请求超时时间10s
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(10000);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(time);
             // 设置读取数据超时时间10s
-            client.getHttpConnectionManager().getParams().setSoTimeout(10000);
+            client.getHttpConnectionManager().getParams().setSoTimeout(time);
             int httpCode = client.executeMethod(method);
             if (httpCode == HttpStatus.SC_OK) {
                 String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
@@ -273,7 +285,7 @@ public class InterfaceUtilService {
                 } else {
                     dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info);
                 }
-//                LOGGER.info("*********************接口返回结果:response={}", response);
+                // LOGGER.info("*********************接口返回结果:response={}", response);
             } else {
                 saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
                     info.getInterfaceAddress(), "httpCode:" + httpCode);
@@ -315,7 +327,7 @@ public class InterfaceUtilService {
                 }
             }
             List<Map<String, Object>> listmap = new ArrayList<>();
-            if(!tableName.isEmpty()){
+            if (!tableName.isEmpty()) {
                 DataSource dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
                 String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
                 StringBuilder sqlStr = getSqlStr(dialect, tableName);
@@ -387,10 +399,11 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info, processInstanceId, "", "");
+                    asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info, processInstanceId,
+                        processDefinitionId, "", "");
 
                 } else if (info.getAsyn().equals("0")) {
-                    syncInterface(processSerialNumber, itemId, info, processInstanceId, "", "");
+                    syncInterface(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, "", "");
 
                 }
             }
@@ -439,11 +452,11 @@ public class InterfaceUtilService {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info, processInstanceId,
-                        flow.getId(), taskDefinitionKey);
+                        processDefinitionId, flow.getId(), taskDefinitionKey);
 
                 } else if (info.getAsyn().equals("0")) {
-                    syncInterface(processSerialNumber, itemId, info, processInstanceId, flow.getId(),
-                        taskDefinitionKey);
+                    syncInterface(processSerialNumber, itemId, info, processInstanceId, processDefinitionId,
+                        flow.getId(), taskDefinitionKey);
 
                 }
             }
@@ -488,11 +501,11 @@ public class InterfaceUtilService {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info, task.getProcessInstanceId(),
-                        task.getId(), task.getTaskDefinitionKey());
+                        processDefinitionId, task.getId(), task.getTaskDefinitionKey());
 
                 } else if (info.getAsyn().equals("0")) {
-                    syncInterface(processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(),
-                        task.getTaskDefinitionKey());
+                    syncInterface(processSerialNumber, itemId, info, task.getProcessInstanceId(), processDefinitionId,
+                        task.getId(), task.getTaskDefinitionKey());
 
                 }
             }
@@ -501,18 +514,20 @@ public class InterfaceUtilService {
 
     /**
      * post方法调用接口
-     *
-     * @param processSerialNumber
-     * @param itemId
-     * @param info
+     * 
+     * @param processSerialNumber 流程编号
+     * @param itemId 流程id
+     * @param info 接口信息
      * @param processInstanceId 流程实例id
+     * @param processDefinitionId 流程定义id
      * @param taskId 任务id
      * @param taskKey 任务key
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String taskId, final String taskKey) throws Exception {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey)
+        throws Exception {
         CloseableHttpClient httpclient = null;
         try {
             httpclient = HttpClients.createDefault();
@@ -559,10 +574,17 @@ public class InterfaceUtilService {
                 StringEntity entity = new StringEntity(jsonString.toString(), Consts.UTF_8);
                 httpPost.setEntity(entity);
             }
+            int time = 10000;
+            TaskTimeConfModel taskTimeConf = itemInterfaceApi
+                .getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey).getData();
+            if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
+                && taskTimeConf.getTimeoutInterrupt() > 0) {
+                time = taskTimeConf.getTimeoutInterrupt();
+            }
             String urlStr = httpPost.getURI().toString();
             httpPost.setURI(new URI(urlStr));
-            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10000)
-                .setConnectionRequestTimeout(10000).setSocketTimeout(10000).build();
+            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(time)
+                .setConnectionRequestTimeout(time).setSocketTimeout(time).build();
             httpPost.setConfig(requestConfig);
             CloseableHttpResponse response = httpclient.execute(httpPost);
             int httpCode = response.getStatusLine().getStatusCode();
@@ -580,7 +602,7 @@ public class InterfaceUtilService {
                 } else {
                     dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info);
                 }
-//                LOGGER.info("*********************接口返回结果:response={}", resp);
+                // LOGGER.info("*********************接口返回结果:response={}", resp);
             } else {
                 saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
                     info.getInterfaceAddress(), "httpCode:" + httpCode);
@@ -644,15 +666,15 @@ public class InterfaceUtilService {
         return new AsyncResult<>(false);
     }
 
-    private String saveFile(String processSerialNumber, String fileStr,String fileType) throws Exception{
+    private String saveFile(String processSerialNumber, String fileStr, String fileType) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String fullPath =
-            "/" + Y9Context.getSystemName() + "/" + processSerialNumber;
+        String fullPath = "/" + Y9Context.getSystemName() + "/" + processSerialNumber;
         byte[] file = Base64.getDecoder().decode(fileStr);
-        Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, processSerialNumber + sdf.format(new Date()) + "." + fileType);
+        Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath,
+            processSerialNumber + sdf.format(new Date()) + "." + fileType);
         String downloadUrl = "";
-        if (y9FileStore != null){
+        if (y9FileStore != null) {
             downloadUrl = y9Config.getCommon().getProcessAdminBaseUrl() + "/s/" + y9FileStore.getId() + "." + fileType;
         }
         return downloadUrl;
@@ -665,17 +687,19 @@ public class InterfaceUtilService {
      * @param itemId 事项id
      * @param info 接口信息
      * @param processInstanceId 流程实例id
+     * @param processDefinitionId 流程定义id
      * @param taskId 任务id
      * @param taskKey 任务key
      * @throws Exception
      */
     public void syncInterface(final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String taskId, final String taskKey) throws Exception {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey)
+        throws Exception {
         if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
-            getMethod(processSerialNumber, itemId, info, processInstanceId, taskId, taskKey);
+            getMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
 
         } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST.getValue())) {
-            postMethod(processSerialNumber, itemId, info, processInstanceId, taskId, taskKey);
+            postMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
         }
     }
 

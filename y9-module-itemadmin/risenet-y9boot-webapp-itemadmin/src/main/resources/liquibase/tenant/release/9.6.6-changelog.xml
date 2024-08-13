@@ -197,4 +197,26 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1702001405829-1-13" author="zhangchongjie" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_TASK_TIMECONF"/>
+            </not>
+        </preConditions>
+        <createTable remarks="任务时间配置表" tableName="FF_TASK_TIMECONF">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(100)"/>
+            <column name="timeoutInterrupt" remarks="超时打断时长" type="INT"/>
+            <column name="leastTime" remarks="最短时长" type="INT"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

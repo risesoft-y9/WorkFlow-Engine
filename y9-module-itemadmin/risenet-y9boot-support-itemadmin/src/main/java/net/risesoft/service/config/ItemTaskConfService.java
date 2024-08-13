@@ -34,7 +34,7 @@ public interface ItemTaskConfService {
     void delete(String id);
 
     /**
-     * Description:删除任务签收绑定信息
+     * Description:删除任务绑定信息
      *
      * @param itemId
      */

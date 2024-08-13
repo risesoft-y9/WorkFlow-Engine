@@ -15,15 +15,19 @@ import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.ItemInterfaceTaskBind;
+import net.risesoft.entity.TaskTimeConf;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.InterfaceParamsModel;
+import net.risesoft.model.itemadmin.TaskTimeConfModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.InterfaceInfoRepository;
 import net.risesoft.repository.jpa.InterfaceResponseParamsRepository;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
+import net.risesoft.repository.jpa.TaskTimeConfRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 事项接口绑定信息
@@ -43,6 +47,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     private final InterfaceResponseParamsRepository interfaceResponseParamsRepository;
 
     private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
+
+    private final TaskTimeConfRepository taskTimeConfRepository;
 
     /**
      * 获取事项绑定的接口信息
@@ -75,7 +81,6 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
                 model.setAbnormalStop(info.getAbnormalStop());
                 resList.add(model);
             }
-
         }
         return Y9Result.success(resList, "获取成功");
     }
@@ -113,9 +118,22 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
                 }
             }
             resList.add(model);
-
         }
         return Y9Result.success(resList, "获取成功");
+    }
+
+    @Override
+    public Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String itemId, String taskKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        TaskTimeConf conf = taskTimeConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+            processDefinitionId, taskKey);
+        TaskTimeConfModel taskTimeConf = null;
+        if (conf != null) {
+            taskTimeConf = new TaskTimeConfModel();
+            Y9BeanUtil.copyProperties(conf, taskTimeConf);
+        }
+        return Y9Result.success(taskTimeConf, "获取成功");
     }
 
 }

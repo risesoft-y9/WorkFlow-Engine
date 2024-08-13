@@ -20,6 +20,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.ErrorLog;
+import net.risesoft.entity.TaskTimeConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
@@ -27,6 +28,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.config.TaskTimeConfService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -54,6 +56,8 @@ public class AsyncUtilService {
 
     private final VariableApi variableApi;
 
+    private final TaskTimeConfService taskTimeConfService;
+
     /**
      * 异步循环发送
      *
@@ -68,7 +72,7 @@ public class AsyncUtilService {
         String taskDefinitionKey = "";
         String taskId = "";
         try {
-            Thread.sleep(5000);// 延时5秒执行
+            // Thread.sleep(5000);// 延时5秒执行
             Y9LoginUserHolder.setTenantId(tenantId);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             Y9LoginUserHolder.setOrgUnit(orgUnit);
@@ -78,9 +82,17 @@ public class AsyncUtilService {
                 taskDefinitionKey = taskModel.getTaskDefinitionKey();
                 String processDefinitionId = taskModel.getProcessDefinitionId();
                 taskId = taskModel.getId();
+                TaskTimeConf taskTimeConf = taskTimeConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+                    processDefinitionId, taskDefinitionKey);
+                if (taskTimeConf != null && taskTimeConf.getLeastTime() != null && taskTimeConf.getLeastTime() > 0) {
+                    Thread.sleep(taskTimeConf.getLeastTime());// 延时执行
+                } else {
+                    Thread.sleep(5000);// 默认延时5秒执行
+                }
                 String stopProcess =
                     variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "stopProcess").getData();
                 if (taskDefinitionKey.contains("skip_") && (stopProcess == null || "false".equals(stopProcess))) {// 当前任务不停止且自动跳过
+
                     List<TargetModel> targetModelList =
                         processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefinitionKey).getData();
                     if (targetModelList != null && !targetModelList.isEmpty()) {
