@@ -63,7 +63,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      */
     @Override
     public Y9Result<List<InterfaceModel>> getInterface(@RequestParam String tenantId, @RequestParam String itemId,
-        @RequestParam String taskKey, @RequestParam String processDefinitionId, @RequestParam String condition) {
+        String taskKey, @RequestParam String processDefinitionId, @RequestParam String condition) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemInterfaceTaskBind> list = itemInterfaceTaskBindRepository
             .findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(itemId, taskKey,
@@ -122,6 +122,16 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
         return Y9Result.success(resList, "获取成功");
     }
 
+    /**
+     * 获取任务时间配置信息
+     *
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskKey 任务key
+     * @return {@code Y9Result<TaskTimeConfModel>} 通用请求返回对象 - data 是任务时间配置信息
+     * @since 9.6.6
+     */
     @Override
     public Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam String tenantId,
         @RequestParam String processDefinitionId, @RequestParam String itemId, String taskKey) {
