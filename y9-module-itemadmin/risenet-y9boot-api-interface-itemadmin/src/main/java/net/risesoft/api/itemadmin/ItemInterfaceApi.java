@@ -35,7 +35,8 @@ public interface ItemInterfaceApi {
      */
     @GetMapping("/getInterface")
     Y9Result<List<InterfaceModel>> getInterface(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") String taskKey,
+        @RequestParam("itemId") @NotBlank String itemId,
+        @RequestParam(value = "taskKey", required = false) String taskKey,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("condition") String condition);
 
     /**
@@ -64,6 +65,7 @@ public interface ItemInterfaceApi {
     @GetMapping("/getTaskTimeConf")
     Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("processDefinitionId") @NotBlank String processDefinitionId,
-        @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") @NotBlank String taskKey);
+        @RequestParam("itemId") @NotBlank String itemId,
+        @RequestParam(value = "taskKey", required = false) String taskKey);
 
 }
