@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -56,11 +54,6 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 @ImportResource({"classpath:/springconfigs/flowable.cfg.xml"})
 @ComponentScan(basePackages = {"net.risesoft", "org.flowable.ui"})
 public class ProcessAdminConfiguraton implements WebMvcConfigurer {
-
-    @Bean
-    public static RequestContextFilter requestContextFilter() {
-        return new OrderedRequestContextFilter();
-    }
 
     private final Environment environment;
 
