@@ -1,7 +1,6 @@
 package net.risesoft.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +18,7 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -88,10 +88,10 @@ public class SendReceiveRestController {
      * @return
      */
     @GetMapping(value = "/deptTreeSearch")
-    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name,
+    public Y9Result<List<NodeTreeVO>> deptTreeSearch(@RequestParam(required = false) String name,
         @RequestParam String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<NodeTreeVO> item = new ArrayList<>();
         List<Person> personList = personApi.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         for (Person person : personList) {
@@ -100,19 +100,19 @@ public class SendReceiveRestController {
             this.recursionUpToOrg(tenantId, deptId, p.getParentId(), orgUnitList, false);
         }
         for (OrgUnit orgUnit : orgUnitList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", orgUnit.getId());
-            map.put("name", orgUnit.getName());
-            map.put("orgType", orgUnit.getOrgType());
-            map.put("parentId", orgUnit.getParentId());
-            map.put("isParent", true);
+            NodeTreeVO nodeTreeVO = new NodeTreeVO();
+            nodeTreeVO.setId(orgUnit.getId());
+            nodeTreeVO.setName(orgUnit.getName());
+            nodeTreeVO.setOrgType(orgUnit.getOrgType().getValue());
+            nodeTreeVO.setParentId(orgUnit.getParentId());
+            nodeTreeVO.setIsParent(true);
             if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                 Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-                map.put("sex", per.getSex());
-                map.put("duty", per.getDuty());
-                map.put("isParent", false);
+                nodeTreeVO.setIsParent(false);
+                nodeTreeVO.setSex(per.getSex().getValue());
+                nodeTreeVO.setDuty(per.getDuty());
             }
-            item.add(map);
+            item.add(nodeTreeVO);
         }
         return Y9Result.success(item, "获取成功");
     }
@@ -125,41 +125,42 @@ public class SendReceiveRestController {
      * @return
      */
     @GetMapping(value = "/getDeptTree")
-    public Y9Result<List<Map<String, Object>>> getDeptTrees(@RequestParam(required = false) String id,
+    public Y9Result<List<NodeTreeVO>> getDeptTrees(@RequestParam(required = false) String id,
         @RequestParam(required = false) String deptId) {
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<NodeTreeVO> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(deptId)) {
             Department dept = departmentApi.get(tenantId, deptId).getData();
             if (dept != null && dept.getId() != null) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", dept.getId());
-                map.put("parentId", dept.getParentId());
-                map.put("name", dept.getName());
-                map.put("isParent", true);
-                map.put("orgType", dept.getOrgType());
-                item.add(map);
+                NodeTreeVO nodeTreeVO = new NodeTreeVO();
+                nodeTreeVO.setId(dept.getId());
+                nodeTreeVO.setName(dept.getName());
+                nodeTreeVO.setOrgType(dept.getOrgType().getValue());
+                nodeTreeVO.setParentId(dept.getParentId());
+                nodeTreeVO.setIsParent(true);
+                item.add(nodeTreeVO);
             }
         }
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgunit : orgList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", orgunit.getId());
-                map.put("parentId", id);
-                map.put("name", orgunit.getName());
-                map.put("orgType", orgunit.getOrgType());
+                NodeTreeVO nodeTreeVO = new NodeTreeVO();
+                nodeTreeVO.setId(orgunit.getId());
+                nodeTreeVO.setName(orgunit.getName());
+                nodeTreeVO.setOrgType(orgunit.getOrgType().getValue());
+                nodeTreeVO.setParentId(id);
+
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                    map.put("isParent", true);
+                    nodeTreeVO.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
                     Person person = personApi.get(tenantId, orgunit.getId()).getData();
-                    map.put("isParent", false);
-                    map.put("sex", person.getSex());
-                    map.put("duty", person.getDuty());
+                    nodeTreeVO.setIsParent(false);
+                    nodeTreeVO.setSex(person.getSex().getValue());
+                    nodeTreeVO.setDuty(person.getDuty());
                 } else {
                     continue;
                 }
-                item.add(map);
+                item.add(nodeTreeVO);
             }
         }
         return Y9Result.success(item, "获取成功");
@@ -183,32 +184,32 @@ public class SendReceiveRestController {
      * @return
      */
     @GetMapping(value = "/getOrgChildTree")
-    public Y9Result<List<Map<String, Object>>> getOrgChildTree(@RequestParam(required = false) String id,
+    public Y9Result<List<NodeTreeVO>> getOrgChildTree(@RequestParam(required = false) String id,
         OrgTreeTypeEnum treeType) {
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<NodeTreeVO> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
             for (OrgUnit orgunit : orgList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", orgunit.getId());
-                map.put("parentId", id);
-                map.put("name", orgunit.getName());
-                map.put("orgType", orgunit.getOrgType());
-                map.put("guidPath", orgunit.getGuidPath());
+                NodeTreeVO nodeTreeVO = new NodeTreeVO();
+                nodeTreeVO.setId(orgunit.getId());
+                nodeTreeVO.setName(orgunit.getName());
+                nodeTreeVO.setOrgType(orgunit.getOrgType().getValue());
+                nodeTreeVO.setParentId(id);
+                nodeTreeVO.setGuidPath(orgunit.getGuidPath());
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                    map.put("isParent", true);
+                    nodeTreeVO.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
                     Person person = personApi.get(tenantId, orgunit.getId()).getData();
-                    map.put("isParent", false);
-                    map.put("sex", person.getSex());
-                    map.put("duty", person.getDuty());
+                    nodeTreeVO.setIsParent(false);
+                    nodeTreeVO.setSex(person.getSex().getValue());
+                    nodeTreeVO.setDuty(person.getDuty());
                 } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
-                    map.put("isParent", false);
+                    nodeTreeVO.setIsParent(false);
                 } else {
                     continue;
                 }
-                item.add(map);
+                item.add(nodeTreeVO);
             }
         }
         return Y9Result.success(item, "获取成功");

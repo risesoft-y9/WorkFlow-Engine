@@ -2,8 +2,6 @@ package net.risesoft.controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,9 +88,9 @@ public class TaoHongTemplateRestContronller {
             if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
-                filename = URLEncoder.encode(filename, "UTF-8");
+                filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             } else {
-                filename = URLEncoder.encode(filename, "UTF-8");
+                filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             }
             response.setContentType("application/octet-stream");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
@@ -111,9 +109,8 @@ public class TaoHongTemplateRestContronller {
      * @return
      */
     @GetMapping(value = "/getList")
-    public Y9Result<List<Map<String, Object>>> getList(@RequestParam(required = false) String name) {
+    public Y9Result<List<TaoHongTemplate>> getList(@RequestParam(required = false) String name) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<TaoHongTemplate> list;
         if (person.isGlobalManager()) {
             list = taoHongTemplateService.listByTenantId(Y9LoginUserHolder.getTenantId(),
@@ -122,22 +119,12 @@ public class TaoHongTemplateRestContronller {
             OrgUnit orgUnit = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId()).getData();
             list = taoHongTemplateService.listByBureauGuid(orgUnit.getId());
         }
-        List<Map<String, Object>> items = new ArrayList<>();
         for (TaoHongTemplate taoHongTemplate : list) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("templateGuid", taoHongTemplate.getTemplateGuid());
-            map.put("template_fileName", taoHongTemplate.getTemplateFileName());
-            map.put("bureauName", taoHongTemplate.getBureauName());
-            map.put("templateType", taoHongTemplate.getTemplateType());
-            map.put("uploadTime", sdf.format(taoHongTemplate.getUploadTime()));
-
             String userId = taoHongTemplate.getUserId();
             Manager manger = managerApi.get(Y9LoginUserHolder.getTenantId(), userId).getData();
-            map.put("userName", manger != null ? manger.getName() : "人员不存在");
-            map.put("tabIndex", taoHongTemplate.getTabIndex());
-            items.add(map);
+            taoHongTemplate.setUserName(manger != null ? manger.getName() : "人员不存在");
         }
-        return Y9Result.success(items, "获取成功");
+        return Y9Result.success(list, "获取成功");
     }
 
     /**
