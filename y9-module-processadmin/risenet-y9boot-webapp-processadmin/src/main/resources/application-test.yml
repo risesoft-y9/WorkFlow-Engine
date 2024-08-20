@@ -1,8 +1,4 @@
 spring:
-    application:
-        name: processAdmin
-    profiles:
-        active: test
     cloud:
         nacos:
             config:

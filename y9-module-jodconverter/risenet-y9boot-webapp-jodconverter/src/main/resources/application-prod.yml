@@ -13,7 +13,7 @@ server:
 simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd
 # 请求的根路径,若为http协议无需更改。若为https协议需修改为全路径(例如：https://dev.youshengyun.com/jodconverter)
 base:
-    url: https://dev.youshengyun.com/jodconverter/
+    url: https://vue.youshengyun.com/jodconverter/
 beian: default
 cache:
     clean:
@@ -83,8 +83,6 @@ pdf2jpg:
 prohibit: exe,dll,dat
 
 spring:
-    profiles:
-        active: dev
     thread-executor: virtual
     freemarker: # Freemarker 配置
         cache: false
