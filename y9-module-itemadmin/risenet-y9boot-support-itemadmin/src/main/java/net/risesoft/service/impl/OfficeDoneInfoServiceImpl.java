@@ -262,7 +262,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of((page < 1) ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
-
+if (StringUtils.isNotBlank(state)) {
+            if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+            }
+        }
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
         if (StringUtils.isNotBlank(title)) {
             criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
@@ -312,7 +316,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
-
+        if (StringUtils.isNotBlank(state)) {
+            if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+            }
+        }
         Criteria criteria =
             new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
         if (StringUtils.isNotBlank(title)) {
@@ -368,6 +376,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        if (StringUtils.isNotBlank(state)) {
+            if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+            }
+        }
         Criteria criteria =
             new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(orgUnitId);
         if (StringUtils.isNotBlank(systemName)) {
@@ -424,6 +437,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        if (StringUtils.isNotBlank(state)) {
+            if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+            }
+        }
         Criteria criteria =
             new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(orgUnitId);
         if (StringUtils.isNotBlank(systemName)) {
@@ -482,7 +500,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-
+        if (StringUtils.isNotBlank(state)) {
+            if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+            }
+        }
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName).or("docNumber").contains(searchName));
@@ -531,7 +553,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-
+        if (StringUtils.isNotBlank(state)) {
+            if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+            }
+        }
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(title)) {
             criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title)
