@@ -1,17 +1,13 @@
 spring:
-    application:
-        name: processAdmin
-    profiles:
-        active: test
     cloud:
         nacos:
             config:
                 enabled: true
+                namespace: dev
                 group: DEFAULT_GROUP
-                namespace: test
-                server-addr: nacos:8848
+                server-addr: https://dev.youshengyun.com:443
                 username: nacos
-                password: Risesoft@2024
+                password: Risesoft@2022
     config:
         import:
             - optional:nacos:processAdmin.yml
