@@ -24,6 +24,7 @@ import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
@@ -34,6 +35,7 @@ import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -65,6 +67,8 @@ public class MainRestController {
     private final TaskApi taskApi;
 
     private final PositionApi positionApi;
+
+    private final OrgUnitApi orgUnitApi;
 
     private final ProcessTodoApi processTodoApi;
 
@@ -358,11 +362,11 @@ public class MainRestController {
             for (EntrustModel model : list1) {
                 if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
                     Map<String, Object> map1 = new HashMap<>(16);
-                    String positionId = model.getOwnerId();
-                    Position position = positionApi.get(tenantId, positionId).getData();
-                    if (position != null) {
-                        map1.put("id", position.getId());
-                        map1.put("name", position.getName());
+                    String ownerId = model.getOwnerId();
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, ownerId).getData();
+                    if (orgUnit != null) {
+                        map1.put("id", orgUnit.getId());
+                        map1.put("name", orgUnit.getName());
                         long todoCount1 = 0;
                         if (StringUtils.isNotBlank(count)) {
                             // 是否统计待办数量
@@ -370,17 +374,16 @@ public class MainRestController {
                                 // 单个事项获取待办数量
                                 ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
                                 todoCount1 = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId,
-                                    position.getId(), itemModel.getWorkflowGuid()).getData();
+                                    orgUnit.getId(), itemModel.getWorkflowGuid()).getData();
                                 allCount = allCount + todoCount1;
                             } else if (StringUtils.isNotBlank(systemName)) {
                                 // 单个事项获取待办数量
                                 todoCount1 = processTodoApi
-                                    .getTodoCountByUserIdAndSystemName(tenantId, position.getId(), systemName)
-                                    .getData();
+                                    .getTodoCountByUserIdAndSystemName(tenantId, orgUnit.getId(), systemName).getData();
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {
-                                    todoCount1 = todotaskApi.countByReceiverId(tenantId, position.getId());
+                                    todoCount1 = todotaskApi.countByReceiverId(tenantId, orgUnit.getId());
                                     allCount = allCount + todoCount1;
                                 } catch (Exception e) {
                                     LOGGER.error("获取待办数量失败", e);

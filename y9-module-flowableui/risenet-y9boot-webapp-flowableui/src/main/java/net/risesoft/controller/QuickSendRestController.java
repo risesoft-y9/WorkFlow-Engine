@@ -19,12 +19,12 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.platform.CustomGroup;
 import net.risesoft.model.platform.Department;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -42,7 +42,7 @@ public class QuickSendRestController {
 
     private final QuickSendApi quickSendApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final DepartmentApi departmentApi;
 
@@ -70,9 +70,9 @@ public class QuickSendRestController {
                 String orgId = id.split(":")[1];
                 int principalType = Integer.parseInt(type);
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionApi.get(tenantId, orgId).getData();
-                    map.put("id", position.getId());
-                    map.put("name", position.getName());
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgId).getData();
+                    map.put("id", orgUnit.getId());
+                    map.put("name", orgUnit.getName());
                     map.put("orgType", OrgTypeEnum.POSITION.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {

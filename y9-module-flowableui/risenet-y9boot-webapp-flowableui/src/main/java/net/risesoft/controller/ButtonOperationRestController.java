@@ -28,7 +28,7 @@ import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -38,6 +38,7 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
@@ -73,7 +74,7 @@ public class ButtonOperationRestController {
     private final VariableApi variableApi;
     private final HistoricVariableApi historicvariableApi;
     private final ProcessDefinitionApi processDefinitionApi;
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
     private final HistoricTaskApi historictaskApi;
     private final DocumentApi documentApi;
     private final MultiInstanceService multiInstanceService;
@@ -307,7 +308,7 @@ public class ButtonOperationRestController {
             if (users != null) {
                 for (Object obj : users) {// 获取下一任务的所有办理人，办理顺序为list的顺序
                     String userId = obj.toString();
-                    Position employee = positionApi.get(tenantId, userId).getData();
+                    OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                     if (userId.equals(taskModel.getAssignee())) {
                         userNames = new StringBuilder("<font color='red'>" + employee.getName() + "</font>");
                     } else {
@@ -384,7 +385,8 @@ public class ButtonOperationRestController {
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (String user : users) {
                     Map<String, Object> map = new HashMap<>(16);
-                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), user).getData();
+                    OrgUnit employee =
+                        orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), user).getData();
                     map.put("user", employee.getName());
                     map.put("order", "");
                     if (StringUtils.isBlank(taskModel.getAssignee())) {// 办理人为空，改件未被签收
@@ -402,7 +404,8 @@ public class ButtonOperationRestController {
                 boolean isEnd = true;
                 for (int i = 0; i < users.size(); i++) {// 获取下一任务的所有办理人，办理顺序为list的顺序
                     Map<String, Object> map = new HashMap<>(16);
-                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
+                    OrgUnit employee =
+                        orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
                     map.put("user", employee.getName());
                     map.put("order", i + 1);
                     if (users.get(i).equals(taskModel.getAssignee())) {
@@ -438,7 +441,7 @@ public class ButtonOperationRestController {
                     if (((timediff >= -3000 && timediff <= 3000) && taskModel.getName().equals(hai.getName()))
                         || hai.getEndTime() == null) {
                         Map<String, Object> map = new HashMap<>(16);
-                        Position employee = positionApi.get(tenantId, hai.getAssignee()).getData();
+                        OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, hai.getAssignee()).getData();
                         map.put("user", employee.getName());
                         Date endTime = hai.getEndTime();
                         String parallelSponsorObj;

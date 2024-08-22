@@ -25,7 +25,7 @@ import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDoingApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -34,7 +34,7 @@ import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -56,7 +56,7 @@ public class DoingServiceImpl implements DoingService {
 
     private final ItemApi itemApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -91,7 +91,7 @@ public class DoingServiceImpl implements DoingService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.get(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                             i += 1;
@@ -103,8 +103,8 @@ public class DoingServiceImpl implements DoingService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -122,7 +122,7 @@ public class DoingServiceImpl implements DoingService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            Position personTemp = positionApi.get(tenantId, assignee).getData();
+                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
                                 i += 1;
