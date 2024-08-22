@@ -20,7 +20,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +36,6 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -47,7 +45,6 @@ import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -72,8 +69,6 @@ public class FormNTKOController {
     private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
-
-    private final PositionApi positionApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -853,8 +848,8 @@ public class FormNTKOController {
         @RequestParam(required = false) String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         if (StringUtils.isBlank(currentBureauGuid) && StringUtils.isNotBlank(positionId)) {
-            Position position = positionApi.get(tenantId, positionId).getData();
-            currentBureauGuid = position.getParentId();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+            currentBureauGuid = orgUnit.getParentId();
         }
         return transactionWordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
     }

@@ -19,14 +19,12 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -51,8 +49,6 @@ public class VueNTKOController {
     private final TransactionWordApi transactionWordApi;
 
     private final PersonApi personApi;
-
-    private final PositionApi positionApi;
 
     private final AttachmentApi attachmentApi;
 
@@ -146,8 +142,8 @@ public class VueNTKOController {
             wordInfo.setTenantId(tenantId);
             wordInfo.setUserId(userId);
             wordInfo.setPositionId(positionId);
-            Position position = positionApi.get(tenantId, positionId).getData();
-            OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+            OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
             wordInfo.setCurrentBureauGuid(currentBureau != null ? currentBureau.getId() : "");
             return Y9Result.success(wordInfo, "获取信息成功");
         } catch (Exception e) {

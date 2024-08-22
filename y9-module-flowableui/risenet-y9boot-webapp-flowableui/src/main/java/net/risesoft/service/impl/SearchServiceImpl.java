@@ -17,13 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
@@ -45,7 +45,7 @@ public class SearchServiceImpl implements SearchService {
 
     private final TaskApi taskApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final IdentityApi identityApi;
 
@@ -68,7 +68,7 @@ public class SearchServiceImpl implements SearchService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.get(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -84,8 +84,8 @@ public class SearchServiceImpl implements SearchService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -102,7 +102,7 @@ public class SearchServiceImpl implements SearchService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionApi.get(tenantId, assignee).getData();
+                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

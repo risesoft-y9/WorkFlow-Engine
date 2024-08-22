@@ -27,7 +27,7 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ItemLinkApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -42,7 +42,7 @@ import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.LinkInfoModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TargetModel;
@@ -76,7 +76,7 @@ public class XxxRestController {
 
     private final TaskApi taskApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final IdentityApi identityApi;
 
@@ -110,7 +110,7 @@ public class XxxRestController {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.get(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -126,8 +126,8 @@ public class XxxRestController {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -144,7 +144,7 @@ public class XxxRestController {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionApi.get(tenantId, assignee).getData();
+                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }
@@ -328,16 +328,16 @@ public class XxxRestController {
         List<String> userChoiceList = documentApi
             .parserUser(tenantId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskKey, "", "", "")
             .getData();
-        String positionName = "";
+        String userName = "";
         if (userChoiceList != null) {
             for (String userChoice : userChoiceList) {
-                Position position = positionApi.get(tenantId, userChoice).getData();
-                if (position != null) {
-                    positionName = Y9Util.genCustomStr(positionName, position.getName());
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userChoice).getData();
+                if (orgUnit != null) {
+                    userName = Y9Util.genCustomStr(userName, orgUnit.getName());
                 }
             }
         }
-        map.put("positionName", positionName);
+        map.put("positionName", userName);
         String processDefinitionName =
             repositoryApi.getProcessDefinitionById(tenantId, processDefinitionId).getData().getName();
         map.put("processDefinitionName", processDefinitionName);
@@ -440,9 +440,9 @@ public class XxxRestController {
             return Y9Result.failure("目标节点未授权人员");
         }
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-        if(taskModel == null){
+        if (taskModel == null) {
             List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            taskId= list.get(0).getId();
+            taskId = list.get(0).getId();
         }
         return buttonOperationApi.reposition(tenantId, positionId, taskId, routeToTaskId, userChoiceList, "", "");
     }
@@ -482,7 +482,7 @@ public class XxxRestController {
     public Y9Result<Object> stopProcess(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        if(list.size() == 1){
+        if (list.size() == 1) {
             TaskModel task = list.get(0);
             if (task.getTaskDefinitionKey().contains("skip_")) {
                 Map<String, Object> map = new HashMap<>();
