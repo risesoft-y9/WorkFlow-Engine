@@ -37,7 +37,7 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     private final PersonApi personApi;
 
     /**
-     * 逻辑删除发言信息
+     * 逻辑删除发出的沟通消息
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -53,11 +53,11 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     }
 
     /**
-     * 根据唯一标示获取发言信息
+     * 根据唯一标示获取发出的沟通消息
      *
      * @param tenantId 租户id
      * @param id 主键id
-     * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发言信息
+     * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发出的沟通消息
      * @since 9.6.6
      */
     @Override
@@ -68,12 +68,12 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     }
 
     /**
-     * 根据流程实例查找某一个流程的所有发言信息，根据时间倒叙排列
+     * 根据流程实例查找某一个流程的所有沟通的消息，根据时间倒叙排列
      *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<List<SpeakInfoModel>>} 通用请求返回对象 - data 是发言信息列表
+     * @return {@code Y9Result<List<SpeakInfoModel>>} 通用请求返回对象 - data 是沟通消息列表
      * @since 9.6.6
      */
     @Override
@@ -104,12 +104,12 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     }
 
     /**
-     * 保存或者更新发言信息
+     * 保存或者更新发出的沟通消息
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param speakInfoModel 发言信息
-     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是发言ID
+     * @param speakInfoModel 沟通消息对象
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是消息ID
      * @since 9.6.6
      */
     @Override

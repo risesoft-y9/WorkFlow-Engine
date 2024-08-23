@@ -49,7 +49,7 @@ public class OpinionApiImpl implements OpinionApi {
     private final OrgUnitApi orgUnitApi;
 
     /**
-     * 检查当前taskId任务节点是否已经签写意见
+     * 验证当前taskId任务节点是否已经签写意见
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -84,7 +84,7 @@ public class OpinionApiImpl implements OpinionApi {
     }
 
     /**
-     * 删除意见
+     * 删除意见数据
      *
      * @param tenantId 租户id
      * @param id 唯一标识
@@ -123,7 +123,7 @@ public class OpinionApiImpl implements OpinionApi {
     }
 
     /**
-     * 根据id获取意见
+     * 根据id获取意见数据
      *
      * @param tenantId 租户id
      * @param id 唯一标识
@@ -142,7 +142,7 @@ public class OpinionApiImpl implements OpinionApi {
     }
 
     /**
-     * 获取意见框历史记录
+     * 根据意见框标识获取意见框历史记录
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -189,7 +189,7 @@ public class OpinionApiImpl implements OpinionApi {
     }
 
     /**
-     * 保存意见
+     * 保存意见信息
      *
      * @param tenantId 租户id
      * @param opinionModel 意见信息
@@ -207,7 +207,7 @@ public class OpinionApiImpl implements OpinionApi {
     }
 
     /**
-     * 保存或更新意见
+     * 保存或更新意见信息
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -233,7 +233,7 @@ public class OpinionApiImpl implements OpinionApi {
     }
 
     /**
-     * 更新意见
+     * 更新意见信息
      *
      * @param tenantId 租户id
      * @param id 意见id

@@ -39,7 +39,7 @@ public class QueryListApiImpl implements QueryListApi {
     private final ItemPageService itemPageService;
 
     /**
-     * 综合搜索
+     * 综合搜索办件列表
      *
      * @param tenantId 租户id
      * @param userId 岗位id

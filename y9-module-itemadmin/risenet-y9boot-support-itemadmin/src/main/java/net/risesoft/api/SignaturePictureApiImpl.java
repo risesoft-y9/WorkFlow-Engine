@@ -41,7 +41,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     private final PersonApi personApi;
 
     /**
-     * 删除签名图片
+     * 删除签名图片信息
      *
      * @param tenantId 租户id
      * @param id id
@@ -56,11 +56,11 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     }
 
     /**
-     * 根据id获取签名图片
+     * 根据id获取签名图片信息
      *
      * @param tenantId 租户id
      * @param id id
-     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片
+     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片信息
      * @since 9.6.6
      */
     @Override
@@ -75,11 +75,11 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     }
 
     /**
-     * 根据人员id获取签名图片
+     * 根据人员id获取签名图片信息
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片
+     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片信息
      * @since 9.6.6
      */
     @Override
@@ -95,12 +95,12 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     }
 
     /**
-     * 保存或更新签名图片
+     * 保存或更新签名图片信息
      *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param spJson spJson
-     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片
+     * @return {@code Y9Result<SignaturePictureModel>} 通用请求返回对象 - data 是签名图片信息
      * @since 9.6.6
      */
     @Override

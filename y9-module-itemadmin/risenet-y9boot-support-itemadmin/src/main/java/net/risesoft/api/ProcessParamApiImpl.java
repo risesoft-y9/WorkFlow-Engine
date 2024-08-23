@@ -31,7 +31,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     private final ProcessParamService processParamService;
 
     /**
-     * 根据流程实例id删除流程变量
+     * 根据流程实例id删除流程变量数据
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -47,8 +47,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     }
 
     /**
-     *
-     * 根据流程实例查找流程数据
+     * 根据流程实例获取流程变量数据
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -69,8 +68,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     }
 
     /**
-     *
-     * 根据流程编号查找流程数据
+     * 根据流程编号获取流程变量数据
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -91,7 +89,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     }
 
     /**
-     * 保存或更新流程数据
+     * 保存或更新流程变量数据
      *
      * @param tenantId 租户ID
      * @param processParam 流程数据对象

@@ -28,7 +28,7 @@ public class QuickSendApiImpl implements QuickSendApi {
     private final QuickSendService quickSendService;
 
     /**
-     * 获取快速发送设置
+     * 获取设置的快速发送人信息
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -46,7 +46,7 @@ public class QuickSendApiImpl implements QuickSendApi {
     }
 
     /**
-     * 保存快速发送设置
+     * 保存快速发送人信息设置
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id

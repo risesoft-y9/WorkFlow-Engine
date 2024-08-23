@@ -47,7 +47,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 监控办结统计
+     * 监控办结统计数量
      *
      * @param tenantId 租户id
      * @param itemId 事项id
@@ -62,7 +62,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 统计个人办结件
+     * 统计个人办结件数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -79,7 +79,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 根据系统名称统计个人办结件
+     * 根据系统名称统计个人办结件数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -96,7 +96,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 监控在办统计
+     * 监控在办统计数量
      *
      * @param tenantId 租户id
      * @param itemId 事项id
@@ -168,7 +168,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 保存办结信息,不经过kafka消息队列，直接保存
+     * 保存办结信息（不经过kafka消息队列，直接保存）
      *
      * @param tenantId 租户id
      * @param info 办结信息
@@ -187,7 +187,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 科室所有件列表
+     * 获取科室所有件列表
      *
      * @param tenantId 租户id
      * @param deptId 部门id
@@ -198,7 +198,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结数据
      * @since 9.6.6
      */
     @Override
@@ -210,7 +210,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 个人所有件搜索
+     * 获取个人所有件列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -223,7 +223,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
      * @param endDate 结束日期
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结信息
+     * @return {@code Y9Page<OfficeDoneInfoModel>} 通用分页请求返回对象 - rows 是办结数据
      * @since 9.6.6
      */
     @Override
@@ -236,7 +236,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 根据系统，个人所有件搜索
+     * 根据系统查询个人所有件列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -289,7 +289,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 监控办件列表
+     * 获取监控办件列表
      *
      * @param tenantId 租户id
      * @param searchName 搜索词
@@ -310,7 +310,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 获取监控在办，办结件列表
+     * 获取监控在办、办结件列表
      *
      * @param tenantId 租户id
      * @param title 搜索词
@@ -353,7 +353,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 根据id,系统名称，获取个人办结件列表
+     * 根据id、系统名称、获取个人办结件列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
