@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.http.MediaType;
@@ -49,7 +50,7 @@ public class ReminderApiImpl implements ReminderApi {
     private final TaskApi taskManager;
 
     /**
-     * 删除催办
+     * 删除催办信息
      *
      * @param tenantId 租户id
      * @param ids 催办ids
@@ -64,7 +65,7 @@ public class ReminderApiImpl implements ReminderApi {
     }
 
     /**
-     * 根据id获取催办
+     * 根据id获取催办信息
      *
      * @param tenantId 租户id
      * @param id 催办id
@@ -127,13 +128,13 @@ public class ReminderApiImpl implements ReminderApi {
     }
 
     /**
-     * 获取待办的提醒数据
+     * 获取待办的催办信息列表
      *
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是待办的催办信息
+     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是待办的催办信息列表
      * @since 9.6.6
      */
     @Override
@@ -205,7 +206,7 @@ public class ReminderApiImpl implements ReminderApi {
             Reminder reminder;
             for (String taskId : taskIds) {
                 reminder = new Reminder();
-                reminder.setMsgContent(URLDecoder.decode(msgContent, "utf-8"));
+                reminder.setMsgContent(URLDecoder.decode(msgContent, StandardCharsets.UTF_8));
                 reminder.setProcInstId(processInstanceId);
                 reminder.setTaskId(taskId);
                 reminderService.saveOrUpdate(reminder);
@@ -247,8 +248,9 @@ public class ReminderApiImpl implements ReminderApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         try {
             // 催办信息处理
-            String err = reminderService.handleReminder(URLDecoder.decode(msgContent, "utf-8"), procInstId, 1, remType,
-                taskId, taskAssigneeId, URLDecoder.decode(documentTitle, "utf-8"));
+            String err =
+                reminderService.handleReminder(URLDecoder.decode(msgContent, StandardCharsets.UTF_8), procInstId, 1,
+                    remType, taskId, taskAssigneeId, URLDecoder.decode(documentTitle, StandardCharsets.UTF_8));
             if ("".equals(err)) {
 
                 return Y9Result.successMsg("催办发送成功!");
@@ -307,12 +309,12 @@ public class ReminderApiImpl implements ReminderApi {
         try {
             Reminder reminder = new Reminder();
             reminder.setId(id);
-            reminder.setMsgContent(URLDecoder.decode(msgContent, "utf-8"));
+            reminder.setMsgContent(URLDecoder.decode(msgContent, StandardCharsets.UTF_8));
             reminderService.saveOrUpdate(reminder);
             return Y9Result.successMsg("保存成功!");
         } catch (Exception e) {
             LOGGER.error("updateReminder error", e);
-            throw new Y9BusinessException(500, "上传文件异常,错误信息为：" + e.getMessage());
+            throw new Y9BusinessException(500, "保存催办信息异常,错误信息为：" + e.getMessage());
         }
     }
 }

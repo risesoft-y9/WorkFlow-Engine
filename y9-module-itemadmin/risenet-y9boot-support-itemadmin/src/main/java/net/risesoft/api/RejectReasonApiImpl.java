@@ -31,7 +31,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
     private final PersonApi personApi;
 
     /**
-     * 保存驳回原因
+     * 保存驳回原因信息
      *
      * @param tenantId 租户id
      * @param userId 人员id

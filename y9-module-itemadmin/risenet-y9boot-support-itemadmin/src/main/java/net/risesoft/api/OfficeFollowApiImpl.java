@@ -32,7 +32,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     private final OfficeFollowService officeFollowService;
 
     /**
-     * 根据流程实例id获取是否有关注
+     * 根据流程实例id获取关注数量
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -68,7 +68,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     }
 
     /**
-     * 根据流程实例id删除关注
+     * 根据流程实例id删除关注数据
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -121,7 +121,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     }
 
     /**
-     * 获取关注列表
+     * 获取指定人员的关注列表
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -160,7 +160,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     }
 
     /**
-     * 更新标题
+     * 更新关注信息的标题
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id

@@ -54,7 +54,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     }
 
     /**
-     * 根据任务id获取自定义历程
+     * 根据任务id获取自定义历程数据（结束时间倒叙排列）
      *
      * @param tenantId 租户id
      * @param taskId 任务id
@@ -75,7 +75,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     }
 
     /**
-     * 根据任务id获取自定义历程
+     * 根据任务id获取自定义历程数据（开始时间正序排列）
      *
      * @param tenantId 租户id
      * @param taskId 任务id
@@ -112,7 +112,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     }
 
     /**
-     * 获取历程列表(包含每个任务节点的特殊操作的历程)
+     * 获取流程历程数据列表(包含每个任务节点的特殊操作的历程)
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -135,7 +135,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     }
 
     /**
-     * 获取历程信息
+     * 获取流程历程信息数据（简单版）
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -158,7 +158,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     }
 
     /**
-     * 保存或更新历程
+     * 保存或更新历程数据
      *
      * @param tenantId 租户id
      * @param processTrackModel 实体类对象（ProcessTrackModel）

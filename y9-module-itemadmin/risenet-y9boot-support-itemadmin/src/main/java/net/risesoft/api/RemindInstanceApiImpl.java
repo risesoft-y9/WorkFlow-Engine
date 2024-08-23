@@ -33,7 +33,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     private final RemindInstanceService remindInstanceService;
 
     /**
-     * 根据流程实例id获取消息提醒设置
+     * 根据流程实例id获取消息提醒设置列表
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -55,12 +55,12 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     }
 
     /**
-     * 根据流程实例id和任务key获取消息提醒设置
+     * 根据流程实例id和任务key获取任务到达的消息提醒设置列表
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param taskKey 任务key
-     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是消息提醒列表
+     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是任务到达的消息提醒列表
      * @since 9.6.6
      */
     @Override
@@ -79,12 +79,12 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     }
 
     /**
-     * 根据流程实例id和任务key获取消息提醒设置
+     * 根据流程实例id和任务key获取任务完成的消息提醒设置列表
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param taskKey taskKey
-     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是消息提醒列表
+     * @param taskKey 任务key
+     * @return {@code Y9Result<List<RemindInstanceModel>>} 通用请求返回对象 - data 是任务完成的消息提醒列表
      * @since 9.6.6
      */
     @Override
@@ -103,7 +103,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     }
 
     /**
-     * 根据流程实例id和提醒类型获取消息提醒设置
+     * 根据流程实例id和提醒类型获取消息提醒设置列表
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -127,7 +127,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     }
 
     /**
-     * 根据流程实例id和任务id获取消息提醒设置
+     * 根据流程实例id和任务id获取消息提醒设置列表
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -173,7 +173,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     }
 
     /**
-     * 保存消息提醒
+     * 保存消息提醒设置
      *
      * @param tenantId 租户id
      * @param userId 人员、岗位id

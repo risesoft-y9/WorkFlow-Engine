@@ -32,7 +32,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
     private final ProcessInstanceDetailsService processInstanceDetailsService;
 
     /**
-     * 删除协作状态
+     * 删除协作状态数据
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id

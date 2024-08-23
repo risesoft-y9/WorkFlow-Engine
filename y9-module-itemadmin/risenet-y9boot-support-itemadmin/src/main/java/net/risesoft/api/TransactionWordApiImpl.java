@@ -91,7 +91,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     private final RepositoryApi repositoryManager;
 
     /**
-     * 根据流程编号删除正文，同时删除文件系统的文件
+     * 根据流程编号删除正文，同时删除文件历史的文件
      *
      * @param tenantId 租户id
      * @param processSerialNumbers 流程编号
@@ -171,7 +171,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 打开历史文件
+     * 根据任务id获取正文历史文件信息
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -219,7 +219,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 获取正文文件信息
+     * 根据流程编号获取正文文件信息
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -265,7 +265,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 获取正文列表
+     * 获取当前流程所有的正文文件列表
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -294,7 +294,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 打开正文
+     * 获取正文文件存储路径信息（用于打开正文）
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -398,7 +398,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 打开套红模板
+     * 根据模板id获取套红模板数据（打开套红模板使用）
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -465,7 +465,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 打开PDF
+     * 获取PDF文件存储信息（打开PDF使用）
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -497,7 +497,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 打开撤销PDF后的正文
+     * 获取撤销PDF后的正文文件存储信息（用于撤销PDF操作后打开正文）
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -530,7 +530,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 选择套红
+     * 获取套红文件存储信息（打开套红使用）
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -595,7 +595,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 获取正文
+     * 获取正文文件信息
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -718,7 +718,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 获取套红模板列表
+     * 获取当前委办局的套红模板列表
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -753,7 +753,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     }
 
     /**
-     * 草稿箱保存正文
+     * 正文上传
      *
      * @param tenantId 租户id
      * @param userId 人员id

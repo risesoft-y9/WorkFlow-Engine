@@ -36,7 +36,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     private final PersonApi personApi;
 
     /**
-     * 检查编号是否已经被使用了
+     * 验证编号是否已经被使用
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -63,11 +63,11 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
-     * 判断机构代字custom在某个流程实例中是否已经编号,没有编号的话就查找有权限的编号的机关代字
+     * 判断编号标识在当前流程实例中是否编号,未编号就获取有权限的编号的机关代字
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @param custom 机关代字标志
+     * @param custom 编号标识
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
@@ -85,12 +85,11 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
-     *
-     * 查找有权限的机构代字
+     * 获取编号标识对应的有权限的机构代字
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
-     * @param custom 机关代字标志
+     * @param custom 编号标识
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
@@ -107,7 +106,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
-     * 查找有权限的机构代字
+     * 获取有权限的编号标识
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
@@ -127,7 +126,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
-     * 获取编号
+     * 获取未使用的编号数字
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -174,7 +173,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
-     * 获取临时编号
+     * 获取临时编号数字
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -195,7 +194,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     }
 
     /**
-     * 保存编号
+     * 保存临时编号字符串（保存后将占用编号）
      *
      * @param tenantId 租户id
      * @param userId 人员id

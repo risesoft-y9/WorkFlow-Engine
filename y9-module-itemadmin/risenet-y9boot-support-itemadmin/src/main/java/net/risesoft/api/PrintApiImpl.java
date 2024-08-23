@@ -28,7 +28,7 @@ public class PrintApiImpl implements PrintApi {
     private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
 
     /**
-     * 打开打印模板
+     * 获取打印模板文件存储ID（打开打印模板使用）
      *
      * @param tenantId 租户id
      * @param itemId 事项id
