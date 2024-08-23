@@ -11,6 +11,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -82,5 +83,9 @@ public class TaoHongTemplate implements Serializable {
     @Comment("排序号")
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
+
+    // 上传人
+    @Transient
+    private String userName;
 
 }

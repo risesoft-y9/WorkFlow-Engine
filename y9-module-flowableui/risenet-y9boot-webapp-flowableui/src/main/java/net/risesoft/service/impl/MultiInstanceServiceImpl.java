@@ -14,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
@@ -36,7 +36,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final VariableApi variableApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final ButtonOperationApi buttonOperationApi;
 
@@ -122,7 +122,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<Map<String, Object>> listMap = new ArrayList<>();
         Map<String, Object> mapTemp;
-        Position personTemp;
+        OrgUnit personTemp;
         int num = 0;
         ProcessParamModel processParamModel =
             processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -133,7 +133,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             mapTemp.put("taskId", tm.getId());
             mapTemp.put("executionId", tm.getExecutionId());
             mapTemp.put("assigneeId", tm.getAssignee());
-            personTemp = positionApi.get(tenantId, tm.getAssignee()).getData();
+            personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, tm.getAssignee()).getData();
             mapTemp.put("assigneeName", personTemp == null ? "" : personTemp.getName());
             mapTemp.put("name", tm.getName());
             mapTemp.put("isZhuBan", "否");
@@ -157,13 +157,13 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         List<String> users = Y9JsonUtil.readValue(usersObj, List.class);
         List<Map<String, Object>> listMap = new ArrayList<>();
         Map<String, Object> mapTemp;
-        Position personTemp;
+        OrgUnit personTemp;
         boolean notStart = false;
         int num = 0;
         if (users != null) {
             for (Object obj : users) {
                 String user = obj.toString();
-                personTemp = positionApi.get(tenantId, user).getData();
+                personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
                 mapTemp = new HashMap<>(16);
                 mapTemp.put("num", num + 1);
                 mapTemp.put("taskId", taskId);

@@ -1,17 +1,13 @@
 spring:
-    application:
-        name: itemAdmin
-    profiles:
-        active: local
     cloud:
         nacos:
             config:
-                enabled: false
-                namespace: local
+                enabled: true
+                namespace: dev
                 group: DEFAULT_GROUP
                 server-addr: https://dev.youshengyun.com:443
                 username: nacos
                 password: Risesoft@2022
     config:
         import:
-            - optional:nacos:itemAdmin.yml
+            - optional:nacos:flowableUI.yml

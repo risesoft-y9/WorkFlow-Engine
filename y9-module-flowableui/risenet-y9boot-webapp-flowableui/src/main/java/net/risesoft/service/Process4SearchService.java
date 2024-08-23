@@ -22,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -44,7 +44,7 @@ import net.risesoft.y9.util.Y9Util;
 public class Process4SearchService {
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
     private final ErrorLogApi errorLogApi;
     private final ProcessParamApi processParamApi;
     @Resource(name = "jdbcTemplate4Tenant")
@@ -102,10 +102,10 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
                     }
                     if (!USER_ID_.isEmpty()) {
-                        Position position = positionApi.get(tenantId, USER_ID_).getData();
-                        if (position != null && position.getId() != null) {
-                            if (!deptIds.contains(position.getParentId())) {
-                                deptIds = Y9Util.genCustomStr(deptIds, position.getParentId());
+                        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, USER_ID_).getData();
+                        if (orgUnit != null && orgUnit.getId() != null) {
+                            if (!deptIds.contains(orgUnit.getParentId())) {
+                                deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
                             }
                         }
                     }
@@ -191,10 +191,10 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
                     }
                     if (!USER_ID_.isEmpty()) {
-                        Position position = positionApi.get(tenantId, USER_ID_).getData();
-                        if (position != null && position.getId() != null) {
-                            if (!deptIds.contains(position.getParentId())) {
-                                deptIds = Y9Util.genCustomStr(deptIds, position.getParentId());
+                        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, USER_ID_).getData();
+                        if (orgUnit != null && orgUnit.getId() != null) {
+                            if (!deptIds.contains(orgUnit.getParentId())) {
+                                deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
                             }
                         }
                     }

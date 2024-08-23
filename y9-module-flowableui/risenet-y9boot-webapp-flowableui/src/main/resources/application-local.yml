@@ -1,8 +1,4 @@
 spring:
-    application:
-        name: flowableUI
-    profiles:
-        active: local
     cloud:
         nacos:
             config:

@@ -20,7 +20,7 @@ import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -29,6 +29,7 @@ import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
@@ -51,7 +52,7 @@ public class MonitorServiceImpl implements MonitorService {
 
     private final ItemApi itemApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -78,7 +79,7 @@ public class MonitorServiceImpl implements MonitorService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.get(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                             i += 1;
@@ -90,8 +91,8 @@ public class MonitorServiceImpl implements MonitorService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -110,7 +111,7 @@ public class MonitorServiceImpl implements MonitorService {
                         if (StringUtils.isNotBlank(assignee)) {
                             // 并行时，领导选取时存在顺序，因此这里也存在顺序
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);
-                            Position personTemp = positionApi.get(tenantId, assignee).getData();
+                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 // 并行时，领导选取时存在顺序，因此这里也存在顺序
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
@@ -159,7 +160,7 @@ public class MonitorServiceImpl implements MonitorService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.get(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -175,8 +176,8 @@ public class MonitorServiceImpl implements MonitorService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -193,7 +194,7 @@ public class MonitorServiceImpl implements MonitorService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionApi.get(tenantId, assignee).getData();
+                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

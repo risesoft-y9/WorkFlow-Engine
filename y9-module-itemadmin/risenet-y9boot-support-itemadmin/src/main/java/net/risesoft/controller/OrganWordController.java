@@ -1,7 +1,6 @@
 package net.risesoft.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -84,7 +83,7 @@ public class OrganWordController {
      * @return
      */
     @PostMapping(value = "/saveOrUpdate")
-    public Y9Result<Map<String, Object>> saveOrUpdate(@Valid OrganWord organWord) {
+    public Y9Result<Object> saveOrUpdate(@Valid OrganWord organWord) {
         organWordService.save(organWord);
         return Y9Result.successMsg("保存成功");
     }

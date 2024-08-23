@@ -22,7 +22,7 @@ import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
@@ -56,7 +56,7 @@ import net.risesoft.y9.util.Y9Util;
 @RequestMapping(value = "/mobile/v1/buttonOperation")
 public class MobileV1ButtonOperationController {
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final TaskApi taskApi;
 
@@ -100,7 +100,8 @@ public class MobileV1ButtonOperationController {
                     taskApi.claim(tenantId, positionId, taskId);
                     return Y9Result.successMsg("签收成功");
                 } else {
-                    String assigneeName = positionApi.get(tenantId, assigneeId).getData().getName();
+                    String assigneeName =
+                        orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assigneeId).getData().getName();
                     return Y9Result.failure("任务已被用户:" + assigneeName + "签收！");
                 }
             }
@@ -294,7 +295,8 @@ public class MobileV1ButtonOperationController {
                         }
                         taskApi.deleteCandidateUser(tenantId, taskId, activitiUser);
                     } else {
-                        String assigneeName = positionApi.get(tenantId, assigneeId).getData().getName();
+                        String assigneeName =
+                            orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assigneeId).getData().getName();
                         return Y9Result.failure("任务已被用户:" + assigneeName + "签收！");
                     }
                 }

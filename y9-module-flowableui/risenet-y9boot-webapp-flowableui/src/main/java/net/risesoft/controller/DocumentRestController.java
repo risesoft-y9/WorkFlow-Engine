@@ -28,7 +28,7 @@ import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
@@ -41,7 +41,7 @@ import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -82,7 +82,7 @@ public class DocumentRestController {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
     private final PositionRoleApi positionRoleApi;
 
@@ -360,7 +360,7 @@ public class DocumentRestController {
                 for (TaskModel task : list) {
                     if (i < 5) {
                         String assigneeId = task.getAssignee();
-                        Position employee = positionApi.get(tenantId, assigneeId).getData();
+                        OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assigneeId).getData();
                         if (employee != null && !employee.getId().equals(positionId)) { // 协办人员
                             if (StringUtils.isBlank(parallelDoing)) {
                                 parallelDoing = employee.getName();
