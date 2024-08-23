@@ -262,10 +262,10 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             // 查找本任务的form,在任务上设置的表单有优先权。
             List<TargetModel> list;
             // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
-            if (StringUtils.isBlank(taskDefKey)) {
-                list = processDefinitionManager.getNodes(tenantId, procDefId, false).getData();
-                taskDefKey = list.get(list.size() - 1).getTaskDefKey();
-            }
+            // if (StringUtils.isBlank(taskDefKey)) {
+            // list = processDefinitionManager.getNodes(tenantId, procDefId, false).getData();
+            // taskDefKey = list.get(list.size() - 1).getTaskDefKey();
+            // }
             eformTaskBinds =
                 y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
             if (eformTaskBinds.isEmpty()) {
