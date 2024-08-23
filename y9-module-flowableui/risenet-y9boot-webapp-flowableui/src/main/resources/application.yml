@@ -4,8 +4,6 @@ management:
             exposure:
                 include: '*'
 server:
-    intranet:
-        ip: 192.168.x.x,10.0.x.x
     port: 8080
     servlet:
         encoding:
@@ -148,6 +146,7 @@ spring:
             static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
     systemName: flowableUI
+    internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
     app:
         flowable:
             systemCnName: 办件3.0

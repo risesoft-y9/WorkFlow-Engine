@@ -24,8 +24,6 @@ management:
 mybatis:
     mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
 server:
-    intranet:
-        ip: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     port: 8080
     servlet:
         encoding:
@@ -178,6 +176,7 @@ spring:
             max-request-size: 1000MB
 y9:
     systemName: processAdmin
+    internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
     app:
         processAdmin:
             cooperationStateSwitch: false
