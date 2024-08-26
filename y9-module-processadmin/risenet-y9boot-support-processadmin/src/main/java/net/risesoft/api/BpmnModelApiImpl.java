@@ -125,7 +125,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     private final ModelRepository modelRepository;
 
     /**
-     * 删除模型
+     * 删除流程图模型
      *
      * @param tenantId 租户id
      * @param modelId 模型id
@@ -140,7 +140,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     }
 
     /**
-     * 根据Model部署流程
+     * 根据流程图模型部署流程
      *
      * @param tenantId 租户id
      * @param modelId 模型id
@@ -162,7 +162,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     }
 
     /**
-     * 生成流程图
+     * 获取流程图字节数据
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -213,7 +213,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     }
 
     /**
-     * 获取流程图模型
+     * 获取流程图模型数据
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -497,7 +497,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     }
 
     /**
-     * 获取模型列表
+     * 获取流程模型列表
      *
      * @param tenantId 租户id
      * @return {@code Y9Result<List<FlowableBpmnModel>>} 通用请求返回对象 - data 流模型列表
@@ -557,7 +557,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     }
 
     /**
-     * 导入流程模型
+     * 导入流程模型文件
      *
      * @param tenantId 租户id
      * @param userId 用户id

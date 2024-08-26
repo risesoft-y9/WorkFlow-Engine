@@ -157,7 +157,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     }
 
     /**
-     * 根据流程实例Id获取流程实例
+     * 根据流程实例Id获取流程实例信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -353,7 +353,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     }
 
     /**
-     * 根据流程实例id设置流程变量
+     * 根据执行实例id设置流程变量
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id

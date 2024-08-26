@@ -220,7 +220,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
-     * 根据流程定义Id和流程节点Key获取目标任务节点集合
+     * 根据流程定义Id和流程节点Key获取目标任务节点集合（可设置是否包含结束节点）
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id

@@ -171,7 +171,7 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
     }
 
     /**
-     * 根据流程定义key条件搜索在办件
+     * 根据流程定义key和其他条件搜索在办件
      *
      * @param tenantId 租户id
      * @param userId 人员id
@@ -192,7 +192,7 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
     }
 
     /**
-     * 根据系统名条件搜索在办件
+     * 根据系统名称和其他条件搜索在办件
      *
      * @param tenantId 租户id
      * @param userId 人员id

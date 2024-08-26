@@ -98,7 +98,7 @@ public class TaskApiImpl implements TaskApi {
     }
 
     /**
-     * 完成按钮的任务完结
+     * 完成按钮的任务完结（相关参与人员的人任务办结）
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位Id

@@ -32,7 +32,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     private final CustomHistoricTaskService customHistoricTaskService;
 
     /**
-     * 根据流程实例id,获取任务
+     * 根据流程实例id获取历史任务（结束时间升序）
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -51,7 +51,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     }
 
     /**
-     * 根据流程实例id,开始时间升序获取任务
+     * 根据流程实例id获取历史任务（开始时间升序）
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -86,7 +86,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     }
 
     /**
-     * 根据流程实例获取所有历史任务实例
+     * 根据流程实例获取所有历史任务实例（开始时间正序）
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -103,7 +103,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     }
 
     /**
-     * 根据流程实例获取所有历史任务实例-按照办结时间倒序
+     * 根据流程实例获取所有历史任务实例（办结时间倒序）
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
