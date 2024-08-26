@@ -197,7 +197,7 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
     }
 
     /**
-     * 根据流程定义Key条件搜索待办件
+     * 根据流程定义Key和其他条件搜索待办件
      *
      * @param tenantId 租户Id
      * @param userId 人员、岗位id
@@ -218,7 +218,7 @@ public class ProcessTodoApiImpl implements ProcessTodoApi {
     }
 
     /**
-     * 根据系统英文名称条件搜索待办件
+     * 根据系统英文名称和其他条件搜索待办件
      *
      * @param tenantId 租户Id
      * @param userId 人员、岗位id

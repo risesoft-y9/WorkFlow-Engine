@@ -33,7 +33,7 @@ public class MonitorApiImpl implements MonitorApi {
     private final CustomRecycleService customRecycleService;
 
     /**
-     * 根据流程定义Key获取监控在办件统计
+     * 根据流程定义Key获取监控在办件统计数量
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
@@ -97,11 +97,11 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据流程定义Key获取监控办结件统计
+     * 根据流程定义Key获取监控办结件统计数量
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 办结件统计
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 办结件统计数量
      * @since 9.6.6
      */
     @Override
@@ -112,11 +112,11 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据流程定义Key获取监控回收站统计
+     * 根据流程定义Key获取监控回收站统计数量
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计数量
      * @since 9.6.6
      */
     @Override
@@ -127,11 +127,11 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据系统英文名称获取监控回收站统计
+     * 根据系统英文名称获取监控回收站统计数量
      *
      * @param tenantId 租户Id
      * @param systemName 系统英文名称
-     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计数量
      * @since 9.6.6
      */
     @Override
@@ -141,12 +141,12 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据人员Id，流程定义Key获取监控回收站统计
+     * 根据人员Id，流程定义Key获取监控回收站统计数量
      *
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param processDefinitionKey 流程定义Key
-     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计数量
      * @since 9.6.6
      */
     @Override
@@ -158,12 +158,12 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据人员id获取监控回收站统计
+     * 根据人员id获取监控回收站统计数量
      *
      * @param tenantId 租户Id
      * @param userId 人员Id
      * @param systemName 系统英文名称
-     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 回收站统计数量
      * @since 9.6.6
      */
     @Override
@@ -208,7 +208,7 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据流程定义Key获取回收站列表
+     * 根据流程定义Key获取传入用户id相关的回收站列表
      *
      * @param tenantId 租户Id
      * @param userId 用户Id
@@ -247,7 +247,7 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据流程定义Key条件搜索在办件
+     * 根据流程定义Key和其他条件搜索在办件
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义Key
@@ -266,7 +266,7 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据系统英文名称条件搜索在办件
+     * 根据系统英文名称和其他条件搜索在办件
      *
      * @param tenantId 租户id
      * @param systemName 系统英文名称
@@ -285,7 +285,7 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据流程定义Key条件搜索回收站件
+     * 根据流程定义Key和其他条件搜索回收站件
      *
      * @param tenantId 租户id
      * @param processDefinitionKey 流程定义Key
@@ -305,7 +305,7 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据系统英文名称条件搜索回收站件
+     * 根据系统英文名称和其他条件搜索回收站件
      *
      * @param tenantId 租户id
      * @param systemName 系统英文名称
@@ -324,7 +324,7 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据用户Id，流程定义Key条件搜索回收站件
+     * 根据用户Id，流程定义Key和其他条件搜索回收站件
      *
      * @param tenantId 租户id
      * @param userId 用户Id
@@ -345,7 +345,7 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
-     * 根据用户Id，系统英文名称条件搜索回收站件
+     * 根据用户Id，系统英文名称和其他条件搜索回收站件
      *
      * @param tenantId 租户id
      * @param userId 用户Id

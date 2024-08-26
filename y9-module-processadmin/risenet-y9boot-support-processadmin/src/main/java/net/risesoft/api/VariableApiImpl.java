@@ -72,7 +72,7 @@ public class VariableApiImpl implements VariableApi {
     }
 
     /**
-     * 获取流程变量
+     * 根据任务id获取流程变量
      *
      * @param tenantId 租户id
      * @param taskId 任务id
@@ -89,7 +89,7 @@ public class VariableApiImpl implements VariableApi {
     }
 
     /**
-     * 获取流程变量
+     * 根据流程实例id获取流程变量
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程id
@@ -168,7 +168,7 @@ public class VariableApiImpl implements VariableApi {
     }
 
     /**
-     * 设置流程变量
+     * 根据任务id设置流程变量
      *
      * @param tenantId 租户id
      * @param taskId 任务id
@@ -186,7 +186,7 @@ public class VariableApiImpl implements VariableApi {
     }
 
     /**
-     * 设置流程变量
+     * 根据流程实例id设置流程变量
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
