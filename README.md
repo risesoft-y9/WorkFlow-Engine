@@ -17,6 +17,10 @@
 
 工作流引擎对内提供单位/机关流程管理规则和内部业务流程的数字化落地实践；对外提供自动化地第三方业务驱动、接口接入和算法单元驱动能力。工作流引擎在提供底层驱动引擎的同时对全局透明监控、安全防御和国产化特色功能进行充分考虑，是内部流程管理和业务算法驱动的不二之选。[系统在线体验----->>>>>](#在线体验)
 
+## 开源地址
+
+源码地址：<a href="https://github.com/y9digitalbase/WorkFlow-Engine" target="_blank">https://github.com/y9digitalbase/WorkFlow-Engine </a>
+
 ## 源码目录
 
 ```
