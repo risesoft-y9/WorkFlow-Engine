@@ -3,7 +3,7 @@
   "pathPrefix": "/itemAdmin",
   "isStrict": false,
   "allInOne": true,
-  "outPath": "../../../y9-digitalbase-pro/docs/smart-docs/itemAdmin-position/api",
+  "outPath": "../../../y9-digitalbase-pro/docs/smart-docs/itemAdmin/api",
   "coverOld": true,
   "createDebugPage": false,
   "packageFilters": "net.risesoft.api",
@@ -74,7 +74,7 @@
   },
   "groups": [],
   "appToken": "632d60cc96d1474a9d5fa26b2044b778",
-  "openUrl": "https://dev.youshengyun.com/torna/api",
+  "openUrl": "https://test.youshengyun.com/torna/api",
   "replace": true,
   "requestParamsTable": true,
   "responseParamsTable": true
