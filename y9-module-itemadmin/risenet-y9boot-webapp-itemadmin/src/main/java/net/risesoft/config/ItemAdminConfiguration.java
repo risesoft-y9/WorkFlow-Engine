@@ -1,7 +1,5 @@
 package net.risesoft.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -11,9 +9,8 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -27,19 +24,13 @@ import net.risesoft.y9.configuration.Y9Properties;
 @EnableScheduling
 @EnableConfigurationProperties(Y9Properties.class)
 @EnableKafka
-public class ItemAdminConfiguration implements WebMvcConfigurer {
-
-    private static final Logger log = LoggerFactory.getLogger(ItemAdminConfiguration.class);
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/", "/");
-    }
+@Slf4j
+public class ItemAdminConfiguration {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Bean
     public FilterRegistrationBean checkItemAdminUserLoginFilter() {
-        log.debug(
+        LOGGER.debug(
             "****************************************************************************init CheckUserLoginFilter4ItemAdmin ...");
         FilterRegistrationBean filterBean = new FilterRegistrationBean();
         filterBean.setFilter(new CheckUserLoginFilter4ItemAdmin());
@@ -47,11 +38,6 @@ public class ItemAdminConfiguration implements WebMvcConfigurer {
         filterBean.setOrder(50);
         filterBean.addUrlPatterns("/*");
         return filterBean;
-    }
-
-    @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
     }
 
     @Bean

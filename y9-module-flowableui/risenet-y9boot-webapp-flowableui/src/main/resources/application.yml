@@ -12,6 +12,8 @@ server:
             force: true
         session:
             tracking-modes: COOKIE
+        context-path: /flowableUI
+        register-default-servlet: true
 spring:
     application:
         name: flowableUI

@@ -32,6 +32,8 @@ server:
             force: true
         session:
             tracking-modes: COOKIE
+        context-path: /processAdmin
+        register-default-servlet: true
     tomcat:
         uri-encoding: UTF-8
 spring:

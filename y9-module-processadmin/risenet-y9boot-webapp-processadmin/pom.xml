@@ -79,7 +79,6 @@
             <version>${project.version}</version>
         </dependency> -->
 
-
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-properties</artifactId>
@@ -123,8 +122,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
         </dependency>
 
