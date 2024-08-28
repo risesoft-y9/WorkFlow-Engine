@@ -39,10 +39,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class EntrustServiceImpl implements EntrustService {
 
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private final static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-
     private final EntrustRepository entrustRepository;
 
     private final EntrustHistoryRepository entrustHistoryRepository;
@@ -54,6 +50,7 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public void destroyEntrust(String id) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Entrust entrust = this.getById(id);
         if (0 != entrust.getUsed()) {
             EntrustHistory eh = new EntrustHistory();
@@ -65,9 +62,7 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setEndTime(entrust.getEndTime());
             eh.setCreatTime(entrust.getCreatTime());
             eh.setUpdateTime(sdf.format(new Date()));
-
             entrustHistoryRepository.save(eh);
-
             entrustRepository.delete(entrust);
         } else {
             entrustRepository.deleteById(id);
@@ -77,6 +72,7 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public void destroyEntrust(String ownerId, String itemId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Entrust entrust = this.findOneByOwnerIdAndItemId(ownerId, itemId);
         if (0 != entrust.getUsed()) {
             EntrustHistory eh = new EntrustHistory();
@@ -88,9 +84,7 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setEndTime(entrust.getEndTime());
             eh.setCreatTime(entrust.getCreatTime());
             eh.setUpdateTime(sdf.format(new Date()));
-
             entrustHistoryRepository.save(eh);
-
             entrustRepository.delete(entrust);
         }
     }
@@ -98,6 +92,7 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public void destroyEntrustById(String id) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Entrust entrust = this.getById(id);
         if (0 != entrust.getUsed()) {
             EntrustHistory eh = new EntrustHistory();
@@ -109,9 +104,7 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setEndTime(entrust.getEndTime());
             eh.setCreatTime(entrust.getCreatTime());
             eh.setUpdateTime(sdf.format(new Date()));
-
             entrustHistoryRepository.save(eh);
-
             entrustRepository.delete(entrust);
         }
     }
@@ -119,6 +112,7 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     public Entrust findOneByOwnerIdAndItemId(String ownerId, String itemId) {
         Entrust entrust = entrustRepository.findOneByOwnerIdAndItemId(ownerId, itemId);
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         if (entrust != null) {
             /**
              * 判断是否使用
@@ -159,6 +153,7 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     public Entrust getById(String id) {
         Entrust entrust = entrustRepository.findById(id).orElse(null);
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         if (null != entrust) {
             String tenantId = Y9LoginUserHolder.getTenantId();
             OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
@@ -177,7 +172,6 @@ public class EntrustServiceImpl implements EntrustService {
                     entrust.setItemName(itemTemp.getName());
                 }
             }
-
             /**
              * 判断是否使用
              */
@@ -213,6 +207,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<Entrust> list(String ownerId) {
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(ownerId);
         OrgUnit pTemp = null;
@@ -222,7 +217,6 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setAssigneeName(pTemp.getName());
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
-
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
                 entrust.setItemName("所有事项");
@@ -234,7 +228,6 @@ public class EntrustServiceImpl implements EntrustService {
                     entrust.setItemName("事项已删除");
                 }
             }
-
             /**
              * 判断是否使用
              */
@@ -265,6 +258,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<Entrust> listAll() {
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll();
         OrgUnit pTemp;
@@ -274,7 +268,6 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setAssigneeName(pTemp.getName());
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
-
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
                 entrust.setItemName("所有事项");
@@ -286,7 +279,6 @@ public class EntrustServiceImpl implements EntrustService {
                     entrust.setItemName("事项已删除");
                 }
             }
-
             /**
              * 判断是否使用
              */
@@ -317,6 +309,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<Entrust> listByAssigneeId(String assigneeId) {
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId);
         OrgUnit pTemp = null;
@@ -326,7 +319,6 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setAssigneeName(pTemp.getName());
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
-
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
                 entrust.setItemName("所有事项");
@@ -338,7 +330,6 @@ public class EntrustServiceImpl implements EntrustService {
                     entrust.setItemName("事项已删除");
                 }
             }
-
             /**
              * 判断是否使用
              */
@@ -369,6 +360,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<EntrustModel> listEntrustByUserId(String orgUnitId) {
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(orgUnitId);
         List<EntrustModel> list = new ArrayList<>();
@@ -414,7 +406,6 @@ public class EntrustServiceImpl implements EntrustService {
         EntrustItemModel eim = null;
         Boolean isEntrust = false;
         Integer count = 0;
-
         /**
          * 针对所有事项
          */
@@ -426,7 +417,6 @@ public class EntrustServiceImpl implements EntrustService {
         isEntrust = 0 != count;
         eim.setIsEntrust(isEntrust);
         eimList.add(eim);
-
         for (SpmApproveItem item : itemList) {
             eim = new EntrustItemModel();
             eim.setItemId(item.getId());
@@ -438,12 +428,12 @@ public class EntrustServiceImpl implements EntrustService {
 
             eimList.add(eim);
         }
-
         return eimList;
     }
 
     @Override
     public List<EntrustModel> listMyEntrust(String orgUnitId) {
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(orgUnitId);
         List<EntrustModel> list = new ArrayList<>();
         for (Entrust entrust : entrustList) {
@@ -484,6 +474,7 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public Entrust saveOrUpdate(Entrust entrust) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = entrust.getId();
         if (StringUtils.isNotEmpty(id)) {
             Entrust old = this.getById(id);
