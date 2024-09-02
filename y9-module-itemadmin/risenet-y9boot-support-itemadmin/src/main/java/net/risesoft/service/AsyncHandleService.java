@@ -77,7 +77,7 @@ import net.risesoft.y9.util.Y9Util;
 @RequiredArgsConstructor
 public class AsyncHandleService {
 
-    private final TodoTaskApi todoTaskManager;
+    private final TodoTaskApi todotaskApi;
 
     private final TaskVariableRepository taskVariableRepository;
 
@@ -95,7 +95,7 @@ public class AsyncHandleService {
 
     private final ProcessParamService processParamService;
 
-    private final MsgRemindInfoApi msgRemindInfoManager;
+    private final MsgRemindInfoApi msgRemindInfoApi;
 
     private final OpinionHistoryRepository opinionHistoryRepository;
 
@@ -107,13 +107,13 @@ public class AsyncHandleService {
 
     private final OpinionRepository opinionRepository;
 
-    private final VariableApi variableManager;
+    private final VariableApi variableApi;
 
     private final ProcessTrackRepository processTrackRepository;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
-    private final HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historictaskApi;
 
     private final Process4SearchService process4SearchService;
 
@@ -156,7 +156,7 @@ public class AsyncHandleService {
                 String time = sdf.format(new Date());
 
                 // 发送失败,可能会出现统一待办已经保存成功,但任务没有在数据库产生,需要删除统一待办数据,只保存当前发送人的待办任务。
-                todoTaskManager.deleteByProcessInstanceId4New(tenantId, taskId, processInstanceId);
+                todotaskApi.deleteByProcessInstanceId4New(tenantId, taskId, processInstanceId);
 
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();
@@ -186,7 +186,7 @@ public class AsyncHandleService {
         throws Exception {
         OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
-        TaskModel task = taskManager.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
             processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
@@ -194,11 +194,11 @@ public class AsyncHandleService {
         }
         // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
         if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-            List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             for (TaskModel taskNext : taskNextList1) {
                 if (!(taskId.equals(taskNext.getId()))) {
-                    taskManager.complete(tenantId, taskNext.getId());
-                    historicTaskManager.setTenantId(tenantId, taskNext.getId());
+                    taskApi.complete(tenantId, taskNext.getId());
+                    historictaskApi.setTenantId(tenantId, taskNext.getId());
                 }
             }
         }
@@ -227,11 +227,11 @@ public class AsyncHandleService {
          * 解决协作状态串行办理历程的所有人员显示
          */
         vmap.put(SysVariables.USERS, userList);
-        variableManager.setVariables(tenantId, taskId, vmap);
+        variableApi.setVariables(tenantId, taskId, vmap);
         processParam.setSended("true");
         processParam.setSponsorGuid(sponsorGuid);
         processParamService.saveOrUpdate(processParam);
-        taskManager.completeWithVariables(tenantId, taskId, orgUnitId, variables);
+        taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
 
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
@@ -267,7 +267,7 @@ public class AsyncHandleService {
                 }
             }
             // 保存下个任务节点的时限
-            List<TaskModel> nextTaskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             for (TaskModel taskNext : nextTaskList) {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.TASKSENDER, orgUnit.getName());
@@ -292,7 +292,7 @@ public class AsyncHandleService {
                     // }
                     // }
                 }
-                variableManager.setVariablesLocal(tenantId, taskNext.getId(), vars);
+                variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
             }
         } catch (
 
@@ -381,7 +381,7 @@ public class AsyncHandleService {
                 todo.setReceiverName(info.getUserName());
                 todo.setReceiverDepartmentId(info.getUserDeptId());
                 todo.setReceiverDepartmentName(info.getUserDeptName());
-                todoTaskManager.saveTodoTask(tenantId, todo);
+                todotaskApi.saveTodoTask(tenantId, todo);
             } catch (Exception e) {
                 String time = sdf.format(new Date());
                 final Writer result = new StringWriter();
@@ -452,7 +452,7 @@ public class AsyncHandleService {
             }
             Y9LoginUserHolder.setTenantId(tenantId);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-            String personIds = msgRemindInfoManager.getRemindConfig(tenantId, userId, "opinionRemind");
+            String personIds = msgRemindInfoApi.getRemindConfig(tenantId, userId, "opinionRemind");
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             if (StringUtils.isNotBlank(personIds) && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
                 LOGGER.info("*****意见填写提醒*****");
@@ -493,7 +493,7 @@ public class AsyncHandleService {
                     info.setReadUserId("");
                     info.setAllUserId(newPersonIds);
                     info.setContent(content);
-                    msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
+                    msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
                 }
             }
         } catch (Exception e) {
@@ -517,7 +517,7 @@ public class AsyncHandleService {
             try {
                 Map<String, Object> val = new HashMap<>();
                 val.put("val", searchTerm);
-                variableManager.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
+                variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
             } catch (Exception e) {
                 e.printStackTrace();
             }

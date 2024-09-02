@@ -53,28 +53,28 @@ public class Process4CompleteUtilService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final DataCenterApi dataCenterManager;
+    private final DataCenterApi dataCenterApi;
 
     private final OrgUnitApi orgUnitApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
-    private final ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogApi;
 
     private final Y9Properties y9Conf;
 
     private final Process4MsgRemindService process4MsgRemindService;
 
     public Process4CompleteUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        OfficeDoneInfoApi officeDoneInfoApi, DataCenterApi dataCenterManager, OrgUnitApi orgUnitApi,
-        ProcessParamApi processParamManager, ErrorLogApi errorLogManager, Y9Properties y9Conf,
+        OfficeDoneInfoApi officeDoneInfoApi, DataCenterApi dataCenterApi, OrgUnitApi orgUnitApi,
+        ProcessParamApi processParamApi, ErrorLogApi errorLogApi, Y9Properties y9Conf,
         Process4MsgRemindService process4MsgRemindService) {
         this.officeDoneInfoApi = officeDoneInfoApi;
         this.jdbcTemplate = jdbcTemplate;
-        this.dataCenterManager = dataCenterManager;
+        this.dataCenterApi = dataCenterApi;
         this.orgUnitApi = orgUnitApi;
-        this.processParamManager = processParamManager;
-        this.errorLogManager = errorLogManager;
+        this.processParamApi = processParamApi;
+        this.errorLogApi = errorLogApi;
         this.y9Conf = y9Conf;
         this.process4MsgRemindService = process4MsgRemindService;
     }
@@ -198,7 +198,7 @@ public class Process4CompleteUtilService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             try {
                 String sql0 = "UPDATE ff_process_param f set f.COMPLETER = '" + personName
                     + "' where f.PROCESSINSTANCEID = '" + processInstanceId + "'";
@@ -228,7 +228,7 @@ public class Process4CompleteUtilService {
             try {
                 Boolean dataCenterSwitch = y9Conf.getApp().getProcessAdmin().getDataCenterSwitch();
                 if (dataCenterSwitch != null && dataCenterSwitch) {
-                    Y9Result<Object> y9Result = dataCenterManager.saveToDateCenter(processInstanceId, tenantId, userId);
+                    Y9Result<Object> y9Result = dataCenterApi.saveToDateCenter(processInstanceId, tenantId, userId);
                     if (y9Result.isSuccess()) {
                         LOGGER
                             .info("#################保存办结数据到数据中心成功：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
@@ -326,7 +326,7 @@ public class Process4CompleteUtilService {
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
             try {
-                errorLogManager.saveErrorLog(tenantId, errorLogModel);
+                errorLogApi.saveErrorLog(tenantId, errorLogModel);
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }

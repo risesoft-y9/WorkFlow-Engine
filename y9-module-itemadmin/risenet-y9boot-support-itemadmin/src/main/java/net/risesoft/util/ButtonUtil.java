@@ -36,24 +36,24 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ButtonUtil {
 
     private final ProcInstanceRelationshipService procInstanceRelationshipService;
-    private final TaskApi taskManager;
-    private final VariableApi variableManager;
-    private final RuntimeApi runtimeManager;
-    private final ProcessDefinitionApi processDefinitionManager;
-    private final IdentityApi identityManager;
-    private final HistoricTaskApi historicTaskManager;
+    private final TaskApi taskApi;
+    private final VariableApi variableApi;
+    private final RuntimeApi runtimeApi;
+    private final ProcessDefinitionApi processDefinitionApi;
+    private final IdentityApi identityApi;
+    private final HistoricTaskApi historictaskApi;
     private final CustomProcessInfoService customProcessInfoService;
     private final SpmApproveItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
 
     public ButtonUtil() {
         this.procInstanceRelationshipService = Y9Context.getBean(ProcInstanceRelationshipService.class);
-        this.taskManager = Y9Context.getBean(TaskApi.class);
-        this.variableManager = Y9Context.getBean(VariableApi.class);
-        this.runtimeManager = Y9Context.getBean(RuntimeApi.class);
-        this.processDefinitionManager = Y9Context.getBean(ProcessDefinitionApi.class);
-        this.identityManager = Y9Context.getBean(IdentityApi.class);
-        this.historicTaskManager = Y9Context.getBean(HistoricTaskApi.class);
+        this.taskApi = Y9Context.getBean(TaskApi.class);
+        this.variableApi = Y9Context.getBean(VariableApi.class);
+        this.runtimeApi = Y9Context.getBean(RuntimeApi.class);
+        this.processDefinitionApi = Y9Context.getBean(ProcessDefinitionApi.class);
+        this.identityApi = Y9Context.getBean(IdentityApi.class);
+        this.historictaskApi = Y9Context.getBean(HistoricTaskApi.class);
         this.customProcessInfoService = Y9Context.getBean(CustomProcessInfoService.class);
         this.itemService = Y9Context.getBean(SpmApproveItemService.class);
         this.itemTaskConfService = Y9Context.getBean(ItemTaskConfService.class);
@@ -74,7 +74,7 @@ public class ButtonUtil {
         }
         TaskModel task = null;
         if (ItemBoxTypeEnum.TODO.getValue().equals(itembox) || ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
-            task = taskManager.findById(tenantId, taskId).getData();
+            task = taskApi.findById(tenantId, taskId).getData();
         }
         Map<String, Object> vars = new HashMap<>(16);
         String varsUser = "";
@@ -88,12 +88,12 @@ public class ButtonUtil {
         }
         showSubmitButton = item.isShowSubmitButton();
         if (task != null) {
-            vars = variableManager.getVariables(tenantId, taskId).getData();
+            vars = variableApi.getVariables(tenantId, taskId).getData();
             varsUsers = (List<String>)vars.get(SysVariables.USERS);
             varsUser = String.valueOf(vars.get(SysVariables.USER));
             varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLELSPONSOR));
             taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
-            multiInstance = processDefinitionManager
+            multiInstance = processDefinitionApi
                 .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
         }
 
@@ -131,8 +131,8 @@ public class ButtonUtil {
                     long finishedCount = 0;
                     if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter
                         || 1 != nrOfActiveInstances) {
-                        finishedCount = historicTaskManager
-                            .getFinishedCountByExecutionId(tenantId, task.getExecutionId()).getData();
+                        finishedCount =
+                            historictaskApi.getFinishedCountByExecutionId(tenantId, task.getExecutionId()).getData();
                         nrOfCompletedInstances = finishedCount;
                         loopCounter = finishedCount;
                         Map<String, Object> varMapTemp = new HashMap<>(16);
@@ -140,7 +140,7 @@ public class ButtonUtil {
                         varMapTemp.put(SysVariables.NROFCOMPLETEDINSTANCES, finishedCount);
                         varMapTemp.put(SysVariables.LOOPCOUNTER, finishedCount);
                         varMapTemp.put(SysVariables.NROFACTIVEINSTANCES, 1);
-                        runtimeManager.setVariables(tenantId, task.getExecutionId(), varMapTemp);
+                        runtimeApi.setVariables(tenantId, task.getExecutionId(), varMapTemp);
                     }
                     if (nrOfInstances == (nrOfCompletedInstances + 1)
                         && orgUnitId.equals(varsUsers.get(varsUsers.size() - 1))) {
@@ -194,9 +194,9 @@ public class ButtonUtil {
                  */
                 boolean isAssignee = StringUtils.isNotBlank(assignee);
                 Boolean isContainEndEvent =
-                    processDefinitionManager.isContainNodeType(tenantId, taskId, SysVariables.ENDEVENT).getData();
+                    processDefinitionApi.isContainNodeType(tenantId, taskId, SysVariables.ENDEVENT).getData();
                 // 获取某个节点除去end节点的所有的输出线路的个数
-                int outPutNodeCount = processDefinitionManager.getOutPutNodeCount(tenantId, taskId).getData();
+                int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
                 String processDefinitionId = task.getProcessDefinitionId();
                 String taskDefKey = task.getTaskDefinitionKey();
                 /*----- 下面是保存按钮的设置 -----*/
@@ -291,12 +291,11 @@ public class ButtonUtil {
                 /*----- 下面是退回按钮的设置 -----*/
                 if (isAssignee && !customItem) {
                     /*----- 下面是退出按钮的判断 -----*/
-                    String returnDoc =
-                        variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+                    String returnDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
                     String takeBackDoc =
-                        variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+                        variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
                     String repositionDoc =
-                        variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+                        variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
                     // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
                     if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
                         isButtonShow[3] = false;
@@ -396,7 +395,7 @@ public class ButtonUtil {
                     isButtonShow[13] = true;
                     // 是否是最后一个拒签人员，如果是则提示是否拒签，如果拒签，则退回任务给发送人，发送人重新选择人员进行签收办理
                     List<IdentityLinkModel> identityLinkList =
-                        identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
+                        identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
                     if (identityLinkList.size() <= 1) {
                         map.put("isLastPerson4RefuseClaim", true);
                     }
@@ -409,8 +408,8 @@ public class ButtonUtil {
                     // 判断当前流程实例经过的任务节点数和当前流程实例是否存在父流程实例
                     // 如果任务节点数为1且存在父流程实例，则是流程调用，此时显示拒签按钮
                     // 否则是流程中发给多人等情况，不显示拒签按钮
-                    Integer count = historicTaskManager.getByProcessInstanceId(tenantId, currentProcInstanceId, "")
-                        .getData().size();
+                    Integer count =
+                        historictaskApi.getByProcessInstanceId(tenantId, currentProcInstanceId, "").getData().size();
                     if (count == 1) {
                         String superProcessInstanceId =
                             procInstanceRelationshipService.getParentProcInstanceId(currentProcInstanceId);
@@ -420,7 +419,7 @@ public class ButtonUtil {
                         }
                     } else {
                         List<IdentityLinkModel> identityLinkList =
-                            identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
+                            identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
                         int size = 2;
                         if (identityLinkList.size() > size) {
                             for (IdentityLinkModel i : identityLinkList) {
@@ -504,10 +503,9 @@ public class ButtonUtil {
             isButtonShow[2] = true;
             // 在办情况下，收回按钮默认为不显示，当配置了收回按钮时，且当前节点的下一个节点满足回收的条件时才显示回收按钮
             isButtonShow[12] = false;
-            String takeBackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-            String rollbackObj = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-            String repositionObj =
-                variableManager.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+            String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+            String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
             // 下面是收回按钮
             if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
                 && rollbackObj == null && repositionObj == null) {
@@ -523,7 +521,7 @@ public class ButtonUtil {
             // 抄送
             isButtonShow[17] = true;
             ProcessInstanceModel processInstanceModel =
-                runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
+                runtimeApi.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
             // 重定向按钮
             isButtonShow[15] = true;
             if (orgUnitId.equals(processInstanceModel.getStartUserId())) {

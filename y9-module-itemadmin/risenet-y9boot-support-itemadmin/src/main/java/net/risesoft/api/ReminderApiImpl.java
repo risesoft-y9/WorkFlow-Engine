@@ -47,7 +47,7 @@ public class ReminderApiImpl implements ReminderApi {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
     /**
      * 删除催办信息
@@ -211,9 +211,9 @@ public class ReminderApiImpl implements ReminderApi {
                 reminder.setTaskId(taskId);
                 reminderService.saveOrUpdate(reminder);
 
-                TaskModel task = taskManager.findById(tenantId, taskId).getData();
+                TaskModel task = taskApi.findById(tenantId, taskId).getData();
                 if (!String.valueOf(task.getPriority()).contains("8")) {
-                    taskManager.setPriority(tenantId, taskId, task.getPriority() + 8);
+                    taskApi.setPriority(tenantId, taskId, task.getPriority() + 8);
                 }
             }
             return Y9Result.successMsg("保存成功!");

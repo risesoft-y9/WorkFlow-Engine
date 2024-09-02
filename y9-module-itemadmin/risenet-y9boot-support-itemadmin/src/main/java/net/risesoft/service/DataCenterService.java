@@ -77,19 +77,19 @@ public class DataCenterService {
 
     private final Y9FormFieldRepository y9FormFieldRepository;
 
-    private final OfficeInfoApi officeInfoManager;
+    private final OfficeInfoApi officeInfoApi;
 
-    private final HistoricProcessApi historicProcessManager;
+    private final HistoricProcessApi historicProcessApi;
 
-    private final HistoricVariableApi historicVariableManager;
+    private final HistoricVariableApi historicVariableApi;
 
     public DataCenterService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         SpmApproveItemService spmApproveitemService, TransactionWordService transactionWordService,
         TransactionFileService transactionFileService, ProcessTrackService processTrackService,
         Y9FormItemBindService y9FormItemBindService, AssociatedFileRepository associatedFileRepository,
         ProcessParamService processParamService, Y9FormRepository y9FormRepository, OrgUnitApi orgUnitApi,
-        Y9FormFieldRepository y9FormFieldRepository, OfficeInfoApi officeInfoManager,
-        HistoricProcessApi historicProcessManager, HistoricVariableApi historicVariableManager) {
+        Y9FormFieldRepository y9FormFieldRepository, OfficeInfoApi officeInfoApi, HistoricProcessApi historicProcessApi,
+        HistoricVariableApi historicVariableApi) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.spmApproveitemService = spmApproveitemService;
         this.transactionWordService = transactionWordService;
@@ -101,9 +101,9 @@ public class DataCenterService {
         this.y9FormRepository = y9FormRepository;
         this.orgUnitApi = orgUnitApi;
         this.y9FormFieldRepository = y9FormFieldRepository;
-        this.officeInfoManager = officeInfoManager;
-        this.historicProcessManager = historicProcessManager;
-        this.historicVariableManager = historicVariableManager;
+        this.officeInfoApi = officeInfoApi;
+        this.historicProcessApi = historicProcessApi;
+        this.historicVariableApi = historicVariableApi;
     }
 
     /**
@@ -233,8 +233,8 @@ public class DataCenterService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         HistoricProcessInstanceModel processInstance =
-            historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
-        HistoricVariableInstanceModel vmap = historicVariableManager
+            historicProcessApi.getById(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+        HistoricVariableInstanceModel vmap = historicVariableApi
             .getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "infoOvert", "").getData();
 
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -317,7 +317,7 @@ public class DataCenterService {
             this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
         officeInfo.setEforms(elist);
 
-        boolean b = officeInfoManager.saveOfficeInfo(tenantId, officeInfo);
+        boolean b = officeInfoApi.saveOfficeInfo(tenantId, officeInfo);
         LOGGER.info("*****officeInfo数保存到数据中心 {} *****", b);
         LOGGER.info("-----办结数据：{}", officeInfo);
         return b;
@@ -418,7 +418,7 @@ public class DataCenterService {
                 this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
             officeInfo.setEforms(elist);
 
-            boolean b = officeInfoManager.saveOfficeInfo(tenantId, officeInfo);
+            boolean b = officeInfoApi.saveOfficeInfo(tenantId, officeInfo);
             LOGGER.info("*****officeInfo数保存到数据中心 {} *****", b);
             LOGGER.info("-----办结数据：{}", officeInfo);
             return b;

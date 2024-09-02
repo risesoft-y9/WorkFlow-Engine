@@ -50,9 +50,9 @@ public class ReminderServiceImpl implements ReminderService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
-    private final HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historictaskApi;
 
     @Override
     @Transactional
@@ -172,7 +172,7 @@ public class ReminderServiceImpl implements ReminderService {
             model.setUserName("无");
             model.setTaskName("无");
 
-            historicTaskTemp = historicTaskManager.getById(tenantId, reminder.getTaskId()).getData();
+            historicTaskTemp = historictaskApi.getById(tenantId, reminder.getTaskId()).getData();
             if (null != historicTaskTemp) {
                 model.setTaskName(historicTaskTemp.getName());
                 if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
@@ -195,7 +195,7 @@ public class ReminderServiceImpl implements ReminderService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<String> taskIds = new ArrayList<>();
         for (TaskModel task : taskList) {
             taskIds.add(task.getId());
@@ -219,7 +219,7 @@ public class ReminderServiceImpl implements ReminderService {
             model.setSenderName(reminder.getSenderName());
             model.setUserName("无");
             model.setTaskName("无");
-            taskTemp = taskManager.findById(tenantId, reminder.getTaskId()).getData();
+            taskTemp = taskApi.findById(tenantId, reminder.getTaskId()).getData();
             if (null != taskTemp) {
                 model.setTaskName(taskTemp.getName());
                 if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
@@ -246,7 +246,7 @@ public class ReminderServiceImpl implements ReminderService {
         List<Reminder> reminderList = pageList.getContent();
         int num = (page - 1) * rows;
         List<ReminderModel> listMap = new ArrayList<>();
-        TaskModel taskTemp = taskManager.findById(tenantId, taskId).getData();
+        TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
         OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
             ReminderModel model = new ReminderModel();

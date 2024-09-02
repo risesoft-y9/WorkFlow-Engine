@@ -27,7 +27,7 @@ import net.risesoft.y9.util.Y9Util;
 @Service(value = "setDeptIdUtilService")
 public class SetDeptIdUtilService {
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -49,7 +49,7 @@ public class SetDeptIdUtilService {
                 bureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
                 parent = orgUnitApi.getOrgUnit(tenantId, orgUnit.getParentId()).getData();
                 ProcessParamModel processParamModel =
-                    processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 String oldDeptId =
                     StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds();
                 String oldDeptId1 =
@@ -70,12 +70,12 @@ public class SetDeptIdUtilService {
                     processParamModel.setBureauIds(oldBureauId);
                     processParamModel.setDeptIds(oldDeptId);
                     processParamModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
-                    processParamManager.saveOrUpdate(tenantId, processParamModel);
+                    processParamApi.saveOrUpdate(tenantId, processParamModel);
                 } else {
                     if (!oldDeptId.equals(oldDeptId1)) {
                         processParamModel.setDeptIds(oldDeptId);
                         processParamModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
-                        processParamManager.saveOrUpdate(tenantId, processParamModel);
+                        processParamApi.saveOrUpdate(tenantId, processParamModel);
                     }
                 }
             }

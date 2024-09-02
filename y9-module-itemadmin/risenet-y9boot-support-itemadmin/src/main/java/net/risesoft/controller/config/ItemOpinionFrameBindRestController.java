@@ -50,7 +50,7 @@ public class ItemOpinionFrameBindRestController {
 
     private final ItemOpinionFrameRoleService itemOpinionFrameRoleService;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     private final SpmApproveItemService spmApproveItemService;
 
@@ -158,7 +158,7 @@ public class ItemOpinionFrameBindRestController {
             String taskDefName = "整个流程";
             if (StringUtils.isNotEmpty(bind.getTaskDefKey())) {
                 List<TargetModel> list =
-                    processDefinitionManager.getNodes(tenantId, bind.getProcessDefinitionId(), false).getData();
+                    processDefinitionApi.getNodes(tenantId, bind.getProcessDefinitionId(), false).getData();
                 for (TargetModel targetModel : list) {
                     if (targetModel.getTaskDefKey().equals(bind.getTaskDefKey())) {
                         taskDefName = targetModel.getTaskDefName();
@@ -184,7 +184,7 @@ public class ItemOpinionFrameBindRestController {
         @RequestParam String itemId) {
         List<TargetModel> list;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+        list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
         for (TargetModel targetModel : list) {
             StringBuilder opinionFrameNames = new StringBuilder();
             List<ItemOpinionFrameBind> bindList =

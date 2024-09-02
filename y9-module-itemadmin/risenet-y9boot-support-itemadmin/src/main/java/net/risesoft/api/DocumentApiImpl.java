@@ -48,7 +48,7 @@ public class DocumentApiImpl implements DocumentApi {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final VariableApi variableManager;
+    private final VariableApi variableApi;
 
     private final AsyncUtilService asyncUtilService;
 
@@ -206,7 +206,7 @@ public class DocumentApiImpl implements DocumentApi {
             y9Result = documentService.saveAndForwarding(itemId, processSerialNumber, processDefinitionKey, userChoice,
                 sponsorGuid, routeToTaskId, variables);
         } else {
-            variableManager.setVariables(tenantId, taskId, variables);
+            variableApi.setVariables(tenantId, taskId, variables);
             y9Result = documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
         }
         if (y9Result.isSuccess()) {// 异步自动循环发送
@@ -248,7 +248,7 @@ public class DocumentApiImpl implements DocumentApi {
                 userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
         } else {
             if (!variables.isEmpty()) {
-                variableManager.setVariables(tenantId, taskId, variables);
+                variableApi.setVariables(tenantId, taskId, variables);
             }
             return documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
         }

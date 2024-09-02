@@ -40,23 +40,23 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
 
     private final JdbcTemplate jdbcTemplate4Tenant;
 
-    private final RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
     private final OrgUnitApi orgUnitApi;
 
     private final ProcessParamService processParamService;
 
     public ItemDataTransferServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
-        RuntimeApi runtimeManager, TaskApi taskManager, RepositoryApi repositoryManager, OrgUnitApi orgUnitApi,
+        RuntimeApi runtimeApi, TaskApi taskApi, RepositoryApi repositoryApi, OrgUnitApi orgUnitApi,
         ProcessParamService processParamService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
-        this.runtimeManager = runtimeManager;
-        this.taskManager = taskManager;
-        this.repositoryManager = repositoryManager;
+        this.runtimeApi = runtimeApi;
+        this.taskApi = taskApi;
+        this.repositoryApi = repositoryApi;
         this.orgUnitApi = orgUnitApi;
         this.processParamService = processParamService;
     }
@@ -65,7 +65,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     public Y9Result<String> dataTransfer(String processDefinitionId, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionId.split(":")[0]).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionId.split(":")[0]).getData();
         String latestProcessDefinitionId = processDefinition.getId();
         // 迁移所有
         if (StringUtils.isEmpty(processInstanceId)) {
@@ -161,7 +161,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
         Y9Page<ProcessInstanceModel> piPage =
-            runtimeManager.getProcessInstancesByDefId(tenantId, processDefinitionId, page, rows);
+            runtimeApi.getProcessInstancesByDefId(tenantId, processDefinitionId, page, rows);
         List<ProcessInstanceModel> list = piPage.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
         List<ProcessInstanceModel> pList =
@@ -181,7 +181,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 mapTemp.put("number",
                     StringUtils.isBlank(processParam.getCustomNumber()) ? "" : processParam.getCustomNumber());
                 mapTemp.put("startorName", processParam.getStartorName());
-                List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 String assigneeNames = getAssigneeIdsAndAssigneeNames(taskList);
                 mapTemp.put("assigneeNames", assigneeNames);
             } catch (Exception e) {

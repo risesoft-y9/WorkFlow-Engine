@@ -32,15 +32,14 @@ public class StarterDeptSecretary extends AbstractDynamicRoleMember {
 
     private final DepartmentApi departmentApi;
 
-    private final RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeApi;
 
     @Override
     public List<OrgUnit> getOrgUnitList(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(processInstanceId)) {
-            ProcessInstanceModel processInstance =
-                runtimeManager.getProcessInstance(tenantId, processInstanceId).getData();
+            ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
             String userIdAndDeptId = processInstance.getStartUserId();
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];

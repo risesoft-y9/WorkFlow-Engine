@@ -51,11 +51,11 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
 
     private final SpmApproveItemRepository spmApproveItemRepository;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    private final RoleApi roleManager;
+    private final RoleApi roleApi;
 
     @Override
     @Transactional
@@ -65,18 +65,17 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
                 ProcessDefinitionModel previouspd =
-                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
                 previouspdId = previouspd.getId();
             }
         }
-        List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             List<ItemOrganWordBind> bindList = itemOrganWordBindRepository
@@ -230,7 +229,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             String roleNames = "";
             for (ItemOrganWordRole role : roleList) {
                 roleIds.add(role.getId());
-                Role r = roleManager.getRole(role.getRoleId()).getData();
+                Role r = roleApi.getRole(role.getRoleId()).getData();
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = null == r ? "角色不存在" : r.getName();
                 } else {

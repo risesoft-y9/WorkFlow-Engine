@@ -69,7 +69,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogApi;
 
     private final DeleteProcessUtilService deleteProcessUtilService;
 
@@ -81,14 +81,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,
         IdentityService identityService, ManagementService managementService,
         CustomProcessDefinitionService customProcessDefinitionService, OfficeDoneInfoApi officeDoneInfoApi,
-        ErrorLogApi errorLogManager, DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
+        ErrorLogApi errorLogApi, DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
         this.runtimeService = runtimeService;
         this.historyService = historyService;
         this.identityService = identityService;
         this.managementService = managementService;
         this.customProcessDefinitionService = customProcessDefinitionService;
         this.officeDoneInfoApi = officeDoneInfoApi;
-        this.errorLogManager = errorLogManager;
+        this.errorLogApi = errorLogApi;
         this.deleteProcessUtilService = deleteProcessUtilService;
         this.actRuDetailApi = actRuDetailApi;
     }
@@ -399,7 +399,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 errorLogModel.setText(msg);
                 errorLogModel.setUpdateTime(time);
                 try {
-                    errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                    errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
                 } catch (Exception e1) {
                     LOGGER.error("保存错误日志失败", e1);
                 }
@@ -428,7 +428,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 errorLogModel.setText(msg);
                 errorLogModel.setUpdateTime(time);
                 try {
-                    errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                    errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
                 } catch (Exception e1) {
                     LOGGER.error("保存错误日志失败", e1);
                 }
@@ -453,7 +453,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
             try {
-                errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }

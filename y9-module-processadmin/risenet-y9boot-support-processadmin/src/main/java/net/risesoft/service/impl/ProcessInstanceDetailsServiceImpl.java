@@ -34,7 +34,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
 
     private final OrgUnitApi orgUnitApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
     private final ProcessInstanceApi processInstanceApi;
 
@@ -53,7 +53,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             String processSerialNumber = (String)map.get("processSerialNumber");
 
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
 
             String itemId = processParamModel.getItemId();
             String number = processParamModel.getCustomNumber();

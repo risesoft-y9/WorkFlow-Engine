@@ -74,9 +74,9 @@ public class OperationServiceImpl implements OperationService {
 
     private final HistoryService historyService;
 
-    private final ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
     private final ProcessTrackApi processTrackApi;
 
@@ -115,19 +115,19 @@ public class OperationServiceImpl implements OperationService {
                 // if (StringUtils.isBlank(ownerId)) {
                 if (task.getAssignee().equals(sponsorGuid)) {
                     vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
-                    ProcessParamModel processParam = processParamManager
+                    ProcessParamModel processParam = processParamApi
                         .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
                     processParam.setSponsorGuid(sponsorGuid);
-                    processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
+                    processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 }
                 // } else {
                 // // 出差委托更换主办人
                 // if (ownerId.contains(sponsorGuid)) {
                 // vars.put(SysVariables.PARALLELSPONSOR, task.getAssignee().split(SysVariables.COLON)[0]);
                 // ProcessParamModel processParam =
-                // processParamManager.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                // processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
                 // processParam.setSponsorGuid(task.getAssignee().split(SysVariables.COLON)[0]);
-                // processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
+                // processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 // }
                 // }
             }
@@ -256,7 +256,7 @@ public class OperationServiceImpl implements OperationService {
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
             try {
-                errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }

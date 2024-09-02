@@ -43,7 +43,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     private final ProcessInstanceApi processInstanceApi;
 
-    private final ChaoSongApi chaoSongInfoManager;
+    private final ChaoSongApi chaoSongApi;
 
     /**
      * 删除流程实例，在办件设为暂停，办结件加删除标识
@@ -72,7 +72,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
                 }
             }
             try {
-                boolean msg3 = chaoSongInfoManager.deleteByProcessInstanceId(tenantId, processInstanceId).isSuccess();
+                boolean msg3 = chaoSongApi.deleteByProcessInstanceId(tenantId, processInstanceId).isSuccess();
                 LOGGER.error("##############################抄送件删除：{}#################################", msg3);
             } catch (Exception e) {
                 LOGGER.error("##########抄送件删除失败：{}#", e.getMessage());

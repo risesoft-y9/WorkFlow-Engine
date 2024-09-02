@@ -45,7 +45,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final OrganizationApi organizationManager;
+    private final OrganizationApi organizationApi;
 
     /**
      * 获取抄送选人组织机构数据
@@ -221,7 +221,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
-            List<Organization> org = organizationManager.list(tenantId).getData();
+            List<Organization> org = organizationApi.list(tenantId).getData();
             if (org != null && !org.isEmpty()) {
                 id = org.get(0).getId();
             }

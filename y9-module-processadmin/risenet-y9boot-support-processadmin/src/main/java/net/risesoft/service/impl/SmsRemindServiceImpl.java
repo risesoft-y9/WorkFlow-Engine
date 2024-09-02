@@ -38,11 +38,11 @@ public class SmsRemindServiceImpl implements SmsRemindService {
 
     private final PositionApi positionApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
     private final Y9Properties y9Conf;
 
-    private final SmsHttpApi smsHttpManager;
+    private final SmsHttpApi smsHttpApi;
 
     /**
      * 短信提醒
@@ -60,7 +60,7 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             String tenantId = (String)map.get("tenantId");
             String processInstanceId = task.getProcessInstanceId();
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             String isSendSms = processParamModel.getIsSendSms();
             String isShuMing = processParamModel.getIsShuMing();
             String smsContent = processParamModel.getSmsContent();
@@ -99,7 +99,7 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             } else {
                 list.add(((Person)orgUnit0).getMobile());
             }
-            smsHttpManager.sendSmsHttpList(tenantId, userId, list, smsContent, processParamModel.getSystemCnName());
+            smsHttpApi.sendSmsHttpList(tenantId, userId, list, smsContent, processParamModel.getSystemCnName());
         } catch (Exception e) {
             LOGGER.warn("##########################短信提醒时发生异常-taskId:{}##########################", task.getId(), e);
         }

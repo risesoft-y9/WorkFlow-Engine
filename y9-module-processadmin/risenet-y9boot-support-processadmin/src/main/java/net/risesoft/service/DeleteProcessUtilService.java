@@ -40,7 +40,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "deleteProcessUtilService")
 public class DeleteProcessUtilService {
 
-    private final TodoTaskApi rpcTodoTaskManager;
+    private final TodoTaskApi todoTaskApi;
 
     private final ProcessInstanceApi processInstanceApi;
 
@@ -48,31 +48,31 @@ public class DeleteProcessUtilService {
 
     private final OfficeInfoApi officeInfoApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
     private final OfficeFollowApi officeFollowApi;
 
-    private final ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogApi;
 
-    private final MsgRemindInfoApi msgRemindInfoManager;
+    private final MsgRemindInfoApi msgRemindInfoApi;
 
     private final ActRuDetailApi actRuDetailApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi,
-        ChaoSongApi chaoSongApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager,
-        OfficeFollowApi officeFollowApi, ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager,
+    public DeleteProcessUtilService(TodoTaskApi todoTaskApi, ProcessInstanceApi processInstanceApi,
+        ChaoSongApi chaoSongApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamApi,
+        OfficeFollowApi officeFollowApi, ErrorLogApi errorLogApi, MsgRemindInfoApi msgRemindInfoApi,
         ActRuDetailApi actRuDetailApi) {
-        this.rpcTodoTaskManager = rpcTodoTaskManager;
+        this.todoTaskApi = todoTaskApi;
         this.processInstanceApi = processInstanceApi;
         this.chaoSongApi = chaoSongApi;
         this.officeInfoApi = officeInfoApi;
-        this.processParamManager = processParamManager;
+        this.processParamApi = processParamApi;
         this.officeFollowApi = officeFollowApi;
-        this.errorLogManager = errorLogManager;
-        this.msgRemindInfoManager = msgRemindInfoManager;
+        this.errorLogApi = errorLogApi;
+        this.msgRemindInfoApi = msgRemindInfoApi;
         this.actRuDetailApi = actRuDetailApi;
     }
 
@@ -81,12 +81,12 @@ public class DeleteProcessUtilService {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            processParamManager.deleteByPprocessInstanceId(tenantId, processInstanceId);
+            processParamApi.deleteByPprocessInstanceId(tenantId, processInstanceId);
         } catch (Exception e3) {
             LOGGER.error("**********删除流程实例", e3);
         }
         try {
-            rpcTodoTaskManager.deleteByProcessInstanceId(tenantId, processInstanceId);
+            todoTaskApi.deleteByProcessInstanceId(tenantId, processInstanceId);
         } catch (Exception e1) {
             LOGGER.error("************************************删除待办事宜数据失败", e1);
             final Writer result = new StringWriter();
@@ -105,7 +105,7 @@ public class DeleteProcessUtilService {
             errorLogModel.setTaskId("");
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
-            errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+            errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
         }
         try {
             processInstanceApi.deleteProcessInstance(tenantId, processInstanceId);
@@ -129,7 +129,7 @@ public class DeleteProcessUtilService {
         }
 
         try {
-            msgRemindInfoManager.deleteMsgRemindInfo(tenantId, processInstanceId);
+            msgRemindInfoApi.deleteMsgRemindInfo(tenantId, processInstanceId);
         } catch (Exception e) {
             LOGGER.error("************************************删除消息提醒数据失败", e);
         }
@@ -191,7 +191,7 @@ public class DeleteProcessUtilService {
             errorLogModel.setTaskId("");
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
-            errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+            errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             LOGGER.error("**********删除年度表数据失败", e);
         }
     }

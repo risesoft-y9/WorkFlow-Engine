@@ -53,9 +53,9 @@ public class EntrustController {
 
     private final DepartmentApi departmentApi;
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
-    private final OrganizationApi organizationManager;
+    private final OrganizationApi organizationApi;
 
     /**
      * 委办局树搜索
@@ -68,7 +68,7 @@ public class EntrustController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<NodeTreeVO> item = new ArrayList<>();
         List<OrgUnit> orgUnitList = new ArrayList<>();
-        OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
+        OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
             List<Person> personList =
                 personApi.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
@@ -78,7 +78,7 @@ public class EntrustController {
                 this.recursionUpToOrg(tenantId, orgUnit.getId(), p.getParentId(), orgUnitList, false);
             }
         } else {
-            orgUnitList = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
+            orgUnitList = orgUnitApi.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
         }
         for (OrgUnit orgUnit0 : orgUnitList) {
             NodeTreeVO map = new NodeTreeVO();
@@ -109,7 +109,7 @@ public class EntrustController {
         List<NodeTreeVO> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
+            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
             if (orgUnit != null && orgUnit.getId() != null) {
                 NodeTreeVO map = new NodeTreeVO();
                 id = orgUnit.getId();
@@ -123,7 +123,7 @@ public class EntrustController {
         }
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList;
-            orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
+            orgList = orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
             for (OrgUnit orgunit : orgList) {
                 NodeTreeVO map = new NodeTreeVO();
 
@@ -187,7 +187,7 @@ public class EntrustController {
     }
 
     public OrgUnit getParent(String tenantId, String parentId) {
-        Organization parent = organizationManager.get(tenantId, parentId).getData();
+        Organization parent = organizationApi.get(tenantId, parentId).getData();
         return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
     }
 

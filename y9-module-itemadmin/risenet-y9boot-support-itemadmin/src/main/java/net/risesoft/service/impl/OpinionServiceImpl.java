@@ -82,25 +82,23 @@ public class OpinionServiceImpl implements OpinionService {
 
     private final PersonApi personApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
     private final HistoricTaskApi historicTaskApi;
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
-    private final HistoricProcessApi historicProcessManager;
+    private final HistoricProcessApi historicProcessApi;
 
     private final ProcessParamService processParamService;
 
     private final AsyncHandleService asyncHandleService;
 
     private final OpinionHistoryRepository opinionHistoryRepository;
-
-    private final OrgUnitApi orgUnitApi;
 
     private final PositionApi positionApi;
 
@@ -361,7 +359,7 @@ public class OpinionServiceImpl implements OpinionService {
                 SpmApproveItem item = spmApproveItemService.findById(itemId);
                 String proDefKey = item.getWorkflowGuid();
                 ProcessDefinitionModel latestpd =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
                 String processDefinitionId = latestpd.getId();
                 ItemOpinionFrameBind bind =
                     itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
@@ -423,7 +421,7 @@ public class OpinionServiceImpl implements OpinionService {
                     resList.add(model);
                     return resList;
                 }
-                TaskModel task = taskManager.findById(tenantId, taskId).getData();
+                TaskModel task = taskApi.findById(tenantId, taskId).getData();
                 String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
                 for (Opinion opinion : list) {
                     OpinionListModel model0 = new OpinionListModel();
@@ -578,7 +576,7 @@ public class OpinionServiceImpl implements OpinionService {
                     // 办结件，阅件不可填写意见
                     if (processParam != null) {
                         HistoricProcessInstanceModel historicProcessInstanceModel =
-                            historicProcessManager.getById(tenantId, processParam.getProcessInstanceId()).getData();
+                            historicProcessApi.getById(tenantId, processParam.getProcessInstanceId()).getData();
                         boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null
                             && historicProcessInstanceModel.getEndTime() != null);
                         if (b) {
@@ -622,7 +620,7 @@ public class OpinionServiceImpl implements OpinionService {
                 Boolean addableTemp = model.getAddable();
                 if (Boolean.TRUE.equals(addableTemp)) {
                     model.setAddable(false);
-                    TaskModel task = taskManager.findById(tenantId, taskId).getData();
+                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
                     ItemOpinionFrameBind bind =
                         itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
                             itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
@@ -680,7 +678,7 @@ public class OpinionServiceImpl implements OpinionService {
             o.setUserId(personId);
             o.setUserName(userName);
             o.setDeptId(user.getParentId());
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, user.getParentId()).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, user.getParentId()).getData();
             o.setDeptName(orgUnit.getName());
             o.setProcessSerialNumber(entity.getProcessSerialNumber());
             o.setProcessInstanceId(entity.getProcessInstanceId());
@@ -703,7 +701,7 @@ public class OpinionServiceImpl implements OpinionService {
                     e1.printStackTrace();
                 }
                 /*try {
-                    HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskManager.getById(tenantId, entity.getTaskId());
+                    HistoricTaskInstanceModel historicTaskInstanceModel = historictaskApi.getById(tenantId, entity.getTaskId());
                     EntrustDetail entrustDetail = entrustDetailService.findByTaskId(historicTaskInstanceModel.getId());
                     if (entrustDetail != null) {
                         if (historicTaskInstanceModel.getAssignee().contains(positionId)) {
@@ -734,14 +732,14 @@ public class OpinionServiceImpl implements OpinionService {
         opinion.setContent(entity.getContent());
         opinion.setProcessInstanceId(entity.getProcessInstanceId());
         opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        OrgUnit orgUnit0 = orgUnitManager.getOrgUnit(tenantId, user.getParentId()).getData();
+        OrgUnit orgUnit0 = orgUnitApi.getOrgUnit(tenantId, user.getParentId()).getData();
         opinion.setDeptId(user.getParentId());
         opinion.setDeptName(orgUnit0.getName());
         opinion.setPositionId(orgUnitId);
         opinion.setPositionName(user.getName());
         /*if (StringUtils.isNotBlank(entity.getTaskId())) {
             try {
-                HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskManager.getById(tenantId, entity.getTaskId());
+                HistoricTaskInstanceModel historicTaskInstanceModel = historictaskApi.getById(tenantId, entity.getTaskId());
                 EntrustDetail entrustDetail = entrustDetailService.findByTaskId(historicTaskInstanceModel.getId());
                 if (entrustDetail != null) {
                     if (historicTaskInstanceModel.getAssignee().contains(positionId)) {

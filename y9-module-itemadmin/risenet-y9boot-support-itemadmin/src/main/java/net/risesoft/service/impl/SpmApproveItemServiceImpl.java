@@ -67,8 +67,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     private final SpmApproveItemRepository spmApproveItemRepository;
-    private final SystemApi systemEntityManager;
-    private final AppApi appManager;
+    private final SystemApi systemApi;
+    private final AppApi appApi;
     private final ItemMappingConfRepository itemMappingConfRepository;
     private final RepositoryApi repositoryApi;
     private final ProcessDefinitionApi processDefinitionApi;
@@ -278,7 +278,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     public Y9Result<String> publishToSystemApp(String itemId) {
         try {
             SpmApproveItem item = this.findById(itemId);
-            System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+            System system = systemApi.getByName(Y9Context.getSystemName()).getData();
             if (null == system) {
                 return Y9Result.failure("发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为["
                     + Y9Context.getSystemName() + "]的系统,请先创建系统后再发布");
@@ -287,7 +287,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
              * 1、判断应用是否存在，不存在则创建应用，存在则修改应用
              */
             String systemId = system.getId();
-            App app = appManager.findBySystemIdAndCustomId(systemId, itemId).getData();
+            App app = appApi.findBySystemIdAndCustomId(systemId, itemId).getData();
             if (null == app) {
                 app = new App();
                 app.setName(item.getName());
@@ -295,14 +295,14 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 app.setCustomId(itemId);
                 app.setEnabled(Boolean.TRUE);
                 app.setSystemId(systemId);
-                appManager.saveIsvApp(app);
+                appApi.saveIsvApp(app);
 
                 return Y9Result.successMsg("发布为系统[" + Y9Context.getSystemName() + "]的新应用成功，请联系运维人员进行应用审核");
             } else {
                 app.setName(item.getName());
                 app.setUrl(item.getAppUrl());
                 app.setSystemId(systemId);
-                appManager.saveIsvApp(app);
+                appApi.saveIsvApp(app);
                 return Y9Result.successMsg("更新系统[" + Y9Context.getSystemName() + "]的应用成功，请联系运维人员进行应用审核");
             }
         } catch (Exception e) {

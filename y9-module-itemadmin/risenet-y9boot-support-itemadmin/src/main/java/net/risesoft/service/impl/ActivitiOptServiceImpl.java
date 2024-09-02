@@ -26,9 +26,9 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 public class ActivitiOptServiceImpl implements ActivitiOptService {
 
-    private final RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
     @Override
     public TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName,
@@ -38,11 +38,11 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
             map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getOrgUnit().getName(), "",
                 Collections.singletonList(userId), processSerialNumber, "", map);
-            ProcessInstanceModel piModel = runtimeManager
-                .startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map).getData();
+            ProcessInstanceModel piModel =
+                runtimeApi.startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map).getData();
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
-            task = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData().get(0);
+            task = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData().get(0);
         } catch (Exception e) {
             LOGGER.error("启动流程失败", e);
         }

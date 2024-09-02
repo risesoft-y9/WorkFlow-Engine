@@ -34,7 +34,7 @@ public class ItemTaskConfRestController {
 
     private final ItemTaskConfService taskConfService;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     /**
      * 复制签收配置
@@ -61,7 +61,7 @@ public class ItemTaskConfRestController {
         @RequestParam String processDefinitionId) {
         List<Map<String, Object>> resList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
         Map<String, Object> map;
         for (TargetModel targetModel : list) {
             map = new HashMap<>(16);

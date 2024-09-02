@@ -52,13 +52,13 @@ public class ItemRestController {
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
-    private final OrganizationApi organizationManager;
+    private final OrganizationApi organizationApi;
 
     private final DepartmentApi departmentApi;
 
-    private final AppIconApi appIconManager;
+    private final AppIconApi appIconApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -150,7 +150,7 @@ public class ItemRestController {
     public void getJson(StringBuilder sb, String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(deptId)) {
-            List<Organization> orgList = organizationManager.list(tenantId).getData();
+            List<Organization> orgList = organizationApi.list(tenantId).getData();
             if (orgList != null && !orgList.isEmpty()) {
                 List<Department> deptList = departmentApi.listByParentId(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
@@ -211,7 +211,7 @@ public class ItemRestController {
         map.put("item", item);
         map.put("manager", manager);
         List<Map<String, Object>> workflowList = new ArrayList<>();
-        List<ProcessDefinitionModel> pdModelList = repositoryManager.getLatestProcessDefinitionList(tenantId).getData();
+        List<ProcessDefinitionModel> pdModelList = repositoryApi.getLatestProcessDefinitionList(tenantId).getData();
         for (ProcessDefinitionModel pdModel : pdModelList) {
             Map<String, Object> row = new HashMap<>(16);
             row.put("id", pdModel.getKey());
@@ -241,7 +241,7 @@ public class ItemRestController {
     @GetMapping(value = "/readAppIconFile")
     public Y9Result<Map<String, Object>> readAppIconFile() {
         List<Map<String, String>> iconList;
-        List<AppIcon> list = appIconManager.listAllIcon().getData();
+        List<AppIcon> list = appIconApi.listAllIcon().getData();
         iconList = new ArrayList<>();
         if (list != null) {
             for (AppIcon appicon : list) {
@@ -289,7 +289,7 @@ public class ItemRestController {
      */
     @GetMapping(value = "/searchAppIcon")
     public Y9Result<Map<String, Object>> searchAppIcon(@RequestParam(required = false) String name) {
-        List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%").getData();
+        List<AppIcon> list = appIconApi.searchAppIcon("%" + name + "%").getData();
         List<Map<String, String>> iconList = new ArrayList<>();
         if (list != null) {
             for (AppIcon appicon : list) {

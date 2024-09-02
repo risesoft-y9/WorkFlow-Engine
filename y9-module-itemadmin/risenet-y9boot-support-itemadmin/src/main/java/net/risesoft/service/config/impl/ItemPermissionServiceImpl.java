@@ -50,17 +50,17 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
 
     private final DynamicRoleMemberService dynamicRoleMemberService;
 
-    private final RoleApi roleManager;
+    private final RoleApi roleApi;
 
     private final DynamicRoleService dynamicRoleService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     private final SpmApproveItemRepository spmApproveItemRepository;
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     @Transactional
@@ -68,21 +68,20 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
                 ProcessDefinitionModel previouspd =
-                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
                 previouspdId = previouspd.getId();
             }
         }
         List<ItemPermission> previousipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
-        List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
         /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的角色，没有就保存
          */
@@ -137,7 +136,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         map.put("existDepartment", false);
         for (ItemPermission o : objectPermList) {
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     map.put("existDepartment", true);
                     continue;
@@ -145,7 +144,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             }
 
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     map.put("existPosition", true);
                     continue;
@@ -153,11 +152,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             }
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
                 int positionSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData().size();
+                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData().size();
                 int departmentSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
+                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
                 int organizationSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData().size();
+                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData().size();
                 if (positionSize > 0) {
                     map.put("existPosition", true);
                 }
@@ -190,12 +189,12 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
         for (ItemPermission ip : ipList) {
             if ((ip.getRoleType() == 1)) {
-                Role role = roleManager.getRole(ip.getRoleId()).getData();
+                Role role = roleApi.getRole(ip.getRoleId()).getData();
                 if (null != role) {
                     ip.setRoleName(role.getName());
                 }
             } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3 || ip.getRoleType() == 6) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, ip.getRoleId()).getData();
                 if (null != orgUnit) {
                     ip.setRoleName(orgUnit.getName());
                 }
@@ -226,12 +225,12 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                     ip.setRoleName(dr.getName());
                 }
             } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, ip.getRoleId()).getData();
                 if (null != orgUnit) {
                     ip.setRoleName(orgUnit.getName());
                 }
             } else if ((ip.getRoleType() == 1)) {
-                Role role = roleManager.getRole(ip.getRoleId()).getData();
+                Role role = roleApi.getRole(ip.getRoleId()).getData();
                 if (null != role) {
                     ip.setRoleName(role.getName());
                 }

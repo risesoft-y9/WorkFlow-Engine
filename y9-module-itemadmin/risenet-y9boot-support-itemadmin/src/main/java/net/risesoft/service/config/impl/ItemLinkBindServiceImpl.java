@@ -43,7 +43,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
 
     private final LinkInfoRepository linkInfoRepository;
 
-    private final RoleApi roleManager;
+    private final RoleApi roleApi;
 
     private final SpmApproveItemRepository spmApproveItemRepository;
 
@@ -88,7 +88,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
             String roleNames = "";
             for (ItemLinkRole bindrole : roleList) {
                 roleIds.add(bindrole.getId());
-                Role role = roleManager.getRole(bindrole.getRoleId()).getData();
+                Role role = roleApi.getRole(bindrole.getRoleId()).getData();
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = null == role ? "角色不存在" : role.getName();
                 } else {
@@ -122,7 +122,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
             String roleNames = "";
             for (ItemLinkRole role : roleList) {
                 roleIds.add(role.getId());
-                Role r = roleManager.getRole(role.getRoleId()).getData();
+                Role r = roleApi.getRole(role.getRoleId()).getData();
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = null == r ? "角色不存在" : r.getName();
                 } else {
@@ -140,7 +140,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     public List<ItemLinkRole> listWithBindRole(String itemLinkId) {
         List<ItemLinkRole> list = itemLinkRoleRepository.findByItemLinkId(itemLinkId);
         for (ItemLinkRole item : list) {
-            Role role = roleManager.getRole(item.getRoleId()).getData();
+            Role role = roleApi.getRole(item.getRoleId()).getData();
             item.setRoleName(role == null ? "角色已删除" : role.getName());
         }
         return list;

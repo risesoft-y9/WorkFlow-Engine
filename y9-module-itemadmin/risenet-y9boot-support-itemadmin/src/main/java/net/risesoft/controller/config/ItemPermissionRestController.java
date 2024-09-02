@@ -37,7 +37,7 @@ public class ItemPermissionRestController {
 
     private final ItemPermissionService itemPermissionService;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     private final Y9Properties y9Conf;
 
@@ -76,7 +76,7 @@ public class ItemPermissionRestController {
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
         String freeFlowKey = y9Conf.getApp().getItemAdmin().getFreeFlowKey();
         /*
          * 自由流程额外添加一个办结角色，规定自由流的办结按钮控制

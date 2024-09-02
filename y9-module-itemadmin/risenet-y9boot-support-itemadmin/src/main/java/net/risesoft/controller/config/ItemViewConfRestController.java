@@ -46,7 +46,7 @@ public class ItemViewConfRestController {
 
     private final ItemViewConfService itemViewConfService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
     private final Y9FormFieldService y9FormFieldService;
 
@@ -92,7 +92,7 @@ public class ItemViewConfRestController {
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         for (Y9FormItemBind bind : formList) {
@@ -124,7 +124,7 @@ public class ItemViewConfRestController {
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
@@ -187,17 +187,6 @@ public class ItemViewConfRestController {
     }
 
     /**
-     * 保存排序
-     *
-     * @param idAndTabIndexs 视图id和排序索引
-     */
-    @PostMapping(value = "/saveOrder")
-    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
-        itemViewConfService.update4Order(idAndTabIndexs);
-        return Y9Result.successMsg("保存成功");
-    }
-
-    /**
      * 保存或者修改
      *
      * @param itemViewConf 视图信息
@@ -206,6 +195,17 @@ public class ItemViewConfRestController {
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(ItemViewConf itemViewConf) {
         itemViewConfService.saveOrUpdate(itemViewConf);
+        return Y9Result.successMsg("保存成功");
+    }
+
+    /**
+     * 保存排序
+     *
+     * @param idAndTabIndexs 视图id和排序索引
+     */
+    @PostMapping(value = "/saveOrder")
+    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
+        itemViewConfService.update4Order(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
     }
 }

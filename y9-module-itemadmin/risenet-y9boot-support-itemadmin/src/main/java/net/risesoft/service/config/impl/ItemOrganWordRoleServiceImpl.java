@@ -27,7 +27,7 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
 
     private final ItemOrganWordRoleRepository itemOrganWordRoleRepository;
 
-    private final RoleApi roleManager;
+    private final RoleApi roleApi;
 
     @Override
     public void deleteById(String id) {
@@ -43,7 +43,7 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     public List<ItemOrganWordRole> listByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
         for (ItemOrganWordRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId()).getData();
+            Role r = roleApi.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

@@ -32,7 +32,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
 
     private final ProcessParamRepository processParamRepository;
 
-    private final VariableApi variableManager;
+    private final VariableApi variableApi;
 
     @Override
     @Transactional
@@ -102,7 +102,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
                     if (update) {
                         Map<String, Object> val = new HashMap<>();
                         val.put("val", processParam.getSearchTerm());
-                        variableManager.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
+                        variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
                     }
                 }
             } catch (Exception e) {
@@ -162,8 +162,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             processParamRepository.save(pp);
             Map<String, Object> val = new HashMap<>();
             val.put("val", pp.getSearchTerm());
-            variableManager.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
-                "searchTerm", val);
+            variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId, "searchTerm",
+                val);
         }
     }
 

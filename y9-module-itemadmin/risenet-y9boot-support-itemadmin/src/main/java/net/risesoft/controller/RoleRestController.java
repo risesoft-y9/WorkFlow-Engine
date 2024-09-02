@@ -38,11 +38,11 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/role", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoleRestController {
 
-    private final RoleApi roleManager;
+    private final RoleApi roleApi;
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
-    private final SystemApi systemEntityManager;
+    private final SystemApi systemApi;
 
     private final AppApi appApi;
 
@@ -56,7 +56,7 @@ public class RoleRestController {
     public Y9Result<List<NodeTreeVO>> findAll(@RequestParam(required = false) String id) {
         List<NodeTreeVO> listMap = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
-            System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+            System system = systemApi.getByName(Y9Context.getSystemName()).getData();
             List<App> appList = appApi.listBySystemId(system.getId()).getData();
             for (App app : appList) {
                 NodeTreeVO map = new NodeTreeVO();
@@ -68,7 +68,7 @@ public class RoleRestController {
                 listMap.add(map);
             }
         } else {
-            List<Role> listRole = roleManager.listRoleByParentId(id).getData();
+            List<Role> listRole = roleApi.listRoleByParentId(id).getData();
             if (listRole != null) {
                 for (Role role : listRole) {
                     NodeTreeVO map = new NodeTreeVO();
@@ -80,7 +80,7 @@ public class RoleRestController {
                         map.setIsParent(false);
                         map.setOrgType("role");
                     } else {
-                        List<Role> list = roleManager.listRoleByParentId(role.getId()).getData();
+                        List<Role> list = roleApi.listRoleByParentId(role.getId()).getData();
                         boolean isP = false;
                         if (list != null) {
                             isP = !list.isEmpty();
@@ -102,7 +102,7 @@ public class RoleRestController {
     public Y9Result<List<NodeTreeVO>> findRoleMember(@RequestParam String roleId) {
         List<NodeTreeVO> listMap = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> list = roleManager.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
+        List<OrgUnit> list = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
         for (OrgUnit orgUnit : list) {
             NodeTreeVO map = new NodeTreeVO();
             map.setId(orgUnit.getId());
@@ -126,7 +126,7 @@ public class RoleRestController {
         List<NodeTreeVO> listMap = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(roleId) && StringUtils.isBlank(id)) {
-            List<OrgUnit> list = roleManager.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.PERSON).getData();
+            List<OrgUnit> list = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.PERSON).getData();
             for (OrgUnit orgUnit : list) {
                 NodeTreeVO map = new NodeTreeVO();
                 map.setId(orgUnit.getId());
@@ -142,7 +142,7 @@ public class RoleRestController {
                 listMap.add(map);
             }
         } else {
-            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
+            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
             for (OrgUnit orgUnit : list) {
                 NodeTreeVO map = new NodeTreeVO();
                 map.setId(orgUnit.getId());

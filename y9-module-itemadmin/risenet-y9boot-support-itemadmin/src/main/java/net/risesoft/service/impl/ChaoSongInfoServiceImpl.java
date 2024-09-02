@@ -89,17 +89,17 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final ProcessParamService processParamService;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
-    private final HistoricProcessApi historicProcessManager;
+    private final HistoricProcessApi historicProcessApi;
 
-    private final OrganizationApi organizationManager;
+    private final OrganizationApi organizationApi;
 
     private final PositionApi positionApi;
 
     private final OrgUnitApi orgUnitApi;
 
-    private final SmsHttpApi smsHttpManager;
+    private final SmsHttpApi smsHttpApi;
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
@@ -113,7 +113,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
-    private final TodoTaskApi todoTaskManager;
+    private final TodoTaskApi todotaskApi;
 
     private final CustomGroupApi customGroupApi;
 
@@ -139,7 +139,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             chaoSong.setReadTime(sdf.format(new Date()));
             chaoSongInfoRepository.save(chaoSong);
             try {
-                todoTaskManager.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
+                todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
                 LOGGER.error("删除待办任务失败", e);
             }
@@ -157,7 +157,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 chaoSongInfoRepository.save(chaoSong);
             }
             try {
-                todoTaskManager.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
+                todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
                 LOGGER.error("删除待办任务失败", e);
             }
@@ -189,7 +189,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         for (String id : ids) {
             chaoSongInfoRepository.deleteById(id);
             try {
-                todoTaskManager.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
+                todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
                 LOGGER.error("删除待办任务失败", e);
             }
@@ -208,24 +208,24 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         OpenDataModel model = new OpenDataModel();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         if (taskList.isEmpty()) {
             itembox = ItemBoxTypeEnum.DONE.getValue();
         }
         if (ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
             taskId = taskList.get(0).getId();
-            TaskModel task = taskManager.findById(tenantId, taskId).getData();
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
         }
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activitiUser = "", startor;
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
                 String year = processParam.getCreateTime().substring(0, 4);
-                hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year).getData();
+                hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 processDefinitionId = hpi.getProcessDefinitionId();
                 processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             } else {
@@ -242,7 +242,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             if (taskId.contains(SysVariables.COMMA)) {
                 taskId = taskId.split(SysVariables.COMMA)[0];
             }
-            TaskModel taskTemp = taskManager.findById(tenantId, taskId).getData();
+            TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
             taskDefinitionKey = taskTemp.getTaskDefinitionKey();
         }
         OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
@@ -446,7 +446,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("level", processParam.getCustomLevel());
                 int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
                 map.put("chaosongNum", chaosongNum);
-                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
+                hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     map.put("banjie", true);
@@ -504,7 +504,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             try {
                 model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
                 model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
-                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
+                hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -651,7 +651,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             try {
                 model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
                 model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
-                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
+                hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -717,7 +717,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setBanjie(false);
             try {
                 model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
-                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
+                hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -790,7 +790,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             // 保存抄送
             OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, currOrgUnit.getParentId()).getData();
             if (null == dept || null == dept.getId()) {
-                dept = organizationManager.get(tenantId, currOrgUnit.getParentId()).getData();
+                dept = organizationApi.get(tenantId, currOrgUnit.getParentId()).getData();
             }
             List<String> mobile = new ArrayList<>();
             for (String userId : userIdListAdd) {
@@ -821,7 +821,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 smsContent += "--" + Y9LoginUserHolder.getUserInfo().getName();
                 Boolean smsSwitch = y9Conf.getApp().getItemAdmin().getSmsSwitch();
                 if (Boolean.TRUE.equals(smsSwitch)) {
-                    smsHttpManager.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile, smsContent,
+                    smsHttpApi.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile, smsContent,
                         systemName + "抄送");
                 } else {
                     LOGGER
@@ -920,7 +920,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
                 model.setProcessSerialNumber(processParam.getProcessSerialNumber());
-                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
+                hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -1008,7 +1008,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
                 model.setProcessSerialNumber(processParam.getProcessSerialNumber());
-                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
+                hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);

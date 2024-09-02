@@ -49,7 +49,7 @@ public class ItemMappingConfRestController {
 
     private final ItemMappingConfRepository itemMappingConfRepository;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
     private final Y9FormFieldService y9FormFieldService;
 
@@ -91,7 +91,7 @@ public class ItemMappingConfRestController {
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
@@ -111,7 +111,7 @@ public class ItemMappingConfRestController {
             SpmApproveItem item1 = spmApproveItemService.findById(mappingItemId);
             String processDefineKey1 = item1.getWorkflowGuid();
             ProcessDefinitionModel processDefinition1 =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey1).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey1).getData();
             List<Y9FormItemBind> formList1 = y9FormItemBindService
                 .listByItemIdAndProcDefIdAndTaskDefKeyIsNull(mappingItemId, processDefinition1.getId());
             List<String> tableNameList1 = new ArrayList<>();

@@ -114,11 +114,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final OfficeDoneInfoApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
-    private final ProcessTrackApi processTrackManager;
+    private final ProcessTrackApi processTrackApi;
 
     private final ModelService modelService;
 
@@ -339,10 +339,10 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId);
             if (hpi == null) {
                 OfficeDoneInfoModel officeDoneInfo =
-                    officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 if (officeDoneInfo == null) {
                     ProcessParamModel processParam =
-                        processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     year = processParam.getCreateTime().substring(0, 4);
                 } else {
                     year = officeDoneInfo.getStartTime().substring(0, 4);
@@ -426,7 +426,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     listMap.add(flowChart);
                 }
 
-                List<ProcessTrackModel> ptList = processTrackManager.findByTaskIdAsc(tenantId, taskId).getData();
+                List<ProcessTrackModel> ptList = processTrackApi.findByTaskIdAsc(tenantId, taskId).getData();
                 String parentId0 = taskId;
                 for (int j = 0; j < ptList.size(); j++) {
                     num += 1;

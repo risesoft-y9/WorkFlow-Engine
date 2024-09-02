@@ -50,7 +50,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final IdentityApi identityManager;
+    private final IdentityApi identityApi;
 
     @Override
     public int countAssociatedFile(String processSerialNumber) {
@@ -126,7 +126,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                         }
                     } else {// 处理单实例未签收的当前办理人显示
                         List<IdentityLinkModel> iList =
-                            identityManager.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {

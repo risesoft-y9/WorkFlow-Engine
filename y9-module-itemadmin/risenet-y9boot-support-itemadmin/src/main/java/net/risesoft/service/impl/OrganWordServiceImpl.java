@@ -79,7 +79,7 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     private final PositionRoleApi positionRoleApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
     @Override
     public boolean checkCustom(String id, String custom) {
@@ -318,7 +318,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         String taskDefKey = "";
         String itemId = "";
         String processDefinitionId = "";
-        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         taskDefKey = taskList.get(0).getTaskDefinitionKey();
         processDefinitionId = taskList.get(0).getProcessDefinitionId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
