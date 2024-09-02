@@ -47,15 +47,15 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     private final ActRuDetailRepository actRuDetailRepository;
 
-    private final HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historictaskApi;
 
     private final ProcessParamService processParamService;
 
     private final SpmApproveItemService itemService;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
-    private final IdentityApi identityManager;
+    private final IdentityApi identityApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -374,7 +374,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         String systemName = processParam.getSystemName(), tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> htiList =
-            historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "").getData();
+            historictaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "").getData();
         ActRuDetail actRuDetail;
         String assignee, owner;
         TaskModel taskTemp;
@@ -401,7 +401,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                     this.saveOrUpdate(actRuDetail);
 
                     /* 再保存assignee */
-                    taskTemp = taskManager.findById(tenantId, hti.getId()).getData();
+                    taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
                     if (null != taskTemp) {
                         actRuDetail.setStatus(0);
                         actRuDetail.setLastTime(null);
@@ -419,7 +419,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                      * 2assignee不为null也有可能是恢复待办的人员是当前任务的办理人，这个时候要查出当前任务是否正在运行，正在运行
                      * Status为0，lastTime为null;当前任务不存在，Status为1，，lastTime为endTime
                      */
-                    taskTemp = taskManager.findById(tenantId, hti.getId()).getData();
+                    taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
                     if (null != taskTemp) {
                         actRuDetail.setStatus(0);
                         actRuDetail.setLastTime(null);
@@ -435,7 +435,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 }
             } else {
                 /* 2办理人为空，说明是区长办件，可以从历史的参与人查找对应任务的办理人 */
-                taskTemp = taskManager.findById(tenantId, hti.getId()).getData();
+                taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
                 if (null != taskTemp) {
                     actRuDetail.setStatus(0);
                     actRuDetail.setLastTime(null);
@@ -445,7 +445,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 }
                 List<IdentityLinkModel> identityLinkList = new ArrayList<>();
                 try {
-                    identityLinkList = identityManager.getIdentityLinksForTask(tenantId, hti.getId()).getData();
+                    identityLinkList = identityApi.getIdentityLinksForTask(tenantId, hti.getId()).getData();
                 } catch (Exception e) {
                     LOGGER.error("Get identity links for task error", e);
                 }

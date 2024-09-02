@@ -60,9 +60,9 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final DocumentService documentService;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
     private final ProcessParamService processParamService;
 
@@ -116,10 +116,10 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
         String processDefinitionId =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         List<TargetModel> routeToTasks =
-            processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
         String taskDefKeyList = "";
         String taskDefNameList = "";
         for (TargetModel targetModel : routeToTasks) {

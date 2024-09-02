@@ -51,17 +51,17 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
-    private final VariableApi variableManager;
+    private final VariableApi variableApi;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    private final HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historictaskApi;
 
-    private final RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeApi;
 
-    private final SpecialOperationApi specialOperationManager;
+    private final SpecialOperationApi specialOperationApi;
 
     /**
      * 加签
@@ -117,7 +117,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        ProcessInstanceModel processInstance = runtimeManager.getProcessInstance(tenantId, processInstanceId).getData();
+        ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
         Y9Result<String> y9Result = documentService.forwarding(taskId, "true", startUserId, routeToTask, "");
         if (y9Result.isSuccess()) {
@@ -140,39 +140,38 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            taskManager.claim(tenantId, orgUnitId, taskId);
-            TaskModel currentTask = taskManager.findById(tenantId, taskId).getData();
+            taskApi.claim(tenantId, orgUnitId, taskId);
+            TaskModel currentTask = taskApi.findById(tenantId, taskId).getData();
             List<String> userAndDeptIdList = new ArrayList<>();
             // 获取当前任务的前一个任务
-            HistoricTaskInstanceModel hti = historicTaskManager.getThePreviousTask(tenantId, taskId).getData();
+            HistoricTaskInstanceModel hti = historictaskApi.getThePreviousTask(tenantId, taskId).getData();
             // 前一任务的受让人，标题
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             Y9LoginUserHolder.setOrgUnit(orgUnit);
-            String htiMultiInstance = processDefinitionManager
+            String htiMultiInstance = processDefinitionApi
                 .getNodeType(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(orgUnitId, orgUnit.getName(), hti.getTaskDefinitionKey(), userAndDeptIdList, "");
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSECLAIMROLLBACK);
-            variableManager.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
-            taskManager.completeWithVariables(tenantId, taskId, orgUnitId, variables);
+            variableApi.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
+            taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
             /*
              * 如果上一任务是并行，则回退时设置主办人
              */
             if (SysVariables.PARALLEL.equals(htiMultiInstance)) {
                 List<TaskModel> taskNextList1 =
-                    taskManager.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId()).getData();
+                    taskApi.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId()).getData();
                 for (TaskModel taskModelNext : taskNextList1) {
                     Map<String, Object> val1 = new HashMap<>();
                     val1.put("val", assignee.split(SysVariables.COLON)[0]);
-                    variableManager.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLELSPONSOR,
-                        val1);
+                    variableApi.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLELSPONSOR, val1);
                 }
             }
         } catch (Exception e) {
-            taskManager.unClaim(tenantId, taskId);
+            taskApi.unClaim(tenantId, taskId);
             LOGGER.error("退回失败", e);
             return Y9Result.failure("退回失败");
         }
@@ -197,7 +196,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         @RequestParam String taskId, @RequestParam String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.reposition(tenantId, orgUnitId, taskId, repositionToTaskId, userChoice, reason,
+        specialOperationApi.reposition(tenantId, orgUnitId, taskId, repositionToTaskId, userChoice, reason,
             sponsorGuid);
         return Y9Result.success();
     }
@@ -216,7 +215,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> rollBack(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(specialOperationManager.rollBack(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationApi.rollBack(tenantId, orgUnitId, taskId, reason).isSuccess());
     }
 
     /**
@@ -232,7 +231,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> rollbackToSender(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(specialOperationManager.rollbackToSender(tenantId, orgUnitId, taskId).isSuccess());
+        return Y9Result.success(specialOperationApi.rollbackToSender(tenantId, orgUnitId, taskId).isSuccess());
     }
 
     /**
@@ -249,8 +248,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> rollbackToStartor(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result
-            .success(specialOperationManager.rollbackToStartor(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationApi.rollbackToStartor(tenantId, orgUnitId, taskId, reason).isSuccess());
     }
 
     /**
@@ -267,8 +265,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> specialComplete(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result
-            .success(specialOperationManager.specialComplete(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationApi.specialComplete(tenantId, orgUnitId, taskId, reason).isSuccess());
     }
 
     /**
@@ -285,6 +282,6 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> takeback(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(specialOperationManager.takeBack(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationApi.takeBack(tenantId, orgUnitId, taskId, reason).isSuccess());
     }
 }

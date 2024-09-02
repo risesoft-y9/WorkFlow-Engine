@@ -73,11 +73,11 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historictaskApi;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
-    private final IdentityApi identityManager;
+    private final IdentityApi identityApi;
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
@@ -157,17 +157,17 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         // 由于需要获取call Activity类型的节点，将查询方法改为如下
         List<HistoricTaskInstanceModel> results =
-            historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "").getData();
+            historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, "").getData();
         String year = "";
         if (results == null || results.isEmpty()) {
             OfficeDoneInfo officeDoneInfoModel = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfoModel != null && officeDoneInfoModel.getProcessInstanceId() != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
-                results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
+                results = historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
             } else {
                 ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 year = processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
-                results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
+                results = historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
             }
         }
         for (int i = 0; i < results.size(); i++) {
@@ -239,7 +239,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             } else {// 处理单实例未签收的办理人显示
                 List<IdentityLinkModel> iList = null;
                 try {
-                    iList = identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
+                    iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
                 } catch (Exception e) {
                     LOGGER.error("获取任务的用户信息失败", e);
                 }
@@ -263,7 +263,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             }
             Integer newToDo = 0;
             if (hai.getEndTime() == null) {
-                TaskModel taskModel = taskManager.findById(tenantId, taskId).getData();
+                TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                 newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
                     : (Integer.parseInt(taskModel.getFormKey()));
             }
@@ -415,17 +415,17 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         List<HistoryProcessModel> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> results =
-            historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "").getData();
+            historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, "").getData();
         String year = "";
         if (results == null || results.isEmpty()) {
             OfficeDoneInfo officeDoneInfoModel = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfoModel != null && officeDoneInfoModel.getProcessInstanceId() != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
-                results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
+                results = historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
             } else {
                 ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 year = processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
-                results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
+                results = historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
             }
         }
         for (int i = 0; i < results.size(); i++) {
@@ -465,7 +465,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     history.setAssigneeId(assignee);
                 }
             } else {// 处理单实例未签收的办理人显示
-                List<IdentityLinkModel> iList = identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
+                List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
                 if (!iList.isEmpty()) {
                     StringBuilder assignees = new StringBuilder();
                     int j = 0;

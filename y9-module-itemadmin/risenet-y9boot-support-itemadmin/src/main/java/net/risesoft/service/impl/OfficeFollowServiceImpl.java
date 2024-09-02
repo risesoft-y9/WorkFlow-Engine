@@ -48,7 +48,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     private final OfficeFollowRepository officeFollowRepository;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -163,7 +163,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                 String processInstanceId = officeFollow.getProcessInstanceId();
                 officeFollow.setStartTime(sdf5.format(sdf.parse(officeFollow.getStartTime())));
                 List<TaskModel> taskList =
-                    taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId()).getData();
+                    taskApi.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId()).getData();
                 if (CollectionUtils.isNotEmpty(taskList)) {
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0);
@@ -220,7 +220,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     .setMsgremind(officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
                 ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 List<TaskModel> taskList =
-                    taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId()).getData();
+                    taskApi.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId()).getData();
                 if (CollectionUtils.isNotEmpty(taskList)) {
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0);

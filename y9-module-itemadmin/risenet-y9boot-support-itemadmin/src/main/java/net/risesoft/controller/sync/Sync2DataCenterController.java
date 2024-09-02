@@ -65,7 +65,7 @@ public class Sync2DataCenterController {
 
     private final ProcessParamService processParamService;
 
-    private final HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historictaskApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -73,14 +73,14 @@ public class Sync2DataCenterController {
 
     public Sync2DataCenterController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         DataCenterService dataCenterService, ErrorLogService errorLogService, ActRuDetailService actRuDetailService,
-        ProcessParamService processParamService, HistoricTaskApi historicTaskManager, OrgUnitApi orgUnitApi,
+        ProcessParamService processParamService, HistoricTaskApi historictaskApi, OrgUnitApi orgUnitApi,
         OfficeDoneInfoService officeDoneInfoService) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataCenterService = dataCenterService;
         this.errorLogService = errorLogService;
         this.actRuDetailService = actRuDetailService;
         this.processParamService = processParamService;
-        this.historicTaskManager = historicTaskManager;
+        this.historictaskApi = historictaskApi;
         this.orgUnitApi = orgUnitApi;
         this.officeDoneInfoService = officeDoneInfoService;
     }
@@ -180,7 +180,7 @@ public class Sync2DataCenterController {
             for (Map<String, Object> map : list) {
                 try {
                     processInstanceId = (String)map.get("PROC_INST_ID_");
-                    List<HistoricTaskInstanceModel> htiList = historicTaskManager
+                    List<HistoricTaskInstanceModel> htiList = historictaskApi
                         .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, year).getData();
                     ActRuDetail newActRuDetail;
                     String assignee, owner;
@@ -311,7 +311,7 @@ public class Sync2DataCenterController {
             for (Map<String, Object> map : list) {
                 try {
                     processInstanceId = (String)map.get("PROC_INST_ID_");
-                    List<HistoricTaskInstanceModel> htiList = historicTaskManager
+                    List<HistoricTaskInstanceModel> htiList = historictaskApi
                         .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "").getData();
                     ActRuDetail newActRuDetail;
                     String assignee, owner;

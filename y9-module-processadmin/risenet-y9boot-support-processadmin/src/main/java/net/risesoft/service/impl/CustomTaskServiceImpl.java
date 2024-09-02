@@ -63,7 +63,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
 
     private final RuntimeService runtimeService;
 
-    private final ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogApi;
 
     @Override
     @Transactional
@@ -147,7 +147,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
             try {
-                errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }

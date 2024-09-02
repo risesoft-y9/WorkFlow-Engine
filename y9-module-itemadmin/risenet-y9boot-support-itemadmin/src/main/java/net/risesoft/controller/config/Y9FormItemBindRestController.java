@@ -51,9 +51,9 @@ public class Y9FormItemBindRestController {
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     private final Y9FormRepository y9FormRepository;
 
@@ -172,7 +172,7 @@ public class Y9FormItemBindRestController {
             eformItemBind.setProcessDefinitionId(procDefId);
         }
         ProcessDefinitionModel processDefinition =
-            repositoryManager.getProcessDefinitionById(tenantId, procDefId).getData();
+            repositoryApi.getProcessDefinitionById(tenantId, procDefId).getData();
         eformItemBind.setProcDefName(processDefinition.getName());
         return Y9Result.success(eformItemBind, "获取成功");
     }
@@ -190,7 +190,7 @@ public class Y9FormItemBindRestController {
         List<Y9FormItemBindVO> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> targetModelList =
-            processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+            processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
         Y9FormItemBindVO map;
         List<Y9FormItemBind> pcBindList;
         List<Y9FormItemMobileBind> mobileBindList;

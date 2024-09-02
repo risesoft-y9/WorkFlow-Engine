@@ -36,7 +36,7 @@ public class ItemOrganWordBindController {
 
     private final OrganWordService organWordService;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     /**
      * 复制按钮配置
@@ -69,7 +69,7 @@ public class ItemOrganWordBindController {
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
         List<ItemOrganWordBind> bindList;
         for (TargetModel targetModel : list) {
             StringBuilder bindNames = new StringBuilder();

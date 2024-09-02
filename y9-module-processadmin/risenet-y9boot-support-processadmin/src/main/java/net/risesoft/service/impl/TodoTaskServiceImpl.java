@@ -46,11 +46,11 @@ public class TodoTaskServiceImpl implements TodoTaskService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final TodoTaskApi todoTaskManager;
+    private final TodoTaskApi todoTaskApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
-    private final ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogApi;
 
     private final Y9Properties y9Conf;
 
@@ -66,7 +66,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             }
             String tenantId = (String)map.get("tenantId");
             String assigneeId = task.getAssignee();
-            boolean msg = todoTaskManager.deleteTodoTaskByTaskIdAndReceiverId(tenantId, task.getId(), assigneeId);
+            boolean msg = todoTaskApi.deleteTodoTaskByTaskIdAndReceiverId(tenantId, task.getId(), assigneeId);
             if (msg) {
                 LOGGER.info("##########################删除超级待办：成功-delete##########################");
             } else {
@@ -82,7 +82,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 errorLogModel.setTaskId(taskId);
                 errorLogModel.setText("false");
                 errorLogModel.setUpdateTime(time);
-                errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
                 LOGGER.info("##########################删除超级待办：失败-delete,taskId:{}##########################",
                     task.getId());
             }
@@ -104,7 +104,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
-            errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+            errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
         }
     }
 
@@ -120,7 +120,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
             VariableInstance vie = executionEntity.getVariableInstance("tenantId");
             String tenantId = vie != null ? vie.getTextValue() : "";
-            boolean msg = todoTaskManager.deleteByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
+            boolean msg = todoTaskApi.deleteByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
             if (msg) {
                 LOGGER.info("##########################删除超级待办：成功-delete##########################");
             } else {
@@ -155,7 +155,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             Y9LoginUserHolder.setTenantId(tenantId);
             String processSerialNumber = (String)map.get("processSerialNumber");
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String itemId = processParamModel.getItemId();
             String itemName = processParamModel.getItemName();
             if (StringUtils.isNotBlank(tenantId)) {
@@ -223,7 +223,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 String url = todoTaskUrlPrefix + "?taskId=" + task.getId() + "&itemId=" + itemId
                     + "&processInstanceId=&type=fromTodo";
                 todo.setUrl(url);
-                boolean b = todoTaskManager.saveTodoTask(tenantId, todo);
+                boolean b = todoTaskApi.saveTodoTask(tenantId, todo);
                 if (b) {
                     LOGGER.info("##########################保存超级待办成功-assignment##########################");
                 } else {
@@ -239,7 +239,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                     errorLogModel.setTaskId(taskId);
                     errorLogModel.setText("false");
                     errorLogModel.setUpdateTime(time);
-                    errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                    errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
                     LOGGER.info("##########################保存超级待办失败-生成超级待办信息时发生异常-taskId:{}##########################",
                         task.getId());
                 }
@@ -262,7 +262,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
-            errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+            errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
         }
     }
 

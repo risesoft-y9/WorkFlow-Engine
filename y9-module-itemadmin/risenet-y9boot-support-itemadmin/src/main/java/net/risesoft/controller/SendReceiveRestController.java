@@ -43,9 +43,9 @@ public class SendReceiveRestController {
 
     private final ReceiveDeptAndPersonService receiveDeptAndPersonService;
 
-    private final OrganizationApi organizationManager;
+    private final OrganizationApi organizationApi;
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final PersonApi personApi;
 
@@ -142,7 +142,7 @@ public class SendReceiveRestController {
             }
         }
         if (StringUtils.isNotBlank(id)) {
-            List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
+            List<OrgUnit> orgList = orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgunit : orgList) {
                 NodeTreeVO nodeTreeVO = new NodeTreeVO();
                 nodeTreeVO.setId(orgunit.getId());
@@ -173,7 +173,7 @@ public class SendReceiveRestController {
      */
     @GetMapping(value = "/getOrg")
     public Y9Result<List<Organization>> getOrg() {
-        List<Organization> list = organizationManager.list(Y9LoginUserHolder.getTenantId()).getData();
+        List<Organization> list = organizationApi.list(Y9LoginUserHolder.getTenantId()).getData();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -189,7 +189,7 @@ public class SendReceiveRestController {
         List<NodeTreeVO> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
-            List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
+            List<OrgUnit> orgList = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
             for (OrgUnit orgunit : orgList) {
                 NodeTreeVO nodeTreeVO = new NodeTreeVO();
                 nodeTreeVO.setId(orgunit.getId());
@@ -225,7 +225,7 @@ public class SendReceiveRestController {
     @GetMapping(value = "/getOrgTree")
     public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id, @RequestParam OrgTreeTypeEnum treeType) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
-        List<OrgUnit> orgUnitList = orgUnitManager.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType).getData();
+        List<OrgUnit> orgUnitList = orgUnitApi.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 orgUnit.setDn("false");
@@ -257,7 +257,7 @@ public class SendReceiveRestController {
     }
 
     public OrgUnit getParent(String tenantId, String parentId) {
-        Organization parent = organizationManager.get(tenantId, parentId).getData();
+        Organization parent = organizationApi.get(tenantId, parentId).getData();
         return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
     }
 
@@ -283,8 +283,7 @@ public class SendReceiveRestController {
     @GetMapping(value = "/orgTreeSearch")
     public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
-        List<OrgUnit> orgUnitList =
-            orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
+        List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 orgUnit.setDn("false");
@@ -312,7 +311,7 @@ public class SendReceiveRestController {
                 newOrgUnitList.add(orgUnit);
             }
         }
-        List<Organization> list = organizationManager.list(Y9LoginUserHolder.getTenantId()).getData();
+        List<Organization> list = organizationApi.list(Y9LoginUserHolder.getTenantId()).getData();
         if (!list.isEmpty()) {
             newOrgUnitList.addAll(list);
         }
@@ -408,8 +407,7 @@ public class SendReceiveRestController {
      */
     @GetMapping(value = "/searchOrgTree")
     public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
-        List<OrgUnit> orgUnitList =
-            orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
+        List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         return Y9Result.success(orgUnitList, "获取成功");
     }
 

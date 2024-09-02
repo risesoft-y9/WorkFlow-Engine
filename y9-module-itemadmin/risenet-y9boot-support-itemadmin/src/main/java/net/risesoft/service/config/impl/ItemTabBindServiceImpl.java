@@ -37,7 +37,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
 
     private final TabEntityService tabEntityService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
     @Override
     @Transactional
@@ -47,10 +47,10 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
             personName = person.getName();
         ProcessDefinitionModel currentPd =
-            repositoryManager.getProcessDefinitionById(tenantId, processDefinitionId).getData();
+            repositoryApi.getProcessDefinitionById(tenantId, processDefinitionId).getData();
         if (currentPd.getVersion() > 1) {
             ProcessDefinitionModel previouspd =
-                repositoryManager.getPreviousProcessDefinitionById(tenantId, processDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(tenantId, processDefinitionId).getData();
             List<ItemTabBind> bindList =
                 tabItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, previouspd.getId());
             for (ItemTabBind bind : bindList) {

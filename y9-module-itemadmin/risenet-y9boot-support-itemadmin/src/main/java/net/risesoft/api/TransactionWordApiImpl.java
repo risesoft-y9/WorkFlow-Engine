@@ -84,11 +84,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final TaskApi taskManager;
+    private final TaskApi taskApi;
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
     /**
      * 根据流程编号删除正文，同时删除文件历史的文件
@@ -332,7 +332,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = processDefinition.getId();
 
             if (StringUtils.isNotBlank(bindValue)) {
@@ -664,13 +664,13 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         } else {
             String processDefinitionId;
             if (StringUtils.isNoneBlank(taskId)) {
-                TaskModel task = taskManager.findById(tenantId, taskId).getData();
+                TaskModel task = taskApi.findById(tenantId, taskId).getData();
                 processDefinitionId = task.getProcessDefinitionId();
             } else {
                 SpmApproveItem item = spmApproveItemService.findById(itemId);
                 String processDefinitionKey = item.getWorkflowGuid();
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
                 processDefinitionId = processDefinitionModel.getId();
             }
             if (StringUtils.isNotBlank(bindValue)) {

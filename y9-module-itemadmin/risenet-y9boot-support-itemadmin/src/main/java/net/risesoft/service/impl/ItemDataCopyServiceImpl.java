@@ -169,13 +169,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
     private final ItemButtonRoleService itemButtonRoleService;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
-    private final SystemApi systemEntityManager;
+    private final SystemApi systemApi;
 
-    private final RoleApi roleManager;
+    private final RoleApi roleApi;
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final ProcessDataCopyApi processDataCopyApi;
 
@@ -229,7 +229,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
 
         List<ItemButtonBind> targetBindList = itemButtonBindService
@@ -239,7 +239,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         }
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemButtonBind> sourceBindList = itemButtonBindService
             .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON.getValue(), sourcepdId);
@@ -249,9 +249,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /*
           3.2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleManager.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
+        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleApi.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
         /*
@@ -263,7 +263,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null, roleId = null;
         Organization organization =
-            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
+            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemButtonBind bind : sourceBindList) {
             /* 保存绑定关系 */
             bind.setProcessDefinitionId(targetpdId);
@@ -273,13 +273,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             roleList = itemButtonRoleService.listByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
-                oldRole = roleManager.getRole(roleId).getData();
+                oldRole = roleApi.getRole(roleId).getData();
                 if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
+                    newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                         /* 把申请人所在的租户机构添加到角色 */
-                        roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
+                        roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
                     } else {
                         newRoleId = newRoleTemp.getId();
                     }
@@ -346,7 +346,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<Y9FormItemBind> targetFormItemBindList =
             y9FormItemBindService.listByItemIdAndProcDefId(itemId, targetpdId);
@@ -358,7 +358,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<Y9FormItemBind> sourceFormItemBindList =
             y9FormItemBindService.listByItemIdAndProcDefId(itemId, sourcepdId);
@@ -547,7 +547,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemOpinionFrameBind> targetBindList =
             itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
@@ -559,7 +559,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemOpinionFrameBind> sourceBindList =
             itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -587,23 +587,23 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /*
          * 5、保存源租户该事项最新流程定义的绑定的角色并把角色在租户角色中创建
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleManager.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
+        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleApi.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null, roleId = null;
         Organization organization =
-            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
+            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemOpinionFrameRole iRole : targetRoleList) {
             roleId = iRole.getRoleId();
-            oldRole = roleManager.getRole(roleId).getData();
+            oldRole = roleApi.getRole(roleId).getData();
             if (null != oldRole && null != oldRole.getId()) {
-                newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
+                newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
                 if (null == newRoleTemp || null == newRoleTemp.getId()) {
                     newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                     /* 把申请人所在的租户机构添加到角色 */
-                    roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
+                    roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
                 } else {
                     newRoleId = newRoleTemp.getId();
                 }
@@ -643,7 +643,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemOrganWordBind> targetBindList =
             itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
@@ -652,7 +652,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         }
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemOrganWordBind> sourceBindList =
             itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -662,9 +662,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /*
          * 3.2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleManager.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
+        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleApi.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
         /*
@@ -676,7 +676,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         String newRoleId = null;
         List<String> roleIdList = null;
         Organization organization =
-            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
+            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemOrganWordBind bind : sourceBindList) {
             /* 保存绑定关系 */
             bind.setProcessDefinitionId(targetpdId);
@@ -685,13 +685,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             /* 更新绑定角色 */
             roleIdList = bind.getRoleIds();
             for (String roleId : roleIdList) {
-                oldRole = roleManager.getRole(roleId).getData();
+                oldRole = roleApi.getRole(roleId).getData();
                 if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
+                    newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                         /* 把申请人所在的租户机构添加到角色 */
-                        roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
+                        roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
                     } else {
                         newRoleId = newRoleTemp.getId();
                     }
@@ -713,7 +713,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemPermission> targetipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
@@ -726,7 +726,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemPermission> sourceipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -818,7 +818,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
 
         List<ItemButtonBind> targetBindList = itemButtonBindService
@@ -828,7 +828,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         }
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemButtonBind> sourceBindList = itemButtonBindService
             .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND.getValue(), sourcepdId);
@@ -838,9 +838,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /*
          * 3.2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleManager.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
+        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleApi.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
         /*
@@ -852,7 +852,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null, roleId = null;
         Organization organization =
-            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
+            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemButtonBind bind : sourceBindList) {
             bind.setProcessDefinitionId(targetpdId);
             itemButtonBindService.save(bind);
@@ -861,13 +861,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             roleList = itemButtonRoleService.listByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
-                oldRole = roleManager.getRole(roleId).getData();
+                oldRole = roleApi.getRole(roleId).getData();
                 if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
+                    newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                         /* 把申请人所在的租户机构添加到角色 */
-                        roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
+                        roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
                     } else {
                         newRoleId = newRoleTemp.getId();
                     }
@@ -903,7 +903,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemTabBind> tabBindList = itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
         if (tabBindList.isEmpty()) {
@@ -914,7 +914,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), personName = person.getName();
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemTabBind> targetTabBindList = itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
         if (!targetTabBindList.isEmpty()) {
@@ -949,7 +949,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        OrgUnit orgUnit = orgUnitManager.getBureau(targetTenantId, person.getPersonId()).getData();
+        OrgUnit orgUnit = orgUnitApi.getBureau(targetTenantId, person.getPersonId()).getData();
         String bureauId = orgUnit.getId(), bureauName = orgUnit.getName();
         for (TaoHongTemplate tt : sourcettList) {
             tt.setBureauGuid(bureauId);
@@ -972,7 +972,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemPermission> sourceipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -987,9 +987,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /*
          * 2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleManager.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
+        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleApi.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
         /*
          * 3、把1中查出的角色复制到目标租户中去，父节点为2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
@@ -999,15 +999,15 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null;
         Organization organization =
-            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
+            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (String roleId : roleIdList) {
-            oldRole = roleManager.getRole(roleId).getData();
+            oldRole = roleApi.getRole(roleId).getData();
             if (null != oldRole && null != oldRole.getId()) {
-                newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
+                newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
                 if (null == newRoleTemp || null == newRoleTemp.getId()) {
                     newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                     /* 把申请人所在的租户机构添加到角色 */
-                    roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
+                    roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
                 } else {
                     newRoleId = newRoleTemp.getId();
                     roleIdMap.put(roleId, newRoleId);
@@ -1043,7 +1043,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel sourcepd =
-            repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         ItemWordTemplateBind bind = itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
         if (null == bind) {
@@ -1051,7 +1051,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         }
         Y9LoginUserHolder.setTenantId(targetTenantId);
         ProcessDefinitionModel targetpd =
-            repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         ItemWordTemplateBind targetBind =
             itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);

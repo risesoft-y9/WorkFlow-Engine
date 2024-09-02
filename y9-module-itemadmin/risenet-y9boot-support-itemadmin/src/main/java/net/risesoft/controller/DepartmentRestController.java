@@ -33,7 +33,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/department", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DepartmentRestController {
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
     private final DepartmentApi departmentApi;
 
@@ -62,7 +62,7 @@ public class DepartmentRestController {
                 items.add(map);
             }
         }
-        List<OrgUnit> employees = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+        List<OrgUnit> employees = orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
         for (OrgUnit employee : employees) {
             NodeTreeVO map = new NodeTreeVO();
             map.setId(employee.getId());
@@ -145,7 +145,7 @@ public class DepartmentRestController {
     @GetMapping(value = "/getOrgTree")
     public Y9Result<List<OrgUnit>> getOrgTree(String id, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
+        List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -153,7 +153,7 @@ public class DepartmentRestController {
     public Y9Result<List<NodeTreeVO>> searchDept(@RequestParam(required = false) String name) {
         List<NodeTreeVO> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> employees = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
+        List<OrgUnit> employees = orgUnitApi.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
         for (OrgUnit employee : employees) {
             NodeTreeVO node = new NodeTreeVO();
             node.setId(employee.getId());
@@ -172,7 +172,7 @@ public class DepartmentRestController {
         List<NodeTreeVO> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> employees =
-            orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
+            orgUnitApi.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
         for (OrgUnit employee : employees) {
             NodeTreeVO node = new NodeTreeVO();
             node.setId(employee.getId());
@@ -189,7 +189,7 @@ public class DepartmentRestController {
     @GetMapping(value = "/treeSearch")
     public Y9Result<List<OrgUnit>> treeSearch(String name, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType).getData();
+        List<OrgUnit> list = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
         return Y9Result.success(list, "获取成功");
     }
 }

@@ -44,7 +44,7 @@ public class Y9FieldPermController {
 
     private final Y9FieldPermRepository y9FieldPermRepository;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     /**
      * 获取该字段是否配置权限
@@ -57,6 +57,25 @@ public class Y9FieldPermController {
     public Y9Result<Boolean> countPerm(@RequestParam String formId, @RequestParam String fieldName) {
         int count = y9FieldPermRepository.countByFormIdAndFieldName(formId, fieldName);
         return Y9Result.success(count != 0, "获取成功");
+    }
+
+    /**
+     * 删除字段节点权限
+     *
+     * @param formId 表单id
+     * @param fieldName 字段名称
+     * @param taskDefKey 任务key
+     * @return
+     */
+    @PostMapping(value = "/delNodePerm")
+    public Y9Result<String> delNodePerm(@RequestParam String formId, @RequestParam String fieldName,
+        @RequestParam(required = false) String taskDefKey) {
+        Y9FieldPerm y9FieldPerm =
+            y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
+        if (y9FieldPerm != null) {
+            y9FieldPermRepository.delete(y9FieldPerm);
+        }
+        return Y9Result.successMsg("删除成功");
     }
 
     /**
@@ -76,25 +95,6 @@ public class Y9FieldPermController {
             y9FieldPerm.setWriteRoleId("");
             y9FieldPerm.setWriteRoleName("");
             y9FieldPermRepository.save(y9FieldPerm);
-        }
-        return Y9Result.successMsg("删除成功");
-    }
-
-    /**
-     * 删除字段节点权限
-     *
-     * @param formId 表单id
-     * @param fieldName 字段名称
-     * @param taskDefKey 任务key
-     * @return
-     */
-    @PostMapping(value = "/delNodePerm")
-    public Y9Result<String> delNodePerm(@RequestParam String formId, @RequestParam String fieldName,
-        @RequestParam(required = false) String taskDefKey) {
-        Y9FieldPerm y9FieldPerm =
-            y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
-        if (y9FieldPerm != null) {
-            y9FieldPermRepository.delete(y9FieldPerm);
         }
         return Y9Result.successMsg("删除成功");
     }
@@ -138,7 +138,7 @@ public class Y9FieldPermController {
         }
         if (StringUtils.isNotBlank(processDefinitionId)) {
             List<TargetModel> targetList =
-                processDefinitionManager.getNodes(tenantId, processDefinitionId, false).getData();
+                processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
             Map<String, Object> map;
             for (TargetModel targetModel : targetList) {
                 Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName,

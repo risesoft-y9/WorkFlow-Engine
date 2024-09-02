@@ -40,17 +40,17 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
 
     private final ExtendedContentRepository extendedContentRepository;
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
+
+    @Override
+    public int countByProcSerialNumberAndCategory(String processSerialNumber, String category) {
+        return extendedContentRepository.findByProcSerialNumberAndCategory(processSerialNumber, category);
+    }
 
     @Override
     public int countByProcessSerialNumberAndUserIdAndCategory(String processSerialNumber, String userid,
         String category) {
         return extendedContentRepository.getCountByUserIdAndCategory(processSerialNumber, userid, category);
-    }
-
-    @Override
-    public int countByProcSerialNumberAndCategory(String processSerialNumber, String category) {
-        return extendedContentRepository.findByProcSerialNumberAndCategory(processSerialNumber, category);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             String departmentId = person.getParentId();
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, departmentId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, departmentId).getData();
             if (StringUtils.isBlank(id)) {
                 ExtendedContent extendedContent = new ExtendedContent();
                 extendedContent.setDepartmentName(orgUnit.getName());

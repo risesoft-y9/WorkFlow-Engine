@@ -33,9 +33,9 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
 
     private final ItemTaskConfRepository taskConfRepository;
 
-    private final RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryApi;
 
-    private final ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     @Override
     @Transactional
@@ -64,20 +64,19 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     public void copyTaskConf(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
-        ProcessDefinitionModel latestpd =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
                 ProcessDefinitionModel previouspd =
-                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
                 previouspdId = previouspd.getId();
             }
         }
         if (latestpd.getVersion() > 1) {
             List<ItemTaskConf> confList = taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
-            List<TargetModel> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false).getData();
+            List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
             for (TargetModel targetModel : nodes) {
                 String currentTaskDefKey = targetModel.getTaskDefKey();
                 ItemTaskConf currentConf =

@@ -40,15 +40,15 @@ import net.risesoft.y9.util.Y9Util;
 @Service(value = "process4MsgRemindService")
 public class Process4MsgRemindService {
 
-    private final MsgRemindInfoApi msgRemindInfoManager;
+    private final MsgRemindInfoApi msgRemindInfoApi;
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
     private final OrgUnitApi orgUnitApi;
 
-    private final RemindInstanceApi remindInstanceManager;
+    private final RemindInstanceApi remindInstanceApi;
 
-    private final OfficeDoneInfoApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final Y9Properties y9Conf;
 
@@ -68,9 +68,8 @@ public class Process4MsgRemindService {
         String processInstanceId = processParamModel.getProcessInstanceId();
         Date date = new Date();
         String allUserId = "";
-        List<RemindInstanceModel> list =
-            remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(tenantId, processInstanceId,
-                RemindInstanceModel.processComplete).getData();
+        List<RemindInstanceModel> list = remindInstanceApi.findRemindInstanceByProcessInstanceIdAndRemindType(tenantId,
+            processInstanceId, RemindInstanceModel.processComplete).getData();
         if (!list.isEmpty()) {
             for (RemindInstanceModel remind : list) {
                 if (!allUserId.contains(remind.getUserId())) {
@@ -98,7 +97,7 @@ public class Process4MsgRemindService {
             info.setReadUserId("");
             info.setAllUserId(allUserId);
             info.setContent(content);
-            msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
+            msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
         }
     }
 
@@ -119,7 +118,7 @@ public class Process4MsgRemindService {
                 return;
             }
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String assignee = task.getAssignee();
             String taskKey = task.getTaskDefinitionKey();
             String taskName = task.getName();
@@ -130,7 +129,7 @@ public class Process4MsgRemindService {
             String allUserId = "";
             // 节点到达
             List<RemindInstanceModel> list =
-                remindInstanceManager.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(tenantId, processInstanceId,
+                remindInstanceApi.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(tenantId, processInstanceId,
                     taskKey + ":" + taskName).getData();
             if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
@@ -158,7 +157,7 @@ public class Process4MsgRemindService {
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
                 info.setContent(taskName);
-                msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
+                msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
             }
         } catch (Exception e) {
             LOGGER.error("taskAssignment error", e);
@@ -182,7 +181,7 @@ public class Process4MsgRemindService {
                 return;
             }
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String assignee = task.getAssignee();
             String taskId = task.getId();
             String taskKey = task.getTaskDefinitionKey();
@@ -200,7 +199,7 @@ public class Process4MsgRemindService {
                 + "&type=fromCplane";
 
             // 任务完成，针对任务设置
-            List<RemindInstanceModel> list = remindInstanceManager
+            List<RemindInstanceModel> list = remindInstanceApi
                 .findRemindInstanceByProcessInstanceIdAndTaskId(tenantId, processInstanceId, taskId).getData();
             if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
@@ -224,17 +223,17 @@ public class Process4MsgRemindService {
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
                 info.setContent(content);
-                msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
+                msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
             }
 
             // 任务完成提醒，针对人设置
             try {
-                String personIds = msgRemindInfoManager.getRemindConfig(tenantId, assignee, "taskRemind");
+                String personIds = msgRemindInfoApi.getRemindConfig(tenantId, assignee, "taskRemind");
                 if (StringUtils.isNotBlank(personIds)) {
                     String newPersonIds = "";
                     String[] ids = personIds.split(",");
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     for (String id : ids) {
                         if (officeDoneInfoModel != null && officeDoneInfoModel.getAllUserId().contains(id)) {
                             newPersonIds = Y9Util.genCustomStr(newPersonIds, id);
@@ -256,7 +255,7 @@ public class Process4MsgRemindService {
                         info.setReadUserId("");
                         info.setAllUserId(personIds);
                         info.setContent("");
-                        msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
+                        msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
                     }
                 }
             } catch (Exception e) {
@@ -264,7 +263,7 @@ public class Process4MsgRemindService {
             }
 
             // 节点完成
-            list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(tenantId,
+            list = remindInstanceApi.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(tenantId,
                 processInstanceId, taskKey + ":" + taskName).getData();
             if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
@@ -288,7 +287,7 @@ public class Process4MsgRemindService {
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
                 info.setContent(taskName);
-                msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
+                msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
             }
 
         } catch (Exception e) {

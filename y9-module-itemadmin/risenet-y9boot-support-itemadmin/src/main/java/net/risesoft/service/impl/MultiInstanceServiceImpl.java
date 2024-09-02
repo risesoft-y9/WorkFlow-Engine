@@ -27,9 +27,9 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequiredArgsConstructor
 public class MultiInstanceServiceImpl implements MultiInstanceService {
 
-    private final VariableApi variableManager;
+    private final VariableApi variableApi;
 
-    private final RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeApi;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -39,24 +39,24 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         /*
          * 改变流程变量中users的值
          */
-        String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS).getData();
+        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
         List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
         users.add(elementUser);
         Map<String, Object> val = new HashMap<>();
         val.put("val", users);
-        variableManager.setVariable(tenantId, taskId, SysVariables.USERS, val);
+        variableApi.setVariable(tenantId, taskId, SysVariables.USERS, val);
         /*
          * 新增执行实例
          */
         Map<String, Object> map = new HashMap<>(16);
         map.put("elementUser", elementUser);
-        runtimeManager.addMultiInstanceExecution(tenantId, activityId, parentExecutionId, map);
+        runtimeApi.addMultiInstanceExecution(tenantId, activityId, parentExecutionId, map);
 
         // 加签后,活动实例数需修改+1
-        // Object nrOfActiveInstances = variableManager.getVariable(tenantId, taskId,
+        // Object nrOfActiveInstances = variableApi.getVariable(tenantId, taskId,
         // SysVariables.NROFACTIVEINSTANCES);
         // if(nrOfActiveInstances != null) {
-        // variableManager.setVariable(tenantId, taskId,
+        // variableApi.setVariable(tenantId, taskId,
         // SysVariables.NROFACTIVEINSTANCES, (int)nrOfActiveInstances + 1);
         // }
     }
@@ -68,7 +68,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         /*
          * 改变流程变量中users的值
          */
-        String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS).getData();
+        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
         List<Object> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
         List<String> usersTemp = new ArrayList<>();
         boolean isDelete = false;
@@ -87,10 +87,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         }
         Map<String, Object> vmap = new HashMap<>(16);
         vmap.put(SysVariables.USERS, usersTemp);
-        variableManager.setVariables(tenantId, taskId, vmap);
+        variableApi.setVariables(tenantId, taskId, vmap);
         /*
          * 新删除执行实例
          */
-        runtimeManager.deleteMultiInstanceExecution(tenantId, executionId);
+        runtimeApi.deleteMultiInstanceExecution(tenantId, executionId);
     }
 }

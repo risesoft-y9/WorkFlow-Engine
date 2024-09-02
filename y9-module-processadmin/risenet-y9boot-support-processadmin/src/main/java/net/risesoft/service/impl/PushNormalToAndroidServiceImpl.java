@@ -34,7 +34,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Service(value = "pushNormalToAndroidService")
 public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidService {
 
-    private final ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamApi;
 
     private final Y9Properties y9Conf;
 
@@ -58,7 +58,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
             String tenantId = (String)map.get("tenantId");
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String title = processParamModel.getTitle();
             String itemName = processParamModel.getItemName();
             List<String> list = new ArrayList<>();

@@ -24,12 +24,12 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 public class CurrentOrg extends AbstractDynamicRoleMember {
 
-    private final OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     public Organization getOrg() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return orgUnitManager.getOrganization(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+        return orgUnitApi.getOrganization(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
     }
 
     @Override

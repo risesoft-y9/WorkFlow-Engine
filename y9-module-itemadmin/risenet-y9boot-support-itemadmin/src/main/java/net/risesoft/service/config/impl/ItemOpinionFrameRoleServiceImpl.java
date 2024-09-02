@@ -27,7 +27,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
 
     private final ItemOpinionFrameRoleRepository itemOpinionFrameRoleRepository;
 
-    private final RoleApi roleManager;
+    private final RoleApi roleApi;
 
     @Override
     @Transactional
@@ -45,7 +45,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
         for (ItemOpinionFrameRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId()).getData();
+            Role r = roleApi.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;
