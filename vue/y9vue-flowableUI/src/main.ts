@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-05-11 16:12:48
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2024-08-29 17:01:49
+ * @LastEditors: yihong yihong@risesoft.net
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\main.ts
  */
@@ -116,12 +116,6 @@ app.use(FormMakingV3, {
 app.component('QuillEditor', QuillEditor)
 app.use(print)
 // app.use(i18n)
-
-//流程设计
-import MyPD from './components/bpmnModel/package/index.js';
-app.use(MyPD);
-import './components/bpmnModel/package/theme/index.scss';
-//流程设计
 
 app.mount('#app')
 
