@@ -28,17 +28,22 @@
       <div style="margin-top: 104px">
         <!-- {{ activeName }} -->
         <!-- 表单 -->
-        <myFormRef v-show="activeName.indexOf('y9form') > -1" ref="myForm" :basicData="basicData" :processInstanceId="processInstanceId" @refreshCount="updateLeftListCount"/>
+        <myFormRef v-show="activeName.indexOf('y9form') > -1" ref="myForm" :basicData="basicData"
+                   :processInstanceId="processInstanceId" @refreshCount="updateLeftListCount"/>
         <!-- 附件 -->
-        <fileList v-if="activeName == 'attach'" ref="fileListRef" :basicData="basicData" :processSerialNumber="processSerialNumber"/>
+        <fileList v-if="activeName == 'attach'" ref="fileListRef" :basicData="basicData"
+                  :processSerialNumber="processSerialNumber"/>
         <!-- 关联流程 -->
-        <associatedFileList v-if="activeName == 'associatedFile'" ref="associatedFileListRef" :basicData="basicData" :processSerialNumber="processSerialNumber"/>
+        <associatedFileList v-if="activeName == 'associatedFile'" ref="associatedFileListRef" :basicData="basicData"
+                            :processSerialNumber="processSerialNumber"/>
         <!-- 沟通交流 -->
-        <speakInfo v-if="activeName == 'speakInfo'" ref="speakInfoRef" :clickCount="clickCount" :processInstanceId="processInstanceId"/>
+        <speakInfo v-if="activeName == 'speakInfo'" ref="speakInfoRef" :clickCount="clickCount"
+                   :processInstanceId="processInstanceId"/>
         <!-- 历程 -->
         <processListCom v-if="activeName == 'process'" ref="processListRef" :processInstanceId="processInstanceId"/>
         <!-- 流程图 -->
-        <flowChart v-if="activeName == 'flowChart'" ref="flowchartRef" :processDefinitionId="basicData.processDefinitionId" :processInstanceId="processInstanceId"/>
+        <flowChart v-if="activeName == 'flowChart'" ref="flowchartRef"
+                   :processDefinitionId="basicData.processDefinitionId" :processInstanceId="processInstanceId"/>
       </div>
     </div>
 
@@ -49,7 +54,8 @@
             <span :style="{fontSize: fontSizeObj.mediumFontSize}">{{ $t('流转状态') }}</span>
           </div>
         </template>
-        <div style="height: 94%;overflow-y: auto;overflow-x: hidden;display: flex;background-color: white; justify-content: center;align-items: self-start;">
+        <div
+            style="height: 94%;overflow-y: auto;overflow-x: hidden;display: flex;background-color: white; justify-content: center;align-items: self-start;">
           <!-- 没数据 显示暂无数据 -->
           <ProcessStatus v-if="processTimeLineList.length>0" :list="processTimeLineList"/>
           <el-empty v-else :description="$t('暂无数据')"/>
@@ -62,18 +68,25 @@
     </div>
 
     <y9Dialog v-model:config="dialogConfig" class="y9DialogClass">
-      <customProcessCom v-if="dialogConfig.type=='customProcess'" ref="customProcessRef" :basicData="basicData" :dialogConfig="dialogConfig"/>
-      <userChoise v-if="dialogConfig.type=='userChoise'" ref="userChoiseRef" :basicData="basicData" :fromType="$t(fromType)" :reposition="reposition" :routeToTask="routeToTask"/>
-      <csUserChoise v-if="dialogConfig.type=='csUserChoise'" ref="csUserChoiseRef" :basicData="basicData" :dialogConfig="dialogConfig" @csRefreshCount="updateLeftListCount" @update-BasicData="setCsProcessData"/>
-      <rollbackOrTakeback v-if="dialogConfig.type=='rollbackOrTakeback'" ref="rollbackOrTakebackRef" :basicData="basicData" :optType="optType"/>
+      <customProcessCom v-if="dialogConfig.type=='customProcess'" ref="customProcessRef" :basicData="basicData"
+                        :dialogConfig="dialogConfig"/>
+      <userChoise v-if="dialogConfig.type=='userChoise'" ref="userChoiseRef" :basicData="basicData"
+                  :fromType="$t(fromType)" :reposition="reposition" :routeToTask="routeToTask"/>
+      <csUserChoise v-if="dialogConfig.type=='csUserChoise'" ref="csUserChoiseRef" :basicData="basicData"
+                    :dialogConfig="dialogConfig" @csRefreshCount="updateLeftListCount"
+                    @update-BasicData="setCsProcessData"/>
+      <rollbackOrTakeback v-if="dialogConfig.type=='rollbackOrTakeback'" ref="rollbackOrTakebackRef"
+                          :basicData="basicData" :optType="optType"/>
       <specialComplete v-if="dialogConfig.type=='specialComplete'" ref="specialCompleteRef" :basicData="basicData"/>
-      <multiInstance v-if="dialogConfig.type=='multiInstance'" ref="multiInstanceRef" :basicData="basicData" @refreshButton="refreshButton"/>
+      <multiInstance v-if="dialogConfig.type=='multiInstance'" ref="multiInstanceRef" :basicData="basicData"
+                     @refreshButton="refreshButton"/>
     </y9Dialog>
 
     <el-dialog v-model="dialogVisible" :title="$t('办结提示')" class="tishi" width="20%">
       <template v-if="y9UserInfo.tenantId == settings.risesoftTenantId">
         <span :style="{fontSize: fontSizeObj.mediumFontSize}">
-          <i :style="{fontSize: fontSizeObj.extraLargeFont,verticalAlign: 'middle',marginRight: '-2px',color:'#FF7F50'}" class="ri-error-warning-line"></i>
+          <i :style="{fontSize: fontSizeObj.extraLargeFont,verticalAlign: 'middle',marginRight: '-2px',color:'#FF7F50'}"
+             class="ri-error-warning-line"></i>
           {{ $t('数据是否在数据中心公开显示?') }}'
         </span><br/>
         <el-radio-group v-model="infoOvert" style="margin-left: 3px;">
@@ -83,15 +96,18 @@
       </template>
       <template v-else>
         <span :style="{fontSize: fontSizeObj.mediumFontSize}">
-          <i :style="{fontSize: fontSizeObj.extraLargeFont,verticalAlign: 'middle',marginRight: '-2px',color:'#FF7F50'}" class="ri-error-warning-line"></i>
+          <i :style="{fontSize: fontSizeObj.extraLargeFont,verticalAlign: 'middle',marginRight: '-2px',color:'#FF7F50'}"
+             class="ri-error-warning-line"></i>
           {{ $t('确定办结该件') }}?
         </span>
       </template>
       <template #footer>
         <span class="dialog-footer">
-          <el-button :size="fontSizeObj.buttonSize" :style="{ fontSize: fontSizeObj.baseFontSize }" class="global-btn-main"
+          <el-button :size="fontSizeObj.buttonSize" :style="{ fontSize: fontSizeObj.baseFontSize }"
+                     class="global-btn-main"
                      @click="setInfoOvert()">{{ $t('办结') }}</el-button>
-          <el-button :size="fontSizeObj.buttonSize" :style="{ fontSize: fontSizeObj.baseFontSize }" class="global-btn-third"
+          <el-button :size="fontSizeObj.buttonSize" :style="{ fontSize: fontSizeObj.baseFontSize }"
+                     class="global-btn-third"
                      @click="dialogVisible = false">{{ $t('取消') }}</el-button>
         </span>
       </template>
@@ -103,7 +119,6 @@
 import ProcessStatus from '@/components/Handling/ProcessStatus.vue';
 import {computed, inject, onMounted, reactive} from 'vue';
 import {ElMessage, ElMessageBox} from 'element-plus';
-import {ntkoBrowser} from '@/assets/js/ntkobackground.min.js';
 import myFormRef from "@/views/workForm/newForm.vue";
 import fileList from "@/views/file/fileList.vue";
 import associatedFileList from "@/views/associatedFile/associatedFileList.vue";
@@ -228,12 +243,55 @@ const data = reactive({
 });
 
 let {
-  processDataList, routeToTask, reposition, myForm, y9UserInfo, dialogVisible, loading, loadingtext, customItem, activeName, itemId,
-  itembox, taskId, addInitData, menuMap, sendMap, formList, basicData, processSerialNumber, processInstanceId,
-  printUrl, printFormType, formId, showOtherFlag, listType, follow, fileLabel, docNum, speakInfoLabel,
-  associatedFileLabel, fileListShow, processListShow, speakInfoShow, associatedFileListShow,
-  dataList, operationBtnList, processTimeLineList, processFlag, clickCount, isRefreshButton,
-  repositionMap, doneManage, infoOvert, multiInstanceType, nextNode, dialogConfig, userChoiseRef, optType, fromType
+  processDataList,
+  routeToTask,
+  reposition,
+  myForm,
+  y9UserInfo,
+  dialogVisible,
+  loading,
+  loadingtext,
+  customItem,
+  activeName,
+  itemId,
+  itembox,
+  taskId,
+  addInitData,
+  menuMap,
+  sendMap,
+  formList,
+  basicData,
+  processSerialNumber,
+  processInstanceId,
+  printUrl,
+  printFormType,
+  formId,
+  showOtherFlag,
+  listType,
+  follow,
+  fileLabel,
+  docNum,
+  speakInfoLabel,
+  associatedFileLabel,
+  fileListShow,
+  processListShow,
+  speakInfoShow,
+  associatedFileListShow,
+  dataList,
+  operationBtnList,
+  processTimeLineList,
+  processFlag,
+  clickCount,
+  isRefreshButton,
+  repositionMap,
+  doneManage,
+  infoOvert,
+  multiInstanceType,
+  nextNode,
+  dialogConfig,
+  userChoiseRef,
+  optType,
+  fromType
 } = toRefs(data);
 
 onMounted(async () => {
@@ -294,7 +352,7 @@ async function getAddData() {//获取新建数据
     setBasicData(addInitData.value);
 
     //事项前置表单处理
-    if(currentrRute.query.processSerialNumber != '' && currentrRute.query.processSerialNumber != undefined){//填写前置表单，返回主表主键id
+    if (currentrRute.query.processSerialNumber != '' && currentrRute.query.processSerialNumber != undefined) {//填写前置表单，返回主表主键id
       processSerialNumber.value = currentrRute.query.processSerialNumber;
       basicData.value.processSerialNumber = currentrRute.query.processSerialNumber;
       basicData.value.formType = currentrRute.query.formType;//前置表单标识
@@ -306,7 +364,7 @@ async function getAddData() {//获取新建数据
 // 页签和按钮的获取
 function getTabs() {
   dataList.value = [];
-  for(let item of formList.value){
+  for (let item of formList.value) {
     dataList.value.push({label: item.formName, name: 'y9form' + item.formId});
   }
   activeName.value = "y9form" + formList.value[0].formId;
@@ -598,7 +656,7 @@ function tabClick(item) {//页签切换
     speakInfoShow.value = true;
   } else if (item.name == "associatedFile") {
     associatedFileListShow.value = true;
-  }else if(item.name.indexOf("y9form") > -1){
+  } else if (item.name.indexOf("y9form") > -1) {
     myForm.value.show(item.name.slice(6));
   }
 }
@@ -637,7 +695,12 @@ function sendClick() {//发送点击
 }
 
 function rollbackToStartor() {//退回发起人，直接退回，不用选人
-  ElMessageBox.confirm(t("确定返回发起人?"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", appendTo: '.newDocument-container'}).then(() => {
+  ElMessageBox.confirm(t("确定返回发起人?"), t("提示"), {
+    confirmButtonText: t("确定"),
+    cancelButtonText: t("取消"),
+    type: "info",
+    appendTo: '.newDocument-container'
+  }).then(() => {
     loading.value = true;
     loadingtext.value = "正在处理中";
     buttonApi.rollbackToStartor(basicData.value.taskId).then(res1 => {
@@ -651,11 +714,22 @@ function rollbackToStartor() {//退回发起人，直接退回，不用选人
 function sendToSender() {//返回发送人，直接发送，不用选人
   let msg = myForm.value.signOpinion();
   if (msg != "") {
-    ElMessage({type: "error", message: msg, dangerouslyUseHTMLString: true, offset: 65, appendTo: '.newDocument-container'});
+    ElMessage({
+      type: "error",
+      message: msg,
+      dangerouslyUseHTMLString: true,
+      offset: 65,
+      appendTo: '.newDocument-container'
+    });
     return;
   }
   //myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
-  ElMessageBox.confirm(t("确定返回发送人?"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", appendTo: '.newDocument-container'}).then(() => {
+  ElMessageBox.confirm(t("确定返回发送人?"), t("提示"), {
+    confirmButtonText: t("确定"),
+    cancelButtonText: t("取消"),
+    type: "info",
+    appendTo: '.newDocument-container'
+  }).then(() => {
     loading.value = true;
     loadingtext.value = "正在处理中";
     buttonApi.sendToSender(basicData.value.taskId).then(res1 => {
@@ -667,7 +741,12 @@ function sendToSender() {//返回发送人，直接发送，不用选人
 }
 
 function sendToStartor() {//发送发送人，直接发送，不用选人
-  ElMessageBox.confirm(t("确定返回发送人?"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", appendTo: '.newDocument-container'}).then(() => {
+  ElMessageBox.confirm(t("确定返回发送人?"), t("提示"), {
+    confirmButtonText: t("确定"),
+    cancelButtonText: t("取消"),
+    type: "info",
+    appendTo: '.newDocument-container'
+  }).then(() => {
     loading.value = true;
     loadingtext.value = "正在处理中";
     buttonApi.sendToStartor(basicData.value.taskId).then(res1 => {
@@ -681,7 +760,13 @@ function sendToStartor() {//发送发送人，直接发送，不用选人
 function submitTo21() {//提交
   let msg = myForm.value.signOpinion();
   if (msg != "") {
-    ElMessage({type: "error", message: msg, dangerouslyUseHTMLString: true, offset: 65, appendTo: '.newDocument-container'});
+    ElMessage({
+      type: "error",
+      message: msg,
+      dangerouslyUseHTMLString: true,
+      offset: 65,
+      appendTo: '.newDocument-container'
+    });
     return;
   }
   myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
@@ -690,7 +775,12 @@ function submitTo21() {//提交
   }).then(value => {
     return myForm.value.saveY9Draft();
   }).then(() => {
-    ElMessageBox.confirm(t("确定提交至下一人?"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", appendTo: '.newDocument-container'}).then(() => {
+    ElMessageBox.confirm(t("确定提交至下一人?"), t("提示"), {
+      confirmButtonText: t("确定"),
+      cancelButtonText: t("取消"),
+      type: "info",
+      appendTo: '.newDocument-container'
+    }).then(() => {
       loading.value = true;
       loadingtext.value = "正在处理中";
       buttonApi.submitTo(basicData.value.itemId, basicData.value.taskId, basicData.value.processSerialNumber).then(res1 => {
@@ -716,7 +806,12 @@ function repositionEvent(sendKey) {//重定位选择
 }
 
 function directSend(sendKey) {//直接发到分配人员手上
-  ElMessageBox.confirm(t("确定发送至结果反馈?"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", appendTo: '.newDocument-container'}).then(() => {
+  ElMessageBox.confirm(t("确定发送至结果反馈?"), t("提示"), {
+    confirmButtonText: t("确定"),
+    cancelButtonText: t("取消"),
+    type: "info",
+    appendTo: '.newDocument-container'
+  }).then(() => {
     loading.value = true;
     loadingtext.value = "正在处理中";
     buttonApi.directSend(basicData.value.processInstanceId, basicData.value.taskId, sendKey).then(res1 => {
@@ -729,19 +824,36 @@ function directSend(sendKey) {//直接发到分配人员手上
 
 async function sendEvent(sendKey) {//发送按钮事件
   if (isRefreshButton.value) {
-    ElMessage({type: "info", message: t("您已加减签，请重新打开办件处理"), offset: 65, appendTo: '.newDocument-container'});
+    ElMessage({
+      type: "info",
+      message: t("您已加减签，请重新打开办件处理"),
+      offset: 65,
+      appendTo: '.newDocument-container'
+    });
     return;
   }
   let msg = myForm.value.signOpinion();
   if (msg != "") {
-    ElMessage({type: "error", message: msg, dangerouslyUseHTMLString: true, offset: 65, appendTo: '.newDocument-container'});
+    ElMessage({
+      type: "error",
+      message: msg,
+      dangerouslyUseHTMLString: true,
+      offset: 65,
+      appendTo: '.newDocument-container'
+    });
     return;
   }
   myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
 
   let msg1 = await myForm.value.setNumber();//编号
   if (msg1 == '') {
-    ElMessage({type: "error", message: t("编号异常"), dangerouslyUseHTMLString: true, offset: 65, appendTo: '.newDocument-container'});
+    ElMessage({
+      type: "error",
+      message: t("编号异常"),
+      dangerouslyUseHTMLString: true,
+      offset: 65,
+      appendTo: '.newDocument-container'
+    });
     return;
   }
 
@@ -771,7 +883,13 @@ async function sendEvent(sendKey) {//发送按钮事件
         }
         if (parallelNames != "") {
           ElMessageBox.confirm(`<font color='red'>${t('温馨提示：并行协办')}【${parallelNames}】${str}${t('未办理完成，发送将使协办人任务强制办结')}。</font>`, t("提示"),
-              {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", dangerouslyUseHTMLString: true, appendTo: '.newDocument-container'}).then(() => {
+              {
+                confirmButtonText: t("确定"),
+                cancelButtonText: t("取消"),
+                type: "info",
+                dangerouslyUseHTMLString: true,
+                appendTo: '.newDocument-container'
+              }).then(() => {
             routeToTask.value = sendKey;
             fromType.value = "发送";
             Object.assign(dialogConfig.value, {
@@ -878,17 +996,33 @@ function buttonEvent(key) {//按钮事件
     });
   } else if (key == "08") {//送下一人
     if (isRefreshButton.value) {
-      ElMessage({type: "info", message: t("您已加减签，请重新打开办件处理"), offset: 65, appendTo: '.newDocument-container'});
+      ElMessage({
+        type: "info",
+        message: t("您已加减签，请重新打开办件处理"),
+        offset: 65,
+        appendTo: '.newDocument-container'
+      });
       return;
     }
     let msg = myForm.value.signOpinion();
     if (msg != "") {
-      ElMessage({type: "error", message: msg, dangerouslyUseHTMLString: true, offset: 65, appendTo: '.newDocument-container'});
+      ElMessage({
+        type: "error",
+        message: msg,
+        dangerouslyUseHTMLString: true,
+        offset: 65,
+        appendTo: '.newDocument-container'
+      });
       return;
     }
     myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
     myForm.value.saveY9Form(false).then(res => {
-      ElMessageBox.confirm(t("是否送下一人"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", appendTo: '.newDocument-container'}).then(() => {
+      ElMessageBox.confirm(t("是否送下一人"), t("提示"), {
+        confirmButtonText: t("确定"),
+        cancelButtonText: t("取消"),
+        type: "info",
+        appendTo: '.newDocument-container'
+      }).then(() => {
         loading.value = true;
         loadingtext.value = "正在处理中";
         buttonApi.handleSerial(basicData.value.taskId).then(res1 => {
@@ -900,17 +1034,33 @@ function buttonEvent(key) {//按钮事件
     });
   } else if (key == "09") {//办理完成
     if (isRefreshButton.value) {
-      ElMessage({type: "info", message: t("您已加减签，请重新打开办件处理"), offset: 65, appendTo: '.newDocument-container'});
+      ElMessage({
+        type: "info",
+        message: t("您已加减签，请重新打开办件处理"),
+        offset: 65,
+        appendTo: '.newDocument-container'
+      });
       return;
     }
     let msg = myForm.value.signOpinion();
     if (msg != "") {
-      ElMessage({type: "error", message: msg, dangerouslyUseHTMLString: true, offset: 65, appendTo: '.newDocument-container'});
+      ElMessage({
+        type: "error",
+        message: msg,
+        dangerouslyUseHTMLString: true,
+        offset: 65,
+        appendTo: '.newDocument-container'
+      });
       return;
     }
     myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
     myForm.value.saveY9Form(false).then(res => {
-      ElMessageBox.confirm(t("是否办理完成"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "info", appendTo: '.newDocument-container'}).then(() => {
+      ElMessageBox.confirm(t("是否办理完成"), t("提示"), {
+        confirmButtonText: t("确定"),
+        cancelButtonText: t("取消"),
+        type: "info",
+        appendTo: '.newDocument-container'
+      }).then(() => {
         loading.value = true;
         loadingtext.value = "正在处理中";
         if (nextNode.value || multiInstanceType.value == "sequential") {//定制流程办理完成
@@ -929,12 +1079,23 @@ function buttonEvent(key) {//按钮事件
     });
   } else if (key == "12") {//办结infoOvert
     if (isRefreshButton.value) {
-      ElMessage({type: "info", message: t("您已加减签，请重新打开办件处理"), offset: 65, appendTo: '.newDocument-container'});
+      ElMessage({
+        type: "info",
+        message: t("您已加减签，请重新打开办件处理"),
+        offset: 65,
+        appendTo: '.newDocument-container'
+      });
       return;
     }
     let msg = myForm.value.signOpinion();
     if (msg != "") {
-      ElMessage({type: "error", message: msg, dangerouslyUseHTMLString: true, offset: 65, appendTo: '.newDocument-container'});
+      ElMessage({
+        type: "error",
+        message: msg,
+        dangerouslyUseHTMLString: true,
+        offset: 65,
+        appendTo: '.newDocument-container'
+      });
       return;
     }
     myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
@@ -954,7 +1115,12 @@ function buttonEvent(key) {//按钮事件
       buttonAfter(res);
     });
   } else if (key == "14") {//拒签
-    ElMessageBox.confirm(t("是否拒签该件?"), t("提示"), {confirmButtonText: t("确定"), cancelButtonText: t("取消"), type: "warning", appendTo: '.newDocument-container'}).then(() => {
+    ElMessageBox.confirm(t("是否拒签该件?"), t("提示"), {
+      confirmButtonText: t("确定"),
+      cancelButtonText: t("取消"),
+      type: "warning",
+      appendTo: '.newDocument-container'
+    }).then(() => {
       loading.value = true;
       loadingtext.value = "正在处理中";
       buttonApi.refuseClaim(basicData.value.taskId).then(res => {
@@ -1047,7 +1213,12 @@ function buttonEvent(key) {//按钮事件
     });
   } else if (key == "21") {//提交
     if (isRefreshButton.value) {
-      ElMessage({type: "info", message: t("您已加减签，请重新打开办件处理"), offset: 65, appendTo: '.newDocument-container'});
+      ElMessage({
+        type: "info",
+        message: t("您已加减签，请重新打开办件处理"),
+        offset: 65,
+        appendTo: '.newDocument-container'
+      });
       return;
     }
     submitTo21();
