@@ -28,8 +28,8 @@ const docIntroRouter = {
     },
     children: [
         {
-            path: '/docIntro',
-            component: () => import('@/views/docIntro/index.vue'),
+            path: import.meta.env.VUE_APP_DOC_URL,
+            //component: () => import('@/views/docIntro/index.vue'),
             name: 'docIntroIndex',
             meta: {
                 title: '操作说明',
