@@ -220,7 +220,7 @@ vue -- 前端工程
 ### 事项管理
 
 **演示地址
-**：<a href="https://test.youshengyun.com/itemAdmin-open/" target="_blank">https://test.youshengyun.com/itemAdmin-open/ </a>
+**：<a href="https://demo.youshengyun.com/itemAdmin/" target="_blank">https://demo.youshengyun.com/itemAdmin/ </a>
 
 > 演示账号：systemManager 密码：Risesoft@2024
 >
@@ -228,11 +228,11 @@ vue -- 前端工程
 ### 工作台
 
 **演示地址
-**：<a href="https://test.youshengyun.com/flowableUI-open/workIndex/" target="_blank">https://test.youshengyun.com/flowableUI-open/workIndex/ </a>
+**：<a href="https://demo.youshengyun.com/flowableUI/workIndex/" target="_blank">https://demo.youshengyun.com/flowableUI/workIndex/ </a>
 
 > 演示账号：
 >
-> 业务用户：测试人员 密码：Risesoft@2024
+> 业务用户：user 密码：Risesoft@2024
 >
 
 ## 文档专区
