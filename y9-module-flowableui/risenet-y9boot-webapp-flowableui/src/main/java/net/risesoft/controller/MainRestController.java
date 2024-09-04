@@ -94,9 +94,7 @@ public class MainRestController {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> list = itemApi.getAllItemList(tenantId).getData();
-        boolean b = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId())
-            .getData();
+        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("monitorManage", b);
         map.put("itemList", list);
         return Y9Result.success(map, "获取成功");
@@ -243,13 +241,11 @@ public class MainRestController {
         ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
-        boolean b = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
-        boolean b1 = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b1 = positionRoleApi.hasPublicRole(tenantId, "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("repositionrManage", b1);
         return Y9Result.success(map, "获取成功");
     }
@@ -265,17 +261,13 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> itemList = itemApi.findAll(tenantId, systemName).getData();
         Map<String, Object> map = new HashMap<>(16);
-        boolean b = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("monitorManage", b);
-        boolean b1 = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b1 = positionRoleApi.hasPublicRole(tenantId, "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("repositionrManage", b1);
-        boolean b2 = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "发文角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b2 = positionRoleApi.hasPublicRole(tenantId, "发文角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("fawenManage", b2);
-        boolean b3 = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "收文角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b3 = positionRoleApi.hasPublicRole(tenantId, "收文角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("shouwenManage", b3);
         map.put("itemList", itemList);
         return Y9Result.success(map, "获取成功");
@@ -428,8 +420,7 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         map.put("tenantManager", person.isGlobalManager());
-        boolean b = positionRoleApi
-            .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
