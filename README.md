@@ -19,7 +19,7 @@
 
 ## 开源地址
 
-源码地址：<a href="https://github.com/risesoft-y9/WorkFlow-Engine" target="_blank">https://github.com/risesoft-y9/WorkFlow-Engine </a>
+源码地址：https://github.com/risesoft-y9/WorkFlow-Engine
 
 ## 源码目录
 
@@ -220,7 +220,7 @@ vue -- 前端工程
 ### 事项管理
 
 **演示地址
-**：<a href="https://demo.youshengyun.com/itemAdmin/" target="_blank">https://demo.youshengyun.com/itemAdmin/ </a>
+**：https://demo.youshengyun.com/itemAdmin/
 
 > 演示账号：systemManager 密码：Risesoft@2024
 >
@@ -228,7 +228,7 @@ vue -- 前端工程
 ### 工作台
 
 **演示地址
-**：<a href="https://demo.youshengyun.com/flowableUI/workIndex/" target="_blank">https://demo.youshengyun.com/flowableUI/workIndex/ </a>
+**：https://demo.youshengyun.com/flowableUI/workIndex/
 
 > 演示账号：
 >
