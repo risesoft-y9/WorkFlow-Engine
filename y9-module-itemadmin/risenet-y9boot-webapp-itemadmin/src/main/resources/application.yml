@@ -126,10 +126,9 @@ spring:
                 useGlobalDataSourceStat: true
                 validationQuery: SELECT 1 FROM DUAL
     elasticsearch:
-        rest:
-            uris: localhost:9200
-            username: elastic
-            password: 'risesoft'
+        uris: localhost:9200
+        username: elastic
+        password: 'risesoft'
     jmx:
         default-domain: itemAdmin
     jpa:
