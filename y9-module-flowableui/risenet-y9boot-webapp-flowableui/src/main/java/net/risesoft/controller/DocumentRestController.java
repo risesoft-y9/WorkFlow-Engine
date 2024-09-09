@@ -267,9 +267,7 @@ public class DocumentRestController {
             // int followCount = officeFollowApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
             // map.put("followCount", followCount);
             // 公共角色
-            boolean b = positionRoleApi
-                .hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId())
-                .getData();
+            boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
             map.put("monitorManage", b);
 
             boolean b1 = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "人事统计角色", Y9LoginUserHolder.getPositionId())
@@ -321,9 +319,7 @@ public class DocumentRestController {
             map.put("notReadCount",
                 chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
             // 公共角色
-            boolean b = positionRoleApi
-                .hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId())
-                .getData();
+            boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
             map.put("monitorManage", b);
 
             boolean b1 = false;
