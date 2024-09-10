@@ -27,7 +27,7 @@ spring:
         nacos:
             server-addr: nacos:8848
             username: nacos
-            password: Risesoft@2024
+            password: ${NACOS_PASSWORD:111111}
             config:
                 enabled: false
                 group: DEFAULT_GROUP
