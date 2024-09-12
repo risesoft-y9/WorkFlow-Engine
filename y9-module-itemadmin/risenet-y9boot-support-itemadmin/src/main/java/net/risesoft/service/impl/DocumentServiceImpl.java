@@ -1168,6 +1168,19 @@ public class DocumentServiceImpl implements DocumentService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (!variables.isEmpty()) {
             variableApi.setVariables(tenantId, taskId, variables);
+            if (variables.get("subProcessNum") != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
+                String type =
+                    processDefinitionApi.getNodeType(tenantId, model.getProcessDefinitionId(), routeToTaskId).getData();
+                if (SysVariables.PARALLEL.equals(type)) {// 并行节点才执行
+                    String userId = userList.get(0);
+                    Integer subProcessNum = Integer.parseInt(variables.get("subProcessNum").toString());
+                    if (subProcessNum > 1 && userList.size() == 1) {
+                        for (int i = 1; i < subProcessNum; i++) {
+                            userList.add(userId);
+                        }
+                    }
+                }
+            }
         }
         return this.start4Forwarding(taskId, routeToTaskId, sponsorGuid, userList);
     }
@@ -1313,6 +1326,7 @@ public class DocumentServiceImpl implements DocumentService {
      * @param userList
      * @return
      */
+    @Override
     public Y9Result<String> start4Forwarding(String taskId, String routeToTaskId, String sponsorGuid,
         List<String> userList) {
         String processInstanceId = "";
@@ -1360,7 +1374,7 @@ public class DocumentServiceImpl implements DocumentService {
                 taskApi.createWithVariables(tenantId, orgUnit.getId(), routeToTaskId, vars, userList);
             } else {
                 assert processParam != null;
-                asyncHandleService.forwarding4Task(processInstanceId, processParam, "", sponsorGuid, taskId,
+                asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", sponsorGuid, taskId,
                     multiInstance, variables, userList);
             }
             return Y9Result.success(processInstanceId, "发送成功!");
@@ -1559,7 +1573,6 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(),
                 processInstanceId = task.getProcessInstanceId();
-
             Y9Result<TargetModel> routeToTaskIdResult =
                 this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
             if (!routeToTaskIdResult.isSuccess()) {
@@ -1577,7 +1590,21 @@ public class DocumentServiceImpl implements DocumentService {
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance,
+            String subProcessStr =
+                variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "subProcessNum").getData();
+            if (subProcessStr != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
+                if (SysVariables.PARALLEL.equals(multiInstance)) {// 并行节点才执行
+                    String userChoice = userList.get(0);
+                    Integer subProcessNum = Integer.parseInt(subProcessStr);
+                    if (subProcessNum > 1 && userList.size() == 1) {
+                        for (int i = 1; i < subProcessNum; i++) {
+                            userList.add(userChoice);
+                        }
+                    }
+                }
+            }
+            variables.put(SysVariables.USERS, userList);
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", "", taskId, multiInstance,
                 variables, userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {

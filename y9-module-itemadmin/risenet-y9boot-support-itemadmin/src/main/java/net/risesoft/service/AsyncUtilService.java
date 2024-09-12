@@ -29,8 +29,8 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.TaskTimeConfService;
+import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
 
 /**
  * @author qinman
@@ -98,19 +98,29 @@ public class AsyncUtilService {
                     if (targetModelList != null && !targetModelList.isEmpty()) {
                         TargetModel targetModel = targetModelList.get(0);
                         String routeToTaskId = targetModel.getTaskDefKey();
-                        List<
-                            String> userChoiceList =
-                                documentService
-                                    .parserUser(itemId, processDefinitionId, routeToTaskId,
-                                        targetModel.getTaskDefName(), processInstanceId, targetModel.getMultiInstance())
-                                    .getData();
+                        String multiInstance = targetModel.getMultiInstance();
+                        List<String> userChoiceList = documentService.parserUser(itemId, processDefinitionId,
+                            routeToTaskId, targetModel.getTaskDefName(), processInstanceId, multiInstance).getData();
                         if (userChoiceList != null && !userChoiceList.isEmpty()) {
-                            String userChoice = "";
-                            for (String userId : userChoiceList) {
-                                userChoice = Y9Util.genCustomStr(userChoice, "6:" + userId, ";");
+                            // String userChoice = "";
+                            // for (String userId : userChoiceList) {
+                            // userChoice = Y9Util.genCustomStr(userChoice, "6:" + userId, ";");
+                            // }
+                            String subProcessStr = variableApi
+                                .getVariableByProcessInstanceId(tenantId, processInstanceId, "subProcessNum").getData();
+                            if (subProcessStr != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
+                                if (SysVariables.PARALLEL.equals(multiInstance)) {// 并行节点才执行
+                                    String userChoice = userChoiceList.get(0);
+                                    Integer subProcessNum = Integer.parseInt(subProcessStr);
+                                    if (subProcessNum > 1 && userChoiceList.size() == 1) {
+                                        for (int i = 1; i < subProcessNum; i++) {
+                                            userChoiceList.add(userChoice);
+                                        }
+                                    }
+                                }
                             }
                             Y9Result<String> y9Result1 =
-                                documentService.forwarding(taskId, "true", userChoice, routeToTaskId, "");
+                                documentService.start4Forwarding(taskId, routeToTaskId, "", userChoiceList);
                             if (y9Result1.isSuccess()) {
                                 // 异步循环发送
                                 this.loopSending(tenantId, orgUnitId, itemId, processInstanceId);

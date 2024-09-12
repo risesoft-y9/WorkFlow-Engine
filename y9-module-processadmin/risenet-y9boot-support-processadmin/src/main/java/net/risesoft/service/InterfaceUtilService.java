@@ -40,6 +40,8 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -105,21 +107,25 @@ public class InterfaceUtilService {
      * @param processDefinitionId 流程定义id
      * @param taskId 任务id
      * @param taskKey 任务key
+     * @param loopCounter 循环次数
      * @return
      */
     @Async
     public Future<Boolean> asynInterface(final String tenantId, final String orgUnitId,
         final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey) {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
+        final Integer loopCounter) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         try {
             if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
-                getMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
+                getMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey,
+                    loopCounter);
 
             } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST.getValue())) {
-                postMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
+                postMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey,
+                    loopCounter);
             }
             return new AsyncResult<>(true);
         } catch (Exception e) {
@@ -143,11 +149,19 @@ public class InterfaceUtilService {
         if (map != null && paramsList != null && !paramsList.isEmpty()) {
             try {
                 String tableName = "";
+                String parentProcessSerialNumber = "";
                 for (InterfaceParamsModel model : paramsList) {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
                         tableName = model.getTableName();
-                        break;
+                        if (model.getColumnName().equals("parentProcessSerialNumber")) {// 子表，新增数据
+                            parentProcessSerialNumber = processSerialNumber;
+                            break;
+                        }
                     }
+                }
+                if (!parentProcessSerialNumber.equals("")) {// 子表，新增数据
+                    this.insertData(tableName, parentProcessSerialNumber, map, paramsList);
+                    return;
                 }
                 DataSource database = Objects.requireNonNull(jdbcTemplate.getDataSource());
                 String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
@@ -166,7 +180,7 @@ public class InterfaceUtilService {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
                         String fieldName = model.getColumnName();
                         String parameterName = model.getParameterName();
-                        String value = (String)map.get(parameterName);
+                        String value = map.get(parameterName) != null ? (String)map.get(parameterName) : "";
                         // 处理文件，保存文件，表单存fileStoreId
                         if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
                             LOGGER.info("********************文件字段处理:" + model.getParameterName());
@@ -208,12 +222,13 @@ public class InterfaceUtilService {
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @param taskKey 任务key
+     * @param loopCounter 循环次数
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public void getMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey)
-        throws Exception {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
+        final Integer loopCounter) throws Exception {
         try {
             HttpClient client = new HttpClient();
             GetMethod method = new GetMethod();
@@ -236,6 +251,16 @@ public class InterfaceUtilService {
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
                                     parameterValue = (String)map.get(model.getColumnName());
+                                    if (loopCounter != null) {// 并行子流程，参数从数组里面通过loopCounter获取
+                                        try {
+                                            JSONArray array = JSON.parseArray((String)map.get(model.getColumnName()));
+                                            parameterValue =
+                                                array.size() > loopCounter ? array.get(loopCounter).toString() : "";
+                                        } catch (Exception e) {
+                                            LOGGER.info("*****************" + model.getColumnName() + "不是数组："
+                                                + map.get(model.getColumnName()));
+                                        }
+                                    }
                                     break;
                                 }
                             }
@@ -364,6 +389,70 @@ public class InterfaceUtilService {
     }
 
     /**
+     * 子表单新增数据
+     *
+     * @param tableName 表名
+     * @param parentProcessSerialNumber 父流程编号
+     * @param map 返回数据
+     * @param paramsList 参数列表
+     * @throws Exception
+     */
+    public void insertData(String tableName, String parentProcessSerialNumber, Map<String, Object> map,
+        List<InterfaceParamsModel> paramsList) throws Exception {
+        DataSource database = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
+        StringBuilder sqlStr = new StringBuilder();
+        if ("oracle".equals(dialect)) {
+            sqlStr.append("insert into \"" + tableName + "\" (");
+        }
+        if ("dm".equals(dialect)) {
+            sqlStr.append("insert into \"" + tableName + "\" (");
+
+        } else if ("mysql".equals(dialect)) {
+            sqlStr.append("insert into " + tableName + " (");
+
+        } else if ("kingbase".equals(dialect)) {
+            sqlStr.append("insert into \"" + tableName + "\" (");
+        }
+        StringBuilder sqlStr1 = new StringBuilder(") values (");
+        boolean isHaveField = false;
+        for (InterfaceParamsModel model : paramsList) {
+            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
+                String fieldName = model.getColumnName();
+                String parameterName = model.getParameterName();
+                String value = map.get(parameterName) != null ? (String)map.get(parameterName) : "";
+                // 处理文件，保存文件，表单存fileStoreId
+                if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
+                    LOGGER.info("********************文件字段处理:" + model.getParameterName());
+                    String downloadUrl = this.saveFile(parentProcessSerialNumber, value, model.getFileType());
+                    value = downloadUrl;
+                }
+                if (isHaveField) {
+                    sqlStr.append(",");
+                }
+                sqlStr.append(fieldName);
+                if (isHaveField) {
+                    sqlStr1.append(",");
+                }
+                if (fieldName.equals("guid") || fieldName.equals("GUID")) {
+                    sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
+                } else if (fieldName.equals("parentProcessSerialNumber")) {
+                    sqlStr1.append("'" + parentProcessSerialNumber + "'");
+                } else if (fieldName.equals("y9_userId")) {
+                    sqlStr1.append("'" + Y9LoginUserHolder.getOrgUnitId() + "'");
+                } else {
+                    sqlStr1.append("'" + value + "'");
+                }
+                isHaveField = true;
+            }
+        }
+        sqlStr1.append(")");
+        sqlStr.append(sqlStr1);
+        String sql = sqlStr.toString();
+        jdbcTemplate.execute(sql);
+    }
+
+    /**
      * 流程启动，办结接口调用
      *
      * @param executionEntity
@@ -400,10 +489,11 @@ public class InterfaceUtilService {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info, processInstanceId,
-                        processDefinitionId, "", "");
+                        processDefinitionId, "", "", null);
 
                 } else if (info.getAsyn().equals("0")) {
-                    syncInterface(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, "", "");
+                    syncInterface(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, "", "",
+                        null);
 
                 }
             }
@@ -452,11 +542,11 @@ public class InterfaceUtilService {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info, processInstanceId,
-                        processDefinitionId, flow.getId(), taskDefinitionKey);
+                        processDefinitionId, flow.getId(), taskDefinitionKey, null);
 
                 } else if (info.getAsyn().equals("0")) {
                     syncInterface(processSerialNumber, itemId, info, processInstanceId, processDefinitionId,
-                        flow.getId(), taskDefinitionKey);
+                        flow.getId(), taskDefinitionKey, null);
 
                 }
             }
@@ -479,11 +569,13 @@ public class InterfaceUtilService {
         String tenantId = "";
         String processSerialNumber = "";
         String itemId = "";
+        Integer loopCounter = null;
         String orgUnitId = task.getAssignee();
         Y9Result<List<InterfaceModel>> y9Result = null;
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
             processSerialNumber = (String)variables.get("processSerialNumber");
+            loopCounter = variables.get("loopCounter") != null ? (Integer)variables.get("loopCounter") : null;
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             itemId = processParamModel.getItemId();
@@ -501,11 +593,11 @@ public class InterfaceUtilService {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info, task.getProcessInstanceId(),
-                        processDefinitionId, task.getId(), task.getTaskDefinitionKey());
+                        processDefinitionId, task.getId(), task.getTaskDefinitionKey(), loopCounter);
 
                 } else if (info.getAsyn().equals("0")) {
                     syncInterface(processSerialNumber, itemId, info, task.getProcessInstanceId(), processDefinitionId,
-                        task.getId(), task.getTaskDefinitionKey());
+                        task.getId(), task.getTaskDefinitionKey(), loopCounter);
 
                 }
             }
@@ -514,7 +606,7 @@ public class InterfaceUtilService {
 
     /**
      * post方法调用接口
-     * 
+     *
      * @param processSerialNumber 流程编号
      * @param itemId 流程id
      * @param info 接口信息
@@ -522,12 +614,13 @@ public class InterfaceUtilService {
      * @param processDefinitionId 流程定义id
      * @param taskId 任务id
      * @param taskKey 任务key
+     * @param loopCounter 循环次数
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey)
-        throws Exception {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
+        final Integer loopCounter) throws Exception {
         CloseableHttpClient httpclient = null;
         try {
             httpclient = HttpClients.createDefault();
@@ -551,6 +644,16 @@ public class InterfaceUtilService {
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
                                     parameterValue = (String)map.get(model.getColumnName());
+                                    if (loopCounter != null) {// 并行子流程，参数从数组里面通过loopCounter获取
+                                        try {
+                                            JSONArray array = JSON.parseArray((String)map.get(model.getColumnName()));
+                                            parameterValue =
+                                                array.size() > loopCounter ? array.get(loopCounter).toString() : "";
+                                        } catch (Exception e) {
+                                            LOGGER.info("*****************" + model.getColumnName() + "不是数组："
+                                                + map.get(model.getColumnName()));
+                                        }
+                                    }
                                     break;
                                 }
                             }
@@ -668,7 +771,6 @@ public class InterfaceUtilService {
 
     private String saveFile(String processSerialNumber, String fileStr, String fileType) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String fullPath = "/" + Y9Context.getSystemName() + "/" + processSerialNumber;
         byte[] file = Base64.getDecoder().decode(fileStr);
         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath,
@@ -690,16 +792,19 @@ public class InterfaceUtilService {
      * @param processDefinitionId 流程定义id
      * @param taskId 任务id
      * @param taskKey 任务key
+     * @param loopCounter 循环次数
      * @throws Exception
      */
     public void syncInterface(final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey)
-        throws Exception {
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
+        final Integer loopCounter) throws Exception {
         if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
-            getMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
+            getMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey,
+                loopCounter);
 
         } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST.getValue())) {
-            postMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey);
+            postMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId, taskId, taskKey,
+                loopCounter);
         }
     }
 

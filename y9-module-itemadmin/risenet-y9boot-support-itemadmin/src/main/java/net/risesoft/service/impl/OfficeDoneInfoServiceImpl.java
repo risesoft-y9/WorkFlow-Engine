@@ -441,8 +441,10 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
             }
         }
-        Criteria criteria =
-            new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(orgUnitId);
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        if (StringUtils.isNotBlank(orgUnitId)) {
+            criteria.subCriteria(new Criteria("allUserId").contains(orgUnitId));
+        }
         if (StringUtils.isNotBlank(systemName)) {
             criteria.subCriteria(new Criteria("systemName").is(systemName));
         }

@@ -205,6 +205,17 @@ public interface DocumentService {
     SignTaskConfigModel signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey,
         String processSerialNumber);
 
+    /*
+     * 启动流程发送
+     *
+     * @param taskId
+     * @param routeToTaskId
+     * @param sponsorGuid
+     * @param userList
+     * @return
+     */
+    Y9Result<String> start4Forwarding(String taskId, String routeToTaskId, String sponsorGuid, List<String> userList);
+
     /**
      * 启动流程，用于当前人启动本租户的流程，启动者是人
      *

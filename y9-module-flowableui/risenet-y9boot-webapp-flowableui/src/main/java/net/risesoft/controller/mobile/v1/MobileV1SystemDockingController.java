@@ -79,6 +79,7 @@ public class MobileV1SystemDockingController {
      * @param itemId 事项id
      * @param mappingId 对接系统标识
      * @param positionChoice 接收岗位id，多岗位,隔开
+     * @param subProcessNum 子流程个数
      * @param formJsonData 表单数据
      * @return Y9Result<Map < String, Object>>
      */
@@ -86,8 +87,8 @@ public class MobileV1SystemDockingController {
     @RequestMapping(value = "/startAndForwarding")
     public Y9Result<Object> startAndForwarding(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String routeToTaskId,
-        @RequestParam @NotBlank String positionChoice, @RequestParam @NotBlank String formJsonData,
-        @RequestParam(required = false) String taskId) {
+        @RequestParam @NotBlank String positionChoice, @RequestParam(required = false) Integer subProcessNum,
+        @RequestParam @NotBlank String formJsonData, @RequestParam(required = false) String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -140,11 +141,15 @@ public class MobileV1SystemDockingController {
                     formDataApi.saveFormData(tenantId, formId, bindFormJsonData);
                 }
             }
+            Map<String, Object> variables = new HashMap<>();
+            if (subProcessNum != null && subProcessNum > 1) {
+                variables.put("subProcessNum", subProcessNum);
+            }
             /*
               3启动流程并发送
              */
             Y9Result<String> y9Result = documentApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId,
-                "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, new HashMap<>());
+                "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, variables);
             if (y9Result.isSuccess()) {
                 return Y9Result.success("操作成功");
             }
