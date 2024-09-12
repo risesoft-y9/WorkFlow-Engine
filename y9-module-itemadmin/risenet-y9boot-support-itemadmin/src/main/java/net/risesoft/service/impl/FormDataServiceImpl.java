@@ -439,10 +439,9 @@ public class FormDataServiceImpl implements FormDataService {
             listMap.add(map);
             for (String columnName : mapFormJsonData.keySet()) {
                 // 根据数据库表名获取列名
-                String value = mapFormJsonData.get(columnName).toString();
                 map = new HashMap<>(16);
                 map.put("name", columnName);
-                map.put("value", value);
+                map.put("value", mapFormJsonData.get(columnName));
                 listMap.add(map);
             }
             formdata = Y9JsonUtil.writeValueAsString(listMap);

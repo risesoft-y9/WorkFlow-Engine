@@ -757,8 +757,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    if (keyValue.get(fieldName) instanceof ArrayList) {
+                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    } else {
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    }
                                 }
                             }
                             isHaveField = true;
@@ -832,8 +837,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    if (keyValue.get(fieldName) instanceof ArrayList) {
+                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    } else {
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    }
                                 }
                                 isHaveField = true;
                             }
@@ -964,8 +974,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    if (keyValue.get(fieldName) instanceof ArrayList) {
+                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    } else {
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    }
                                 }
                             }
                             isHaveField = true;
@@ -1039,8 +1054,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    if (keyValue.get(fieldName) instanceof ArrayList) {
+                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    } else {
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    }
                                 }
                                 isHaveField = true;
                             }
