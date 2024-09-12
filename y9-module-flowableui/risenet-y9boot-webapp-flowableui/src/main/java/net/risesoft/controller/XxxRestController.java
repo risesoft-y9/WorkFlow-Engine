@@ -140,6 +140,7 @@ public class XxxRestController {
                         }
                     }
                 } else {
+                    taskIds = Y9Util.genCustomStr(taskIds, task.getId(), SysVariables.COMMA);
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
@@ -462,6 +463,9 @@ public class XxxRestController {
         String positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<>();
         map.put("val", false);
+        if (taskId.contains(",")) {
+            taskId = taskId.split(",")[0];
+        }
         variableApi.setVariable(tenantId, taskId, "stopProcess", map);
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         List<TargetModel> targetModelList = processDefinitionApi

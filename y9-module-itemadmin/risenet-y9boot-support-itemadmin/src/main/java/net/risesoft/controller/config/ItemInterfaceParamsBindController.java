@@ -71,7 +71,7 @@ public class ItemInterfaceParamsBindController {
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
-            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            y9FormItemBindService.listByItemIdAndProcDefId(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         List<Map<String, Object>> tableField = new ArrayList<>();
