@@ -18,8 +18,6 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -85,7 +83,7 @@ public class InterfaceUtilService {
     private final ItemInterfaceApi itemInterfaceApi;
     private final Y9FileStoreService y9FileStoreService;
     private final Y9Properties y9Config;
-    @Resource(name = "jdbcTemplate4Tenant")
+    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public InterfaceUtilService(ProcessParamApi processParamApi, ErrorLogApi errorLogApi,
@@ -182,7 +180,14 @@ public class InterfaceUtilService {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
                         String fieldName = model.getColumnName();
                         String parameterName = model.getParameterName();
-                        String value = map.get(parameterName) != null ? (String)map.get(parameterName) : "";
+                        String value = "";
+                        if (map.get(parameterName) != null) {
+                            if (map.get(parameterName) instanceof ArrayList) {
+                                value = Y9JsonUtil.writeValueAsString(map.get(parameterName));
+                            } else {
+                                value = String.valueOf(map.get(parameterName));
+                            }
+                        }
                         // 处理文件，保存文件，表单存fileStoreId
                         if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
                             LOGGER.info("********************文件字段处理:" + model.getParameterName());
@@ -422,7 +427,15 @@ public class InterfaceUtilService {
             if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
                 String fieldName = model.getColumnName();
                 String parameterName = model.getParameterName();
-                String value = map.get(parameterName) != null ? (String)map.get(parameterName) : "";
+                String value = "";
+                if (map.get(parameterName) != null) {
+                    if (map.get(parameterName) instanceof ArrayList) {
+                        value = Y9JsonUtil.writeValueAsString(map.get(parameterName));
+                    } else {
+                        value = String.valueOf(map.get(parameterName));
+                    }
+                }
+
                 // 处理文件，保存文件，表单存fileStoreId
                 if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
                     LOGGER.info("********************文件字段处理:" + model.getParameterName());
