@@ -24,6 +24,7 @@ import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
@@ -35,7 +36,6 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.util.Y9Util;
 
@@ -61,13 +61,13 @@ public class Process4CompleteUtilService {
 
     private final ErrorLogApi errorLogApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     private final Process4MsgRemindService process4MsgRemindService;
 
     public Process4CompleteUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         OfficeDoneInfoApi officeDoneInfoApi, DataCenterApi dataCenterApi, OrgUnitApi orgUnitApi,
-        ProcessParamApi processParamApi, ErrorLogApi errorLogApi, Y9Properties y9Conf,
+        ProcessParamApi processParamApi, ErrorLogApi errorLogApi, Y9ProcessAdminProperties y9ProcessAdminProperties,
         Process4MsgRemindService process4MsgRemindService) {
         this.officeDoneInfoApi = officeDoneInfoApi;
         this.jdbcTemplate = jdbcTemplate;
@@ -75,7 +75,7 @@ public class Process4CompleteUtilService {
         this.orgUnitApi = orgUnitApi;
         this.processParamApi = processParamApi;
         this.errorLogApi = errorLogApi;
-        this.y9Conf = y9Conf;
+        this.y9ProcessAdminProperties = y9ProcessAdminProperties;
         this.process4MsgRemindService = process4MsgRemindService;
     }
 
@@ -226,7 +226,7 @@ public class Process4CompleteUtilService {
             String startTime = (String)map.get("START_TIME_");
             String endTime = map.get("END_TIME_") != null ? (String)map.get("END_TIME_") : sdf.format(new Date());
             try {
-                Boolean dataCenterSwitch = y9Conf.getApp().getProcessAdmin().getDataCenterSwitch();
+                Boolean dataCenterSwitch = y9ProcessAdminProperties.getDataCenterSwitch();
                 if (dataCenterSwitch != null && dataCenterSwitch) {
                     Y9Result<Object> y9Result = dataCenterApi.saveToDateCenter(processInstanceId, tenantId, userId);
                     if (y9Result.isSuccess()) {

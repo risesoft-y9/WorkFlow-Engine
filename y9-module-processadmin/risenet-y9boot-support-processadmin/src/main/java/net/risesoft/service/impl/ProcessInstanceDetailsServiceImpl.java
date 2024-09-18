@@ -14,13 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * @author qinman
@@ -38,11 +38,11 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
 
     private final ProcessInstanceApi processInstanceApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     @Override
     public void saveProcessInstanceDetails(final DelegateTask task, final Map<String, Object> map) {
-        Boolean cooperationStateSwitch = y9Conf.getApp().getProcessAdmin().getCooperationStateSwitch();
+        Boolean cooperationStateSwitch = y9ProcessAdminProperties.getCooperationStateSwitch();
         if (cooperationStateSwitch == null || !cooperationStateSwitch) {
             LOGGER.info("######################协作状态开关已关闭,如需保存数据到协作状态请更改配置文件######################");
             return;
@@ -114,7 +114,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     @Override
     @Async
     public void updateProcessInstanceDetails(final DelegateTask taskEntityHti, final Map<String, Object> map) {
-        Boolean cooperationStateSwitch = y9Conf.getApp().getProcessAdmin().getCooperationStateSwitch();
+        Boolean cooperationStateSwitch = y9ProcessAdminProperties.getCooperationStateSwitch();
         if (cooperationStateSwitch == null || !cooperationStateSwitch) {
             LOGGER.info("######################协作状态开关已关闭,如需保存数据到协作状态请更改配置文件######################");
             return;

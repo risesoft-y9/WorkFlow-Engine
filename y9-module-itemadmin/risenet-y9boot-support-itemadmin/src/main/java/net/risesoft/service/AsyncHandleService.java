@@ -32,6 +32,7 @@ import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.api.todo.TodoTaskApi;
+import net.risesoft.config.Y9ItemAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
@@ -62,7 +63,6 @@ import net.risesoft.repository.jpa.TaskVariableRepository;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -85,7 +85,7 @@ public class AsyncHandleService {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
-    private final Y9Properties y9Conf;
+    private final Y9ItemAdminProperties y9ItemAdminProperties;
 
     private final PersonApi personApi;
 
@@ -446,7 +446,7 @@ public class AsyncHandleService {
     public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber,
         final String content) {
         try {
-            Boolean msgSwitch = y9Conf.getApp().getItemAdmin().getMsgSwitch();
+            Boolean msgSwitch = y9ItemAdminProperties.getMsgSwitch();
             if (msgSwitch == null || !msgSwitch) {
                 return;
             }
@@ -542,7 +542,7 @@ public class AsyncHandleService {
     @Async
     public void weiXinRemind(final String tenantId, final String userId, final String processSerialNumber,
         final List<ChaoSong> list) {
-        Boolean weiXinSwitch = y9Conf.getApp().getItemAdmin().getWeiXinSwitch();
+        Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
         if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
@@ -568,7 +568,7 @@ public class AsyncHandleService {
                 method.addParameter("processInstanceId", cs.getProcessInstanceId());
                 method.addParameter("taskId", "");
                 method.addParameter("itemId", itemId);
-                String url = y9Conf.getApp().getItemAdmin().getWeiXinUrl();
+                String url = y9ItemAdminProperties.getWeiXinUrl();
                 method.setPath(url);
                 int code = client.executeMethod(method);
                 LOGGER.info("##########################微信接口状态：" + code + "##########################");
@@ -595,7 +595,7 @@ public class AsyncHandleService {
     @Async
     public void weiXinRemind4ChaoSongInfo(final String tenantId, final String userId, final String processSerialNumber,
         final List<ChaoSongInfo> list) {
-        Boolean weiXinSwitch = y9Conf.getApp().getItemAdmin().getWeiXinSwitch();
+        Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
         if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
@@ -623,7 +623,7 @@ public class AsyncHandleService {
                 method.addParameter("processInstanceId", cs.getProcessInstanceId());
                 method.addParameter("taskId", "");
                 method.addParameter("itemId", itemId);
-                String url = y9Conf.getApp().getItemAdmin().getWeiXinUrl();
+                String url = y9ItemAdminProperties.getWeiXinUrl();
                 method.setPath(url);
                 int code = client.executeMethod(method);
                 LOGGER.info("##########################微信接口状态：" + code + "##########################");

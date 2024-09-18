@@ -22,6 +22,7 @@ import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.todo.TodoTaskApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -32,7 +33,6 @@ import net.risesoft.model.todo.TodoTask;
 import net.risesoft.service.TodoTaskService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * @author qinman
@@ -52,14 +52,14 @@ public class TodoTaskServiceImpl implements TodoTaskService {
 
     private final ErrorLogApi errorLogApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     @Override
     public void deleteTodo(final DelegateTask task, final Map<String, Object> map) {
         String taskId = task.getId();
         String processInstanceId = task.getProcessInstanceId();
         try {
-            Boolean todoSwitch = y9Conf.getApp().getProcessAdmin().getTodoSwitch();
+            Boolean todoSwitch = y9ProcessAdminProperties.getTodoSwitch();
             if (todoSwitch == null || Boolean.FALSE.equals(todoSwitch)) {
                 LOGGER.info("######################保存超级待办按钮已关闭,如需保存超级待办请更改配置文件######################");
                 return;
@@ -111,7 +111,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
     @Override
     public void deleteTodoByProcessInstanceId(final FlowableEvent event, final Map<String, Object> variables) {
         try {
-            Boolean todoSwitch = y9Conf.getApp().getProcessAdmin().getTodoSwitch();
+            Boolean todoSwitch = y9ProcessAdminProperties.getTodoSwitch();
             if (todoSwitch == null || Boolean.FALSE.equals(todoSwitch)) {
                 LOGGER.info("######################保存超级待办按钮已关闭,如需保存超级待办请更改配置文件######################");
                 return;
@@ -140,7 +140,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
      */
     @Override
     public void saveTodoTask(final DelegateTask task, final Map<String, Object> map) {
-        Boolean todoSwitch = y9Conf.getApp().getProcessAdmin().getTodoSwitch();
+        Boolean todoSwitch = y9ProcessAdminProperties.getTodoSwitch();
         if (todoSwitch == null || Boolean.FALSE.equals(todoSwitch)) {
             LOGGER.info("######################保存超级待办按钮已关闭,如需保存超级待办请更改配置文件######################");
             return;
