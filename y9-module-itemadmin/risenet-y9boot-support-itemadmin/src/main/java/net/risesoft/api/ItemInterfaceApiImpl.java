@@ -86,6 +86,52 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     }
 
     /**
+     * 根据事项id，流程定义key获取绑定接口
+     *
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @return {@code Y9Result<List<InterfaceModel>>} 通用请求返回对象 - data 是接口绑定列表
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<InterfaceModel>> getInterfaceList(String tenantId, String itemId, String processDefinitionId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<ItemInterfaceTaskBind> list =
+            itemInterfaceTaskBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+        List<InterfaceModel> resList = new ArrayList<>();
+        for (ItemInterfaceTaskBind bind : list) {
+            InterfaceModel model = new InterfaceModel();
+            InterfaceInfo info = interfaceInfoRepository.findById(bind.getInterfaceId()).orElse(null);
+            if (info != null) {
+                model.setId(info.getId());
+                model.setInterfaceAddress(info.getInterfaceAddress());
+                model.setInterfaceName(info.getInterfaceName());
+                model.setRequestType(info.getRequestType());
+                model.setAsyn(info.getAsyn());
+                model.setAbnormalStop(info.getAbnormalStop());
+                List<ItemInterfaceParamsBind> list0 = itemInterfaceParamsBindRepository
+                    .findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, info.getId());
+                List<InterfaceParamsModel> list1 = new ArrayList<>();
+                for (ItemInterfaceParamsBind bind0 : list0) {
+                    InterfaceParamsModel model0 = new InterfaceParamsModel();
+                    model0.setId(bind0.getId());
+                    model0.setBindType(bind0.getBindType());
+                    model0.setColumnName(bind0.getColumnName());
+                    model0.setParameterName(bind0.getParameterName());
+                    model0.setParameterType(bind0.getParameterType());
+                    model0.setTableName(bind0.getTableName());
+                    model0.setTableType(bind0.getTableType());
+                    list1.add(model0);
+                }
+                model.setParamsList(list1);
+                resList.add(model);
+            }
+        }
+        return Y9Result.success(resList, "获取成功");
+    }
+
+    /**
      * 获取事项绑定的接口参数信息
      *
      * @param tenantId 租户id
@@ -109,6 +155,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
             model.setParameterName(bind.getParameterName());
             model.setParameterType(bind.getParameterType());
             model.setTableName(bind.getTableName());
+            model.setTableType(bind.getTableType());
             model.setFileType("");
             if (ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue().equals(bind.getBindType())) {
                 List<InterfaceResponseParams> plist =

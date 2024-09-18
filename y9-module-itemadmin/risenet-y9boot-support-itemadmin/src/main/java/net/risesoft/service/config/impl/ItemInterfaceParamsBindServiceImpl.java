@@ -53,6 +53,7 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
                 item.setTableName(info.getTableName());
                 item.setParameterName(info.getParameterName());
                 item.setParameterType(info.getParameterType());
+                item.setTableType(info.getTableType());
                 itemInterfaceParamsBindRepository.save(item);
             } else {
                 item = new ItemInterfaceParamsBind();
@@ -62,6 +63,7 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
                 item.setParameterType(info.getParameterType());
                 item.setBindType(info.getBindType());
                 item.setInterfaceId(info.getInterfaceId());
+                item.setTableType(info.getTableType());
                 item.setItemId(info.getItemId());
                 item.setId(info.getId());
                 item.setCreateTime(sdf.format(new Date()));
@@ -76,6 +78,7 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
             item.setBindType(info.getBindType());
             item.setInterfaceId(info.getInterfaceId());
             item.setItemId(info.getItemId());
+            item.setTableType(info.getTableType());
             item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             item.setCreateTime(sdf.format(new Date()));
             itemInterfaceParamsBindRepository.save(item);

@@ -41,6 +41,12 @@ public class InterfaceParamsModel implements Serializable {
      * 表名称
      */
     private String tableName;
+
+    /**
+     * 表类型
+     */
+    private String tableType;
+
     /**
      * 表列名
      */

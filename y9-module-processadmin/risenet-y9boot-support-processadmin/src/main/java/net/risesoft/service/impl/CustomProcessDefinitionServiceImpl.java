@@ -109,7 +109,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> list = (List<FlowElement>)process.getFlowElements();
-        list.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent);
         List<FlowElement> newlist = new ArrayList<>();
         for (FlowElement activity : list) {
             newlist.add(activity);
@@ -136,7 +135,12 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         return SysVariables.COMMON;
                     }
                 } else if (activity instanceof SubProcess) {
-                    return SysVariables.SUBPROCESS;
+                    SubProcess subProcess = (SubProcess)activity;
+                    if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                        return SysVariables.PARALLEL;
+                    } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                        return SysVariables.SEQUENTIAL;
+                    }
                 } else if (activity instanceof CallActivity) {
                     return SysVariables.CALLACTIVITY;
                 }
@@ -416,8 +420,13 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     targetModel.setMultiInstance(SysVariables.COMMON);
                 }
             } else if (activity instanceof SubProcess) {
-                targetModel.setMultiInstance(SysVariables.PARALLEL);
+                targetModel.setMultiInstance(SysVariables.COMMON);
                 SubProcess subProcess = (SubProcess)activity;
+                if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.PARALLEL);
+                } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                }
                 List<FlowElement> subProcessList = (List<FlowElement>)subProcess.getFlowElements();
                 subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
                     || e instanceof SequenceFlow);
@@ -438,9 +447,9 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     list.add(targetModel1);
                 }
             }
-            if (!(activity instanceof SubProcess)) {// 子流程不加入list
-                list.add(targetModel);
-            }
+            // if (!(activity instanceof SubProcess)) {// 子流程不加入list
+            list.add(targetModel);
+            // }
         }
         TargetModel targetModel = new TargetModel();
         targetModel.setTaskDefKey("");
@@ -546,16 +555,16 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         if (fe instanceof EndEvent) {
                             break;
                         }
-                        SubProcess subProcess = null;
-                        if (fe instanceof SubProcess) {// 子流程，获取子流程里面第一个任务节点
-                            subProcess = (SubProcess)fe;
-                            for (FlowElement subfe : subProcess.getFlowElements()) {
-                                if (subfe instanceof UserTask) {
-                                    fe = subfe;
-                                    break;
-                                }
-                            }
-                        }
+                        // SubProcess subProcess = null;
+                        // if (fe instanceof SubProcess) {// 子流程，获取子流程里面第一个任务节点
+                        // subProcess = (SubProcess)fe;
+                        // for (FlowElement subfe : subProcess.getFlowElements()) {
+                        // if (subfe instanceof UserTask) {
+                        // fe = subfe;
+                        // break;
+                        // }
+                        // }
+                        // }
 
                         targetModel.setTaskDefKey(fe.getId());
                         String name = tr.getName();
@@ -577,9 +586,15 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             } else {
                                 targetModel.setMultiInstance(SysVariables.COMMON);
                             }
-                        }
-                        if (subProcess != null && subProcess instanceof SubProcess) {// 子流程使用并行
-                            targetModel.setMultiInstance(SysVariables.PARALLEL);
+                        } else if (fe instanceof SubProcess) {
+                            SubProcess subProcess = (SubProcess)fe;
+                            if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                targetModel.setMultiInstance(SysVariables.PARALLEL);
+                            } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                                targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                            } else {
+                                targetModel.setMultiInstance(SysVariables.COMMON);
+                            }
                         }
                     }
                 } else {
@@ -601,7 +616,14 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                 targetModel.setTaskDefName(tr.getTargetFlowElement().getName());
                             }
                             if (fe instanceof SubProcess) {
-                                targetModel.setMultiInstance(SysVariables.PARALLEL);
+                                SubProcess subProcess = (SubProcess)fe;
+                                if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                    targetModel.setMultiInstance(SysVariables.PARALLEL);
+                                } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                                } else {
+                                    targetModel.setMultiInstance(SysVariables.COMMON);
+                                }
                             } else {
                                 UserTask userTask = (UserTask)fe;
                                 if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {

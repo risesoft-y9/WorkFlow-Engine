@@ -15,21 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.entity.Y9FormItemBind;
-import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9Table;
-import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.entity.form.Y9TableField;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
-import net.risesoft.service.config.Y9FormItemBindService;
-import net.risesoft.service.form.Y9FormFieldService;
+import net.risesoft.service.form.Y9TableFieldService;
 import net.risesoft.service.form.Y9TableService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author zhangchongjie
@@ -44,13 +40,9 @@ public class ItemInterfaceParamsBindController {
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final RepositoryApi repositoryApi;
-
-    private final Y9FormItemBindService y9FormItemBindService;
-
-    private final Y9FormFieldService y9FormFieldService;
-
     private final Y9TableService y9TableService;
+
+    private final Y9TableFieldService y9TableFieldService;
 
     private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
@@ -65,36 +57,19 @@ public class ItemInterfaceParamsBindController {
     public Y9Result<Map<String, Object>> getBindInfo(@RequestParam(required = false) String id,
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
-        String processDefineKey = item.getWorkflowGuid();
-        ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
-        List<Y9FormItemBind> formList =
-            y9FormItemBindService.listByItemIdAndProcDefId(itemId, processDefinition.getId());
+        Y9Page<Y9Table> pageList = y9TableService.pageTables(item.getSystemName(), 1, 500);
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         List<Map<String, Object>> tableField = new ArrayList<>();
-        for (Y9FormItemBind bind : formList) {
-            String formId = bind.getFormId();
-            List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
-            for (Y9FormField formField : formFieldList) {
-                if (!tableNameList.contains(formField.getTableName())) {
-                    Y9Table y9Table = y9TableService.findById(formField.getTableId());
-                    tableNameList.add(formField.getTableName());
-                    tableList.add(y9Table);
-                    List<Y9FormField> fieldlist = new ArrayList<>();
-                    for (Y9FormField formField1 : formFieldList) {
-                        if (y9Table.getTableName().equals(formField1.getTableName())) {
-                            fieldlist.add(formField1);
-                        }
-                    }
-                    Map<String, Object> tableFieldMap = new HashMap<>();
-                    tableFieldMap.put("tableName", y9Table.getTableName());
-                    tableFieldMap.put("fieldlist", fieldlist);
-                    tableField.add(tableFieldMap);
-                }
-            }
+        for (Y9Table table : pageList.getRows()) {
+            tableNameList.add(table.getTableName());
+            tableList.add(table);
+            Map<String, Object> tableFieldMap = new HashMap<>();
+            tableFieldMap.put("tableName", table.getTableName());
+            List<Y9TableField> fieldlist = y9TableFieldService.listByTableId(table.getId());
+            tableFieldMap.put("fieldlist", fieldlist);
+            tableField.add(tableFieldMap);
         }
         if (StringUtils.isNotBlank(id)) {
             ItemInterfaceParamsBind info = itemInterfaceParamsBindRepository.findById(id).orElse(null);
