@@ -121,7 +121,7 @@ public class InterfaceMethodService {
                         List<Map<String, Object>> res_list = jdbcTemplate.queryForList(sqlStr.toString(), guid);
                         if (res_list.size() == 0) {// 新增数据
                             this.insertData(tableName, processSerialNumber, map, paramsList, guid);
-                            return;
+                            continue;
                         }
                     }
                     StringBuilder sqlStr = new StringBuilder();
