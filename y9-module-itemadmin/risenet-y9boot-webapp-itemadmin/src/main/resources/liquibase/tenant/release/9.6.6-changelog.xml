@@ -219,4 +219,16 @@
             <column name="leastTime" remarks="最短时长" type="INT"/>
         </createTable>
     </changeSet>
+    <changeSet id="1702001405829-1-14" author="zhangchongjie" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ITEM_INTERFACE_PARAMS_BIND" columnName="TABLETYPE"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="FF_ITEM_INTERFACE_PARAMS_BIND">
+            <column name="TABLETYPE" remarks="表类型" type="VARCHAR(20)" defaultValue="1">
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

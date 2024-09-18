@@ -68,6 +68,10 @@ public class ItemInterfaceParamsBind implements Serializable {
     @Column(name = "TABLENAME", length = 50)
     private String tableName;
 
+    @Comment("表类型")
+    @Column(name = "TABLETYPE", length = 20)
+    private String tableType;
+
     @Comment("列名称")
     @Column(name = "COLUMNNAME", length = 100)
     private String columnName;

@@ -1,6 +1,7 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.Data;
 
@@ -40,5 +41,8 @@ public class InterfaceModel implements Serializable {
 
     // 是否异常停止
     private String abnormalStop;
+
+    // 接口参数
+    private List<InterfaceParamsModel> paramsList;
 
 }

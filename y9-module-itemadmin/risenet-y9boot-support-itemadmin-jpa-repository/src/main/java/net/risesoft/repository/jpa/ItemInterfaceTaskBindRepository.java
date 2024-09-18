@@ -18,17 +18,19 @@ import net.risesoft.entity.ItemInterfaceTaskBind;
 public interface ItemInterfaceTaskBindRepository
     extends JpaRepository<ItemInterfaceTaskBind, String>, JpaSpecificationExecutor<ItemInterfaceTaskBind> {
 
+    @Transactional
+    void deleteByItemId(String itemId);
+
     @Modifying
     @Transactional(readOnly = false)
     void deleteByItemIdAndInterfaceId(String itemId, String interfaceId);
+
+    List<ItemInterfaceTaskBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
     List<ItemInterfaceTaskBind> findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(
         String itemId, String taskKey, String processDefinitionId, String condition);
 
     ItemInterfaceTaskBind findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(String elementKey,
         String itemId, String processDefinitionId, String interfaceId);
-
-    @Transactional
-    void deleteByItemId(String itemId);
 
 }
