@@ -38,7 +38,7 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
  */
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties(Y9Properties.class)
+@EnableConfigurationProperties({Y9Properties.class, Y9ProcessAdminProperties.class})
 @ImportResource({"classpath:/springconfigs/flowable.cfg.xml"})
 @ComponentScan(basePackages = {"net.risesoft"})
 public class ProcessAdminConfiguraton implements WebMvcConfigurer {

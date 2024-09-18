@@ -15,6 +15,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.sms.SmsHttpApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -22,7 +23,6 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.SmsRemindService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * @author qinman
@@ -40,7 +40,7 @@ public class SmsRemindServiceImpl implements SmsRemindService {
 
     private final ProcessParamApi processParamApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     private final SmsHttpApi smsHttpApi;
 
@@ -50,7 +50,7 @@ public class SmsRemindServiceImpl implements SmsRemindService {
     @Override
     public void smsRemind(final DelegateTask task, final Map<String, Object> map, final Map<String, Object> local) {
 
-        Boolean smsSwitch = y9Conf.getApp().getProcessAdmin().getSmsSwitch();
+        Boolean smsSwitch = y9ProcessAdminProperties.getSmsSwitch();
         if (smsSwitch == null || !smsSwitch) {
             LOGGER.info("######################短信提醒开关已关闭,如需短信提醒请更改配置文件######################");
             return;

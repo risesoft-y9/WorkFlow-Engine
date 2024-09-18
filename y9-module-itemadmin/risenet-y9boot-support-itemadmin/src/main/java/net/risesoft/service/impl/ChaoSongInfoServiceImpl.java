@@ -39,6 +39,7 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.sms.SmsHttpApi;
 import net.risesoft.api.todo.TodoTaskApi;
+import net.risesoft.config.Y9ItemAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
@@ -70,7 +71,6 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -103,7 +103,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
-    private final Y9Properties y9Conf;
+    private final Y9ItemAdminProperties y9ItemAdminProperties;
 
     private final OfficeFollowService officeFollowService;
 
@@ -819,7 +819,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             asyncHandleService.saveChaoSong4Todo(tenantId, csList);
             if (StringUtils.isNotBlank(isSendSms) && UtilConsts.TRUE.equals(isSendSms)) {
                 smsContent += "--" + Y9LoginUserHolder.getUserInfo().getName();
-                Boolean smsSwitch = y9Conf.getApp().getItemAdmin().getSmsSwitch();
+                Boolean smsSwitch = y9ItemAdminProperties.getSmsSwitch();
                 if (Boolean.TRUE.equals(smsSwitch)) {
                     smsHttpApi.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile, smsContent,
                         systemName + "抄送");
