@@ -52,7 +52,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
     private DruidDataSource defaultDataSource;
 
     @Autowired
-    private Y9Properties y9Config;
+    private Y9Properties y9Properties;
 
     public MultiTenantProcessEngineConfiguration() {
         super(getFlowableTenantInfoHolder());
@@ -64,8 +64,8 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     @Override
     public ProcessEngine buildProcessEngine() {
-        createSystem(y9Config.getApp().getProcessAdmin().getSystemName());// 创建系统
-        createTenantSystem(y9Config.getApp().getProcessAdmin().getSystemName());// 租户租用系统
+        createSystem(y9Properties.getSystemName());// 创建系统
+        createTenantSystem(y9Properties.getSystemName());// 租户租用系统
         LOGGER.info("start registerTenant");
         /*
          * 设置默认的租户数据源
@@ -76,8 +76,8 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
         /*
          * 系统存在的话查看租户租用系统的数据源
          */
-        List<Map<String, Object>> systems = jdbcTemplate4Public.queryForList(
-            "SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", y9Config.getApp().getProcessAdmin().getSystemName());
+        List<Map<String, Object>> systems = jdbcTemplate4Public
+            .queryForList("SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", y9Properties.getSystemName());
         if (!systems.isEmpty()) {
             Map<String, Object> map = systems.get(0);
             String systemId = (String)map.get("ID");

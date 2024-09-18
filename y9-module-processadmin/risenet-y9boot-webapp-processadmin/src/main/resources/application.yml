@@ -178,6 +178,7 @@ spring:
             max-request-size: 1000MB
 y9:
     systemName: processAdmin
+    systemCnName: 流程管理器
     internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
     app:
         processAdmin:
@@ -187,8 +188,6 @@ y9:
             messagePushSwitch: false
             pushSwitch: false
             smsSwitch: false
-            systemCnName: 流程管理器
-            systemName: processAdmin
             todoSwitch: false
             weiXinSwitch: false
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage

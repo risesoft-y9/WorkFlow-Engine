@@ -22,7 +22,7 @@ import net.risesoft.y9.configuration.Y9Properties;
  */
 @Configuration
 @EnableScheduling
-@EnableConfigurationProperties(Y9Properties.class)
+@EnableConfigurationProperties({Y9Properties.class, Y9ItemAdminProperties.class})
 @EnableKafka
 @Slf4j
 public class ItemAdminConfiguration {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.config.Y9ItemAdminProperties;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.model.processadmin.TargetModel;
@@ -23,7 +24,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * @author qinman
@@ -39,7 +39,7 @@ public class ItemPermissionRestController {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ItemAdminProperties y9ItemAdminProperties;
 
     /**
      * 复制权限
@@ -77,7 +77,7 @@ public class ItemPermissionRestController {
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
-        String freeFlowKey = y9Conf.getApp().getItemAdmin().getFreeFlowKey();
+        String freeFlowKey = y9ItemAdminProperties.getFreeFlowKey();
         /*
          * 自由流程额外添加一个办结角色，规定自由流的办结按钮控制
          */

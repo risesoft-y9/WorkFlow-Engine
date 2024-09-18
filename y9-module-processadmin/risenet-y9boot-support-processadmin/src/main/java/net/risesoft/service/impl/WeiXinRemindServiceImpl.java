@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -25,7 +26,6 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.WeiXinRemindService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
@@ -44,7 +44,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
 
     private final ProcessParamApi processParamApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     /**
      * 微信提醒
@@ -56,7 +56,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
     @Override
     @SuppressWarnings("unchecked")
     public void weiXinRemind(final DelegateTask task, final Map<String, Object> map, final Map<String, Object> local) {
-        Boolean weiXinSwitch = y9Conf.getApp().getProcessAdmin().getWeiXinSwitch();
+        Boolean weiXinSwitch = y9ProcessAdminProperties.getWeiXinSwitch();
         if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
@@ -83,7 +83,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 List<Person> list = positionApi.listPersonsByPositionId(tenantId, assignee).getData();
-                String url = y9Conf.getApp().getProcessAdmin().getWeiXinUrl();
+                String url = y9ProcessAdminProperties.getWeiXinUrl();
                 for (Person p : list) {
                     try {
                         HttpClient client = new HttpClient();
@@ -127,7 +127,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
                 method.addParameter("processInstanceId", task.getProcessInstanceId());
                 method.addParameter("taskId", task.getId());
                 method.addParameter("itemId", itemId);
-                String url = y9Conf.getApp().getProcessAdmin().getWeiXinUrl();
+                String url = y9ProcessAdminProperties.getWeiXinUrl();
                 method.setPath(url);
                 int code = client.executeMethod(method);
                 LOGGER.info("##########################微信接口状态：{}##########################", code);

@@ -15,6 +15,7 @@ import net.risesoft.Y9Push;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -22,7 +23,6 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.PushNormalToAndroidService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * @author qinman
@@ -36,7 +36,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
 
     private final ProcessParamApi processParamApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -47,7 +47,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
      */
     @Override
     public void pushNormalToAndroid(final DelegateTask task, final Map<String, Object> map) {
-        Boolean pushSwitch = y9Conf.getApp().getProcessAdmin().getPushSwitch();
+        Boolean pushSwitch = y9ProcessAdminProperties.getPushSwitch();
         if (pushSwitch == null || !pushSwitch) {
             LOGGER.info("######################消息推送提醒开关已关闭,如需推送请更改配置文件######################");
             return;

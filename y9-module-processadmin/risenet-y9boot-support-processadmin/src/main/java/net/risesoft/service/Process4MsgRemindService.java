@@ -17,6 +17,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -25,7 +26,6 @@ import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -50,7 +50,7 @@ public class Process4MsgRemindService {
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final Y9Properties y9Conf;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     /**
      * 流程办结消息提醒
@@ -60,7 +60,7 @@ public class Process4MsgRemindService {
      */
     public void processComplete(final ProcessParamModel processParamModel, String personName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
+        Boolean msgSwitch = y9ProcessAdminProperties.getMsgSwitch();
         if (msgSwitch == null || !msgSwitch) {
             return;
         }
@@ -113,7 +113,7 @@ public class Process4MsgRemindService {
         String processSerialNumber = (String)variables.get("processSerialNumber");
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
+            Boolean msgSwitch = y9ProcessAdminProperties.getMsgSwitch();
             if (msgSwitch == null || !msgSwitch) {
                 return;
             }
@@ -176,7 +176,7 @@ public class Process4MsgRemindService {
         String processSerialNumber = (String)variables.get("processSerialNumber");
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
+            Boolean msgSwitch = y9ProcessAdminProperties.getMsgSwitch();
             if (msgSwitch == null || !msgSwitch) {
                 return;
             }
