@@ -56,7 +56,7 @@ vue -- 前端工程
 
 3. 工作流引擎不仅仅支持传统OA，更面向外部业务、算法、接口、代理的接入和控制
 
-## 功能架构图 ##
+## 功能架构图
 
 <div><img src="https://vue.youshengyun.com/files/img/function2.png"><div/>
 
@@ -219,16 +219,14 @@ vue -- 前端工程
 
 ### 事项管理
 
-**演示地址
-**：<https://demo.youshengyun.com/itemAdmin/>
+演示地址 ：<https://demo.youshengyun.com/itemAdmin/>
 
 > 演示账号：systemManager 密码：Risesoft@2024
 >
 
 ### 工作台
 
-**演示地址
-**：<https://demo.youshengyun.com/flowableUI/workIndex/>
+演示地址 ：<https://demo.youshengyun.com/flowableUI/workIndex/>
 
 > 演示账号：
 >
