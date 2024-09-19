@@ -17,6 +17,7 @@ import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
@@ -50,6 +51,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     private final ProcessParamApi processParamApi;
 
+    private final ProcessDefinitionApi processDefinitionApi;
+
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -68,6 +71,12 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
          */
         documentApi.complete(tenantId, positionId, taskId);
 
+        boolean isSubProcessChildNode = processDefinitionApi
+            .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+            .getData();
+        if (isSubProcessChildNode) {// 子流程办结，不更新自定义历程信息
+            return;
+        }
         /*
           2更新自定义历程结束时间
          */

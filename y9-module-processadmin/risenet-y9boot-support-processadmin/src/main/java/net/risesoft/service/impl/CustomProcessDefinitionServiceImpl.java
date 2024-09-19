@@ -299,6 +299,40 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public Boolean isSubProcess(String processDefinitionId, String taskDefKey) {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+        List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
+        for (FlowElement flowElement : flowElements) {
+            String id = flowElement.getId();
+            if (taskDefKey.equals(id)) {
+                if (flowElement instanceof SubProcess) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean isSubProcessChildNode(String processDefinitionId, String taskDefKey) {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+        List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
+        for (FlowElement flowElement : flowElements) {
+            if (flowElement instanceof SubProcess) {
+                SubProcess subProcess = (SubProcess)flowElement;
+                for (FlowElement fe : subProcess.getFlowElements()) {
+                    if (taskDefKey.equals(fe.getId())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
     public Y9Result<List<TargetModel>> listContainEndEvent4UserTask(String processDefinitionId) {
         List<TargetModel> userTaskList = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
