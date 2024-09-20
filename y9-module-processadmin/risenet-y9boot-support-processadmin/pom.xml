@@ -193,15 +193,12 @@
             <artifactId>jxl</artifactId>
             <version>2.6</version>
         </dependency>
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-file-jpa-repository</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-file-jpa-repository</artifactId>
-        </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
