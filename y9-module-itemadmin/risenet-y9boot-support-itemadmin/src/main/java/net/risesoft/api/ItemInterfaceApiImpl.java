@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -95,10 +96,15 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceModel>> getInterfaceList(String tenantId, String itemId, String processDefinitionId) {
+    public Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam String tenantId, @RequestParam String itemId,
+        String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemInterfaceTaskBind> list =
-            itemInterfaceTaskBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+        List<ItemInterfaceTaskBind> list;
+        if (StringUtils.isBlank(processDefinitionId)) {
+            list = itemInterfaceTaskBindRepository.findByItemId(itemId);
+        } else {
+            list = itemInterfaceTaskBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+        }
         List<InterfaceModel> resList = new ArrayList<>();
         for (ItemInterfaceTaskBind bind : list) {
             InterfaceModel model = new InterfaceModel();
