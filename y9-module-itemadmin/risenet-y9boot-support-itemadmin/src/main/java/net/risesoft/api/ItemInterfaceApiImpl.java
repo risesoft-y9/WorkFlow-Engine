@@ -3,7 +3,6 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceResponseParams;
+import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.ItemInterfaceTaskBind;
 import net.risesoft.entity.TaskTimeConf;
@@ -24,6 +24,7 @@ import net.risesoft.model.itemadmin.TaskTimeConfModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.InterfaceInfoRepository;
 import net.risesoft.repository.jpa.InterfaceResponseParamsRepository;
+import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.repository.jpa.TaskTimeConfRepository;
@@ -44,6 +45,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
 
     private final InterfaceInfoRepository interfaceInfoRepository;
+
+    private final ItemInterfaceBindRepository itemInterfaceBindRepository;
 
     private final InterfaceResponseParamsRepository interfaceResponseParamsRepository;
 
@@ -87,26 +90,19 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     }
 
     /**
-     * 根据事项id，流程定义key获取绑定接口
+     * 根据事项id获取绑定接口
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
      * @return {@code Y9Result<List<InterfaceModel>>} 通用请求返回对象 - data 是接口绑定列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam String tenantId, @RequestParam String itemId,
-        String processDefinitionId) {
+    public Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemInterfaceTaskBind> list;
-        if (StringUtils.isBlank(processDefinitionId)) {
-            list = itemInterfaceTaskBindRepository.findByItemId(itemId);
-        } else {
-            list = itemInterfaceTaskBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-        }
+        List<ItemInterfaceBind> list = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
         List<InterfaceModel> resList = new ArrayList<>();
-        for (ItemInterfaceTaskBind bind : list) {
+        for (ItemInterfaceBind bind : list) {
             InterfaceModel model = new InterfaceModel();
             InterfaceInfo info = interfaceInfoRepository.findById(bind.getInterfaceId()).orElse(null);
             if (info != null) {

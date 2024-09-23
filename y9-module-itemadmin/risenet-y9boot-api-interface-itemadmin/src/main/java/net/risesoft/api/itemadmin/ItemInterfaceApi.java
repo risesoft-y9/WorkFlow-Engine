@@ -40,18 +40,16 @@ public interface ItemInterfaceApi {
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("condition") String condition);
 
     /**
-     * 根据事项id，流程定义key获取绑定接口
+     * 根据事项id获取绑定接口
      * 
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
      * @return {@code Y9Result<List<InterfaceModel>>} 通用请求返回对象 - data 是接口绑定列表
      * @since 9.6.6
      */
     @GetMapping("/getInterfaceList")
     Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("itemId") @NotBlank String itemId,
-        @RequestParam(value = "processDefinitionId", required = false) String processDefinitionId);
+        @RequestParam("itemId") @NotBlank String itemId);
 
     /**
      * 获取事项接口参数信息
