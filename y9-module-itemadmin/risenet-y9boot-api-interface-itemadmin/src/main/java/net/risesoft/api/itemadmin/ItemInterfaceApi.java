@@ -51,7 +51,7 @@ public interface ItemInterfaceApi {
     @GetMapping("/getInterfaceList")
     Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("itemId") @NotBlank String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId);
+        @RequestParam(value = "processDefinitionId", required = false) String processDefinitionId);
 
     /**
      * 获取事项接口参数信息
