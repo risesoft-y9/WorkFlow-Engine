@@ -82,6 +82,24 @@ public interface CustomProcessDefinitionService {
     Boolean isContainNodeType(String taskId, String nodeType);
 
     /**
+     * 判断流程定义的节点是否是SubProcess节点
+     *
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    Boolean isSubProcess(String processDefinitionId, String taskDefKey);
+
+    /**
+     * 判断流程定义的节点是否是SubProcess内的节点
+     *
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    Boolean isSubProcessChildNode(String processDefinitionId, String taskDefKey);
+
+    /**
      * 获取有办结权限的UserTask
      *
      * @param processDefinitionId
@@ -94,7 +112,7 @@ public interface CustomProcessDefinitionService {
      *
      * @param processDefinitionId
      * @param isContainStartNode
-     * @return Y9Result<List<FlowElementModel>>
+     * @return Y9Result<List < FlowElementModel>>
      */
     Y9Result<List<FlowElementModel>> listFlowElementByProcessDefinitionId(String processDefinitionId,
         Boolean isContainStartNode);
@@ -104,7 +122,7 @@ public interface CustomProcessDefinitionService {
      *
      * @param processDefinitionId
      * @param isContainStartNode
-     * @return Y9Result<List<TargetModel>>
+     * @return Y9Result<List < TargetModel>>
      */
     Y9Result<List<TargetModel>> listNodesByProcessDefinitionId(String processDefinitionId, Boolean isContainStartNode);
 
@@ -113,7 +131,7 @@ public interface CustomProcessDefinitionService {
      *
      * @param processDefinitionId
      * @param taskDefKey
-     * @return Y9Result<List<GatewayModel>>
+     * @return Y9Result<List < GatewayModel>>
      */
     Y9Result<List<GatewayModel>> listParallelGateway(String processDefinitionId, String taskDefKey);
 
@@ -122,7 +140,7 @@ public interface CustomProcessDefinitionService {
      *
      * @param processDefinitionId
      * @param taskDefKey
-     * @return Y9Result<List<TargetModel>>
+     * @return Y9Result<List < TargetModel>>
      */
     Y9Result<List<TargetModel>> listTargetNodes(String processDefinitionId, String taskDefKey);
 

@@ -218,6 +218,21 @@ public class Y9FormRestController {
     }
 
     /**
+     * 获取事项绑定的表单
+     *
+     * @param itemId 事项id
+     * @param processDefinitionId 流程实例id
+     * @param taskDefinitionKey 任务key
+     * @return Y9Result<List < BindFormModel>>
+     */
+    @GetMapping(value = "/getFormItemBind")
+    public Y9Result<List<BindFormModel>> getFormItemBind(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefinitionKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return formDataApi.findFormItemBind(tenantId, itemId, processDefinitionId, taskDefinitionKey);
+    }
+
+    /**
      * 获取表单json数据
      *
      * @param formId 表单id

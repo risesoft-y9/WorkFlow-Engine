@@ -78,22 +78,6 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
-     * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
-     *
-     * @param tenantId 租户Id
-     * @param processDefinitionId 流程定义id
-     * @param isContainStartNode 是否包含开始节点
-     * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<TargetModel>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
-        @RequestParam Boolean isContainStartNode) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.listNodesByProcessDefinitionId(processDefinitionId, isContainStartNode);
-    }
-
-    /**
      * 获取具体流程的某个节点类型
      *
      * @param tenantId 租户Id
@@ -107,6 +91,22 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
         @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customProcessDefinitionService.getNodeType(processDefinitionId, taskDefKey));
+    }
+
+    /**
+     * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @param isContainStartNode 是否包含开始节点
+     * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<TargetModel>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+        @RequestParam Boolean isContainStartNode) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return customProcessDefinitionService.listNodesByProcessDefinitionId(processDefinitionId, isContainStartNode);
     }
 
     /**
@@ -268,5 +268,37 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
         @RequestParam String nodeType) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customProcessDefinitionService.isContainNodeType(taskId, nodeType));
+    }
+
+    /**
+     * 判断流程定义的节点是否是SubProcess节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Boolean> isSubProcess(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return Y9Result.success(customProcessDefinitionService.isSubProcess(processDefinitionId, taskDefKey));
+    }
+
+    /**
+     * 判断流程定义的节点是否是SubProcess内的节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Boolean> isSubProcessChildNode(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return Y9Result.success(customProcessDefinitionService.isSubProcessChildNode(processDefinitionId, taskDefKey));
     }
 }

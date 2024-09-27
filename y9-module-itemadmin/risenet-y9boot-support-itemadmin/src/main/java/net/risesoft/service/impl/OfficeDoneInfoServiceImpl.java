@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -229,8 +230,10 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             LOGGER.info("***************************保存办结件信息成功*****************************");
         } catch (Exception e) {
             final Writer result = new StringWriter();
-            LOGGER.warn("异常", e);
+            final PrintWriter print = new PrintWriter(result);
+            e.printStackTrace(print);
             String msg = result.toString();
+            LOGGER.warn("异常", e);
             String time = sdf.format(new Date());
             ErrorLog errorLogModel = new ErrorLog();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
