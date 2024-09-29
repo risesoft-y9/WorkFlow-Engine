@@ -210,6 +210,17 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    public Map<String, Object> getFormData(String formId, String processSerialNumber) {
+        Map<String, Object> map = new HashMap<>(16);
+        try {
+            map = y9FormService.getFormData(formId, processSerialNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    @Override
     public String getFormJson(String formId) {
         String formJson = "";
         try {
@@ -219,17 +230,6 @@ public class FormDataServiceImpl implements FormDataService {
             e.printStackTrace();
         }
         return formJson;
-    }
-
-    @Override
-    public Map<String, Object> getFromData(String formId, String processSerialNumber) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            map = y9FormService.getFormData(formId, processSerialNumber);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return map;
     }
 
     @Override
