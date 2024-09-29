@@ -12,4 +12,6 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 public interface OfficeDoneInfoRepository extends ElasticsearchRepository<OfficeDoneInfo, String> {
 
     OfficeDoneInfo findByProcessInstanceIdAndTenantId(String processInstanceId, String tenantId);
+
+    OfficeDoneInfo findByProcessSerialNumberAndTenantId(String processSerialNumber, String tenantId);
 }
