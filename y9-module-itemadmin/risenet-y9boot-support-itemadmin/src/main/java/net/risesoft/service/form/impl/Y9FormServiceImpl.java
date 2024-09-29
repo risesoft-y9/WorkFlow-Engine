@@ -549,7 +549,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
@@ -629,7 +629,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
@@ -764,7 +764,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
@@ -845,7 +845,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
@@ -983,7 +983,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
@@ -1064,7 +1064,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
