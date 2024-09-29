@@ -111,7 +111,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 根据流程实例id删除办结信息
+     * 根据流程实例id删除办件信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -127,7 +127,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 根据流程实例id获取办结信息
+     * 根据流程实例id获取办件信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -139,6 +139,27 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+        OfficeDoneInfoModel officeDoneInfoModel = null;
+        if (officeDoneInfo != null) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+        }
+        return Y9Result.success(officeDoneInfoModel);
+    }
+
+    /**
+     * 根据流程实例编号获取办件信息
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程实例编号
+     * @return {@code Y9Result<OfficeDoneInfoModel>} 通用请求返回对象 - data 是办结信息
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<OfficeDoneInfoModel> findByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessSerialNumber(processSerialNumber);
         OfficeDoneInfoModel officeDoneInfoModel = null;
         if (officeDoneInfo != null) {
             officeDoneInfoModel = new OfficeDoneInfoModel();
@@ -168,7 +189,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     /**
-     * 保存办结信息（不经过kafka消息队列，直接保存）
+     * 保存办件信息（不经过kafka消息队列，直接保存）
      *
      * @param tenantId 租户id
      * @param info 办结信息

@@ -167,6 +167,12 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
+    public OfficeDoneInfo findByProcessSerialNumber(String processSerialNumber) {
+        return officeDoneInfoRepository.findByProcessSerialNumberAndTenantId(processSerialNumber,
+            Y9LoginUserHolder.getTenantId());
+    }
+
+    @Override
     public Y9Page<OfficeDoneInfoModel> pageMeetingList(String userName, String deptName, String title,
         String meetingType, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();

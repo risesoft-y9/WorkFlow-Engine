@@ -15,7 +15,7 @@ import net.risesoft.pojo.Y9Page;
 public interface OfficeDoneInfoService {
 
     /**
-     * 取消上会，当代研究所
+     * 取消上会
      *
      * @param processInstanceId
      */
@@ -72,7 +72,15 @@ public interface OfficeDoneInfoService {
     OfficeDoneInfo findByProcessInstanceId(String processInstanceId);
 
     /**
-     * 上会台账列表，当代研究所
+     * 根据流程编号获取办件信息
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    OfficeDoneInfo findByProcessSerialNumber(String processSerialNumber);
+
+    /**
+     * 上会台账列表
      *
      * @param userName
      * @param deptName
@@ -226,7 +234,7 @@ public interface OfficeDoneInfoService {
         String startdate, String enddate, Integer page, Integer rows);
 
     /**
-     * 上会，当代研究所
+     * 上会
      *
      * @param processInstanceId
      * @param meetingType

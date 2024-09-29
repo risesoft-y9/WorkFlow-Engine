@@ -83,7 +83,7 @@ public interface OfficeDoneInfoApi {
         @RequestParam(value = "itemId", required = false) String itemId);
 
     /**
-     * 根据流程实例id删除办结信息
+     * 根据流程实例id删除办件信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -95,7 +95,7 @@ public interface OfficeDoneInfoApi {
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 根据流程实例id获取办结信息
+     * 根据流程实例id获取办件信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -105,6 +105,17 @@ public interface OfficeDoneInfoApi {
     @GetMapping("/findByProcessInstanceId")
     Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
+
+    /**
+     * 根据流程流水号获取办件信息
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程流水号
+     * @return {@code Y9Result<OfficeDoneInfoModel>} 通用请求返回对象 - data 是办结信息
+     * @since 9.6.6
+     */
+    Y9Result<OfficeDoneInfoModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 上会台账列表（定制）
