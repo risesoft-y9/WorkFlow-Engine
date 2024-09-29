@@ -158,6 +158,19 @@ public interface FormDataApi {
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
+     * 根据表单id获取表单数据
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是表单数据
+     * @since 9.6.6
+     */
+    @GetMapping("/getFormData")
+    Y9Result<Map<String, Object>> getFormData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("formId") String formId, @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
      * 根据表单id获取绑定字段信息
      *
      * @param tenantId 租户id
@@ -191,19 +204,6 @@ public interface FormDataApi {
      */
     @GetMapping("/getFormJson")
     Y9Result<String> getFormJson(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId);
-
-    /**
-     * 根据表单id获取表单数据
-     *
-     * @param tenantId 租户id
-     * @param formId 表单id
-     * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是表单数据
-     * @since 9.6.6
-     */
-    @GetMapping("/getFromData")
-    Y9Result<Map<String, Object>> getFromData(@RequestParam("tenantId") String tenantId,
-        @RequestParam("formId") String formId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 根据表单id获取前置表单数据

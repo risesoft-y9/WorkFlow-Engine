@@ -201,7 +201,7 @@ public class Y9FormRestController {
     public Y9Result<Map<String, Object>> getFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.getFromData(tenantId, formId, processSerialNumber);
+        return formDataApi.getFormData(tenantId, formId, processSerialNumber);
     }
 
     /**

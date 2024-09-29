@@ -38,7 +38,7 @@ public class DocumentUtil {
             formMap.put("formId", formIdList.get(i));
             formMap.put("formName", formNameList.get(i));
             Y9Result<Map<String, Object>> y9Result =
-                Y9Context.getBean(FormDataApi.class).getFromData(tenantId, formIdList.get(i), processSerialNumber);
+                Y9Context.getBean(FormDataApi.class).getFormData(tenantId, formIdList.get(i), processSerialNumber);
             formMap.putAll(y9Result.isSuccess() ? y9Result.getData() : new HashMap<>(16));
             formListMap.add(formMap);
         }

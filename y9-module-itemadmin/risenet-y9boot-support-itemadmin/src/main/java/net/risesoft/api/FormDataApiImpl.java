@@ -226,6 +226,27 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     /**
+     * 根据表单id获取表单数据
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是表单数据
+     * @since 9.6.6
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Y9Result<Map<String, Object>> getFormData(@RequestParam String tenantId, @RequestParam String formId,
+        @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Object> map = formDataService.getFormData(formId, processSerialNumber);
+        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.success((Map<String, Object>)map.get("formData"));
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
      * 根据表单id获取绑定字段信息
      *
      * @param tenantId 租户id
@@ -269,27 +290,6 @@ public class FormDataApiImpl implements FormDataApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         String json = formDataService.getFormJson(formId);
         return Y9Result.success(json);
-    }
-
-    /**
-     * 根据表单id获取表单数据
-     *
-     * @param tenantId 租户id
-     * @param formId 表单id
-     * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是表单数据
-     * @since 9.6.6
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Y9Result<Map<String, Object>> getFromData(@RequestParam String tenantId, @RequestParam String formId,
-        @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = formDataService.getFromData(formId, processSerialNumber);
-        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.success((Map<String, Object>)map.get("formData"));
-        }
-        return Y9Result.failure("获取失败");
     }
 
     /**

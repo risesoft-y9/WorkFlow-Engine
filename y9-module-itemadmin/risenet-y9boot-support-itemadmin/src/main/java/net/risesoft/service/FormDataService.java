@@ -64,21 +64,21 @@ public interface FormDataService {
     FieldPermModel getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId);
 
     /**
-     * 获取表单json数据
-     *
-     * @param formId
-     * @return
-     */
-    String getFormJson(String formId);
-
-    /**
      * 根据表单id获取表单数据
      *
      * @param formId
      * @param processSerialNumber
      * @return
      */
-    Map<String, Object> getFromData(String formId, String processSerialNumber);
+    Map<String, Object> getFormData(String formId, String processSerialNumber);
+
+    /**
+     * 获取表单json数据
+     *
+     * @param formId
+     * @return
+     */
+    String getFormJson(String formId);
 
     /**
      * 获取表单所有字段权限
