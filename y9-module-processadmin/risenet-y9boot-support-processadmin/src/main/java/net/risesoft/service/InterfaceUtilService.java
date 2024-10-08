@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -34,13 +35,16 @@ public class InterfaceUtilService {
     private final ItemInterfaceApi itemInterfaceApi;
     private final AsynUtilService asynUtilService;
     private final InterfaceMethodService interfaceMethodService;
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
 
     public InterfaceUtilService(ProcessParamApi processParamApi, ItemInterfaceApi itemInterfaceApi,
-        AsynUtilService asynUtilService, InterfaceMethodService interfaceMethodService) {
+        AsynUtilService asynUtilService, InterfaceMethodService interfaceMethodService,
+        Y9ProcessAdminProperties y9ProcessAdminProperties) {
         this.processParamApi = processParamApi;
         this.itemInterfaceApi = itemInterfaceApi;
         this.asynUtilService = asynUtilService;
         this.interfaceMethodService = interfaceMethodService;
+        this.y9ProcessAdminProperties = y9ProcessAdminProperties;
     }
 
     /**
@@ -61,6 +65,10 @@ public class InterfaceUtilService {
         String itemId = "";
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Y9Result<List<InterfaceModel>> y9Result = null;
+        Boolean interfaceSwitch = y9ProcessAdminProperties.getInterfaceSwitch();
+        if (!interfaceSwitch) {
+            return;
+        }
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
             processSerialNumber = (String)variables.get("processSerialNumber");
@@ -109,6 +117,10 @@ public class InterfaceUtilService {
         String itemId = "";
         Y9Result<List<InterfaceModel>> y9Result = null;
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        Boolean interfaceSwitch = y9ProcessAdminProperties.getInterfaceSwitch();
+        if (!interfaceSwitch) {
+            return;
+        }
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
             processInstanceId = flow.getProcessInstanceId();
@@ -164,6 +176,10 @@ public class InterfaceUtilService {
         Integer loopCounter = null;
         String orgUnitId = task.getAssignee();
         Y9Result<List<InterfaceModel>> y9Result = null;
+        Boolean interfaceSwitch = y9ProcessAdminProperties.getInterfaceSwitch();
+        if (!interfaceSwitch) {
+            return;
+        }
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
             processSerialNumber = (String)variables.get("processSerialNumber");

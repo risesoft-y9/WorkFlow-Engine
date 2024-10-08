@@ -32,6 +32,8 @@ public class Y9ProcessAdminProperties {
 
     private Boolean smsSwitch = false;
 
+    private Boolean interfaceSwitch = false;// 接口调用开关
+
     private String weiXinUrl;
 
 }
