@@ -549,8 +549,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append((keyValue.get(fieldName) != null
+                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
+                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                             }
@@ -629,8 +630,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append((keyValue.get(fieldName) != null
+                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
+                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                                 isHaveField = true;
@@ -764,8 +766,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append((keyValue.get(fieldName) != null
+                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
+                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                             }
@@ -845,8 +848,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append((keyValue.get(fieldName) != null
+                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
+                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                                 isHaveField = true;
@@ -983,8 +987,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append((keyValue.get(fieldName) != null
+                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
+                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                             }
@@ -1064,8 +1069,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                             ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
                                             : "''");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append((keyValue.get(fieldName) != null
+                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
+                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                                 isHaveField = true;
