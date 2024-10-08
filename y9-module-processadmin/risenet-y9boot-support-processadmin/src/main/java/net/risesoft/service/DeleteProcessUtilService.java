@@ -24,6 +24,7 @@ import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.todo.TodoTaskApi;
+import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
@@ -57,14 +58,14 @@ public class DeleteProcessUtilService {
     private final MsgRemindInfoApi msgRemindInfoApi;
 
     private final ActRuDetailApi actRuDetailApi;
-
+    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public DeleteProcessUtilService(TodoTaskApi todoTaskApi, ProcessInstanceApi processInstanceApi,
         ChaoSongApi chaoSongApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamApi,
         OfficeFollowApi officeFollowApi, ErrorLogApi errorLogApi, MsgRemindInfoApi msgRemindInfoApi,
-        ActRuDetailApi actRuDetailApi) {
+        ActRuDetailApi actRuDetailApi, Y9ProcessAdminProperties y9ProcessAdminProperties) {
         this.todoTaskApi = todoTaskApi;
         this.processInstanceApi = processInstanceApi;
         this.chaoSongApi = chaoSongApi;
@@ -74,6 +75,7 @@ public class DeleteProcessUtilService {
         this.errorLogApi = errorLogApi;
         this.msgRemindInfoApi = msgRemindInfoApi;
         this.actRuDetailApi = actRuDetailApi;
+        this.y9ProcessAdminProperties = y9ProcessAdminProperties;
     }
 
     @Async
@@ -85,28 +87,32 @@ public class DeleteProcessUtilService {
         } catch (Exception e3) {
             LOGGER.error("**********删除流程实例", e3);
         }
-        try {
-            todoTaskApi.deleteByProcessInstanceId(tenantId, processInstanceId);
-        } catch (Exception e1) {
-            LOGGER.error("************************************删除待办事宜数据失败", e1);
-            final Writer result = new StringWriter();
-            final PrintWriter print = new PrintWriter(result);
-            e1.printStackTrace(print);
-            String msg = result.toString();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
-            ErrorLogModel errorLogModel = new ErrorLogModel();
-            errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
-            errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_DELETE_TODO);
-            errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
-            errorLogModel.setExtendField("删除流程实例，删除统一待办失败");
-            errorLogModel.setProcessInstanceId(processInstanceId);
-            errorLogModel.setTaskId("");
-            errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
-            errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+        Boolean todoSwitch = y9ProcessAdminProperties.getTodoSwitch();
+        if (Boolean.TRUE.equals(todoSwitch)) {
+            try {
+                todoTaskApi.deleteByProcessInstanceId(tenantId, processInstanceId);
+            } catch (Exception e1) {
+                LOGGER.error("************************************删除待办事宜数据失败", e1);
+                final Writer result = new StringWriter();
+                final PrintWriter print = new PrintWriter(result);
+                e1.printStackTrace(print);
+                String msg = result.toString();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String time = sdf.format(new Date());
+                ErrorLogModel errorLogModel = new ErrorLogModel();
+                errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                errorLogModel.setCreateTime(time);
+                errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_DELETE_TODO);
+                errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
+                errorLogModel.setExtendField("删除流程实例，删除统一待办失败");
+                errorLogModel.setProcessInstanceId(processInstanceId);
+                errorLogModel.setTaskId("");
+                errorLogModel.setText(msg);
+                errorLogModel.setUpdateTime(time);
+                errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+            }
         }
+
         try {
             processInstanceApi.deleteProcessInstance(tenantId, processInstanceId);
         } catch (Exception e1) {
@@ -122,16 +128,23 @@ public class DeleteProcessUtilService {
         } catch (Exception e1) {
             LOGGER.error("************************************删除关注数据失败", e1);
         }
-        try {
-            officeInfoApi.deleteOfficeInfo(tenantId, processInstanceId);
-        } catch (Exception e) {
-            LOGGER.error("************************************删除数据中心数据失败", e);
+
+        Boolean dataCenterSwitch = y9ProcessAdminProperties.getDataCenterSwitch();
+        if (Boolean.TRUE.equals(dataCenterSwitch)) {
+            try {
+                officeInfoApi.deleteOfficeInfo(tenantId, processInstanceId);
+            } catch (Exception e) {
+                LOGGER.error("************************************删除数据中心数据失败", e);
+            }
         }
 
-        try {
-            msgRemindInfoApi.deleteMsgRemindInfo(tenantId, processInstanceId);
-        } catch (Exception e) {
-            LOGGER.error("************************************删除消息提醒数据失败", e);
+        Boolean msgSwitch = y9ProcessAdminProperties.getMsgSwitch();
+        if (Boolean.TRUE.equals(msgSwitch)) {
+            try {
+                msgRemindInfoApi.deleteMsgRemindInfo(tenantId, processInstanceId);
+            } catch (Exception e) {
+                LOGGER.error("************************************删除消息提醒数据失败", e);
+            }
         }
 
         try {
