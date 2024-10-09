@@ -6,11 +6,13 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+
 import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
@@ -29,23 +31,14 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Slf4j
 @Service(value = "interfaceUtilService")
+@RequiredArgsConstructor
 public class InterfaceUtilService {
 
     private final ProcessParamApi processParamApi;
     private final ItemInterfaceApi itemInterfaceApi;
-    private final AsynUtilService asynUtilService;
+    private final AsyncUtilService asyncUtilService;
     private final InterfaceMethodService interfaceMethodService;
     private final Y9ProcessAdminProperties y9ProcessAdminProperties;
-
-    public InterfaceUtilService(ProcessParamApi processParamApi, ItemInterfaceApi itemInterfaceApi,
-        AsynUtilService asynUtilService, InterfaceMethodService interfaceMethodService,
-        Y9ProcessAdminProperties y9ProcessAdminProperties) {
-        this.processParamApi = processParamApi;
-        this.itemInterfaceApi = itemInterfaceApi;
-        this.asynUtilService = asynUtilService;
-        this.interfaceMethodService = interfaceMethodService;
-        this.y9ProcessAdminProperties = y9ProcessAdminProperties;
-    }
 
     /**
      * 流程启动，办结接口调用
@@ -87,7 +80,7 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
+                    asyncUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
                         processInstanceId, processDefinitionId, "", "", null);
 
                 } else if (info.getAsyn().equals("0")) {
@@ -145,7 +138,7 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
+                    asyncUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
                         processInstanceId, processDefinitionId, flow.getId(), taskDefinitionKey, null);
 
                 } else if (info.getAsyn().equals("0")) {
@@ -200,7 +193,7 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
+                    asyncUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
                         task.getProcessInstanceId(), processDefinitionId, task.getId(), task.getTaskDefinitionKey(),
                         loopCounter);
 
