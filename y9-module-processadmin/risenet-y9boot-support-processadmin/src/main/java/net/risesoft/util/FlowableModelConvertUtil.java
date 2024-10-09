@@ -47,7 +47,6 @@ public class FlowableModelConvertUtil {
         tm.setDelegationState(task.getDelegationState());
         tm.setVariables(task.getVariables());
         tm.setLocalVariables(task.getVariablesLocal());
-
         return tm;
     }
 
@@ -93,7 +92,6 @@ public class FlowableModelConvertUtil {
         haiModel.setDurationInMillis(hai.getDurationInMillis());
         haiModel.setDeleteReason(hai.getDeleteReason());
         haiModel.setTenantId(hai.getTenantId());
-
         return haiModel;
     }
 
@@ -149,6 +147,7 @@ public class FlowableModelConvertUtil {
         histim.setProcessInstanceId(hti.getProcessInstanceId());
         histim.setTaskDefinitionKey(hti.getTaskDefinitionKey());
         histim.setTenantId(hti.getTenantId());
+        histim.setScopeType(hti.getScopeType());
         return histim;
     }
 
