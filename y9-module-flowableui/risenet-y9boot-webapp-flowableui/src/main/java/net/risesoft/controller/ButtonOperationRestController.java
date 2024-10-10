@@ -407,7 +407,6 @@ public class ButtonOperationRestController {
                     OrgUnit employee =
                         orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
                     map.put("user", employee.getName());
-
                     map.put("order", i + 1);
                     if (users.get(i).equals(taskModel.getAssignee())) {
                         map.put("status", "正在处理");
@@ -446,7 +445,7 @@ public class ButtonOperationRestController {
                         || hai.getEndTime() == null) {
                         Map<String, Object> map = new HashMap<>(16);
                         OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, hai.getAssignee()).getData();
-                        map.put("user", employee.getName());
+                        map.put("user", employee != null ? employee.getName() : "岗位不存在");
                         if (StringUtils.isNotBlank(hai.getScopeType())) {// ScopeType存的是岗位/人员名称，优先显示这个名称
                             map.put("user", hai.getScopeType());
                         }
