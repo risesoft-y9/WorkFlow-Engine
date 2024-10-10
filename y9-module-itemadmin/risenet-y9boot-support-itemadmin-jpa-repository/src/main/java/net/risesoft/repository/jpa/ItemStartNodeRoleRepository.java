@@ -18,6 +18,9 @@ import net.risesoft.entity.ItemStartNodeRole;
 public interface ItemStartNodeRoleRepository
     extends JpaRepository<ItemStartNodeRole, String>, JpaSpecificationExecutor<ItemStartNodeRole> {
 
+    @Transactional
+    void deleteByItemId(String itemId);
+
     List<ItemStartNodeRole> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
     ItemStartNodeRole findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
@@ -29,9 +32,6 @@ public interface ItemStartNodeRoleRepository
     List<ItemStartNodeRole> findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(String itemId,
         String processDefinitionId);
 
-    @Query("select max(tabIndex) from ItemStartNodeRole t where t.itemId=?1 and t.processDefinitionId=?2")
+    @Query("select max(t.tabIndex) from ItemStartNodeRole t where t.itemId=?1 and t.processDefinitionId=?2")
     Integer getMaxTabIndex(String itemId, String processDefinitionId);
-
-    @Transactional
-    void deleteByItemId(String itemId);
 }

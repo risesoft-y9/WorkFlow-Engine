@@ -29,7 +29,7 @@ public interface ReceivePersonRepository
 
     @Modifying
     @Transactional(readOnly = false)
-    @Query("delete ReceivePerson t where t.deptId = ?1 and personId = ?2")
+    @Query("delete ReceivePerson t where t.deptId = ?1 and t.personId = ?2")
     void deleteByDeptIdAndPersonId(String deptId, String userId);
 
     List<ReceivePerson> findByDeptId(String deptId);

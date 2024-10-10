@@ -21,10 +21,10 @@ import net.risesoft.entity.ChaoSong;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface ChaoSongRepository extends JpaRepository<ChaoSong, String>, JpaSpecificationExecutor<ChaoSong> {
 
-    @Query("select count(ID) from ChaoSong t where t.processInstanceId=?1")
+    @Query("select count(t.id) from ChaoSong t where t.processInstanceId=?1")
     int countByProcessInstanceId(String processInstanceId);
 
-    @Query("select count(ID) from ChaoSong t where t.senderId=?1 and t.processInstanceId=?2")
+    @Query("select count(t.id) from ChaoSong t where t.senderId=?1 and t.processInstanceId=?2")
     int countByUserIdAndProcessInstanceId(String userId, String processInstanceId);
 
     List<ChaoSong> findByProcessInstanceId(String processInstanceId);
@@ -51,13 +51,13 @@ public interface ChaoSongRepository extends JpaRepository<ChaoSong, String>, Jpa
     @Query("from ChaoSong t where t.userId=?1 and t.title like ?2 and t.status=1")
     Page<ChaoSong> getDoneByUserIdAndTitleLike(String userId, String name, Pageable pageable);
 
-    @Query("select count(ID) from ChaoSong t where t.userId=?1 and t.status=1")
+    @Query("select count(t.id) from ChaoSong t where t.userId=?1 and t.status=1")
     int getDoneCountByUserId(String userId);
 
-    @Query("select count(ID) from ChaoSong t where t.userId=?1 and itemId=?2 and t.status=1")
+    @Query("select count(t.id) from ChaoSong t where t.userId=?1 and t.itemId=?2 and t.status=1")
     int getDoneCountByUserIdAndItemId(String userId, String itemId);
 
-    @Query("select count(ID) from ChaoSong t where t.userId=?1 and systemName=?2 and t.status=1")
+    @Query("select count(t.id) from ChaoSong t where t.userId=?1 and t.systemName=?2 and t.status=1")
     int getDoneCountByUserIdAndSystemName(String userId, String systemName);
 
     @Query("from ChaoSong t where t.userId=?1 and t.status=1")
@@ -90,16 +90,16 @@ public interface ChaoSongRepository extends JpaRepository<ChaoSong, String>, Jpa
     @Query("from ChaoSong t where t.userId in ?1 and t.systemName=?2 and t.status =2")
     Page<ChaoSong> getTodoByUserIdsAndSystemName(List<String> userIds, String systemName, Pageable pageable);
 
-    @Query("select count(ID) from ChaoSong t where t.userId=?1 and t.status=2")
+    @Query("select count(t.id) from ChaoSong t where t.userId=?1 and t.status=2")
     int getTodoCount4NewByUserId(String userId);
 
-    @Query("select count(ID) from ChaoSong t where t.userId=?1 and t.status =2")
+    @Query("select count(t.id) from ChaoSong t where t.userId=?1 and t.status =2")
     int getTodoCountByUserId(String userId);
 
-    @Query("select count(ID) from ChaoSong t where t.userId=?1 and t.itemId=?2 and t.status =2")
+    @Query("select count(t.id) from ChaoSong t where t.userId=?1 and t.itemId=?2 and t.status =2")
     int getTodoCountByUserIdAndItemId(String userId, String itemId);
 
-    @Query("select count(ID) from ChaoSong t where t.userId=?1 and t.systemName=?2 and t.status =2")
+    @Query("select count(t.id) from ChaoSong t where t.userId=?1 and t.systemName=?2 and t.status =2")
     int getTodoCountByUserIdAndSystemName(String userId, String systemName);
 
     @Query("from ChaoSong t where t.userId=?1 and t.status =2")

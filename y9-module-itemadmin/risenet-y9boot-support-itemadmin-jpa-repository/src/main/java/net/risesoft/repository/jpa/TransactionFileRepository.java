@@ -30,7 +30,7 @@ public interface TransactionFileRepository
 
     @Modifying
     @Transactional(readOnly = false)
-    @Query("delete from TransactionFile t where t.processSerialNumber=?1 and name=?2")
+    @Query("delete from TransactionFile t where t.processSerialNumber=?1 and t.name=?2")
     int delFileByName(String processSerialNumber, String name);
 
     @Query("select count(*) from TransactionFile t where t.processSerialNumber=?1")

@@ -51,7 +51,6 @@ public interface EntrustHistoryRepository
      * 
      * @param ownerId
      * @param itemId
-     * @param dateTime
      * @return
      */
     @Query("from EntrustHistory t where t.ownerId=?1 and t.itemId=?2  order by t.startTime desc")

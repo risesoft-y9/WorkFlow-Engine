@@ -26,10 +26,10 @@ public interface ProcessInstanceRepository
 
     ProcessInstance findByProcessInstanceId(String processInstanceId);
 
-    @Query("from ProcessInstance t where t.assignee like ?1 and isDeleted = 0")
+    @Query("from ProcessInstance t where t.assignee like ?1 and t.isDeleted = 0")
     Page<ProcessInstance> findByUserId(String userId, PageRequest pageable);
 
-    @Query("from ProcessInstance t where t.assignee like ?1 and (serialNumber like ?2 or title like ?2) and isDeleted = 0")
+    @Query("from ProcessInstance t where t.assignee like ?1 and (t.serialNumber like ?2 or t.title like ?2) and t.isDeleted = 0")
     Page<ProcessInstance> findByUserIdAndTitle(String userId, String title, PageRequest pageable);
 
 }

@@ -22,7 +22,6 @@ public interface EntrustRepository extends JpaRepository<Entrust, String>, JpaSp
     /**
      * 查找某个用户没有删除的委托对象
      * 
-     * @param ownerId
      * @return
      */
     @Override
@@ -53,7 +52,7 @@ public interface EntrustRepository extends JpaRepository<Entrust, String>, JpaSp
     /**
      * 查找某个人某个时间点的被委托对象
      * 
-     * @param ownerId
+     * @param assigneeId
      * @param dateTime
      * @return
      */
@@ -65,7 +64,6 @@ public interface EntrustRepository extends JpaRepository<Entrust, String>, JpaSp
      * 
      * @param ownerId
      * @param itemId
-     * @param dateTime
      * @return
      */
     @Query("from Entrust t where t.ownerId=?1 and t.itemId=?2")
