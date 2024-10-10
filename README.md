@@ -15,7 +15,7 @@
 
 ## 简介
 
-工作流引擎对内提供单位/机关流程管理规则和内部业务流程的数字化落地实践；对外提供自动化地第三方业务驱动、接口接入和算法单元驱动能力。工作流引擎在提供底层驱动引擎的同时对全局透明监控、安全防御和国产化特色功能进行充分考虑，是内部流程管理和业务算法驱动的不二之选。[系统在线体验----->>>>>](#在线体验)
+工作流引擎对内提供单位/机关流程管理规则和内部业务流程的数字化落地实践；对外提供自动化地第三方业务驱动、接口接入和算法单元驱动能力。工作流引擎在提供底层驱动引擎的同时对全局透明监控、安全防御和国产化特色功能进行充分考虑，是内部流程管理和业务算法驱动的最佳实践。[系统在线体验----->>>>>](#在线体验)
 
 ## 开源地址
 
@@ -58,45 +58,32 @@ vue -- 前端工程
 
 ## 功能架构图
 
-<div><img src="https://vue.youshengyun.com/files/img/function2.png"><div/>
+<div><img src="https://vue.youshengyun.com/files/img/flowableUI_framework.png"><div/>
 
-1. 工作台的功能划分重点在于不同的批办状态和事件状态
+1.工作台的功能和界面都由事项管理进行配置后形成
 
+2.事项管理的功能分为流程类、表单类和配置项类
 
-2. 事项管理的功能划分一方面是流程和表单相关的设计，另一方面则为其他绑定项
+3.表单管理负责映射数据库的表结构设计，由拖拉拽的表单引擎支撑
 
+4.流程管理包含流程的设计、部署和监控，由拖拉拽的流程引擎支撑
 
-3. 表单管理不仅仅是界面设计，也映射数据库的表结构设计
+5.接口管理支持在流程节点和流程路径中接入第三方的接口
 
+6.链接管理支持通过岗位绑定第三方应用的入口
 
-4. 流程管理不仅仅是流程设计，也包含流程部署和流程监控
-
-
-5. 接口管理支持在流程节点和流程路径中接入第三方的接口
-
-
-6. 链接管理支持通过岗位绑定第三方应用的入口
-
-
-7. 正文模板和套红模板均需要第三方插件才可以有效使用
+7.正文模板和套红模板均需要接入第三方插件才可以使用
 
 ## 部署架构图
 
 <div><img src="https://vue.youshengyun.com/files/img/deploy2.png"><div/>
+1.工作流引擎支持以微服务、分布式、容器化的方式进行部署和扩展
 
-1. 工作流引擎支持以微服务、分布式的方式进行平行扩展
+2.工作流引擎需要额外部署文件预览相关的服务器
 
+3.工作流引擎依赖数字底座和其单点登录服务
 
-2. 工作流引擎需要额外部署文件预览相关的服务器
-
-
-3. 工作流引擎依赖数字底座和其单点登录服务
-
-
-4. 工作流引擎支持容器化方式部署
-
-
-5. 工作流引擎单体在信创环境中，4核8GB内存的虚拟机可以轻松应对500用户（历史数据需按年度结转）
+4.工作流引擎单体在信创环境中，4核8GB内存的虚拟机可以轻松应对500用户（历史数据需按年度结转）
 
 ## 后端技术选型
 
@@ -253,18 +240,20 @@ vue -- 前端工程
 | 12 | <a href="https://vue.youshengyun.com/files/国际化.pdf" target="_blank">前端国际化</a>                                    |
 | 13 | <a href="https://vue.youshengyun.com/files/Icon图标.pdf" target="_blank">前端Icon图标</a>                              |
 | 14 | <a href="https://vue.youshengyun.com/files/单点登录对接文档.pdf" target="_blank">单点登录对接文档</a>                            |
-| 15 | <a href="https://docs.youshengyun.com/" target="_blank">安装部署文档</a>                                               |
-| 16 | <a href="https://docs.youshengyun.com/flowable/backend/operation/docIntro.html" target="_blank">工作流程操作文档</a>     |
-| 17 | <a href="https://vue.youshengyun.com/files/workFlow/流程管理后端接口文档.pdf" target="_blank">流程管理接口文档</a>                 |
-| 18 | <a href="https://vue.youshengyun.com/files/workFlow/事项管理后端接口文档.pdf" target="_blank">事项管理接口文档</a>                 |
-| 19 | <a href="https://vue.youshengyun.com/files/workFlow/工作办件后端接口文档.pdf" target="_blank">工作办件接口文档</a>                 |
-| 20 | <a href="https://vue.youshengyun.com/files/workFlow/Oracle数据库适配文档.pdf" target="_blank">Oracle数据库适配文档</a>         |
-| 21 | <a href="https://vue.youshengyun.com/files/workFlow/Dameng数据库适配文档.pdf" target="_blank">Dameng数据库适配文档</a>         |
-| 22 | <a href="https://vue.youshengyun.com/files/workFlow/PostgreSQL数据库适配文档.pdf" target="_blank">PostgreSQL数据库适配文档</a> |
-| 23 | <a href="https://vue.youshengyun.com/files/workFlow/KingBase数据库适配文档.pdf" target="_blank">Kingbase数据库适配文档</a>     |
-| 24 | <a href="https://vue.youshengyun.com/files/workFlow/Mariadb数据库适配文档.pdf" target="_blank">Mariadb数据库适配文档</a>       |
-| 25 | <a href="https://vue.youshengyun.com/files/workFlow/OceanBase数据库适配文档.pdf" target="_blank">OceanBase数据库适配文档</a>   |
-| 26 | <a href="https://vue.youshengyun.com/files/workFlow/MySQL数据库适配文档.pdf" target="_blank">MySQL数据库适配文档</a>           | 
+| 16 | <a href="https://docs.youshengyun.com/flowable/backend/introduction" target="_blank">工作流在线文档</a>                 |
+| 17 | <a href="https://vue.youshengyun.com/files/工作流war包部署文档.pdf" target="_blank">工作流war包部署文档</a>                      |
+| 18 | <a href="https://vue.youshengyun.com/files/工作流源码部署文档.pdf" target="_blank">工作流源码部署文档</a>                          |
+| 19 | <a href="https://vue.youshengyun.com/files/工作流程操作文档.pdf" target="_blank">工作流程操作文档</a>                            |
+| 20 | <a href="https://vue.youshengyun.com/files/workFlow/流程管理后端接口文档.pdf" target="_blank">流程管理接口文档</a>                 |
+| 21 | <a href="https://vue.youshengyun.com/files/workFlow/事项管理后端接口文档.pdf" target="_blank">事项管理接口文档</a>                 |
+| 22 | <a href="https://vue.youshengyun.com/files/workFlow/工作办件后端接口文档.pdf" target="_blank">工作办件接口文档</a>                 |
+| 23 | <a href="https://vue.youshengyun.com/files/workFlow/Oracle数据库适配文档.pdf" target="_blank">Oracle数据库适配文档</a>         |
+| 24 | <a href="https://vue.youshengyun.com/files/workFlow/Dameng数据库适配文档.pdf" target="_blank">Dameng数据库适配文档</a>         |
+| 25 | <a href="https://vue.youshengyun.com/files/workFlow/PostgreSQL数据库适配文档.pdf" target="_blank">PostgreSQL数据库适配文档</a> |
+| 26 | <a href="https://vue.youshengyun.com/files/workFlow/KingBase数据库适配文档.pdf" target="_blank">Kingbase数据库适配文档</a>     |
+| 27 | <a href="https://vue.youshengyun.com/files/workFlow/Mariadb数据库适配文档.pdf" target="_blank">Mariadb数据库适配文档</a>       |
+| 28 | <a href="https://vue.youshengyun.com/files/workFlow/OceanBase数据库适配文档.pdf" target="_blank">OceanBase数据库适配文档</a>   |
+| 29 | <a href="https://vue.youshengyun.com/files/workFlow/MySQL数据库适配文档.pdf" target="_blank">MySQL数据库适配文档</a>           | 
 
 ## 工作流引擎截图
 
