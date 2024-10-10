@@ -2,11 +2,13 @@ package net.risesoft.service;
 
 import java.util.concurrent.Future;
 
+
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.enums.ItemInterfaceTypeEnum;
@@ -16,14 +18,11 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @EnableAsync
-@Service(value = "asynUtilService")
-public class AsynUtilService {
+@Service(value = "asyncUtilService")
+@RequiredArgsConstructor
+public class AsyncUtilService {
 
     private final InterfaceMethodService interfaceMethodService;
-
-    public AsynUtilService(InterfaceMethodService interfaceMethodService) {
-        this.interfaceMethodService = interfaceMethodService;
-    }
 
     /**
      * 异步调用接口

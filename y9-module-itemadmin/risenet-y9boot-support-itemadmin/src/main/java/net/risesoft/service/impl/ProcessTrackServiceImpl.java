@@ -114,26 +114,32 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 task.setExecutionId("");
                 task.setCalledProcessInstanceId("");
                 if (assignee != null) {
+                    String employeeName = "";
                     // 意见
                     List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
                         task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
-                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
                     OrgUnit employee =
                         orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+                    HistoricVariableInstanceModel zhuBan = null;
+                    try {
+                        zhuBan = historicVariableApi
+                            .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLELSPONSOR, year)
+                            .getData();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     if (employee != null) {
-                        String employeeName = employee.getName();
-                        HistoricVariableInstanceModel zhuBan = null;
-                        try {
-                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(),
-                                SysVariables.PARALLELSPONSOR, year).getData();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (zhuBan != null) {// 办理人
-                            task.setCalledProcessInstanceId(employeeName + "(主办)");
-                        } else {
-                            task.setCalledProcessInstanceId(employeeName);
-                        }
+                        employeeName = employee.getName();
+                    }
+                    if (StringUtils.isNotBlank(task.getTenantId())) {// tenantId存的是岗位/人员名称，优先显示这个名称
+                        employeeName = task.getTenantId();
+                    }
+                    // 将TenantId字段存意见
+                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
+                    if (zhuBan != null) {// 办理人
+                        task.setCalledProcessInstanceId(employeeName + "(主办)");
+                    } else {
+                        task.setCalledProcessInstanceId(employeeName);
                     }
                     if (task.getStartTime() != null && task.getEndTime() != null) {// 办理时长
                         task.setExecutionId(longTime(task.getStartTime(), task.getEndTime()));
@@ -200,41 +206,37 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             if (StringUtils.isNotBlank(assignee)) {
                 OrgUnit employee =
                     orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+                model.setAssigneeId(assignee);
+                // 承办人id,用于数据中心保存
+                model.setUndertakerId(assignee);
+                HistoricVariableInstanceModel zhuBan = null;
+                try {
+                    zhuBan = historicVariableApi
+                        .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String employeeName = "";
                 if (employee != null) {
-
-                    model.setAssigneeId(assignee);
-                    // 承办人id,用于数据中心保存
-                    model.setUndertakerId(assignee);
-
                     String ownerId = hai.getOwner();
-                    String employeeName = employee.getName();
+                    employeeName = employee.getName();
                     // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                     if (StringUtils.isNotBlank(ownerId)) {
                         OrgUnit ownerUser =
                             orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
-                        employeeName = ownerUser.getName();
-                        model.setUndertakerId(ownerUser.getId());
+                        if (ownerUser != null) {
+                            employeeName = ownerUser.getName();
+                            model.setUndertakerId(ownerUser.getId());
+                        }
                     }
-                    /*EntrustDetail entrustDetail = entrustDetailService.findByTaskId(taskId);
-                    // 出差委托标识
-                    if (entrustDetail != null) {
-                        String owner4Entrust = entrustDetail.getOwnerId();
-                        Position owner = positionApi.getPosition(tenantId, owner4Entrust);
-                        employeeName = employeeName + "(" + owner.getName() + "委托)";
-                    }*/
-                    HistoricVariableInstanceModel zhuBan = null;
-                    try {
-                        zhuBan = historicVariableApi
-                            .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    if (zhuBan != null) {
-                        model.setAssignee(employeeName + "(主办)");
-                    } else {
-                        model.setAssignee(employeeName);
-                    }
+                }
+                if (StringUtils.isNotBlank(hai.getScopeType())) {// ScopeType存的是岗位/人员名称，优先显示这个名称
+                    employeeName = hai.getScopeType();
+                }
+                if (zhuBan != null) {
+                    model.setAssignee(employeeName + "(主办)");
+                } else {
+                    model.setAssignee(employeeName);
                 }
             } else {// 处理单实例未签收的办理人显示
                 List<IdentityLinkModel> iList = null;
@@ -251,7 +253,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         OrgUnit ownerUser = orgUnitApi
                             .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
-                            assignees = Y9Util.genCustomStr(assignees, ownerUser.getName(), "、");
+                            assignees =
+                                Y9Util.genCustomStr(assignees, ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
                         } else {
                             assignees.append("等，共" + iList.size() + "人");
                             break;
@@ -267,12 +270,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
                     : (Integer.parseInt(taskModel.getFormKey()));
             }
-
             model.setNewToDo(newToDo);
-
             // 是否被强制办结任务标识
             model.setEndFlag(StringUtils.isBlank(hai.getTenantId()) ? "" : hai.getTenantId());
-
             // 描述
             String description = hai.getDeleteReason();
             if (null != description && !(description.equals("MI_END"))) {
@@ -302,14 +302,12 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 StringUtils.isBlank(assignee) ? "" : assignee);
             model.setStartTime(hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
             model.setOpinion(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
-
             try {
                 model.setStartTimes(
                     hai.getStartTime() == null ? 0 : sdf.parse(DATE_FORMAT.format(hai.getStartTime())).getTime());
             } catch (Exception e2) {
                 e2.printStackTrace();
             }
-
             /*
              * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
              */
@@ -333,9 +331,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 model.setTime(longTime(hai.getStartTime(), endTime1));
             }
             items.add(model);
-
             for (ProcessTrack pt : ptList) {
-
                 HistoryProcessModel modelTrack = new HistoryProcessModel();
                 modelTrack.setId(id);
                 modelTrack.setAssignee(pt.getReceiverName() == null ? "" : pt.getReceiverName());
@@ -347,12 +343,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 modelTrack.setHistoryVersion(pt.getDocVersion() == null ? null : pt.getDocVersion());
                 modelTrack.setTaskId(taskId);
                 modelTrack.setIsChaoSong(pt.getIsChaoSong() != null && pt.getIsChaoSong());
-
                 modelTrack.setStartTime(pt.getStartTime() == null ? "" : pt.getStartTime());
                 modelTrack.setEndTime(pt.getEndTime() == null ? "" : pt.getEndTime());
-
                 try {
-
                     modelTrack.setStartTimes(DATE_FORMAT.parse(pt.getStartTime()).getTime());
                     modelTrack.setEndTimes(
                         StringUtils.isBlank(pt.getEndTime()) ? 0 : DATE_FORMAT.parse(pt.getEndTime()).getTime());
@@ -369,7 +362,6 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
                 items.add(modelTrack);
             }
         }
@@ -392,9 +384,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     if (start) {
                         OrgUnit employee =
                             orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), user).getData();
-
                         HistoryProcessModel history = new HistoryProcessModel();
-                        history.setAssignee(employee.getName());
+                        history.setAssignee(employee != null ? employee.getName() : "岗位不存在");
                         history.setName("串行办理");
                         history.setDescription("");
                         history.setOpinion("");
@@ -434,35 +425,37 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 continue;
             }
             String taskId = hai.getId();
-
             HistoryProcessModel history = new HistoryProcessModel();
             // 收件人
             history.setAssignee("");
             // 任务名称
             history.setName(hai.getName());
-
             // 收件人
             String assignee = hai.getAssignee();
             if (StringUtils.isNotBlank(assignee)) {
+                String employeeName = "";
                 OrgUnit employee =
                     orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
                 if (employee != null) {
                     String ownerId = hai.getOwner();
-                    String employeeName = employee.getName();
+                    employeeName = employee.getName();
                     // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                     if (StringUtils.isNotBlank(ownerId)) {
                         OrgUnit ownerUser =
                             orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                         employeeName = ownerUser.getName();
                     }
-                    HistoricVariableInstanceModel zhuBan = historicVariableApi
-                        .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
-                    if (zhuBan != null) {
-                        history.setAssignee(employeeName + "(主办)");
-                    } else {
-                        history.setAssignee(employeeName);
-                    }
-                    history.setAssigneeId(assignee);
+                }
+                if (StringUtils.isNotBlank(hai.getScopeType())) {// ScopeType存的是岗位/人员名称，优先显示这个名称
+                    employeeName = hai.getScopeType();
+                }
+                history.setAssigneeId(assignee);
+                HistoricVariableInstanceModel zhuBan = historicVariableApi
+                    .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
+                if (zhuBan != null) {
+                    history.setAssignee(employeeName + "(主办)");
+                } else {
+                    history.setAssignee(employeeName);
                 }
             } else {// 处理单实例未签收的办理人显示
                 List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
@@ -474,7 +467,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         OrgUnit ownerUser = orgUnitApi
                             .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
-                            assignees = Y9Util.genCustomStr(assignees, ownerUser.getName(), "、");
+                            assignees =
+                                Y9Util.genCustomStr(assignees, ownerUser != null ? ownerUser.getName() : "岗位不存在", "、");
                         } else {
                             assignees.append("等，共" + iList.size() + "人");
                             break;
@@ -496,12 +490,10 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 history.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
                 history.setTime(longTime(hai.getStartTime(), endTime1));
             } else {
-
                 history.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
                 history.setTime(longTime(hai.getStartTime(), endTime1));
             }
             items.add(history);
-
             for (ProcessTrack pt : ptList) {
                 HistoryProcessModel process = new HistoryProcessModel();
                 process.setAssignee(pt.getReceiverName() == null ? "" : pt.getReceiverName());
@@ -518,7 +510,6 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
                 items.add(process);
             }
         }
@@ -542,7 +533,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         OrgUnit employee =
                             orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), user).getData();
                         HistoryProcessModel history2 = new HistoryProcessModel();
-                        history2.setAssignee(employee.getName());
+                        history2.setAssignee(employee != null ? employee.getName() : "岗位不存在");
                         history2.setName("串行办理");
                         history2.setDescription("");
                         history2.setOpinion("");

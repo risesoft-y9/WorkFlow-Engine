@@ -3,9 +3,9 @@ package net.risesoft.service.impl;
 import java.util.Date;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -112,7 +112,6 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     }
 
     @Override
-    @Async
     public void updateProcessInstanceDetails(final DelegateTask taskEntityHti, final Map<String, Object> map) {
         Boolean cooperationStateSwitch = y9ProcessAdminProperties.getCooperationStateSwitch();
         if (cooperationStateSwitch == null || !cooperationStateSwitch) {

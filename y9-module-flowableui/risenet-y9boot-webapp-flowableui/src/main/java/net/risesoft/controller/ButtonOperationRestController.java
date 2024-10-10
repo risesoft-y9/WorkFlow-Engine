@@ -419,6 +419,9 @@ public class ButtonOperationRestController {
                         for (HistoricTaskInstanceModel hai : htims) {
                             if (hai.getAssignee().equals(users.get(i))) {// 获取串行多人处理的完成时间
                                 map.put("endTime", sdf.format(hai.getEndTime()));
+                                if (StringUtils.isNotBlank(hai.getScopeType())) {// ScopeType存的是岗位/人员名称，优先显示这个名称
+                                    map.put("user", hai.getScopeType());
+                                }
                             }
                         }
                     } else {
@@ -442,7 +445,10 @@ public class ButtonOperationRestController {
                         || hai.getEndTime() == null) {
                         Map<String, Object> map = new HashMap<>(16);
                         OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, hai.getAssignee()).getData();
-                        map.put("user", employee.getName());
+                        map.put("user", employee != null ? employee.getName() : "岗位不存在");
+                        if (StringUtils.isNotBlank(hai.getScopeType())) {// ScopeType存的是岗位/人员名称，优先显示这个名称
+                            map.put("user", hai.getScopeType());
+                        }
                         Date endTime = hai.getEndTime();
                         String parallelSponsorObj;
                         if (null == endTime) {

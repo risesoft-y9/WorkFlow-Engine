@@ -114,6 +114,7 @@ public interface OfficeDoneInfoApi {
      * @return {@code Y9Result<OfficeDoneInfoModel>} 通用请求返回对象 - data 是办结信息
      * @since 9.6.6
      */
+    @GetMapping("/findByProcessSerialNumber")
     Y9Result<OfficeDoneInfoModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber);
 

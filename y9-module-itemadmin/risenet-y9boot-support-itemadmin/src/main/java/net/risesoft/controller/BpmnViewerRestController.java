@@ -76,22 +76,28 @@ public class BpmnViewerRestController {
                     // 意见
                     List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
                         task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
-                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
                     OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    HistoricVariableInstanceModel zhuBan = null;
+                    try {
+                        zhuBan = historicVariableApi
+                            .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLELSPONSOR, year)
+                            .getData();
+                    } catch (Exception e) {
+                        LOGGER.error("获取主办人失败", e);
+                    }
+                    String employeeName = "";
                     if (employee != null) {
-                        String employeeName = employee.getName();
-                        HistoricVariableInstanceModel zhuBan = null;
-                        try {
-                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(),
-                                SysVariables.PARALLELSPONSOR, year).getData();
-                        } catch (Exception e) {
-                            LOGGER.error("获取主办人失败", e);
-                        }
-                        if (zhuBan != null) {// 办理人
-                            task.setCalledProcessInstanceId(employeeName + "(主办)");
-                        } else {
-                            task.setCalledProcessInstanceId(employeeName);
-                        }
+                        employeeName = employee.getName();
+                    }
+                    if (StringUtils.isNotBlank(task.getTenantId())) {// tenantId存的是岗位/人员名称，优先显示这个名称
+                        employeeName = task.getTenantId();
+                    }
+                    // 将TenantId字段存意见
+                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
+                    if (zhuBan != null) {// 办理人
+                        task.setCalledProcessInstanceId(employeeName + "(主办)");
+                    } else {
+                        task.setCalledProcessInstanceId(employeeName);
                     }
                     if (task.getStartTime() != null && task.getEndTime() != null) {// 办理时长
                         task.setExecutionId(longTime(task.getStartTime(), task.getEndTime()));

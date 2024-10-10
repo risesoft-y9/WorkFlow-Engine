@@ -80,4 +80,9 @@ public class HistoricTaskInstanceModel implements Serializable {
      * 租户ID
      */
     private String tenantId;
+
+    /**
+     * 存岗位，人员名称，避免岗位换人，或人员删除，名称变化
+     */
+    private String scopeType;
 }
