@@ -22,7 +22,6 @@ public interface DynamicRoleRepository
     /**
      * 查找当前租户的所有动态角色
      * 
-     * @param tenantId
      * @return
      */
     List<DynamicRole> findAllByOrderByTabIndexAsc();

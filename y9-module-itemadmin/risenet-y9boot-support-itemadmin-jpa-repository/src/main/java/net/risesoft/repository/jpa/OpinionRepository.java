@@ -56,7 +56,7 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
      * @param userId
      * @return
      */
-    @Query("from Opinion t where t.processSerialNumber=?1 and t.userId=?2 and taskId=?3")
+    @Query("from Opinion t where t.processSerialNumber=?1 and t.userId=?2 and t.taskId=?3")
     List<Opinion> findByProcessSerialNumberAndUserId(String processSerialNumber, String userId, String taskId);
 
     List<Opinion> findByProcessSerialNumberOrderByCreateDateDesc(String processSerialNumber);
@@ -110,7 +110,7 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
      * @param userId
      * @return
      */
-    @Query("select count(id) from Opinion t where t.processSerialNumber = ?1 and t.taskId=?2 and t.opinionFrameMark=?3 and t.userId=?4 order by t.createDate ASC")
+    @Query("select count(t.id) from Opinion t where t.processSerialNumber = ?1 and t.taskId=?2 and t.opinionFrameMark=?3 and t.userId=?4 order by t.createDate ASC")
     Integer getCount4Personal(String processSerialNumber, String taskId, String opinionFrameMark, String userId);
 
     /**

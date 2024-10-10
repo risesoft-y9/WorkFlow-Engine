@@ -25,7 +25,7 @@ public interface ItemViewConfRepository
 
     List<ItemViewConf> findByViewTypeOrderByTabIndexAsc(String viewType);
 
-    @Query("select max(tabIndex) from ItemViewConf t where t.itemId=?1 and t.viewType=?2")
+    @Query("select max(t.tabIndex) from ItemViewConf t where t.itemId=?1 and t.viewType=?2")
     Integer getMaxTabIndex(String itemId, String viewType);
 
     /**

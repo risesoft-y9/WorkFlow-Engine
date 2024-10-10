@@ -22,6 +22,6 @@ public interface ItemTabBindRepository
 
     List<ItemTabBind> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId, String processDefinitionId);
 
-    @Query("select max(tabIndex) from ItemTabBind t where t.itemId=?1 and t.processDefinitionId=?2")
+    @Query("select max(t.tabIndex) from ItemTabBind t where t.itemId=?1 and t.processDefinitionId=?2")
     Integer getMaxTabIndex(String itemId, String processDefinitionId);
 }

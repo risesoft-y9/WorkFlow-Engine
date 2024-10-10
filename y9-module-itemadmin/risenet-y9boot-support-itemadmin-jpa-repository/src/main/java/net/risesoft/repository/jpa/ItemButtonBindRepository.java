@@ -20,6 +20,8 @@ public interface ItemButtonBindRepository
 
     List<ItemButtonBind> findByButtonIdOrderByItemIdDescUpdateTimeDesc(String buttonId);
 
+    List<ItemButtonBind> findByItemId(String itemId);
+
     @Query("from ItemButtonBind t where t.itemId=?1 and t.buttonType=?2 and t.processDefinitionId=?3 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex ASC")
     List<ItemButtonBind> findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(
         String itemId, Integer buttonType, String processDefinitionId);
@@ -31,9 +33,6 @@ public interface ItemButtonBindRepository
         Integer buttonType, String processDefinitionId);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndTaskDefKeyOrderByTabIndexAsc(String itemId, int i, String string);
-
-    List<ItemButtonBind> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId,
-        String processDefinitionId);
 
     ItemButtonBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(String itemId,
         String processDefinitionId, String taskDefKey, String buttonId);
@@ -49,8 +48,9 @@ public interface ItemButtonBindRepository
     List<ItemButtonBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(String itemId,
         String processDefinitionId, String taskDefKey);
 
-    List<ItemButtonBind> findByItemId(String itemId);
+    List<ItemButtonBind> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId,
+        String processDefinitionId);
 
-    @Query("select max(tabIndex) from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 and t.buttonType=?4")
+    @Query("select max(t.tabIndex) from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 and t.buttonType=?4")
     Integer getMaxTabIndex(String itemId, String processDefinitionId, String taskDefKey, Integer buttonType);
 }

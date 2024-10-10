@@ -27,7 +27,7 @@ public interface OrganWordPropertyRepository
      * 
      * @return
      */
-    @Query("select max(tabIndex) from OrganWordProperty t where t.organWordId=?1")
+    @Query("select max(t.tabIndex) from OrganWordProperty t where t.organWordId=?1")
     Integer getMaxTabIndex(String organWordId);
 
     /**

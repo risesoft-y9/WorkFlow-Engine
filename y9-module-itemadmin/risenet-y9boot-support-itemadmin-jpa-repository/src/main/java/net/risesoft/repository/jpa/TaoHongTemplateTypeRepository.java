@@ -25,7 +25,7 @@ public interface TaoHongTemplateTypeRepository
     @Query("from TaoHongTemplateType t where t.bureauId=?1 order by t.tabIndex")
     List<TaoHongTemplateType> findByBureauId(String bureauId);
 
-    @Query("select max(tabIndex) from TaoHongTemplateType t where t.bureauId=?1")
+    @Query("select max(t.tabIndex) from TaoHongTemplateType t where t.bureauId=?1")
     Integer getMaxTabIndex(String bureauId);
 
     @Modifying
