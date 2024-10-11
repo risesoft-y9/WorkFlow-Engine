@@ -32,7 +32,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/chaoSong4database", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ChaoSong4DataBaseApiApiImpl implements ChaoSong4DataBaseApi {
+public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
 
     private final ChaoSongService chaoSongService;
 
