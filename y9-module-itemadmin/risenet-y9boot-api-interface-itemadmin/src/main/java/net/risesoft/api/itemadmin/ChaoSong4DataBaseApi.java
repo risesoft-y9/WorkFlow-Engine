@@ -12,13 +12,13 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
 /**
- * 抄送件接口(elasticsearch)
+ * 抄送件接口(database)
  *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface ChaoSongApi {
+public interface ChaoSong4DataBaseApi {
 
     /**
      * 改变抄送件意见状态

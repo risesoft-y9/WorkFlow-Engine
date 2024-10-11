@@ -131,11 +131,11 @@ public class ChaoSong implements Serializable {
     private String sendDeptId;
 
     /**
-     * 传阅的状态,0未阅,1已阅,2新件
+     * 传阅的状态,2未阅,1已阅
      */
     @Comment("传阅状态")
     @Column(name = "STATUS", length = 2)
-    private Integer status = 0;
+    private Integer status = 2;
 
     /**
      * 抄送时间
