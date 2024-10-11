@@ -405,6 +405,93 @@ public class AsyncHandleService {
     }
 
     /**
+     * 保存抄送件到统一待办
+     *
+     * @param tenantId
+     * @param csList
+     */
+    @Async
+    public void saveChaoSongTodo(final String tenantId, final List<ChaoSong> csList) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String processInstanceId = "";
+        String taskId = "";
+        String id = "";
+        Y9LoginUserHolder.setTenantId(tenantId);
+        for (ChaoSong info : csList) {
+            try {
+                id = info.getId();
+                taskId = info.getTaskId();
+                processInstanceId = info.getProcessInstanceId();
+                TodoTask todo = new TodoTask();
+                todo.setTenantId(tenantId);
+                todo.setSystemName("阅件");
+                todo.setSystemCnName("阅件");
+                todo.setAppName("阅件");
+                todo.setAppCnName("阅件");
+                todo.setTitle(info.getTitle());
+                todo.setSenderId(info.getSenderId());
+                todo.setSenderName(info.getSenderName());
+                todo.setSenderDepartmentId(info.getSendDeptId());
+                todo.setSenderDepartmentName(info.getSendDeptName());
+                todo.setSendTime(sdf.parse(info.getCreateTime()));
+                todo.setIsNewTodo("1");
+                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                String level = processParam.getCustomLevel() == null ? "" : processParam.getCustomLevel();
+                String todoTaskUrlPrefix = processParam.getTodoTaskUrlPrefix();
+                String urgency = "0";
+                if (level.equals("一般")) {
+                    urgency = "0";
+                } else if (level.equals("重要")) {
+                    urgency = "1";
+                } else if (level.equals("紧急")) {
+                    urgency = "2";
+                }
+
+                if ("普通".equals(level)) {
+                    urgency = "0";
+                } else if ("急".equals(level)) {
+                    urgency = "1";
+                } else if ("特急".equals(level)) {
+                    urgency = "2";
+                }
+
+                todo.setUrgency(urgency);
+                todo.setDocNumber(processParam.getCustomNumber());
+                todo.setProcessInstanceId(processInstanceId);
+                String url = todoTaskUrlPrefix.replace("index", "readIndex") + "?id=" + info.getId() + "&itemId="
+                    + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
+                    + "&type=fromTodo&appName=chaoSong";
+                todo.setUrl(url);
+                todo.setTaskId(id);
+                todo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                todo.setReceiverId(info.getUserId());
+                todo.setReceiverName(info.getUserName());
+                todo.setReceiverDepartmentId(info.getUserDeptId());
+                todo.setReceiverDepartmentName(info.getUserDeptName());
+                todotaskApi.saveTodoTask(tenantId, todo);
+            } catch (Exception e) {
+                String time = sdf.format(new Date());
+                final Writer result = new StringWriter();
+                final PrintWriter print = new PrintWriter(result);
+                e.printStackTrace(print);
+                String msg = result.toString();
+                // 保存发送错误日志
+                ErrorLog errorLog = new ErrorLog();
+                errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                errorLog.setCreateTime(time);
+                errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_CHAOSONG);
+                errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
+                errorLog.setExtendField("阅件保存至统一待办失败，抄送id:" + id);
+                errorLog.setProcessInstanceId(processInstanceId);
+                errorLog.setTaskId(taskId);
+                errorLog.setText(msg);
+                errorLog.setUpdateTime(time);
+                errorLogService.saveErrorLog(errorLog);
+            }
+        }
+    }
+
+    /**
      * 保存意见历史记录
      *
      * @param oldOpinion

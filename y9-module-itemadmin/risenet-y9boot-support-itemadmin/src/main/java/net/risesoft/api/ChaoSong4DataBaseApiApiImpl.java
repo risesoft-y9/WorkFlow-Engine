@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import net.risesoft.api.itemadmin.ChaoSong4DataBaseApi;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,18 +12,18 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.entity.ChaoSong;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
-import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ChaoSongInfoService;
+import net.risesoft.service.ChaoSongService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 抄送件接口(elasticsearch)
+ * 抄送件接口(database)
  *
  * @author qinman
  * @author zhangchongjie
@@ -30,10 +31,10 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/chaoSong", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ChaoSongInfoApiImpl implements ChaoSongApi {
+@RequestMapping(value = "/services/rest/chaoSong4database", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ChaoSong4DataBaseApiApiImpl implements ChaoSong4DataBaseApi {
 
-    private final ChaoSongInfoService chaoSongInfoService;
+    private final ChaoSongService chaoSongService;
 
     private final PersonApi personApi;
 
@@ -51,7 +52,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Object> changeChaoSongState(@RequestParam String tenantId, @RequestParam String id, String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.changeChaoSongState(id, type);
+        chaoSongService.changeChaoSongState(id, type);
         return Y9Result.success();
     }
 
@@ -66,7 +67,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Object> changeStatus(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.changeStatus(ids);
+        chaoSongService.changeStatus(ids);
         return Y9Result.success();
     }
 
@@ -81,7 +82,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Object> changeStatus2read(@RequestParam String tenantId, @RequestParam String chaoSongId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.changeStatus(chaoSongId);
+        chaoSongService.changeStatus(chaoSongId);
         return Y9Result.success();
     }
 
@@ -98,7 +99,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Result<Integer> countByProcessInstanceId(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int num = chaoSongInfoService.countByProcessInstanceId(orgUnitId, processInstanceId);
+        int num = chaoSongService.countByProcessInstanceId(orgUnitId, processInstanceId);
         return Y9Result.success(num);
     }
 
@@ -115,7 +116,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Result<Integer> countByUserIdAndProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int num = chaoSongInfoService.countByUserIdAndProcessInstanceId(orgUnitId, processInstanceId);
+        int num = chaoSongService.countByUserIdAndProcessInstanceId(orgUnitId, processInstanceId);
         return Y9Result.success(num);
     }
 
@@ -130,7 +131,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Object> deleteByIds(@RequestParam String tenantId, @RequestParam @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.deleteByIds(ids);
+        chaoSongService.deleteByIds(ids);
         return Y9Result.success();
     }
 
@@ -146,7 +147,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Result<Object> deleteByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.deleteByProcessInstanceId(processInstanceId);
+        chaoSongService.deleteByProcessInstanceId(processInstanceId);
         return Y9Result.success();
     }
 
@@ -169,12 +170,12 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         Boolean openNotRead, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
-        OpenDataModel model = chaoSongInfoService.detail(processInstanceId, status, mobile);
+        OpenDataModel model = chaoSongService.detail(processInstanceId, status, mobile);
         model.setId(id);
         model.setStatus(status);
-        ChaoSongInfo chaoSong = chaoSongInfoService.getById(id);
+        ChaoSong chaoSong = chaoSongService.getById(id);
         if (null != chaoSong && chaoSong.getStatus() != 1 && !Boolean.TRUE.equals(openNotRead)) {
-            chaoSongInfoService.changeStatus(id);
+            chaoSongService.changeStatus(id);
         }
         return Y9Result.success(model);
     }
@@ -191,7 +192,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Result<Integer> getDone4OpinionCountByUserId(@RequestParam String tenantId,
         @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int num = chaoSongInfoService.getDone4OpinionCountByUserId(orgUnitId);
+        int num = chaoSongService.getDone4OpinionCountByUserId(orgUnitId);
         return Y9Result.success(num);
     }
 
@@ -206,7 +207,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Integer> getDoneCount(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int num = chaoSongInfoService.getDoneCountByUserId(orgUnitId);
+        int num = chaoSongService.getDoneCountByUserId(orgUnitId);
         return Y9Result.success(num);
     }
 
@@ -225,7 +226,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Page<ChaoSongModel> getDoneList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return chaoSongInfoService.pageDoneList(orgUnitId, documentTitle, rows, page);
+        return chaoSongService.pageDoneList(orgUnitId, documentTitle, rows, page);
     }
 
     /**
@@ -246,7 +247,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
-        return chaoSongInfoService.pageByProcessInstanceIdAndUserName(processInstanceId, userName, rows, page);
+        return chaoSongService.pageByProcessInstanceIdAndUserName(processInstanceId, userName, rows, page);
     }
 
     /**
@@ -266,8 +267,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         @RequestParam String senderId, @RequestParam String processInstanceId, String userName, @RequestParam int rows,
         @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return chaoSongInfoService.pageBySenderIdAndProcessInstanceId(senderId, processInstanceId, userName, rows,
-            page);
+        return chaoSongService.pageBySenderIdAndProcessInstanceId(senderId, processInstanceId, userName, rows, page);
     }
 
     /**
@@ -285,7 +285,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam String tenantId,
         @RequestParam String orgUnitId, String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return chaoSongInfoService.pageOpinionChaosongByUserId(orgUnitId, documentTitle, rows, page);
+        return chaoSongService.pageOpinionChaosongByUserId(orgUnitId, documentTitle, rows, page);
     }
 
     /**
@@ -299,7 +299,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Integer> getTodoCount(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int num = chaoSongInfoService.getTodoCountByUserId(orgUnitId);
+        int num = chaoSongService.getTodoCountByUserId(orgUnitId);
         return Y9Result.success(num);
     }
 
@@ -318,7 +318,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Page<ChaoSongModel> getTodoList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return chaoSongInfoService.pageTodoList(orgUnitId, documentTitle, rows, page);
+        return chaoSongService.pageTodoList(orgUnitId, documentTitle, rows, page);
     }
 
     /**
@@ -342,7 +342,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
-        return chaoSongInfoService.pageMyChaoSongList(searchName, itemId, userName, state, year, rows, page);
+        return chaoSongService.pageMyChaoSongList(searchName, itemId, userName, state, year, rows, page);
     }
 
     /**
@@ -369,7 +369,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        return chaoSongInfoService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+        return chaoSongService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
     }
 
     /**
@@ -393,7 +393,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
-        return chaoSongInfoService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
+        return chaoSongService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
     }
 
     /**
@@ -416,7 +416,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         String senderName, String userName, String state, String year, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return chaoSongInfoService.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);
+        return chaoSongService.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);
     }
 
     /**
@@ -432,7 +432,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     public Y9Result<Object> updateTitle(@RequestParam String tenantId, @RequestParam String processInstanceId,
         @RequestParam String documentTitle) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.updateTitle(processInstanceId, documentTitle);
+        chaoSongService.updateTitle(processInstanceId, documentTitle);
         return Y9Result.success();
     }
 }

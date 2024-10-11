@@ -10,21 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +36,7 @@ import net.risesoft.api.sms.SmsHttpApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.config.Y9ItemAdminProperties;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -56,20 +52,18 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
-import net.risesoft.nosql.elastic.repository.ChaoSongInfoRepository;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.repository.jpa.ChaoSongRepository;
 import net.risesoft.service.AsyncHandleService;
-import net.risesoft.service.ChaoSongInfoService;
+import net.risesoft.service.ChaoSongService;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -81,9 +75,10 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
+@Transactional(value = "rsTenantTransactionManager", readOnly = true)
+public class ChaoSongServiceImpl implements ChaoSongService {
 
-    private final ChaoSongInfoRepository chaoSongInfoRepository;
+    private final ChaoSongRepository chaoSongRepository;
 
     private final DocumentService documentService;
 
@@ -111,8 +106,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final ErrorLogService errorLogService;
 
-    private final ElasticsearchOperations elasticsearchOperations;
-
     private final TodoTaskApi todotaskApi;
 
     private final CustomGroupApi customGroupApi;
@@ -124,20 +117,21 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
             opinionState = "1";
         }
-        ChaoSongInfo chaoSongInfo = chaoSongInfoRepository.findById(id).orElse(null);
-        assert chaoSongInfo != null;
-        chaoSongInfo.setOpinionState(opinionState);
-        chaoSongInfoRepository.save(chaoSongInfo);
+        ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
+        assert chaoSong != null;
+        chaoSong.setOpinionState(opinionState);
+        chaoSongRepository.save(chaoSong);
     }
 
     @Override
+    @Transactional
     public void changeStatus(String id) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
+        ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
         if (chaoSong != null) {
             chaoSong.setStatus(1);
             chaoSong.setReadTime(sdf.format(new Date()));
-            chaoSongInfoRepository.save(chaoSong);
+            chaoSongRepository.save(chaoSong);
             try {
                 todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
@@ -147,14 +141,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
+    @Transactional
     public void changeStatus(String[] ids) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
-            ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
+            ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
             if (chaoSong != null) {
                 chaoSong.setStatus(1);
                 chaoSong.setReadTime(sdf.format(new Date()));
-                chaoSongInfoRepository.save(chaoSong);
+                chaoSongRepository.save(chaoSong);
             }
             try {
                 todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
@@ -166,28 +161,30 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public int countAllByUserId(String userId) {
-        return chaoSongInfoRepository.countByUserIdAndTenantId(userId, Y9LoginUserHolder.getTenantId());
+        return chaoSongRepository.countByUserId(userId);
     }
 
     @Override
     public int countByProcessInstanceId(String userId, String processInstanceId) {
-        return chaoSongInfoRepository.countBySenderIdIsNotAndProcessInstanceId(userId, processInstanceId);
+        return chaoSongRepository.countBySenderIdIsNotAndProcessInstanceId(userId, processInstanceId);
     }
 
     @Override
     public int countByUserIdAndProcessInstanceId(String userId, String processInstanceId) {
-        return chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
+        return chaoSongRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
-        chaoSongInfoRepository.deleteById(id);
+        chaoSongRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public void deleteByIds(String[] ids) {
         for (String id : ids) {
-            chaoSongInfoRepository.deleteById(id);
+            chaoSongRepository.deleteById(id);
             try {
                 todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
@@ -199,7 +196,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Override
     @Transactional
     public boolean deleteByProcessInstanceId(String processInstanceId) {
-        chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+        chaoSongRepository.deleteByProcessInstanceId(processInstanceId);
         return true;
     }
 
@@ -272,52 +269,55 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public ChaoSongInfo getById(String id) {
-        return chaoSongInfoRepository.findById(id).orElse(null);
+    public ChaoSong getById(String id) {
+        return chaoSongRepository.findById(id).orElse(null);
     }
 
     @Override
     public int getDone4OpinionCountByUserId(String userId) {
-        return chaoSongInfoRepository.countByUserIdAndOpinionStateAndTenantId(userId, "1",
-            Y9LoginUserHolder.getTenantId());
+        return chaoSongRepository.countByUserIdAndOpinionState(userId, "1");
     }
 
     @Override
     public int getDoneCountByUserId(String userId) {
-        return chaoSongInfoRepository.countByUserIdAndStatus(userId, 1);
+        return chaoSongRepository.countByUserIdAndStatus(userId, 1);
     }
 
     @Override
     public int getTodoCountByUserId(String userId) {
-        return chaoSongInfoRepository.countByUserIdAndStatus(userId, 2);
+        return chaoSongRepository.countByUserIdAndStatus(userId, 2);
     }
 
     @Override
     public Y9Page<ChaoSongModel> pageByProcessInstanceIdAndUserName(String processInstanceId, String userName, int rows,
         int page) {
         String senderId = Y9LoginUserHolder.getOrgUnitId();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         List<ChaoSongModel> list = new ArrayList<>();
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria =
-            new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("processInstanceId").is(processInstanceId);
-        criteria.subCriteria(new Criteria("senderId").not().is(senderId));
-        if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("processInstanceId"), processInstanceId));
+                list.add(builder.notEqual(root.get("senderId"), senderId));
+                if (StringUtils.isNotBlank(userName)) {
+                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
-        for (ChaoSongInfo info : csList) {
+        for (ChaoSong info : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(info, model);
             model.setId(info.getId());
@@ -348,26 +348,31 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     public Y9Page<ChaoSongModel> pageBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
         String userName, int rows, int page) {
         List<ChaoSongModel> list = new ArrayList<>();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(senderId)
-            .and("processInstanceId").is(processInstanceId);
-        if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("senderId"), senderId));
+                list.add(builder.equal(root.get("processInstanceId"), processInstanceId));
+                if (StringUtils.isNotBlank(userName)) {
+                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(cs, model);
             model.setId(cs.getId());
@@ -398,28 +403,33 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     public Y9Page<Map<String, Object>> pageByUserIdAndDocumentTitle(String userId, String documentTitle, int rows,
         int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
-        if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("userId"), userId));
+                if (StringUtils.isNotBlank(documentTitle)) {
+                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         List<Map<String, Object>> listMap = new ArrayList<>();
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("id", cs.getId());
             try {
@@ -439,7 +449,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
                 map.put("number", processParam.getCustomNumber());
                 map.put("level", processParam.getCustomLevel());
-                int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
+                int chaosongNum = chaoSongRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
                 map.put("chaosongNum", chaosongNum);
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
@@ -459,29 +469,34 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Override
     public Y9Page<ChaoSongModel> pageDoneList(String orgUnitId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(orgUnitId)
-            .and("status").is(1);
-        if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("userId"), orgUnitId));
+                list.add(builder.equal(root.get("status"), 1));
+                if (StringUtils.isNotBlank(documentTitle)) {
+                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         List<ChaoSongModel> list = new ArrayList<>();
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
@@ -525,38 +540,43 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         String year, int rows, int page) {
         String userId = Y9LoginUserHolder.getOrgUnitId();
         List<ChaoSongModel> list = new ArrayList<>();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(userId);
-        if (StringUtils.isNotBlank(searchName)) {
-            criteria.subCriteria(new Criteria("title").contains(searchName));
-        }
-        if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
-        }
-        if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
-        }
-        if (StringUtils.isNotBlank(state)) {
-            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
-        }
-        if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("createTime").contains(year));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("senderId"), userId));
+                if (StringUtils.isNotBlank(searchName)) {
+                    list.add(builder.like(root.get("title"), "%" + searchName + "%"));
+                }
+                if (StringUtils.isNotBlank(itemId)) {
+                    list.add(builder.equal(root.get("itemId"), itemId));
+                }
+                if (StringUtils.isNotBlank(userName)) {
+                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                }
+                if (StringUtils.isNotBlank(state)) {
+                    list.add(builder.equal(root.get("status"), state));
+                }
+                if (StringUtils.isNotBlank(year)) {
+                    list.add(builder.like(root.get("createTime"), "%" + year + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         OfficeDoneInfo hpi;
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
@@ -599,29 +619,34 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Override
     public Y9Page<ChaoSongModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
         List<ChaoSongModel> list = new ArrayList<>();
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId)
-            .and("opinionState").is("1");
-        if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("userId"), userId));
+                list.add(builder.equal(root.get("opinionState"), "1"));
+                if (StringUtils.isNotBlank(documentTitle)) {
+                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         int num = (page - 1) * rows;
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
@@ -648,6 +673,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setProcessSerialNumber(officeDoneInfo.getProcessSerialNumber());
                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
                 model.setFollow(countFollow > 0);
+
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
@@ -663,29 +689,34 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Override
     public Y9Page<ChaoSongModel> pageTodoList(String orgUnitId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         List<ChaoSongModel> list = new ArrayList<>();
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(orgUnitId)
-            .and("status").is(2);
-        if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("userId"), orgUnitId));
+                list.add(builder.equal(root.get("status"), 2));
+                if (StringUtils.isNotBlank(documentTitle)) {
+                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
@@ -711,7 +742,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setProcessSerialNumber(officeDoneInfo.getProcessSerialNumber());
                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
                 model.setFollow(countFollow > 0);
-
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
@@ -725,13 +755,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public ChaoSongInfo save(ChaoSongInfo chaoSong) {
-        return chaoSongInfoRepository.save(chaoSong);
+    @Transactional
+    public ChaoSong save(ChaoSong chaoSong) {
+        return chaoSongRepository.save(chaoSong);
     }
 
     @Override
-    public void save(List<ChaoSongInfo> chaoSongList) {
-        chaoSongInfoRepository.saveAll(chaoSongList);
+    @Transactional
+    public void save(List<ChaoSong> chaoSongList) {
+        chaoSongRepository.saveAll(chaoSongList);
     }
 
     @Override
@@ -746,7 +778,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             String title = processParam.getTitle(), itemId = processParam.getItemId(),
                 itemName = processParam.getItemName(), systemName = processParam.getSystemName();
             String[] orgUnitList = users.split(";");
-            List<ChaoSongInfo> csList = new ArrayList<>();
+            List<ChaoSong> csList = new ArrayList<>();
             List<String> userIdListAdd = new ArrayList<>();
             // 添加的人员
             for (String orgUnitStr : orgUnitList) {
@@ -779,7 +811,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             List<String> mobile = new ArrayList<>();
             for (String userId : userIdListAdd) {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-                ChaoSongInfo cs = new ChaoSongInfo();
+                ChaoSong cs = new ChaoSong();
                 cs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 cs.setCreateTime(sdf.format(new Date()));
                 cs.setProcessInstanceId(processInstanceId);
@@ -800,7 +832,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 csList.add(cs);
             }
             this.save(csList);
-            asyncHandleService.saveChaoSong4Todo(tenantId, csList);
+            asyncHandleService.saveChaoSongTodo(tenantId, csList);
             if (StringUtils.isNotBlank(isSendSms) && UtilConsts.TRUE.equals(isSendSms)) {
                 smsContent += "--" + Y9LoginUserHolder.getUserInfo().getName();
                 Boolean smsSwitch = y9ItemAdminProperties.getSmsSwitch();
@@ -808,12 +840,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     smsHttpApi.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile, smsContent,
                         systemName + "抄送");
                 } else {
-                    LOGGER
-                        .info("*********************y9.app.itemAdmin.smsSwitch开关未打开**********************************");
+                    LOGGER.info("*********************y9.app.itemAdmin.smsSwitch开关未打开*******************");
                 }
             }
-            asyncHandleService.weiXinRemind4ChaoSongInfo(tenantId, Y9LoginUserHolder.getPersonId(),
-                processParam.getProcessSerialNumber(), csList);
             return Y9Result.successMsg("抄送成功");
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -847,39 +876,44 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
         List<ChaoSongModel> list = new ArrayList<>();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
-        if (StringUtils.isNotBlank(searchName)) {
-            criteria.subCriteria(new Criteria("title").contains(searchName));
-        }
-        if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
-        }
-        if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("senderName").contains(userName));
-        }
-        if (StringUtils.isNotBlank(state)) {
-            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
-        }
-        if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("createTime").contains(year));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                list.add(builder.equal(root.get("userId"), userId));
+                if (StringUtils.isNotBlank(searchName)) {
+                    list.add(builder.like(root.get("title"), "%" + searchName + "%"));
+                }
+                if (StringUtils.isNotBlank(itemId)) {
+                    list.add(builder.equal(root.get("itemId"), itemId));
+                }
+                if (StringUtils.isNotBlank(userName)) {
+                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                }
+                if (StringUtils.isNotBlank(state)) {
+                    list.add(builder.equal(root.get("status"), state));
+                }
+                if (StringUtils.isNotBlank(year)) {
+                    list.add(builder.like(root.get("createTime"), "%" + year + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
@@ -924,42 +958,46 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ChaoSongModel> list = new ArrayList<>();
-        List<ChaoSongInfo> csList;
+        List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
-        if (StringUtils.isNotBlank(searchName)) {
-            criteria.subCriteria(new Criteria("title").contains(searchName));
-        }
-        if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
-        }
-        if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
-        }
-        if (StringUtils.isNotBlank(senderName)) {
-            criteria.subCriteria(new Criteria("senderName").contains(senderName));
-        }
-        if (StringUtils.isNotBlank(state)) {
-            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
-        }
-        if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("createTime").contains(year));
-        }
-        Query query = new CriteriaQuery(criteria).setPageable(pageable);
-        query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-        SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
-        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
+            @Override
+            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                if (StringUtils.isNotBlank(searchName)) {
+                    list.add(builder.like(root.get("title"), "%" + searchName + "%"));
+                }
+                if (StringUtils.isNotBlank(itemId)) {
+                    list.add(builder.equal(root.get("itemId"), itemId));
+                }
+                if (StringUtils.isNotBlank(userName)) {
+                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                }
+                if (StringUtils.isNotBlank(senderName)) {
+                    list.add(builder.like(root.get("senderName"), "%" + senderName + "%"));
+                }
+                if (StringUtils.isNotBlank(state)) {
+                    list.add(builder.equal(root.get("status"), state));
+                }
+                if (StringUtils.isNotBlank(year)) {
+                    list.add(builder.like(root.get("createTime"), "%" + year + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
         csList = pageList.getContent();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
-        for (ChaoSongInfo cs : csList) {
+        for (ChaoSong cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
@@ -1005,14 +1043,14 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Transactional
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
-            List<ChaoSongInfo> list = chaoSongInfoRepository.findByProcessInstanceId(processInstanceId);
-            List<ChaoSongInfo> newList = new ArrayList<>();
-            for (ChaoSongInfo info : list) {
+            List<ChaoSong> list = chaoSongRepository.findByProcessInstanceId(processInstanceId);
+            List<ChaoSong> newList = new ArrayList<>();
+            for (ChaoSong info : list) {
                 info.setTitle(documentTitle);
                 newList.add(info);
             }
             if (!newList.isEmpty()) {
-                chaoSongInfoRepository.saveAll(newList);
+                chaoSongRepository.saveAll(newList);
             }
         } catch (Exception e) {
             LOGGER.error("更新抄送标题失败", e);
