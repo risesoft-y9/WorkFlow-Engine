@@ -21,6 +21,7 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 流程实例相关接口
@@ -101,7 +102,12 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId);
-        return Y9Result.success(FlowableModelConvertUtil.historicProcessInstance2Model(hpi));
+        HistoricProcessInstanceModel hpiModel = null;
+        if (hpi != null) {
+            hpiModel = new HistoricProcessInstanceModel();
+            Y9BeanUtil.copyProperties(hpi, hpiModel);
+        }
+        return Y9Result.success(hpiModel);
     }
 
     /**
@@ -121,7 +127,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         HistoricProcessInstance hpi = customHistoricProcessService.getByIdAndYear(processInstanceId, year);
         HistoricProcessInstanceModel hpiModel = null;
         if (hpi != null) {
-            hpiModel = FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
+            hpiModel = new HistoricProcessInstanceModel();
+            Y9BeanUtil.copyProperties(hpi, hpiModel);
         }
         return Y9Result.success(hpiModel);
     }
@@ -158,7 +165,12 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getSuperProcessInstanceById(processInstanceId);
-        return Y9Result.success(FlowableModelConvertUtil.historicProcessInstance2Model(hpi));
+        HistoricProcessInstanceModel hpiModel = null;
+        if (hpi != null) {
+            hpiModel = new HistoricProcessInstanceModel();
+            Y9BeanUtil.copyProperties(hpi, hpiModel);
+        }
+        return Y9Result.success(hpiModel);
     }
 
     /**

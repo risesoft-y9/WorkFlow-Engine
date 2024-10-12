@@ -22,6 +22,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 部署流程相关接口
@@ -79,7 +80,12 @@ public class RepositoryApiImpl implements RepositoryApi {
         @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getLatestProcessDefinitionByKey(processDefinitionKey);
-        return Y9Result.success(FlowableModelConvertUtil.processDefinition2Model(pd));
+        ProcessDefinitionModel model = null;
+        if (pd != null) {
+            model = new ProcessDefinitionModel();
+            Y9BeanUtil.copyProperties(pd, model);
+        }
+        return Y9Result.success(model);
     }
 
     /**
@@ -109,7 +115,12 @@ public class RepositoryApiImpl implements RepositoryApi {
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getPreviousProcessDefinitionById(processDefinitionId);
-        return Y9Result.success(FlowableModelConvertUtil.processDefinition2Model(pd));
+        ProcessDefinitionModel model = null;
+        if (pd != null) {
+            model = new ProcessDefinitionModel();
+            Y9BeanUtil.copyProperties(pd, model);
+        }
+        return Y9Result.success(model);
     }
 
     /**
@@ -125,7 +136,12 @@ public class RepositoryApiImpl implements RepositoryApi {
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getProcessDefinitionById(processDefinitionId);
-        return Y9Result.success(FlowableModelConvertUtil.processDefinition2Model(pd));
+        ProcessDefinitionModel model = null;
+        if (pd != null) {
+            model = new ProcessDefinitionModel();
+            Y9BeanUtil.copyProperties(pd, model);
+        }
+        return Y9Result.success(model);
     }
 
     /**

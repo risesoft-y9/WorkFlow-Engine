@@ -18,6 +18,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricVariableService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 历史变量相关接口
@@ -69,7 +70,9 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
         if (hvi == null) {
             return Y9Result.failure("该流程实例下没有该变量");
         }
-        return Y9Result.success(FlowableModelConvertUtil.historicVariableInstance2Model(hvi));
+        HistoricVariableInstanceModel hviModel = new HistoricVariableInstanceModel();
+        Y9BeanUtil.copyProperties(hvi, hviModel);
+        return Y9Result.success(hviModel);
     }
 
     /**
@@ -107,7 +110,9 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
         if (hvi == null) {
             return Y9Result.failure("流程变量不存在");
         }
-        return Y9Result.success(FlowableModelConvertUtil.historicVariableInstance2Model(hvi));
+        HistoricVariableInstanceModel hviModel = new HistoricVariableInstanceModel();
+        Y9BeanUtil.copyProperties(hvi, hviModel);
+        return Y9Result.success(hviModel);
     }
 
     /**
