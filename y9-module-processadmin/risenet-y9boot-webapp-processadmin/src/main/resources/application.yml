@@ -94,7 +94,7 @@ spring:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL8Dialect
                 hbm2ddl:
-                    auto: update
+                    auto: none
                 jdbc:
                     batchSize: 100
                 showSql: true
@@ -110,9 +110,6 @@ spring:
             auto-commit-interval: 1000
             enable-auto-commit: true
             group-id: y9processAdmin-server
-    liquibase:
-        change-log: classpath:db/liquibase-changelog.xml
-        enabled: true
     main:
         allow-bean-definition-overriding: true
     mvc:
@@ -170,6 +167,8 @@ y9:
             packagesToScanEntityTenant: net.risesoft.entity
             packagesToScanRepositoryPublic: net.risesoft.y9public.repository
             packagesToScanRepositoryTenant: net.risesoft.repository
+        liquibase:
+            public-enabled: true
         log:
             enabled: true
             # kafka, api

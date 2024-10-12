@@ -17,10 +17,10 @@ import lombok.Data;
  **/
 @Entity
 @Data
-@Table(name = "ACT_DE_MODEL")
-public class ActDeModel  implements Serializable {
+@Table(name = "ACT_DE_MODEL_HISTORY")
+public class ActDeModelHistory implements Serializable {
 
-    private static final long serialVersionUID = 2081551802722131038L;
+    private static final long serialVersionUID = -6449513466078106336L;
 
     @Id
     @Column(name = "ID", nullable = false)
@@ -50,6 +50,9 @@ public class ActDeModel  implements Serializable {
     @Column(name = "LAST_UPDATED_BY")
     private String lastUpdatedBy;
 
+    @Column(name = "removalDate", length = 6)
+    private Date removalDate;
+
     @Column(name = "VERSION")
     private int version;
 
@@ -57,9 +60,8 @@ public class ActDeModel  implements Serializable {
     @Column(name = "MODEL_EDITOR_JSON")
     private String modelEditorJson;
 
-    @Lob
-    @Column(name = "THUMBNAIL")
-    private byte[] thumbnail;
+    @Column(name = "MODEL_ID")
+    private String modelId;
 
     @Column(name = "MODEL_TYPE")
     private int modelType;
