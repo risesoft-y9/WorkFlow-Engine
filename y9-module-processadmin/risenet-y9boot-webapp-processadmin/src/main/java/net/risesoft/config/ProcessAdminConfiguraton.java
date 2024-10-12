@@ -11,6 +11,7 @@ import org.flowable.ui.modeler.service.ModelServiceImpl;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -23,6 +24,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -35,12 +37,16 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
 import net.risesoft.filter.RemoveUrlJsessionIdFilter;
+import net.risesoft.liquibase.LiquibaseUtil;
 import net.risesoft.listener.FlowableMultiTenantListener;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.configuration.feature.liquibase.Y9LiquibaseProperties;
 import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * @author qinman
@@ -174,5 +180,13 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean("y9TenantDataSourceLookup")
     public Y9TenantDataSourceLookup y9TenantDataSourceLookup(@Qualifier("y9PublicDS") DruidDataSource ds) {
         return new Y9TenantDataSourceLookup(ds, environment.getProperty("y9.systemName"));
+    }
+
+    @Bean
+    @ConditionalOnBean(name = "y9FlowableDS")
+    public SpringLiquibase y9FlowableSpringLiquibase(Y9LiquibaseProperties properties, @Qualifier("y9FlowableDS") DruidDataSource dataSource,
+                                                     ResourceLoader resourceLoader) {
+        return LiquibaseUtil.getSpringLiquibase(dataSource, properties, resourceLoader,
+                false);
     }
 }
