@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+
 import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -27,6 +28,7 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 正在运行任务相关接口
@@ -221,7 +223,12 @@ public class TaskApiImpl implements TaskApi {
     public Y9Result<TaskModel> findById(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskId);
-        return Y9Result.success(FlowableModelConvertUtil.task2TaskModel(task));
+        TaskModel tm = null;
+        if (task != null) {
+            tm = new TaskModel();
+            Y9BeanUtil.copyProperties(task, tm);
+        }
+        return Y9Result.success(tm);
     }
 
     /**
