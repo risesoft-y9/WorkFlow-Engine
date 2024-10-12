@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -362,7 +363,7 @@ public class MobileSyncController {
     }
 
     /**
-     * 同步办结件至数据中心
+     * 同步办结件至数据中心，办结截转数据失败的件
      *
      * @param tenantId 租户ID
      */
@@ -378,7 +379,7 @@ public class MobileSyncController {
                 + " ORDER BY" + "	P .END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
-            if (dialectName.equals("mysql")) {
+            if (dialectName.equals("mysql") || dialectName.equals("kingbase")) {
                 sql = "SELECT"
                     + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
                     + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL"
@@ -391,84 +392,24 @@ public class MobileSyncController {
                 String PROC_INST_ID_;
                 try {
                     PROC_INST_ID_ = (String)map.get("PROC_INST_ID_");
-                    String PROC_DEF_ID_ = (String)map.get("PROC_DEF_ID_");
                     String START_TIME_ = (String)map.get("START_TIME_");
                     String END_TIME_ = (String)map.get("END_TIME_");
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
-                    OfficeDoneInfoModel officeDoneInfo = new OfficeDoneInfoModel();
-                    officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
-                    if (officeDoneInfo == null) {
-                        officeDoneInfo = new OfficeDoneInfoModel();
-                        officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    }
-                    if (processParamModel != null) {
-                        officeDoneInfo.setBureauId(StringUtils.isBlank(processParamModel.getBureauIds()) ? ""
-                            : processParamModel.getBureauIds());
-                        officeDoneInfo.setDeptId(
-                            StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds());
-                        officeDoneInfo.setCreatUserId(
-                            StringUtils.isBlank(processParamModel.getStartor()) ? "" : processParamModel.getStartor());
-                        officeDoneInfo.setCreatUserName(StringUtils.isBlank(processParamModel.getStartorName()) ? ""
-                            : processParamModel.getStartorName());
-                        officeDoneInfo.setDocNumber(StringUtils.isBlank(processParamModel.getCustomNumber()) ? ""
-                            : processParamModel.getCustomNumber());
-                        officeDoneInfo.setItemId(
-                            StringUtils.isBlank(processParamModel.getItemId()) ? "" : processParamModel.getItemId());
-                        officeDoneInfo.setItemName(StringUtils.isBlank(processParamModel.getItemName()) ? ""
-                            : processParamModel.getItemName());
-                        officeDoneInfo
-                            .setProcessSerialNumber(StringUtils.isBlank(processParamModel.getProcessSerialNumber()) ? ""
-                                : processParamModel.getProcessSerialNumber());
-                        officeDoneInfo.setSystemCnName(StringUtils.isBlank(processParamModel.getSystemCnName()) ? ""
-                            : processParamModel.getSystemCnName());
-                        officeDoneInfo.setSystemName(StringUtils.isBlank(processParamModel.getSystemName()) ? ""
-                            : processParamModel.getSystemName());
-                        officeDoneInfo.setTitle(
-                            StringUtils.isBlank(processParamModel.getTitle()) ? "" : processParamModel.getTitle());
-                        officeDoneInfo.setUrgency(StringUtils.isBlank(processParamModel.getCustomLevel()) ? ""
-                            : processParamModel.getCustomLevel());
-                        officeDoneInfo.setUserComplete(StringUtils.isBlank(processParamModel.getCompleter()) ? ""
-                            : processParamModel.getCompleter());
-                        officeDoneInfo.setTarget(
-                            StringUtils.isBlank(processParamModel.getTarget()) ? "" : processParamModel.getTarget());
-                    }
-
-                    // 处理委托人
-                    /*sql = "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + PROC_INST_ID_ + "'";
-                    List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
-                    String entrustUserId = "";
-                    for (Map<String, Object> m : list2) {
-                        String USER_ID_ = (String)m.get("OWNERID");
-                        if (!entrustUserId.contains(USER_ID_)) {
-                            entrustUserId = Y9Util.genCustomStr(entrustUserId, USER_ID_);
+                    OfficeDoneInfoModel officeDoneInfo =
+                        officeDoneInfoApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
+                    if (officeDoneInfo != null) {
+                        if (processParamModel != null) {
+                            officeDoneInfo.setUserComplete(StringUtils.isBlank(processParamModel.getCompleter()) ? ""
+                                : processParamModel.getCompleter());
                         }
+                        officeDoneInfo.setEndTime(END_TIME_);
+                        officeDoneInfo.setTenantId(tenantId);
+                        officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
+                        String year = START_TIME_.substring(0, 4);
+                        this.saveYearData(year, PROC_INST_ID_);
+                        this.deleteDoneData(PROC_INST_ID_);
                     }
-                    officeDoneInfo.setEntrustUserId(entrustUserId);*/
-
-                    // 处理参与人
-                    sql =
-                        "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
-                    List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
-                    String allUserId = "";
-                    for (Map<String, Object> m : list3) {
-                        String USER_ID_ = (String)m.get("USER_ID_");
-                        if (!allUserId.contains(USER_ID_)) {
-                            allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
-                        }
-                    }
-                    officeDoneInfo.setAllUserId(allUserId);
-                    officeDoneInfo.setEndTime(END_TIME_);
-                    officeDoneInfo.setProcessDefinitionId(PROC_DEF_ID_);
-                    officeDoneInfo.setProcessDefinitionKey(PROC_DEF_ID_.split(":")[0]);
-                    officeDoneInfo.setProcessInstanceId(PROC_INST_ID_);
-                    officeDoneInfo.setStartTime(START_TIME_);
-                    officeDoneInfo.setTenantId(tenantId);
-                    officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
-                    String year = START_TIME_.substring(0, 4);
-                    this.saveYearData(year, PROC_INST_ID_);
-                    this.deleteDoneData(PROC_INST_ID_);
                 } catch (Exception e) {
                     i = i + 1;
                     LOGGER.error("同步失败", e);
@@ -499,7 +440,7 @@ public class MobileSyncController {
                 + " and P.DELETE_REASON_ is null" + " ORDER BY" + "	P .END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
-            if (dialectName.equals("mysql")) {
+            if (dialectName.equals("mysql") || dialectName.equals("kingbase")) {
                 sql = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_" + " FROM"
                     + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL" + " and P.DELETE_REASON_ is null"
                     + " ORDER BY" + "	P .END_TIME_ DESC";

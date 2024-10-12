@@ -75,20 +75,20 @@ public class SyncYearTableService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         /**
-         * 每年的12月20号开始生成年度表结构
+         * 每年的10月10号开始生成年度表结构
          */
-        boolean is1210 = sdf.format(date).contains("12-10");
-        if (is1210) {
+        boolean is1010 = sdf.format(date).contains("10-10");
+        if (is1010) {
             LOGGER.info("********************定时生成年度表结构开始**********************");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy");
             String year = sdf1.format(date);
             String year0 = String.valueOf((Integer.parseInt(year) + 1));
-            List<String> list = jdbcTemplate4Public.queryForList("select id from rs_common_tenant", String.class);
+            List<String> list = jdbcTemplate4Public.queryForList("select id from y9_common_tenant", String.class);
             for (String tenantId : list) {
                 Y9LoginUserHolder.setTenantId(tenantId);
-                String sql = "SELECT" + "	count(t.ID)" + " FROM" + "	rs_common_tenant_system t"
-                    + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId
-                    + "'" + " and s.SYSTEMNAME = 'itemAdmin'";
+                String sql = "SELECT count(t.id) FROM y9_common_tenant_system t"
+                    + " LEFT JOIN y9_common_system s on t.system_id = s.ID WHERE t.tenant_id = '" + tenantId
+                    + "' and s.NAME = 'itemAdmin'";
                 int count = jdbcTemplate4Public.queryForObject(sql, Integer.class);
                 if (count > 0) {
                     this.syncYearTable(year0);
