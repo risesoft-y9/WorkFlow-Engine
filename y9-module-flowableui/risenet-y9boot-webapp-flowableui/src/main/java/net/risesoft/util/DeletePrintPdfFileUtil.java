@@ -69,7 +69,7 @@ public class DeletePrintPdfFileUtil {
         }
     }
 
-    @Scheduled(cron = "0 0/5 * * * ?") // 每5分钟执行一次
+    @Scheduled(cron = "0 0/3 * * * ?") // 每5分钟执行一次
     public void updateTaskEndTime() {// kingbase办结时出现.截转数据时最后一个历史任务时间为null，历程不显示
         Date date = new Date();
         try {
@@ -80,11 +80,28 @@ public class DeletePrintPdfFileUtil {
             String sql = "SELECT * FROM act_hi_taskinst_" + year + " WHERE END_TIME_ IS NULL";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list.size() > 0) {
-                sql = "UPDATE act_hi_taskinst_" + year + " t SET t.END_TIME_ = ( SELECT"
-                    + " p.STARTTIME FROM  ff_processtrack AS p WHERE"
-                    + " t.PROC_INST_ID_ = p.PROCESSINSTANCEID and p.TASKDEFNAME = '办结')"
-                    + " WHERE t.END_TIME_ IS NULL ";
-                jdbcTemplate.execute(sql);
+                // sql = "UPDATE act_hi_taskinst_" + year + " t SET t.END_TIME_ = ( SELECT"
+                // + " p.STARTTIME FROM ff_processtrack AS p WHERE"
+                // + " t.PROC_INST_ID_ = p.PROCESSINSTANCEID and p.TASKDEFNAME = '办结')"
+                // + " WHERE t.END_TIME_ IS NULL ";
+                // jdbcTemplate.execute(sql);
+                for (Map<String, Object> map : list) {
+                    try {
+                        String PROC_INST_ID_ = map.get("PROC_INST_ID_").toString();
+                        String ID_ = map.get("ID_").toString();
+                        String sql0 = "select STARTTIME as startTime from ff_processtrack where PROCESSINSTANCEID = '"
+                            + PROC_INST_ID_ + "' and TASKDEFNAME like '%办结%' order by STARTTIME desc";
+                        List<Map<String, Object>> list0 = jdbcTemplate.queryForList(sql0);
+                        if (list0.size() > 0) {
+                            String startTime = list0.get(0).get("startTime").toString();
+                            String sql1 = "update act_hi_taskinst_" + year + " set END_TIME_ = '" + startTime
+                                + "' where ID_ = '" + ID_ + "'";
+                            jdbcTemplate.execute(sql1);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("定时任务updateTaskEndTime异常1：{}", e.getMessage());
+                    }
+                }
             }
         } catch (Exception e) {
             LOGGER.error("定时任务updateTaskEndTime异常：{}", e.getMessage());
