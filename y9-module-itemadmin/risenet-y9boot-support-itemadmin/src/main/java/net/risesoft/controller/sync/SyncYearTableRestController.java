@@ -46,12 +46,12 @@ public class SyncYearTableRestController {
     @RequestMapping(value = "/syncYearTable4AllTenant")
     public void syncYearTable4AllTenant(String year, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
-        List<String> list = jdbcTemplate4Public.queryForList("select id from rs_common_tenant", String.class);
+        List<String> list = jdbcTemplate4Public.queryForList("select id from y9_common_tenant", String.class);
         for (String tenantId : list) {
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "	count(t.ID)" + " FROM" + "	rs_common_tenant_system t"
-                + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId + "'"
-                + " and s.SYSTEMNAME = 'itemAdmin'";
+            String sql = "SELECT count(t.id) FROM y9_common_tenant_system t"
+                + " LEFT JOIN y9_common_system s on t.system_id = s.ID WHERE t.tenant_id = '" + tenantId
+                + "' and s.NAME = 'itemAdmin'";
             Object obj = jdbcTemplate4Public.queryForObject(sql, Object.class);
             int count = 0;
             if (obj != null) {
