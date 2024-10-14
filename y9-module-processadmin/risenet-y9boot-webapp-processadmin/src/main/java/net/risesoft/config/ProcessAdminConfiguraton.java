@@ -41,6 +41,7 @@ import net.risesoft.liquibase.LiquibaseUtil;
 import net.risesoft.listener.FlowableMultiTenantListener;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 import net.risesoft.y9.configuration.feature.liquibase.Y9LiquibaseProperties;
 import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
@@ -184,9 +185,8 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnBean(name = "y9FlowableDS")
-    public SpringLiquibase y9FlowableSpringLiquibase(Y9LiquibaseProperties properties, @Qualifier("y9FlowableDS") DruidDataSource dataSource,
-                                                     ResourceLoader resourceLoader) {
-        return LiquibaseUtil.getSpringLiquibase(dataSource, properties, resourceLoader,
-                false);
+    public SpringLiquibase y9FlowableSpringLiquibase(Y9LiquibaseProperties properties,
+        @Qualifier("y9FlowableDS") DruidDataSource dataSource, ResourceLoader resourceLoader) {
+        return LiquibaseUtil.getSpringLiquibase(dataSource, properties, resourceLoader, false);
     }
 }

@@ -24,12 +24,12 @@ import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.todo.TodoTaskApi;
-import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
  * @author qinman

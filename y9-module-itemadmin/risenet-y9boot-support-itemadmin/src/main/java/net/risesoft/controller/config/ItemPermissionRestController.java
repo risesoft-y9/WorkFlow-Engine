@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.config.Y9ItemAdminProperties;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.model.processadmin.TargetModel;
@@ -24,6 +23,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 
 /**
  * @author qinman

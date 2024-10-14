@@ -15,7 +15,6 @@ import net.risesoft.Y9Push;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -23,6 +22,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.PushNormalToAndroidService;
 import net.risesoft.util.SysVariables;
+import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
  * @author qinman

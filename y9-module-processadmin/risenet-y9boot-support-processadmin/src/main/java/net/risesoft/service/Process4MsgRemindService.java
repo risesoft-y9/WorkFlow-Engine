@@ -17,7 +17,6 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -26,6 +25,7 @@ import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 import net.risesoft.y9.util.Y9Util;
 
 /**

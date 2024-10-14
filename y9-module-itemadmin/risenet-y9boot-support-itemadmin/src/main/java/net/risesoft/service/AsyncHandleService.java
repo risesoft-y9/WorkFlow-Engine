@@ -32,7 +32,6 @@ import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.api.todo.TodoTaskApi;
-import net.risesoft.config.Y9ItemAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
@@ -63,6 +62,7 @@ import net.risesoft.repository.jpa.TaskVariableRepository;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 import net.risesoft.y9.util.Y9Util;
 
 /**
