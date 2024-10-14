@@ -34,7 +34,6 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.sms.SmsHttpApi;
 import net.risesoft.api.todo.TodoTaskApi;
-import net.risesoft.config.Y9ItemAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
@@ -65,6 +64,7 @@ import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**

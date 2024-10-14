@@ -6,7 +6,6 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
-
 import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.task.service.delegate.DelegateTask;
@@ -17,13 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
  * @author zhangchongjie

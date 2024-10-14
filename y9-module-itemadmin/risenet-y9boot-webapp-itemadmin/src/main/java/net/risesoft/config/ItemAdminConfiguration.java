@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 
 /**
  * @author qinman
