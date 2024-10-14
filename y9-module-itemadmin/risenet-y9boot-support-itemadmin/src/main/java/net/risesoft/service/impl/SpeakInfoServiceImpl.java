@@ -80,7 +80,6 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
             }
             speakInfo.setReadUserId(readUserId);
             speakInfoRepository.save(speakInfo);
-
             speakInfo.setEdited(true);
             if (!currentUserId.equals(speakInfo.getUserId())) {
                 speakInfo.setEdited(false);
@@ -115,7 +114,6 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
             SpeakInfo oldsi = this.findById(id);
             oldsi.setContent(speakInfo.getContent());
             oldsi.setUpdateTime(sdf.format(new Date()));
-
             speakInfoRepository.save(oldsi);
             return id;
         }
