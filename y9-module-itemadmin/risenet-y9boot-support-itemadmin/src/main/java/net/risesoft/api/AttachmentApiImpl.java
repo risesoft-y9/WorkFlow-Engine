@@ -378,8 +378,9 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        TransactionFile transactionFile = ItemAdminModelConvertUtil.attachmentModel2TransactionFile(attachmentModel);
-        transactionFileService.uploadRestModel(transactionFile);
+        TransactionFile file = new TransactionFile();
+        Y9BeanUtil.copyProperties(attachmentModel, file);
+        transactionFileService.uploadRestModel(file);
         return Y9Result.success();
     }
 }

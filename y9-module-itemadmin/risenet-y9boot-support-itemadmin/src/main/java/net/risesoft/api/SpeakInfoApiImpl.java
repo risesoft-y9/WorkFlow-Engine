@@ -19,6 +19,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 沟通交流接口
@@ -64,7 +65,12 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     public Y9Result<SpeakInfoModel> findById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SpeakInfo speakInfo = speakInfoService.findById(id);
-        return Y9Result.success(ItemAdminModelConvertUtil.speakInfo2Model(speakInfo));
+        SpeakInfoModel speakInfoModel = null;
+        if (speakInfo != null) {
+            speakInfoModel = new SpeakInfoModel();
+            Y9BeanUtil.copyProperties(speakInfo, speakInfoModel);
+        }
+        return Y9Result.success(speakInfoModel);
     }
 
     /**
@@ -118,8 +124,8 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-
-        SpeakInfo speakInfo = ItemAdminModelConvertUtil.speakInfoModel2SpeakInfo(speakInfoModel);
+        SpeakInfo speakInfo = new SpeakInfo();
+        Y9BeanUtil.copyProperties(speakInfoModel, speakInfo);
         return Y9Result.success(speakInfoService.saveOrUpdate(speakInfo));
     }
 }

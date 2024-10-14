@@ -21,6 +21,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 历程接口
@@ -170,8 +171,11 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     public Y9Result<ProcessTrackModel> saveOrUpdate(@RequestParam String tenantId,
         @RequestBody ProcessTrackModel processTrackModel) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        ProcessTrack processTrack = ItemAdminModelConvertUtil.processTrackModel2ProcessTrack(processTrackModel);
+        ProcessTrack processTrack = new ProcessTrack();
+        Y9BeanUtil.copyProperties(processTrackModel, processTrack);
         ProcessTrack ptTemp = processTrackService.saveOrUpdate(processTrack);
-        return Y9Result.success(ItemAdminModelConvertUtil.processTrack2Model(ptTemp));
+        ProcessTrackModel model = new ProcessTrackModel();
+        Y9BeanUtil.copyProperties(ptTemp, model);
+        return Y9Result.success(model);
     }
 }
