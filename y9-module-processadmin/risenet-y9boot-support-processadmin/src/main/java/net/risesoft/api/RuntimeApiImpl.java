@@ -30,7 +30,6 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 正在运行流程实例操作接口
@@ -138,9 +137,7 @@ public class RuntimeApiImpl implements RuntimeApi {
         if (null == execution) {
             return Y9Result.failure("未找到执行实例");
         }
-        ExecutionModel eModel = new ExecutionModel();
-        Y9BeanUtil.copyProperties(execution, eModel);
-        return Y9Result.success(eModel);
+        return Y9Result.success(FlowableModelConvertUtil.execution2Model(execution));
     }
 
     /**
@@ -175,9 +172,7 @@ public class RuntimeApiImpl implements RuntimeApi {
         if (null == pi) {
             return Y9Result.failure("流程实例不存在");
         }
-        ProcessInstanceModel pim = new ProcessInstanceModel();
-        Y9BeanUtil.copyProperties(pi, pim);
-        return Y9Result.success(pim);
+        return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
     }
 
     /**
@@ -395,12 +390,7 @@ public class RuntimeApiImpl implements RuntimeApi {
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         ProcessInstance pi = customRuntimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
-        ProcessInstanceModel pim = null;
-        if (pi != null) {
-            pim = new ProcessInstanceModel();
-            Y9BeanUtil.copyProperties(pi, pim);
-        }
-        return Y9Result.success(pim);
+        return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
     }
 
     /**

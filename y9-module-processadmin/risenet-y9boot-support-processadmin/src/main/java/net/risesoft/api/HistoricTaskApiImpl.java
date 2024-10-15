@@ -16,7 +16,6 @@ import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 历史任务相关接口
@@ -83,12 +82,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public Y9Result<HistoricTaskInstanceModel> getById(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricTaskInstance hti = customHistoricTaskService.getById(taskId);
-        HistoricTaskInstanceModel model = null;
-        if (hti != null) {
-            model = new HistoricTaskInstanceModel();
-            Y9BeanUtil.copyProperties(hti, model);
-        }
-        return Y9Result.success(model);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstance2Model(hti));
     }
 
     /**
@@ -155,12 +149,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricTaskInstance hti = customHistoricTaskService.getThePreviousTask(taskId);
-        HistoricTaskInstanceModel model = null;
-        if (hti != null) {
-            model = new HistoricTaskInstanceModel();
-            Y9BeanUtil.copyProperties(hti, model);
-        }
-        return Y9Result.success(model);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstance2Model(hti));
     }
 
     /**
