@@ -76,16 +76,6 @@ public class Process4SearchService {
 
                 // 处理委托人
                 String sql;
-                /*    "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
-                List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
-                String entrustUserId = "";
-                for (Map<String, Object> m : list2) {
-                    String USER_ID_ = (String)m.get("OWNERID");
-                    if (!entrustUserId.contains(USER_ID_)) {
-                        entrustUserId = Y9Util.genCustomStr(entrustUserId, USER_ID_);
-                    }
-                }
-                officeDoneInfo.setEntrustUserId(entrustUserId);*/
 
                 // 处理参与人
                 sql =
