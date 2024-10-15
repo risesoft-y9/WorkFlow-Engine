@@ -58,7 +58,7 @@ vue -- 前端工程
 
 ## 功能架构图
 
-<div><img src="https://vue.youshengyun.com/files/img/flowableUI_framework.png"><div/>
+<div><img src="https://vue.youshengyun.com/files/img/flowableUI_framework2.png"><div/>
 
 1.工作台的功能和界面都由事项管理进行配置后形成
 
