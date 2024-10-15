@@ -24,7 +24,6 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OpinionService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
-import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -201,7 +200,8 @@ public class OpinionApiImpl implements OpinionApi {
     public Y9Result<Object> save(@RequestParam String tenantId, @RequestBody OpinionModel opinionModel)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Opinion opinion = ItemAdminModelConvertUtil.opinionModel2Opinion(opinionModel);
+        Opinion opinion = new Opinion();
+        Y9BeanUtil.copyProperties(opinionModel, opinion);
         opinionService.save(opinion);
         return Y9Result.successMsg("保存成功");
     }

@@ -12,8 +12,8 @@ import net.risesoft.entity.CalendarConfig;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CalendarConfigService;
-import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 日历配置接口
@@ -41,8 +41,10 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
     public Y9Result<CalendarConfigModel> findByYear(@RequestParam String tenantId, @RequestParam String year) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
-        CalendarConfigModel calendarConfigModel =
-            ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
+        CalendarConfigModel calendarConfigModel = new CalendarConfigModel();
+        if (calendarConfig != null) {
+            Y9BeanUtil.copyProperties(calendarConfig, calendarConfigModel);
+        }
         return Y9Result.success(calendarConfigModel);
     }
 

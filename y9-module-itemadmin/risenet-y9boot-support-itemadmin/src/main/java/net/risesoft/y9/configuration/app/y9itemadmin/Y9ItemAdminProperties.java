@@ -1,4 +1,4 @@
-package net.risesoft.config;
+package net.risesoft.y9.configuration.app.y9itemadmin;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

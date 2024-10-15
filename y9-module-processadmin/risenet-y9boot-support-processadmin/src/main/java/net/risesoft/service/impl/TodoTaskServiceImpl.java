@@ -22,7 +22,6 @@ import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.todo.TodoTaskApi;
-import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -33,6 +32,7 @@ import net.risesoft.model.todo.TodoTask;
 import net.risesoft.service.TodoTaskService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
  * @author qinman

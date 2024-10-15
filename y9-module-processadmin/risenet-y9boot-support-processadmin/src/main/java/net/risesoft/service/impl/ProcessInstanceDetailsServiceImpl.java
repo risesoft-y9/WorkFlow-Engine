@@ -3,7 +3,6 @@ package net.risesoft.service.impl;
 import java.util.Date;
 import java.util.Map;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.stereotype.Service;
@@ -14,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.config.Y9ProcessAdminProperties;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.util.SysVariables;
+import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
  * @author qinman
