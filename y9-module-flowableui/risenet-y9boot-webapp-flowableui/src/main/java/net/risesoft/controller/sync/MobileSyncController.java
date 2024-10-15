@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -282,8 +281,12 @@ public class MobileSyncController {
                     String END_TIME_ = (String)map.get("END_TIME_");
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
-                    OfficeDoneInfoModel officeDoneInfo = new OfficeDoneInfoModel();
-                    officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    OfficeDoneInfoModel officeDoneInfo =
+                        officeDoneInfoApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
+                    if (officeDoneInfo == null) {
+                        officeDoneInfo = new OfficeDoneInfoModel();
+                        officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    }
                     if (processParamModel != null) {
                         officeDoneInfo.setBureauId(StringUtils.isBlank(processParamModel.getBureauIds()) ? ""
                             : processParamModel.getBureauIds());

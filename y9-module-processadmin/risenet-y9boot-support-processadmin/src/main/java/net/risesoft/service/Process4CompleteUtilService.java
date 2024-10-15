@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,13 +26,11 @@ import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.DialectEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -247,8 +246,12 @@ public class Process4CompleteUtilService {
              * 保存办结数据到数据中心，用于办结件列表查询
              *********************************************/
 
-            OfficeDoneInfoModel officeDoneInfo = new OfficeDoneInfoModel();
-            officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            OfficeDoneInfoModel officeDoneInfo =
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            if (officeDoneInfo == null) {
+                officeDoneInfo = new OfficeDoneInfoModel();
+                officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            }
             if (processParamModel != null && StringUtils.isNotBlank(processParamModel.getId())) {
                 // ----------------------------------------------------数据中心办结信息
                 officeDoneInfo.setBureauId(
@@ -297,10 +300,7 @@ public class Process4CompleteUtilService {
             officeDoneInfo.setProcessInstanceId(processInstanceId);
             officeDoneInfo.setStartTime(startTime);
             officeDoneInfo.setTenantId(tenantId);
-            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
-            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
-            }
+            officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
             String year0 = year;
             if (StringUtils.isBlank(year)) {
                 year0 = startTime.substring(0, 4);

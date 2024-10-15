@@ -95,8 +95,11 @@ public class MobileSyncWeiBanJieController {
                      * 保存办结数据到数据中心，用于办结件列表查询
                      */
                     ProcessParam processParamModel = processParamRepository.findByProcessInstanceId(processInstanceId);
-                    OfficeDoneInfo officeDoneInfo = new OfficeDoneInfo();
-                    officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                    if (officeDoneInfo == null) {
+                        officeDoneInfo = new OfficeDoneInfo();
+                        officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    }
                     if (processParamModel != null && StringUtils.isNotBlank(processParamModel.getId())) {
                         // ----------------------------------------------------数据中心办结信息
                         officeDoneInfo.setBureauId(StringUtils.isNotBlank(processParamModel.getBureauIds())
@@ -131,18 +134,6 @@ public class MobileSyncWeiBanJieController {
                     }
 
                     // 处理委托人
-                    // sql = "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" +
-                    // processInstanceId
-                    // + "'";
-                    // List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
-                    // String entrustUserId = "";
-                    // for (Map<String, Object> m : list2) {
-                    // String userId = (String)m.get("OWNERID");
-                    // if (!entrustUserId.contains(userId)) {
-                    // entrustUserId = Y9Util.genCustomStr(entrustUserId, userId);
-                    // }
-                    // }
-                    // officeDoneInfo.setEntrustUserId(entrustUserId);
 
                     // 处理参与人
                     sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId
@@ -230,8 +221,11 @@ public class MobileSyncWeiBanJieController {
                      * 保存办结数据到数据中心，用于办结件列表查询
                      *********************************************/
                     ProcessParam processParamModel = processParamRepository.findByProcessInstanceId(processInstanceId);
-                    OfficeDoneInfo officeDoneInfo = new OfficeDoneInfo();
-                    officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                    if (officeDoneInfo == null) {
+                        officeDoneInfo = new OfficeDoneInfo();
+                        officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    }
                     if (processParamModel != null && StringUtils.isNotBlank(processParamModel.getId())) {
                         // ----------------------------------------------------数据中心办结信息
                         officeDoneInfo.setBureauId(StringUtils.isNotBlank(processParamModel.getBureauIds())
@@ -265,17 +259,6 @@ public class MobileSyncWeiBanJieController {
                     }
 
                     // 处理委托人
-                    // sql = "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" +
-                    // processInstanceId + "'";
-                    // List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
-                    // String entrustUserId = "";
-                    // for (Map<String, Object> m : list2) {
-                    // String userId = (String)m.get("OWNERID");
-                    // if (!entrustUserId.contains(userId)) {
-                    // entrustUserId = Y9Util.genCustomStr(entrustUserId, userId);
-                    // }
-                    // }
-                    // officeDoneInfo.setEntrustUserId(entrustUserId);
 
                     // 处理参与人
                     sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK_2023 i where i.PROC_INST_ID_ = '"
