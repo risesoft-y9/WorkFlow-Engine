@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-digitalbase</artifactId>
-        <version>v9.6.7-SNAPSHOT</version>
+        <version>v9.6.7</version>
         <relativePath/>
     </parent>
     <artifactId>y9-flowable</artifactId>
@@ -58,7 +58,7 @@
         <gitee.connection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.connection>
         <gitee.developerConnection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.developerConnection>
 
-        <revision>v9.6.7-SNAPSHOT</revision>
+        <revision>v9.6.7</revision>
     </properties>
 
     <modules>
