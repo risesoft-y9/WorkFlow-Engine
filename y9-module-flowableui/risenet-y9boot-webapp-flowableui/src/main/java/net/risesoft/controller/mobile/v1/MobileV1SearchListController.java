@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -37,7 +38,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping("/mobile/v1/searchList")
 public class MobileV1SearchListController {
 
-    private final TodoTaskApi todotaskApi;
+    private final ItemTodoTaskApi todotaskApi;
 
     private final SearchService searchService;
 
@@ -85,7 +86,7 @@ public class MobileV1SearchListController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             // 统计统一待办
-            todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
+            todoCount = todotaskApi.countByReceiverId(tenantId, positionId).getData();
             // 统计流程在办件
             Y9Page<OfficeDoneInfoModel> y9Page =
                 officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);

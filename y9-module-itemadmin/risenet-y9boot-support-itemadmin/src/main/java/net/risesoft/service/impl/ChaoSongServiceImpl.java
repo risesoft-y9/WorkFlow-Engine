@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,14 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ItemSmsHttpApi;
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.sms.SmsHttpApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
@@ -94,7 +95,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final SmsHttpApi smsHttpApi;
+    private final ItemSmsHttpApi smsHttpApi;
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
@@ -106,7 +107,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
 
     private final ErrorLogService errorLogService;
 
-    private final TodoTaskApi todotaskApi;
+    private final ItemTodoTaskApi todotaskApi;
 
     private final CustomGroupApi customGroupApi;
 

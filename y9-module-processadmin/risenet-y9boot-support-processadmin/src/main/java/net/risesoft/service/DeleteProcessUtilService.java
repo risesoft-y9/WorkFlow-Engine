@@ -15,15 +15,15 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.DataCenterApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
+import net.risesoft.api.itemadmin.ItemMsgRemindApi;
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.msgremind.MsgRemindInfoApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
@@ -41,13 +41,13 @@ import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties
 @Service(value = "deleteProcessUtilService")
 public class DeleteProcessUtilService {
 
-    private final TodoTaskApi todoTaskApi;
+    private final ItemTodoTaskApi todoTaskApi;
 
     private final ProcessInstanceApi processInstanceApi;
 
     private final ChaoSongApi chaoSongApi;
 
-    private final OfficeInfoApi officeInfoApi;
+    private final DataCenterApi dataCenterApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -55,25 +55,25 @@ public class DeleteProcessUtilService {
 
     private final ErrorLogApi errorLogApi;
 
-    private final MsgRemindInfoApi msgRemindInfoApi;
+    private final ItemMsgRemindApi itemMsgRemindApi;
 
     private final ActRuDetailApi actRuDetailApi;
     private final Y9ProcessAdminProperties y9ProcessAdminProperties;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public DeleteProcessUtilService(TodoTaskApi todoTaskApi, ProcessInstanceApi processInstanceApi,
-        ChaoSongApi chaoSongApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamApi,
-        OfficeFollowApi officeFollowApi, ErrorLogApi errorLogApi, MsgRemindInfoApi msgRemindInfoApi,
+    public DeleteProcessUtilService(ItemTodoTaskApi todoTaskApi, ProcessInstanceApi processInstanceApi,
+        ChaoSongApi chaoSongApi, DataCenterApi dataCenterApi, ProcessParamApi processParamApi,
+        OfficeFollowApi officeFollowApi, ErrorLogApi errorLogApi, ItemMsgRemindApi itemMsgRemindApi,
         ActRuDetailApi actRuDetailApi, Y9ProcessAdminProperties y9ProcessAdminProperties) {
         this.todoTaskApi = todoTaskApi;
         this.processInstanceApi = processInstanceApi;
         this.chaoSongApi = chaoSongApi;
-        this.officeInfoApi = officeInfoApi;
+        this.dataCenterApi = dataCenterApi;
         this.processParamApi = processParamApi;
         this.officeFollowApi = officeFollowApi;
         this.errorLogApi = errorLogApi;
-        this.msgRemindInfoApi = msgRemindInfoApi;
+        this.itemMsgRemindApi = itemMsgRemindApi;
         this.actRuDetailApi = actRuDetailApi;
         this.y9ProcessAdminProperties = y9ProcessAdminProperties;
     }
@@ -132,7 +132,7 @@ public class DeleteProcessUtilService {
         Boolean dataCenterSwitch = y9ProcessAdminProperties.getDataCenterSwitch();
         if (Boolean.TRUE.equals(dataCenterSwitch)) {
             try {
-                officeInfoApi.deleteOfficeInfo(tenantId, processInstanceId);
+                dataCenterApi.deleteOfficeInfo(tenantId, processInstanceId);
             } catch (Exception e) {
                 LOGGER.error("************************************删除数据中心数据失败", e);
             }
@@ -141,7 +141,7 @@ public class DeleteProcessUtilService {
         Boolean msgSwitch = y9ProcessAdminProperties.getMsgSwitch();
         if (Boolean.TRUE.equals(msgSwitch)) {
             try {
-                msgRemindInfoApi.deleteMsgRemindInfo(tenantId, processInstanceId);
+                itemMsgRemindApi.deleteMsgRemindInfo(tenantId, processInstanceId);
             } catch (Exception e) {
                 LOGGER.error("************************************删除消息提醒数据失败", e);
             }

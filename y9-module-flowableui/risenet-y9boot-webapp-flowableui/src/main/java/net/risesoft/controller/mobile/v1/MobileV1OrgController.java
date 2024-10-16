@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +18,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.EntrustApi;
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
@@ -53,7 +54,7 @@ public class MobileV1OrgController {
 
     private final DepartmentApi departmentApi;
 
-    private final TodoTaskApi todoTaskApi;
+    private final ItemTodoTaskApi todoTaskApi;
 
     private final EntrustApi entrustApi;
 
@@ -172,7 +173,7 @@ public class MobileV1OrgController {
                 map0.put("id", p.getId());
                 map0.put("name", p.getName());
                 long todoCount;
-                todoCount = todoTaskApi.countByReceiverId(tenantId, p.getId());
+                todoCount = todoTaskApi.countByReceiverId(tenantId, p.getId()).getData();
                 map0.put("todoCount", todoCount);
                 resList.add(map0);
 
@@ -188,7 +189,7 @@ public class MobileV1OrgController {
                                 map1.put("id", position.getId());
                                 map1.put("name", position.getName());
                                 long todoCount1;
-                                todoCount1 = todoTaskApi.countByReceiverId(tenantId, position.getId());
+                                todoCount1 = todoTaskApi.countByReceiverId(tenantId, position.getId()).getData();
                                 map1.put("todoCount", todoCount1);
                                 resList.add(map1);
                             }

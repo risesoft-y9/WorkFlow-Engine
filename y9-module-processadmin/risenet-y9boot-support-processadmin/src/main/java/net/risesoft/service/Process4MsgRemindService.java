@@ -12,17 +12,17 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ItemMsgRemindApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ItemMsgRemindModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
-import net.risesoft.model.msgremind.MsgRemindInfoModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
@@ -40,7 +40,7 @@ import net.risesoft.y9.util.Y9Util;
 @Service(value = "process4MsgRemindService")
 public class Process4MsgRemindService {
 
-    private final MsgRemindInfoApi msgRemindInfoApi;
+    private final ItemMsgRemindApi itemMsgRemindApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -82,10 +82,10 @@ public class Process4MsgRemindService {
                 + "&type=fromCplane";
             String title = processParamModel.getTitle();
             String content = "【" + title + "】";
-            MsgRemindInfoModel info = new MsgRemindInfoModel();
+            ItemMsgRemindModel info = new ItemMsgRemindModel();
             info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             info.setItemId(processParamModel.getItemId());
-            info.setMsgType(MsgRemindInfoModel.MSG_TYPE_PROCESS_COMPLETE);
+            info.setMsgType(ItemMsgRemindModel.MSG_TYPE_PROCESS_COMPLETE);
             info.setProcessInstanceId(processInstanceId);
             info.setStartTime(sdf.format(date));
             info.setSystemName(processParamModel.getSystemName());
@@ -97,7 +97,7 @@ public class Process4MsgRemindService {
             info.setReadUserId("");
             info.setAllUserId(allUserId);
             info.setContent(content);
-            msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
+            itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
         }
     }
 
@@ -142,10 +142,10 @@ public class Process4MsgRemindService {
                 String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
                     + "&type=fromCplane";
                 String title = processParamModel.getTitle();
-                MsgRemindInfoModel info = new MsgRemindInfoModel();
+                ItemMsgRemindModel info = new ItemMsgRemindModel();
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 info.setItemId(processParamModel.getItemId());
-                info.setMsgType(MsgRemindInfoModel.MSG_TYPE_NODE_ARRIVE);
+                info.setMsgType(ItemMsgRemindModel.MSG_TYPE_NODE_ARRIVE);
                 info.setProcessInstanceId(processInstanceId);
                 info.setStartTime(sdf.format(date));
                 info.setSystemName(processParamModel.getSystemName());
@@ -157,7 +157,7 @@ public class Process4MsgRemindService {
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
                 info.setContent(taskName);
-                msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
+                itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
             }
         } catch (Exception e) {
             LOGGER.error("taskAssignment error", e);
@@ -208,10 +208,10 @@ public class Process4MsgRemindService {
                     }
                 }
                 String content = "【" + title + "】";
-                MsgRemindInfoModel info = new MsgRemindInfoModel();
+                ItemMsgRemindModel info = new ItemMsgRemindModel();
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 info.setItemId(processParamModel.getItemId());
-                info.setMsgType(MsgRemindInfoModel.MSG_TYPE_TASK_COMPLETE);
+                info.setMsgType(ItemMsgRemindModel.MSG_TYPE_TASK_COMPLETE);
                 info.setProcessInstanceId(processInstanceId);
                 info.setStartTime(sdf.format(date));
                 info.setSystemName(processParamModel.getSystemName());
@@ -223,12 +223,12 @@ public class Process4MsgRemindService {
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
                 info.setContent(content);
-                msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
+                itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
             }
 
             // 任务完成提醒，针对人设置
             try {
-                String personIds = msgRemindInfoApi.getRemindConfig(tenantId, assignee, "taskRemind");
+                String personIds = itemMsgRemindApi.getRemindConfig(tenantId, assignee, "taskRemind").getData();
                 if (StringUtils.isNotBlank(personIds)) {
                     String newPersonIds = "";
                     String[] ids = personIds.split(",");
@@ -240,10 +240,10 @@ public class Process4MsgRemindService {
                         }
                     }
                     if (StringUtils.isNotBlank(newPersonIds)) {
-                        MsgRemindInfoModel info = new MsgRemindInfoModel();
+                        ItemMsgRemindModel info = new ItemMsgRemindModel();
                         info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                         info.setItemId(processParamModel.getItemId());
-                        info.setMsgType(MsgRemindInfoModel.MSG_TYPE_TASK_COMPLETE);
+                        info.setMsgType(ItemMsgRemindModel.MSG_TYPE_TASK_COMPLETE);
                         info.setProcessInstanceId(processInstanceId);
                         info.setStartTime(sdf.format(date));
                         info.setSystemName(processParamModel.getSystemName());
@@ -255,7 +255,7 @@ public class Process4MsgRemindService {
                         info.setReadUserId("");
                         info.setAllUserId(personIds);
                         info.setContent("");
-                        msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
+                        itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
                     }
                 }
             } catch (Exception e) {
@@ -272,10 +272,10 @@ public class Process4MsgRemindService {
                     }
                 }
                 date = new Date();
-                MsgRemindInfoModel info = new MsgRemindInfoModel();
+                ItemMsgRemindModel info = new ItemMsgRemindModel();
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 info.setItemId(processParamModel.getItemId());
-                info.setMsgType(MsgRemindInfoModel.MSG_TYPE_NODE_COMPLETE);
+                info.setMsgType(ItemMsgRemindModel.MSG_TYPE_NODE_COMPLETE);
                 info.setProcessInstanceId(processInstanceId);
                 info.setStartTime(sdf.format(date));
                 info.setSystemName(processParamModel.getSystemName());
@@ -287,7 +287,7 @@ public class Process4MsgRemindService {
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
                 info.setContent(taskName);
-                msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
+                itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
             }
 
         } catch (Exception e) {

@@ -51,12 +51,10 @@ import net.risesoft.y9.util.Y9Util;
  */
 @Slf4j
 @RestController
-@RequestMapping("/services/rest/datacenter")
-public class Sync2DataCenterController {
+@RequestMapping("/services/rest/syncActRuDetail")
+public class Sync2ActRuDetailController {
 
     private final JdbcTemplate jdbcTemplate;
-
-    private final DataCenterService dataCenterService;
 
     private final ErrorLogService errorLogService;
 
@@ -70,18 +68,20 @@ public class Sync2DataCenterController {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
-    public Sync2DataCenterController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        DataCenterService dataCenterService, ErrorLogService errorLogService, ActRuDetailService actRuDetailService,
-        ProcessParamService processParamService, HistoricTaskApi historictaskApi, OrgUnitApi orgUnitApi,
-        OfficeDoneInfoService officeDoneInfoService) {
+    private final DataCenterService dataCenterService;
+
+    public Sync2ActRuDetailController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        ErrorLogService errorLogService, ActRuDetailService actRuDetailService, ProcessParamService processParamService,
+        HistoricTaskApi historictaskApi, OrgUnitApi orgUnitApi, OfficeDoneInfoService officeDoneInfoService,
+        DataCenterService dataCenterService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dataCenterService = dataCenterService;
         this.errorLogService = errorLogService;
         this.actRuDetailService = actRuDetailService;
         this.processParamService = processParamService;
         this.historictaskApi = historictaskApi;
         this.orgUnitApi = orgUnitApi;
         this.officeDoneInfoService = officeDoneInfoService;
+        this.dataCenterService = dataCenterService;
     }
 
     @RequestMapping(value = "/tongbu2DataCenter")
