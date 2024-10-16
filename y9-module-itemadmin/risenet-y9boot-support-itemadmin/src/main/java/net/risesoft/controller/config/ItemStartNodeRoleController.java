@@ -1,9 +1,6 @@
 package net.risesoft.controller.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -48,10 +45,10 @@ public class ItemStartNodeRoleController {
      *
      * @param itemId 事项id
      * @param processDefinitionId 流程定义ID
-     * @return
+     * @return Y9Result<List<ItemStartNodeRole>>
      */
     @GetMapping(value = "/getBpmList")
-    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId,
+    public Y9Result<List<ItemStartNodeRole>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
@@ -67,19 +64,8 @@ public class ItemStartNodeRoleController {
             }
             oldList = itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         }
-        List<Map<String, Object>> rows = new ArrayList<>();
         List<Role> roleList;
-        List<String> roleIdList = new ArrayList<>();
-        Map<String, Object> mapTemp;
         for (ItemStartNodeRole isnr : oldList) {
-            mapTemp = new HashMap<>(16);
-            mapTemp.put("id", isnr.getId());
-            mapTemp.put("processDefinitionId", isnr.getProcessDefinitionId());
-            mapTemp.put("itemId", isnr.getItemId());
-            mapTemp.put("taskDefKey", isnr.getTaskDefKey());
-            mapTemp.put("taskDefName", isnr.getTaskDefName());
-            mapTemp.put("tabIndex", isnr.getTabIndex());
-
             String roleNames = "";
             roleList = itemStartNodeRoleService.listRoleByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
                 processDefinitionId, isnr.getTaskDefKey());
@@ -89,13 +75,10 @@ public class ItemStartNodeRoleController {
                 } else {
                     roleNames += "、" + role.getName();
                 }
-                roleIdList.add(role.getId());
             }
-            mapTemp.put("roleNames", roleNames);
-            mapTemp.put("roleIds", roleIdList);
-            rows.add(mapTemp);
+            isnr.setRoleNames(roleNames);
         }
-        return Y9Result.success(rows, "获取成功");
+        return Y9Result.success(oldList, "获取成功");
     }
 
     @GetMapping(value = "/getNodeList")
@@ -124,7 +107,7 @@ public class ItemStartNodeRoleController {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义ID
      * @param taskDefKey 任务节点key
-     * @return
+     * @return Y9Result<List<Role>>
      */
     @GetMapping(value = "/list")
     public Y9Result<List<Role>> list(@RequestParam String itemId, @RequestParam String processDefinitionId,
@@ -141,7 +124,7 @@ public class ItemStartNodeRoleController {
      * @param processDefinitionId 流程定义ID
      * @param taskDefKey 任务节点key
      * @param roleIds 角色id
-     * @return
+     * @return Y9Result<String>
      */
     @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam String itemId, @RequestParam String processDefinitionId,
@@ -163,7 +146,7 @@ public class ItemStartNodeRoleController {
      * @param processDefinitionId 流程定义ID
      * @param taskDefKey 任务节点key
      * @param roleIds 角色id
-     * @return
+     * @return Y9Result<String>
      */
     @PostMapping(value = "/saveRole")
     public Y9Result<String> saveRole(@RequestParam String itemId, @RequestParam String processDefinitionId,
