@@ -10,7 +10,7 @@
     </parent>
     <artifactId>risenet-y9boot-webapp-flowableui</artifactId>
     <packaging>war</packaging>
-    
+
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -80,12 +80,6 @@
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-api-feignclient-platform</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-api-feignclient-todo</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -23,7 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.msgremind.MsgRemindInfoApi;
+import net.risesoft.api.itemadmin.ItemMsgRemindApi;
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -31,7 +33,6 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
@@ -45,13 +46,13 @@ import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.msgremind.MsgRemindInfoModel;
+import net.risesoft.model.itemadmin.ItemMsgRemindModel;
+import net.risesoft.model.itemadmin.TodoTaskModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.model.todo.TodoTask;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.repository.jpa.DraftEntityRepository;
@@ -77,7 +78,7 @@ import net.risesoft.y9.util.Y9Util;
 @RequiredArgsConstructor
 public class AsyncHandleService {
 
-    private final TodoTaskApi todotaskApi;
+    private final ItemTodoTaskApi todotaskApi;
 
     private final TaskVariableRepository taskVariableRepository;
 
@@ -95,7 +96,7 @@ public class AsyncHandleService {
 
     private final ProcessParamService processParamService;
 
-    private final MsgRemindInfoApi msgRemindInfoApi;
+    private final ItemMsgRemindApi itemMsgRemindApi;
 
     private final OpinionHistoryRepository opinionHistoryRepository;
 
@@ -335,7 +336,7 @@ public class AsyncHandleService {
                 id = info.getId();
                 taskId = info.getTaskId();
                 processInstanceId = info.getProcessInstanceId();
-                TodoTask todo = new TodoTask();
+                TodoTaskModel todo = new TodoTaskModel();
                 todo.setTenantId(tenantId);
                 todo.setSystemName("阅件");
                 todo.setSystemCnName("阅件");
@@ -359,7 +360,6 @@ public class AsyncHandleService {
                 } else if (level.equals("紧急")) {
                     urgency = "2";
                 }
-
                 if ("普通".equals(level)) {
                     urgency = "0";
                 } else if ("急".equals(level)) {
@@ -367,7 +367,6 @@ public class AsyncHandleService {
                 } else if ("特急".equals(level)) {
                     urgency = "2";
                 }
-
                 todo.setUrgency(urgency);
                 todo.setDocNumber(processParam.getCustomNumber());
                 todo.setProcessInstanceId(processInstanceId);
@@ -422,7 +421,7 @@ public class AsyncHandleService {
                 id = info.getId();
                 taskId = info.getTaskId();
                 processInstanceId = info.getProcessInstanceId();
-                TodoTask todo = new TodoTask();
+                TodoTaskModel todo = new TodoTaskModel();
                 todo.setTenantId(tenantId);
                 todo.setSystemName("阅件");
                 todo.setSystemCnName("阅件");
@@ -539,7 +538,7 @@ public class AsyncHandleService {
             }
             Y9LoginUserHolder.setTenantId(tenantId);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-            String personIds = msgRemindInfoApi.getRemindConfig(tenantId, userId, "opinionRemind");
+            String personIds = itemMsgRemindApi.getRemindConfig(tenantId, userId, "opinionRemind").getData();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             if (StringUtils.isNotBlank(personIds) && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
                 LOGGER.info("*****意见填写提醒*****");
@@ -565,10 +564,10 @@ public class AsyncHandleService {
                     }
                 }
                 if (StringUtils.isNotBlank(newPersonIds)) {
-                    MsgRemindInfoModel info = new MsgRemindInfoModel();
+                    ItemMsgRemindModel info = new ItemMsgRemindModel();
                     info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     info.setItemId(processParam.getItemId());
-                    info.setMsgType(MsgRemindInfoModel.MSG_TYPE_OPINION);
+                    info.setMsgType(ItemMsgRemindModel.MSG_TYPE_OPINION);
                     info.setProcessInstanceId(processParam.getProcessInstanceId());
                     info.setStartTime(sdf.format(date));
                     info.setSystemName(processParam.getSystemName());
@@ -580,7 +579,7 @@ public class AsyncHandleService {
                     info.setReadUserId("");
                     info.setAllUserId(newPersonIds);
                     info.setContent(content);
-                    msgRemindInfoApi.saveMsgRemindInfo(tenantId, info);
+                    itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
                 }
             }
         } catch (Exception e) {

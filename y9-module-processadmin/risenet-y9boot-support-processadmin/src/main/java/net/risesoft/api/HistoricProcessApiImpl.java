@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import java.util.List;
 
+
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
@@ -39,7 +40,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     private final CustomTaskService customTaskService;
 
-    private final TodoTaskApi todoTaskApi;
+    private final ItemTodoTaskApi todoTaskApi;
 
     private final ProcessInstanceApi processInstanceApi;
 
@@ -64,7 +65,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
             if (list != null && !list.isEmpty()) {
                 for (org.flowable.task.api.Task task : list) {
                     try {
-                        boolean msg1 = todoTaskApi.deleteTodoTaskByTaskId(tenantId, task.getId());
+                        boolean msg1 = todoTaskApi.deleteTodoTaskByTaskId(tenantId, task.getId()).getData();
                         LOGGER.error("##############################统一待办删除：{}#################################", msg1);
                     } catch (Exception e) {
                         LOGGER.error("##############################统一待办删除失败：{}#", e.getMessage());
@@ -180,7 +181,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         if (b && (list != null && !list.isEmpty())) {
             for (org.flowable.task.api.Task task : list) {
                 try {
-                    boolean msg1 = todoTaskApi.recoveryTodoTaskByTaskId(tenantId, task.getId());
+                    boolean msg1 = todoTaskApi.recoveryTodoTaskByTaskId(tenantId, task.getId()).getData();
                     LOGGER.info("##############################统一待办还原：{}#################################", msg1);
                 } catch (Exception e) {
                     e.printStackTrace();

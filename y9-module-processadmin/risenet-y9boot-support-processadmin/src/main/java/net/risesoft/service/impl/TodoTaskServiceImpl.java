@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.event.FlowableEvent;
 import org.flowable.engine.delegate.event.impl.FlowableEntityEventImpl;
@@ -19,16 +20,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.TodoTaskModel;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.todo.TodoTask;
 import net.risesoft.service.TodoTaskService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -46,7 +47,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final TodoTaskApi todoTaskApi;
+    private final ItemTodoTaskApi todoTaskApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -66,7 +67,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             }
             String tenantId = (String)map.get("tenantId");
             String assigneeId = task.getAssignee();
-            boolean msg = todoTaskApi.deleteTodoTaskByTaskIdAndReceiverId(tenantId, task.getId(), assigneeId);
+            boolean msg = todoTaskApi.deleteTodoTaskByTaskIdAndReceiverId(tenantId, task.getId(), assigneeId).getData();
             if (msg) {
                 LOGGER.info("##########################删除超级待办：成功-delete##########################");
             } else {
@@ -120,7 +121,8 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
             VariableInstance vie = executionEntity.getVariableInstance("tenantId");
             String tenantId = vie != null ? vie.getTextValue() : "";
-            boolean msg = todoTaskApi.deleteByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
+            boolean msg =
+                todoTaskApi.deleteByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId()).getData();
             if (msg) {
                 LOGGER.info("##########################删除超级待办：成功-delete##########################");
             } else {
@@ -191,8 +193,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                         urgency = "2";
                         break;
                 }
-
-                TodoTask todo = new TodoTask();
+                TodoTaskModel todo = new TodoTaskModel();
                 todo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 todo.setTenantId(tenantId);
                 todo.setTaskId(task.getId());
@@ -223,7 +224,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 String url = todoTaskUrlPrefix + "?taskId=" + task.getId() + "&itemId=" + itemId
                     + "&processInstanceId=&type=fromTodo";
                 todo.setUrl(url);
-                boolean b = todoTaskApi.saveTodoTask(tenantId, todo);
+                boolean b = todoTaskApi.saveTodoTask(tenantId, todo).getData();
                 if (b) {
                     LOGGER.info("##########################保存超级待办成功-assignment##########################");
                 } else {
