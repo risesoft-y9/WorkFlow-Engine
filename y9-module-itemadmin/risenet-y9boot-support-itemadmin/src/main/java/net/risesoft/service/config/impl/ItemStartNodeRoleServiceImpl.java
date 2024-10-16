@@ -20,6 +20,7 @@ import net.risesoft.entity.ItemStartNodeRole;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
@@ -29,6 +30,7 @@ import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * @author qinman
@@ -186,6 +188,36 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             startTaskDefKey = nodes.get(0).getTaskDefKey();
         }
         return startTaskDefKey;
+    }
+
+    @Override
+    public List<ItemStartNodeRoleModel> getAllStartTaskDefKey(String itemId) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel latestpd =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        String processDefinitionId = latestpd.getId();
+        List<ItemStartNodeRole> list = itemStartNodeRoleRepository
+            .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
+        List<ItemStartNodeRoleModel> itemStartNodeRoleModelList = new ArrayList<>();
+        ItemStartNodeRoleModel itemStartNodeRoleModel;
+        for (ItemStartNodeRole isnr : list) {
+            String roleIds = isnr.getRoleIds();
+            if (StringUtils.isNotEmpty(roleIds)) {
+                String[] roleIdArr = roleIds.split(";");
+                for (String roleId : roleIdArr) {
+                    boolean has = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
+                    if (has) {
+                        itemStartNodeRoleModel = new ItemStartNodeRoleModel();
+                        Y9BeanUtil.copyProperties(isnr, itemStartNodeRoleModel);
+                        itemStartNodeRoleModelList.add(itemStartNodeRoleModel);
+                    }
+                }
+            }
+        }
+
+        return itemStartNodeRoleModelList;
     }
 
     @Override

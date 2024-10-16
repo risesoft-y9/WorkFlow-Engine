@@ -60,7 +60,7 @@ public class ItemStartNodeRoleController {
                 processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
             for (TargetModel targetModel : nodeList) {
                 itemStartNodeRoleService.initRole(itemId, processDefinitionId, targetModel.getTaskDefKey(),
-                    targetModel.getRealTaskDefName());
+                    targetModel.getTaskDefName());
             }
             oldList = itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         }
