@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,14 +32,14 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ItemSmsHttpApi;
+import net.risesoft.api.itemadmin.ItemTodoTaskApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.sms.SmsHttpApi;
-import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
@@ -99,7 +100,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final SmsHttpApi smsHttpApi;
+    private final ItemSmsHttpApi smsHttpApi;
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
@@ -113,7 +114,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final ElasticsearchOperations elasticsearchOperations;
 
-    private final TodoTaskApi todotaskApi;
+    private final ItemTodoTaskApi todotaskApi;
 
     private final CustomGroupApi customGroupApi;
 

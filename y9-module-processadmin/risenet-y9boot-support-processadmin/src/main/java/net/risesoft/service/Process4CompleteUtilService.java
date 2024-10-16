@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -227,7 +226,7 @@ public class Process4CompleteUtilService {
             try {
                 Boolean dataCenterSwitch = y9ProcessAdminProperties.getDataCenterSwitch();
                 if (dataCenterSwitch != null && dataCenterSwitch) {
-                    Y9Result<Object> y9Result = dataCenterApi.saveToDateCenter(processInstanceId, tenantId, userId);
+                    Y9Result<Object> y9Result = dataCenterApi.saveToDataCenter(processInstanceId, tenantId, userId);
                     if (y9Result.isSuccess()) {
                         LOGGER
                             .info("#################保存办结数据到数据中心成功：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");

@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,11 +25,27 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/dataCenter", produces = MediaType.APPLICATION_JSON_VALUE)
+@Primary
 public class DataCenterApiImpl implements DataCenterApi {
 
     private final OrgUnitApi orgUnitApi;
 
     private final DataCenterService dataCenterService;
+
+    /**
+     * 根据流程实例id删除流程数据
+     *
+     * @param processInstanceId 流程实例id
+     * @param tenantId 租户id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> deleteOfficeInfo(String tenantId, String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        dataCenterService.deleteOfficeInfo(processInstanceId);
+        return Y9Result.success();
+    }
 
     /**
      * 保存办结数据到数据中心
@@ -40,12 +57,12 @@ public class DataCenterApiImpl implements DataCenterApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveToDateCenter(@RequestParam String processInstanceId, @RequestParam String tenantId,
+    public Y9Result<Object> saveToDataCenter(@RequestParam String processInstanceId, @RequestParam String tenantId,
         @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        dataCenterService.saveToDateCenter(processInstanceId);
+        dataCenterService.saveToDataCenter(processInstanceId);
         return Y9Result.success();
     }
 
