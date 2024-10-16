@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -58,6 +59,12 @@ public class ItemStartNodeRole implements Serializable {
     @Comment("角色Id")
     @Column(name = "ROLEIDS", length = 500)
     private String roleIds;
+
+    /**
+     * 绑定的角色名称
+     */
+    @Transient
+    private String roleNames;
 
     @Comment("创建人名称")
     @Column(name = "USERNAME", length = 50)
