@@ -19,6 +19,7 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
+import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
@@ -28,6 +29,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.ProcessParamService;
+import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -53,6 +55,8 @@ public class DocumentApiImpl implements DocumentApi {
     private final AsyncUtilService asyncUtilService;
 
     private final ProcessParamService processParamService;
+
+    private  final ItemStartNodeRoleService itemStartNodeRoleService;
 
     /**
      * 新建办件
@@ -306,6 +310,16 @@ public class DocumentApiImpl implements DocumentApi {
         SignTaskConfigModel model =
             documentService.signTaskConfig(itemId, processDefinitionId, taskDefinitionKey, processSerialNumber);
         return Y9Result.success(model);
+    }
+
+    @Override
+    public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam String tenantId,
+        @RequestParam String orgUnitId, @RequestParam String itemId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        List<ItemStartNodeRoleModel> modelList =itemStartNodeRoleService.getAllStartTaskDefKey(itemId);
+        return Y9Result.success(modelList);
     }
 
     /**

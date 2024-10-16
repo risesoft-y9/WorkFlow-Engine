@@ -3,6 +3,7 @@ package net.risesoft.service.config;
 import java.util.List;
 
 import net.risesoft.entity.ItemStartNodeRole;
+import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.platform.Role;
 
 /**
@@ -47,12 +48,20 @@ public interface ItemStartNodeRoleService {
         String taskDefKey);
 
     /**
-     * Description:
+     * 获取有权限的优先级最大的开始任务节点，如果都没有权限，则返回优先级最小的，，如果没有初始化权限，则返回第一个节点
      *
      * @param itemId
      * @return
      */
     String getStartTaskDefKey(String itemId);
+
+    /**
+     * 获取有权限的所有任务节点
+     *
+     * @param itemId
+     * @return
+     */
+    List<ItemStartNodeRoleModel> getAllStartTaskDefKey(String itemId);
 
     /**
      * Description:

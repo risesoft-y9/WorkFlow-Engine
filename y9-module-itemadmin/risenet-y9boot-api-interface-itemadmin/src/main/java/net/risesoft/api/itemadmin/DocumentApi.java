@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
+import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
@@ -214,6 +215,19 @@ public interface DocumentApi {
         @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefinitionKey") String taskDefinitionKey,
         @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
+     * 获取签收任务配置
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @return {@code Y9Result<List<ItemStartNodeRoleModel>>} 通用请求返回对象 - data是启动任务节点
+     * @since 9.6.6
+     */
+    @GetMapping("/getAllStartTaskDefKey")
+    Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam("tenantId") String tenantId,
+                                                           @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId);
 
     /**
      * 启动流程
