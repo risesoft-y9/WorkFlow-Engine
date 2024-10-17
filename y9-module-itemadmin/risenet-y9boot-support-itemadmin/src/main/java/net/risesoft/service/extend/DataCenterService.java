@@ -18,7 +18,7 @@ public interface DataCenterService {
      * 保存到数据中心
      *
      * @param processInstanceId 流程实例ID
-     * @return
+     * @return boolean
      */
     boolean saveToDataCenter(String processInstanceId);
 
@@ -27,6 +27,7 @@ public interface DataCenterService {
      * 
      * @param processInstanceId 流程实例ID
      * @param processDefinitionId 流程定义ID
+     * @return boolean
      */
     boolean saveToDateCenter1(String processInstanceId, String processDefinitionId);
 }
