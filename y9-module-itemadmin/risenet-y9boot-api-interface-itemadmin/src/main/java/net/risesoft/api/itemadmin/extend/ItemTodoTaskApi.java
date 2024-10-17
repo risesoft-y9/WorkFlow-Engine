@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin;
+package net.risesoft.api.itemadmin.extend;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

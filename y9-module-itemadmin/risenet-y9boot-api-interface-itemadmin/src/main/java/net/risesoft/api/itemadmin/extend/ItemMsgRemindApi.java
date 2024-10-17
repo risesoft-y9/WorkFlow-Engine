@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin;
+package net.risesoft.api.itemadmin.extend;
 
 import javax.validation.constraints.NotBlank;
 

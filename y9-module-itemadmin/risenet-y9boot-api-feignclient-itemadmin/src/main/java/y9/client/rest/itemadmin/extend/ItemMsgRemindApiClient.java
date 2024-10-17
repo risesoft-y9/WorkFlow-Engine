@@ -1,8 +1,8 @@
-package y9.client.rest.itemadmin;
+package y9.client.rest.itemadmin.extend;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-import net.risesoft.api.itemadmin.ItemMsgRemindApi;
+import net.risesoft.api.itemadmin.extend.ItemMsgRemindApi;
 
 /**
  * @author qinman

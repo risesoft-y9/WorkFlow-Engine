@@ -1,8 +1,8 @@
-package y9.client.rest.itemadmin;
+package y9.client.rest.itemadmin.extend;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-import net.risesoft.api.itemadmin.DataCenterApi;
+import net.risesoft.api.itemadmin.extend.DataCenterApi;
 
 /**
  * @author qinman

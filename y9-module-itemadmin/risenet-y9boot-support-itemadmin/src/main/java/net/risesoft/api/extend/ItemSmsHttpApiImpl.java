@@ -1,7 +1,6 @@
-package net.risesoft.api;
+package net.risesoft.api.extend;
 
 import java.util.List;
-
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ItemSmsHttpApi;
+import net.risesoft.api.itemadmin.extend.ItemSmsHttpApi;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemSmsHttpService;
 

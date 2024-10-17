@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin;
+package net.risesoft.api.itemadmin.extend;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
