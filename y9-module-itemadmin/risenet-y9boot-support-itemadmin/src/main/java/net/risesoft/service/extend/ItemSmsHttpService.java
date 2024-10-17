@@ -1,4 +1,4 @@
-package net.risesoft.service;
+package net.risesoft.service.extend;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package net.risesoft.service.impl;
+package net.risesoft.service.extend.impl;
 
 import org.springframework.stereotype.Service;
 
@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.model.itemadmin.ItemMsgRemindModel;
-import net.risesoft.service.ItemMsgRemindService;
+import net.risesoft.service.extend.ItemMsgRemindService;
 
 /**
  * @author qinman

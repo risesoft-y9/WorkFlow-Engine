@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.extend.ItemMsgRemindApi;
 import net.risesoft.model.itemadmin.ItemMsgRemindModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemMsgRemindService;
+import net.risesoft.service.extend.ItemMsgRemindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
