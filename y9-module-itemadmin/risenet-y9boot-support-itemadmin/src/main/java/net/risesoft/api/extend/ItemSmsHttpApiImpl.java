@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.extend.ItemSmsHttpApi;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemSmsHttpService;
+import net.risesoft.service.extend.ItemSmsHttpService;
 
 /**
  * 短信接口

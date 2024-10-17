@@ -1,4 +1,4 @@
-package net.risesoft.service.impl;
+package net.risesoft.service.extend.impl;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.service.ItemSmsHttpService;
+import net.risesoft.service.extend.ItemSmsHttpService;
 
 /**
  * @author qinman
