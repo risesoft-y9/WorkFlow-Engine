@@ -1,4 +1,4 @@
-package net.risesoft.api;
+package net.risesoft.api.extend;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.DataCenterApi;
+import net.risesoft.api.itemadmin.extend.DataCenterApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
