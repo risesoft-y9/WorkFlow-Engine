@@ -220,6 +220,32 @@ public class DocumentServiceImpl implements DocumentService {
         return model;
     }
 
+    @Override
+    public OpenDataModel addWithStartTaskDefKey(String itemId, String startTaskDefKey, boolean mobile) {
+        String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
+        OpenDataModel model = new OpenDataModel();
+        if (StringUtils.isNotBlank(itemId)) {
+            SpmApproveItem item = spmApproveitemService.findById(itemId);
+            model.setItemId(itemId);
+            model.setProcessDefinitionKey(item.getWorkflowGuid());
+            String processDefinitionKey = item.getWorkflowGuid();
+            ProcessDefinitionModel pdModel =
+                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            String processDefinitionId = pdModel.getId();
+            model = this.genDocumentModel(itemId, processDefinitionKey, "", startTaskDefKey, mobile, model);
+            model =
+                    this.menuControl(itemId, processDefinitionId, startTaskDefKey, "", model, ItemBoxTypeEnum.ADD.getValue());
+            model.setProcessDefinitionId(processDefinitionId);
+            model.setTaskDefKey(startTaskDefKey);
+            model.setActivitiUser(userId);
+            model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+            model.setItembox(ItemBoxTypeEnum.ADD.getValue());
+            model.setProcessSerialNumber(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            model.setProcessInstanceId("");
+        }
+        return model;
+    }
+
     /*
      * 向userIds中添加内容
      *
