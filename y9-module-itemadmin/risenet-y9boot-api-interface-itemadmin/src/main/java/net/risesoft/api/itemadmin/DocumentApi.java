@@ -40,6 +40,21 @@ public interface DocumentApi {
         @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
 
     /**
+     * 新建
+     * 用于一个开始节点经过排他网关到达多个任务节点的情况，具体到达哪个任务节点开始，需要由用户选择
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param startTaskDefKey 开始任务节点
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
+     * @since 9.6.8
+     */
+    @GetMapping("/addWithStartTaskDefKey")
+    Y9Result<OpenDataModel> addWithStartTaskDefKey(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+                                @RequestParam("itemId") String itemId,@RequestParam("startTaskDefKey") String startTaskDefKey, @RequestParam("mobile") boolean mobile);
+
+    /**
      * 办件办结
      *
      * @param tenantId 租户id

@@ -21,11 +21,20 @@ public interface DocumentService {
      * Description: 事项新建公文
      *
      * @param itemId 事项id
-     * @param mobile
-     * @param map
-     * @return
+     * @param mobile 是否是移动端
+     * @return OpenDataModel
      */
     OpenDataModel add(String itemId, boolean mobile);
+
+    /**
+     * Description: 事项新建公文
+     * 用于一个开始节点经过排他网关到达多个任务节点的情况，具体到达哪个任务节点开始，需要由用户选择
+     * @param itemId 事项id
+     * @param startTaskDefKey 开始任务节点
+     * @param mobile 是否是移动端
+     * @return OpenDataModel
+     */
+    OpenDataModel addWithStartTaskDefKey(String itemId, String startTaskDefKey, boolean mobile);
 
     /**
      * Description: 办结

@@ -79,6 +79,27 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
+     * 新建
+     * 用于一个开始节点经过排他网关到达多个任务节点的情况，具体到达哪个任务节点开始，需要由用户选择
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param startTaskDefKey 开始任务节点
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<OpenDataModel> addWithStartTaskDefKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
+                                       @RequestParam String itemId, @RequestParam String startTaskDefKey, @RequestParam boolean mobile) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        OpenDataModel model = documentService.add(itemId, mobile);
+        return Y9Result.success(model);
+    }
+
+    /**
      * 办件办结
      *
      * @param tenantId 租户id

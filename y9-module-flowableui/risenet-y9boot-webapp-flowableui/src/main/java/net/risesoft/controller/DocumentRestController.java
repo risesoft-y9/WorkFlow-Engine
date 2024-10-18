@@ -37,6 +37,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
@@ -108,6 +109,33 @@ public class DocumentRestController {
         Map<String, Object> map;
         try {
             OpenDataModel model = documentApi.add(tenantId, Y9LoginUserHolder.getPositionId(), itemId, false).getData();
+            String str = Y9JsonUtil.writeValueAsString(model);
+            map = Y9JsonUtil.readHashMap(str);
+            map.put("tenantId", tenantId);
+            map.put("userId", Y9LoginUserHolder.getPositionId());
+            map.put("userName", Y9LoginUserHolder.getPosition().getName());
+            map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
+            map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
+            map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
+            return Y9Result.success(map, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取新建办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取新建办件初始化数据
+     *
+     * @param itemId 事项id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/addWithStartTaskDefKey")
+    public Y9Result<Map<String, Object>> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,@RequestParam @NotBlank String startTaskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Map<String, Object> map;
+        try {
+            OpenDataModel model = documentApi.addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
             map.put("tenantId", tenantId);
@@ -447,4 +475,15 @@ public class DocumentRestController {
             Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
     }
 
+    /**
+     * 获取所有开始节点
+     * 
+     * @param itemId 事项id
+     * @return Y9Result<List<ItemStartNodeRoleModel>>
+     */
+    @GetMapping(value = "/getAllStartTaskDefKey")
+    public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam @NotBlank String itemId) {
+        return documentApi.getAllStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+            itemId);
+    }
 }
