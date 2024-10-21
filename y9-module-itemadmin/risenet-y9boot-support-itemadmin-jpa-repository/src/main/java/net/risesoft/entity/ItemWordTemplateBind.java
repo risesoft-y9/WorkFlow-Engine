@@ -51,9 +51,10 @@ public class ItemWordTemplateBind implements Serializable {
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
+    // 0未绑定，1已绑定
     @Comment("绑定状态")
     @Column(name = "BINDSTATUS")
-    private Integer bindStatus = 0;// 0未绑定，1已绑定
+    private Integer bindStatus = 0;
 
     @Comment("绑定值")
     @Column(name = "BINDVALUE", length = 100)

@@ -24,6 +24,14 @@ public interface ItemWordTemplateBindService {
      * 复制正文模板绑定信息
      *
      * @param itemId
+     * @param processDefinitionId
+     */
+    void copyBind(String itemId, String processDefinitionId);
+
+    /**
+     * 复制正文模板绑定信息
+     *
+     * @param itemId
      * @param newItemId
      * @param lastVersionPid
      */
