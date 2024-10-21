@@ -164,6 +164,37 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     @Transactional
+    public Y9Result<String> copyAllBind(String itemId, String processDefinitionId) {
+        try {
+            // 复制表单绑定信息
+            y9FormItemBindService.copyEform(itemId, processDefinitionId);
+            // 复制权限信息
+            itemPermissionService.copyPerm(itemId, processDefinitionId);
+            // 复制意见框绑定信息
+            itemOpinionFrameBindService.copyBind(itemId, processDefinitionId);
+            // 复制编号绑定信息
+            itemOrganWordBindService.copyBind(itemId, processDefinitionId);
+            // 复制正文模板绑定信息
+            itemWordTemplateBindService.copyBind(itemId, processDefinitionId);
+            // 复制签收配置绑定信息
+            itemTaskConfService.copyTaskConf(itemId, processDefinitionId);
+            // 复制路由配置
+            itemStartNodeRoleService.copyBind(itemId, processDefinitionId);
+            // 复制按钮配置的绑定信息
+            itemButtonBindService.copyBind(itemId, processDefinitionId);
+            // 复制链接节点配置信息
+            itemNodeLinkBindService.copyBind(itemId, processDefinitionId);
+            // 复制任务时间配置
+            taskTimeConfService.copyTaskConf(itemId, processDefinitionId);
+            return Y9Result.successMsg("复制成功");
+        } catch (Exception e) {
+            LOGGER.error("复制事项异常", e);
+            return Y9Result.failure("复制事项异常");
+        }
+    }
+
+    @Override
+    @Transactional
     public Y9Result<String> delete(String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {

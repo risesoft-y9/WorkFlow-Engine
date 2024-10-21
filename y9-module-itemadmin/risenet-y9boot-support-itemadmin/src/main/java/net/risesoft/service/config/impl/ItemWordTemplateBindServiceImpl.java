@@ -8,11 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemWordTemplateBind;
+import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemWordTemplateBindRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.config.ItemWordTemplateBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -29,6 +33,10 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
 
     private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
+    private final SpmApproveItemRepository spmApproveItemRepository;
+
+    private final RepositoryApi repositoryApi;
+
     @Override
     @Transactional
     public void clearBindStatus(String itemId, String processDefinitionId) {
@@ -36,6 +44,49 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
         for (ItemWordTemplateBind itemWordTemplateBind : list) {
             itemWordTemplateBind.setBindStatus(0);
             wordTemplateBindRepository.save(itemWordTemplateBind);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void copyBind(String itemId, String processDefinitionId) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+            String proDefKey = item.getWorkflowGuid();
+            ProcessDefinitionModel latestpd =
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+            String latestpdId = latestpd.getId();
+            String previouspdId = processDefinitionId;
+            if (processDefinitionId.equals(latestpdId)) {
+                if (latestpd.getVersion() > 1) {
+                    ProcessDefinitionModel previouspd =
+                        repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
+                    previouspdId = previouspd.getId();
+                }
+            }
+            List<ItemWordTemplateBind> previousList =
+                wordTemplateBindRepository.findByItemIdAndProcessDefinitionIdOrderByBindStatus(itemId, previouspdId);
+            if (null != previousList && !previousList.isEmpty()) {
+                for (ItemWordTemplateBind templateBind : previousList) {
+                    ItemWordTemplateBind oldBind =
+                        wordTemplateBindRepository.findByItemIdAndProcessDefinitionIdAndTemplateId(itemId, previouspdId,
+                            templateBind.getTemplateId());
+                    if (null == oldBind) {
+                        ItemWordTemplateBind bind = new ItemWordTemplateBind();
+                        bind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                        bind.setItemId(itemId);
+                        bind.setProcessDefinitionId(latestpdId);
+                        bind.setTemplateId(templateBind.getTemplateId());
+                        bind.setBindStatus(templateBind.getBindStatus());
+                        bind.setBindValue(templateBind.getBindValue());
+                        bind.setTenantId(Y9LoginUserHolder.getTenantId());
+                        wordTemplateBindRepository.save(bind);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("复制正文模板绑定信息失败", e);
         }
     }
 
@@ -53,6 +104,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
                     bind.setProcessDefinitionId(lastVersionPid);
                     bind.setTemplateId(templateBind.getTemplateId());
                     bind.setBindStatus(templateBind.getBindStatus());
+                    bind.setBindValue(templateBind.getBindValue());
                     bind.setTenantId(Y9LoginUserHolder.getTenantId());
                     wordTemplateBindRepository.save(bind);
                 }

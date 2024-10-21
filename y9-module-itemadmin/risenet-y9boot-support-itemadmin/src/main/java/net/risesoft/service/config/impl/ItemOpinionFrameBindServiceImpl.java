@@ -127,6 +127,21 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     for (ItemOpinionFrameRole role : roleList) {
                         itemOpinionFrameRoleService.saveOrUpdate(newbindId, role.getRoleId());
                     }
+                    /**
+                     * 复制意见框一键设置的配置
+                     */
+                    List<OpinionFrameOneClickSet> setList = opinionFrameOneClickSetService.findByBindId(oldbindId);
+                    for (OpinionFrameOneClickSet set : setList) {
+                        OpinionFrameOneClickSet newSet = new OpinionFrameOneClickSet();
+                        newSet.setBindId(newbindId);
+                        newSet.setCreateDate(sdf.format(new Date()));
+                        newSet.setOneSetType(set.getOneSetType());
+                        newSet.setOneSetTypeName(set.getOneSetTypeName());
+                        newSet.setExecuteAction(set.getExecuteAction());
+                        newSet.setExecuteActionName(set.getExecuteActionName());
+                        newSet.setUserId(userId);
+                        opinionFrameOneClickSetService.save(newSet);
+                    }
                 }
             }
         }

@@ -74,6 +74,18 @@ public class ItemRestController {
     }
 
     /**
+     * 复制事项和流程定义版本相关的绑定
+     *
+     * @param itemId    事项唯一标识
+     * @param processDefinitionId 流程定义
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/copyAllBind")
+    public Y9Result<String> copyAllBind(@RequestParam String itemId,@RequestParam String processDefinitionId) {
+        return spmApproveItemService.copyAllBind(itemId,processDefinitionId);
+    }
+
+    /**
      * 删除事项
      *
      * @param id 事项id

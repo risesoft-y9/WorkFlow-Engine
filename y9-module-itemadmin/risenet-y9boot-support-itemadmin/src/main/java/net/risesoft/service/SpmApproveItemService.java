@@ -25,6 +25,15 @@ public interface SpmApproveItemService {
     Y9Result<String> copyItem(String id);
 
     /**
+     * 复制事项和流程定义版本相关的绑定
+     *
+     * @param itemId    事项唯一标识
+     * @param processDefinitionId 流程定义
+     * @return Y9Result<String>
+     */
+    Y9Result<String> copyAllBind(String itemId,String processDefinitionId);
+
+    /**
      * Description:
      *
      * @param ids

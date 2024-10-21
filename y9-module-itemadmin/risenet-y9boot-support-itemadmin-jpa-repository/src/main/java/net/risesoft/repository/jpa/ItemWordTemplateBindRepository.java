@@ -19,12 +19,14 @@ public interface ItemWordTemplateBindRepository
 
     ItemWordTemplateBind findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
+    ItemWordTemplateBind findByItemIdAndProcessDefinitionIdAndTemplateId(String itemId, String processDefinitionId,String templateId);
+
     ItemWordTemplateBind findByItemIdAndProcessDefinitionIdAndBindValue(String itemId, String processDefinitionId,
         String bindValue);
 
     ItemWordTemplateBind findByItemIdAndTemplateId(String itemId, String templateId);
 
-    List<ItemWordTemplateBind> findByItemIdOrderByBindValueAsc(String ItemId);
+    List<ItemWordTemplateBind> findByItemIdOrderByBindValueAsc(String itemId);
 
     List<ItemWordTemplateBind> findByItemIdAndProcessDefinitionIdOrderByBindStatus(String itemId,
         String processDefinitionId);
