@@ -167,6 +167,7 @@ public class SysVariables {
     public static final String SINGLE_QUOTE_MARK = "'";
     /** activiti关键字 流程图开始点的节点类型 */
     public static final String STARTEVENT = "startEvent";
+    // @formatter:off
     public static final String STARTOR = "startor";
     /** activiti关键字 流程图Gateway的节点类型 */
     public static final String SUBPROCESS = "subProcess";
@@ -204,4 +205,6 @@ public class SysVariables {
     public static final String XIEBAN = "xieban";
     /** 表示当前公文在暂停件列表(暂停的意思是流程挂起) */
     public static final String ZHUBAN = "zhuban";
+
+    // @formatter:on
 }
