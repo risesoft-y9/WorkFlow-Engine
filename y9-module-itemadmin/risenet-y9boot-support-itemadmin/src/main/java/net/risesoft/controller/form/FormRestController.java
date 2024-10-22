@@ -48,6 +48,17 @@ public class FormRestController {
     }
 
     /**
+     * 清空表单绑定的字段
+     *
+     * @param formId 表单id
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/deleteByFormId")
+    public Y9Result<String> deleteByFormId(@RequestParam @NotBlank String formId) {
+        return y9FormFieldService.deleteByFormId(formId);
+    }
+
+    /**
      * 获取表单信息
      *
      * @param id 表单id
