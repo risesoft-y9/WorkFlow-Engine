@@ -100,8 +100,7 @@ public class MobileV1SystemDockingController {
             Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
                 if (mapFormData != null && null != mapFormData.get(mapping.getMappingName())) {
-                    String text = mapFormData.get(mapping.getMappingName()).toString();
-                    bindFormDataMap.put(mapping.getColumnName(), text);
+                    bindFormDataMap.put(mapping.getColumnName(), mapFormData.get(mapping.getMappingName()));
                 }
             }
             String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
