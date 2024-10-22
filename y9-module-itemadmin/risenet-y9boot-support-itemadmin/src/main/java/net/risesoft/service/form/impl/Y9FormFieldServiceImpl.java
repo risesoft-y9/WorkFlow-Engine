@@ -44,6 +44,18 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     @Override
+    @Transactional(readOnly = false)
+    public Y9Result<String> deleteByFormId(String formId) {
+        try {
+            y9FormFieldRepository.deleteByFormId(formId);
+            return Y9Result.successMsg("清空表单绑定字段成功");
+        } catch (Exception e) {
+            LOGGER.error("清空表单绑定字段失败", e);
+            return Y9Result.failure("清空表单绑定字段失败");
+        }
+    }
+
+    @Override
     public Y9FormField findById(String id) {
         return y9FormFieldRepository.findById(id).orElse(null);
     }

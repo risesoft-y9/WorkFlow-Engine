@@ -23,6 +23,14 @@ public interface Y9FormFieldService {
     Y9Result<String> deleteFormFieldBind(String id);
 
     /**
+     * 清空表单绑定的字段
+     *
+     * @param formId 表单id
+     * @return Y9Result<String>
+     */
+    Y9Result<String> deleteByFormId(String formId);
+
+    /**
      * Description:
      *
      * @param id
