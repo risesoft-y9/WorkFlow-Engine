@@ -61,13 +61,15 @@ public class QueryListApiImpl implements QueryListApi {
         try {
             String sql0 = "";
             StringBuilder sql1 = new StringBuilder();
-            if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(searchMapStr)) {// 表单搜索
+            // 表单搜索
+            if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(searchMapStr)) {
                 boolean query = false;
                 sql0 = " LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
                 List<Map<String, Object>> list = Y9JsonUtil.readListOfMap(searchMapStr, String.class, Object.class);
                 assert list != null;
                 for (Map<String, Object> map : list) {
-                    if (map.get("value") != null && !map.get("value").toString().isEmpty()) {// value有值
+                    // value有值
+                    if (map.get("value") != null && !map.get("value").toString().isEmpty()) {
                         query = true;
                         String queryType = map.get("queryType").toString();
                         String value = map.get("value").toString();
@@ -79,14 +81,17 @@ public class QueryListApiImpl implements QueryListApi {
                                 sql1.append(" AND F.").append(columnName.toUpperCase()).append(" = '").append(value)
                                     .append("' ");
                                 break;
-                            case "checkbox": {// 多选框搜索
+                            case "checkbox": {
+                                // 多选框搜索
                                 String[] values = value.split(",");
-                                if (values.length == 1) {// 单个值
+                                // 单个值
+                                if (values.length == 1) {
                                     sql1.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(",'")
                                         .append(values[0]).append("') > 0 ");
                                 } else {
                                     StringBuilder sql2 = new StringBuilder();
-                                    for (String val : values) {// 多个值
+                                    // 多个值
+                                    for (String val : values) {
                                         if (sql2.toString().isEmpty()) {
                                             sql2.append(" AND ( INSTR(F.").append(columnName.toUpperCase()).append(",'")
                                                 .append(val).append("') > 0 ");
@@ -100,7 +105,8 @@ public class QueryListApiImpl implements QueryListApi {
                                 }
                                 break;
                             }
-                            case "date": {// 日期搜索
+                            case "date": {
+                                // 日期搜索
                                 String[] values = value.split(",");
                                 sql1.append(" AND F.").append(columnName.toUpperCase()).append(" >= '")
                                     .append(values[0]).append("' ");
@@ -121,7 +127,8 @@ public class QueryListApiImpl implements QueryListApi {
                 }
             }
             String stateSql = "";
-            if (StringUtils.isNotBlank(state)) {// 状态搜索
+            // 状态搜索
+            if (StringUtils.isNotBlank(state)) {
                 switch (state) {
                     case "todo":
                         stateSql = " and T.STATUS = 0 AND T.ENDED = FALSE ";
