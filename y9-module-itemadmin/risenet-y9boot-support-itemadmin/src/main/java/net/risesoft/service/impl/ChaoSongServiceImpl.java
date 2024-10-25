@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -301,7 +301,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("processInstanceId"), processInstanceId));
@@ -356,7 +356,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("senderId"), senderId));
@@ -411,7 +411,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("userId"), userId));
@@ -477,7 +477,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("userId"), orgUnitId));
@@ -548,7 +548,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("senderId"), userId));
@@ -628,7 +628,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("userId"), userId));
@@ -698,7 +698,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("userId"), orgUnitId));
@@ -884,7 +884,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("userId"), userId));
@@ -966,7 +966,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
-            public Predicate toPredicate(Root<ChaoSong> root, javax.persistence.criteria.CriteriaQuery<?> query,
+            public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(searchName)) {

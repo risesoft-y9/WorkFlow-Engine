@@ -1,15 +1,9 @@
 package net.risesoft.config;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.flowable.ui.modeler.properties.FlowableModelerAppProperties;
-import org.flowable.ui.modeler.service.FlowableModelQueryService;
-import org.flowable.ui.modeler.service.ModelImageService;
-import org.flowable.ui.modeler.service.ModelServiceImpl;
-import org.mybatis.spring.SqlSessionFactoryBean;
-import org.mybatis.spring.SqlSessionTemplate;
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,22 +15,17 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
-import net.risesoft.filter.RemoveUrlJsessionIdFilter;
 import net.risesoft.liquibase.LiquibaseUtil;
 import net.risesoft.listener.FlowableMultiTenantListener;
 import net.risesoft.y9.Y9Context;
@@ -73,16 +62,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     }
 
     @Bean
-    public FlowableModelerAppProperties flowableModelerAppProperties() {
-        return new FlowableModelerAppProperties();
-    }
-
-    @Bean
-    public FlowableModelQueryService flowableModelQueryService() {
-        return new FlowableModelQueryService();
-    }
-
-    @Bean
     public FlowableMultiTenantListener flowableMultiTenantListener() {
         return new FlowableMultiTenantListener();
     }
@@ -93,7 +72,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     }
 
     @Bean(name = {"jdbcTemplate4Public"})
-    public JdbcTemplate jdbcTemplate(@Qualifier("y9PublicDS") DruidDataSource y9PublicDs) {
+    public JdbcTemplate jdbcTemplate(@Qualifier("y9PublicDS") HikariDataSource y9PublicDs) {
         return new JdbcTemplate(y9PublicDs);
     }
 
@@ -101,16 +80,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @ConditionalOnMissingBean(name = "jdbcTemplate4Tenant")
     public JdbcTemplate jdbcTemplate4Tenant(@Qualifier("y9TenantDataSource") DataSource ds) {
         return new JdbcTemplate(ds);
-    }
-
-    @Bean
-    public ModelImageService modelImageService() {
-        return new ModelImageService();
-    }
-
-    @Bean
-    public ModelServiceImpl modelService() {
-        return new ModelServiceImpl();
     }
 
     @Bean
@@ -124,69 +93,41 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<RemoveUrlJsessionIdFilter> removeUrlJsessionIdFilter() {
-        final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean = new FilterRegistrationBean<>();
-        filterBean.setFilter(new RemoveUrlJsessionIdFilter());
-        filterBean.setAsyncSupported(false);
-        filterBean.addUrlPatterns("/*");
-        if (this.configProps.getSingleSignOutFilterOrder() != null) {
-            filterBean.setOrder(this.configProps.getSingleSignOutFilterOrder());
-        } else {
-            filterBean.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-        }
-        return filterBean;
-    }
-
-    @Bean(name = {"sqlSessionFactory"})
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("y9FlowableDS") DruidDataSource dataSource) throws Exception {
-        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-        bean.setDataSource(dataSource);
-
-        Resource resource =
-            new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml");
-        bean.setConfigLocation(resource);
-        return bean.getObject();
-    }
-
-    @Bean(name = {"flowableModeler"})
-    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
-        return new SqlSessionTemplate(sqlSessionFactory);
-    }
-
-    @Bean
     public Y9Context y9Context() {
         return new Y9Context();
     }
 
     @Primary
-    @ConfigurationProperties("spring.datasource.druid.flowable")
+    @ConfigurationProperties("spring.datasource.hikari.flowable")
     @Bean(name = {"y9FlowableDS"})
-    public DruidDataSource y9FlowableDs() {
-        return DruidDataSourceBuilder.create().build();
+    public HikariDataSource y9FlowableDs() {
+        HikariDataSource dataSource = new HikariDataSource();
+        return dataSource;
     }
 
-    @ConfigurationProperties("spring.datasource.druid.y9-public")
+    @ConfigurationProperties("spring.datasource.hikari.y9-public")
     @Bean(name = {"y9PublicDS"})
     @ConditionalOnMissingBean(name = "y9PublicDS")
-    public DruidDataSource y9PublicDs() {
-        return DruidDataSourceBuilder.create().build();
+    public HikariDataSource y9PublicDs() {
+        HikariDataSource dataSource = new HikariDataSource();
+        return dataSource;
     }
 
     @Bean("y9TenantDataSource")
-    public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs,
+    public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") HikariDataSource y9FlowableDs,
         @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
         return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
     }
 
     @Bean("y9TenantDataSourceLookup")
-    public Y9TenantDataSourceLookup y9TenantDataSourceLookup(@Qualifier("y9PublicDS") DruidDataSource ds) {
+    public Y9TenantDataSourceLookup y9TenantDataSourceLookup(@Qualifier("y9PublicDS") HikariDataSource ds) {
         return new Y9TenantDataSourceLookup(ds, environment.getProperty("y9.systemName"));
     }
 
     @Bean
     @ConditionalOnBean(name = "y9FlowableDS")
     public SpringLiquibase y9FlowableSpringLiquibase(Y9LiquibaseProperties properties,
-        @Qualifier("y9FlowableDS") DruidDataSource dataSource, ResourceLoader resourceLoader) {
+        @Qualifier("y9FlowableDS") HikariDataSource dataSource, ResourceLoader resourceLoader) {
         return LiquibaseUtil.getSpringLiquibase(dataSource, properties, resourceLoader, false);
     }
 }
