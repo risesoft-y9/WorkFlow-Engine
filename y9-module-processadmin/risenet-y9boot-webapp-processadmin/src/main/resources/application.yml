@@ -191,7 +191,7 @@ y9:
             imageCountUrl: http://localhost:8081/imageCount
     service:
         itemAdmin:
-            directUrl: http://localhost:7056
+            directUrl: http://localhost:7057
         datacenter:
             directUrl: http://localhost:7056
         sms:

@@ -227,7 +227,7 @@ y9:
             rest:
                 fileManagerUrl: http://localhost:8080/fileManager
             ftp:
-                host: dev.youshengyun.com
+                host: nexus-internal.youshengyun.com
                 port: 21
                 username: y9admin
                 password: '83204585'

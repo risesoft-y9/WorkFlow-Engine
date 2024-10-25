@@ -79,9 +79,9 @@ spring:
                 #username: Y9_PUBLIC
                 #password: '111111'
                 driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://192.168.3.31:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
+                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
                 username: root
-                password: 'Y9i-83204585'
+                password: '111111'
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -155,23 +155,23 @@ y9:
             systemName: flowableUI
     service:
         itemAdmin:
-            directUrl: http://localhost:7056
+            directUrl: http://localhost:7057
         processAdmin:
             directUrl: http://localhost:7056
         org:
-            directUrl: https://test-api.youshengyun.com
+            directUrl: http://localhost:7055
         todo:
-            directUrl: https://test-api.youshengyun.com
+            directUrl: http://localhost:7055
     common:
         cacheEnabled: true
         kafkaEnabled: true
-        flowableBaseUrl: https://test-api.youshengyun.com/flowableUI
-        itemAdminBaseUrl: https://test-api.youshengyun.com/itemAdmin
-        orgBaseUrl: https://test-api.youshengyun.com/platform
-        processAdminBaseUrl: https://test-api.youshengyun.com/processAdmin
+        flowableBaseUrl: http://localhost:7058/flowableUI
+        itemAdminBaseUrl: http://localhost:7057/itemAdmin
+        orgBaseUrl: http://localhost:7055/platform
+        processAdminBaseUrl: http://localhost:7056/processAdmin
         todoBaseUrl: https://test.youshengyun.com/todo
         todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
-        jodconverterBaseUrl: https://test-api.youshengyun.com/jodconverter/onlinePreview?url=
+        jodconverterBaseUrl: http://localhost:7055/jodconverter/onlinePreview?url=
     feature:
         apisix:
             enabled: false
@@ -188,7 +188,7 @@ y9:
             rest:
                 fileManagerUrl: http://test-api.youshengyun.com/fileManager
             ftp:
-                host: ftp
+                host: nexus-internal.youshengyun.com
                 port: 21
                 username: y9admin
                 password: '83204585'
@@ -269,5 +269,5 @@ y9:
                 opaque:
                     client-id: clientid
                     client-secret: secret
-                    introspection-uri: http://test-api-internal.youshengyun.com/sso/oauth2.0/introspect
-                    profile-uri: http://test-api-internal.youshengyun.com/sso/oauth2.0/profile
+                    introspection-uri: http://localhost:7055/sso/oauth2.0/introspect
+                    profile-uri: http://localhost:7055/sso/oauth2.0/profile
