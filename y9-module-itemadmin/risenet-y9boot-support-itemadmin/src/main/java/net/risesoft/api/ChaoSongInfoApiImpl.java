@@ -128,7 +128,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByIds(@RequestParam String tenantId, @RequestParam @RequestBody String[] ids) {
+    public Y9Result<Object> deleteByIds(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.deleteByIds(ids);
         return Y9Result.success();

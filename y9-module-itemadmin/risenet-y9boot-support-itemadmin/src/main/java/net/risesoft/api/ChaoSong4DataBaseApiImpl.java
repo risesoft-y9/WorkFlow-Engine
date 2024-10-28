@@ -1,6 +1,5 @@
 package net.risesoft.api;
 
-import net.risesoft.api.itemadmin.ChaoSong4DataBaseApi;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.ChaoSong4DataBaseApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ChaoSong;
@@ -129,7 +128,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByIds(@RequestParam String tenantId, @RequestParam @RequestBody String[] ids) {
+    public Y9Result<Object> deleteByIds(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongService.deleteByIds(ids);
         return Y9Result.success();
