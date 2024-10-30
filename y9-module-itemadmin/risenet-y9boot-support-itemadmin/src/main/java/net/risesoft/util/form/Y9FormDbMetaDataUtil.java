@@ -211,6 +211,7 @@ public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
         list.add(map);
         map = new HashMap<>(16);
         map.put("typeName", "bit");
+        list.add(map);
         return list;
     }
 

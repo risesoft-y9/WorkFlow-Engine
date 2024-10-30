@@ -878,6 +878,15 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 sqlStr1.append((keyValue.get(fieldName) != null
                                     && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
                                         ? keyValue.get(fieldName) : null);
+                            } else if (y9TableField.getFieldType().toLowerCase().contains("bit")) {
+                                boolean isTrue = false;
+                                if ((keyValue.get(fieldName) != null
+                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))) {
+                                    isTrue = Boolean.parseBoolean(String.valueOf(keyValue.get(fieldName)));
+                                }
+                                sqlStr1.append((keyValue.get(fieldName) != null
+                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName)))) ? isTrue
+                                        : null);
                             } else if (y9TableField.getFieldType().toUpperCase().contains("DOUBLE")
                                 || y9TableField.getFieldType().toUpperCase().contains("FLOAT")) {
                                 sqlStr1.append((keyValue.get(fieldName) != null
@@ -973,6 +982,15 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     sqlStr.append((keyValue.get(fieldName) != null
                                         && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
                                             ? keyValue.get(fieldName) : null);
+                                } else if (y9TableField.getFieldType().toLowerCase().contains("bit")) {
+                                    boolean isTrue = false;
+                                    if ((keyValue.get(fieldName) != null
+                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))) {
+                                        isTrue = Boolean.parseBoolean(String.valueOf(keyValue.get(fieldName)));
+                                    }
+                                    sqlStr.append((keyValue.get(fieldName) != null
+                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName)))) ? isTrue
+                                            : null);
                                 } else if (y9TableField.getFieldType().toUpperCase().contains("DOUBLE")
                                     || y9TableField.getFieldType().toUpperCase().contains("FLOAT")) {
                                     sqlStr.append((keyValue.get(fieldName) != null
