@@ -145,8 +145,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             String sql =
                 "SELECT T.* FROM FF_ACT_RU_DETAIL T " + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE "
                     + sql1 + systemNameSql + " AND T.ASSIGNEE = ? ORDER BY " + orderBy;
-            String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + processParamSql
-                + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
+            String countSql = "SELECT COUNT(T.ID) FROM FF_ACT_RU_DETAIL T " + processParamSql
+                + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1 + systemNameSql;
             Object[] args = new Object[1];
             args[0] = userId;
             ItemPage<ActRuDetailModel> ardModelPage = itemPageService.page(sql, args,
