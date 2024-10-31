@@ -197,6 +197,19 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
+    public Page<ActRuDetail> pageByAssigneeAndStatus(String assignee, int status, int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ActRuDetail> pageList;
+        if (0 == status) {
+            pageList = actRuDetailRepository.findByAssigneeAndStatusAndDeletedFalse(assignee, status, pageable);
+        } else {
+            pageList =
+                actRuDetailRepository.findByAssigneeAndStatusAndEndedFalseAndDeletedFalse(assignee, status, pageable);
+        }
+        return pageList;
+    }
+
+    @Override
     public Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status,
         int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);

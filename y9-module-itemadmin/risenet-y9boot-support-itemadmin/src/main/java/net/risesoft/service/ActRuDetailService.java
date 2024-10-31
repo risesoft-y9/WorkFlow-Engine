@@ -145,6 +145,19 @@ public interface ActRuDetailService {
     /**
      * 查找个人待办，在办列表
      *
+     * @param assignee
+     * @param status 0为待办，1位在办
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageByAssigneeAndStatus( String assignee, int status, int rows,
+        int page, Sort sort);
+
+    /**
+     * 查找个人待办，在办列表
+     *
      * @param systemName
      * @param assignee
      * @param status 0为待办，1位在办
@@ -154,7 +167,7 @@ public interface ActRuDetailService {
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
-        int page, Sort sort);
+                                                           int page, Sort sort);
 
     /**
      * 标记流程为归档

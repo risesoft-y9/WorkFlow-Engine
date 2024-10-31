@@ -23,6 +23,9 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * @author qinman
+ */
 @RequiredArgsConstructor
 @Service(value = "actRuDetailService")
 @Slf4j

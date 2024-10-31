@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
@@ -32,6 +33,19 @@ public interface ItemTodoApi {
     @GetMapping("/countByUserIdAndSystemName")
     Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName);
+
+    /**
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param queryParamModel 查询参数
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @PostMapping("/findByUserId")
+    Y9Page<ActRuDetailModel> findByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestBody QueryParamModel queryParamModel);
 
     /**
      * 根据用户id和系统名称查询待办列表(以发送时间排序)
