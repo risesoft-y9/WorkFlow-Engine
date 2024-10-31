@@ -82,8 +82,13 @@ public interface ActRuDetailRepository
     Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
         int status, Pageable pageable);
 
+    Page<ActRuDetail> findByAssigneeAndStatusAndDeletedFalse(String assignee, int status, Pageable pageable);
+
     Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName,
         String assignee, int status, Pageable pageable);
+
+    Page<ActRuDetail> findByAssigneeAndStatusAndEndedFalseAndDeletedFalse(String assignee, int status,
+        Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameAndStatusAndEndedFalse(String systemName, int status, Pageable pageable);
 
