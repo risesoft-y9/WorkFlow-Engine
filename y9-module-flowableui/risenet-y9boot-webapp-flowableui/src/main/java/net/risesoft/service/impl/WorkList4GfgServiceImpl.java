@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.platform.OrgUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,6 +83,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final ItemTodoApi itemTodoApi;
 
     private final TaskApi taskApi;
+
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     public Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
@@ -489,10 +494,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (queryParamModel.getPage() - 1) * queryParamModel.getRows();
-            Map<String, Object> vars;
-            Collection<String> keys;
             Map<String, Object> mapTemp;
-            Map<String, Object> formDataMap;
             ProcessParamModel processParam;
             String processInstanceId;
             for (ActRuDetailModel ardModel : taslList) {
@@ -501,37 +503,27 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
-                    Date taskCreateTime = ardModel.getCreateTime();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
                     TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                    mapTemp.put("taskId", taskId);
-                    String processDefinitionId = task.getProcessDefinitionId();
                     String taskAssignee = ardModel.getAssignee();
-                    String taskDefinitionKey = task.getTaskDefinitionKey();
                     String taskName = task.getName();
                     int priority = task.getPriority();
-                    keys = new ArrayList<>();
-                    keys.add(SysVariables.TASKSENDER);
-                    vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("processDefinitionKey", processDefinitionId.split(":")[0]);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("taskDefinitionKey", taskDefinitionKey);
+                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("number", processParam.getCustomNumber());
+                    mapTemp.put("title", processParam.getTitle());
+                    mapTemp.put("bureauName", orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
                     mapTemp.put("taskName", taskName);
-                    mapTemp.put("taskAssignee", taskAssignee);
-                    mapTemp.put(SysVariables.TASKSENDER, taskSender);
+
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("itemName", processParam.getItemName());
-                    formDataMap =
-                        formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData();
-                    mapTemp.putAll(formDataMap);
-                    mapTemp.put("processInstanceId", processInstanceId);
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
                     // 退回件
                     if (Boolean.parseBoolean(rollBack)) {

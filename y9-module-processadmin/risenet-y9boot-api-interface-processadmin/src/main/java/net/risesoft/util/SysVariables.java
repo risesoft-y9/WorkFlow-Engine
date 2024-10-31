@@ -88,6 +88,10 @@ public class SysVariables {
     public static final String DECLARESN = "declaresn";
     /** 审批事项业务流水号 */
     public static final String ISNEWTODO = "isNewTodo";
+    /**
+     * 待办来源，待办来源有：add(起草),todo(待办),doing(在办),done(办结),monitorDoing(监控在办),monitorDone(监控办结),monitorRecycle(监控回收站),yuejian(阅件)
+     */
+    public static final String ITEMBOX = "itemBox";
     /** 待办是否是最新的(新产生的待办，打开过就不是最新的) */
     public static final String SYSTEMNAME = "systemName";
     /** 系统名称 */
