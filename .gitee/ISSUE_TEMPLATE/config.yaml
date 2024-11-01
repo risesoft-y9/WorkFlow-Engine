@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+    - name: 工作流引擎文档
+      url: https://docs.youshengyun.com/flowable/backend/introduction
+      about: 提供工作流引擎介绍、基本组件使用和常见问题解答
