@@ -25,5 +25,7 @@ rebel.xml
 
 # vue
 node_modules/
+vue/y9vue-flowableUI/flowableUI/
+vue/y9vue-itemAdmin/itemAdmin/
 
 .flattened-pom.xml
