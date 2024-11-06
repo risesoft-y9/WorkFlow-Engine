@@ -427,13 +427,12 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         List<TargetModel> list = new ArrayList<>();
         List<FlowElement> activitieList = new ArrayList<>();
         if (!Boolean.TRUE.equals(isContainStartNode)) {
-            List<FlowElement> listTemp;
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-            listTemp = (List<FlowElement>)process.getFlowElements();
-            if (!listTemp.isEmpty()) {
+            List<FlowElement> listCache = (List<FlowElement>)process.getFlowElements();
+            if (!listCache.isEmpty()) {
                 // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-                activitieList.addAll(listTemp);
+                activitieList.addAll(listCache);
             }
             activitieList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
                 || e instanceof SequenceFlow);
@@ -461,7 +460,12 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                     targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                 }
-                List<FlowElement> subProcessList = (List<FlowElement>)subProcess.getFlowElements();
+                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
+                List<FlowElement> subProcessListCache = (List<FlowElement>)subProcess.getFlowElements();
+                List<FlowElement> subProcessList=new ArrayList<>();
+                if(!subProcessListCache.isEmpty()){
+                    subProcessList.addAll(subProcessListCache);
+                }
                 subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
                     || e instanceof SequenceFlow);
                 for (FlowElement subProcessFe : subProcessList) {
