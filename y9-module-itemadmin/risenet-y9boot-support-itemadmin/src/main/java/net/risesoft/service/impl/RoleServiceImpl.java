@@ -128,18 +128,20 @@ public class RoleServiceImpl implements RoleService {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             OrgUnit user = orgUnitApi
                                 .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
-                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                            model.setId(customGroupMember.getMemberId());
-                            model.setParentId(id);
-                            model.setName(user.getName());
-                            model.setIsParent(false);
-                            model.setOrgType(user.getOrgType().getValue());
-                            model.setPerson("6:" + user.getId() + ":" + user.getParentId());
-                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
-                            if (item.contains(model)) {
-                                continue;// 去重
+                            if (user != null && !user.getDisabled()) {
+                                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                                model.setId(customGroupMember.getMemberId());
+                                model.setParentId(id);
+                                model.setName(user.getName());
+                                model.setIsParent(false);
+                                model.setOrgType(user.getOrgType().getValue());
+                                model.setPerson("6:" + user.getId() + ":" + user.getParentId());
+                                model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                                if (item.contains(model)) {
+                                    continue;// 去重
+                                }
+                                item.add(model);
                             }
-                            item.add(model);
                         }
                     }
                 }
@@ -218,7 +220,7 @@ public class RoleServiceImpl implements RoleService {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             OrgUnit user = orgUnitApi
                                 .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
-                            if (user != null && user.getName().contains(name)) {
+                            if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                                 ItemRoleOrgUnitModel model0 = new ItemRoleOrgUnitModel();
                                 model0.setIsParent(false);
                                 model0.setPerson("6:" + user.getId() + ":" + user.getParentId());
@@ -400,18 +402,20 @@ public class RoleServiceImpl implements RoleService {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             OrgUnit user = orgUnitApi
                                 .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
-                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                            model.setId(customGroupMember.getMemberId());
-                            model.setParentId(id);
-                            model.setName(user.getName());
-                            model.setIsParent(false);
-                            model.setOrgType(user.getOrgType().getValue());
-                            model.setPerson("6:" + user.getId());
-                            model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
-                            if (item.contains(model)) {
-                                continue;// 去重
+                            if (user != null && !user.getDisabled()) {
+                                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                                model.setId(customGroupMember.getMemberId());
+                                model.setParentId(id);
+                                model.setName(user.getName());
+                                model.setIsParent(false);
+                                model.setOrgType(user.getOrgType().getValue());
+                                model.setPerson("6:" + user.getId());
+                                model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                                if (item.contains(model)) {
+                                    continue;// 去重
+                                }
+                                item.add(model);
                             }
-                            item.add(model);
                         }
                     }
                 }
@@ -621,7 +625,7 @@ public class RoleServiceImpl implements RoleService {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             OrgUnit user = orgUnitApi
                                 .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
-                            if (user != null && user.getName().contains(name)) {
+                            if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                                 ItemRoleOrgUnitModel model1 = new ItemRoleOrgUnitModel();
                                 model1.setId(customGroupMember.getMemberId());
                                 model1.setName(user.getName());
