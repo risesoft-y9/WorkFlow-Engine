@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1704700543333-1" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_attachment_paper"/>
+            </not>
+        </preConditions>
+        <createTable remarks="纸质附件信息表" tableName="ff_attachment_paper">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(255)"/>
+            <column name="COUNT" remarks="份数" type="INT"/>
+            <column name="PAGES" remarks="页数" type="INT"/>
+            <column name="MIJI" remarks="密级" type="VARCHAR(20)"/>
+            <column name="UPLOADTIME" remarks="上传时间" type="VARCHAR(100)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="文件索引" type="INT"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
