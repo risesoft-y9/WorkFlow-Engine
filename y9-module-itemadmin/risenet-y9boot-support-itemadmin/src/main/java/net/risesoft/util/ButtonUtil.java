@@ -59,7 +59,6 @@ public class ButtonUtil {
         this.itemTaskConfService = Y9Context.getBean(ItemTaskConfService.class);
     }
 
-    @SuppressWarnings({"unused", "unchecked"})
     public Map<String, Object> showButton(String itemId, String taskId, String itembox) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Map<String, Object> map = new HashMap<>(16);
@@ -568,6 +567,45 @@ public class ButtonUtil {
         return map;
     }
 
+    @SuppressWarnings({"unused"})
+    public Map<String, Object> showButton4Add(String itemId) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        Map<String, Object> map = new HashMap<>(16);
+        String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
+                "16", "17", "18", "19", "20", "21"};
+        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
+                "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
+        int[] buttonOrders = {3, 15, 10, 11, 1, 2, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+        boolean[] isButtonShow = new boolean[buttonIds.length];
+        for (int i = 0; i < buttonIds.length; i++) {
+            isButtonShow[i] = false;
+        }
+        Map<String, Object> vars = new HashMap<>(16);
+        String varsUser = "";
+        String taskSenderId = "";
+        List<String> varsUsers = new ArrayList<>();
+        String varsSponsorGuid = "";
+        SpmApproveItem item = itemService.findById(itemId);
+        boolean showSubmitButton = item.isShowSubmitButton();
+        isButtonShow[0] = true;
+        if (showSubmitButton) {
+            isButtonShow[20] = true;
+        } else {
+            isButtonShow[1] = true;
+        }
+        // 新建可抄送
+        isButtonShow[17] = true;
+        // 打印
+        isButtonShow[16] = false;
+        map.put("buttonIds", buttonIds);
+        map.put("buttonNames", buttonNames);
+        map.put("isButtonShow", isButtonShow);
+        map.put("buttonOrders", buttonOrders);
+
+        return map;
+    }
+
+
     public Map<String, Object> showButton4Todo(String itemId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Map<String, Object> map = new HashMap<>(16);
@@ -985,9 +1023,9 @@ public class ButtonUtil {
         }
         // 上面是加减签按钮
         // 打印
-        isButtonShow[16] = true;
+        isButtonShow[16] = false;
         // 抄送
-        isButtonShow[17] = true;
+        isButtonShow[17] = false;
         map.put("buttonIds", buttonIds);
         map.put("buttonNames", buttonNames);
         map.put("isButtonShow", isButtonShow);

@@ -77,16 +77,6 @@ public class DocumentDetailModel implements Serializable {
     private String showOtherFlag;
 
     /**
-     * 打印表单id
-     */
-    private String printFormId;
-
-    /**
-     * 打印表单类型
-     */
-    private String printFormType;
-
-    /**
      * 重定位选项
      */
     private List<Map<String, Object>> repositionMap;
