@@ -92,12 +92,12 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.8
      */
     @Override
-    public Y9Result<OpenDataModel> addWithStartTaskDefKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
+    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
                                                           @RequestParam String itemId, @RequestParam String startTaskDefKey, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        OpenDataModel model = documentService.add(itemId, mobile);
+        DocumentDetailModel model = documentService.addWithStartTaskDefKey(itemId,startTaskDefKey, mobile);
         return Y9Result.success(model);
     }
 

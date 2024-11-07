@@ -53,7 +53,7 @@ public interface DocumentApi {
      * @since 9.6.8
      */
     @GetMapping("/addWithStartTaskDefKey")
-    Y9Result<OpenDataModel> addWithStartTaskDefKey(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+    Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
                                                    @RequestParam("itemId") String itemId, @RequestParam("startTaskDefKey") String startTaskDefKey, @RequestParam("mobile") boolean mobile);
 
     /**

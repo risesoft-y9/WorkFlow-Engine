@@ -36,7 +36,7 @@ public interface DocumentService {
      * @param mobile          是否是移动端
      * @return OpenDataModel
      */
-    OpenDataModel addWithStartTaskDefKey(String itemId, String startTaskDefKey, boolean mobile);
+    DocumentDetailModel addWithStartTaskDefKey(String itemId, String startTaskDefKey, boolean mobile);
 
     /**
      * Description: 办结
@@ -57,8 +57,7 @@ public interface DocumentService {
      * @param processInstanceId    流程实例id
      * @return
      */
-    DocUserChoiseModel docUserChoise(String itemId, String processDefinitionKey, String processDefinitionId,
-                                     String taskId, String routeToTask, String processInstanceId);
+    DocUserChoiseModel docUserChoise(String itemId, String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask, String processInstanceId);
 
     /**
      * Description: 办件办理
@@ -91,8 +90,7 @@ public interface DocumentService {
      * @param sponsorGuid
      * @return
      */
-    Y9Result<String> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId,
-                                String sponsorGuid);
+    Y9Result<String> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId, String sponsorGuid);
 
     /**
      * Description: 获取绑定表单
@@ -105,8 +103,7 @@ public interface DocumentService {
      * @param model
      * @return
      */
-    OpenDataModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
-                                   String taskDefinitionKey, boolean mobile, OpenDataModel model);
+    OpenDataModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId, String taskDefinitionKey, boolean mobile, OpenDataModel model);
 
     /**
      * Description: 获取绑定表单
@@ -119,8 +116,7 @@ public interface DocumentService {
      * @param model
      * @return
      */
-    DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
-                                    String taskDefinitionKey, boolean mobile, DocumentDetailModel model);
+    DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId, String taskDefinitionKey, boolean mobile, DocumentDetailModel model);
 
     /**
      * Description: 获取首个事项id
@@ -163,8 +159,18 @@ public interface DocumentService {
      * @param itembox
      * @return
      */
-    OpenDataModel menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId,
-                              OpenDataModel model, String itembox);
+    OpenDataModel menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId, OpenDataModel model, String itembox);
+
+    /**
+     * Description: 获取菜单
+     *
+     * @param itemId              事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey
+     * @param model
+     * @return
+     */
+    DocumentDetailModel menuControl4Add(String itemId, String processDefinitionId, String taskDefKey, DocumentDetailModel model);
 
     /**
      * Description: 获取菜单
@@ -176,8 +182,7 @@ public interface DocumentService {
      * @param model
      * @return
      */
-    DocumentDetailModel menuControl4Todo(String itemId, String processDefinitionId, String taskDefKey, String taskId,
-                                         DocumentDetailModel model);
+    DocumentDetailModel menuControl4Todo(String itemId, String processDefinitionId, String taskDefKey, String taskId, DocumentDetailModel model);
 
     /**
      * Description: 解析工作流发送时用户选取的人员
@@ -187,8 +192,7 @@ public interface DocumentService {
      */
     List<String> parseUserChoice(String userChoice);
 
-    Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId,
-                                      String routeToTaskName, String processInstanceId, String multiInstance);
+    Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId, String routeToTaskName, String processInstanceId, String multiInstance);
 
     /**
      * 重定位
@@ -211,8 +215,7 @@ public interface DocumentService {
      * @param variables
      * @return
      */
-    Y9Result<String> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey,
-                                       String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables);
+    Y9Result<String> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables);
 
     /**
      * Description: 启动流程并发送(指定)
@@ -227,9 +230,7 @@ public interface DocumentService {
      * @param variables
      * @return
      */
-    Y9Result<String> saveAndForwardingByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey,
-                                                String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId,
-                                                Map<String, Object> variables);
+    Y9Result<String> saveAndForwardingByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId, Map<String, Object> variables);
 
     /**
      * Description: 启动流程并提交
@@ -249,8 +250,7 @@ public interface DocumentService {
      * @param processSerialNumber 流程编号
      * @return
      */
-    SignTaskConfigModel signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey,
-                                       String processSerialNumber);
+    SignTaskConfigModel signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey, String processSerialNumber);
 
     /*
      * 启动流程发送
@@ -282,8 +282,7 @@ public interface DocumentService {
      * @param userIds
      * @return
      */
-    StartProcessResultModel startProcess(String itemId, String processSerialNumber, String processDefinitionKey,
-                                         String userIds);
+    StartProcessResultModel startProcess(String itemId, String processSerialNumber, String processDefinitionKey, String userIds);
 
     /**
      * 启动流程，指定任务节点
@@ -294,8 +293,7 @@ public interface DocumentService {
      * @param startRouteToTaskId
      * @return
      */
-    Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey,
-                                              String startRouteToTaskId);
+    Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String startRouteToTaskId);
 
     /**
      * Description: 启动流程并提交

@@ -204,7 +204,11 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         ItemStartNodeRoleModel itemStartNodeRoleModel;
         for (ItemStartNodeRole isnr : list) {
             String roleIds = isnr.getRoleIds();
-            if (StringUtils.isNotEmpty(roleIds)) {
+            if (StringUtils.isEmpty(roleIds)) {
+                itemStartNodeRoleModel = new ItemStartNodeRoleModel();
+                Y9BeanUtil.copyProperties(isnr, itemStartNodeRoleModel);
+                itemStartNodeRoleModelList.add(itemStartNodeRoleModel);
+            }else{
                 String[] roleIdArr = roleIds.split(";");
                 for (String roleId : roleIdArr) {
                     boolean has = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
