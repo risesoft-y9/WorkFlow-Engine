@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -184,26 +185,14 @@ public class WorkList4GfgRestController {
      * 获取待办件列表
      *
      * @param itemId 事项id
-     * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
-    }
-
-    /**
-     * 获取待办件列表
-     *
-     * @param queryParamModel 查询参数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @PostMapping(value = "/allTodoList")
-    public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
-        return workList4GfgService.allTodoList(queryParamModel);
+                                                @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.todoList(itemId, page, rows);
     }
 
     /**
@@ -218,6 +207,17 @@ public class WorkList4GfgRestController {
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
+    }
+
+    /**
+     * 获取待办件列表
+     *
+     * @param queryParamModel 查询参数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/allTodoList")
+    public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
+        return workList4GfgService.allTodoList(queryParamModel);
     }
 
     /**
