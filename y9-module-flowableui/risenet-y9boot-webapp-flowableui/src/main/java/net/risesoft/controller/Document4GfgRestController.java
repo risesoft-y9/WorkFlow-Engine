@@ -7,7 +7,11 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
+import net.risesoft.model.itemadmin.ItemSystemListModel;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.Organization;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -86,11 +90,7 @@ public class Document4GfgRestController {
 
     private final PositionRoleApi positionRoleApi;
 
-    private final SpeakInfoApi speakInfoApi;
-
-    private final AssociatedFileApi associatedFileApi;
-
-    private final OfficeFollowApi officeFollowApi;
+    private final DepartmentApi departmentApi;
 
     private final Y9Properties y9Config;
 
@@ -130,20 +130,11 @@ public class Document4GfgRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/addWithStartTaskDefKey")
-    public Y9Result<Map<String, Object>> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String startTaskDefKey) {
+    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String startTaskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map;
         try {
-            OpenDataModel model = documentApi.addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false).getData();
-            String str = Y9JsonUtil.writeValueAsString(model);
-            map = Y9JsonUtil.readHashMap(str);
-            map.put("tenantId", tenantId);
-            map.put("userId", Y9LoginUserHolder.getPositionId());
-            map.put("userName", Y9LoginUserHolder.getPosition().getName());
-            map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
-            map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
-            map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
-            return Y9Result.success(map, "获取成功");
+            DocumentDetailModel model = documentApi.addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false).getData();
+            return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取新建办件数据失败", e);
         }
@@ -466,7 +457,7 @@ public class Document4GfgRestController {
     }
 
     /**
-     * 获取所有开始节点
+     * 获取所有开始节点(事项管理-事项配置-路由配置进行授权)
      *
      * @param itemId 事项id
      * @return Y9Result<List < ItemStartNodeRoleModel>>
@@ -475,5 +466,26 @@ public class Document4GfgRestController {
     public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam @NotBlank String itemId) {
         return documentApi.getAllStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
                 itemId);
+    }
+
+    /**
+     * 获取主办司局（暂时取组织下的部门）
+     *
+     * @return Y9Result<List<Department>>
+     */
+    @GetMapping(value = "/getBureau")
+    public Y9Result<List<Department>> getBureau() {
+        Organization organization=orgUnitApi.getOrganization(Y9LoginUserHolder.getTenantId(),Y9LoginUserHolder.getPersonId()).getData();
+        return departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), organization.getId());
+    }
+
+    /**
+     * 获取事项系统
+     *
+     * @return Y9Result<List<ItemSystemListModel>>
+     */
+    @GetMapping(value = "/getItemSystem")
+    public Y9Result<List<ItemSystemListModel>> getItemSystem() {
+        return itemApi.getItemSystem(Y9LoginUserHolder.getTenantId());
     }
 }

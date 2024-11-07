@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import net.risesoft.model.itemadmin.DocumentDetailModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -131,20 +132,11 @@ public class DocumentRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/addWithStartTaskDefKey")
-    public Y9Result<Map<String, Object>> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,@RequestParam @NotBlank String startTaskDefKey) {
+    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,@RequestParam @NotBlank String startTaskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map;
         try {
-            OpenDataModel model = documentApi.addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false).getData();
-            String str = Y9JsonUtil.writeValueAsString(model);
-            map = Y9JsonUtil.readHashMap(str);
-            map.put("tenantId", tenantId);
-            map.put("userId", Y9LoginUserHolder.getPositionId());
-            map.put("userName", Y9LoginUserHolder.getPosition().getName());
-            map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
-            map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
-            map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
-            return Y9Result.success(map, "获取成功");
+            DocumentDetailModel model = documentApi.addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false).getData();
+            return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取新建办件数据失败", e);
         }
