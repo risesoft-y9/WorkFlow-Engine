@@ -26,4 +26,26 @@
             <column name="TABINDEX" remarks="文件索引" type="INT"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-2" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_attachment_ele"/>
+            </not>
+        </preConditions>
+        <createTable remarks="电子附件信息表" tableName="ff_attachment_ele">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(255)"/>
+            <column name="MIJI" remarks="密级" type="VARCHAR(20)"/>
+            <column name="ATTACHMENTTYPE" remarks="附件类型" type="VARCHAR(20)"/>
+            <column name="UPLOADTIME" remarks="上传时间" type="VARCHAR(100)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="文件索引" type="INT"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
