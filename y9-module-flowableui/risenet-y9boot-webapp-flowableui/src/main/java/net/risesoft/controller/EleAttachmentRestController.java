@@ -3,8 +3,10 @@ package net.risesoft.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.EleAttachmentApi;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.model.itemadmin.AttachmentModel;
+import net.risesoft.model.itemadmin.EleAttachmentModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -15,6 +17,7 @@ import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,19 +61,18 @@ public class EleAttachmentRestController {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final AttachmentApi attachmentApi;
+    private final EleAttachmentApi eleAttachmentApi;
 
     /**
      * 附件下载
      *
      * @param id 附件id
      */
-    @GetMapping(value = "/attachmentDownload")
-    public void attachmentDownload(@RequestParam @NotBlank String id, HttpServletResponse response,
-        HttpServletRequest request) {
+    @GetMapping(value = "/download")
+    public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            AttachmentModel model = attachmentApi.findById(tenantId, id).getData();
+            EleAttachmentModel model = eleAttachmentApi.findById(tenantId, id).getData();
             String filename = model.getName();
             String filePath = model.getFileStoreId();
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -100,7 +102,7 @@ public class EleAttachmentRestController {
     @PostMapping(value = "/delFile")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        attachmentApi.delFile(tenantId, ids);
+        eleAttachmentApi.delFile(tenantId, ids);
         return Y9Result.successMsg("删除成功");
     }
 
@@ -108,32 +110,25 @@ public class EleAttachmentRestController {
      * 获取附件列表
      *
      * @param processSerialNumber 流程编号
-     * @param fileSource 文件来源
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<AttachmentModel>
+     * @param attachmentType      附件类型
+     * @return Y9Result<List < EleAttachmentModel>>
      */
-    @GetMapping(value = "/getAttachmentList")
-    public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
+    @GetMapping(value = "/list")
+    public Y9Result<List<EleAttachmentModel>> list(@RequestParam @NotBlank String processSerialNumber, @RequestParam String attachmentType) {
+        return eleAttachmentApi.findByProcessSerialNumberAndAttachmentType(Y9LoginUserHolder.getTenantId(), processSerialNumber, attachmentType);
     }
 
     /**
      * 附加打包zip下载
      *
      * @param processSerialNumber 流程编号
-     * @param fileSource 附件来源
+     * @param attachmentType      附件类型
      */
     @GetMapping(value = "/packDownload")
-    public void packDownload(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String fileSource, HttpServletResponse response, HttpServletRequest request) {
+    public void packDownload(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String attachmentType, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Y9Page<AttachmentModel> y9Page =
-                attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
-            List<AttachmentModel> list = y9Page.getRows();
+            List<EleAttachmentModel> list = eleAttachmentApi.findByProcessSerialNumberAndAttachmentType(tenantId, processSerialNumber, attachmentType).getData();
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
             String fileZip = base_name + ".zip";
@@ -146,11 +141,11 @@ public class EleAttachmentRestController {
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(zipPath));
             ZipOutputStream zos = new ZipOutputStream(bos);
             ZipEntry ze;
-            for (AttachmentModel file : list) {
-                String filename = file.getName();
-                String fileStoreId = file.getFileStoreId();
-                byte[] filebyte = y9FileStoreService.downloadFileToBytes(fileStoreId);
-                InputStream bis = new ByteArrayInputStream(filebyte);
+            for (EleAttachmentModel eleAttachmentModel : list) {
+                String filename = eleAttachmentModel.getName();
+                String fileStoreId = eleAttachmentModel.getFileStoreId();
+                byte[] fileByte = y9FileStoreService.downloadFileToBytes(fileStoreId);
+                InputStream bis = new ByteArrayInputStream(fileByte);
                 ze = new ZipEntry(filename);
                 zos.putNextEntry(ze);
                 int s;
@@ -200,34 +195,31 @@ public class EleAttachmentRestController {
     /**
      * 上传附件
      *
-     * @param file 文件
-     * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @param describes 描述
+     * @param file                文件
      * @param processSerialNumber 流程编号
-     * @param fileSource 文件来源
+     * @param attachmentType      文件来源
      * @return Y9Result<String>
      */
     @PostMapping(value = "/upload")
-    public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes,
-        @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource) {
+    public Y9Result<Object> upload(MultipartFile file, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String miJi, @RequestParam @NotBlank String attachmentType) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            if (StringUtils.isNotEmpty(describes)) {
-                describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
-            }
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
-            String fullPath =
-                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             String storeId = y9FileStore.getId();
-            String fileSize =
-                Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
-            return attachmentApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize,
-                processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
+            EleAttachmentModel eleAttachmentModel = new EleAttachmentModel();
+            eleAttachmentModel.setAttachmentType(attachmentType);
+            eleAttachmentModel.setName(originalFilename);
+            eleAttachmentModel.setMiJi(miJi);
+            eleAttachmentModel.setProcessSerialNumber(processSerialNumber);
+            eleAttachmentModel.setFileStoreId(storeId);
+            eleAttachmentModel.setUploadTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            eleAttachmentModel.setPersonId(person.getPersonId());
+            eleAttachmentModel.setPersonName(person.getName());
+            return eleAttachmentApi.saveOrUpdate(tenantId, eleAttachmentModel);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
         }
