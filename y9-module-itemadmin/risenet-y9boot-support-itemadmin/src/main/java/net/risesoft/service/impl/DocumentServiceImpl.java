@@ -645,13 +645,14 @@ public class DocumentServiceImpl implements DocumentService {
         List<Y9FormItemBind> y9FormTaskBinds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
         List<ItemFormModel> list = new ArrayList<>();
         if (!y9FormTaskBinds.isEmpty()) {
-            ItemFormModel itemFormModel = new ItemFormModel();
-            for (Y9FormItemBind eftb : y9FormTaskBinds) {
-                String formName = eftb.getFormName();
+            ItemFormModel itemFormModel;
+            for (Y9FormItemBind fib : y9FormTaskBinds) {
+                itemFormModel = new ItemFormModel();
+                String formName = fib.getFormName();
                 if (formName.contains("(")) {
                     formName = formName.substring(0, formName.indexOf("("));
                 }
-                itemFormModel.setFormId(eftb.getFormId());
+                itemFormModel.setFormId(fib.getFormId());
                 itemFormModel.setFormName(formName);
                 list.add(itemFormModel);
             }
