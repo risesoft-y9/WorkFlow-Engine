@@ -613,7 +613,7 @@ public class ButtonUtil {
                 "16", "17", "18", "19", "20", "21"};
         String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
                 "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
-        int[] buttonOrders = {3, 15, 10, 11, 1, 2, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+        int[] buttonOrders = {3, 15, 10, 11, 2, 1, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
         boolean[] isButtonShow = new boolean[buttonIds.length];
         for (int i = 0; i < buttonIds.length; i++) {
             isButtonShow[i] = false;
@@ -821,7 +821,7 @@ public class ButtonUtil {
         /*----- 上面是可以打开选人界面的发送按钮的设置 -----*/
 
         /*----- 下面是返回按钮的设置 -----*/
-        isButtonShow[2] = true;
+        isButtonShow[2] = false;
         /*----- 上面是返回按钮的设置 -----*/
 
         /*----- 下面是退回按钮的设置 -----*/
