@@ -575,7 +575,7 @@ public class ButtonUtil {
                 "16", "17", "18", "19", "20", "21"};
         String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
                 "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
-        int[] buttonOrders = {3, 15, 10, 11, 1, 2, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+        int[] buttonOrders = {3, 15, 10, 11, 2, 1, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
         boolean[] isButtonShow = new boolean[buttonIds.length];
         for (int i = 0; i < buttonIds.length; i++) {
             isButtonShow[i] = false;
@@ -594,7 +594,7 @@ public class ButtonUtil {
             isButtonShow[1] = true;
         }
         // 新建可抄送
-        isButtonShow[17] = true;
+        isButtonShow[17] = false;
         // 打印
         isButtonShow[16] = false;
         map.put("buttonIds", buttonIds);
@@ -613,7 +613,7 @@ public class ButtonUtil {
                 "16", "17", "18", "19", "20", "21"};
         String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
                 "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
-        int[] buttonOrders = {3, 15, 10, 11, 2, 1, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+        int[] buttonOrders = {3, 15, 10, 11, 2, 4, 1, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
         boolean[] isButtonShow = new boolean[buttonIds.length];
         for (int i = 0; i < buttonIds.length; i++) {
             isButtonShow[i] = false;
@@ -815,7 +815,7 @@ public class ButtonUtil {
                     (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
                             && !isButtonShow[1];
             if (b) {
-                isButtonShow[18] = true;
+                //isButtonShow[18] = true;
             }
         }
         /*----- 上面是可以打开选人界面的发送按钮的设置 -----*/
@@ -1019,7 +1019,7 @@ public class ButtonUtil {
                 && !customItem && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId)
                 || (StringUtils.isNotBlank(varsSponsorGuid) && orgUnitId.equals(varsSponsorGuid));
         if (b) {
-            isButtonShow[18] = true;
+            //isButtonShow[18] = true;
         }
         // 上面是加减签按钮
         // 打印
