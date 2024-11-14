@@ -8,9 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.platform.OrgUnit;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,19 +29,19 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.enums.ItemLeaveTypeEnum;
+import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
-import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.WorkList4GfgService;
@@ -87,7 +85,71 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final OrgUnitApi orgUnitApi;
 
     @Override
-    public Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
+        Y9Page<ActRuDetailModel> itemPage;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            itemPage = itemTodoApi.findByUserId(tenantId, positionId, queryParamModel);
+            List<ActRuDetailModel> list = itemPage.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
+            List<Map<String, Object>> items = new ArrayList<>();
+            int serialNumber = (queryParamModel.getPage() - 1) * queryParamModel.getRows();
+            Map<String, Object> mapTemp;
+            ProcessParamModel processParam;
+            String processInstanceId;
+            for (ActRuDetailModel ardModel : taslList) {
+                mapTemp = new HashMap<>(16);
+                String taskId = ardModel.getTaskId();
+                processInstanceId = ardModel.getProcessInstanceId();
+                try {
+                    String processSerialNumber = ardModel.getProcessSerialNumber();
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
+                    String taskAssignee = ardModel.getAssignee();
+                    String taskName = task.getName();
+                    int priority = task.getPriority();
+                    int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
+                    Boolean isReminder = String.valueOf(priority).contains("8");
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("number", processParam.getCustomNumber());
+                    mapTemp.put("title", processParam.getTitle());
+                    mapTemp.put("bureauName",
+                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("taskName", taskName);
+
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+
+                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
+                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
+                    String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+                    // 退回件
+                    if (Boolean.parseBoolean(rollBack)) {
+                        mapTemp.put("rollBack", true);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(queryParamModel.getPage(), itemPage.getTotalPages(), itemPage.getTotal(), items,
+                "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取待办列表失败", e);
+        }
+        return Y9Page.success(queryParamModel.getPage(), 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page,
+        Integer rows) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -95,14 +157,15 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             Y9Page<TaskModel> taskPage;
             if (StringUtils.isBlank(searchTerm)) {
-                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, page, rows);
+                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    processDefinitionKey, page, rows);
             } else {
-                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
+                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    processDefinitionKey, searchTerm, page, rows);
             }
             List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> vars;
@@ -125,13 +188,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
-                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     // 催办的时候任务的优先级+5
                     Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                    String documentTitle =
+                        StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                     String level = processParam.getCustomLevel();
                     String number = processParam.getCustomNumber();
                     mapTemp.put("itemId", itemId);
@@ -152,7 +216,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
                     mapTemp.put(SysVariables.LEVEL, level);
                     mapTemp.put(SysVariables.NUMBER, number);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
@@ -162,7 +227,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                                 mapTemp.put("isZhuBan", "true");
                             }
                         }
-                        String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(), SysVariables.NROFACTIVEINSTANCES).getData();
+                        String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(),
+                            SysVariables.NROFACTIVEINSTANCES).getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
@@ -171,7 +237,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                             mapTemp.put("isZhuBan", "");
                         }
                     }
-                    int chaosongNum = chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                    int chaosongNum = chaoSongApi
+                        .countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
                     /*
                       红黄绿灯的情况判断，这里先不考虑
@@ -192,72 +259,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> todoList(String itemId, Integer page, Integer rows) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage = itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
-            List<ActRuDetailModel> list = itemPage.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
-            List<Map<String, Object>> items = new ArrayList<>();
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            ProcessParamModel processParam;
-            String processInstanceId;
-            Map<String, Object> formData;
-            for (ActRuDetailModel ardModel : taslList) {
-                mapTemp = new HashMap<>(16);
-                String taskId = ardModel.getTaskId();
-                processInstanceId = ardModel.getProcessInstanceId();
-                try {
-                    String processSerialNumber = ardModel.getProcessSerialNumber();
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                    String taskAssignee = ardModel.getAssignee();
-                    String taskName = task.getName();
-                    int priority = task.getPriority();
-                    int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
-                    Boolean isReminder = String.valueOf(priority).contains("8");
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
-                    mapTemp.put("taskName", taskName);
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
-                    /**
-                     * 暂时取表单所有字段数据
-                     */
-                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    mapTemp.putAll(formData);
-
-                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
-                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
-                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-                    // 退回件
-                    if (Boolean.parseBoolean(rollBack)) {
-                        mapTemp.put("rollBack", true);
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
-                }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
-            }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    @Override
-    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr,
+        Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -267,12 +270,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, systemName, page, rows);
             } else {
-                itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, systemName, tableName, searchMapStr, page, rows);
+                itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, systemName, tableName,
+                    searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> vars;
@@ -302,7 +305,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
-                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -315,7 +318,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.TASKSENDER, taskSender);
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    String multiInstance = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+                    String multiInstance = processDefinitionApi
+                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
                         mapTemp.put("isZhuBan", "false");
@@ -325,7 +329,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                                 mapTemp.put("isZhuBan", "true");
                             }
                         }
-                        String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(), SysVariables.NROFACTIVEINSTANCES).getData();
+                        String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(),
+                            SysVariables.NROFACTIVEINSTANCES).getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
@@ -335,7 +340,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         }
                     }
                     mapTemp.put("isForwarding", false);
-                    TaskVariableModel taskVariableModel = taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding").getData();
+                    TaskVariableModel taskVariableModel =
+                        taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding").getData();
                     if (taskVariableModel != null) {// 是否正在发送标识
                         mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
@@ -352,15 +358,18 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }*/
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
+                    int speakInfoNum = speakInfoApi
+                        .getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
                     mapTemp.put("speakInfoNum", speakInfoNum);
                     mapTemp.put("remindSetting", false);
-                    RemindInstanceModel remindInstanceModel = remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
+                    RemindInstanceModel remindInstanceModel = remindInstanceApi
+                        .getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
 
-                    int countFollow = officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                    int countFollow =
+                        officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
@@ -382,21 +391,22 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
-        Y9Page<ActRuDetailModel> itemPage;
+    public Y9Page<Map<String, Object>> todoList(String itemId, Integer page, Integer rows) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            itemPage = itemTodoApi.findByUserId(tenantId, positionId, queryParamModel);
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            Y9Page<ActRuDetailModel> itemPage =
+                itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
-            int serialNumber = (queryParamModel.getPage() - 1) * queryParamModel.getRows();
+            int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             ProcessParamModel processParam;
             String processInstanceId;
+            Map<String, Object> formData;
             for (ActRuDetailModel ardModel : taslList) {
                 mapTemp = new HashMap<>(16);
                 String taskId = ardModel.getTaskId();
@@ -412,16 +422,20 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("number", processParam.getCustomNumber());
-                    mapTemp.put("title", processParam.getTitle());
-                    mapTemp.put("bureauName", orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName",
+                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
                     mapTemp.put("taskName", taskName);
-
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", task.getProcessDefinitionId());
                     mapTemp.put("taskId", taskId);
-                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+                    /**
+                     * 暂时取表单所有字段数据
+                     */
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    mapTemp.putAll(formData);
 
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
@@ -436,10 +450,10 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(queryParamModel.getPage(), itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败", e);
+            LOGGER.error("获取待办异常", e);
         }
-        return Y9Page.success(queryParamModel.getPage(), 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 }
