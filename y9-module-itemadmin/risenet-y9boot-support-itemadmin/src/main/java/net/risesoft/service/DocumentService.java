@@ -274,6 +274,16 @@ public interface DocumentService {
     StartProcessResultModel startProcess(String itemId, String processSerialNumber, String processDefinitionKey);
 
     /**
+     * 启动流程，用于当前人启动本租户的流程，启动者是人
+     *
+     * @param itemId               事项id
+     * @param processSerialNumber  流程编号
+     * @param processDefinitionKey 流程定义key
+     * @return
+     */
+    StartProcessResultModel startProcessByTheTaskKey(String itemId, String processSerialNumber, String processDefinitionKey,String theTaskKey);
+
+    /**
      * 启动流程，多人
      *
      * @param itemId               事项id

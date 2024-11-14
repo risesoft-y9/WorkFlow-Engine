@@ -1769,6 +1769,61 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public StartProcessResultModel startProcessByTheTaskKey(String itemId, String processSerialNumber, String processDefinitionKey,String theTaskKey) {
+        StartProcessResultModel model = null;
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            Map<String, Object> vars = new HashMap<>(16);
+            SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
+            vars.put("tenantId", tenantId);
+            vars.put("routeToTaskId", theTaskKey);
+            vars.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
+            assert item != null;
+            if (item.isShowSubmitButton()) {
+                ProcessDefinitionModel processDefinitionModel = repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
+                Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+                for (String columnName : variables.keySet()) {
+                    String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
+                    if (StringUtils.isNumeric(str)) {// 是数值
+                        if (variables.get(columnName).toString().contains(".")) {
+                            LOGGER.info("*************************startProcess_Double:" + variables.get(columnName).toString());
+                            variables.put(columnName, Double.valueOf(variables.get(columnName).toString()));
+                        } else {
+                            LOGGER.info("*************************startProcess_Integer:" + variables.get(columnName).toString());
+                            variables.put(columnName, Integer.parseInt(variables.get(columnName).toString()));
+                        }
+                    }
+                }
+                vars.putAll(variables);
+            }
+            TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+            processParam.setProcessInstanceId(task.getProcessInstanceId());
+            processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
+            processParam.setStartorName(Y9LoginUserHolder.getOrgUnit().getName());
+            processParam.setSended("true");
+            // 保存流程信息到ES
+            process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
+
+            processParamService.saveOrUpdate(processParam);
+
+            // 异步处理数据
+            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(), task.getProcessInstanceId(), processParam.getSearchTerm());
+
+            model = new StartProcessResultModel();
+            model.setProcessDefinitionId(task.getProcessDefinitionId());
+            model.setProcessInstanceId(task.getProcessInstanceId());
+            model.setProcessSerialNumber(processSerialNumber);
+            model.setTaskId(task.getId());
+            model.setTaskDefKey(task.getTaskDefinitionKey());
+        } catch (Exception e) {
+            LOGGER.error("启动流程失败！", e);
+        }
+        return model;
+    }
+
+    @Override
     public StartProcessResultModel startProcess(String itemId, String processSerialNumber, String processDefinitionKey, String userIds) {
         StartProcessResultModel model = null;
         try {

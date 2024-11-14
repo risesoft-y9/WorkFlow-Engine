@@ -390,6 +390,29 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
+     * 启动流程
+     *
+     * @param tenantId             租户id
+     * @param orgUnitId            人员、岗位id
+     * @param itemId               事项id
+     * @param processSerialNumber  流程编号
+     * @param processDefinitionKey 流程定义key
+     * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
+                                                          @RequestParam String itemId, @RequestParam String processSerialNumber,
+                                                          @RequestParam String processDefinitionKey,@RequestParam String theTaskKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        StartProcessResultModel model = documentService.startProcessByTheTaskKey(itemId, processSerialNumber, processDefinitionKey,theTaskKey);
+        return Y9Result.success(model);
+    }
+
+    /**
      * 启动流程（多人）
      *
      * @param tenantId             租户id

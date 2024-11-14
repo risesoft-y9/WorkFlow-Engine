@@ -54,7 +54,7 @@ public interface DocumentApi {
      */
     @GetMapping("/addWithStartTaskDefKey")
     Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-                                                   @RequestParam("itemId") String itemId, @RequestParam("startTaskDefKey") String startTaskDefKey, @RequestParam("mobile") boolean mobile);
+                                                         @RequestParam("itemId") String itemId, @RequestParam("startTaskDefKey") String startTaskDefKey, @RequestParam("mobile") boolean mobile);
 
     /**
      * 办件办结
@@ -278,6 +278,25 @@ public interface DocumentApi {
                                                    @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
                                                    @RequestParam("processSerialNumber") String processSerialNumber,
                                                    @RequestParam("processDefinitionKey") String processDefinitionKey) throws Exception;
+
+    /**
+     * 启动流程
+     *
+     * @param tenantId             租户id
+     * @param orgUnitId            人员、岗位id
+     * @param itemId               事项id
+     * @param processSerialNumber  流程编号
+     * @param processDefinitionKey 流程定义key
+     * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @PostMapping("/startProcessByTaskKey")
+    Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam("tenantId") String tenantId,
+                                                               @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
+                                                               @RequestParam("processSerialNumber") String processSerialNumber,
+                                                               @RequestParam("processDefinitionKey") String processDefinitionKey,
+                                                               @RequestParam("theTaskKey") String theTaskKey) throws Exception;
 
     /**
      * 启动流程，多人
