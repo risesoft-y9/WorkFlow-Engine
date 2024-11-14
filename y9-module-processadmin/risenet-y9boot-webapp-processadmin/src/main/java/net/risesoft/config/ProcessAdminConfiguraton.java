@@ -1,6 +1,5 @@
 package net.risesoft.config;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -21,7 +20,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -36,14 +34,12 @@ import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
-import net.risesoft.filter.RemoveUrlJsessionIdFilter;
 import net.risesoft.liquibase.LiquibaseUtil;
 import net.risesoft.listener.FlowableMultiTenantListener;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 import net.risesoft.y9.configuration.feature.liquibase.Y9LiquibaseProperties;
-import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 
@@ -63,10 +59,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     private final Environment environment;
 
-    private final Y9Properties y9config;
-
-    Y9SsoClientProperties configProps;
-
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/", "/main/index");
@@ -85,11 +77,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean
     public FlowableMultiTenantListener flowableMultiTenantListener() {
         return new FlowableMultiTenantListener();
-    }
-
-    @PostConstruct
-    public void init() {
-        configProps = y9config.getFeature().getSso();
     }
 
     @Bean(name = {"jdbcTemplate4Public"})
@@ -120,20 +107,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
         filterBean.setAsyncSupported(false);
         filterBean.setOrder(50);
         filterBean.addUrlPatterns("/*");
-        return filterBean;
-    }
-
-    @Bean
-    public FilterRegistrationBean<RemoveUrlJsessionIdFilter> removeUrlJsessionIdFilter() {
-        final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean = new FilterRegistrationBean<>();
-        filterBean.setFilter(new RemoveUrlJsessionIdFilter());
-        filterBean.setAsyncSupported(false);
-        filterBean.addUrlPatterns("/*");
-        if (this.configProps.getSingleSignOutFilterOrder() != null) {
-            filterBean.setOrder(this.configProps.getSingleSignOutFilterOrder());
-        } else {
-            filterBean.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-        }
         return filterBean;
     }
 
