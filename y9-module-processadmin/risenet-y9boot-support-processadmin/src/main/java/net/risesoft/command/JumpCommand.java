@@ -8,6 +8,8 @@ import java.util.Map;
 import org.flowable.bpmn.model.Activity;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.Process;
+import org.flowable.bpmn.model.SubProcess;
+import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
 import org.flowable.engine.FlowableEngineAgenda;
@@ -79,6 +81,34 @@ public class JumpCommand implements Command<Void> {
          * 获取当前节点信息
          */
         Activity flowElement = (Activity)process.getFlowElement(taskEntity.getTaskDefinitionKey());
+
+        // 子流程内部节点处理
+        boolean isSubProcessNode = false; // 是否是子流程节点
+        if (flowElement == null) {// 子流程内部节点
+            for (FlowElement flowElement0 : process.getFlowElements()) {
+                if (flowElement != null) {
+                    break;
+                }
+                if (flowElement0 instanceof SubProcess) {
+                    SubProcess subProcess = (SubProcess)flowElement0;
+                    for (FlowElement flowElement1 : subProcess.getFlowElements()) {
+                        if (flowElement1 instanceof UserTask) {
+                            UserTask userTask = (UserTask)flowElement1;
+                            if (userTask.getId().equals(taskEntity.getTaskDefinitionKey())) {
+                                flowElement = (Activity)flowElement1;
+                                isSubProcessNode = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            // 父节点是子流程
+            if (flowElement.getParentContainer() != null && flowElement.getParentContainer() instanceof SubProcess) {
+                isSubProcessNode = true;
+            }
+        }
         Object currentBehavior = flowElement.getBehavior();
         /**
          * 根据是否是多实例，执行对应的跳转操作,多实例，一定存在parentExecutionEntity
@@ -108,6 +138,36 @@ public class JumpCommand implements Command<Void> {
          */
         FlowElement targetFlowElement = process.getFlowElement(targetNodeId);
 
+        // 子流程内部节点处理
+        if (targetFlowElement == null) {// 目标节点是子流程内部节点
+            for (FlowElement flowElement0 : process.getFlowElements()) {
+                if (targetFlowElement != null) {
+                    break;
+                }
+                if (flowElement0 instanceof SubProcess) {
+                    SubProcess subProcess = (SubProcess)flowElement0;
+                    for (FlowElement flowElement1 : subProcess.getFlowElements()) {
+                        if (flowElement1 instanceof UserTask) {
+                            UserTask userTask = (UserTask)flowElement1;
+                            if (userTask.getId().equals(targetNodeId)) {
+                                targetFlowElement = flowElement1;
+                                if (!isSubProcessNode) {// 当前节点不是子流程节点
+                                    targetFlowElement = subProcess;// 不是子流程节点，重定向到子流程内的节点，先重定向到子流程，再重定向到目标节点
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            // 父节点是子流程
+            if (targetFlowElement.getParentContainer() != null
+                && targetFlowElement.getParentContainer() instanceof SubProcess && !isSubProcessNode) {
+                targetFlowElement = (FlowElement)targetFlowElement.getParentContainer();
+            }
+        }
+
         /**
          * 设置新任务的发送人和办理人-开始
          */
@@ -119,6 +179,7 @@ public class JumpCommand implements Command<Void> {
         if (users.size() == 1) {
             user = users.get(0);
         }
+        vars.put("elementUser", user);// 重定向到子流程内的节点
         vars.put(SysVariables.USER, user);
         vars.put(SysVariables.USERS, users);
         /**

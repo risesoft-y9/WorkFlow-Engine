@@ -407,6 +407,40 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 } else {
                     feModel.setMultiInstance(SysVariables.COMMON);
                 }
+            } else if (activity instanceof SubProcess) {
+                feModel.setType("SubProcess");
+                feModel.setMultiInstance(SysVariables.COMMON);
+                SubProcess subProcess = (SubProcess)activity;
+                if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                    feModel.setMultiInstance(SysVariables.PARALLEL);
+                } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                    feModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                }
+                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
+                List<FlowElement> subProcessListCache = (List<FlowElement>)subProcess.getFlowElements();
+                List<FlowElement> subProcessList = new ArrayList<>();
+                if (!subProcessListCache.isEmpty()) {
+                    subProcessList.addAll(subProcessListCache);
+                }
+                subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
+                    || e instanceof SequenceFlow);
+                for (FlowElement subProcessFe : subProcessList) {
+                    FlowElementModel targetModel1 = new FlowElementModel();
+                    targetModel1.setElementKey(subProcessFe.getId());
+                    targetModel1.setElementName(subProcessFe.getName());
+                    if (subProcessFe instanceof UserTask) {
+                        targetModel1.setType("UserTask");
+                        UserTask userTask = (UserTask)subProcessFe;
+                        if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                            targetModel1.setMultiInstance(SysVariables.SEQUENTIAL);
+                        } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                            targetModel1.setMultiInstance(SysVariables.PARALLEL);
+                        } else {
+                            targetModel1.setMultiInstance(SysVariables.COMMON);
+                        }
+                    }
+                    list.add(targetModel1);
+                }
             }
             if (activity.getName() != null && !activity.getName().isEmpty() && activity.getId() != null
                 && !activity.getId().isEmpty()) {
@@ -462,8 +496,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 }
                 // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
                 List<FlowElement> subProcessListCache = (List<FlowElement>)subProcess.getFlowElements();
-                List<FlowElement> subProcessList=new ArrayList<>();
-                if(!subProcessListCache.isEmpty()){
+                List<FlowElement> subProcessList = new ArrayList<>();
+                if (!subProcessListCache.isEmpty()) {
                     subProcessList.addAll(subProcessListCache);
                 }
                 subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
@@ -614,7 +648,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             targetModel.setTaskDefName(fe.getName());
                         }
                         targetModel.setRealTaskDefName(fe.getName());
-                        targetNodes.add(targetModel);
                         if (fe instanceof UserTask) {
                             UserTask userTask = (UserTask)fe;
                             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
@@ -634,6 +667,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                 targetModel.setMultiInstance(SysVariables.COMMON);
                             }
                         }
+                        targetNodes.add(targetModel);
                     }
                 } else {
                     for (SequenceFlow tr : list) {
