@@ -32,7 +32,6 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 import net.risesoft.y9.configuration.feature.liquibase.Y9LiquibaseProperties;
-import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 
@@ -52,10 +51,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     private final Environment environment;
 
-    private final Y9Properties y9config;
-
-    Y9SsoClientProperties configProps;
-
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/", "/main/index");
@@ -64,11 +59,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean
     public FlowableMultiTenantListener flowableMultiTenantListener() {
         return new FlowableMultiTenantListener();
-    }
-
-    @PostConstruct
-    public void init() {
-        configProps = y9config.getFeature().getSso();
     }
 
     @Bean(name = {"jdbcTemplate4Public"})
@@ -91,7 +81,6 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
         filterBean.addUrlPatterns("/*");
         return filterBean;
     }
-
     @Bean
     public Y9Context y9Context() {
         return new Y9Context();
