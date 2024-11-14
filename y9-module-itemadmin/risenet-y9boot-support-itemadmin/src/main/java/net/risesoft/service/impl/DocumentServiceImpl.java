@@ -660,6 +660,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
         model.setFormList(list);
         model.setShowOtherFlag(showOtherFlag);
+        model.setShowOpinionTab(false);
         return model;
     }
 
