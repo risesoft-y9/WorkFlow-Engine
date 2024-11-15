@@ -487,6 +487,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     targetModel.setMultiInstance(SysVariables.COMMON);
                 }
             } else if (activity instanceof SubProcess) {
+                targetModel.setTaskDefName(activity.getName()+"【子】");
                 targetModel.setMultiInstance(SysVariables.COMMON);
                 SubProcess subProcess = (SubProcess)activity;
                 if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
@@ -503,20 +504,20 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
                     || e instanceof SequenceFlow);
                 for (FlowElement subProcessFe : subProcessList) {
-                    TargetModel targetModel1 = new TargetModel();
-                    targetModel1.setTaskDefKey(subProcessFe.getId());
-                    targetModel1.setTaskDefName(subProcessFe.getName());
+                    TargetModel subTargetModel = new TargetModel();
+                    subTargetModel.setTaskDefKey(subProcessFe.getId());
+                    subTargetModel.setTaskDefName(subProcessFe.getName()+"[子]");
                     if (subProcessFe instanceof UserTask) {
                         UserTask userTask = (UserTask)subProcessFe;
                         if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                            targetModel1.setMultiInstance(SysVariables.SEQUENTIAL);
+                            subTargetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                         } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                            targetModel1.setMultiInstance(SysVariables.PARALLEL);
+                            subTargetModel.setMultiInstance(SysVariables.PARALLEL);
                         } else {
-                            targetModel1.setMultiInstance(SysVariables.COMMON);
+                            subTargetModel.setMultiInstance(SysVariables.COMMON);
                         }
                     }
-                    list.add(targetModel1);
+                    list.add(subTargetModel);
                 }
             }
             // if (!(activity instanceof SubProcess)) {// 子流程不加入list
