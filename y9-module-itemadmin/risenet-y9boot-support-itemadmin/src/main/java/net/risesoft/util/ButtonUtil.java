@@ -1032,4 +1032,48 @@ public class ButtonUtil {
         map.put("buttonOrders", buttonOrders);
         return map;
     }
+
+    public Map<String, Object> showButton4Doing(String itemId, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        Map<String, Object> map = new HashMap<>(16);
+        String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
+                "16", "17", "18", "19", "20", "21"};
+        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "取回",
+                "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
+        int[] buttonOrders = {3, 15, 10, 11, 1, 2, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+        boolean[] isButtonShow = new boolean[buttonIds.length];
+        for (int i = 0; i < buttonIds.length; i++) {
+            isButtonShow[i] = false;
+        }
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        Map<String, Object> vars;
+        String taskSenderId = "";
+        if (task != null) {
+            vars = variableApi.getVariables(tenantId, taskId).getData();
+            taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
+        }
+        // 在办情况下，收回按钮默认为不显示，当配置了收回按钮时，且当前节点的下一个节点满足回收的条件时才显示回收按钮
+        isButtonShow[12] = false;
+        String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+        String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+        String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+        // 下面是收回按钮
+        if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
+                && rollbackObj == null && repositionObj == null) {
+            isButtonShow[12] = true;
+        }
+        // 上面是收回按钮
+        //返回
+        isButtonShow[2] = false;
+        // 抄送
+        isButtonShow[17] = false;
+        // 打印
+        isButtonShow[16] = false;
+        map.put("buttonIds", buttonIds);
+        map.put("buttonNames", buttonNames);
+        map.put("isButtonShow", isButtonShow);
+        map.put("buttonOrders", buttonOrders);
+
+        return map;
+    }
 }

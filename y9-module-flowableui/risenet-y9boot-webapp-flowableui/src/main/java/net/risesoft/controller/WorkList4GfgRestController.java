@@ -56,15 +56,13 @@ public class WorkList4GfgRestController {
      * 获取在办件列表
      *
      * @param itemId 事项id
-     * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/doingList")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return doingService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
+    public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId,@RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.doingList(itemId, page, rows);
     }
 
     /**

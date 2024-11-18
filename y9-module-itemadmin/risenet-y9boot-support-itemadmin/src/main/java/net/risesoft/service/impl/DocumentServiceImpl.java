@@ -443,6 +443,44 @@ public class DocumentServiceImpl implements DocumentService {
         return model;
     }
 
+    @Override
+    public DocumentDetailModel editDoing(String processInstanceId, boolean mobile) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "",itemId="";
+        String startor;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        model.setMeeting(false);
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        startor = processParam.getStartor();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+        processDefinitionId = hpi.getProcessDefinitionId();
+        processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+        assert officeDoneInfo != null;
+        processSerialNumber = processParam.getProcessSerialNumber();
+        itemId=processParam.getItemId();
+
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        TaskModel taskTemp = taskList.get(0);
+        taskDefinitionKey = taskTemp.getTaskDefinitionKey();
+        model.setTitle(processParam.getTitle());
+        model.setStartor(startor);
+        model.setItembox(ItemBoxTypeEnum.DOING.getValue());
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setProcessDefinitionKey(processDefinitionKey);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId(processInstanceId);
+        model.setTaskDefKey(taskDefinitionKey);
+        model.setTaskId(taskTemp.getId());
+        model.setActivitiUser(activitiUser);
+        model.setItemId(itemId);
+
+        model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = this.menuControl4Doing(itemId, processDefinitionId, taskDefinitionKey, taskTemp.getId(), model);
+        return model;
+    }
+
     /*
      * Description:
      *
@@ -1299,6 +1337,31 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public DocumentDetailModel menuControl4Doing(String itemId, String processDefinitionId, String taskDefKey, String taskId, DocumentDetailModel model) {
+        ButtonUtil buttonUtil = new ButtonUtil();
+        Map<String, Object> map = buttonUtil.showButton4Doing(itemId, taskId);
+        String[] buttonIds = (String[]) map.get("buttonIds");
+        String[] buttonNames = (String[]) map.get("buttonNames");
+        String sponsorHandle = (String) map.get("sponsorHandle");
+        int[] buttonOrders = (int[]) map.get("buttonOrders");
+        boolean[] isButtonShow = (boolean[]) map.get("isButtonShow");
+        List<ItemButtonModel> buttonList = new ArrayList<>();
+        // 生成按钮数组
+        for (int i = buttonOrders.length - 1; i >= 0; i--) {
+            int k = buttonOrders[i] - 1;
+            if (k != 1 && isButtonShow[k]) {
+                buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
+            }
+        }
+        model.setButtonList(buttonList);
+        model.setSponsorHandle(sponsorHandle);
+        model.setLastPerson4RefuseClaim(map.get("isLastPerson4RefuseClaim") != null ? (Boolean) map.get("isLastPerson4RefuseClaim") : false);
+        model.setMultiInstance(map.get("multiInstance") != null ? (String) map.get("multiInstance") : "");
+        model.setNextNode(map.get("nextNode") != null ? (Boolean) map.get("nextNode") : false);
+        return model;
+    }
+
+    @Override
     public List<String> parseUserChoice(String userChoice) {
         String users = "";
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -1769,7 +1832,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public StartProcessResultModel startProcessByTheTaskKey(String itemId, String processSerialNumber, String processDefinitionKey,String theTaskKey) {
+    public StartProcessResultModel startProcessByTheTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String theTaskKey) {
         StartProcessResultModel model = null;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
