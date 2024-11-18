@@ -580,11 +580,11 @@ public class ButtonUtil {
             isButtonShow[i] = false;
         }
         //返回
-        isButtonShow[2] = true;
+        isButtonShow[2] = false;
         //恢复待办
-        isButtonShow[19] = true;
+        isButtonShow[19] = false;
         // 打印
-        isButtonShow[16] = true;
+        isButtonShow[16] = false;
         map.put("buttonIds", buttonIds);
         map.put("buttonNames", buttonNames);
         map.put("isButtonShow", isButtonShow);
