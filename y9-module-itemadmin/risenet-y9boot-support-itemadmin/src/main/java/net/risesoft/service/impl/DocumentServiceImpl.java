@@ -481,6 +481,42 @@ public class DocumentServiceImpl implements DocumentService {
         return model;
     }
 
+    @Override
+    public DocumentDetailModel editDone(String processInstanceId, boolean mobile) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "",itemId="";
+        String startor;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        startor = processParam.getStartor();
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+        if (officeDoneInfo == null) {
+            String year = processParam.getCreateTime().substring(0, 4);
+            HistoricProcessInstanceModel hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+            processDefinitionId = hpi.getProcessDefinitionId();
+            processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+        } else {
+            processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+            processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
+        }
+        processSerialNumber = processParam.getProcessSerialNumber();
+        itemId=processParam.getItemId();
+        model.setTitle(processParam.getTitle());
+        model.setStartor(startor);
+        model.setItembox(ItemBoxTypeEnum.DOING.getValue());
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setProcessDefinitionKey(processDefinitionKey);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId(processInstanceId);
+        model.setActivitiUser(activitiUser);
+        model.setItemId(itemId);
+
+        model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = this.menuControl4Done(itemId, processDefinitionId, taskDefinitionKey,model);
+        return model;
+    }
+
     /*
      * Description:
      *
@@ -1358,6 +1394,26 @@ public class DocumentServiceImpl implements DocumentService {
         model.setLastPerson4RefuseClaim(map.get("isLastPerson4RefuseClaim") != null ? (Boolean) map.get("isLastPerson4RefuseClaim") : false);
         model.setMultiInstance(map.get("multiInstance") != null ? (String) map.get("multiInstance") : "");
         model.setNextNode(map.get("nextNode") != null ? (Boolean) map.get("nextNode") : false);
+        return model;
+    }
+
+    @Override
+    public DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey,DocumentDetailModel model) {
+        ButtonUtil buttonUtil = new ButtonUtil();
+        Map<String, Object> map = buttonUtil.showButton4Done(itemId);
+        String[] buttonIds = (String[]) map.get("buttonIds");
+        String[] buttonNames = (String[]) map.get("buttonNames");
+        int[] buttonOrders = (int[]) map.get("buttonOrders");
+        boolean[] isButtonShow = (boolean[]) map.get("isButtonShow");
+        List<ItemButtonModel> buttonList = new ArrayList<>();
+        // 生成按钮数组
+        for (int i = buttonOrders.length - 1; i >= 0; i--) {
+            int k = buttonOrders[i] - 1;
+            if (k != 1 && isButtonShow[k]) {
+                buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
+            }
+        }
+        model.setButtonList(buttonList);
         return model;
     }
 

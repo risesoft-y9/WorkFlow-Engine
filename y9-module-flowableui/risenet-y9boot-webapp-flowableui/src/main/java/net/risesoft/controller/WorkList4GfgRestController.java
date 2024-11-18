@@ -83,15 +83,14 @@ public class WorkList4GfgRestController {
      * 获取办结件列表
      *
      * @param itemId 事项id
-     * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/doneList")
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return doneService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
+         @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.doneList(itemId, page, rows);
     }
 
     /**
