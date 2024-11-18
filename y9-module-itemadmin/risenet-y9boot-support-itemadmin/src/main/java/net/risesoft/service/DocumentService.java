@@ -81,6 +81,15 @@ public interface DocumentService {
     DocumentDetailModel editTodo(String taskId, boolean mobile);
 
     /**
+     * Description: 办件办理
+     *
+     * @param processInstanceId 流程实例id
+     * @param mobile
+     * @return
+     */
+    DocumentDetailModel editDoing(String processInstanceId, boolean mobile);
+
+    /**
      * Description: 发送
      *
      * @param taskId        任务id
@@ -183,6 +192,19 @@ public interface DocumentService {
      * @return
      */
     DocumentDetailModel menuControl4Todo(String itemId, String processDefinitionId, String taskDefKey, String taskId, DocumentDetailModel model);
+
+    /**
+     * Description: 获取菜单
+     *
+     * @param itemId              事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey
+     * @param taskId              任务id
+     * @param model
+     * @return
+     */
+    DocumentDetailModel menuControl4Doing(String itemId, String processDefinitionId, String taskDefKey, String taskId, DocumentDetailModel model);
+
 
     /**
      * Description: 解析工作流发送时用户选取的人员

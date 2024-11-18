@@ -189,18 +189,37 @@ public class Document4GfgRestController {
     /**
      * 获取编辑办件数据
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/editTodo")
     public Y9Result<DocumentDetailModel> editTodo(
             @RequestParam @NotBlank String taskId) {
         try {
-            if(null==taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId)){
+            if (null == taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId)) {
                 return Y9Result.failure("当前待办已处理！");
             }
             DocumentDetailModel model = documentApi.editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    taskId,false).getData();
+                    taskId, false).getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取编辑办件数据
+     *
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/editDoing")
+    public Y9Result<DocumentDetailModel> editDoing(
+                                             @RequestParam @NotBlank String processInstanceId) {
+        try {
+            DocumentDetailModel model = documentApi.editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                    processInstanceId, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -471,18 +490,18 @@ public class Document4GfgRestController {
     /**
      * 获取主办司局（暂时取组织下的部门）
      *
-     * @return Y9Result<List<Department>>
+     * @return Y9Result<List < Department>>
      */
     @GetMapping(value = "/getBureau")
     public Y9Result<List<Department>> getBureau() {
-        Organization organization=orgUnitApi.getOrganization(Y9LoginUserHolder.getTenantId(),Y9LoginUserHolder.getPersonId()).getData();
+        Organization organization = orgUnitApi.getOrganization(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId()).getData();
         return departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), organization.getId());
     }
 
     /**
      * 获取事项系统
      *
-     * @return Y9Result<List<ItemSystemListModel>>
+     * @return Y9Result<List < ItemSystemListModel>>
      */
     @GetMapping(value = "/getItemSystem")
     public Y9Result<List<ItemSystemListModel>> getItemSystem() {

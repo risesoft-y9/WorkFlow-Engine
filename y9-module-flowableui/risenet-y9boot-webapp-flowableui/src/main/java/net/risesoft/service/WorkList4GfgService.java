@@ -11,23 +11,42 @@ public interface WorkList4GfgService {
     /**
      * 获取待办列表
      *
-     * @param itemId     事项Id
-     * @param searchTerm 搜索词
-     * @param page       页数
-     * @param rows       行数
-     * @return Map<String, Object>
-     */
-    Y9Page<Map<String, Object>> page4MobileByItemIdAndSearchTerm(String itemId, String searchTerm, Integer page, Integer rows);
-
-    /**
-     * 获取待办列表
-     *
      * @param itemId 事项Id
      * @param page   页数
      * @param rows   行数
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> todoList(String itemId, Integer page, Integer rows);
+
+    /**
+     * 获取在办列表
+     *
+     * @param itemId 事项Id
+     * @param page   页数
+     * @param rows   行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> doingList(String itemId, Integer page, Integer rows);
+
+    /**
+     * 获取在办列表
+     *
+     * @param itemId 事项Id
+     * @param page   页数
+     * @param rows   行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows);
+
+    /**
+     * 获取在办列表
+     *
+     * @param itemId 事项Id
+     * @param page   页数
+     * @param rows   行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> deleteList(String itemId, Integer page, Integer rows);
 
     /**
      * 待办列表
