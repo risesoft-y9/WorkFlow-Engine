@@ -123,7 +123,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newpp.setProcessSerialNumber(processParam.getProcessSerialNumber());
         newpp.setSystemName(processParam.getSystemName());
         newpp.setSystemCnName(processParam.getSystemCnName());
-        newpp.setTitle(processParam.getTitle());
+        newpp.setTitle(StringUtils.isBlank(processParam.getTitle())?"暂无标题":processParam.getTitle());
         newpp.setSearchTerm(processParam.getSearchTerm());
         newpp.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
         newpp.setIsSendSms(processParam.getIsSendSms());
