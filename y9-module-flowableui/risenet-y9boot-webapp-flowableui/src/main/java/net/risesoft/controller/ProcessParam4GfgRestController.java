@@ -41,7 +41,7 @@ public class ProcessParam4GfgRestController {
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String theTaskKey, @RequestParam(required = false) String processInstanceId,
-        @RequestParam @NotBlank String documentTitle, @RequestParam(required = false) String number,
+        @RequestParam (required = false) String documentTitle, @RequestParam(required = false) String number,
         @RequestParam(required = false) String level, @RequestParam(required = false) Boolean customItem) {
         return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number,
             level, customItem,theTaskKey);

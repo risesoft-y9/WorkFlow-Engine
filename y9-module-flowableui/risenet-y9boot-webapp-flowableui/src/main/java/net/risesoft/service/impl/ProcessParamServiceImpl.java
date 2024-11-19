@@ -98,7 +98,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             pp.setProcessSerialNumber(processSerialNumber);
             pp.setSystemName(item.getSystemName());
             pp.setSystemCnName(item.getSysLevel());
-            pp.setTitle(documentTitle);
+            pp.setTitle(StringUtils.isBlank(documentTitle)?"暂无标题":documentTitle);
             pp.setSponsorGuid(processParamModel != null ? processParamModel.getSponsorGuid() : "");
             pp.setSended(processParamModel != null ? processParamModel.getSended() : "");
             pp.setStartor(processParamModel != null ? processParamModel.getStartor() : "");
