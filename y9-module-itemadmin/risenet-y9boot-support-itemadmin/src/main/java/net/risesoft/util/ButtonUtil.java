@@ -1,10 +1,15 @@
 package net.risesoft.util;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import net.risesoft.enums.ItemButtonTypeEnum;
+import net.risesoft.model.itemadmin.ItemButtonModel;
+import net.risesoft.model.processadmin.TargetModel;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.api.DelegationState;
 
@@ -45,6 +50,28 @@ public class ButtonUtil {
     private final CustomProcessInfoService customProcessInfoService;
     private final SpmApproveItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
+
+    private ItemButtonModel fanHui = new ItemButtonModel("03", "返回", ItemButtonTypeEnum.COMMON.getValue(), 1);
+    private ItemButtonModel teShuBanJie = new ItemButtonModel("15", "特殊办结", ItemButtonTypeEnum.COMMON.getValue(), 2);
+    private ItemButtonModel qianShou = new ItemButtonModel("10", "签收", ItemButtonTypeEnum.COMMON.getValue(), 3);
+    private ItemButtonModel cheXiaoQianShou = new ItemButtonModel("11", "撤销签收", ItemButtonTypeEnum.COMMON.getValue(), 4);
+    private ItemButtonModel baoCun = new ItemButtonModel("01", "保存", ItemButtonTypeEnum.COMMON.getValue(), 5);
+    private ItemButtonModel faSong = new ItemButtonModel("02", "发送", ItemButtonTypeEnum.COMMON.getValue(), 6);
+    private ItemButtonModel tiJIao = new ItemButtonModel("21", "提交", ItemButtonTypeEnum.COMMON.getValue(), 7);
+    private ItemButtonModel tuiHui = new ItemButtonModel("04", "退回", ItemButtonTypeEnum.COMMON.getValue(), 8);
+    private ItemButtonModel weiTuo = new ItemButtonModel("05", "委托", ItemButtonTypeEnum.COMMON.getValue(), 9);
+    private ItemButtonModel xieShang = new ItemButtonModel("06", "协商", ItemButtonTypeEnum.COMMON.getValue(), 10);
+    private ItemButtonModel wanCheng = new ItemButtonModel("07", "完成", ItemButtonTypeEnum.COMMON.getValue(), 11);
+    private ItemButtonModel songXiaYiRen = new ItemButtonModel("08", "送下一人", ItemButtonTypeEnum.COMMON.getValue(), 12);
+    private ItemButtonModel banLiWanCheng = new ItemButtonModel("09", "办理完成", ItemButtonTypeEnum.COMMON.getValue(), 13);
+    private ItemButtonModel banJie = new ItemButtonModel("12", "办结", ItemButtonTypeEnum.COMMON.getValue(), 14);
+    private ItemButtonModel jiaJianQian = new ItemButtonModel("19", "加减签", ItemButtonTypeEnum.COMMON.getValue(), 15);
+    private ItemButtonModel shouHui = new ItemButtonModel("13", "收回", ItemButtonTypeEnum.COMMON.getValue(), 16);
+    private ItemButtonModel juQian = new ItemButtonModel("14", "拒签", ItemButtonTypeEnum.COMMON.getValue(), 17);
+    private ItemButtonModel chongDingWei = new ItemButtonModel("16", "重定位", ItemButtonTypeEnum.COMMON.getValue(), 18);
+    private ItemButtonModel chaoSong = new ItemButtonModel("18", "抄送", ItemButtonTypeEnum.COMMON.getValue(), 19);
+    private ItemButtonModel huiFuDaiBan = new ItemButtonModel("20", "恢复待办", ItemButtonTypeEnum.COMMON.getValue(), 20);
+    private ItemButtonModel daYin = new ItemButtonModel("17", "打印", ItemButtonTypeEnum.COMMON.getValue(), 21);
 
     public ButtonUtil() {
         this.procInstanceRelationshipService = Y9Context.getBean(ProcInstanceRelationshipService.class);
@@ -567,32 +594,6 @@ public class ButtonUtil {
         return map;
     }
 
-    public Map<String, Object> showButton4Done(String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        Map<String, Object> map = new HashMap<>(16);
-        String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
-                "16", "17", "18", "19", "20", "21"};
-        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
-                "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
-        int[] buttonOrders = {3, 15, 10, 11, 1, 2, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
-        boolean[] isButtonShow = new boolean[buttonIds.length];
-        for (int i = 0; i < buttonIds.length; i++) {
-            isButtonShow[i] = false;
-        }
-        //返回
-        isButtonShow[2] = false;
-        //恢复待办
-        isButtonShow[19] = false;
-        // 打印
-        isButtonShow[16] = false;
-        map.put("buttonIds", buttonIds);
-        map.put("buttonNames", buttonNames);
-        map.put("isButtonShow", isButtonShow);
-        map.put("buttonOrders", buttonOrders);
-
-        return map;
-    }
-
     @SuppressWarnings({"unused"})
     public Map<String, Object> showButton4Add(String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
@@ -756,8 +757,8 @@ public class ButtonUtil {
          * 是否签收，true表示签收了，false表示没有签收 如果未签收了，除了签收、拒签、返回按钮都不显示 因此下面每个按钮都需要判断isAssignee为true还是false
          */
         boolean isAssignee = StringUtils.isNotBlank(assignee);
-        Boolean isContainEndEvent =
-                processDefinitionApi.isContainNodeType(tenantId, taskId, SysVariables.ENDEVENT).getData();
+        TargetModel endNode =
+                processDefinitionApi.getEndNode(tenantId, taskId).getData();
         // 获取某个节点除去end节点的所有的输出线路的个数
         int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
         String processDefinitionId = task.getProcessDefinitionId();
@@ -998,7 +999,9 @@ public class ButtonUtil {
         /*----- 下面是办结按钮的设置 -----*/
         // 办结
         // 当前节点的目标节点存在ENDEVENT类型节点时，显示办结按钮
-        if (isAssignee && isContainEndEvent) {
+        if (isAssignee && null != endNode) {
+            //改变办结按钮名称
+            buttonNames[11] = endNode.getTaskDefName();
             // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示办结按钮，否则不显示
             if (isParallel) {
                 ItemTaskConf itemTaskConf =
@@ -1059,18 +1062,10 @@ public class ButtonUtil {
         return map;
     }
 
-    public Map<String, Object> showButton4Doing(String itemId, String taskId) {
+    public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        Map<String, Object> map = new HashMap<>(16);
-        String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
-                "16", "17", "18", "19", "20", "21"};
-        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "取回",
-                "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
-        int[] buttonOrders = {3, 15, 10, 11, 1, 2, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
-        boolean[] isButtonShow = new boolean[buttonIds.length];
-        for (int i = 0; i < buttonIds.length; i++) {
-            isButtonShow[i] = false;
-        }
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         Map<String, Object> vars;
         String taskSenderId = "";
@@ -1078,28 +1073,26 @@ public class ButtonUtil {
             vars = variableApi.getVariables(tenantId, taskId).getData();
             taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
         }
-        // 在办情况下，收回按钮默认为不显示，当配置了收回按钮时，且当前节点的下一个节点满足回收的条件时才显示回收按钮
-        isButtonShow[12] = false;
         String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
         String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
         String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
         // 下面是收回按钮
         if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
                 && rollbackObj == null && repositionObj == null) {
-            isButtonShow[12] = true;
+            buttonModelList.add(shouHui);
         }
-        // 上面是收回按钮
-        //返回
-        isButtonShow[2] = false;
-        // 抄送
-        isButtonShow[17] = false;
-        // 打印
-        isButtonShow[16] = false;
-        map.put("buttonIds", buttonIds);
-        map.put("buttonNames", buttonNames);
-        map.put("isButtonShow", isButtonShow);
-        map.put("buttonOrders", buttonOrders);
+        buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
+        return buttonModelList;
+    }
 
-        return map;
+
+    public List<ItemButtonModel> showButton4Done(String itemId) {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(huiFuDaiBan);
+        buttonModelList.add(chaoSong);
+        buttonModelList.add(daYin);
+        buttonModelList.add(fanHui);
+        buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
+        return new ArrayList<>();
     }
 }

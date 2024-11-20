@@ -214,6 +214,18 @@ public interface ProcessDefinitionApi {
         @RequestParam("taskId") String taskId, @RequestParam("nodeType") String nodeType);
 
     /**
+     * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
+     *
+     * @param tenantId 租户Id
+     * @param taskId 任务id
+     * @return {@code Y9Result<TargetModel>} 通用请求返回对象 - data 判断结果
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getEndNode")
+    Y9Result<TargetModel> getEndNode(@RequestParam("tenantId") String tenantId,
+                                        @RequestParam("taskId") String taskId);
+
+    /**
      * 判断流程定义的节点是否是SubProcess节点
      *
      * @param tenantId 租户Id

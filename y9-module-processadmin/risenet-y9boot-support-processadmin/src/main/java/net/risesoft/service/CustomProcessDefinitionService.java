@@ -82,6 +82,14 @@ public interface CustomProcessDefinitionService {
     Boolean isContainNodeType(String taskId, String nodeType);
 
     /**
+     * 查找当前任务节点的输出的结束节点
+     *
+     * @param taskId
+     * @return
+     */
+    Y9Result<TargetModel> getEndNode(String taskId);
+
+    /**
      * 判断流程定义的节点是否是SubProcess节点
      *
      * @param processDefinitionId
