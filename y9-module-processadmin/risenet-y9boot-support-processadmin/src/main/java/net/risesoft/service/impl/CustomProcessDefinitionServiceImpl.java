@@ -299,6 +299,21 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public  Y9Result<TargetModel> getEndNode(String taskId) {
+        List<SequenceFlow> flowElements = getPvmTransitions(taskId);
+        for (SequenceFlow tr : flowElements) {
+            FlowElement flowElement = tr.getTargetFlowElement();
+            if (flowElement instanceof EndEvent) {
+                TargetModel targetModel =new TargetModel();
+                targetModel.setTaskDefName(StringUtils.isBlank(tr.getName())?flowElement.getName():tr.getName());
+                targetModel.setRealTaskDefName(flowElement.getName());
+                return Y9Result.success(targetModel);
+            }
+        }
+        return Y9Result.success();
+    }
+
+    @Override
     public Boolean isSubProcess(String processDefinitionId, String taskDefKey) {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);

@@ -1375,44 +1375,15 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDetailModel menuControl4Doing(String itemId, String processDefinitionId, String taskDefKey, String taskId, DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
-        Map<String, Object> map = buttonUtil.showButton4Doing(itemId, taskId);
-        String[] buttonIds = (String[]) map.get("buttonIds");
-        String[] buttonNames = (String[]) map.get("buttonNames");
-        String sponsorHandle = (String) map.get("sponsorHandle");
-        int[] buttonOrders = (int[]) map.get("buttonOrders");
-        boolean[] isButtonShow = (boolean[]) map.get("isButtonShow");
-        List<ItemButtonModel> buttonList = new ArrayList<>();
-        // 生成按钮数组
-        for (int i = buttonOrders.length - 1; i >= 0; i--) {
-            int k = buttonOrders[i] - 1;
-            if (k != 1 && isButtonShow[k]) {
-                buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
-            }
-        }
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Doing(itemId, taskId);
         model.setButtonList(buttonList);
-        model.setSponsorHandle(sponsorHandle);
-        model.setLastPerson4RefuseClaim(map.get("isLastPerson4RefuseClaim") != null ? (Boolean) map.get("isLastPerson4RefuseClaim") : false);
-        model.setMultiInstance(map.get("multiInstance") != null ? (String) map.get("multiInstance") : "");
-        model.setNextNode(map.get("nextNode") != null ? (Boolean) map.get("nextNode") : false);
         return model;
     }
 
     @Override
     public DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey,DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
-        Map<String, Object> map = buttonUtil.showButton4Done(itemId);
-        String[] buttonIds = (String[]) map.get("buttonIds");
-        String[] buttonNames = (String[]) map.get("buttonNames");
-        int[] buttonOrders = (int[]) map.get("buttonOrders");
-        boolean[] isButtonShow = (boolean[]) map.get("isButtonShow");
-        List<ItemButtonModel> buttonList = new ArrayList<>();
-        // 生成按钮数组
-        for (int i = buttonOrders.length - 1; i >= 0; i--) {
-            int k = buttonOrders[i] - 1;
-            if (k != 1 && isButtonShow[k]) {
-                buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
-            }
-        }
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Done(itemId);
         model.setButtonList(buttonList);
         return model;
     }

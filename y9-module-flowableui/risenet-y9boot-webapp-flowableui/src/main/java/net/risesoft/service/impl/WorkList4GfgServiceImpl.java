@@ -125,7 +125,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     int priority = task.getPriority();
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
                     mapTemp.put("title", processParam.getTitle());
@@ -295,7 +295,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     @Override
     public Y9Page<Map<String, Object>> todoList(String itemId, Integer page, Integer rows) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
@@ -322,7 +321,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     int priority = task.getPriority();
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName",
                         orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());

@@ -14,6 +14,7 @@ import java.io.Serializable;
  * @date 2024/11/01
  */
 @Data
+@NoArgsConstructor
 public class ItemButtonModel implements Serializable {
 
     private static final long serialVersionUID = -695604520841204814L;
@@ -47,5 +48,12 @@ public class ItemButtonModel implements Serializable {
         this.key = key;
         this.name = name;
         this.buttonType = buttonType;
+    }
+
+    public ItemButtonModel(String key, String name, Integer buttonType,Integer tabIndex) {
+        this.key = key;
+        this.name = name;
+        this.buttonType = buttonType;
+        this.tabIndex = tabIndex;
     }
 }
