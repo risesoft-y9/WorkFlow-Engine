@@ -15,6 +15,14 @@ import net.risesoft.pojo.Y9Result;
 public interface CustomProcessDefinitionService {
 
     /**
+     * 查找当前任务节点的输出的结束节点
+     *
+     * @param taskId
+     * @return
+     */
+    Y9Result<TargetModel> getEndNode(String taskId);
+
+    /**
      * 获取某一任务所在节点的目标是结束节点的目标节点Key,如果有多个结束节点则获取第一个
      *
      * @param taskId
@@ -56,6 +64,15 @@ public interface CustomProcessDefinitionService {
     String getStartNodeKeyByProcessDefinitionKey(String processDefinitionKey);
 
     /**
+     * 根据taskDefinitionKey获取子流程父节点
+     *
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    TargetModel getSubProcessParentNode(String processDefinitionId, String taskDefKey);
+
+    /**
      * 根据任务Id获取流程的结束节点信息
      *
      * @param taskId
@@ -80,14 +97,6 @@ public interface CustomProcessDefinitionService {
      * @return
      */
     Boolean isContainNodeType(String taskId, String nodeType);
-
-    /**
-     * 查找当前任务节点的输出的结束节点
-     *
-     * @param taskId
-     * @return
-     */
-    Y9Result<TargetModel> getEndNode(String taskId);
 
     /**
      * 判断流程定义的节点是否是SubProcess节点
