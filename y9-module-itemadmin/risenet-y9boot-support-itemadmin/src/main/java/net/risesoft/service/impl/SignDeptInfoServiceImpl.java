@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.entity.SignDeptInfo;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.repository.jpa.SignDeptInfoRepository;
 import net.risesoft.service.SignDeptInfoService;
@@ -59,6 +62,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 signDeptInfo.setOrderIndex(i + 1);
             } else {
                 signDeptInfo = new SignDeptInfo();
+                signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
                 signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
                 signDeptInfo.setOrderIndex(i + 1);
