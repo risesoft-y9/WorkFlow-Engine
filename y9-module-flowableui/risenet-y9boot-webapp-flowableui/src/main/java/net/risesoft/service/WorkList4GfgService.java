@@ -29,7 +29,7 @@ public interface WorkList4GfgService {
     Y9Page<Map<String, Object>> doingList(String itemId, Integer page, Integer rows);
 
     /**
-     * 获取在办列表
+     * 获取已办列表
      *
      * @param itemId 事项Id
      * @param page   页数
@@ -39,14 +39,14 @@ public interface WorkList4GfgService {
     Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows);
 
     /**
-     * 获取在办列表
+     * 获取回收站列表
      *
      * @param itemId 事项Id
      * @param page   页数
      * @param rows   行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> deleteList(String itemId, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> recycleList(String itemId, Integer page, Integer rows);
 
     /**
      * 待办列表

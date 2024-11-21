@@ -108,6 +108,34 @@ public class WorkList4GfgRestController {
     }
 
     /**
+     * 获取在办列表视图配置
+     *
+     * @param itemId 事项id
+     * @return Y9Result<List < ItemViewConfModel>>
+     */
+    @GetMapping(value = "/recycleViewConf")
+    public Y9Result<List<ItemViewConfModel>> recycleViewConf(@RequestParam String itemId) {
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+                .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue())
+                .getData();
+        return Y9Result.success(itemViewConfList, "获取成功");
+    }
+
+    /**
+     * 获取回收站列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/recycleList")
+    public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId,
+                                                @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.recycleList(itemId, page, rows);
+    }
+
+    /**
      * 综合查询
      *
      * @param itemId 事项id

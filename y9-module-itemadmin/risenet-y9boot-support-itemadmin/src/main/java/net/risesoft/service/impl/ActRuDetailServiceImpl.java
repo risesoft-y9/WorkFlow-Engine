@@ -140,6 +140,19 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     @Transactional
+    public boolean endByExecutionId(String executionId) {
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionId);
+        List<ActRuDetail> listTemp = new ArrayList<>();
+        for (ActRuDetail actRuDetail : list) {
+            actRuDetail.setEnded(true);
+            listTemp.add(actRuDetail);
+        }
+        actRuDetailRepository.saveAll(listTemp);
+        return true;
+    }
+
+    @Override
+    @Transactional
     public boolean endByProcessSerialNumber(String processSerialNumber) {
         List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
         List<ActRuDetail> listTemp = new ArrayList<>();
@@ -194,6 +207,14 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return actRuDetailRepository
             .findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows,
+                                                                     int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository
+                .findBySystemNameAndAssigneeAndDeletedTrue(systemName, assignee, pageable);
     }
 
     @Override
