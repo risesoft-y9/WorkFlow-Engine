@@ -69,5 +69,5 @@ public interface SignDeptInfoApi {
      */
     @PostMapping(value = "/saveSignDeptInfo")
     Y9Result<Object> saveSignDeptInfo(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
-        @RequestParam("userName") String userName);
+        @RequestParam(value = "userName", required = false) String userName);
 }

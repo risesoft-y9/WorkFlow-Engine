@@ -80,7 +80,7 @@ public class SignDept4GfgController {
      * @return Y9Result<Object>
      */
     @PostMapping(value = "/saveSignDeptInfo")
-    public Y9Result<Object> saveSignDeptInfo(@RequestParam String id, @RequestParam String userName) {
+    public Y9Result<Object> saveSignDeptInfo(@RequestParam String id, @RequestParam(required = false) String userName) {
         return signDeptInfoApi.saveSignDeptInfo(Y9LoginUserHolder.getTenantId(), id, userName);
     }
 
