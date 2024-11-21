@@ -64,4 +64,20 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
         return Y9Result.success(FlowableModelConvertUtil.historicActivityInstanceList2Model(list));
     }
 
+    /**
+     * 根据流程实例和执行id获取历史节点实例
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param executionId 执行id
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>}
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskListByExecutionId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId, @RequestParam String executionId, String year) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return customHistoricActivityService.getTaskListByExecutionId(processInstanceId, executionId, year);
+    }
+
 }

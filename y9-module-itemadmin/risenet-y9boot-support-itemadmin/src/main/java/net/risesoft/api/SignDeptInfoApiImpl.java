@@ -3,7 +3,6 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -106,8 +105,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> saveSignDeptInfo(@RequestParam String tenantId, @RequestParam String id,
-        @RequestParam String userName) {
+    public Y9Result<Object> saveSignDeptInfo(@RequestParam String tenantId, @RequestParam String id, String userName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         signDeptInfoService.saveSignDeptInfo(id, userName);
         return Y9Result.success();

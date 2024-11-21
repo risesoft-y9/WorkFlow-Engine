@@ -67,6 +67,21 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public Y9Result<TargetModel> getEndNode(String taskId) {
+        List<SequenceFlow> flowElements = getPvmTransitions(taskId);
+        for (SequenceFlow tr : flowElements) {
+            FlowElement flowElement = tr.getTargetFlowElement();
+            if (flowElement instanceof EndEvent) {
+                TargetModel targetModel = new TargetModel();
+                targetModel.setTaskDefName(StringUtils.isBlank(tr.getName()) ? flowElement.getName() : tr.getName());
+                targetModel.setRealTaskDefName(flowElement.getName());
+                return Y9Result.success(targetModel);
+            }
+        }
+        return Y9Result.success();
+    }
+
+    @Override
     public String getEndNodeKeyByTaskId(String taskId) {
         List<SequenceFlow> outTransitions = getPvmTransitions(taskId);
         for (SequenceFlow tr : outTransitions) {
@@ -253,6 +268,40 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public TargetModel getSubProcessParentNode(String processDefinitionId, String taskDefKey) {
+        TargetModel targetNode = null;
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+        List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
+        for (int i = 0; i < flowElements.size(); i++) {
+            FlowElement flowElement = flowElements.get(i);
+            if (targetNode != null) {
+                break;
+            }
+            // 如果是子流程节点
+            if (flowElement instanceof SubProcess) {
+                SubProcess subProcess = (SubProcess)flowElement;
+                for (FlowElement subfe : subProcess.getFlowElements()) {
+                    if (taskDefKey.equals(subfe.getId()) && subfe instanceof UserTask) {// 找到子流程内当前任务key,返回子流程父节点subProcess
+                        targetNode = new TargetModel();
+                        targetNode.setTaskDefKey(flowElement.getId());
+                        targetNode.setTaskDefName(flowElement.getName());
+                        if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                            targetNode.setMultiInstance(SysVariables.SEQUENTIAL);
+                        } else if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                            targetNode.setMultiInstance(SysVariables.PARALLEL);
+                        } else {
+                            targetNode.setMultiInstance(SysVariables.COMMON);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return targetNode;
+    }
+
+    @Override
     public String getTaskDefKey4EndEvent(String taskId) {
         String taskDefKey4EndEvent = "";
         HistoricTaskInstance hti = customHistoricTaskService.getById(taskId);
@@ -296,21 +345,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             }
         }
         return result;
-    }
-
-    @Override
-    public  Y9Result<TargetModel> getEndNode(String taskId) {
-        List<SequenceFlow> flowElements = getPvmTransitions(taskId);
-        for (SequenceFlow tr : flowElements) {
-            FlowElement flowElement = tr.getTargetFlowElement();
-            if (flowElement instanceof EndEvent) {
-                TargetModel targetModel =new TargetModel();
-                targetModel.setTaskDefName(StringUtils.isBlank(tr.getName())?flowElement.getName():tr.getName());
-                targetModel.setRealTaskDefName(flowElement.getName());
-                return Y9Result.success(targetModel);
-            }
-        }
-        return Y9Result.success();
     }
 
     @Override
@@ -502,7 +536,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     targetModel.setMultiInstance(SysVariables.COMMON);
                 }
             } else if (activity instanceof SubProcess) {
-                targetModel.setTaskDefName(activity.getName()+"【子】");
+                targetModel.setTaskDefName(activity.getName() + "【子】");
                 targetModel.setMultiInstance(SysVariables.COMMON);
                 SubProcess subProcess = (SubProcess)activity;
                 if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
@@ -521,7 +555,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 for (FlowElement subProcessFe : subProcessList) {
                     TargetModel subTargetModel = new TargetModel();
                     subTargetModel.setTaskDefKey(subProcessFe.getId());
-                    subTargetModel.setTaskDefName(subProcessFe.getName()+"[子]");
+                    subTargetModel.setTaskDefName(subProcessFe.getName() + "[子]");
                     if (subProcessFe instanceof UserTask) {
                         UserTask userTask = (UserTask)subProcessFe;
                         if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {

@@ -32,6 +32,17 @@ public interface ProcessDefinitionApi {
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
+     * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
+     *
+     * @param tenantId 租户Id
+     * @param taskId 任务id
+     * @return {@code Y9Result<TargetModel>} 通用请求返回对象 - data 判断结果
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getEndNode")
+    Y9Result<TargetModel> getEndNode(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+
+    /**
      * 获取某一任务所在节点的目标是结束节点的目标节点Key
      *
      * @param tenantId 租户Id
@@ -134,6 +145,19 @@ public interface ProcessDefinitionApi {
         @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
+     * 获取子流程父节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @return {@code Y9Result<TargetModel>} 通用请求返回对象 - data 节点类型
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getSubProcessParentNode")
+    Y9Result<TargetModel> getSubProcessParentNode(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+
+    /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
      *
      * @param tenantId 租户Id
@@ -214,18 +238,6 @@ public interface ProcessDefinitionApi {
         @RequestParam("taskId") String taskId, @RequestParam("nodeType") String nodeType);
 
     /**
-     * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
-     *
-     * @param tenantId 租户Id
-     * @param taskId 任务id
-     * @return {@code Y9Result<TargetModel>} 通用请求返回对象 - data 判断结果
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getEndNode")
-    Y9Result<TargetModel> getEndNode(@RequestParam("tenantId") String tenantId,
-                                        @RequestParam("taskId") String taskId);
-
-    /**
      * 判断流程定义的节点是否是SubProcess节点
      *
      * @param tenantId 租户Id
@@ -235,8 +247,8 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/isSubProcess")
-    Y9Result<Boolean> isSubProcess(@RequestParam String tenantId, @RequestParam String processDefinitionId,
-        @RequestParam String taskDefKey);
+    Y9Result<Boolean> isSubProcess(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 判断流程定义的节点是否是SubProcess内的节点
@@ -248,6 +260,6 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/isSubProcessChildNode")
-    Y9Result<Boolean> isSubProcessChildNode(@RequestParam String tenantId, @RequestParam String processDefinitionId,
-        @RequestParam String taskDefKey);
+    Y9Result<Boolean> isSubProcessChildNode(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 }
