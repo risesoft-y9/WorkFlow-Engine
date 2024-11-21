@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricActivityService;
+import net.risesoft.util.FlowableModelConvertUtil;
 
 /**
  * @author qinman
@@ -23,6 +26,23 @@ import net.risesoft.service.CustomHistoricActivityService;
 public class CustomHistoricActivityServiceImpl implements CustomHistoricActivityService {
 
     private final HistoryService historyService;
+
+    @Override
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskListByExecutionId(String processInstanceId,
+        String executionId, String year) {
+        List<HistoricActivityInstance> hisActivityList;
+        if (StringUtils.isBlank(year)) {
+            hisActivityList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
+                .executionId(executionId).orderByHistoricActivityInstanceStartTime().asc().list();
+        } else {
+            String sql = "select RES.* from ACT_HI_ACTINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '"
+                + processInstanceId + "' and RES.EXECUTION_ID_ = '" + executionId + "' order by START_TIME_ asc";
+            hisActivityList = historyService.createNativeHistoricActivityInstanceQuery().sql(sql).list();
+        }
+        List<HistoricActivityInstanceModel> modelList =
+            FlowableModelConvertUtil.historicActivityInstanceList2Model(hisActivityList);
+        return Y9Result.success(modelList);
+    }
 
     @Override
     public List<HistoricActivityInstance> listByProcessInstanceId(String processInstanceId) {

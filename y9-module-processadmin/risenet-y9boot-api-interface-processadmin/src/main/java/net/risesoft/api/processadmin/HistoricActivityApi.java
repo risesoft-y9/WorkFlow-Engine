@@ -43,4 +43,18 @@ public interface HistoricActivityApi {
         @RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam(value = "year", required = false) String year);
 
+    /**
+     * 根据流程实例和执行id获取历史节点实例
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param executionId 执行id
+     * @param year 年度
+     * @return {@code Y9Result<List<HistoricActivityInstanceModel>>}
+     * @since 9.6.6
+     */
+    @GetMapping("/getTaskListByExecutionId")
+    Y9Result<List<HistoricActivityInstanceModel>> getTaskListByExecutionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("executionId") String executionId,
+        @RequestParam(value = "year", required = false) String year);
 }
