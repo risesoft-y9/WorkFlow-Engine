@@ -63,6 +63,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
                 signDeptInfo.setOrderIndex(i + 1);
                 signDeptInfo.setDeptId(deptId);
+                signDeptInfo.setRecordTime(new Date());
                 Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
                 signDeptInfo.setDeptName(department != null ? department.getName() : "部门不存在");
                 signDeptInfo.setProcessInstanceId(processInstanceId);
