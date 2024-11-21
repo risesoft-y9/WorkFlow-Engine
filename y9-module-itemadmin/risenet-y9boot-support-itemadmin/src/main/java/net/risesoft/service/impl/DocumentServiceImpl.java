@@ -503,7 +503,7 @@ public class DocumentServiceImpl implements DocumentService {
         itemId=processParam.getItemId();
         model.setTitle(processParam.getTitle());
         model.setStartor(startor);
-        model.setItembox(ItemBoxTypeEnum.DOING.getValue());
+        model.setItembox(ItemBoxTypeEnum.DONE.getValue());
         model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
         model.setProcessSerialNumber(processSerialNumber);
         model.setProcessDefinitionKey(processDefinitionKey);
@@ -514,6 +514,42 @@ public class DocumentServiceImpl implements DocumentService {
 
         model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
         model = this.menuControl4Done(itemId, processDefinitionId, taskDefinitionKey,model);
+        return model;
+    }
+
+    @Override
+    public DocumentDetailModel editRecycle(String processInstanceId, boolean mobile) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "",itemId="";
+        String startor;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        startor = processParam.getStartor();
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+        if (officeDoneInfo == null) {
+            String year = processParam.getCreateTime().substring(0, 4);
+            HistoricProcessInstanceModel hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+            processDefinitionId = hpi.getProcessDefinitionId();
+            processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+        } else {
+            processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+            processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
+        }
+        processSerialNumber = processParam.getProcessSerialNumber();
+        itemId=processParam.getItemId();
+        model.setTitle(processParam.getTitle());
+        model.setStartor(startor);
+        model.setItembox(ItemBoxTypeEnum.RECYCLE.getValue());
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setProcessDefinitionKey(processDefinitionKey);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId(processInstanceId);
+        model.setActivitiUser(activitiUser);
+        model.setItemId(itemId);
+
+        model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = this.menuControl4Recycle(itemId, processDefinitionId, taskDefinitionKey,model);
         return model;
     }
 
@@ -1384,6 +1420,14 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey,DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
         List<ItemButtonModel> buttonList = buttonUtil.showButton4Done(itemId);
+        model.setButtonList(buttonList);
+        return model;
+    }
+
+    @Override
+    public DocumentDetailModel menuControl4Recycle(String itemId, String processDefinitionId, String taskDefKey,DocumentDetailModel model) {
+        ButtonUtil buttonUtil = new ButtonUtil();
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Recycle();
         model.setButtonList(buttonList);
         return model;
     }

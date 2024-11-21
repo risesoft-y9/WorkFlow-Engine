@@ -52,6 +52,22 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
+     * 根据执行实例id标记流程为办结状态
+     *
+     * @param tenantId 租户id
+     * @param executionId 执行实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> endByExecutionId(@RequestParam String tenantId,
+                                                   @RequestParam String executionId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        actRuDetailService.endByProcessInstanceId(executionId);
+        return Y9Result.success();
+    }
+
+    /**
      * 根据流程编号标记流程为办结状态
      *
      * @param tenantId 租户id

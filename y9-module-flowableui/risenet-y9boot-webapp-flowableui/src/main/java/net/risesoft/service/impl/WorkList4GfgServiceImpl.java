@@ -11,6 +11,7 @@ import java.util.Map;
 
 import net.risesoft.api.itemadmin.ItemDoingApi;
 import net.risesoft.api.itemadmin.ItemDoneApi;
+import net.risesoft.api.itemadmin.ItemRecycleApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.IdentityLinkModel;
@@ -86,10 +87,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
 
     private final ItemTodoApi itemTodoApi;
 
-
     private final ItemDoingApi itemDoingApi;
 
     private final ItemDoneApi itemDoneApi;
+
+    private final ItemRecycleApi itemRecycleApi;
 
     private final TaskApi taskApi;
 
@@ -551,12 +553,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> deleteList(String itemId, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> recycleList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                    itemDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                    itemRecycleApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
