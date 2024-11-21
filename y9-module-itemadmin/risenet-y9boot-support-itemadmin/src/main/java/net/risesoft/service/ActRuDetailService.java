@@ -207,6 +207,14 @@ public interface ActRuDetailService {
     boolean recoveryByProcessInstanceId(String processSerialNumber);
 
     /**
+     * 恢复流程的办理详情
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    boolean recoveryByProcessSerialNumber(String processSerialNumber);
+
+    /**
      *
      * Description: 恢复流程的办理详情
      *

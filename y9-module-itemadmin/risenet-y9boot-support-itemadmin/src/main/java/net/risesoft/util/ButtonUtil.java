@@ -596,42 +596,17 @@ public class ButtonUtil {
         return map;
     }
 
-    @SuppressWarnings({"unused"})
-    public Map<String, Object> showButton4Add(String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        Map<String, Object> map = new HashMap<>(16);
-        String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
-                "16", "17", "18", "19", "20", "21"};
-        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
-                "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
-        int[] buttonOrders = {3, 15, 10, 11, 2, 1, 21, 4, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
-        boolean[] isButtonShow = new boolean[buttonIds.length];
-        for (int i = 0; i < buttonIds.length; i++) {
-            isButtonShow[i] = false;
-        }
-        Map<String, Object> vars = new HashMap<>(16);
-        String varsUser = "";
-        String taskSenderId = "";
-        List<String> varsUsers = new ArrayList<>();
-        String varsSponsorGuid = "";
+    public List<ItemButtonModel> showButton4Add(String itemId) {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(baoCun);
         SpmApproveItem item = itemService.findById(itemId);
         boolean showSubmitButton = item.isShowSubmitButton();
-        isButtonShow[0] = true;
         if (showSubmitButton) {
-            isButtonShow[20] = true;
+            buttonModelList.add(tiJIao);
         } else {
-            isButtonShow[1] = true;
+            buttonModelList.add(faSong);
         }
-        // 新建可抄送
-        isButtonShow[17] = false;
-        // 打印
-        isButtonShow[16] = false;
-        map.put("buttonIds", buttonIds);
-        map.put("buttonNames", buttonNames);
-        map.put("isButtonShow", isButtonShow);
-        map.put("buttonOrders", buttonOrders);
-
-        return map;
+        return buttonModelList;
     }
 
 

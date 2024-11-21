@@ -1,11 +1,17 @@
 package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.processadmin.HistoricProcessApi;
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +59,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
+    private final ActRuDetailApi actRuDetailApi;
+
+    private final HistoricProcessApi historicProcessApi;
+
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -72,8 +82,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         documentApi.complete(tenantId, positionId, taskId);
 
         boolean isSubProcessChildNode = processDefinitionApi
-            .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
-            .getData();
+                .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+                .getData();
         if (isSubProcessChildNode) {// 子流程办结，不更新自定义历程信息
             return;
         }
@@ -130,17 +140,17 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
                 ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
             HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi
-                .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
+                    .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             /*
               2、添加流程的历程
@@ -174,5 +184,64 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             LOGGER.error("runtimeApi resumeToDo error", e);
             throw new Exception("runtimeApi resumeToDo error");
         }
+    }
+
+    @Override
+    public Y9Result<String> deleteTodos(String[] taskIdAndProcessSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        int total = taskIdAndProcessSerialNumbers.length;
+        AtomicInteger success = new AtomicInteger();
+        AtomicInteger error = new AtomicInteger();
+        List<TargetModel> nodeList = new ArrayList<>();
+        for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
+            try {
+                String[] tpArr = taskIdAndProcessSerialNumber.split(":");
+                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+                if (null == task) {
+                    error.getAndIncrement();
+                    continue;
+                }
+                if (nodeList.isEmpty()) {
+                    String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
+                    nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode).getData();
+                }
+                boolean canDelete = nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
+                if (canDelete) {
+                    actRuDetailApi.deleteByProcessSerialNumber(tenantId, tpArr[1]);
+                    success.getAndIncrement();
+                } else {
+                    error.getAndIncrement();
+                }
+                //TODO 删除第三方统一待办
+            } catch (Exception e) {
+                error.getAndIncrement();
+                e.printStackTrace();
+            }
+        }
+        return Y9Result.successMsg("成功删除" + success.get() + "条，失败" + error.get() + "条，共" + total + "条");
+    }
+
+    @Override
+    public Y9Result<String> recoverTodos(String[] processSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        for (String processSerialNumber : processSerialNumbers) {
+            actRuDetailApi.recoveryByProcessSerialNumber(tenantId, processSerialNumber);
+            //TODO 删除第三方统一待办
+        }
+        return Y9Result.successMsg("成功恢复" + processSerialNumbers.length + "条待办");
+    }
+
+    @Override
+    public Y9Result<String> removeTodos(String[] processSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ProcessParamModel processParamModel;
+        for (String processSerialNumber : processSerialNumbers) {
+            actRuDetailApi.removeByProcessSerialNumber(tenantId, processSerialNumber);
+            processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            // 删除流程实例
+            historicProcessApi.deleteProcessInstance(tenantId, processParamModel.getProcessInstanceId());
+            // TODO 删除业务数据
+        }
+        return Y9Result.successMsg("成功删除" + processSerialNumbers.length + "条待办");
     }
 }

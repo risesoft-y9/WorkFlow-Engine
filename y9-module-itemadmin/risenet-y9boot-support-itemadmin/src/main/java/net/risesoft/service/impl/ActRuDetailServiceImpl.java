@@ -279,6 +279,19 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     @Transactional
+    public boolean recoveryByProcessSerialNumber(String processSerialNumber) {
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
+        List<ActRuDetail> listTemp = new ArrayList<>();
+        for (ActRuDetail actRuDetail : list) {
+            actRuDetail.setDeleted(false);
+            listTemp.add(actRuDetail);
+        }
+        actRuDetailRepository.saveAll(listTemp);
+        return true;
+    }
+
+    @Override
+    @Transactional
     public boolean recoveryTodoByProcessSerialNumber(String processSerialNumber, String todoPersonId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
