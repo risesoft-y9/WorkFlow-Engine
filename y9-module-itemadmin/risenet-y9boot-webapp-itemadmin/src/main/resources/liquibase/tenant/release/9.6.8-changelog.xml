@@ -48,4 +48,26 @@
             <column name="TABINDEX" remarks="文件索引" type="INT"/>
         </createTable>
     </changeSet>
+    <changeSet id="1704700543333-3" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_SIGN_DEPT_INFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="会签信息表" tableName="FF_SIGN_DEPT_INFO">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DEPTID" remarks="部门Id" type="VARCHAR(50)"/>
+            <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="签字人姓名" type="VARCHAR(50)"/>
+            <column name="SIGNDATE" remarks="签字日期" type="VARCHAR(20)"/>
+            <column name="DEPTTYPE" remarks="单位类型" type="VARCHAR(20)"/>
+            <column name="RECORDTIME" remarks="录入时间" type="datetime"/>
+            <column name="INPUTPERSON" remarks="录入人" type="VARCHAR(50)"/>
+            <column name="INPUTPERSONID" remarks="录入人id" type="VARCHAR(50)"/>
+            <column name="ORDERINDEX" remarks="部门排序" type="INT"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
