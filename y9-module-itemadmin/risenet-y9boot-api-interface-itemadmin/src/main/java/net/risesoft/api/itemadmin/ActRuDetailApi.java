@@ -33,6 +33,18 @@ public interface ActRuDetailApi {
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
+     * 根据执行实例id标记流程为办结
+     *
+     * @param tenantId 租户id
+     * @param executionId 执行实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/endByExecutionId")
+    Y9Result<Object> endByExecutionId(@RequestParam("tenantId") String tenantId,
+                                            @RequestParam("executionId") String executionId);
+
+    /**
      * 根据流程编号标记流程为办结
      *
      * @param tenantId 租户id

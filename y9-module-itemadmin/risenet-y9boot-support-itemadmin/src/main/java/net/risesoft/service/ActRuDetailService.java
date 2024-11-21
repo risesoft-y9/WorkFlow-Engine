@@ -62,6 +62,14 @@ public interface ActRuDetailService {
     /**
      * 标记流程为办结
      *
+     * @param executionId
+     * @return
+     */
+    boolean endByExecutionId(String executionId);
+
+    /**
+     * 标记流程为办结
+     *
      * @param processSerialNumber
      * @return
      */
@@ -141,6 +149,19 @@ public interface ActRuDetailService {
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page,
         Sort sort);
+
+    /**
+     * 查找个人删除列表
+     *
+     * @param systemName
+     * @param assignee
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows, int page,
+                                                              Sort sort);
 
     /**
      * 查找个人待办，在办列表
