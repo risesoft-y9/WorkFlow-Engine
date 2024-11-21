@@ -270,6 +270,25 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 获取回收站办件数据
+     *
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/editRecycle")
+    public Y9Result<DocumentDetailModel> editRecycle(
+            @RequestParam @NotBlank String processInstanceId) {
+        try {
+            DocumentDetailModel model = documentApi.editRecycle(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                    processInstanceId, false).getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
      * 办件发送
      *
      * @param itemId               事项id
