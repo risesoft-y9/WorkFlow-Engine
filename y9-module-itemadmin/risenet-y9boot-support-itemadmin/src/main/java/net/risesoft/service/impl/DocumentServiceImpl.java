@@ -446,7 +446,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDetailModel editDoing(String processInstanceId, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "",itemId="";
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "", itemId = "";
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
         model.setMeeting(false);
@@ -458,7 +458,7 @@ public class DocumentServiceImpl implements DocumentService {
         processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
         assert officeDoneInfo != null;
         processSerialNumber = processParam.getProcessSerialNumber();
-        itemId=processParam.getItemId();
+        itemId = processParam.getItemId();
 
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         TaskModel taskTemp = taskList.get(0);
@@ -484,7 +484,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDetailModel editDone(String processInstanceId, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "",itemId="";
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "", itemId = "";
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -500,7 +500,7 @@ public class DocumentServiceImpl implements DocumentService {
             processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
         }
         processSerialNumber = processParam.getProcessSerialNumber();
-        itemId=processParam.getItemId();
+        itemId = processParam.getItemId();
         model.setTitle(processParam.getTitle());
         model.setStartor(startor);
         model.setItembox(ItemBoxTypeEnum.DONE.getValue());
@@ -513,14 +513,14 @@ public class DocumentServiceImpl implements DocumentService {
         model.setItemId(itemId);
 
         model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
-        model = this.menuControl4Done(itemId, processDefinitionId, taskDefinitionKey,model);
+        model = this.menuControl4Done(itemId, processDefinitionId, taskDefinitionKey, model);
         return model;
     }
 
     @Override
     public DocumentDetailModel editRecycle(String processInstanceId, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "",itemId="";
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "", itemId = "";
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -536,7 +536,7 @@ public class DocumentServiceImpl implements DocumentService {
             processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
         }
         processSerialNumber = processParam.getProcessSerialNumber();
-        itemId=processParam.getItemId();
+        itemId = processParam.getItemId();
         model.setTitle(processParam.getTitle());
         model.setStartor(startor);
         model.setItembox(ItemBoxTypeEnum.RECYCLE.getValue());
@@ -549,7 +549,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setItemId(itemId);
 
         model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
-        model = this.menuControl4Recycle(itemId, processDefinitionId, taskDefinitionKey,model);
+        model = this.menuControl4Recycle(itemId, processDefinitionId, taskDefinitionKey, model);
         return model;
     }
 
@@ -1149,115 +1149,69 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDetailModel menuControl4Add(String itemId, String processDefinitionId, String taskDefKey, DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        List<ItemButtonModel> buttonList = new ArrayList<>();
-        Map<String, Object> map = buttonUtil.showButton4Add(itemId);
-        String[] buttonIds = (String[]) map.get("buttonIds");
-        String[] buttonNames = (String[]) map.get("buttonNames");
-        String sponsorHandle = (String) map.get("sponsorHandle");
-        int[] buttonOrders = (int[]) map.get("buttonOrders");
-        boolean[] isButtonShow = (boolean[]) map.get("isButtonShow");
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Add(itemId);
+        List<ItemButtonModel> returnButtonList = new ArrayList<>();
         List<ItemButtonBind> bibList;
         // 生成按钮数组
-        for (int i = buttonOrders.length - 1; i >= 0; i--) {
-            int k = buttonOrders[i] - 1;
+        for (ItemButtonModel itemButtonModel : buttonList) {
             /*
              * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
              */
-            if (k == 0 && isButtonShow[0]) {
+            if ("01".equals(itemButtonModel.getKey())) {
                 bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(), processDefinitionId, taskDefKey);
                 for (ItemButtonBind bind : bibList) {
                     String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                    if (!"发送".equals(buttonName)) {
-                        List<String> roleIds = bind.getRoleIds();
-                        if (roleIds.isEmpty()) {
-                            buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasRole) {
-                                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
-                                    break;
-                                }
+                    List<String> roleIds = bind.getRoleIds();
+                    if (roleIds.isEmpty()) {
+                        returnButtonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
+                    } else {
+                        for (String roleId : roleIds) {
+                            boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                            if (hasRole) {
+                                returnButtonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
+                                break;
                             }
                         }
                     }
                 }
             }
-
             /*
              * 假如发送按钮显示的话，去获取发送下面的路由
              */
-            if (k == 1 && isButtonShow[1] && StringUtils.isNotBlank(taskDefKey)) {
+            if ("02".equals(itemButtonModel.getKey())) {
                 /*
-                 * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
+                 * 添加发送下面的路由
                  */
-                boolean haveSendButton = false;
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(), processDefinitionId, taskDefKey);
-                bibFor:
-                for (ItemButtonBind bib : bibList) {
-                    if ("发送".equals(bib.getButtonName())) {
-                        List<String> roleIds = bib.getRoleIds();
-                        if (roleIds.isEmpty()) {
-                            buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(), ItemButtonTypeEnum.COMMON.getValue()));
-                            haveSendButton = true;
-                            break;
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasrole) {
-                                    buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(), ItemButtonTypeEnum.COMMON.getValue()));
-                                    haveSendButton = true;
-                                    break bibFor;
-                                }
-                            }
-                        }
+                List<TargetModel> routeToTasks = processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+                for (TargetModel m : routeToTasks) {
+                    // 退回、路由网关不显示在发送下面
+                    if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
+                        returnButtonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND.getValue()));
                     }
                 }
-                if (!haveSendButton) {
-                    /*
-                     * 没有配置自定义“发送”按钮的话，添加上默认的“发送”按钮
-                     */
-                    buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
-                    /*
-                     * 添加发送下面的路由
-                     */
-                    List<TargetModel> routeToTasks = processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-                    for (TargetModel m : routeToTasks) {
-                        // 退回、路由网关不显示在发送下面
-                        if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
-                            buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND.getValue()));
-                        }
-                    }
-                    /*
-                     * 添加自定义按钮到发送
-                     */
-                    bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(), processDefinitionId, taskDefKey);
-                    for (ItemButtonBind bind : bibList) {
-                        List<String> roleIds = bind.getRoleIds();
-                        String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                        if (roleIds.isEmpty()) {
-                            buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasrole) {
-                                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
-                                    break;
-                                }
+                /*
+                 * 添加自定义按钮到发送
+                 */
+                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(), processDefinitionId, taskDefKey);
+                for (ItemButtonBind bind : bibList) {
+                    List<String> roleIds = bind.getRoleIds();
+                    String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+                    if (roleIds.isEmpty()) {
+                        returnButtonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
+                    } else {
+                        for (String roleId : roleIds) {
+                            boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                            if (hasRole) {
+                                returnButtonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
+                                break;
                             }
                         }
                     }
                 }
             }
-
-            if (k != 1 && isButtonShow[k]) {
-                buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
-            }
+            returnButtonList.add(itemButtonModel);
         }
-        model.setButtonList(buttonList);
-        model.setSponsorHandle(sponsorHandle);
-        model.setMultiInstance(map.get("multiInstance") != null ? (String) map.get("multiInstance") : "");
-        model.setNextNode(map.get("nextNode") != null ? (Boolean) map.get("nextNode") : false);
+        model.setButtonList(returnButtonList);
         return model;
     }
 
@@ -1417,7 +1371,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey,DocumentDetailModel model) {
+    public DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey, DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
         List<ItemButtonModel> buttonList = buttonUtil.showButton4Done(itemId);
         model.setButtonList(buttonList);
@@ -1425,7 +1379,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel menuControl4Recycle(String itemId, String processDefinitionId, String taskDefKey,DocumentDetailModel model) {
+    public DocumentDetailModel menuControl4Recycle(String itemId, String processDefinitionId, String taskDefKey, DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
         List<ItemButtonModel> buttonList = buttonUtil.showButton4Recycle();
         model.setButtonList(buttonList);

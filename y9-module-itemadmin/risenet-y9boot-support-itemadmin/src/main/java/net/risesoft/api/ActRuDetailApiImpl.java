@@ -191,6 +191,22 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         actRuDetailService.recoveryByProcessInstanceId(processInstanceId);
         return Y9Result.success();
     }
+    /**
+     * 恢复整个流程的流转信息（通过改变流程是否结束状态恢复）
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> recoveryByProcessSerialNumber(@RequestParam String tenantId,
+                                                        @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        actRuDetailService.recoveryByProcessSerialNumber(processSerialNumber);
+        return Y9Result.success();
+    }
+
 
     /**
      * 根据流程实例id删除整个流程的办件详情
@@ -221,6 +237,22 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         actRuDetailService.removeByProcessSerialNumber(processSerialNumber);
+        return Y9Result.success();
+    }
+
+    /**
+     * 根据流程编号删除整个流程的办件详情(逻辑删除)
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> deleteByProcessSerialNumber(@RequestParam String tenantId,
+                                                        @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        actRuDetailService.deletedByProcessSerialNumber(processSerialNumber);
         return Y9Result.success();
     }
 

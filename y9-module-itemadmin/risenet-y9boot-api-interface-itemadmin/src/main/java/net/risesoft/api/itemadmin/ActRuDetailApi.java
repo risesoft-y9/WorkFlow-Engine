@@ -120,6 +120,18 @@ public interface ActRuDetailApi {
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
+     * 恢复整个流程的办件详情
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程序列号
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/recoveryByProcessSerialNumber")
+    Y9Result<Object> recoveryByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+                                                 @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
      * 根据流程实例id删除整个流程的办件详情
      *
      * @param tenantId 租户id
@@ -142,6 +154,18 @@ public interface ActRuDetailApi {
     @PostMapping("/removeByProcessSerialNumber")
     Y9Result<Object> removeByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
+     * 根据流程编号删除整个流程的办件详情(逻辑删除)
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/deleteByProcessSerialNumber")
+    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+                                                 @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 删除某个参与人的办件详情

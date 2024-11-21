@@ -1,5 +1,7 @@
 package net.risesoft.service;
 
+import net.risesoft.pojo.Y9Result;
+
 /**
  * 按钮操作实现
  *
@@ -30,4 +32,11 @@ public interface ButtonOperationService {
      * @param desc 描述
      */
     void resumeToDo(String processInstanceId, String desc) throws Exception;
+
+    Y9Result<String> deleteTodos(String[] taskIdAndProcessSerialNumbers);
+
+    Y9Result<String> recoverTodos(String[] processSerialNumbers);
+
+
+    Y9Result<String> removeTodos(String[] processSerialNumbers);
 }
