@@ -72,6 +72,8 @@ public class ButtonUtil {
     private ItemButtonModel chaoSong = new ItemButtonModel("18", "抄送", ItemButtonTypeEnum.COMMON.getValue(), 19);
     private ItemButtonModel huiFuDaiBan = new ItemButtonModel("20", "恢复待办", ItemButtonTypeEnum.COMMON.getValue(), 20);
     private ItemButtonModel daYin = new ItemButtonModel("17", "打印", ItemButtonTypeEnum.COMMON.getValue(), 21);
+    private ItemButtonModel huiFu = new ItemButtonModel("huiFu", "从回收站恢复", ItemButtonTypeEnum.COMMON.getValue(), 22);
+    private ItemButtonModel cheDiShanChu = new ItemButtonModel("cheDiShanChu", "彻底删除", ItemButtonTypeEnum.COMMON.getValue(), 23);
 
     public ButtonUtil() {
         this.procInstanceRelationshipService = Y9Context.getBean(ProcInstanceRelationshipService.class);
@@ -1094,5 +1096,13 @@ public class ButtonUtil {
         buttonModelList.add(fanHui);
         buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
         return new ArrayList<>();
+    }
+
+    public List<ItemButtonModel> showButton4Recycle() {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(huiFu);
+        buttonModelList.add(cheDiShanChu);
+        buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
+        return buttonModelList;
     }
 }
