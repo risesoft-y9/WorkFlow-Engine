@@ -19,6 +19,29 @@ import net.risesoft.pojo.Y9Result;
 public interface ItemRoleApi {
 
     /**
+     * 获取发送人gfg
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义Id
+     * @param taskDefKey 流程定义中节点Id
+     * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
+     * @param id 唯一标识
+     * @param processInstanceId 流程实例Id
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
+     */
+    @GetMapping("/findAllPermUser")
+    Y9Result<List<ItemRoleOrgUnitModel>> findAllPermUser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType,
+        @RequestParam(value = "id", required = false) String id,
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
+
+    /**
      * 获取抄送选人
      *
      * @param tenantId 租户id

@@ -48,6 +48,36 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     private final OrganizationApi organizationApi;
 
     /**
+     * 获取发送人gfg
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义Id
+     * @param taskDefKey 流程定义中节点Id
+     * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
+     * @param id 唯一标识
+     * @param processInstanceId 流程实例Id
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<ItemRoleOrgUnitModel>> findAllPermUser(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String orgUnitId, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Integer principalType,
+        String id, String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        List<ItemRoleOrgUnitModel> list =
+            roleService.listAllPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+        return Y9Result.success(list);
+    }
+
+    /**
      * 获取抄送选人组织机构数据
      *
      * @param tenantId 租户id

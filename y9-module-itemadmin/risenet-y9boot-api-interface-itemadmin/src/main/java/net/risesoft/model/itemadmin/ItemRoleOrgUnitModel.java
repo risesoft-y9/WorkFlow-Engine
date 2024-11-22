@@ -11,7 +11,7 @@ import lombok.Data;
  * @date 2024/06/26
  */
 @Data
-public class ItemRoleOrgUnitModel implements Serializable {
+public class ItemRoleOrgUnitModel implements Serializable, Comparable<ItemRoleOrgUnitModel> {
 
     private static final long serialVersionUID = 8518359792106513369L;
     /**
@@ -49,4 +49,13 @@ public class ItemRoleOrgUnitModel implements Serializable {
      */
     private String person;
 
+    /**
+     * 排序
+     */
+    private String orderedPath;
+
+    @Override
+    public int compareTo(ItemRoleOrgUnitModel o) {
+        return this.orderedPath.compareTo(o.getOrderedPath());
+    }
 }

@@ -35,9 +35,14 @@ public class DocUserChoiseModel implements Serializable {
     private boolean existCustomGroup;
 
     /**
-     * 任务节点类型
+     * 任务节点多实例类型
      */
     private String multiInstance;
+
+    /**
+     * 节点类型
+     */
+    private String type;
 
     /**
      * 流程定义Id
