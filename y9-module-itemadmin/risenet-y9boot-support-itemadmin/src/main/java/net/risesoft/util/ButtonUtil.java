@@ -51,6 +51,8 @@ public class ButtonUtil {
     private final SpmApproveItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
 
+    private List<TargetModel> nodeList = new ArrayList<>();
+
     private ItemButtonModel fanHui = new ItemButtonModel("03", "返回", ItemButtonTypeEnum.COMMON.getValue(), 1);
     private ItemButtonModel teShuBanJie = new ItemButtonModel("15", "特殊办结", ItemButtonTypeEnum.COMMON.getValue(), 2);
     private ItemButtonModel qianShou = new ItemButtonModel("10", "签收", ItemButtonTypeEnum.COMMON.getValue(), 3);
@@ -614,10 +616,10 @@ public class ButtonUtil {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Map<String, Object> map = new HashMap<>(16);
         String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
-                "16", "17", "18", "19", "20", "21"};
+                "16", "17", "18", "19", "20", "21","22","23"};
         String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
-                "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交"};
-        int[] buttonOrders = {3, 15, 10, 11, 2, 4, 1, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+                "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交","放入回收站","打印日志"};
+        int[] buttonOrders = {3,23, 15, 10, 11, 22, 2, 4, 1, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
         boolean[] isButtonShow = new boolean[buttonIds.length];
         for (int i = 0; i < buttonIds.length; i++) {
             isButtonShow[i] = false;
@@ -746,7 +748,6 @@ public class ButtonUtil {
             isButtonShow[0] = true;
         }
         /*----- 上面是保存按钮的设置 -----*/
-
         /*----- 下面是可以打开选人界面的发送按钮的设置 -----*/
         // DelegationState.PENDING ==
         // task.getDelegationState()：表示当前用户是在协办状态，发送按钮不再显示，完成按钮显示
@@ -1028,10 +1029,25 @@ public class ButtonUtil {
             //isButtonShow[18] = true;
         }
         // 上面是加减签按钮
+
+        // 下面是放入回收站按钮
+        if (isAssignee) {
+            if(nodeList.isEmpty()){
+                String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
+                nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode).getData();
+            }
+            boolean canDelete = nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
+            if(canDelete){
+                isButtonShow[21] = true;
+            }
+        }
+        // 上面是放入回收站按钮
+
         // 打印
         isButtonShow[16] = false;
         // 抄送
         isButtonShow[17] = false;
+        isButtonShow[22] = true;
         map.put("buttonIds", buttonIds);
         map.put("buttonNames", buttonNames);
         map.put("isButtonShow", isButtonShow);
