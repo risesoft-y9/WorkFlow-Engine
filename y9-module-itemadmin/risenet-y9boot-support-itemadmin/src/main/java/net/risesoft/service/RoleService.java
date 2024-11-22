@@ -15,6 +15,20 @@ public interface RoleService {
     /**
      * Description:
      *
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @param principalType
+     * @param id
+     * @param processInstanceId
+     * @return
+     */
+    List<ItemRoleOrgUnitModel> listAllPermUser(String itemId, String processDefinitionId, String taskDefKey,
+        Integer principalType, String id, String processInstanceId);
+
+    /**
+     * Description:
+     *
      * @param id
      * @param principalType
      * @param processInstanceId

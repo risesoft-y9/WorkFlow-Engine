@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPermission;
@@ -25,6 +27,7 @@ import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Position;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.RoleService;
@@ -50,11 +53,179 @@ public class RoleServiceImpl implements RoleService {
 
     private final DepartmentApi departmentApi;
 
+    private final PositionApi positionApi;
+
     private final OrgUnitApi orgUnitApi;
 
     private final ReceiveDepartmentRepository receiveDepartmentRepository;
 
     private final CustomGroupApi customGroupApi;
+
+    public List<ItemRoleOrgUnitModel> getParent(List<ItemRoleOrgUnitModel> itemList, ItemRoleOrgUnitModel model) {
+        OrgUnit parent = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), model.getParentId()).getData();
+        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+            ItemRoleOrgUnitModel parentModel = new ItemRoleOrgUnitModel();
+            parentModel.setId(parent.getId());
+            parentModel.setParentId(parent.getParentId());
+            parentModel.setName(parent.getName());
+            parentModel.setIsParent(true);
+            parentModel.setOrgType(parent.getOrgType().getValue());
+            parentModel.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+            if (!itemList.contains(parentModel)) {
+                itemList.add(parentModel);
+            }
+            getParent(itemList, parentModel);
+        }
+        return itemList;
+    }
+
+    @Override
+    public List<ItemRoleOrgUnitModel> listAllPermUser(String itemId, String processDefinitionId, String taskDefKey,
+        Integer principalType, String id, String processInstanceId) {
+        List<ItemRoleOrgUnitModel> allItemList = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> itemList = new ArrayList<>();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            List<ItemPermission> list = itemPermissionService
+                .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+            if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
+                if (StringUtils.isBlank(id)) {
+                    List<OrgUnit> deptList = new ArrayList<>();
+                    for (ItemPermission o : list) {
+                        if (o.getRoleType() == 1) {
+                            deptList.addAll(
+                                roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData());
+                            deptList.addAll(
+                                roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData());
+                        }
+                        if (o.getRoleType() == 2) {
+                            deptList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
+                        }
+                        if (o.getRoleType() == 4) {
+                            List<OrgUnit> orgUnitList = dynamicRoleMemberService
+                                .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                            for (OrgUnit orgUnit : orgUnitList) {
+                                if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                                    || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
+                                    deptList.add(orgUnit);
+                                }
+                            }
+                        }
+                    }
+                    for (OrgUnit org : deptList) {
+                        if (OrgTypeEnum.ORGANIZATION.equals(org.getOrgType())) {
+                            List<OrgUnit> orgList = orgUnitApi
+                                .getSubTree(tenantId, org.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+                            for (OrgUnit orgUnit : orgList) {
+                                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                                model.setId(orgUnit.getId());
+                                model.setParentId(id);
+                                model.setName(orgUnit.getName());
+                                model.setIsParent(org.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                                model.setOrgType(orgUnit.getOrgType().getValue());
+                                model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                                    ? ItemPermissionEnum.DEPARTMENT.getValue()
+                                    : ItemPermissionEnum.POSITION.getValue());
+                                if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                                    model.setPerson("6:" + orgUnit.getId());
+                                }
+                                if (itemList.contains(model)) {
+                                    continue;// 去重
+                                }
+                                itemList.add(model);
+                            }
+                        } else {
+                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                            model.setId(org.getId());
+                            model.setParentId(id);
+                            model.setName(org.getName());
+                            model.setIsParent(true);
+                            model.setOrgType(org.getOrgType() == null ? OrgTypeEnum.ORGANIZATION.getEnName()
+                                : org.getOrgType().getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                            if (itemList.contains(model)) {
+                                continue;// 去重
+                            }
+                            itemList.add(model);
+                        }
+                    }
+                } else {
+                    // 取部门下的部门或人员
+                    List<OrgUnit> orgList =
+                        orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+                    for (OrgUnit orgunit : orgList) {
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                        String orgunitId = orgunit.getId();
+                        model.setId(orgunitId);
+                        model.setParentId(id);
+                        model.setName(orgunit.getName());
+                        model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                        model.setOrgType(orgunit.getOrgType().getValue());
+                        if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                        } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
+                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            model.setPerson("6:" + orgunit.getId());
+                        }
+                        if (itemList.contains(model)) {
+                            // 去重
+                            continue;
+                        }
+                        itemList.add(model);
+                    }
+                }
+            } else if (ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType)) {
+                // 岗位
+                List<OrgUnit> orgList = new ArrayList<>();
+                for (ItemPermission o : list) {
+                    if (o.getRoleType() == 1) {
+                        orgList
+                            .addAll(roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData());
+                    }
+                    if (o.getRoleType() == 6) {
+                        orgList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
+                    }
+                    if (o.getRoleType() == 4) {
+                        List<OrgUnit> orgUnitList = dynamicRoleMemberService
+                            .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                        for (OrgUnit orgUnit : orgUnitList) {
+                            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                                orgList.add(orgUnit);
+                            }
+                        }
+                    }
+                }
+                for (OrgUnit orgUnit : orgList) {
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    Position position = positionApi.get(tenantId, orgUnit.getId()).getData();
+                    if (position != null && !position.getDisabled()) {
+                        model.setId(orgUnit.getId());
+                        model.setParentId(orgUnit.getParentId());
+                        model.setName(orgUnit.getName());
+                        model.setIsParent(false);
+                        model.setOrgType(orgUnit.getOrgType().getValue());
+                        model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                        model.setPerson("6:" + orgUnit.getId());
+                        model.setOrderedPath(position.getOrderedPath());
+                        if (itemList.contains(model)) {
+                            continue;// 去重
+                        }
+                        itemList.add(model);
+                    }
+                }
+                // 排序
+                itemList = itemList.stream().sorted().collect(Collectors.toList());
+
+                for (ItemRoleOrgUnitModel model : itemList) {
+                    allItemList.add(model);
+                    allItemList = getParent(allItemList, model);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allItemList;
+    }
 
     @Override
     public List<ItemRoleOrgUnitModel> listCsUser(String id, Integer principalType, String processInstanceId) {
