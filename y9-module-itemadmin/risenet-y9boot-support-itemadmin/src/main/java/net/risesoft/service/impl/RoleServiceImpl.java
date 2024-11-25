@@ -149,6 +149,7 @@ public class RoleServiceImpl implements RoleService {
                             itemList.add(model);
                         }
                     }
+                    allItemList.addAll(itemList);
                 } else {
                     // 取部门下的部门或人员
                     List<OrgUnit> orgList =
@@ -173,6 +174,7 @@ public class RoleServiceImpl implements RoleService {
                         }
                         itemList.add(model);
                     }
+                    allItemList.addAll(itemList);
                 }
             } else if (ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType)) {
                 // 岗位
