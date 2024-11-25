@@ -1,6 +1,7 @@
 package net.risesoft.controller;
 
 import lombok.RequiredArgsConstructor;
+import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
 import org.springframework.http.MediaType;
@@ -36,13 +37,13 @@ public class ProcessParam4GfgRestController {
      * @param number 编号
      * @param level 紧急程度
      * @param customItem 是否定制流程
-     * @return Y9Result<String>
+     * @return Y9Result<StartProcessResultModel>
      */
     @PostMapping(value = "/saveOrUpdate")
-    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId,
-        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String theTaskKey, @RequestParam(required = false) String processInstanceId,
-        @RequestParam (required = false) String documentTitle, @RequestParam(required = false) String number,
-        @RequestParam(required = false) String level, @RequestParam(required = false) Boolean customItem) {
+    public Y9Result<StartProcessResultModel> saveOrUpdate(@RequestParam @NotBlank String itemId,
+                                                          @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String theTaskKey, @RequestParam(required = false) String processInstanceId,
+                                                          @RequestParam (required = false) String documentTitle, @RequestParam(required = false) String number,
+                                                          @RequestParam(required = false) String level, @RequestParam(required = false) Boolean customItem) {
         return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number,
             level, customItem,theTaskKey);
     }
