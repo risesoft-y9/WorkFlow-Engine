@@ -1,5 +1,6 @@
 package net.risesoft.service;
 
+import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.pojo.Y9Result;
 
 public interface ProcessParamService {
@@ -32,7 +33,7 @@ public interface ProcessParamService {
      * @param theTaskKey 开始任务节点
      * @return Y9Result<String>
      */
-    Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId,
-                                  String documentTitle, String number, String level, Boolean customItem,String theTaskKey);
+    Y9Result<StartProcessResultModel> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId,
+                                                   String documentTitle, String number, String level, Boolean customItem, String theTaskKey);
 
 }
