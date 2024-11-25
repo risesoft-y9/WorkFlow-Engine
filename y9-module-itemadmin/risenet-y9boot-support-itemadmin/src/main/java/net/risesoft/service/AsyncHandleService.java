@@ -276,27 +276,13 @@ public class AsyncHandleService {
                  * 并行状态且区分主协办情况下，如果受让人是主办人，则将主办人guid设为任务变量
                  */
                 if (SysVariables.PARALLEL.equals(multiInstance)) {
-                    // boolean isEntrusr = entrustDetailService.haveEntrustDetailByTaskId(taskNext.getId());
-                    // if (!isEntrusr) {
                     if (taskNext.getAssignee().equals(sponsorGuid)) {
                         vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
                     }
-                    // } else {
-                    // EntrustDetail entrustDetail = entrustDetailService.findByTaskId(taskNext.getId());
-                    // String owner = (entrustDetail == null ? "" : entrustDetail.getOwnerId());
-                    //// 出差委托更换主办人
-                    // if (owner.contains(sponsorGuid)) {
-                    // vars.put(SysVariables.PARALLELSPONSOR, taskNext.getAssignee().split(SysVariables.COLON)[0]);
-                    // processParam.setSponsorGuid(taskNext.getAssignee().split(SysVariables.COLON)[0]);
-                    // processParamService.saveOrUpdate(processParam);
-                    // }
-                    // }
                 }
                 variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
             }
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             LOGGER.warn("*****forwardingHandle发送发生异常*****", e);
         }
     }
