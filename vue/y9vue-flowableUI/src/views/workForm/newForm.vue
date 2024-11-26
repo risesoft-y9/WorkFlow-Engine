@@ -304,7 +304,7 @@ function initOpinion() {//加载意见框
         if (res.success) {
             bindOpinionFrameList.value = res.data;
             for (let item of bindOpinionFrameList.value) {
-                let customOpinions = generateForm.value.getComponent('custom_opinion@' + item);
+                let customOpinions = generateForm.value.getComponent('custom_opinion@' + item.opinionFrameMark);
                 if (customOpinions != null) {
                     customOpinions.initOpinion(data);
                 }
