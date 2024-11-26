@@ -6,7 +6,6 @@
         "serve-local": "vite  --mode localEnv",
         "build": "vite build",
         "build-dev": "vite build  --mode development",
-        "build-test": "vite build  --mode test",
         "build-local": "vite build  --mode localEnv",
         "preview": "vite preview",
         "svgo": "svgo -f src/assets/iconsvg --config=src/assets/iconsvg/svgo.yml"
