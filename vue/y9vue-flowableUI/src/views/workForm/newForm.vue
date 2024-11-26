@@ -6,14 +6,15 @@
                   element-loading-background="rgba(0, 0, 0, 0.8)"
                   element-loading-spinner="el-icon-loading"
     >
-        <el-aside class="formaside" style="width: 80%;height: auto;overflow: auto;padding: 1% 0% 2% 0%;margin-left: 10%;">
+        <el-aside class="formaside"
+                  style="width: 80%;height: auto;overflow: auto;padding: 1% 0% 2% 0%;margin-left: 10%;">
             <fm-generate-form
-                    id="printTest"
-                    ref="generateForm"
-                    :data="formJson"
-                    :edit="edit"
-                    :remote="remoteFuncs"
-                    style="margin: auto;"
+                id="printTest"
+                ref="generateForm"
+                :data="formJson"
+                :edit="edit"
+                :remote="remoteFuncs"
+                style="margin: auto;"
             >
             </fm-generate-form>
         </el-aside>
@@ -27,7 +28,18 @@ import {EventBus} from '@/components/formMaking/util/event-bus'
 import {saveProcessParam} from "@/api/flowableUI/processParam";
 import {saveDraft} from "@/api/flowableUI/draft";
 import {getBindOpinionFrame} from "@/api/flowableUI/opinion";
-import {delChildTableRow, getAllFieldPerm, getChildTableData, getDayOrHour, getFormData, getFormInitData, getFormJson, getOptionValueList, saveChildTableData, saveFormData} from "@/api/flowableUI/form";
+import {
+    delChildTableRow,
+    getAllFieldPerm,
+    getChildTableData,
+    getDayOrHour,
+    getFormData,
+    getFormInitData,
+    getFormJson,
+    getOptionValueList,
+    saveChildTableData,
+    saveFormData
+} from "@/api/flowableUI/form";
 import {useFlowableStore} from "@/store/modules/flowableStore";
 import y9_storage from '@/utils/storage';
 import {useSettingStore} from "@/store/modules/settingStore";
@@ -109,7 +121,12 @@ onMounted(() => {
             if (data.guid != "") {
                 delChildTableRow(formId.value, data.tableId, data.guid).then(res => {
                     if (!res.success) {
-                        ElMessage({type: 'error', message: t("删除子表数据失败"), offset: 65, appendTo: '.newForm-container'});
+                        ElMessage({
+                            type: 'error',
+                            message: t("删除子表数据失败"),
+                            offset: 65,
+                            appendTo: '.newForm-container'
+                        });
                         initChildTable(data.tableName);
                     }
                 });
@@ -187,7 +204,10 @@ function show(fId) {
             nextTick(() => {
                 generateForm.value.refresh();
                 if (basicData.value.itembox == "add" && basicData.value.formType == undefined) {
-                    generateForm.value.setData({guid: basicData.value.processSerialNumber, processInstanceId: basicData.value.processSerialNumber});
+                    generateForm.value.setData({
+                        guid: basicData.value.processSerialNumber,
+                        processInstanceId: basicData.value.processSerialNumber
+                    });
                     let Promise = generateForm.value.getData(false);
                     Promise.then(function (value) {
                         getFormInitData(initDataUrl.value, basicData.value.processSerialNumber).then(res => {//表单初始化数据：1.在这里初始化数据，2.在表单设计里通过表单数据源初始化数据
@@ -219,7 +239,7 @@ function show(fId) {
                 } else {
                     getFormData(fId, basicData.value.processSerialNumber).then(res1 => {//表单数据
                         let formData = res1.data;
-                        if(basicData.value.itembox == "add"){//前置表单事项走此方法
+                        if (basicData.value.itembox == "add") {//前置表单事项走此方法
                             let Promise = generateForm.value.getData(false);
                             Promise.then(function (value) {
                                 getFormInitData(initDataUrl.value, basicData.value.processSerialNumber).then(res => {
@@ -237,13 +257,13 @@ function show(fId) {
                                 });
                             }).catch(() => {
                             });
-                        }else{
+                        } else {
                             let data = res1.data;
                             for (let key of Object.keys(data)) {//处理多选框
                                 if (data[key] != undefined && data[key] != '' && data[key].startsWith('[') && data[key].endsWith(']')) {
-                                    if(data[key] == '[]'){
+                                    if (data[key] == '[]') {
                                         data[key] = [];
-                                    }else{
+                                    } else {
                                         let str = data[key].split('[')[1].split(']')[0];
                                         data[key] = str.split(', ');
                                     }
@@ -263,10 +283,10 @@ function show(fId) {
                                     generateForm.value.disabledAll(false);//启用表单所有字段
                                 }
                             }
-                            if(basicData.value.itembox == "add"){//前置表单事项走此方法
+                            if (basicData.value.itembox == "add") {//前置表单事项走此方法
                                 if (formJson.value.config.permissionForm) {//权限表单，默认开始禁用所有字段
                                     generateForm.value.disabledAll(true);
-                                }else{
+                                } else {
                                     generateForm.value.disabledAll(false);
                                 }
                                 initFieldPerm();//字段填写权限
@@ -654,7 +674,7 @@ function saveChangeOpinion() {//保存未保存的意见内容
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .formaside {
     /* background-color: #e7e8ec; */
 }
@@ -718,4 +738,45 @@ function saveChangeOpinion() {//保存未保存的意见内容
 :deep(.el-form-item__error) {
     font-size: v-bind('fontSizeObj.smallFontSize');
 }
+
+:deep(.el-form-item__error) {
+    font-size: v-bind('fontSizeObj.smallFontSize');
+}
+
+/* 设置一些级别样式，可根据具体需求修改 */
+.fm-form {
+
+    :deep(.form) {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    :deep(.fm-form-item) {
+        margin-top: 8px;
+    }
+
+    :deep( .el-input) {
+        border: #e4e7ed solid 1px;
+    }
+
+    :deep(.el-textarea) {
+        border: #e4e7ed solid 1px;
+    }
+
+    :deep(.el-form-item__label) {
+        line-height: 40px;
+        height: 40px;
+    }
+
+    :deep(.el-form-item__content) {
+        margin: 0px 2px;
+    }
+
+    :deep( .suggest ) {
+        border: #e4e7ed solid 1px;
+    }
+
+
+}
+
 </style>
