@@ -445,7 +445,7 @@
             if (printFormType.value == '2') {
                 //打印表单
                 printUrl.value =
-                    import.meta.env.VUE_APP_CONTEXT +
+                    import.meta.env.VUE_APP_HOST_INDEX +
                     'print?formId=' +
                     basicData.value.printFormId +
                     '&processSerialNumber=' +

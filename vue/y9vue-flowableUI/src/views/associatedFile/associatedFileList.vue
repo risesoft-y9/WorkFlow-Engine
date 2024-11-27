@@ -211,7 +211,10 @@
         // let pos = curPageUrl.indexOf(pathName);
         // let localhostPath = curPageUrl.substring(0, pos);
         window.open(
-            import.meta.env.VUE_APP_CONTEXT + 'index?processInstanceId=' + row.processInstanceId + '&type=fromHistory'
+            import.meta.env.VUE_APP_HOST_INDEX +
+                'index?processInstanceId=' +
+                row.processInstanceId +
+                '&type=fromHistory'
         );
     }
 </script>
