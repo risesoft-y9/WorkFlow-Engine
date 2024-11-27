@@ -8,17 +8,17 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #update>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -29,8 +29,8 @@
                 :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
                 :underline="false"
                 @click="openDoc(row)"
-                >{{ row.title }}</el-link
-            >
+                >{{ row.title }}
+            </el-link>
         </template>
         <template #itembox="{ row, column, index }">
             <font v-if="row.banjie" style="color: #d81e06">{{ $t('办结') }}</font>
@@ -38,12 +38,12 @@
         </template>
         <template #optButton="{ row, column, index }">
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openHistoryList(row)"
-                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}</el-button
-            >
+                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}
+            </el-button>
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
@@ -52,15 +52,14 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
-    import type { FormInstance, ElMessageBox, ElMessage, ElLoading } from 'element-plus';
     import { search } from '@/api/flowableUI/chaoSong';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import HistoryList from '@/views/process/historyList.vue';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
+
     const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
@@ -83,7 +82,14 @@ import { computed } from 'vue';
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
                 { title: computed(() => t('类别')), key: 'itemName', width: '90' },
                 { title: computed(() => t('文件编号')), key: 'number', width: '190' },
-                { title: computed(() => t('标题')), key: 'title', width: 'auto', slot: 'title', align: 'left', minWidth: '200' },
+                {
+                    title: computed(() => t('标题')),
+                    key: 'title',
+                    width: 'auto',
+                    slot: 'title',
+                    align: 'left',
+                    minWidth: '200'
+                },
                 { title: computed(() => t('接收时间')), key: 'createTime', width: '140' },
                 { title: computed(() => t('阅读时间')), key: 'readTime', width: '140' },
                 { title: computed(() => t('发送人')), key: 'senderName', width: '200' },
@@ -210,7 +216,7 @@ import { computed } from 'vue';
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            title: t('历程')+'【' + row.title + '】',
+            title: t('历程') + '【' + row.title + '】',
             showFooter: false
         });
     }
@@ -220,6 +226,7 @@ import { computed } from 'vue';
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;

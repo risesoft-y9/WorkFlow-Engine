@@ -31,13 +31,12 @@
     </y9Table>
 </template>
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
-    import { getDraftRecycleList, draftViewConf, reduction, deleteDraft } from '@/api/flowableUI/draft';
+    import { computed, inject, onMounted, reactive } from 'vue';
+    import { deleteDraft, draftViewConf, getDraftRecycleList, reduction } from '@/api/flowableUI/draft';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
-    import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
+
     const { t } = useI18n();
     const emits = defineEmits(['refreshCount']);
     const router = useRouter();
@@ -87,6 +86,7 @@ import { computed } from 'vue';
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -208,9 +208,11 @@ import { computed } from 'vue';
     :global(.el-message-box .el-message-box__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
+
     :global(.el-message-box .el-message-box__title) {
         font-size: v-bind('fontSizeObj.largeFontSize');
     }
+
     :global(.el-message-box .el-message-box__btns button) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }

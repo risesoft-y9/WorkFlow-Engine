@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-07 16:44:57
  * @LastEditors: zhangchongjie
@@ -15,7 +15,7 @@ const printTemplateRouter = {
     name: 'printTemplate',
     meta: {
         title: '打印模板',
-        roles: ['systemAdmin'],
+        roles: ['systemAdmin']
     },
     children: [
         {
@@ -25,10 +25,10 @@ const printTemplateRouter = {
             meta: {
                 title: '打印模板',
                 icon: 'ri-printer-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
-        },
-    ],
+        }
+    ]
 };
 
 export default printTemplateRouter;

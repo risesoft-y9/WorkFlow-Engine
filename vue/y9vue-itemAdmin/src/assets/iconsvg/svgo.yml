@@ -5,18 +5,18 @@
 
 plugins:
 
-  # - name
-  #
-  # or:
-  # - name: false
-  # - name: true
-  #
-  # or:
-  # - name:
-  #     param1: 1
-  #     param2: 2
+    # - name
+    #
+    # or:
+    # - name: false
+    # - name: true
+    #
+    # or:
+    # - name:
+    #     param1: 1
+    #     param2: 2
 
-- removeAttrs:
-    attrs:
-      - 'fill'
-      - 'fill-rule'
+    -   removeAttrs:
+            attrs:
+                - 'fill'
+                - 'fill-rule'

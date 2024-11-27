@@ -8,13 +8,12 @@
  */
 import '@/assets/css/nprogress.css'; // progress bar style
 import router from '@/router';
-import { checkRole } from '@/router/checkRole';
-import { constantRoutes } from '@/router/index';
-import { useSettingStore } from '@/store/modules/settingStore';
-import y9_storage from '@/utils/storage';
+import {checkRole} from '@/router/checkRole';
+import {constantRoutes} from '@/router/index';
+import {useSettingStore} from '@/store/modules/settingStore';
 import NProgress from 'nprogress'; // progress bar
-import { $y9_SSO } from '../main';
-import { getLoginInfo } from './getInitData';
+import {$y9_SSO} from '../main';
+import {getLoginInfo} from './getInitData';
 
 NProgress.configure({ showSpinner: false, easing: 'ease', speed: 1000 });
 
@@ -56,6 +55,7 @@ export async function checkWriteList(to, from) {
 }
 
 let userRole = ['user'];
+
 async function check() {
     let isTokenValid, isRoleValid;
 

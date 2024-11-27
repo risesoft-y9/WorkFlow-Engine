@@ -1,5 +1,5 @@
 <template>
-    <el-dropdown @command="onMenuClick" :hide-on-click="true" class="user-el-dropdown">
+    <el-dropdown :hide-on-click="true" class="user-el-dropdown" @command="onMenuClick">
         <div class="name" @click="(e) => e.preventDefault()">
             <!-- show & if 的vue指令 仅用于适配移动端 -->
             <div v-show="settingStore.getWindowWidth > 425">
@@ -12,12 +12,12 @@
                     ></el-badge>
                 </span>
             </div>
-            <i class="ri-shut-down-line" v-if="settingStore.device === 'mobile'"></i>
+            <i v-if="settingStore.device === 'mobile'" class="ri-shut-down-line"></i>
         </div>
         <template #dropdown>
             <el-dropdown-menu>
                 <el-dropdown-item command="personalCenter">
-                    <div class="el-dropdown-item"> <i class="ri-user-line"></i>{{ $t('个人中心') }} </div>
+                    <div class="el-dropdown-item"><i class="ri-user-line"></i>{{ $t('个人中心') }}</div>
                 </el-dropdown-item>
                 <!-- <el-dropdown-item command="signIn">
                     <div class="el-dropdown-item">
@@ -36,14 +36,14 @@
                     </div>
                 </el-dropdown-item> -->
                 <el-dropdown-item v-for="item in flowableStore.positionList" :key="item.id">
-                    <div @click="setPosition(item.id)" class="el-dropdown-item" style="text-align: center">
+                    <div class="el-dropdown-item" style="text-align: center" @click="setPosition(item.id)">
                         <font v-if="flowableStore.currentPositionId == item.id" color="blue">{{ item.name }}</font>
                         <font v-else>{{ item.name }}</font>
                         <el-badge
                             v-if="item.todoCount > 0"
-                            style="top: 3px"
                             :value="item.todoCount"
                             class="item"
+                            style="top: 3px"
                             type="danger"
                         ></el-badge>
                     </div>
@@ -60,14 +60,14 @@
     <PersonInfo ref="personInfo" />
 </template>
 <script lang="ts">
-    import { ref, computed, ComputedRef, defineComponent, inject } from 'vue';
-    import { useRouter, useRoute } from 'vue-router';
+    import { defineComponent, inject, ref } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import y9_storage from '@/utils/storage';
     import IconSvg from './IconSvg';
-    import { $y9_SSO } from '@/main';
     import PersonInfo from '@/views/personalCenter/personInfo.vue';
+
     interface RightTopUserSetupData {
         userInfo: Object;
         onMenuClick: (event: any) => Promise<void>;
@@ -77,6 +77,7 @@
         personInfo;
         fontSizeObj;
     }
+
     export default defineComponent({
         name: 'RightTopUser',
         components: {
@@ -141,6 +142,7 @@
 </script>
 <style lang="scss" scoped>
     @import '@/theme/global-vars.scss';
+
     .user-el-dropdown {
         z-index: 9999;
         //height: $headerHeight;
@@ -149,25 +151,30 @@
             align-items: center;
         }
     }
+
     .name {
         color: var(--el-text-color-primary);
         font-size: v-bind('fontSizeObj.baseFontSize');
         display: flex;
+
         & > div {
             display: flex;
             flex-direction: column;
             justify-content: end;
+
             span {
                 line-height: 20px;
                 text-align: end;
                 margin-top: auto;
             }
         }
+
         i {
             color: var(--el-color-primary);
             font-size: v-bind('fontSizeObj.maximumFontSize');
             margin-left: 8px;
         }
+
         :deep(.el-badge) {
             margin-top: 8px;
         }

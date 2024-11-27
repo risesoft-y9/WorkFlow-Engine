@@ -8,9 +8,7 @@
 -->
 <template>
     <template v-if="!item.hidden">
-        <template
-            v-if="item.children && Array.isArray(item.children) && hasChildRoute(item.children)"
-        >
+        <template v-if="item.children && Array.isArray(item.children) && hasChildRoute(item.children)">
             <el-sub-menu :index="item.path" class="y9-el-sub-menu">
                 <template #title>
                     <i v-if="item.meta.icon" :class="['icon', item.meta.icon]" />
@@ -19,8 +17,8 @@
                 <sider-menu-item
                     v-for="item2 in item.children"
                     :key="item2.path"
-                    :routeItem="item2"
                     :belongTopMenu="belongTopMenu"
+                    :routeItem="item2"
                 ></sider-menu-item>
             </el-sub-menu>
         </template>
@@ -36,91 +34,93 @@
     </template>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, toRefs, computed, Ref, ComputedRef } from 'vue';
-import { RoutesDataItem, getRouteBelongTopMenu, hasChildRoute } from '@/utils/routes';
-import { useSettingStore } from "@/store/modules/settingStore";
-import ALink from '@/layouts/components/ALink/index.vue';
-import Icon from "./Icon.vue";
-interface SiderMenuItemSetupData {
-    item: Ref;
-    topMenuPath: ComputedRef<string>;
-    hasChildRoute: (children: RoutesDataItem[]) => boolean;
-    toggleCollapsedFunc: () => void;
-}
-export default defineComponent({
-    name: 'SiderMenuItem',
-    props: {
-        routeItem: {
-            type: Object as PropType<RoutesDataItem>,
-            required: true
-        },
-        belongTopMenu: {
-            type: String,
-            default: ''
-        }
-    },
-    components: {
-        ALink,
-        Icon
-    },
-    setup(props): SiderMenuItemSetupData {
+    import { computed, ComputedRef, defineComponent, PropType, Ref, toRefs } from 'vue';
+    import { getRouteBelongTopMenu, hasChildRoute, RoutesDataItem } from '@/utils/routes';
+    import { useSettingStore } from '@/store/modules/settingStore';
+    import ALink from '@/layouts/components/ALink/index.vue';
+    import Icon from './Icon.vue';
 
-        const { routeItem } = toRefs(props);
-        const topMenuPath = computed<string>(() => getRouteBelongTopMenu(routeItem.value as RoutesDataItem));
-
-        // console.log(routeItem.value);
-        const settingStore = useSettingStore()
-        const { toggleCollapsed } = settingStore
-        const toggleCollapsedFunc = () => {
-            if (settingStore.getDevice === 'mobile') {
-                toggleCollapsed()
-            }
-        }
-
-        return {
-            item: routeItem,
-            topMenuPath: topMenuPath,
-            hasChildRoute,
-            toggleCollapsedFunc
-        }
-
+    interface SiderMenuItemSetupData {
+        item: Ref;
+        topMenuPath: ComputedRef<string>;
+        hasChildRoute: (children: RoutesDataItem[]) => boolean;
+        toggleCollapsedFunc: () => void;
     }
-})
 
+    export default defineComponent({
+        name: 'SiderMenuItem',
+        props: {
+            routeItem: {
+                type: Object as PropType<RoutesDataItem>,
+                required: true
+            },
+            belongTopMenu: {
+                type: String,
+                default: ''
+            }
+        },
+        components: {
+            ALink,
+            Icon
+        },
+        setup(props): SiderMenuItemSetupData {
+            const { routeItem } = toRefs(props);
+            const topMenuPath = computed<string>(() => getRouteBelongTopMenu(routeItem.value as RoutesDataItem));
+
+            // console.log(routeItem.value);
+            const settingStore = useSettingStore();
+            const { toggleCollapsed } = settingStore;
+            const toggleCollapsedFunc = () => {
+                if (settingStore.getDevice === 'mobile') {
+                    toggleCollapsed();
+                }
+            };
+
+            return {
+                item: routeItem,
+                topMenuPath: topMenuPath,
+                hasChildRoute,
+                toggleCollapsedFunc
+            };
+        }
+    });
 </script>
 
 <style lang="scss" scoped>
-.y9-el-sub-menu {
-    & > div {
-        text-decoration: none;
-        i {
-            font-size: 18px;
-            margin-right: 15px;
-        }
-    }
-}
-
-.el-teleport,.el-popper {
-    ul.el-menu {
-        & > a {
+    .y9-el-sub-menu {
+        & > div {
             text-decoration: none;
-        }
-        li.el-menu-item {
-            & > i {
+
+            i {
                 font-size: 18px;
                 margin-right: 15px;
             }
         }
     }
-}
-.el-menu {
-    background-color: none;
-}
 
+    .el-teleport,
+    .el-popper {
+        ul.el-menu {
+            & > a {
+                text-decoration: none;
+            }
+
+            li.el-menu-item {
+                & > i {
+                    font-size: 18px;
+                    margin-right: 15px;
+                }
+            }
+        }
+    }
+
+    .el-menu {
+        background-color: none;
+    }
 </style>
 
 <style>
-.y9-el-sub-menu.el-sub-menu .el-menu{
-	background: transparent;
-}
+    .y9-el-sub-menu.el-sub-menu .el-menu {
+        background: transparent;
+    }
 </style>

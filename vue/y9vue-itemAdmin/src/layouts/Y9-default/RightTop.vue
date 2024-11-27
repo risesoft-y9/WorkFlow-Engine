@@ -9,8 +9,8 @@
     const props = defineProps({
         menuCollapsed: {
             type: Boolean,
-            default: false,
-        },
+            default: false
+        }
     });
 
     // 全屏功能
@@ -21,7 +21,7 @@
     const settingStore = useSettingStore();
     const toggleCollapsedFunc = () => {
         settingStore.$patch({
-            menuCollapsed: !settingStore.getMenuCollapsed,
+            menuCollapsed: !settingStore.getMenuCollapsed
         });
     };
 
@@ -29,14 +29,14 @@
     const isDark = useDark({
         selector: 'html',
         valueDark: 'theme-dark',
-        valueLight: '',
+        valueLight: ''
     });
     const toggleDark = useToggle(isDark);
 
     // 锁屏
     const lockScreenFunc = () => {
         settingStore.$patch({
-            lockScreen: true,
+            lockScreen: true
         });
     };
 
@@ -54,24 +54,24 @@
     <div id="right-top">
         <div class="left">
             <div class="indexlayout-flexible" @click="toggleCollapsedFunc">
-                <i class="ri-menu-unfold-line" v-if="menuCollapsed"></i>
-                <i class="ri-menu-fold-line" v-else></i>
+                <i v-if="menuCollapsed" class="ri-menu-unfold-line"></i>
+                <i v-else class="ri-menu-fold-line"></i>
             </div>
         </div>
         <div class="right">
-            <div class="item" @click="lockScreenFunc" v-show="settingStore.getLock">
+            <div v-show="settingStore.getLock" class="item" @click="lockScreenFunc">
                 <i class="ri-lock-2-line"></i>
                 <span>{{ $t('锁屏') }}</span>
             </div>
-            <div class="item search" @click="searchFunc" v-show="false">
+            <div v-show="false" class="item search" @click="searchFunc">
                 <i class="ri-search-line"></i>
                 <span>{{ $t('搜索') }}</span>
             </div>
-            <div class="item" @click="refreshFunc" v-show="settingStore.getRefresh">
+            <div v-show="settingStore.getRefresh" class="item" @click="refreshFunc">
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
             </div>
-            <div class="item" @click="toggleFullScreen" v-show="settingStore.getFullScreeen">
+            <div v-show="settingStore.getFullScreeen" class="item" @click="toggleFullScreen">
                 <i class="ri-fullscreen-line"></i>
                 <span>{{ $t('全屏') }}</span>
             </div>
@@ -92,7 +92,7 @@
             </div>
             <div class="item user">
                 <!-- 头像测试链接地址：https://www.youshengyun.com/fileManager/files/e6b5d41fd2bd4cdda538139f9b7848c7.jpg -->
-                <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ $t(`${userInfo.loginName}`) }} </el-avatar>
+                <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ $t(`${userInfo.loginName}`) }}</el-avatar>
             </div>
             <!-- <div class="item" @click="logout">
                 <i class="ri-logout-box-r-line"></i>
@@ -104,6 +104,7 @@
 
 <style lang="scss" scoped>
     @import '@/theme/global-vars.scss';
+
     #right-top {
         background-color: var(--el-bg-color);
         color: var(--el-text-color-primary);
@@ -114,6 +115,7 @@
         border-bottom: 1px solid var(--el-border-color-base);
         box-shadow: 2px 2px 2px 1px rgb(0 0 0 / 6%);
         z-index: 1;
+
         .left,
         .right {
             display: flex;
@@ -134,6 +136,7 @@
                 color: var(--el-text-color-primary);
             }
         }
+
         .right {
             padding-right: 15px;
 
@@ -145,27 +148,33 @@
                 cursor: pointer;
                 display: flex;
                 align-items: center;
+
                 i {
                     position: relative;
                     // top: 4px;
                 }
+
                 span {
                     font-size: var(--el-font-size-base);
                     margin-left: 5px;
                 }
+
                 &:hover {
                     border-bottom: 2px solid var(--el-border-color-light);
                     color: var(--el-color-primary);
                 }
+
                 &.notify {
                     .badge {
                         position: absolute;
                         z-index: 1;
+
                         & > .el-badge__content--danger {
                             background-color: var(--el-color-danger);
                         }
                     }
                 }
+
                 &.user {
                     //min-width: 202px;
                     display: flex;
@@ -176,26 +185,31 @@
                         width: $headerHeight - 18px;
                         border-radius: 50%;
                     }
+
                     & > .name {
                         font-size: var(--el-font-size-base);
                         display: flex;
                         flex-direction: column;
                         justify-content: end;
+
                         span {
                             line-height: 20px;
                             text-align: end;
                         }
                     }
+
                     i {
                         color: var(--el-color-primary);
                         font-size: 48px;
                         margin-left: 8px;
                         margin-bottom: 8px;
                     }
+
                     .el-avatar {
                         background-color: var(--el-color-primary);
                     }
                 }
+
                 &:hover {
                     cursor: pointer;
                     border-bottom: none; // 鼠标划过或点击时不显示下划线

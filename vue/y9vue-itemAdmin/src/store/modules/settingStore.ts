@@ -2,8 +2,6 @@ import { isMobile } from '@/utils/index';
 import { useWindowSize } from '@vueuse/core';
 import { defineStore } from 'pinia';
 
-
-
 export const useSettingStore = defineStore('settingStore', {
     state: () => {
         return {
@@ -11,7 +9,7 @@ export const useSettingStore = defineStore('settingStore', {
             logoSvgName: '', // 网站logo
             webLanguage: 'zh', // 语言
             themeName: 'theme-default', // 主题
-            isDark: false,  // 是否暗黑主题
+            isDark: false, // 是否暗黑主题
             menuAnimation: 'rtl', // 菜单动画方向——仅mobile
             menuStyle: 'Light', // 菜单样式
             menuWidth: '100%', // 菜单宽度（高度）
@@ -31,18 +29,18 @@ export const useSettingStore = defineStore('settingStore', {
             lockScreenImage: new URL('../../assets/images/menu-bg1.png', import.meta.url).href, // 锁屏背景
             unlockScreenPwd: '123456', // 默认锁屏密码
             pageAnimation: true, // 页面动画
-            pcLayout: 'Y9Default',// pc布局   Y9Horizontal, Y9Default, Y9Default sidebar-separate
+            pcLayout: 'Y9Default', // pc布局   Y9Horizontal, Y9Default, Y9Default sidebar-separate
             layout: 'Y9Default', // pc or mobile
-            allPcLayout:'globalModule',//globalModule 全局 singleModule 单一
-            allLayoutList:[],
+            allPcLayout: 'globalModule', //globalModule 全局 singleModule 单一
+            allLayoutList: [],
             menuCollapsed: false, // 菜单伸缩
             device: !isMobile() ? 'pc' : 'mobile', // 设备类型
             windowWidth: useWindowSize().width, // 窗口实时宽度
             windowHeight: useWindowSize().height, // 窗口实时高度
             direction: 'ltr', // 菜单——仅mobile
-            settingPageStyle: 'Admin-plus',  // 设置页面的风格 Dcat Admin-plus
+            settingPageStyle: 'Admin-plus', // 设置页面的风格 Dcat Admin-plus
             settingAnimation: 'rtl', // 设置页面的移入方向
-            settingWidth: '20%',    // 设置页面的宽度（高度）
+            settingWidth: '20%' // 设置页面的宽度（高度）
         };
     },
     getters: {
@@ -67,29 +65,29 @@ export const useSettingStore = defineStore('settingStore', {
         getMenuStyle: (state) => {
             return state.menuStyle;
         },
-       getLayout: (state) => {
-            let layout:any=''
-            if(state.allPcLayout=='globalModule'){
-                layout=state.layout;
-            }else{
-                let name=import.meta.env.VUE_APP_NAME
-                let allLayoutList:any=state.allLayoutList
+        getLayout: (state) => {
+            let layout: any = '';
+            if (state.allPcLayout == 'globalModule') {
+                layout = state.layout;
+            } else {
+                let name = import.meta.env.VUE_APP_NAME;
+                let allLayoutList: any = state.allLayoutList;
                 let found = false;
                 for (let i = 0; i < allLayoutList.length; i++) {
-                    let item = allLayoutList[i]
-                    if(item.name==name){
+                    let item = allLayoutList[i];
+                    if (item.name == name) {
                         found = true;
-                        layout=item.value
+                        layout = item.value;
                         break;
                     }
                 }
                 if (!found) {
-                    layout=state.layout
+                    layout = state.layout;
                 }
             }
             return layout;
         },
-        getLayoutList:()=>{},
+        getLayoutList: () => {},
         //查询全局还是单一
         getAllPcLayout: (state) => {
             return state.allPcLayout;
@@ -97,7 +95,7 @@ export const useSettingStore = defineStore('settingStore', {
         getAllPcLayoutList: (state) => {
             return state.allLayoutList;
         },
-        getPcLayout:(state) => {
+        getPcLayout: (state) => {
             return state.pcLayout;
         },
         getMenuCollapsed: (state) => {
@@ -149,7 +147,7 @@ export const useSettingStore = defineStore('settingStore', {
             return state.lockScreenImage;
         },
         getUnlockScreenPwd: (state) => {
-            return state.unlockScreenPwd
+            return state.unlockScreenPwd;
         },
         getPageAnimation: (state) => {
             return state.pageAnimation;
@@ -167,29 +165,28 @@ export const useSettingStore = defineStore('settingStore', {
             return state.windowHeight;
         },
         getSettingPageStyle: (state) => {
-            return state.settingPageStyle
+            return state.settingPageStyle;
         },
         getSettingAnimation: (state) => {
-            return state.settingAnimation
+            return state.settingAnimation;
         },
         getSettingWidth: (state) => {
-            return state.settingWidth
-        },
+            return state.settingWidth;
+        }
     },
     actions: {
         toggleDevice() {
             if (isMobile()) {
-                this.device = 'mobile'
-                this.layout = 'Y9Mobile'
-                this.settingWidth = '100%'
+                this.device = 'mobile';
+                this.layout = 'Y9Mobile';
+                this.settingWidth = '100%';
             } else {
                 this.device = 'pc';
-                this.layout = this.pcLayout
+                this.layout = this.pcLayout;
             }
         },
         toggleCollapsed() {
-            this.menuCollapsed = !this.menuCollapsed
+            this.menuCollapsed = !this.menuCollapsed;
         }
-    },
+    }
 });
-

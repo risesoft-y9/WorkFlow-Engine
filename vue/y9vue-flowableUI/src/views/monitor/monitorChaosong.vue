@@ -8,37 +8,37 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
+        @select="handleSelectionChange"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
-        @select="handleSelectionChange"
         @select-all="handleSelectionChange"
     >
         <template #buttonslot>
             <el-button
-                class="global-btn-main"
-                @click="reloadTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="reloadTable"
             >
                 <i class="ri-search-line"></i>
                 <span>{{ $t('搜索') }}</span>
             </el-button>
             <el-button
-                class="global-btn-main"
-                @click="handleDelete"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="handleDelete"
             >
                 <i class="ri-delete-bin-line"></i>
                 <span>{{ $t('删除') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -49,8 +49,8 @@
                 :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
                 :underline="false"
                 @click="openDoc(row)"
-                >{{ row.title }}</el-link
-            >
+                >{{ row.title }}
+            </el-link>
         </template>
         <template #itembox="{ row, column, index }">
             <font v-if="row.banjie" style="color: #d81e06">{{ $t('办结') }}</font>
@@ -62,8 +62,8 @@
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
                 class="global-btn-third"
                 @click="openHistoryList(row)"
-                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}</el-button
-            >
+                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}
+            </el-button>
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
@@ -72,15 +72,15 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
     import HistoryList from '@/views/process/historyList.vue';
     import { useRoute, useRouter } from 'vue-router';
-    import { monitorChaosongList, getAllItemList } from '@/api/flowableUI/monitor';
+    import { getAllItemList, monitorChaosongList } from '@/api/flowableUI/monitor';
     import { deleteList } from '@/api/flowableUI/chaoSong';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
+
     const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
@@ -104,7 +104,14 @@ import { computed } from 'vue';
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
                 { title: computed(() => t('类别')), key: 'itemName', width: '90' },
                 { title: computed(() => t('文件编号')), key: 'number', width: '190' },
-                { title: computed(() => t('标题')), key: 'title', width: 'auto', slot: 'title', align: 'left', minWidth: '200' },
+                {
+                    title: computed(() => t('标题')),
+                    key: 'title',
+                    width: 'auto',
+                    slot: 'title',
+                    align: 'left',
+                    minWidth: '200'
+                },
                 { title: computed(() => t('发送人')), key: 'senderName', width: '180' },
                 { title: computed(() => t('发送时间')), key: 'createTime', width: '140' },
                 { title: computed(() => t('收件人')), key: 'userName', width: '180' },
@@ -322,7 +329,7 @@ import { computed } from 'vue';
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            title: t('历程')+'【' + row.title + '】',
+            title: t('历程') + '【' + row.title + '】',
             showFooter: false
         });
     }
@@ -349,6 +356,7 @@ import { computed } from 'vue';
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -410,16 +418,20 @@ import { computed } from 'vue';
     :global(.el-message-box .el-message-box__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
+
     :global(.el-message-box .el-message-box__title) {
         font-size: v-bind('fontSizeObj.largeFontSize');
     }
+
     :global(.el-message-box .el-message-box__btns button) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
+
     /*notification */
     :global(.el-notification__title) {
         font-size: v-bind('fontSizeObj.mediumFontSize');
     }
+
     :global(.el-notification__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }

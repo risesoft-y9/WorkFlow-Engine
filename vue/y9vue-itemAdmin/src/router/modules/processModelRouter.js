@@ -3,7 +3,7 @@
  * @Date: 2022-03-31 20:14:43
  * @LastEditors: zhangchongjie
  * @LastEditTime: 2022-06-08 14:41:29
- * @Description: 
+ * @Description:
  */
 const processModelRouter = {
     path: '/model',
@@ -12,7 +12,7 @@ const processModelRouter = {
     name: 'model',
     meta: {
         title: '流程设计',
-        roles: ['systemAdmin'] 
+        roles: ['systemAdmin']
     },
     children: [
         {
@@ -22,8 +22,8 @@ const processModelRouter = {
             meta: {
                 title: '流程设计',
                 icon: 'ri-list-settings-fill',
-                roles: ['systemAdmin'] 
-            },
+                roles: ['systemAdmin']
+            }
         }
     ]
 };

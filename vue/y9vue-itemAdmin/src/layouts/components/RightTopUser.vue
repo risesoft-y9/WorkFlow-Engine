@@ -1,5 +1,5 @@
 <template>
-    <el-dropdown @command="onMenuClick" :hide-on-click="true" class="user-el-dropdown">
+    <el-dropdown :hide-on-click="true" class="user-el-dropdown" @command="onMenuClick">
         <div class="name" @click="(e) => e.preventDefault()">
             <!-- show & if 的vue指令 仅用于适配移动端 -->
             <div v-show="settingStore.getWindowWidth > 425">
@@ -8,8 +8,8 @@
             </div>
             <el-avatar
                 v-if="settingStore.device === 'mobile'"
-                style="font-size: 14px; background-color: var(--el-color-primary); margin-top: 8px"
                 :src="userInfo.avator ? userInfo.avator : ''"
+                style="font-size: 14px; background-color: var(--el-color-primary); margin-top: 8px"
             >
                 {{ userInfo.loginName }}
             </el-avatar>
@@ -48,7 +48,7 @@
                 </el-dropdown-item> 
                 <el-divider style="padding-bottom: 5px; margin: 0px"></el-divider>-->
                 <el-dropdown-item command="logout">
-                    <div class="el-dropdown-item"> <i class="ri-logout-box-r-line"></i>{{ $t('退出') }} </div>
+                    <div class="el-dropdown-item"><i class="ri-logout-box-r-line"></i>{{ $t('退出') }}</div>
                 </el-dropdown-item>
             </el-dropdown-menu>
         </template>
@@ -56,12 +56,13 @@
     <!-- <PersonInfo ref="personInfo"/> -->
 </template>
 <script lang="ts">
-    import { ref, computed, ComputedRef, defineComponent } from 'vue';
+    import { defineComponent } from 'vue';
     import { useRouter } from 'vue-router';
     import { useSettingStore } from '@/store/modules/settingStore';
     import y9_storage from '@/utils/storage';
     import IconSvg from './IconSvg';
     import { $y9_SSO } from '@/main';
+
     // import PersonInfo from '@/views/personal/personInfo.vue';
     interface RightTopUserSetupData {
         userInfo: Object;
@@ -69,10 +70,11 @@
         departmentMapList: Object;
         onMenuClick: (event: any) => Promise<void>;
     }
+
     export default defineComponent({
         name: 'RightTopUser',
         components: {
-            IconSvg,
+            IconSvg
             // PersonInfo
         },
         setup(): RightTopUserSetupData {
@@ -106,7 +108,7 @@
                                 __y9delete__: () => {
                                     // 删除前执行的函数
                                     console.log('删除前执行的函数');
-                                },
+                                }
                             };
                             $y9_SSO.ssoLogout(params);
                         } catch (error) {
@@ -123,35 +125,41 @@
                 userInfo,
                 initInfo,
                 departmentMapList,
-                onMenuClick,
+                onMenuClick
                 // personInfo
             };
-        },
+        }
     });
 </script>
 <style lang="scss" scoped>
     @import '@/theme/global-vars.scss';
+
     .user-el-dropdown {
         z-index: 9999;
         height: $headerHeight;
+
         :deep(.el-dropdown--default) {
             display: flex;
             align-items: center;
         }
     }
+
     .name {
         color: var(--el-text-color-primary);
         font-size: var(--el-font-size-base);
         display: flex;
+
         & > div {
             display: flex;
             flex-direction: column;
             justify-content: center;
+
             span {
                 line-height: 20px;
                 text-align: end;
             }
         }
+
         i {
             color: var(--el-color-primary);
             font-size: 48px;

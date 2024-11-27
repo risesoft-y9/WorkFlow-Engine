@@ -10,7 +10,7 @@ import { getItemList, getPositionList } from '@/api/flowableUI/index';
 import router, { asyncRoutes } from '@/router';
 import { useRouterStore } from '@/store/modules/routerStore';
 import { useFlowableStore } from '@/store/modules/flowableStore';
-import y9_storage from '@/utils/storage';
+
 /**
  * 根据 meta.role 判断当前用户是否有权限
  * @param roles 用户的权限
@@ -55,7 +55,7 @@ export function getPermissionRoutes(rolesArr = ['systemAdmin']) {
     const permissionRoutes = filterAsyncRoutes(asyncRoutes, roles);
     // 项目存储中心 pinia - routerStore模块 存储有权限的所有路由源数据，permissionRoutes即包含项目所有可跳转的路由
     routerStore.$patch({
-        PermissionRoutes: permissionRoutes,
+        PermissionRoutes: permissionRoutes
     });
     return permissionRoutes;
 }
@@ -85,7 +85,7 @@ export async function checkRole(rolesArr = ['user']) {
                     positionList: pres.data.positionList,
                     currentPositionId: pres.data.positionList.length > 0 ? pres.data.positionList[0].id : '',
                     currentCount: flowableStore.positionList.length > 0 ? flowableStore.positionList[0].todoCount : 0,
-                    currentPositionName: flowableStore.positionList.length > 0 ? flowableStore.positionList[0].name : 0,
+                    currentPositionName: flowableStore.positionList.length > 0 ? flowableStore.positionList[0].name : 0
                 });
                 sessionStorage.setItem(
                     'positionId',
@@ -101,7 +101,7 @@ export async function checkRole(rolesArr = ['user']) {
             if (pres.success) {
                 flowableStore.$patch({
                     positionList: pres.data.positionList,
-                    currentPositionId: positionId,
+                    currentPositionId: positionId
                 });
             }
         }
@@ -124,8 +124,8 @@ export async function checkRole(rolesArr = ['user']) {
                 notReadCount: notReadCount,
                 youjianCount: youjianCount,
                 monitorManage: monitorManage,
-                leaveManage:data.leaveManage,
-                appType: itemList.value.length > 0 ? itemList.value[0].url : 'yuejian',
+                leaveManage: data.leaveManage,
+                appType: itemList.value.length > 0 ? itemList.value[0].url : 'yuejian'
                 //itemName:itemList.value.length > 0 ? itemList.value[0].name : '阅件'
                 // followCount:followCount
             });
@@ -141,33 +141,33 @@ export async function checkRole(rolesArr = ['user']) {
             {
                 path: '/workIndex/add',
                 name: 'workIndex_add',
-                meta: { title: '新建', icon: 'ri-file-add-line', roles: ['user'] },
+                meta: { title: '新建', icon: 'ri-file-add-line', roles: ['user'] }
             },
             {
                 path: '/workIndex/draft',
                 name: 'workIndex_draft',
-                meta: { title: '草稿箱', icon: 'ri-draft-line', roles: ['user'] },
+                meta: { title: '草稿箱', icon: 'ri-draft-line', roles: ['user'] }
             },
             {
                 path: '/workIndex/todo',
                 name: 'workIndex_todo',
-                meta: { title: '待办件', icon: 'ri-article-line', roles: ['user'] },
+                meta: { title: '待办件', icon: 'ri-article-line', roles: ['user'] }
             },
             {
                 path: '/workIndex/doing',
                 name: 'workIndex_doing',
-                meta: { title: '在办件', icon: 'ri-repeat-fill', roles: ['user'] },
+                meta: { title: '在办件', icon: 'ri-repeat-fill', roles: ['user'] }
             },
             {
                 path: '/workIndex/done',
                 name: 'workIndex_done',
-                meta: { title: '办结件', icon: 'ri-record-circle-line', roles: ['user'] },
+                meta: { title: '办结件', icon: 'ri-record-circle-line', roles: ['user'] }
             },
             {
                 path: '/workIndex/draftRecycle',
                 name: 'workIndex_draftRecycle',
-                meta: { title: '回收站', icon: 'ri-delete-bin-line', roles: ['user'] },
-            },
+                meta: { title: '回收站', icon: 'ri-delete-bin-line', roles: ['user'] }
+            }
         ];
 
         //事项菜单项集成
@@ -177,19 +177,19 @@ export async function checkRole(rolesArr = ['user']) {
                 path: '',
                 name: '',
                 todoCount: 0,
-                children: [],
+                children: []
             };
-            if(item.name == '报销办件'){
+            if (item.name == '报销办件') {
                 obj.meta.icon = 'ri-money-cny-box-line';
-            }else if(item.name == '对公支付'){
+            } else if (item.name == '对公支付') {
                 obj.meta.icon = 'ri-exchange-cny-fill';
-            }else if(item.name == '发票申请'){
+            } else if (item.name == '发票申请') {
                 obj.meta.icon = 'ri-currency-line';
-            }else if(item.name == '人事办件'){
+            } else if (item.name == '人事办件') {
                 obj.meta.icon = 'ri-account-pin-box-line';
-            }else if(item.name == '公文办件'){
+            } else if (item.name == '公文办件') {
                 obj.meta.icon = 'ri-function-line';
-            }else if(item.name == '项目备案'){
+            } else if (item.name == '项目备案') {
                 obj.meta.icon = 'ri-projector-line';
             }
             obj.meta.title = item.name;
@@ -221,15 +221,15 @@ export async function checkRole(rolesArr = ['user']) {
                         parentTitle: '阅件',
                         component: () => import('@/views/chaoSong/csTodo.vue'),
                         name: 'workIndex_csTodo',
-                        meta: { title: '未阅件', icon: 'ri-message-2-line', roles: ['user'] },
+                        meta: { title: '未阅件', icon: 'ri-message-2-line', roles: ['user'] }
                     },
                     {
                         path: '/workIndex/csDone',
                         parentTitle: '阅件',
                         component: () => import('@/views/chaoSong/csDone.vue'),
                         name: 'workIndex_csDone',
-                        meta: { title: '已阅件', icon: 'ri-chat-check-line', roles: ['user'] },
-                    },
+                        meta: { title: '已阅件', icon: 'ri-chat-check-line', roles: ['user'] }
+                    }
                     // {
                     //     path: '/workIndex/csPiyue',
                     //     parentTitle: '阅件',
@@ -237,7 +237,7 @@ export async function checkRole(rolesArr = ['user']) {
                     //     name: 'workIndex_csPiyue',
                     //     meta: { title: '批阅件', icon: 'ri-chat-heart-line', roles: ['user'] },
                     // },
-                ],
+                ]
             },
             // {meta:{title:'公务邮件',icon:'ri-mail-volume-line',roles:['user']},todoCount:youjianCount,path:'/workIndex/email',name:'email',children:[]},
             {
@@ -246,7 +246,7 @@ export async function checkRole(rolesArr = ['user']) {
                 path: '/workIndex/follow',
                 name: 'follow',
                 children: [],
-                component: () => import('@/views/follow/followList.vue'),
+                component: () => import('@/views/follow/followList.vue')
             },
             {
                 meta: { title: '综合搜索', icon: 'ri-search-line', roles: ['user'] },
@@ -259,30 +259,29 @@ export async function checkRole(rolesArr = ['user']) {
                         parentTitle: '综合搜索',
                         component: () => import('@/views/search/searchList.vue'),
                         name: 'workIndex_searchList',
-                        meta: { title: '个人所有件', icon: 'ri-file-list-line', roles: ['user'] },
+                        meta: { title: '个人所有件', icon: 'ri-file-list-line', roles: ['user'] }
                     },
                     {
                         path: '/workIndex/yuejianList',
                         parentTitle: '综合搜索',
                         component: () => import('@/views/search/yuejianList.vue'),
                         name: 'workIndex_yuejianList',
-                        meta: { title: '阅件', icon: 'ri-chat-poll-line', roles: ['user'] },
-                    },
+                        meta: { title: '阅件', icon: 'ri-chat-poll-line', roles: ['user'] }
+                    }
                     // {path: '/workIndex/emailList',parentTitle:'综合搜索',component: () => import('@/views/search/emailList.vue'),name: 'workIndex_emailList',meta: {title: '公务邮件',icon: 'ri-mail-line',roles: ['user']}}
-                ],
-            },
+                ]
+            }
         ];
-        if(flowableStore.leaveManage){//人事统计
-            flowableUI_Async_Routes.push(
-                {
-                    meta:{title:'人事统计',icon:'ri-bar-chart-2-line',roles:['user']},
-                    parentTitle:'人事统计',
-                    path:'/workIndex/leaveCount',
-                    name:'leaveCount',
-                    children:[],
-                    component: () => import('@/views/leaveCount/index.vue')
-                },
-            )
+        if (flowableStore.leaveManage) {
+            //人事统计
+            flowableUI_Async_Routes.push({
+                meta: { title: '人事统计', icon: 'ri-bar-chart-2-line', roles: ['user'] },
+                parentTitle: '人事统计',
+                path: '/workIndex/leaveCount',
+                name: 'leaveCount',
+                children: [],
+                component: () => import('@/views/leaveCount/index.vue')
+            });
         }
         if (flowableStore.monitorManage) {
             //监控管理员
@@ -297,16 +296,16 @@ export async function checkRole(rolesArr = ['user']) {
                         parentTitle: '监控中心',
                         component: () => import('@/views/monitor/monitorBanjian.vue'),
                         name: 'workIndex_monitorBanjian',
-                        meta: { title: '监控办件', icon: 'ri-file-search-line', roles: ['user'] },
+                        meta: { title: '监控办件', icon: 'ri-file-search-line', roles: ['user'] }
                     },
                     {
                         path: '/workIndex/monitorChaosong',
                         parentTitle: '监控中心',
                         component: () => import('@/views/monitor/monitorChaosong.vue'),
                         name: 'workIndex_monitorChaosong',
-                        meta: { title: '监控阅件', icon: 'ri-video-chat-line', roles: ['user'] },
-                    },
-                ],
+                        meta: { title: '监控阅件', icon: 'ri-video-chat-line', roles: ['user'] }
+                    }
+                ]
             });
         }
         flowableUI_Async_Routes.forEach((item) => {

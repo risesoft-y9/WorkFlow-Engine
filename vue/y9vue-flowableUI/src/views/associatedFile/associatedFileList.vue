@@ -3,20 +3,30 @@
         <el-aside style="width: 100%; height: auto; overflow: auto; padding: 1% 0% 2% 0%">
             <y9Card :showHeader="false" style="width: 80%; height: calc(100% - 20px); margin: auto">
                 <div v-if="btnShow" class="margin-bottom-20 assFile">
-                    <el-button type="primary" @click="addAssociated" :size="fontSizeObj.buttonSize"
-                    :style="{ fontSize: fontSizeObj.baseFontSize }" plain
-                        ><i class="ri-file-add-line"></i>{{ $t('添加') }}</el-button
-                    >
-                    <el-button type="primary" @click="delAssociated" :size="fontSizeObj.buttonSize"
+                    <el-button
+                        :size="fontSizeObj.buttonSize"
                         :style="{ fontSize: fontSizeObj.baseFontSize }"
-                        ><i class="ri-delete-bin-line"></i>{{ $t('删除') }}</el-button
-                    >
+                        plain
+                        type="primary"
+                        @click="addAssociated"
+                        ><i class="ri-file-add-line"></i>{{ $t('添加') }}
+                    </el-button>
+                    <el-button
+                        :size="fontSizeObj.buttonSize"
+                        :style="{ fontSize: fontSizeObj.baseFontSize }"
+                        type="primary"
+                        @click="delAssociated"
+                        ><i class="ri-delete-bin-line"></i>{{ $t('删除') }}
+                    </el-button>
                 </div>
-                <y9Table :config="fileTableConfig" @select-all="handleSelectionChange" @select="handleSelectionChange">
+                <y9Table :config="fileTableConfig" @select="handleSelectionChange" @select-all="handleSelectionChange">
                     <template #title="{ row, column, index }">
-                        <el-link :style="{color: 'blue', fontSize: fontSizeObj.baseFontSize}" :underline="false" @click="openDoc(row)">{{
-                            row.documentTitle
-                        }}</el-link>
+                        <el-link
+                            :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
+                            :underline="false"
+                            @click="openDoc(row)"
+                            >{{ row.documentTitle }}
+                        </el-link>
                     </template>
                     <template #itembox="{ row, column, index }">
                         <font v-if="row.itembox == 'done'" style="color: #d81e06">{{ $t('办结') }}</font>
@@ -25,22 +35,24 @@
                         <font v-else></font>
                     </template>
                     <template #opt="{ row, column, index }">
-                        <el-link type="primary" :underline="false" @click="openHistoryList(row)">{{ $t('历程') }}</el-link>
+                        <el-link :underline="false" type="primary" @click="openHistoryList(row)"
+                            >{{ $t('历程') }}
+                        </el-link>
                     </template>
                 </y9Table>
 
                 <y9Dialog v-model:config="dialogConfig">
                     <addAssociatedFile
-                        ref="addAssociatedFileRef"
                         v-if="dialogConfig.type == 'addFile'"
+                        ref="addAssociatedFileRef"
+                        :dialogConfig="dialogConfig"
                         :itemId="itemId"
                         :processSerialNumber="processSerialNumber"
-                        :dialogConfig="dialogConfig"
                         :reloadTable="reloadTable"
                     />
                     <historyList
-                        ref="historyListRef"
                         v-if="dialogConfig.type == 'history'"
+                        ref="historyListRef"
                         :processInstanceId="processInstanceId"
                     />
                 </y9Dialog>
@@ -50,29 +62,29 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, inject, reactive } from 'vue';
+    import { computed, defineProps, inject, onMounted, reactive } from 'vue';
     import historyList from '@/views/process/historyList.vue';
-    import { getAssociatedFileList, delAssociatedFile } from '@/api/flowableUI/associatedFile';
+    import { delAssociatedFile, getAssociatedFileList } from '@/api/flowableUI/associatedFile';
     import addAssociatedFile from '@/views/associatedFile/addAssociatedFile.vue';
-    import { useSettingStore } from "@/store/modules/settingStore";
+    import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
-    const { t } = useI18n();    
-    const settingStore = useSettingStore()
+
+    const { t } = useI18n();
+    const settingStore = useSettingStore();
     let style = 'height:calc(100vh - 210px) !important; width: 100%;';
-    if(settingStore.pcLayout == 'Y9Horizontal'){
+    if (settingStore.pcLayout == 'Y9Horizontal') {
         style = 'height:calc(100vh - 240px) !important; width: 100%;';
     }
     // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo'); 
+    const fontSizeObj: any = inject('sizeObjInfo');
     const props = defineProps({
         basicData: {
             type: Object,
             default: () => {
                 return {};
-            },
+            }
         },
-        processSerialNumber: String,
+        processSerialNumber: String
     });
 
     const data = reactive({
@@ -85,14 +97,21 @@ import { computed } from 'vue';
             columns: [
                 { title: computed(() => t('序号')), type: 'index', width: '60' },
                 { title: computed(() => t('文件编号')), key: 'number', width: '180' },
-                { title: computed(() => t('标题')), key: 'documentTitle', slot: 'title', align: 'left', width: 'auto',minWidth:'200' },
+                {
+                    title: computed(() => t('标题')),
+                    key: 'documentTitle',
+                    slot: 'title',
+                    align: 'left',
+                    width: 'auto',
+                    minWidth: '200'
+                },
                 { title: computed(() => t('开始时间')), key: 'startTime', width: '170' },
                 { title: computed(() => t('状态')), key: 'itembox', width: '70', slot: 'itembox' },
-                { title: computed(() => t('操作')), key: 'opt', width: '70', slot: 'opt' },
+                { title: computed(() => t('操作')), key: 'opt', width: '70', slot: 'opt' }
             ],
             tableData: [],
             pageConfig: false,
-            border: 0,
+            border: 0
         },
         //弹窗配置
         dialogConfig: {
@@ -102,8 +121,8 @@ import { computed } from 'vue';
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {});
             },
-            visibleChange: (visible) => {},
-        },
+            visibleChange: (visible) => {}
+        }
     });
 
     let { btnShow, processSerialNumber, processInstanceId, itemId, multipleSelection, fileTableConfig, dialogConfig } =
@@ -141,7 +160,7 @@ import { computed } from 'vue';
             width: '65%',
             title: computed(() => t('添加关联流程')),
             type: 'addFile',
-            showFooter: false,
+            showFooter: false
         });
     }
 
@@ -180,9 +199,9 @@ import { computed } from 'vue';
         Object.assign(dialogConfig.value, {
             show: true,
             width: '75%',
-            title: t('历程')+'【' + row.documentTitle + '】',
+            title: t('历程') + '【' + row.documentTitle + '】',
             type: 'history',
-            showFooter: false,
+            showFooter: false
         });
     }
 
@@ -191,7 +210,9 @@ import { computed } from 'vue';
         // let pathName = window.document.location.pathname;
         // let pos = curPageUrl.indexOf(pathName);
         // let localhostPath = curPageUrl.substring(0, pos);
-        window.open(import.meta.env.VUE_APP_CONTEXT + 'index?processInstanceId=' +row.processInstanceId +'&type=fromHistory');
+        window.open(
+            import.meta.env.VUE_APP_CONTEXT + 'index?processInstanceId=' + row.processInstanceId + '&type=fromHistory'
+        );
     }
 </script>
 
@@ -199,6 +220,7 @@ import { computed } from 'vue';
     .el-main-table {
         padding: 0px;
     }
+
     .el-table__header-wrapper {
         border-top: 1px solid #ebeef5;
     }
@@ -208,10 +230,10 @@ import { computed } from 'vue';
     }
 </style>
 
-<style scoped lang="scss">
-.associat-file {
-    :global(.el-message .el-message__content) {
-        font-size: v-bind('fontSizeObj.baseFontSize');
+<style lang="scss" scoped>
+    .associat-file {
+        :global(.el-message .el-message__content) {
+            font-size: v-bind('fontSizeObj.baseFontSize');
+        }
     }
-}
 </style>

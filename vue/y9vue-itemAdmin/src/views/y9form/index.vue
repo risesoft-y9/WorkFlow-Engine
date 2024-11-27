@@ -9,65 +9,55 @@
 -->
 <template>
     <systemTree ref="itemTreeRef" @onTreeClick="onTreeClick">
-		<template #rightContainer>
+        <template #rightContainer>
             <tableManage ref="tableManageRef" :currTreeNodeInfo="currTreeNodeInfo"></tableManage>
-            <formManage ref="formManageRef" :currTreeNodeInfo="currTreeNodeInfo" ></formManage>
-		</template>
-	</systemTree>
+            <formManage ref="formManageRef" :currTreeNodeInfo="currTreeNodeInfo"></formManage>
+        </template>
+    </systemTree>
     <y9Dialog v-model:config="dialogConfig">
-		<itemForm ref="itemFormRef" isEditState="true"></itemForm>
-	</y9Dialog>
+        <itemForm ref="itemFormRef" isEditState="true"></itemForm>
+    </y9Dialog>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps, onMounted, watch,reactive} from 'vue';
-import type {ElMessageBox, ElMessage,ElLoading } from 'element-plus';
-import y9_storage from "@/utils/storage";
-import settings from '@/settings.ts';
-import systemTree from './systemTree.vue';
-import tableManage from "@/views/y9form/table/tableManage.vue";
-import formManage from "@/views/y9form/form/formManage.vue";
-import {saveItem,getItemList,deleteItem} from '@/api/itemAdmin/item/item';
-//数据
-const data = reactive({
-    currTreeNodeInfo:{},//当前tree节点的信息
-    //弹窗配置
-    dialogConfig: {
-        show: false,
-        title: "",
-        onOkLoading: true,
-        onOk: (newConfig) => {
-            return new Promise(async (resolve, reject) => {
-                let result = {success:false,msg:''};
-                ElNotification({
-                    title: result.success ? '成功' : '失败',
-                    message: result.msg,
-                    type: result.success ? 'success' : 'error',
-                    duration: 2000,
-                    offset: 80
+    import { reactive } from 'vue';
+    import systemTree from './systemTree.vue';
+    import tableManage from '@/views/y9form/table/tableManage.vue';
+    import formManage from '@/views/y9form/form/formManage.vue';
+    //数据
+    const data = reactive({
+        currTreeNodeInfo: {}, //当前tree节点的信息
+        //弹窗配置
+        dialogConfig: {
+            show: false,
+            title: '',
+            onOkLoading: true,
+            onOk: (newConfig) => {
+                return new Promise(async (resolve, reject) => {
+                    let result = { success: false, msg: '' };
+                    ElNotification({
+                        title: result.success ? '成功' : '失败',
+                        message: result.msg,
+                        type: result.success ? 'success' : 'error',
+                        duration: 2000,
+                        offset: 80
+                    });
+                    resolve();
                 });
-                resolve();
-            })
-        },
-        visibleChange:(visible) => {
-            if(!visible){
-                dialogConfig.value.onOkLoading = false;
+            },
+            visibleChange: (visible) => {
+                if (!visible) {
+                    dialogConfig.value.onOkLoading = false;
+                }
             }
         }
-    },
-})
+    });
 
-const {
-    currTreeNodeInfo,
-    dialogConfig,
-} = toRefs(data);
+    const { currTreeNodeInfo, dialogConfig } = toRefs(data);
 
-//点击tree的回调
-function onTreeClick(currTreeNode){
-    currTreeNodeInfo.value = currTreeNode;
-}
-
-
+    //点击tree的回调
+    function onTreeClick(currTreeNode) {
+        currTreeNodeInfo.value = currTreeNode;
+    }
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

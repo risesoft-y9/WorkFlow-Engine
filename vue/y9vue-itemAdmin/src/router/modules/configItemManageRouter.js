@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-07 16:44:57
  * @LastEditors: zhangchongjie
@@ -26,7 +26,7 @@ const configItemManageRouter = {
             meta: {
                 title: '日历配置',
                 icon: 'ri-calendar-2-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
         },
         {
@@ -36,7 +36,7 @@ const configItemManageRouter = {
             meta: {
                 title: '动态角色',
                 icon: 'ri-user-add-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
         },
         {
@@ -46,7 +46,7 @@ const configItemManageRouter = {
             meta: {
                 title: '意见框管理',
                 icon: 'ri-archive-drawer-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
         },
         {
@@ -56,7 +56,7 @@ const configItemManageRouter = {
             meta: {
                 title: '编号管理',
                 icon: 'ri-numbers-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
         },
         {
@@ -66,7 +66,7 @@ const configItemManageRouter = {
             meta: {
                 title: '按钮管理',
                 icon: 'ri-device-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
         },
         {
@@ -76,7 +76,7 @@ const configItemManageRouter = {
             meta: {
                 title: '数据字典',
                 icon: 'ri-price-tag-2-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
         },
         {
@@ -86,10 +86,10 @@ const configItemManageRouter = {
             meta: {
                 title: '视图类型',
                 icon: 'ri-eye-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
-        },
-    ],
+        }
+    ]
 };
 
 export default configItemManageRouter;

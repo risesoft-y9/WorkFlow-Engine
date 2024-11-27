@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-06-14 10:06:53
  * @LastEditors: zhangchongjie
@@ -15,7 +15,7 @@ const y9formRouter = {
     name: 'y9form',
     meta: {
         title: '表单管理',
-        roles: ['systemAdmin'],
+        roles: ['systemAdmin']
     },
     children: [
         {
@@ -25,10 +25,10 @@ const y9formRouter = {
             meta: {
                 title: '表单管理',
                 icon: 'ri-table-line',
-                roles: ['systemAdmin'],
-            },
-        },
-    ],
+                roles: ['systemAdmin']
+            }
+        }
+    ]
 };
 
 export default y9formRouter;

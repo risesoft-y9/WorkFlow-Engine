@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-06-02 16:44:07
  * @LastEditors: zhangchongjie
@@ -25,8 +25,8 @@ const processManageRouter = {
             meta: {
                 title: '流程设计',
                 icon: 'ri-list-settings-fill',
-                roles: ['systemAdmin'] 
-            },
+                roles: ['systemAdmin']
+            }
         },
         {
             path: '/processDeploy',
@@ -35,8 +35,8 @@ const processManageRouter = {
             meta: {
                 title: '流程部署',
                 icon: 'ri-install-line',
-                roles: ['systemAdmin'],
-            },
+                roles: ['systemAdmin']
+            }
         },
         {
             path: '/processControl',
@@ -45,8 +45,8 @@ const processManageRouter = {
             meta: {
                 title: '流程监控',
                 icon: 'ri-sound-module-line',
-                roles: ['systemAdmin'] 
-            },
+                roles: ['systemAdmin']
+            }
         }
     ]
 };
