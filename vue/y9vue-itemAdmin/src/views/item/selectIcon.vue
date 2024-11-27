@@ -9,68 +9,72 @@
 -->
 
 <template>
-	<div>
-		<el-input style="width:200px;margin-right: 10px;" v-model="iconName" placeholder="应用入口名称"></el-input>
-		<el-button type="primary" @click="iconSearch"><i class="ri-search-line"></i>搜索</el-button>
-		<el-table border style="width: 100%;margin-top: 16px;" height="450px" :data="iconList" highlight-current-row @current-change="handleCurrentChange">
-			<el-table-column prop="icon" label="默认图标" align="center" width="120">
-				<template #default="icon_cell">
-					<img style="width: 50px;" :src="'data:image/png;base64,'+icon_cell.row.iconData" />
-				</template>
-			</el-table-column>
-			<el-table-column prop="name" label="应用入口名称" align="center" width="auto"></el-table-column>
-		</el-table>
-	</div>
+    <div>
+        <el-input v-model="iconName" placeholder="应用入口名称" style="width: 200px; margin-right: 10px"></el-input>
+        <el-button type="primary" @click="iconSearch"><i class="ri-search-line"></i>搜索</el-button>
+        <el-table
+            :data="iconList"
+            border
+            height="450px"
+            highlight-current-row
+            style="width: 100%; margin-top: 16px"
+            @current-change="handleCurrentChange"
+        >
+            <el-table-column align="center" label="默认图标" prop="icon" width="120">
+                <template #default="icon_cell">
+                    <img :src="'data:image/png;base64,' + icon_cell.row.iconData" style="width: 50px" />
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="应用入口名称" prop="name" width="auto"></el-table-column>
+        </el-table>
+    </div>
 </template>
 <script lang="ts" setup>
-	import { $keyNameAssign, } from '@/utils/object.ts'
-	import {readAppIconFile,searchIcon} from "@/api/itemAdmin/item/item";
-	const props = defineProps({
-		iformDialogConfig: {//当前信息
-			type: Object,
-			default: () => { return {} }
-		},
-	})
+    import { readAppIconFile, searchIcon } from '@/api/itemAdmin/item/item';
 
-	const data = reactive({
-		iconList:[],
-		iconName:'',
-		iconData:''
-	})
+    const props = defineProps({
+        iformDialogConfig: {
+            //当前信息
+            type: Object,
+            default: () => {
+                return {};
+            }
+        }
+    });
 
-	let {
-		iconList,
-		iconName,
-		iconData
-	} = toRefs(data);
+    const data = reactive({
+        iconList: [],
+        iconName: '',
+        iconData: ''
+    });
 
-	defineExpose({
-		iconData
-	})
+    let { iconList, iconName, iconData } = toRefs(data);
 
-	onMounted(async ()=>{
-		props.iformDialogConfig.loading = true;
-		let res = await readAppIconFile();
-		props.iformDialogConfig.loading = false;
-		if(res.success){
-			iconList.value = res.data.iconList;
-		}
-	});
+    defineExpose({
+        iconData
+    });
 
-	async function iconSearch() {
-		props.iformDialogConfig.loading = true;
-		let res = await searchIcon(iconName.value);
-		if(res.success){
-			iconList.value = res.data.iconList;
-		}
-		props.iformDialogConfig.loading = false;
-	}
+    onMounted(async () => {
+        props.iformDialogConfig.loading = true;
+        let res = await readAppIconFile();
+        props.iformDialogConfig.loading = false;
+        if (res.success) {
+            iconList.value = res.data.iconList;
+        }
+    });
 
-	async function handleCurrentChange(val) {
-        iconData.value = "data:image/png;base64," + val.iconData;
+    async function iconSearch() {
+        props.iformDialogConfig.loading = true;
+        let res = await searchIcon(iconName.value);
+        if (res.success) {
+            iconList.value = res.data.iconList;
+        }
+        props.iformDialogConfig.loading = false;
+    }
+
+    async function handleCurrentChange(val) {
+        iconData.value = 'data:image/png;base64,' + val.iconData;
     }
 </script>
 
-<style lang="scss" scoped>
-	
-</style>
+<style lang="scss" scoped></style>

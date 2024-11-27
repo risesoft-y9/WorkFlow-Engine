@@ -1,45 +1,53 @@
 <template>
     <div class="margin-bottom-20">
         <el-input
-            @keyup.enter.native="reloadTable()"
             v-model="userName"
             :placeholder="$t('请输入接收人姓名')"
-            :size="fontSizeObj.buttonSize" 
+            :size="fontSizeObj.buttonSize"
             :style="{ fontSize: fontSizeObj.baseFontSize }"
-            style="width: 200px"
             clearable
+            style="width: 200px"
+            @keyup.enter.native="reloadTable()"
         ></el-input>
-        <el-button style="margin-left: 10px" type="primary" @click="reloadTable"
-        :size="fontSizeObj.buttonSize" :style="{ fontSize: fontSizeObj.baseFontSize }"
-            ><i class="ri-search-line"></i>{{ $t('搜索') }}</el-button
-        >
-        <el-button v-if="type == 'my'" type="primary" @click="delChaoSong" :size="fontSizeObj.buttonSize"
+        <el-button
+            :size="fontSizeObj.buttonSize"
             :style="{ fontSize: fontSizeObj.baseFontSize }"
-            ><i class="ri-folder-received-line"></i>{{ $t('收回') }}</el-button
-        >
+            style="margin-left: 10px"
+            type="primary"
+            @click="reloadTable"
+            ><i class="ri-search-line"></i>{{ $t('搜索') }}
+        </el-button>
+        <el-button
+            v-if="type == 'my'"
+            :size="fontSizeObj.buttonSize"
+            :style="{ fontSize: fontSizeObj.baseFontSize }"
+            type="primary"
+            @click="delChaoSong"
+            ><i class="ri-folder-received-line"></i>{{ $t('收回') }}
+        </el-button>
     </div>
     <y9Table
         :config="tableConfig"
+        @select="handleSelectionChange"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
         @select-all="handleSelectionChange"
-        @select="handleSelectionChange"
     >
     </y9Table>
 </template>
 
 <script lang="ts" setup>
-    import {inject, reactive} from 'vue';
-    import { getChaoSongList, deleteList } from '@/api/flowableUI/chaoSong';
+    import { computed, inject, reactive } from 'vue';
+    import { deleteList, getChaoSongList } from '@/api/flowableUI/chaoSong';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
+
     const { t } = useI18n();
     const props = defineProps({
         processInstanceId: String,
-        type: String,
+        type: String
     });
     // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo'); 
+    const fontSizeObj: any = inject('sizeObjInfo');
     const data = reactive({
         userName: '',
         multipleSelection: [],
@@ -47,22 +55,22 @@ import { computed } from 'vue';
             //表格配置
             columns: [
                 { title: '', type: 'selection', width: '50', fixed: 'left' },
-                { title: computed(() =>t('序号')), type: 'index', width: '60' },
-                { title: computed(() =>t('抄送人')), key: 'senderName', width: '180' },
-                { title: computed(() =>t('抄送部门')), key: 'sendDeptName' },
-                { title: computed(() =>t('抄送时间')), key: 'createTime', width: '140' },
-                { title: computed(() =>t('接收人')), key: 'userName', width: '180' },
-                { title: computed(() =>t('接收部门')), key: 'userDeptName' },
-                { title: computed(() =>t('阅读时间')), key: 'readTime', width: '140' },
+                { title: computed(() => t('序号')), type: 'index', width: '60' },
+                { title: computed(() => t('抄送人')), key: 'senderName', width: '180' },
+                { title: computed(() => t('抄送部门')), key: 'sendDeptName' },
+                { title: computed(() => t('抄送时间')), key: 'createTime', width: '140' },
+                { title: computed(() => t('接收人')), key: 'userName', width: '180' },
+                { title: computed(() => t('接收部门')), key: 'userDeptName' },
+                { title: computed(() => t('阅读时间')), key: 'readTime', width: '140' }
             ],
             tableData: [],
             pageConfig: {
                 currentPage: 1,
                 pageSize: 20,
                 total: 0,
-                pageSizeOpts:[10, 20, 30, 50, 100]
-            },
-        },
+                pageSizeOpts: [10, 20, 30, 50, 100]
+            }
+        }
     });
 
     let { userName, multipleSelection, tableConfig } = toRefs(data);
@@ -80,6 +88,7 @@ import { computed } from 'vue';
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -120,9 +129,9 @@ import { computed } from 'vue';
 </script>
 
 <style scoped>
-.margin-bottom-20 {
-    :global(.el-message .el-message__content) {
-        font-size: v-bind('fontSizeObj.baseFontSize');
+    .margin-bottom-20 {
+        :global(.el-message .el-message__content) {
+            font-size: v-bind('fontSizeObj.baseFontSize');
+        }
     }
-}
 </style>

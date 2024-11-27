@@ -8,26 +8,26 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #buttonslot>
             <el-button
-                class="global-btn-main"
-                @click="reloadTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="reloadTable"
             >
                 <i class="ri-search-line"></i>
                 <span>{{ $t('搜索') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -45,40 +45,41 @@
         <template #follow="{ row, column, index }">
             <i
                 v-if="row.follow"
-                @click="delFollow(row)"
+                :style="{ fontSize: fontSizeObj.extrarLargeFont, color: '#ffb800' }"
                 :title="$t('点击取消关注')"
                 class="ri-star-line"
-                :style="{ fontSize: fontSizeObj.extrarLargeFont, color: '#ffb800' }"
+                @click="delFollow(row)"
             ></i>
             <i
                 v-else
+                :style="{ fontSize: fontSizeObj.largeFontSize }"
+                :title="$t('点击关注')"
                 class="ri-star-fill"
                 @click="saveFollow(row)"
-                :title="$t('点击关注')"
-                :style="{ fontSize: fontSizeObj.largeFontSize }"
             ></i>
         </template>
         <template #optButton="{ row, column, index }">
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openHistoryList(row)"
             >
                 <i class="ri-sound-module-fill"></i>{{ $t('历程') }}
             </el-button>
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openFlowChart(row)"
-                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}</el-button
-            >
-            <el-button v-if="settings.huifudaiban"
-                size="small"
-                :style="{ fontSize: fontSizeObj.smallFontSize }"
+                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}
+            </el-button>
+            <el-button
+                v-if="settings.huifudaiban"
                 :class="{ 'margin-button': fontSizeObj.buttonSize == 'large' }"
+                :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="resumeTodo(row)"
             >
                 <i class="ri-restart-line"></i>{{ $t('恢复待办') }}
@@ -86,16 +87,25 @@
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
-        <HistoryList v-if="dialogConfig.type == 'process'" ref="historyListRef" :processInstanceId="processInstanceId" />
-        <flowChart v-if="dialogConfig.type == 'flowChart'" ref="flowchartRef" :processDefinitionId="processDefinitionId" :processInstanceId="processInstanceId"/>
+        <HistoryList
+            v-if="dialogConfig.type == 'process'"
+            ref="historyListRef"
+            :processInstanceId="processInstanceId"
+        />
+        <flowChart
+            v-if="dialogConfig.type == 'flowChart'"
+            ref="flowchartRef"
+            :processDefinitionId="processDefinitionId"
+            :processInstanceId="processInstanceId"
+        />
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject, computed } from 'vue';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
     import HistoryList from '@/views/process/historyList.vue';
-    import flowChart from "@/views/flowchart/index4List.vue";
-    import { getDoneList, searchDoneList, doneViewConf } from '@/api/flowableUI/workList';
-    import { saveOfficeFollow, delOfficeFollow } from '@/api/flowableUI/follow';
+    import flowChart from '@/views/flowchart/index4List.vue';
+    import { doneViewConf, getDoneList } from '@/api/flowableUI/workList';
+    import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
     import { buttonApi } from '@/api/flowableUI/buttonOpt';
     import { useRoute, useRouter } from 'vue-router';
     import settings from '@/settings';
@@ -104,6 +114,7 @@
     import { useSettingStore } from '@/store/modules/settingStore';
     import { getOptionValueList } from '@/api/flowableUI/form';
     import { useI18n } from 'vue-i18n';
+
     const { t } = useI18n();
     const settingStore = useSettingStore();
     const router = useRouter();
@@ -171,7 +182,7 @@
             }
         },
         tableName: '', //表名
-        processDefinitionId:''
+        processDefinitionId: ''
     });
 
     let {
@@ -221,6 +232,7 @@
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -365,8 +377,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            type:'process',
-            title: t('历程')+'【' + row.title + '】',
+            type: 'process',
+            title: t('历程') + '【' + row.title + '】',
             showFooter: false
         });
     }
@@ -377,8 +389,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            type:'flowChart',
-            title: t('流程图')+'【' + row.title + '】',
+            type: 'flowChart',
+            title: t('流程图') + '【' + row.title + '】',
             showFooter: false
         });
     }
@@ -464,9 +476,11 @@
     :global(.el-message-box .el-message-box__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
+
     :global(.el-message-box .el-message-box__title) {
         font-size: v-bind('fontSizeObj.largeFontSize');
     }
+
     :global(.el-message-box .el-message-box__btns button) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }

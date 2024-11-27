@@ -14,10 +14,8 @@ import { useSettingStore } from '@/store/modules/settingStore';
 import y9_storage from '@/utils/storage';
 import NProgress from 'nprogress'; // progress bar
 import { $y9_SSO } from '../main';
-import { getLoginInfo } from './getInitData';
 
 NProgress.configure({ showSpinner: false, easing: 'ease', speed: 1000 });
-
 
 // 路由白名单过滤
 function routerWriteList(array, path) {
@@ -57,9 +55,10 @@ export async function checkWriteList(to, from) {
 }
 
 let userRole = ['user'];
+
 async function check() {
     let isTokenValid, isRoleValid;
-    
+
     // access_token 是否过期
     isTokenValid = await $y9_SSO.checkToken();
     // console.log(`isTokenValid=${isTokenValid}`);
@@ -71,7 +70,7 @@ async function check() {
 
     if (y9UserInfo.managerLevel === 0) {
         userRole = ['user'];
-    } 
+    }
 
     isRoleValid = (await checkRole(userRole)) ? true : false;
     // 根据角色权限获取路由
@@ -99,10 +98,10 @@ async function check() {
     } else {
         if (!isTokenValid || !isRoleValid) {
             await $y9_SSO.ssoLogout({
-                logoutUrl: import.meta.env.VUE_APP_SSO_LOGOUT_URL + import.meta.env.VUE_APP_NAME + '/',
+                logoutUrl: import.meta.env.VUE_APP_SSO_LOGOUT_URL + import.meta.env.VUE_APP_NAME + '/'
             });
         }
-       
+
         return false;
     }
 }
@@ -117,7 +116,6 @@ function isFresh(role, path) {
     // });
     return fresh;
 }
-
 
 // 所有路由上带的参数塞到一个对象里
 const parseQueryString = (string) => {
@@ -164,24 +162,24 @@ export const routerBeforeEach = async (to, from) => {
     if (isWriteRoute) {
         return true;
     }
-  
+
     let CHECK = await check();
     // console.log(`CHECK = ${CHECK}`);
     if (CHECK) {
         // console.log(await router.getRoutes(),router,from,to, router.hasRoute(to.name));
         if (!to.name) {
-            let array = await router.getRoutes()
+            let array = await router.getRoutes();
             // console.log(to, array)
-            array.forEach(item => {
+            array.forEach((item) => {
                 if (item.path === to.path && item.name) {
                     // console.log("=====", router.hasRoute(item.name));
-                    router.push({...to, name: item.name})
+                    router.push({ ...to, name: item.name });
                 }
             });
-        }else{
+        } else {
             return true;
         }
-    }else {
+    } else {
         await $y9_SSO.checkLogin();
     }
 

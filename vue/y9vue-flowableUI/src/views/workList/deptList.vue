@@ -8,17 +8,17 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #search>
             <el-button
-                type="primary"
-                @click="reloadTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                type="primary"
+                @click="reloadTable"
             >
                 <i class="ri-search-line"></i>
                 <span>{{ $t('搜索') }}</span>
@@ -26,10 +26,10 @@
         </template>
         <template #update>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -51,11 +51,11 @@
         </template>
         <template #opt="{ row, column, index }">
             <el-button
+                :size="fontSizeObj.buttonSize"
+                :style="{ fontSize: fontSizeObj.baseFontSize }"
                 class="global-btn-third"
                 size="small"
                 @click="openHistoryList(row)"
-                :size="fontSizeObj.buttonSize"
-                :style="{ fontSize: fontSizeObj.baseFontSize }"
             >
                 <i class="ri-sound-module-fill"></i>{{ $t('历程') }}
             </el-button>
@@ -66,17 +66,16 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { ref, toRefs, onMounted, watch, reactive, inject } from 'vue';
+    import { computed, inject, onMounted, reactive, toRefs, watch } from 'vue';
     import historyList from '@/views/process/historyList.vue';
     import { deptList } from '@/api/flowableUI/monitor';
     import { useRoute, useRouter } from 'vue-router';
-    import settings from '@/settings';
     import y9_storage from '@/utils/storage';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
-    const { t } = useI18n();    
+
+    const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
     const settingStore = useSettingStore();
@@ -245,6 +244,7 @@ import { computed } from 'vue';
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -297,7 +297,7 @@ import { computed } from 'vue';
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            title: t('历程')+'【' + row.documentTitle + '】',
+            title: t('历程') + '【' + row.documentTitle + '】',
             type: 'history',
             showFooter: false
         });
@@ -310,6 +310,7 @@ import { computed } from 'vue';
         color: white !important;
         cursor: pointer;
     }
+
     .searchList .searchName {
         padding: 0 10px;
     }

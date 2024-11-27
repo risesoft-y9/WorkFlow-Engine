@@ -8,26 +8,26 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #button>
             <el-button
-                class="global-btn-main"
-                @click="showQuery"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="showQuery"
             >
                 <i class="ri-search-eye-line"></i>
                 <span>{{ $t('高级搜索') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -38,24 +38,26 @@
                 :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
                 :underline="false"
                 @click="openDoc(row)"
-                >{{ row.title == '' ? $t('未定义标题') : row.title }}</el-link
-            >
+                >{{ row.title == '' ? $t('未定义标题') : row.title }}
+            </el-link>
         </template>
         <template #itembox="{ row, column, index }">
-            <font v-if="row.itembox == 'done'" :style="{ color: '#d81e06', fontSize: fontSizeObj.baseFontSize }"
-                >{{ $t('办结') }}</font
-            >
-            <font v-else-if="row.itembox == 'doing'" :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('在办') }}</font>
-            <font v-else-if="row.itembox == 'todo'" :style="{ color: '#228b22', fontSize: fontSizeObj.baseFontSize }"
-                >{{ $t('待办') }}</font
-            >
+            <font v-if="row.itembox == 'done'" :style="{ color: '#d81e06', fontSize: fontSizeObj.baseFontSize }">{{
+                $t('办结')
+            }}</font>
+            <font v-else-if="row.itembox == 'doing'" :style="{ fontSize: fontSizeObj.baseFontSize }">{{
+                $t('在办')
+            }}</font>
+            <font v-else-if="row.itembox == 'todo'" :style="{ color: '#228b22', fontSize: fontSizeObj.baseFontSize }">{{
+                $t('待办')
+            }}</font>
             <font v-else></font>
         </template>
         <template #optButton="{ row, column, index }">
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openHistoryList(row)"
             >
                 <i class="ri-sound-module-fill"></i>{{ $t('历程') }}
@@ -64,11 +66,11 @@
     </y9Table>
     <el-drawer
         v-model="drawer"
-        :title="$t('高级搜索')"
-        :direction="direction"
         :append-to-body="true"
-        custom-class="querydrawer"
+        :direction="direction"
         :size="450"
+        :title="$t('高级搜索')"
+        custom-class="querydrawer"
     >
         <el-form :model="form" label-width="100px">
             <el-form-item :label="$t('状态')">
@@ -82,12 +84,12 @@
             <el-form-item :label="$t('开始时间')">
                 <el-date-picker
                     v-model="form.createDate"
-                    type="daterange"
-                    unlink-panels
                     :range-separator="$t('至')"
                     :shortcuts="shortcuts"
-                    value-format="YYYY-MM-DD"
                     clearable
+                    type="daterange"
+                    unlink-panels
+                    value-format="YYYY-MM-DD"
                 />
             </el-form-item>
             <template v-for="item in formField">
@@ -98,12 +100,12 @@
                     <template v-if="item.queryType == 'date'">
                         <el-date-picker
                             v-model="item.value"
-                            type="daterange"
-                            unlink-panels
                             :range-separator="$t('至')"
                             :shortcuts="shortcuts"
-                            value-format="YYYY-MM-DD"
                             clearable
+                            type="daterange"
+                            unlink-panels
+                            value-format="YYYY-MM-DD"
                         />
                     </template>
                     <template v-if="item.queryType == 'select'">
@@ -139,28 +141,28 @@
         <template #footer>
             <div style="flex: auto">
                 <el-button
-                    class="global-btn-main"
-                    @click="queryList"
                     :size="fontSizeObj.buttonSize"
                     :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    class="global-btn-main"
+                    @click="queryList"
                 >
                     <i class="ri-search-line"></i>
                     <span>{{ $t('查询') }}</span>
                 </el-button>
                 <el-button
-                    class="global-btn-third"
-                    @click="clearQuery"
                     :size="fontSizeObj.buttonSize"
                     :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    class="global-btn-third"
+                    @click="clearQuery"
                 >
                     <i class="ri-repeat-line"></i>
                     <span>{{ $t('清空') }}</span>
                 </el-button>
                 <el-button
-                    class="global-btn-third"
-                    @click="drawer = false"
                     :size="fontSizeObj.buttonSize"
                     :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    class="global-btn-third"
+                    @click="drawer = false"
                 >
                     <i class="ri-close-line"></i>
                     <span>{{ $t('取消') }}</span>
@@ -173,14 +175,15 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject, computed } from 'vue';
+    import { computed, inject, onMounted, reactive } from 'vue';
     import historyList from '@/views/process/historyList.vue';
     import { getFormField, getOptionValueList } from '@/api/flowableUI/form';
     import { getQueryList, viewConf } from '@/api/flowableUI/workList';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
+
     const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
@@ -355,6 +358,7 @@
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -513,7 +517,7 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            title: t('历程')+'【' + row.title + '】',
+            title: t('历程') + '【' + row.title + '】',
             type: 'history',
             showFooter: false
         });
@@ -524,9 +528,11 @@
         padding-bottom: 22px !important;
         border-bottom: 1px solid #f4f4f4 !important;
     }
+
     .querydrawer .el-drawer__body {
         padding-top: 0 !important;
     }
+
     .querydrawer .el-select {
         width: 100%;
     }
@@ -542,9 +548,11 @@
     :global(.el-message-box .el-message-box__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
+
     :global(.el-message-box .el-message-box__title) {
         font-size: v-bind('fontSizeObj.largeFontSize');
     }
+
     :global(.el-message-box .el-message-box__btns button) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }

@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-06-02 16:44:07
  * @LastEditors: zhangchongjie
@@ -11,23 +11,23 @@ const flowableIndexRouter = [
     {
         path: '/index',
         component: () => import('@/layouts/index.vue'),
-        name:'index',
+        name: 'index',
         redirect: '/index/work',
         meta: {
             title: '工作台',
-            roles: ['user'],
+            roles: ['user']
         },
-        children:[
+        children: [
             {
                 path: '/index/work',
                 component: () => import('@/views/index/work.vue'),
                 name: 'index_work',
-                hidden:true,
+                hidden: true,
                 meta: {
                     title: 'work',
                     icon: 'ri-file-add-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/add',
@@ -36,8 +36,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '新建',
                     icon: 'ri-file-add-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/draft',
@@ -46,8 +46,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '草稿箱',
                     icon: 'ri-draft-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/todo',
@@ -57,7 +57,7 @@ const flowableIndexRouter = [
                     title: '待办件',
                     icon: 'ri-todo-line',
                     roles: ['user']
-                },
+                }
             },
             {
                 path: '/index/doing',
@@ -66,8 +66,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '在办件',
                     icon: 'ri-repeat-fill',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/done',
@@ -76,8 +76,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '办结件',
                     icon: 'ri-time-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/queryList',
@@ -86,8 +86,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '综合查询',
                     icon: 'ri-search-eye-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/draftRecycle',
@@ -96,35 +96,36 @@ const flowableIndexRouter = [
                 meta: {
                     title: '回收站',
                     icon: 'ri-delete-bin-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/edit',
                 component: () => import('@/views/workForm/newDocument.vue'),
-                hidden:true,
-                props: route => ({ 
-                    itemId: route.query.itemId, 
-                    processSerialNumber:route.query.processSerialNumber,
-                    itembox:route.query.itembox,
-                    currPage:route.query.currPage,
-                    listType:route.query.listType}),
+                hidden: true,
+                props: (route) => ({
+                    itemId: route.query.itemId,
+                    processSerialNumber: route.query.processSerialNumber,
+                    itembox: route.query.itembox,
+                    currPage: route.query.currPage,
+                    listType: route.query.listType
+                }),
                 name: 'editIndex',
                 meta: {
                     title: '编辑/查看',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/deptList',
                 component: () => import('@/views/workList/deptList.vue'),
-                hidden:true,
+                hidden: true,
                 name: 'deptListIndex',
                 meta: {
                     title: '单位所有件',
                     icon: 'ri-file-list-3-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/monitorDoing',
@@ -133,8 +134,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '监控在办',
                     icon: 'ri-video-download-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/index/monitorDone',
@@ -143,21 +144,21 @@ const flowableIndexRouter = [
                 meta: {
                     title: '监控办结',
                     icon: 'ri-vidicon-line',
-                    roles: ['user'] 
-                },
-            },
+                    roles: ['user']
+                }
+            }
         ]
     },
     {
         path: '/cplane',
         component: () => import('@/layouts/index.vue'),
-        name:'cplane',
+        name: 'cplane',
         redirect: '/cplane/list',
         meta: {
             title: '我的协作',
-            roles: ['user'],
+            roles: ['user']
         },
-        children:[
+        children: [
             {
                 path: '/cplane/list',
                 component: () => import('@/views/cplane/index.vue'),
@@ -165,22 +166,22 @@ const flowableIndexRouter = [
                 meta: {
                     title: '协作状态',
                     icon: 'ri-equalizer-line',
-                    roles: ['user'] 
-                },
-            },
+                    roles: ['user']
+                }
+            }
         ]
     },
     {
         path: '/workIndex',
         component: () => import('@/layouts/index.vue'),
-        name:'workIndex_1',
+        name: 'workIndex_1',
         redirect: '/workIndex/work',
-        hidden:true,
+        hidden: true,
         meta: {
             title: '工作台',
-            roles: ['user'],
+            roles: ['user']
         },
-        children:[
+        children: [
             {
                 path: '/workIndex/work',
                 component: () => import('@/views/workIndex/work.vue'),
@@ -188,8 +189,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: 'work',
                     icon: 'ri-file-add-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/add',
@@ -198,8 +199,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '新建',
                     icon: 'ri-file-add-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/draft',
@@ -208,10 +209,10 @@ const flowableIndexRouter = [
                 meta: {
                     title: '草稿箱',
                     icon: 'ri-draft-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
-             {
+            {
                 path: '/workIndex/todo',
                 name: 'workIndex_todo_1',
                 component: () => import('@/views/workList/todo.vue'),
@@ -219,7 +220,7 @@ const flowableIndexRouter = [
                     title: '待办件',
                     icon: 'ri-article-line',
                     roles: ['user']
-                },
+                }
             },
             {
                 path: '/workIndex/doing',
@@ -228,8 +229,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '在办件',
                     icon: 'ri-repeat-fill',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/done',
@@ -238,8 +239,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '办结件',
                     icon: 'ri-record-circle-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/draftRecycle',
@@ -248,8 +249,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '回收站',
                     icon: 'ri-delete-bin-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/follow',
@@ -258,41 +259,43 @@ const flowableIndexRouter = [
                 meta: {
                     title: '我的关注',
                     icon: 'ri-message-2-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/edit',
                 component: () => import('@/views/workForm/newDocument.vue'),
-                hidden:true,
-                props: route => ({ 
-                    itemId: route.query.itemId, 
-                    processSerialNumber:route.query.processSerialNumber,
-                    itembox:route.query.itembox,
-                    currPage:route.query.currPage,
-                    listType:route.query.listType}),
+                hidden: true,
+                props: (route) => ({
+                    itemId: route.query.itemId,
+                    processSerialNumber: route.query.processSerialNumber,
+                    itembox: route.query.itembox,
+                    currPage: route.query.currPage,
+                    listType: route.query.listType
+                }),
                 name: 'workIndex_editIndex_1',
                 meta: {
                     title: '编辑/查看',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/csEdit',
                 component: () => import('@/views/chaoSong/csDocument.vue'),
-                hidden:true,
-                props: route => ({ 
-                    itemId: route.query.itemId, 
-                    id:route.query.id,
-                    processInstanceId:route.query.processInstanceId,
-                    status:route.query.status,
-                    currPage:route.query.currPage,
-                    listType:route.query.listType}),
+                hidden: true,
+                props: (route) => ({
+                    itemId: route.query.itemId,
+                    id: route.query.id,
+                    processInstanceId: route.query.processInstanceId,
+                    status: route.query.status,
+                    currPage: route.query.currPage,
+                    listType: route.query.listType
+                }),
                 name: 'workIndex_csEdit_1',
                 meta: {
                     title: '编辑/查看',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/csTodo',
@@ -301,8 +304,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '未阅件',
                     icon: 'ri-message-2-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/csDone',
@@ -311,8 +314,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '已阅件',
                     icon: 'ri-chat-check-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/csPiyue',
@@ -321,8 +324,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '批阅件',
                     icon: 'ri-chat-heart-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/searchList',
@@ -331,8 +334,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '个人所有件',
                     icon: 'ri-file-list-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/yuejianList',
@@ -341,8 +344,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '阅件',
                     icon: 'ri-chat-poll-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/emailList',
@@ -351,8 +354,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '公务邮件',
                     icon: 'ri-mail-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/leaveCount',
@@ -361,8 +364,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '人事统计',
                     icon: 'ri-bar-chart-2-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/monitorBanjian',
@@ -371,8 +374,8 @@ const flowableIndexRouter = [
                 meta: {
                     title: '监控办件',
                     icon: 'ri-file-search-line',
-                    roles: ['user'] 
-                },
+                    roles: ['user']
+                }
             },
             {
                 path: '/workIndex/monitorChaosong',
@@ -381,47 +384,48 @@ const flowableIndexRouter = [
                 meta: {
                     title: '监控阅件',
                     icon: 'ri-video-chat-line_1',
-                    roles: ['user'] 
-                },
-            },
+                    roles: ['user']
+                }
+            }
         ]
     },
     {
         path: '/print',
         component: () => import('@/views/print/printIndex.vue'),
         name: 'printIndex',
-        hidden:true,
-        props: route => ({ 
-            formId: route.query.formId, 
-            processSerialNumber:route.query.processSerialNumber,
-            processInstanceId:route.query.processInstanceId,
-            processDefinitionId:route.query.processDefinitionId,
-            taskDefKey:route.query.taskDefKey,
-            activitiUser:route.query.activitiUser,
-            itemId:route.query.itemId}),
+        hidden: true,
+        props: (route) => ({
+            formId: route.query.formId,
+            processSerialNumber: route.query.processSerialNumber,
+            processInstanceId: route.query.processInstanceId,
+            processDefinitionId: route.query.processDefinitionId,
+            taskDefKey: route.query.taskDefKey,
+            activitiUser: route.query.activitiUser,
+            itemId: route.query.itemId
+        }),
         meta: {
             title: '打印',
-            roles: ['user'] 
-        },
+            roles: ['user']
+        }
     },
     {
         path: '/search/work',
         component: () => import('@/views/search/work.vue'),
-        name:'search_1',
-        hidden:true,
+        name: 'search_1',
+        hidden: true,
         meta: {
             title: '工作台',
-            roles: ['user'],
+            roles: ['user']
         }
     },
     {
         path: '/readIndex',
         component: () => import('@/views/chaoSong/work.vue'),
-        name:'schaosong_1',
-        hidden:true,
+        name: 'schaosong_1',
+        hidden: true,
         meta: {
             title: '工作台',
-            roles: ['user'],
+            roles: ['user']
         }
     }
 
@@ -442,7 +446,7 @@ const flowableIndexRouter = [
     //             meta: {
     //                 title: '未处理',
     //                 icon: 'ri-star-line',
-    //                 roles: ['user'] 
+    //                 roles: ['user']
     //             },
     //         }
     //     ]
@@ -464,7 +468,7 @@ const flowableIndexRouter = [
     //             meta: {
     //                 title: '已处理',
     //                 icon: 'ri-star-fill',
-    //                 roles: ['user'] 
+    //                 roles: ['user']
     //             },
     //         }
     //     ]
@@ -483,8 +487,8 @@ const flowableIndexRouter = [
     //         {
     //             path: '/wedit/index',
     //             component: () => import('@/views/mainIndex/index.vue'),
-    //             props: route => ({ 
-    //                 itemId: route.query.itemId, 
+    //             props: route => ({
+    //                 itemId: route.query.itemId,
     //                 processSerialNumber:route.query.processSerialNumber,
     //                 itembox:route.query.itembox,
     //                 currPage:route.query.currPage,
@@ -492,13 +496,12 @@ const flowableIndexRouter = [
     //             name: 'weditIndex',
     //             meta: {
     //                 title: '编辑/查看',
-    //                 roles: ['user'] 
+    //                 roles: ['user']
     //             },
     //         }
     //     ]
-        
+
     // },
-    
 ];
 
 export default flowableIndexRouter;

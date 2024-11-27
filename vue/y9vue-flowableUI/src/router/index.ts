@@ -12,7 +12,6 @@ import NProgress from 'nprogress';
 import { createRouter, createWebHistory } from 'vue-router';
 import flowableIndexRouter from './modules/flowableIndexRouter';
 import homeRouter from './modules/homeRouter';
-import {getItemList} from "@/api/flowableUI/index";
 //constantRoutes为不需要动态判断权限的路由，如登录、404、500等
 export const constantRoutes: Array<any> = [
     {
@@ -32,7 +31,7 @@ export const constantRoutes: Array<any> = [
         path: '/index',
         name: 'index1',
         hidden: true,
-        redirect: '/index/work',
+        redirect: '/index/work'
     },
     {
         path: '/401',
@@ -40,7 +39,7 @@ export const constantRoutes: Array<any> = [
         meta: {
             title: 'Not Permission'
         },
-        component: () => import('@/views/401/index.vue'),
+        component: () => import('@/views/401/index.vue')
     },
     {
         path: '/404',
@@ -48,18 +47,18 @@ export const constantRoutes: Array<any> = [
         meta: {
             title: 'Not Found'
         },
-        component: () => import('@/views/404/index.vue'),
+        component: () => import('@/views/404/index.vue')
     }
 ];
 // 懒加载
 const lazy = (path) => {
     // return import.meta.glob(`./${path}`)
     return () => import(`@/views/${path}.vue`);
-}
-let routes:RouteRecordRaw[] = []
-const isSsoSuccess = sessionStorage.getItem(import.meta.env.VUE_APP_SSO_SITETOKEN_KEY);//判断单点登录是否成功
+};
+let routes: RouteRecordRaw[] = [];
+const isSsoSuccess = sessionStorage.getItem(import.meta.env.VUE_APP_SSO_SITETOKEN_KEY); //判断单点登录是否成功
 
-if(isSsoSuccess){
+if (isSsoSuccess) {
 }
 //asyncRoutes需求动态判断权限并动态添加的页面  这里的路由模块顺序也是菜单显示的顺序（位置：src->router->modules）
 export const asyncRoutes = [
@@ -80,5 +79,5 @@ const router = createRouter({
 router.beforeEach(routerBeforeEach);
 router.afterEach(() => {
     NProgress.done();
-  });
+});
 export default router;

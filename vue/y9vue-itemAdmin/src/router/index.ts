@@ -7,19 +7,15 @@
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\router\index.ts
  */
 
-import { routerBeforeEach } from '@/router/checkRouter';
+import {routerBeforeEach} from '@/router/checkRouter';
 import NProgress from 'nprogress';
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import itemListRouter from './modules/itemListRouter';
-import homeRouter from './modules/homeRouter';
 import y9formRouter from './modules/y9formRouter';
-import printTemplateRouter from './modules/printTemplateRouter';
 //import entrustRouter from './modules/entrustRouter';
-import sendReceiveRouter from './modules/sendReceiveRouter';
 import docIntroRouter from './modules/docIntroRouter';
- 
-import configItemManageRouter from './modules/configItemManageRouter';
 
+import configItemManageRouter from './modules/configItemManageRouter';
 
 //流程相关
 import processManageRouter from './modules/processManageRouter';
@@ -30,7 +26,7 @@ export const constantRoutes: Array<any> = [
         path: '/',
         name: 'index',
         hidden: true,
-        redirect: '/modelNew',
+        redirect: '/modelNew'
     },
     {
         path: '/401',
@@ -38,7 +34,7 @@ export const constantRoutes: Array<any> = [
         meta: {
             title: 'Not Permission'
         },
-        component: () => import('@/views/401/index.vue'),
+        component: () => import('@/views/401/index.vue')
     },
     {
         path: '/404',
@@ -46,7 +42,7 @@ export const constantRoutes: Array<any> = [
         meta: {
             title: 'Not Found'
         },
-        component: () => import('@/views/404/index.vue'),
+        component: () => import('@/views/404/index.vue')
     }
 ];
 
@@ -61,17 +57,14 @@ export const asyncRoutes = [
     // printTemplateRouter,
     //entrustRouter,
     // sendReceiveRouter,
-    
-    
-    // 引入其他模块路由
 
-   
+    // 引入其他模块路由
 ];
 
 //创建路由模式，采用history模式没有“#”
 const router = createRouter({
     history: createWebHistory(import.meta.env.VUE_APP_PUBLIC_PATH),
-    routes: constantRoutes,
+    routes: constantRoutes
 });
 
 //在用户点击前，进入routerBeforeEach去判断用户是否有权限
@@ -79,5 +72,5 @@ const router = createRouter({
 router.beforeEach(routerBeforeEach);
 router.afterEach(() => {
     NProgress.done();
-  });
+});
 export default router;

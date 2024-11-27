@@ -15,10 +15,10 @@
     >
         <template #update>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -35,9 +35,9 @@
         </template>
         <template #optButton="{ row, column, index }">
             <el-button
-                class="global-btn-third"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
                 @click="delDraft(row)"
             >
                 <i class="ri-delete-bin-line"></i>{{ $t('删除') }}
@@ -48,24 +48,24 @@
         <div style="text-align: right">
             <span class="dialog-footer">
                 <el-button
-                    class="global-btn-third"
-                    @click="delDraftInfo"
                     :size="fontSizeObj.buttonSize"
                     :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    class="global-btn-third"
+                    @click="delDraftInfo"
                     >{{ $t('彻底删除') }}</el-button
                 >
                 <el-button
-                    class="global-btn-third"
-                    @click="removeDraftInfo"
                     :size="fontSizeObj.buttonSize"
                     :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    class="global-btn-third"
+                    @click="removeDraftInfo"
                     >{{ $t('放入回收站') }}</el-button
                 >
                 <el-button
-                    class="global-btn-third"
-                    @click="dialogConfig.show = false"
                     :size="fontSizeObj.buttonSize"
                     :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    class="global-btn-third"
+                    @click="dialogConfig.show = false"
                     >{{ $t('取消') }}</el-button
                 >
             </span>
@@ -73,13 +73,13 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
-    import { getDraftList, draftViewConf, removeDraft, deleteDraft } from '@/api/flowableUI/draft';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
+    import { deleteDraft, draftViewConf, getDraftList, removeDraft } from '@/api/flowableUI/draft';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
+
     const { t } = useI18n();
     const settingStore = useSettingStore();
     const emits = defineEmits(['refreshCount']);
@@ -183,6 +183,7 @@ import { computed } from 'vue';
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;

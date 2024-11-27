@@ -8,28 +8,28 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
+        @select="handleSelectionChange"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
-        @select="handleSelectionChange"
         @select-all="handleSelectionChange"
     >
         <template #buttonslot>
             <el-button
-                class="global-btn-main"
-                @click="read"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="read"
             >
                 <i class="ri-book-read-line"></i>
                 <span>{{ $t('批量阅件') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -40,8 +40,8 @@
                 :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
                 :underline="false"
                 @click="openDoc(row)"
-                >{{ row.title }}</el-link
-            >
+                >{{ row.title }}
+            </el-link>
         </template>
         <template #itembox="{ row, column, index }">
             <font v-if="row.banjie" style="color: #d81e06">{{ $t('办结') }}</font>
@@ -49,44 +49,53 @@
         </template>
         <template #optButton="{ row, column, index }">
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openHistoryList(row)"
-                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}</el-button
-            >
+                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}
+            </el-button>
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openFlowChart(row)"
-                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}</el-button
-            >
+                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}
+            </el-button>
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
-        <HistoryList v-if="dialogConfig.type == 'process'" ref="historyListRef" :processInstanceId="processInstanceId" />
-        <flowChart v-if="dialogConfig.type == 'flowChart'" ref="flowchartRef" :processDefinitionId="processDefinitionId" :processInstanceId="processInstanceId"/>
+        <HistoryList
+            v-if="dialogConfig.type == 'process'"
+            ref="historyListRef"
+            :processInstanceId="processInstanceId"
+        />
+        <flowChart
+            v-if="dialogConfig.type == 'flowChart'"
+            ref="flowchartRef"
+            :processDefinitionId="processDefinitionId"
+            :processInstanceId="processInstanceId"
+        />
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
-    import type { FormInstance, ElMessageBox, ElMessage, ElLoading } from 'element-plus';
-    import { search, changeStatus } from '@/api/flowableUI/chaoSong';
+    import type { ElMessage } from 'element-plus';
+    import { changeStatus, search } from '@/api/flowableUI/chaoSong';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import HistoryList from '@/views/process/historyList.vue';
-    import flowChart from "@/views/flowchart/index4List.vue";
+    import flowChart from '@/views/flowchart/index4List.vue';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-    import { computed } from 'vue';
+
     const { t } = useI18n();
     const settingStore = useSettingStore();
     const flowableStore = useFlowableStore();
     const currentrRute = useRoute();
     const router = useRouter();
     const emits = defineEmits(['refreshCount']);
-    
+
     // const tableHeight = ref(useSettingStore().getWindowHeight - 280 - 20);
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
@@ -105,7 +114,14 @@
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
                 { title: computed(() => t('类别')), key: 'itemName', width: '90' },
                 { title: computed(() => t('文件编号')), key: 'number', width: '190' },
-                { title: computed(() => t('标题')), key: 'title', width: 'auto', slot: 'title', align: 'left', minWidth: '200' },
+                {
+                    title: computed(() => t('标题')),
+                    key: 'title',
+                    width: 'auto',
+                    slot: 'title',
+                    align: 'left',
+                    minWidth: '200'
+                },
                 { title: computed(() => t('接收时间')), key: 'createTime', width: '140' },
                 { title: computed(() => t('发送人')), key: 'senderName', width: '190' },
                 { title: computed(() => t('办理情况')), key: 'banjie', width: '85', slot: 'itembox' },
@@ -156,7 +172,7 @@
         },
         historyListRef: '',
         processInstanceId: '',
-        processDefinitionId:''
+        processDefinitionId: ''
     });
 
     let {
@@ -266,8 +282,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            type:'process',
-            title: t('历程')+'【' + row.title + '】',
+            type: 'process',
+            title: t('历程') + '【' + row.title + '】',
             showFooter: false
         });
     }
@@ -278,8 +294,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            type:'flowChart',
-            title: t('流程图')+'【' + row.title + '】',
+            type: 'flowChart',
+            title: t('流程图') + '【' + row.title + '】',
             showFooter: false
         });
     }
@@ -289,6 +305,7 @@
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;

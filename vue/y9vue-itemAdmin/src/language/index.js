@@ -9,16 +9,16 @@
 
 import zh from './zh.json';
 import en from './en.json';
-import { createI18n } from 'vue-i18n';
+import {createI18n} from 'vue-i18n';
 // 获取本地语言
 const info = JSON.parse(localStorage.getItem('userSettingData'));
 const messages = {
     zh: {
-        ...zh,
+        ...zh
     },
     en: {
-        ...en,
-    },
+        ...en
+    }
 };
 
 // 用于动态功能配置
@@ -28,7 +28,7 @@ const i18n = createI18n({
     legacy: false,
     // 全局注入 $t 函数
     globalInjection: true,
-    messages,
+    messages
 });
 
 export default i18n;

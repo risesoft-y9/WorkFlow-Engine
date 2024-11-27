@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-07 16:44:57
  * @LastEditors: zhangchongjie
@@ -15,7 +15,7 @@ const itemListRouter = {
     name: 'item',
     meta: {
         title: '事项配置',
-        roles: ['systemAdmin'],
+        roles: ['systemAdmin']
     },
     children: [
         {
@@ -25,10 +25,10 @@ const itemListRouter = {
             meta: {
                 title: '事项配置',
                 icon: 'ri-database-2-line',
-                roles: ['systemAdmin'],
-            },
-        },
-    ],
+                roles: ['systemAdmin']
+            }
+        }
+    ]
 };
 
 export default itemListRouter;

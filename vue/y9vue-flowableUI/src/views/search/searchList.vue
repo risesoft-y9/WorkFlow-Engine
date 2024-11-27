@@ -8,26 +8,26 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #buttonslot>
             <el-button
-                class="global-btn-main"
-                @click="reloadTable"
                 :size="sizeObjInfo.buttonSize"
                 :style="{ fontSize: sizeObjInfo.baseFontSize }"
+                class="global-btn-main"
+                @click="reloadTable"
             >
                 <i class="ri-search-line"></i>
                 <span>{{ $t('搜索') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="sizeObjInfo.buttonSize"
                 :style="{ fontSize: sizeObjInfo.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -38,8 +38,8 @@
                 :style="{ color: 'blue', fontSize: sizeObjInfo.baseFontSize }"
                 :underline="false"
                 @click="openDoc(row)"
-                >{{ row.documentTitle == '' ? $t('未定义标题') : row.documentTitle }}</el-link
-            >
+                >{{ row.documentTitle == '' ? $t('未定义标题') : row.documentTitle }}
+            </el-link>
         </template>
         <template #itembox="{ row, column, index }">
             <font v-if="row.itembox == 'done'" style="color: #d81e06">{{ $t('办结') }}</font>
@@ -49,35 +49,45 @@
         </template>
         <template #optButton="{ row, column, index }">
             <el-button
+                :style="{ fontSize: sizeObjInfo.smallFontSize }"
                 class="global-btn-third"
                 @click="openHistoryList(row)"
-                :style="{ fontSize: sizeObjInfo.smallFontSize }"
-                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}</el-button
-            >
+                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}
+            </el-button>
             <el-button
-                size="small"
                 :style="{ fontSize: sizeObjInfo.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openFlowChart(row)"
-                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}</el-button
-            >
+                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}
+            </el-button>
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
-        <HistoryList v-if="dialogConfig.type == 'process'" ref="historyListRef" :processInstanceId="processInstanceId" />
-        <flowChart v-if="dialogConfig.type == 'flowChart'" ref="flowchartRef" :processDefinitionId="processDefinitionId" :processInstanceId="processInstanceId"/>
+        <HistoryList
+            v-if="dialogConfig.type == 'process'"
+            ref="historyListRef"
+            :processInstanceId="processInstanceId"
+        />
+        <flowChart
+            v-if="dialogConfig.type == 'flowChart'"
+            ref="flowchartRef"
+            :processDefinitionId="processDefinitionId"
+            :processInstanceId="processInstanceId"
+        />
     </y9Dialog>
 </template>
 
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject, computed } from 'vue';
+    import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
-    import { getSearchList, getMyItemList } from '@/api/flowableUI/search';
+    import { getSearchList } from '@/api/flowableUI/search';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import HistoryList from '@/views/process/historyList.vue';
-    import flowChart from "@/views/flowchart/index4List.vue";
+    import flowChart from '@/views/flowchart/index4List.vue';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
+
     const { t } = useI18n();
     // 注入 字体对象
     const sizeObjInfo: any = inject('sizeObjInfo') || {};
@@ -99,7 +109,14 @@
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
                 { title: computed(() => t('类别')), key: 'itemName', width: '90' },
                 { title: computed(() => t('文件编号')), key: 'number', width: '190' },
-                { title: computed(() => t('标题')), key: 'documentTitle', width: 'auto', slot: 'title', align: 'left', minWidth: '200' },
+                {
+                    title: computed(() => t('标题')),
+                    key: 'documentTitle',
+                    width: 'auto',
+                    slot: 'title',
+                    align: 'left',
+                    minWidth: '200'
+                },
                 { title: computed(() => t('发起人')), key: 'creatUserName', width: '170' },
                 { title: computed(() => t('开始时间')), key: 'startTime', width: '155' },
                 { title: computed(() => t('结束时间')), key: 'endTime', width: '155' },
@@ -210,7 +227,7 @@
         },
         historyListRef: '',
         processInstanceId: '',
-        processDefinitionId:''
+        processDefinitionId: ''
     });
 
     let {
@@ -322,8 +339,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            type:'process',
-            title: t('历程')+'【' + row.documentTitle + '】',
+            type: 'process',
+            title: t('历程') + '【' + row.documentTitle + '】',
             showFooter: false
         });
     }
@@ -334,8 +351,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            type:'flowChart',
-            title: t('流程图')+'【' + row.documentTitle + '】',
+            type: 'flowChart',
+            title: t('流程图') + '【' + row.documentTitle + '】',
             showFooter: false
         });
     }
@@ -362,6 +379,7 @@
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
