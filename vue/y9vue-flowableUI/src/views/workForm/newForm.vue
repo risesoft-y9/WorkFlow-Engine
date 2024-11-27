@@ -753,15 +753,18 @@ function saveChangeOpinion() {//保存未保存的意见内容
 
     :deep(.fm-form-item) {
         margin-top: 8px;
+
+        .el-form-item__content {
+            .el-input__wrapper {
+                border: #e4e7ed solid 1px;
+            }
+
+            .el-textarea {
+                border: #e4e7ed solid 1px;
+            }
+        }
     }
 
-    :deep( .el-input) {
-        border: #e4e7ed solid 1px;
-    }
-
-    :deep(.el-textarea) {
-        border: #e4e7ed solid 1px;
-    }
 
     :deep(.el-form-item__label) {
         line-height: 40px;
