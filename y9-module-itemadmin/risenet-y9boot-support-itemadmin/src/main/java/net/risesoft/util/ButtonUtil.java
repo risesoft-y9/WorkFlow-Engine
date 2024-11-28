@@ -1060,19 +1060,17 @@ public class ButtonUtil {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
 
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        Map<String, Object> vars;
-        String taskSenderId = "";
         if (task != null) {
-            vars = variableApi.getVariables(tenantId, taskId).getData();
-            taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
-        }
-        String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-        String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-        String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
-        // 下面是收回按钮
-        if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
-                && rollbackObj == null && repositionObj == null) {
-            buttonModelList.add(shouHui);
+            Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
+            String taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
+            String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+            String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+            String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            // 下面是收回按钮
+            if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
+                    && rollbackObj == null && repositionObj == null) {
+                buttonModelList.add(shouHui);
+            }
         }
         buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
         return buttonModelList;
