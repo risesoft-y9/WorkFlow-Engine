@@ -408,6 +408,10 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         newActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
         newActRuDetail.setStartTime(actRuDetail.getStartTime());
 
+        OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+        newActRuDetail.setBureauId(bureau.getId());
+        newActRuDetail.setBureauName(bureau.getName());
+
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         newActRuDetail.setItemId(processParam.getItemId());
         newActRuDetail.setSystemName(processParam.getSystemName());
