@@ -1,5 +1,11 @@
 package net.risesoft.listener;
 
+import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.event.AbstractFlowableEventListener;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
 import org.flowable.common.engine.api.delegate.event.FlowableEvent;
@@ -33,12 +39,12 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void onEvent(FlowableEvent event) {
-        FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
+        FlowableEngineEventType type = (FlowableEngineEventType) event.getType();
         switch (type) {
             case PROCESS_COMPLETED:
-                FlowableEntityEventImpl entityEvent = (FlowableEntityEventImpl)event;
-                ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
-                String tenantId = (String)executionEntity.getVariable(SysVariables.TENANTID);
+                FlowableEntityEventImpl entityEvent = (FlowableEntityEventImpl) event;
+                ExecutionEntityImpl executionEntity = (ExecutionEntityImpl) entityEvent.getEntity();
+                String tenantId = (String) executionEntity.getVariable(SysVariables.TENANTID);
                 // 接口调用
                 InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
                 try {
@@ -47,23 +53,39 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_COMPLETED");
                 }
                 Process4CompleteUtilService process4CompleteUtilService =
-                    Y9Context.getBean(Process4CompleteUtilService.class);
+                        Y9Context.getBean(Process4CompleteUtilService.class);
                 process4CompleteUtilService.saveToDataCenter(tenantId, "", Y9LoginUserHolder.getOrgUnitId(),
-                    executionEntity.getProcessInstanceId(), Y9LoginUserHolder.getOrgUnit().getName());
+                        executionEntity.getProcessInstanceId(), Y9LoginUserHolder.getOrgUnit().getName());
 
                 Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
-                    executionEntity.getProcessInstanceId());
+                        executionEntity.getProcessInstanceId());
                 break;
             case PROCESS_STARTED:
-                FlowableEntityEventImpl entityEvent1 = (FlowableEntityEventImpl)event;
-                ExecutionEntityImpl executionEntity1 = (ExecutionEntityImpl)entityEvent1.getEntity();
+                FlowableEntityEventImpl entityEventStart = (FlowableEntityEventImpl) event;
+                ExecutionEntityImpl executionEntityStart = (ExecutionEntityImpl) entityEventStart.getEntity();
                 // 接口调用
                 InterfaceUtilService interfaceUtilService1 = Y9Context.getBean(InterfaceUtilService.class);
                 try {
-                    interfaceUtilService1.interfaceCallByProcess(executionEntity1, executionEntity1.getVariables(),
-                        "启动");
+                    interfaceUtilService1.interfaceCallByProcess(executionEntityStart, executionEntityStart.getVariables(),
+                            "启动");
                 } catch (Exception e) {
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_STARTED");
+                }
+
+                /**
+                 * 启动人为空，则为子流程启动
+                 */
+                ItemApi itemApi = Y9Context.getBean(ItemApi.class);
+                String tenantIdTemp = (String) executionEntityStart.getVariable(SysVariables.TENANTID);
+                ItemModel itemModel = itemApi.findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey()).getData();
+                if (StringUtils.isNotEmpty(itemModel.getType()) && "sub".equals(itemModel.getType())) {
+                    String processSerialNumber = (String) executionEntityStart.getVariable(SysVariables.PROCESSSERIALNUMBER);
+                    String subProcessSerialNumber = Y9IdGenerator.genId();
+                    executionEntityStart.setVariable(SysVariables.PROCESSSERIALNUMBER, subProcessSerialNumber);
+
+                    ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
+                    processParamApi.initCallActivity(tenantIdTemp, processSerialNumber, subProcessSerialNumber,
+                            executionEntityStart.getProcessInstanceId(), itemModel.getId(), itemModel.getName());
                 }
                 break;
             case HISTORIC_PROCESS_INSTANCE_ENDED:

@@ -33,14 +33,14 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     /**
      * 根据流程实例id删除流程变量数据
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
     public Y9Result<Object> deleteByPprocessInstanceId(@RequestParam String tenantId,
-        @RequestParam String processInstanceId) {
+                                                       @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         processParamService.deleteByPprocessInstanceId(processInstanceId);
         return Y9Result.success();
@@ -49,14 +49,14 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     /**
      * 根据流程实例获取流程变量数据
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
      * @since 9.6.6
      */
     @Override
     public Y9Result<ProcessParamModel> findByProcessInstanceId(@RequestParam String tenantId,
-        @RequestParam String processInstanceId) {
+                                                               @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         ProcessParamModel pp = null;
@@ -70,14 +70,14 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     /**
      * 根据流程编号获取流程变量数据
      *
-     * @param tenantId 租户id
+     * @param tenantId            租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
      * @since 9.6.6
      */
     @Override
     public Y9Result<ProcessParamModel> findByProcessSerialNumber(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber) {
+                                                                 @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         ProcessParamModel pp = null;
@@ -91,7 +91,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     /**
      * 保存或更新流程变量数据
      *
-     * @param tenantId 租户ID
+     * @param tenantId     租户ID
      * @param processParam 流程数据对象
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
@@ -108,17 +108,24 @@ public class ProcessParamApiImpl implements ProcessParamApi {
     /**
      * 更新定制流程状态
      *
-     * @param tenantId 租户id
+     * @param tenantId            租户id
      * @param processSerialNumber 流程编号
-     * @param isCustomItem 是否定制流程
+     * @param isCustomItem        是否定制流程
      * @return{@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
     public Y9Result<Object> updateCustomItem(@RequestParam String tenantId, @RequestParam String processSerialNumber,
-        @RequestParam boolean isCustomItem) {
+                                             @RequestParam boolean isCustomItem) {
         Y9LoginUserHolder.setTenantId(tenantId);
         processParamService.updateCustomItem(processSerialNumber, isCustomItem);
+        return Y9Result.success();
+    }
+
+    @Override
+    public Y9Result<Object> initCallActivity(String tenantId, String processSerialNumber, String subProcessSerialNumber, String subProcessInstanceId, String itemId, String itemName) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        processParamService.initCallActivity(processSerialNumber, subProcessSerialNumber, subProcessInstanceId, itemId, itemName);
         return Y9Result.success();
     }
 }

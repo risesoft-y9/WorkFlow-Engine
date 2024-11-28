@@ -69,4 +69,7 @@ public interface ProcessParamService {
      * @param b
      */
     void updateCustomItem(String processSerialNumber, boolean b);
+
+
+    void initCallActivity(String processSerialNumber, String subProcessSerialNumber,String subProcessInstanceId,String itemId,String itemName);
 }

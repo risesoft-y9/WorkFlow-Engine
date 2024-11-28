@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.y9.util.Y9BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     private final ProcessParamRepository processParamRepository;
 
     private final VariableApi variableApi;
+
+    private final SpmApproveItemService spmApproveItemService;
 
     @Override
     @Transactional
@@ -97,7 +102,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             try {
                 if (StringUtils.isNotBlank(processInstanceId)) {
                     boolean update = oldpp.getSearchTerm() != null && processParam.getSearchTerm() != null
-                        && !oldpp.getSearchTerm().equals(processParam.getSearchTerm());
+                            && !oldpp.getSearchTerm().equals(processParam.getSearchTerm());
                     // 搜索字段不一样才修改
                     if (update) {
                         Map<String, Object> val = new HashMap<>();
@@ -123,7 +128,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newpp.setProcessSerialNumber(processParam.getProcessSerialNumber());
         newpp.setSystemName(processParam.getSystemName());
         newpp.setSystemCnName(processParam.getSystemCnName());
-        newpp.setTitle(StringUtils.isBlank(processParam.getTitle())?"暂无标题":processParam.getTitle());
+        newpp.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
         newpp.setSearchTerm(processParam.getSearchTerm());
         newpp.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
         newpp.setIsSendSms(processParam.getIsSendSms());
@@ -163,7 +168,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             Map<String, Object> val = new HashMap<>();
             val.put("val", pp.getSearchTerm());
             variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId, "searchTerm",
-                val);
+                    val);
         }
     }
 
@@ -176,5 +181,21 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    @Transactional
+    public void initCallActivity(String processSerialNumber, String subProcessSerialNumber,String subProcessInstanceId,String itemId,String itemName) {
+        ProcessParam parent = processParamRepository.findByProcessSerialNumber(processSerialNumber);
+        if (null != parent) {
+            ProcessParam newProcessParam=new ProcessParam();
+            Y9BeanUtil.copyProperties(parent, newProcessParam);
+            newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newProcessParam.setProcessSerialNumber(subProcessSerialNumber);
+            newProcessParam.setProcessInstanceId(subProcessInstanceId);
+            newProcessParam.setItemId(itemId);
+            newProcessParam.setItemName(itemName);
+            processParamRepository.save(newProcessParam);
+        }
     }
 }
