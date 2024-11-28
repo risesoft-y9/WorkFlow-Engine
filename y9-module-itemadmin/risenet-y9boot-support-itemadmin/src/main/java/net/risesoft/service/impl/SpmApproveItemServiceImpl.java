@@ -37,8 +37,6 @@ import net.risesoft.service.PrintTemplateService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemInterfaceBindService;
-import net.risesoft.service.config.ItemLinkBindService;
-import net.risesoft.service.config.ItemNodeLinkBindService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOrganWordBindService;
 import net.risesoft.service.config.ItemPermissionService;
@@ -75,8 +73,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final Y9FormItemBindService y9FormItemBindService;
     private final ItemPermissionService itemPermissionService;
     private final RelatedProcessService relatedProcessService;
-    private final ItemLinkBindService itemLinkBindService;
-    private final ItemNodeLinkBindService itemNodeLinkBindService;
     private final ItemInterfaceBindService itemInterfaceBindService;
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
     private final Y9PreFormItemBindService y9PreFormItemBindService;
@@ -88,6 +84,35 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final ItemButtonBindService itemButtonBindService;
     private final ItemViewConfService itemViewConfService;
     private final TaskTimeConfService taskTimeConfService;
+
+    @Override
+    @Transactional
+    public Y9Result<String> copyAllBind(String itemId, String processDefinitionId) {
+        try {
+            // 复制表单绑定信息
+            y9FormItemBindService.copyEform(itemId, processDefinitionId);
+            // 复制权限信息
+            itemPermissionService.copyPerm(itemId, processDefinitionId);
+            // 复制意见框绑定信息
+            itemOpinionFrameBindService.copyBind(itemId, processDefinitionId);
+            // 复制编号绑定信息
+            itemOrganWordBindService.copyBind(itemId, processDefinitionId);
+            // 复制正文模板绑定信息
+            itemWordTemplateBindService.copyBind(itemId, processDefinitionId);
+            // 复制签收配置绑定信息
+            itemTaskConfService.copyTaskConf(itemId, processDefinitionId);
+            // 复制路由配置
+            itemStartNodeRoleService.copyBind(itemId, processDefinitionId);
+            // 复制按钮配置的绑定信息
+            itemButtonBindService.copyBind(itemId, processDefinitionId);
+            // 复制任务时间配置
+            taskTimeConfService.copyTaskConf(itemId, processDefinitionId);
+            return Y9Result.successMsg("复制成功");
+        } catch (Exception e) {
+            LOGGER.error("复制事项异常", e);
+            return Y9Result.failure("复制事项异常");
+        }
+    }
 
     @Override
     @Transactional
@@ -127,12 +152,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 // 复制关联事项绑定信息
                 relatedProcessService.copyBindInfo(id, newItemId);
 
-                // 复制链接配置信息
-                itemLinkBindService.copyBindInfo(id, newItemId);
-
-                // 复制链接节点配置信息
-                itemNodeLinkBindService.copyBindInfo(id, newItemId, latestpdId);
-
                 // 复制接口配置信息
                 itemInterfaceBindService.copyBindInfo(id, newItemId);
 
@@ -164,37 +183,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     @Transactional
-    public Y9Result<String> copyAllBind(String itemId, String processDefinitionId) {
-        try {
-            // 复制表单绑定信息
-            y9FormItemBindService.copyEform(itemId, processDefinitionId);
-            // 复制权限信息
-            itemPermissionService.copyPerm(itemId, processDefinitionId);
-            // 复制意见框绑定信息
-            itemOpinionFrameBindService.copyBind(itemId, processDefinitionId);
-            // 复制编号绑定信息
-            itemOrganWordBindService.copyBind(itemId, processDefinitionId);
-            // 复制正文模板绑定信息
-            itemWordTemplateBindService.copyBind(itemId, processDefinitionId);
-            // 复制签收配置绑定信息
-            itemTaskConfService.copyTaskConf(itemId, processDefinitionId);
-            // 复制路由配置
-            itemStartNodeRoleService.copyBind(itemId, processDefinitionId);
-            // 复制按钮配置的绑定信息
-            itemButtonBindService.copyBind(itemId, processDefinitionId);
-            // 复制链接节点配置信息
-            itemNodeLinkBindService.copyBind(itemId, processDefinitionId);
-            // 复制任务时间配置
-            taskTimeConfService.copyTaskConf(itemId, processDefinitionId);
-            return Y9Result.successMsg("复制成功");
-        } catch (Exception e) {
-            LOGGER.error("复制事项异常", e);
-            return Y9Result.failure("复制事项异常");
-        }
-    }
-
-    @Override
-    @Transactional
     public Y9Result<String> delete(String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {
@@ -213,10 +201,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                     itemOrganWordBindService.deleteBindInfo(s);
                     // 删除关联事项绑定信息
                     relatedProcessService.deleteBindInfo(s);
-                    // 删除链接配置信息
-                    itemLinkBindService.deleteBindInfo(s);
-                    // 删除链接节点配置信息
-                    itemNodeLinkBindService.deleteBindInfo(s);
                     // 删除接口配置信息
                     itemInterfaceBindService.deleteBindInfo(s);
                     // 删除正文模板绑定信息
