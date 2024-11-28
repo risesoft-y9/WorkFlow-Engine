@@ -108,7 +108,7 @@ public class AsyncUtilService {
             } else {
                 numberStr = String.valueOf(number);
             }
-            String sql = "update y9_form_fw set lsh = characterValue+'[" + year + "]" + numberStr + "' where guid = '"
+            String sql = "update y9_form_fw set lsh = '"+characterValue+"[" + year + "]" + numberStr + "' where guid = '"
                 + processSerialNumber + "'";
             jdbcTemplate.execute(sql);
         }
