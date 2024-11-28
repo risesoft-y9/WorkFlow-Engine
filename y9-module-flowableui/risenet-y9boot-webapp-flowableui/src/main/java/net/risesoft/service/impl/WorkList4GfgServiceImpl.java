@@ -122,9 +122,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-
                     TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                    String taskAssignee = ardModel.getAssignee();
+                    String taskAssignee = ardModel.getAssigneeName();
+                    if(StringUtils.isBlank(task.getAssignee())){
+                        taskAssignee = getAssigneeNames(taskId);
+                    }
                     String taskName = task.getName();
                     int priority = task.getPriority();
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
@@ -148,6 +150,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
+                    mapTemp.put("taskAssignee", taskAssignee);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
 
                     mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
@@ -367,6 +370,32 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         return list;
     }
 
+    /**
+     * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
+     *
+     * @return List<String>
+     */
+    private String getAssigneeNames(String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String assigneeNames = "";
+        List<IdentityLinkModel> iList =
+                identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+        int j = 0;
+        for (IdentityLinkModel identityLink : iList) {
+            String assigneeId = identityLink.getUserId();
+            OrgUnit ownerUser = orgUnitApi
+                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+            if (j < 5) {
+                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+            } else {
+                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                break;
+            }
+            j++;
+        }
+        return assigneeNames;
+    }
+
     @Override
     public Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr,
                                                       Integer page, Integer rows) {
@@ -580,7 +609,10 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                    String taskAssignee = ardModel.getAssignee();
+                    String taskAssignee = ardModel.getAssigneeName();
+                    if(StringUtils.isBlank(task.getAssignee())){
+                        taskAssignee=getAssigneeNames(taskId);
+                    }
                     String taskName = task.getName();
                     int priority = task.getPriority();
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
@@ -594,6 +626,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionId", task.getProcessDefinitionId());
                     mapTemp.put("taskId", taskId);
+                    mapTemp.put("taskAssignee", taskAssignee);
                     /**
                      * 暂时取表单所有字段数据
                      */
