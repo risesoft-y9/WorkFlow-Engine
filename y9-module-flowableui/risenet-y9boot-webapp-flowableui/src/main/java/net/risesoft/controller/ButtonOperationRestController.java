@@ -2,6 +2,7 @@ package net.risesoft.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.DocumentApi;
@@ -14,6 +15,7 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -78,6 +80,7 @@ public class ButtonOperationRestController {
     private final ProcessParamApi processParamApi;
     private final CustomProcessInfoApi customProcessInfoApi;
     private final ButtonOperationService buttonOperationService;
+    private final ActRuDetailApi actRuDetailApi;
 
     /**
      * 任务签收
@@ -579,7 +582,8 @@ public class ButtonOperationRestController {
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
             for (IdentityLinkModel il : list) {
-                if ("assignee".equals(il.getType())) {// 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
+                // 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
+                if ("assignee".equals(il.getType())) {
                     return Y9Result.failure("您好，该件已被签收");
                 }
             }
@@ -593,6 +597,12 @@ public class ButtonOperationRestController {
                 }
             }
             taskApi.deleteCandidateUser(tenantId, taskId, activitiUser);
+            String processSerialNumber = (String) vars.get(SysVariables.PROCESSSERIALNUMBER);
+            ActRuDetailModel actRuDetailModel=actRuDetailApi.findByProcessSerialNumberAndAssignee(tenantId,processSerialNumber,positionId).getData();
+            if(null!=actRuDetailModel){
+                actRuDetailModel.setStatus(1);
+                actRuDetailApi.saveOrUpdate(tenantId,actRuDetailModel);
+            }
             return Y9Result.successMsg("拒签成功");
         } catch (Exception e) {
             LOGGER.error("refuseClaim error", e);
