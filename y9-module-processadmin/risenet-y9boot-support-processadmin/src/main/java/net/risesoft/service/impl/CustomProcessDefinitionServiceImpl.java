@@ -535,6 +535,15 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 } else {
                     targetModel.setMultiInstance(SysVariables.COMMON);
                 }
+            } else if (activity instanceof CallActivity) {
+                targetModel.setTaskDefName(activity.getName() + "【子】");
+                targetModel.setMultiInstance(SysVariables.COMMON);
+                CallActivity callActivity = (CallActivity)activity;
+                if (callActivity.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.PARALLEL);
+                } else if (callActivity.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                }
             } else if (activity instanceof SubProcess) {
                 targetModel.setTaskDefName(activity.getName() + "【子】");
                 targetModel.setMultiInstance(SysVariables.COMMON);
