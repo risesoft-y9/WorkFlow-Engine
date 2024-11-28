@@ -1,6 +1,5 @@
 <script lang="ts" setup>
     import RightTopUser from '../components/RightTopUser.vue';
-    import { Edit } from '@element-plus/icons';
     import { useSettingStore } from '@/store/modules/settingStore';
     import y9_storage from '@/utils/storage';
 
@@ -14,14 +13,14 @@
     const isDark = useDark({
         selector: 'html',
         valueDark: 'theme-dark',
-        valueLight: '',
+        valueLight: ''
     });
     const toggleDark = useToggle(isDark);
 
     // 锁屏
     const lockScreenFunc = () => {
         settingStore.$patch({
-            lockScreen: true,
+            lockScreen: true
         });
     };
 
@@ -55,7 +54,7 @@
                 <i class="ri-search-line"></i>
                 <span></span>
             </div> -->
-            <div class="item" @click="lockScreenFunc" v-show="settingStore.getLock">
+            <div v-show="settingStore.getLock" class="item" @click="lockScreenFunc">
                 <i class="ri-lock-2-line"></i>
                 <span>{{ $t('锁屏') }}</span>
             </div>
@@ -67,7 +66,7 @@
                 <el-badge :value="3" class="badge"></el-badge>
                 <i class="ri-notification-line"></i>
             </div> -->
-            <div class="item" @click="refreshFunc" v-show="settingStore.getRefresh">
+            <div v-show="settingStore.getRefresh" class="item" @click="refreshFunc">
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
             </div>
@@ -80,7 +79,7 @@
             </div>
             <div class="item user">
                 <!-- <img src="@/assets/images/app-icon.png"> -->
-                <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ userInfo.loginName }} </el-avatar>
+                <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ userInfo.loginName }}</el-avatar>
             </div>
             <!-- <div class="item" @click="logout">
                 <i class="ri-logout-box-r-line"></i>
@@ -92,6 +91,7 @@
 
 <style lang="scss" scoped>
     @import '@/theme/global-vars.scss';
+
     #right-top {
         background-color: var(--el-bg-color);
         color: var(--el-text-color-primary);
@@ -100,6 +100,7 @@
         width: 100%;
         z-index: 2;
         border-bottom: 1px solid var(--el-color-primary-light-9);
+
         .left,
         .center,
         .right {
@@ -107,20 +108,24 @@
             height: $headerHeight;
             line-height: $headerHeight;
             font-size: var(--el-font-size-extra-large);
+
             & > .item {
                 overflow: hidden;
                 padding: 0 15px;
                 min-width: 5px;
                 display: flex;
                 align-items: center;
+
                 i {
                     position: relative;
                     // top: 4px;
                 }
+
                 span {
                     font-size: var(--el-font-size-base);
                     margin-left: 5px;
                 }
+
                 &:hover {
                     cursor: pointer;
                     color: var(--el-color-primary);
@@ -136,6 +141,7 @@
             font-weight: 500;
             color: var(--el-color-primary);
         }
+
         .right {
             //min-width: 300px;
             & > .item {
@@ -143,11 +149,13 @@
                     .badge {
                         position: absolute;
                         z-index: 1;
+
                         & > .el-badge__content--danger {
                             background-color: var(--el-color-danger);
                         }
                     }
                 }
+
                 &.user {
                     //min-width: 202px;
                     padding: 0 12px;
@@ -159,22 +167,26 @@
                         width: $headerHeight - 18px;
                         border-radius: 50%;
                     }
+
                     & > .name {
                         font-size: var(--el-font-size-base);
                         display: flex;
                         flex-direction: column;
                         justify-content: end;
+
                         span {
                             line-height: 20px;
                             text-align: end;
                         }
                     }
+
                     i {
                         color: var(--el-color-primary);
                         font-size: 48px;
                         margin-left: 8px;
                         margin-bottom: 8px;
                     }
+
                     .el-avatar {
                         background-color: var(--el-color-primary);
                     }

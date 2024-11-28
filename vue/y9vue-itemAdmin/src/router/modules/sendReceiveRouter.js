@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-07 16:44:57
  * @LastEditors: zhangchongjie
@@ -15,7 +15,7 @@ const sendReceiveRouter = {
     name: 'sendReceive',
     meta: {
         title: '收发管理',
-        roles: ['systemAdmin'],
+        roles: ['systemAdmin']
     },
     children: [
         {
@@ -25,10 +25,10 @@ const sendReceiveRouter = {
             meta: {
                 title: '收发管理',
                 icon: 'ri-user-voice-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
-        },
-    ],
+        }
+    ]
 };
 
 export default sendReceiveRouter;

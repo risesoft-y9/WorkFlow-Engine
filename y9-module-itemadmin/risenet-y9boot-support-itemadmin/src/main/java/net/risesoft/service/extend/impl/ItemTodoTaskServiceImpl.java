@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.model.itemadmin.TodoTaskModel;
 import net.risesoft.service.extend.ItemTodoTaskService;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -18,9 +20,11 @@ import net.risesoft.service.extend.ItemTodoTaskService;
 @RequiredArgsConstructor
 public class ItemTodoTaskServiceImpl implements ItemTodoTaskService {
 
+    private final ProcessTodoApi processTodoApi;
+
     @Override
     public int countByReceiverId(String receiverId) {
-        return 0;
+        return Math.toIntExact(processTodoApi.countByOrgUnitId(Y9LoginUserHolder.getTenantId(), receiverId).getData());
     }
 
     @Override

@@ -8,84 +8,85 @@
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\y9form\table\selectTable.vue
 -->
 <template>
-	<div class="margin-bottom-20">
-		<el-input 
-			style="width:230px;"
-			v-model="tableName" 
-			placeholder="请搜索" 
-			clearable="true"
-			@keyup.enter="getTableList">
-			<template #prefix>
-				<i class="ri-search-line"></i>
-			</template>
-		</el-input>
-	</div>
-	<y9Table :config="tableConfig" @on-current-change="onCurrentChange"></y9Table>
+    <div class="margin-bottom-20">
+        <el-input
+            v-model="tableName"
+            clearable="true"
+            placeholder="请搜索"
+            style="width: 230px"
+            @keyup.enter="getTableList"
+        >
+            <template #prefix>
+                <i class="ri-search-line"></i>
+            </template>
+        </el-input>
+    </div>
+    <y9Table :config="tableConfig" @on-current-change="onCurrentChange"></y9Table>
 </template>
 
 <script lang="ts" setup>
-	import { $deepAssignObject, } from '@/utils/object.ts'
-	import {getAllTables} from '@/api/itemAdmin/y9form';
-	const props = defineProps({
-		currInfo: {//当前tree节点信息
-			type: Object,
-			default:() => { return {} }
-		},
-	})
-	const data = reactive({
-		//当前节点信息
-		tableConfig: {//人员列表表格配置
-			columns: [
-				{
-					title: "序号",
-					type:"index",
-					width: '80'
-				},
-				{
-					title: "名称",
-					key: "name",
-				}
-			],
-			tableData: [],
-			pageConfig:false,//取消分页
-			height:'auto'
-		},
-		currentRow:null,
-		tableName:'',//搜索表名
-		tableNames:'',//已经存在的表名
-	})
-	
-	let {
-		tableConfig,
-		currentRow,
-		tableName,
-		tableNames
-	} = toRefs(data);
-	
-	watch(() => props.currInfo,(newVal) => {
+    import { getAllTables } from '@/api/itemAdmin/y9form';
 
-	})
+    const props = defineProps({
+        currInfo: {
+            //当前tree节点信息
+            type: Object,
+            default: () => {
+                return {};
+            }
+        }
+    });
+    const data = reactive({
+        //当前节点信息
+        tableConfig: {
+            //人员列表表格配置
+            columns: [
+                {
+                    title: '序号',
+                    type: 'index',
+                    width: '80'
+                },
+                {
+                    title: '名称',
+                    key: 'name'
+                }
+            ],
+            tableData: [],
+            pageConfig: false, //取消分页
+            height: 'auto'
+        },
+        currentRow: null,
+        tableName: '', //搜索表名
+        tableNames: '' //已经存在的表名
+    });
 
-	onMounted(()=>{
-		getTableList();
-	});
+    let { tableConfig, currentRow, tableName, tableNames } = toRefs(data);
 
-	function onCurrentChange(data){
-		currentRow.value = data;
-	}
+    watch(
+        () => props.currInfo,
+        (newVal) => {}
+    );
 
-	async function getTableList() {
-		let res = await getAllTables(tableName.value);
-		if(res.success){
-			tableConfig.value.tableData = res.data.rows;
-			tableNames.value = res.data.tableNames;
-		}
-	}
-	defineExpose({
-		currentRow,
-		tableNames
-	})
+    onMounted(() => {
+        getTableList();
+    });
+
+    function onCurrentChange(data) {
+        currentRow.value = data;
+    }
+
+    async function getTableList() {
+        let res = await getAllTables(tableName.value);
+        if (res.success) {
+            tableConfig.value.tableData = res.data.rows;
+            tableNames.value = res.data.tableNames;
+        }
+    }
+
+    defineExpose({
+        currentRow,
+        tableNames
+    });
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

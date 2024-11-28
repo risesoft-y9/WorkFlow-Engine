@@ -1,42 +1,42 @@
 <template>
-    <el-container style="height: 100%; width: 100%" class="opinion-container">
+    <el-container class="opinion-container" style="height: 100%; width: 100%">
         <el-header style="width: 100%; height: auto; overflow: hidden">
             <div>
                 <div style="margin: 8px 0">
                     <span>{{ $t(title) }}</span>
                     <i
                         v-if="msgshow"
-                        class="el-icon-warning-outline"
                         :title="$t('请先点击新建或编辑意见')"
+                        class="el-icon-warning-outline"
                         style="color: red"
                     ></i>
                 </div>
                 <el-input
                     ref="opinioninput"
-                    type="textarea"
-                    resize="none"
-                    :disabled="disabled"
-                    :rows="8"
-                    :placeholder="$t('请输入内容')"
                     v-model="opinionContent"
+                    :disabled="disabled"
+                    :placeholder="$t('请输入内容')"
+                    :rows="8"
                     maxlength="200"
+                    resize="none"
                     show-word-limit
+                    type="textarea"
                 ></el-input>
                 <div style="text-align: right; margin-top: 5px">
                     <el-button
+                        :disabled="disabled"
                         :size="fontSizeObj.buttonSize"
                         :style="{ fontSize: fontSizeObj.baseFontSize }"
                         style="margin-left: 15px"
                         @click="saveOrUpdateOpinion()"
-                        :disabled="disabled"
-                        >{{ $t('保存') }}</el-button
-                    >
+                        >{{ $t('保存') }}
+                    </el-button>
                     <el-button
                         :size="fontSizeObj.buttonSize"
                         :style="{ fontSize: fontSizeObj.baseFontSize }"
                         @click="saveCommon()"
-                        >{{ $t('存为常用语') }}</el-button
-                    >
+                        >{{ $t('存为常用语') }}
+                    </el-button>
                 </div>
             </div>
         </el-header>
@@ -44,12 +44,12 @@
             <div style="margin-bottom: 10px">
                 <span>{{ $t('请选择意见') }}</span>
                 <el-button
-                    style="padding: 7px 7px; margin-left: 8px"
-                    @click="setCommonManage()"
                     :size="fontSizeObj.buttonSize"
                     :style="{ fontSize: fontSizeObj.baseFontSize }"
-                    >{{ $t('常用语设置') }}</el-button
-                >
+                    style="padding: 7px 7px; margin-left: 8px"
+                    @click="setCommonManage()"
+                    >{{ $t('常用语设置') }}
+                </el-button>
             </div>
             <div class="comment" style="background-color: #fff; height: 70%; overflow: auto">
                 <template v-for="item in commonSentencesData" v-bind:[key]="item.id">
@@ -64,17 +64,18 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject, computed } from 'vue';
+    import { computed, inject } from 'vue';
     import {
         commonSentencesList,
-        saveCommonSentences,
+        delOpinion,
         personalComment,
-        saveOpinion,
-        delOpinion
+        saveCommonSentences,
+        saveOpinion
     } from '@/api/flowableUI/opinion';
     import { changeChaoSongState } from '@/api/flowableUI/chaoSong';
     import addUser from '@/views/opinion/addUser.vue';
     import { useI18n } from 'vue-i18n';
+
     const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
@@ -113,7 +114,12 @@
                 return new Promise(async (resolve, reject) => {
                     let treeData = addUserRef.value.treeSelectedData;
                     if (treeData.length == 0) {
-                        ElMessage({ type: 'error', message: t('请选择人员'), offset: 65, appendTo: '.opinion-container' });
+                        ElMessage({
+                            type: 'error',
+                            message: t('请选择人员'),
+                            offset: 65,
+                            appendTo: '.opinion-container'
+                        });
                         reject();
                     }
                     if (treeData.length > 1) {
@@ -348,26 +354,31 @@
         padding: 10px 0 10px 10px;
         list-style-type: none;
     }
+
     .comment li:hover {
         background-color: #eee;
     }
+
     .comment .left_comment {
         display: inline-block;
         width: 60%;
     }
+
     .comment .right_button {
         display: inline-block;
     }
+
     .ishide {
         display: none;
     }
+
     .dailu .el-input {
         width: 55%;
         margin-left: 10px;
     }
 </style>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .opinion-container {
         /*message */
         :global(.el-message .el-message__content) {
@@ -378,9 +389,11 @@
         :global(.el-message-box .el-message-box__content) {
             font-size: v-bind('fontSizeObj.baseFontSize');
         }
+
         :global(.el-message-box .el-message-box__title) {
             font-size: v-bind('fontSizeObj.largeFontSize');
         }
+
         :global(.el-message-box .el-message-box__btns button) {
             font-size: v-bind('fontSizeObj.baseFontSize');
         }

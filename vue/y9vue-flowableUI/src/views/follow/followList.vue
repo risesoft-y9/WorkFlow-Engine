@@ -8,28 +8,28 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
+        @select="handleSelectionChange"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
         @select-all="handleSelectionChange"
-        @select="handleSelectionChange"
     >
         <template #buttonslot>
             <el-button
-                class="global-btn-main"
-                @click="delFollow"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="delFollow"
             >
                 <i class="ri-star-line"></i>
                 <span>{{ $t('取消关注') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -40,8 +40,8 @@
                 :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
                 :underline="false"
                 @click="openDoc(row)"
-                >{{ row.documentTitle }}</el-link
-            >
+                >{{ row.documentTitle }}
+            </el-link>
         </template>
         <template #itemBox="{ row, column, index }">
             <font v-if="row.itembox == 'done'" style="color: #d81e06">{{ $t('办结') }}</font>
@@ -51,12 +51,12 @@
         </template>
         <template #opt="{ row, column, index }">
             <el-button
-                class="global-btn-third"
-                @click="openHistoryList(row)"
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
-                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}</el-button
-            >
+                class="global-btn-third"
+                size="small"
+                @click="openHistoryList(row)"
+                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}
+            </el-button>
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
@@ -65,15 +65,15 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject, computed } from 'vue';
-    import type { FormInstance, ElMessageBox, ElMessage, ElLoading } from 'element-plus';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
+    import type { ElMessage } from 'element-plus';
     import HistoryList from '@/views/process/historyList.vue';
     import { delOfficeFollow, followList } from '@/api/flowableUI/follow';
     import { useRoute, useRouter } from 'vue-router';
-    import settings from '@/settings';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
+
     const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
@@ -99,7 +99,13 @@
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
                 { title: computed(() => t('类别')), key: 'fileType', width: '90' },
                 { title: computed(() => t('文件编号')), key: 'numbers', width: '190' },
-                { title: computed(() => t('标题')), key: 'documentTitle', slot: 'documentTitle', width: 'auto', align: 'left' },
+                {
+                    title: computed(() => t('标题')),
+                    key: 'documentTitle',
+                    slot: 'documentTitle',
+                    width: 'auto',
+                    align: 'left'
+                },
                 { title: computed(() => t('发起人')), key: 'userName', width: '180' },
                 { title: computed(() => t('开始时间')), key: 'startTime', width: '140' },
                 { title: computed(() => t('状态')), key: 'itembox', width: '60', slot: 'itemBox' },
@@ -176,6 +182,7 @@
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -226,7 +233,7 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            title: t('历程')+'【' + row.documentTitle + '】',
+            title: t('历程') + '【' + row.documentTitle + '】',
             type: 'history',
             showFooter: false
         });

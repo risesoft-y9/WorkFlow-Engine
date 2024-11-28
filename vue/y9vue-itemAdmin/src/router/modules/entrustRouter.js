@@ -1,6 +1,6 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-07 16:44:57
  * @LastEditors: zhangchongjie
@@ -15,7 +15,7 @@ const entrustRouter = {
     name: 'entrust',
     meta: {
         title: '出差委托',
-        roles: ['systemAdmin'],
+        roles: ['systemAdmin']
     },
     children: [
         {
@@ -25,10 +25,10 @@ const entrustRouter = {
             meta: {
                 title: '出差委托',
                 icon: 'ri-user-shared-line',
-                roles: ['systemAdmin'],
+                roles: ['systemAdmin']
             }
-        },
-    ],
+        }
+    ]
 };
 
 export default entrustRouter;

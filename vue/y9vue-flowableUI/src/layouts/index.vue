@@ -1,29 +1,16 @@
 <script lang="ts">
-    import {
-        defineEmits,
-        defineComponent,
-        watch,
-        ref,
-        Ref,
-        unref,
-        reactive,
-        nextTick,
-        computed,
-        ComputedRef,
-        onBeforeMount,
-        onMounted,
-    } from 'vue';
+    import { computed, ComputedRef, nextTick, onBeforeMount, onMounted, Ref, ref, unref, watch } from 'vue';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useRouterStore } from '@/store/modules/routerStore';
     import { useRoute } from 'vue-router';
     import {
-        getSelectLeftMenuPath,
-        getRouteBelongTopMenu,
-        getRouteItem,
-        RoutesDataItem,
+        BreadcrumbType,
         formatRoutePathTheParents,
         getBreadcrumbRoutes,
-        BreadcrumbType,
+        getRouteBelongTopMenu,
+        getRouteItem,
+        getSelectLeftMenuPath,
+        RoutesDataItem
     } from '@/utils/routes';
     import Y9Default from '@/layouts/Y9-default/index.vue';
     import Y9Horizontal from '@/layouts/Y9-horizontal/index.vue';
@@ -32,10 +19,11 @@
     import { getAllCountItems } from '@/api/flowableUI/workList';
     import { getItem, getItemList, getPositionList } from '@/api/flowableUI/index';
     import y9_storage from '@/utils/storage';
-    import settings from '@/settings';
-    import { useI18n } from "vue-i18n";
+    import { useI18n } from 'vue-i18n';
+
     const currentrRute = useRoute();
     const flowableStore = useFlowableStore();
+
     interface IndexLayoutSetupData {
         menuCollapsed: computed<Boolean>;
         tabNavEnable: boolean;
@@ -53,7 +41,7 @@
         components: {
             Y9Default,
             Y9Horizontal,
-            Y9Mobile,
+            Y9Mobile
         },
         setup() {
             // PC网站配置
@@ -64,7 +52,7 @@
                 // horizontal布局时，menuCollapsed 必须为false，禁止折叠
                 if (settingStore.getLayout === 'Y9Horizontal') {
                     settingStore.$patch({
-                        menuCollapsed: false,
+                        menuCollapsed: false
                     });
                 }
                 const nameArray = settingStore.getLayout.split(' ');
@@ -78,12 +66,12 @@
             watch(theme, () => {
                 document.getElementsByTagName('html')[0].className = theme.value;
                 // 修复打包后的主题切换问题
-                if (document.getElementById("head")) {
-                    let themeDom = document.getElementById("head")
-                    let pathArray = themeDom.href.split('/')
-                    pathArray[pathArray.length-1] = theme.value + '.css'
-                    let newPath = pathArray.join('/')
-                    themeDom.href = newPath
+                if (document.getElementById('head')) {
+                    let themeDom = document.getElementById('head');
+                    let pathArray = themeDom.href.split('/');
+                    pathArray[pathArray.length - 1] = theme.value + '.css';
+                    let newPath = pathArray.join('/');
+                    themeDom.href = newPath;
                 }
             });
 
@@ -91,7 +79,7 @@
             if (settingStore.getDevice === 'mobile') {
                 settingStore.$patch({
                     layout: 'Y9Mobile',
-                    settingWidth: '100%',
+                    settingWidth: '100%'
                 });
             }
             const { toggleDevice } = settingStore;
@@ -133,19 +121,19 @@
                         routesData.push(obj);
                     }
                 }
-            }else if (route.path.indexOf('/cplane') > -1) {
+            } else if (route.path.indexOf('/cplane') > -1) {
                 let newmenuData = routerStore.getPermissionRoutes;
                 for (let obj of newmenuData) {
                     if (obj.path.indexOf('/cplane') > -1) {
                         menuData.push(obj);
                     }
-                    flowableStore.itemName = t("我的协作");
+                    flowableStore.itemName = t('我的协作');
                     if (obj.path == '/cplane') {
                         routesData.push(obj);
                     }
                 }
             }
-            
+
             // 当前路由 item
             const routeItem = computed<RoutesDataItem>(() => getRouteItem(route.path, routesData));
 
@@ -162,10 +150,10 @@
                 addTab(unref(routeItem));
                 await nextTick();
                 let active = getSelectLeftMenuPath(routeItem.value);
-                if(!active.includes('/edit')){
+                if (!active.includes('/edit')) {
                     defaultActive.value = getSelectLeftMenuPath(routeItem.value);
                 }
-                if(active.includes('/searchList')){
+                if (active.includes('/searchList')) {
                     defaultActive.value = '/workIndex/monitorBanjian';
                 }
             });
@@ -194,7 +182,7 @@
             });
 
             const getItemInfo = () => {
-                if(route.path.indexOf('/cplane') > -1){
+                if (route.path.indexOf('/cplane') > -1) {
                     return;
                 }
                 // 获取当前路由
@@ -202,7 +190,7 @@
                     //let itemId = route.query?.itemId?route.query?.itemId: '';
                     let itemId = y9_storage.getObjectItem('query', 'itemId');
                     flowableStore.$patch({
-                        itemId: itemId,
+                        itemId: itemId
                     });
                     if (itemId != '' && itemId != undefined) {
                         getItem(itemId)
@@ -212,17 +200,20 @@
                                     itemId: res.data.itemModel.id,
                                     itemName: res.data.itemModel.name,
                                     deptManage: res.data.deptManage,
-                                    monitorManage: res.data.monitorManage,
+                                    monitorManage: res.data.monitorManage
                                 });
                                 document.title = res.data.itemModel.name;
-                                menuData.forEach(menu => {
+                                menuData.forEach((menu) => {
                                     // let y9UserInfo =JSON.parse(sessionStorage.getItem('ssoUserInfo'));
                                     let positionId = sessionStorage.getItem('positionId');
                                     //人事办件，曲金凤账号可查看监控在办，特殊办结
-                                    let manager = res.data.itemModel.nature == null ? '' : res.data.itemModel.nature;//事项管理员
+                                    let manager = res.data.itemModel.nature == null ? '' : res.data.itemModel.nature; //事项管理员
                                     let monitorManage = manager.indexOf(positionId) > -1 ? true : false;
-                                    if(!monitorManage){//不是事项管理员，删除监控列表
-                                        menu.children = menu.children?.filter(item => item.name?.indexOf('monitor') == -1);
+                                    if (!monitorManage) {
+                                        //不是事项管理员，删除监控列表
+                                        menu.children = menu.children?.filter(
+                                            (item) => item.name?.indexOf('monitor') == -1
+                                        );
                                     }
                                 });
                             })
@@ -234,7 +225,7 @@
             };
 
             const getPositionListAndTodoCount = () => {
-                if(route.path.indexOf('/cplane') > -1){
+                if (route.path.indexOf('/cplane') > -1) {
                     return;
                 }
                 let itemId = route.path.indexOf('/index') > -1 ? y9_storage.getObjectItem('query', 'itemId') : '';
@@ -255,7 +246,7 @@
                                 currentPositionId: positionId,
                                 allCount: res.data.allCount,
                                 currentCount: currenttodoCount,
-                                currentPositionName: currentName,
+                                currentPositionName: currentName
                             });
                             sessionStorage.setItem('positionId', positionId);
                             sessionStorage.setItem('positionName', currentName);
@@ -268,7 +259,7 @@
             };
 
             const getAllMenuCount = () => {
-                if(route.path.indexOf('/cplane') > -1){
+                if (route.path.indexOf('/cplane') > -1) {
                     return;
                 }
                 if (flowableStore.getItemId != '' && route.path.indexOf('/index') > -1) {
@@ -287,7 +278,7 @@
                                 doneCount: countItems.doneCount, //办结件数量
                                 draftRecycleCount: countItems.draftRecycleCount, //回收站数量
                                 monitorDoing: countItems.monitorDoing, //监控在办数量
-                                monitorDone: countItems.monitorDone, //监控办结数量
+                                monitorDone: countItems.monitorDone //监控办结数量
                             });
                         })
                         .catch(() => {
@@ -310,7 +301,7 @@
                                 doneCount: countItems.doneCount, //办结件数量
                                 draftRecycleCount: countItems.draftRecycleCount, //回收站数量
                                 monitorDoing: countItems.monitorDoing, //监控在办数量
-                                monitorDone: countItems.monitorDone, //监控办结数量
+                                monitorDone: countItems.monitorDone //监控办结数量
                             });
                         })
                         .catch(() => {
@@ -331,9 +322,10 @@
                                     res.data.itemMap.forEach((item) => {
                                         if (item.url == menu.name) {
                                             menu.todoCount = item.todoCount;
-                                            if(menu.children.length > 0){//子菜单待办件数量
+                                            if (menu.children.length > 0) {
+                                                //子菜单待办件数量
                                                 menu.children.forEach((children) => {
-                                                    if(children.name == 'workIndex_todo'){
+                                                    if (children.name == 'workIndex_todo') {
                                                         children.todoCount = item.todoCount;
                                                     }
                                                 });
@@ -345,7 +337,7 @@
                             flowableStore.$patch({
                                 itemList: res.data.itemMap,
                                 notReadCount: res.data.notReadCount,
-                                youjianCount: res.data.youjianCount,
+                                youjianCount: res.data.youjianCount
                                 // followCount:res.data.followCount
                             });
                         }
@@ -355,11 +347,11 @@
             };
 
             // 国际语言切换 仍有bug
-            const webLanguage = computed(() => settingStore.getWebLanguage)
+            const webLanguage = computed(() => settingStore.getWebLanguage);
             watch(webLanguage, () => {
                 // 修复打包后的国际语言切换和主题切换 的问题
-                locale.value = webLanguage.value
-            })
+                locale.value = webLanguage.value;
+            });
 
             return {
                 layoutName,
@@ -374,25 +366,25 @@
                 flowableStore,
                 getItemInfo,
                 getAllMenuCount,
-                refreshMenuCount,
+                refreshMenuCount
             };
-        },
+        }
     };
 </script>
 <template>
     <component
         :is="layoutName"
         :key="layoutName"
+        ref="indexLayoutRef"
+        :belongTopMenu="belongTopMenu"
+        :breadCrumbs="breadCrumbs"
+        :defaultActive="defaultActive"
+        :defaultOpened="defaultOpened"
         :layoutName="layoutName"
         :layoutSubName="layoutSubName"
         :menuCollapsed="menuCollapsed"
-        :belongTopMenu="belongTopMenu"
-        :defaultActive="defaultActive"
-        :defaultOpened="defaultOpened"
         :menuData="menuData"
-        :breadCrumbs="breadCrumbs"
         :routeItem="routeItem"
-        ref="indexLayoutRef"
         v-on:indexRefreshCount="refreshMenuCount($event)"
     ></component>
 </template>

@@ -9,19 +9,34 @@
     <y9Table
         :config="reminderTableConfig"
         :filterConfig="filterConfig"
-        @select-all="handleSelectionChange"
         @select="handleSelectionChange"
+        @select-all="handleSelectionChange"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #reminderFilter>
-            <el-button-group style="display: flex;">
-                <el-button type="primary" @click="reminder" :size="fontSizeObj.buttonSize"
-                    :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('催办') }}</el-button>
-                <el-button type="primary" @click="myReminder" :size="fontSizeObj.buttonSize"
-                    :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('我的催办') }}</el-button>
-                <el-button type="primary" @click="allReminder" :size="fontSizeObj.buttonSize"
-                    :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('所有催办') }}</el-button>
+            <el-button-group style="display: flex">
+                <el-button
+                    :size="fontSizeObj.buttonSize"
+                    :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    type="primary"
+                    @click="reminder"
+                    >{{ $t('催办') }}
+                </el-button>
+                <el-button
+                    :size="fontSizeObj.buttonSize"
+                    :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    type="primary"
+                    @click="myReminder"
+                    >{{ $t('我的催办') }}
+                </el-button>
+                <el-button
+                    :size="fontSizeObj.buttonSize"
+                    :style="{ fontSize: fontSizeObj.baseFontSize }"
+                    type="primary"
+                    @click="allReminder"
+                    >{{ $t('所有催办') }}
+                </el-button>
             </el-button-group>
         </template>
     </y9Table>
@@ -34,36 +49,47 @@
         />
         <div v-if="dialogConfig.type == 'remindMsg'">
             <el-input
-                type="textarea"
-                resize="none"
-                :rows="5"
+                v-model="msgContent"
                 :placeholder="$t('请输入内容')"
+                :rows="5"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
                 maxlength="50"
-                v-model="msgContent"
+                resize="none"
                 show-word-limit
+                type="textarea"
             ></el-input>
-            <el-button type="primary" style="margin-top: 8px;float: right;" @click="dialogConfig.show = false"
-            :size="fontSizeObj.buttonSize"
-            :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('取消') }}</el-button>
-            <el-button type="primary" style="margin-top: 8px;margin-right: 8px;float: right;" @click="sendReminder()"
-            :size="fontSizeObj.buttonSize"
-                :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('发送催办') }}</el-button>
+            <el-button
+                :size="fontSizeObj.buttonSize"
+                :style="{ fontSize: fontSizeObj.baseFontSize }"
+                style="margin-top: 8px; float: right"
+                type="primary"
+                @click="dialogConfig.show = false"
+                >{{ $t('取消') }}
+            </el-button>
+            <el-button
+                :size="fontSizeObj.buttonSize"
+                :style="{ fontSize: fontSizeObj.baseFontSize }"
+                style="margin-top: 8px; margin-right: 8px; float: right"
+                type="primary"
+                @click="sendReminder()"
+                >{{ $t('发送催办') }}
+            </el-button>
         </div>
     </y9Dialog>
 </template>
 
 <script lang="ts" setup>
-    import { taskList, saveReminder } from '@/api/flowableUI/reminder';
+    import { saveReminder, taskList } from '@/api/flowableUI/reminder';
     import remindList from '@/views/reminder/remindList.vue';
-    import { onMounted, ref, watch, reactive, toRefs, inject, computed } from 'vue';
+    import { computed, inject, onMounted, reactive, ref, toRefs, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
+
     const { t } = useI18n();
     // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo')||{}; 
+    const fontSizeObj: any = inject('sizeObjInfo') || {};
     const props = defineProps({
         processInstanceId: String,
-        taskId: String,
+        taskId: String
     });
 
     let total = ref(0);
@@ -80,7 +106,7 @@
                 { title: computed(() => t('办件人')), key: 'userName' },
                 { title: computed(() => t('开始时间')), key: 'createTime', width: '190' },
                 { title: computed(() => t('持续时间')), key: 'duration' },
-                { title: computed(() => t('办理环节')), key: 'taskName', width: '180' },
+                { title: computed(() => t('办理环节')), key: 'taskName', width: '180' }
             ],
             tableData: [],
             pageConfig: {
@@ -88,9 +114,9 @@
                 currentPage: 1, //当前页数，支持 v-model 双向绑定
                 pageSize: 10, //每页显示条目个数，支持 v-model 双向绑定
                 total: total.value, //总条目数
-                pageSizeOpts:[10, 20, 30, 50, 100]
+                pageSizeOpts: [10, 20, 30, 50, 100]
             },
-            border: 0,
+            border: 0
         },
         filterConfig: {
             //过滤配置
@@ -98,9 +124,9 @@
                 {
                     type: 'slot',
                     span: 8,
-                    slotName: 'reminderFilter',
-                },
-            ],
+                    slotName: 'reminderFilter'
+                }
+            ]
         },
         //弹窗配置
         dialogConfig: {
@@ -111,8 +137,8 @@
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {});
             },
-            visibleChange: (visible) => {},
-        },
+            visibleChange: (visible) => {}
+        }
     });
 
     let {
@@ -123,7 +149,7 @@
         filterConfig,
         multipleSelection,
         reminderTableConfig,
-        dialogConfig,
+        dialogConfig
     } = toRefs(data);
 
     watch(
@@ -153,6 +179,7 @@
         reminderTableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         reminderTableConfig.value.pageConfig.pageSize = pageSize;
@@ -177,7 +204,7 @@
                 width: '40%',
                 title: computed(() => t('催办信息')),
                 type: 'remindMsg',
-                showFooter: false,
+                showFooter: false
             });
         }
     }
@@ -207,7 +234,7 @@
             width: '50%',
             title: computed(() => t('我的催办')),
             type: 'reminder',
-            showFooter: false,
+            showFooter: false
         });
     }
 
@@ -220,7 +247,7 @@
             width: '50%',
             title: computed(() => t('所有催办')),
             type: 'reminder',
-            showFooter: false,
+            showFooter: false
         });
     }
 </script>
@@ -234,8 +261,8 @@
 </style>
 
 <style scoped>
- /*message */
- :global(.el-message .el-message__content) {
-    font-size: v-bind('fontSizeObj.baseFontSize');
-}
+    /*message */
+    :global(.el-message .el-message__content) {
+        font-size: v-bind('fontSizeObj.baseFontSize');
+    }
 </style>

@@ -3,47 +3,58 @@
         <el-aside style="width: 100%; height: auto; overflow: auto; padding: 1% 0% 2% 0%">
             <y9Card :showHeader="false" style="width: 80%; height: calc(100% - 20px); margin: auto">
                 <div class="margin-bottom-20">
-                    <el-button type="primary" @click="myChaoSong" :size="fontSizeObj.buttonSize"
-                        :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('我的抄送') }}({{ $t(mychaosongStr) }})</el-button>
-                    <el-button type="primary" @click="otherChaoSong" :size="fontSizeObj.buttonSize"
-                        :style="{ fontSize: fontSizeObj.baseFontSize }">{{ $t('他人抄送') }}({{ $t(otherchaosongStr) }})</el-button>
+                    <el-button
+                        :size="fontSizeObj.buttonSize"
+                        :style="{ fontSize: fontSizeObj.baseFontSize }"
+                        type="primary"
+                        @click="myChaoSong"
+                        >{{ $t('我的抄送') }}({{ $t(mychaosongStr) }})
+                    </el-button>
+                    <el-button
+                        :size="fontSizeObj.buttonSize"
+                        :style="{ fontSize: fontSizeObj.baseFontSize }"
+                        type="primary"
+                        @click="otherChaoSong"
+                        >{{ $t('他人抄送') }}({{ $t(otherchaosongStr) }})
+                    </el-button>
                 </div>
                 <y9Table :config="processTableConfig">
                     <template #status="{ row, column, index }">
                         <i
                             v-if="row.newToDo == 1"
+                            :style="{ color: 'green', fontSize: fontSizeObj.mediumFontSize }"
                             :title="$t('未阅')"
                             class="ri-chat-poll-line"
-                            :style="{color: 'green', fontSize: fontSizeObj.mediumFontSize}"
                         ></i>
                         <i
                             v-else-if="row.startTime == '未开始'"
+                            :style="{ color: 'green', fontSize: fontSizeObj.mediumFontSize }"
                             :title="$t('未开始')"
                             class="ri-chat-history-line"
-                            :style="{color: 'green', fontSize: fontSizeObj.mediumFontSize}"
                         ></i>
                         <i
                             v-else-if="row.endTime == ''"
+                            :style="{ color: 'blue', fontSize: fontSizeObj.mediumFontSize }"
                             :title="$t('已阅，未处理')"
                             class="ri-eye-line"
-                            :style="{color: 'blue', fontSize: fontSizeObj.mediumFontSize}"
                         ></i>
                         <i
                             v-else-if="row.endTime != ''"
+                            :style="{ fontSize: fontSizeObj.mediumFontSize }"
                             :title="$t('已处理')"
                             class="ri-checkbox-circle-line"
-                            :style="{fontSize: fontSizeObj.mediumFontSize}"
                         ></i>
                     </template>
                     <template #name="{ row, column, index }">
                         <font v-if="row.endFlag == '1'"
-                            >{{ row.name }}<i class="ri-check-double-line" style="color: red" :title="$t('强制办结任务')"></i
+                            >{{ row.name
+                            }}<i :title="$t('强制办结任务')" class="ri-check-double-line" style="color: red"></i
                         ></font>
                         <font v-else>{{ row.name }}</font>
                     </template>
                 </y9Table>
                 <y9Dialog v-model:config="dialogConfig">
-                    <chaoSongList ref="chaoSongListRef" :type="type" :processInstanceId="processInstanceId" />
+                    <chaoSongList ref="chaoSongListRef" :processInstanceId="processInstanceId" :type="type" />
                 </y9Dialog>
             </y9Card>
         </el-aside>
@@ -51,23 +62,23 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
+    import { computed, defineProps, inject, onMounted, reactive, watch } from 'vue';
     import chaoSongList from '@/views/chaoSong/chaoSongList.vue';
     import { historyList } from '@/api/flowableUI/process';
-    import { useSettingStore } from "@/store/modules/settingStore";
+    import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
+
     const { t } = useI18n();
-    const settingStore = useSettingStore()
+    const settingStore = useSettingStore();
     let style = 'height:calc(100vh - 210px) !important; width: 100%;';
-    if(settingStore.pcLayout == 'Y9Horizontal'){
+    if (settingStore.pcLayout == 'Y9Horizontal') {
         style = 'height:calc(100vh - 240px) !important; width: 100%;';
     }
     const props = defineProps({
-        processInstanceId: String,
+        processInstanceId: String
     });
     // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo')||{}; 
+    const fontSizeObj: any = inject('sizeObjInfo') || {};
     const data = reactive({
         type: '',
         mychaosongStr: '无',
@@ -84,11 +95,11 @@ import { computed } from 'vue';
                 //{ title: "开始时间", key: "startTime", width: '170', },
                 //{ title: "结束时间", key: "endTime", width: '170', },
                 { title: computed(() => t('办理时长')), key: 'time', align: 'left', width: '155' },
-                { title: computed(() => t('描述')), key: 'description', align: 'left', width: '160' },
+                { title: computed(() => t('描述')), key: 'description', align: 'left', width: '160' }
             ],
             tableData: [],
             pageConfig: false, //取消分页
-            border: 0,
+            border: 0
         },
         //弹窗配置
         dialogConfig: {
@@ -98,8 +109,8 @@ import { computed } from 'vue';
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {});
             },
-            visibleChange: (visible) => {},
-        },
+            visibleChange: (visible) => {}
+        }
     });
 
     let { type, dialogConfig, mychaosongStr, otherchaosongStr, mychaosongNum, otherchaosongNum, processTableConfig } =
@@ -139,7 +150,7 @@ import { computed } from 'vue';
             show: true,
             width: '60%',
             title: computed(() => t('我的抄送')),
-            showFooter: false,
+            showFooter: false
         });
     }
 
@@ -149,7 +160,7 @@ import { computed } from 'vue';
             show: true,
             width: '60%',
             title: computed(() => t('其他抄送')),
-            showFooter: false,
+            showFooter: false
         });
     }
 </script>

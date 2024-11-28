@@ -8,26 +8,26 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #buttonslot>
             <el-button
-                class="global-btn-main"
-                @click="reloadTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="reloadTable"
             >
                 <i class="ri-search-line"></i>
                 <span>{{ $t('搜索') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -51,51 +51,44 @@
         <template #follow="{ row, column, index }">
             <i
                 v-if="row.follow"
-                @click="delFollow(row)"
+                :style="{ fontSize: fontSizeObj.extrarLargeFont, color: '#ffb800' }"
                 :title="$t('点击取消关注')"
                 class="ri-star-line"
-                :style="{ fontSize: fontSizeObj.extrarLargeFont, color: '#ffb800' }"
+                @click="delFollow(row)"
             ></i>
             <i
                 v-else
+                :style="{ fontSize: fontSizeObj.largeFontSize }"
+                :title="$t('点击关注')"
                 class="ri-star-fill"
                 @click="saveFollow(row)"
-                :title="$t('点击关注')"
-                :style="{ fontSize: fontSizeObj.largeFontSize }"
             ></i>
         </template>
         <template #optButton="{ row, column, index }">
             <el-button
-                size="small"
+                v-if="row.isReminder"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
-                v-if="row.isReminder"
+                size="small"
                 @click="openReminder(row)"
-                ><i class="ri-timer-flash-line"></i>{{ $t('催办') }}</el-button
-            >
+                ><i class="ri-timer-flash-line"></i>{{ $t('催办') }}
+            </el-button>
             <!-- <el-button v-if="row.chaosongNum > 0" type="primary" size="mini" @click="chaosongList(opt_cell.row)">抄送</el-button> -->
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openHistoryList(row)"
-                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}</el-button
-            >
+                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}
+            </el-button>
             <el-button
-                size="small"
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                 class="global-btn-third"
+                size="small"
                 @click="openFlowChart(row)"
-                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}</el-button
-            >
+                ><i class="ri-flow-chart"></i>{{ $t('流程图') }}
+            </el-button>
             <!-- :class="{'margin-button': fontSizeObj.buttonSize == 'large' }" -->
-            <el-button
-                size="small"
-                :style="{ fontSize: fontSizeObj.smallFontSize }"
-                class="global-btn-third"
-                @click="openRemindInstance(row)"
-                ><i class="ri-notification-3-line"></i>{{ $t('消息提醒') }}</el-button
-            >
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
@@ -111,25 +104,29 @@
             :processInstanceId="processInstanceId"
             :reloadTable="reloadTable"
         />
-        <flowChart v-if="dialogConfig.type == 'flowChart'" ref="flowchartRef" :processDefinitionId="processDefinitionId" :processInstanceId="processInstanceId"/>
+        <flowChart
+            v-if="dialogConfig.type == 'flowChart'"
+            ref="flowchartRef"
+            :processDefinitionId="processDefinitionId"
+            :processInstanceId="processInstanceId"
+        />
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
     import HistoryList from '@/views/process/historyList.vue';
     import TaskList from '@/views/reminder/taskList.vue';
     import RemindInstance from '@/views/reminder/remindInstance.vue';
-    import flowChart from "@/views/flowchart/index4List.vue";
-    import { getDoingList, searchDoingList, doingViewConf } from '@/api/flowableUI/workList';
-    import { saveOfficeFollow, delOfficeFollow } from '@/api/flowableUI/follow';
+    import flowChart from '@/views/flowchart/index4List.vue';
+    import { doingViewConf, getDoingList } from '@/api/flowableUI/workList';
+    import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
     import { useRoute, useRouter } from 'vue-router';
-    import settings from '@/settings';
     import y9_storage from '@/utils/storage';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { getOptionValueList } from '@/api/flowableUI/form';
     import { useI18n } from 'vue-i18n';
-    import { computed } from 'vue';
+
     const { t } = useI18n();
     const settingStore = useSettingStore();
     const router = useRouter();
@@ -198,7 +195,7 @@
             }
         },
         tableName: '', //表名
-        processDefinitionId:''
+        processDefinitionId: ''
     });
     let {
         filterRef,
@@ -251,6 +248,7 @@
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -308,7 +306,7 @@
                         props: {}
                     };
                     searchItem.props.placeholder =
-                       t('请输入') + (element.labelName == '' ? element.disPlayName : element.labelName);
+                        t('请输入') + (element.labelName == '' ? element.disPlayName : element.labelName);
                     if (element.inputBoxType == 'select') {
                         let optionClass = element.optionClass;
                         searchItem.props.placeholder = t('请选择');
@@ -395,7 +393,7 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '55%',
-            title: t('任务催办')+'【' + row.title + '】',
+            title: t('任务催办') + '【' + row.title + '】',
             type: 'task',
             showFooter: false
         });
@@ -406,19 +404,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            title: t('历程')+'【' + row.title + '】',
+            title: t('历程') + '【' + row.title + '】',
             type: 'history',
-            showFooter: false
-        });
-    }
-
-    function openRemindInstance(row) {
-        processInstanceId.value = row.processInstanceId;
-        Object.assign(dialogConfig.value, {
-            show: true,
-            width: '60%',
-            title: t('消息提醒')+'【' + row.title + '】',
-            type: 'remindMsg',
             showFooter: false
         });
     }
@@ -429,8 +416,8 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            type:'flowChart',
-            title: t('流程图')+'【' + row.title + '】',
+            type: 'flowChart',
+            title: t('流程图') + '【' + row.title + '】',
             showFooter: false
         });
     }

@@ -8,26 +8,26 @@
 <template>
     <y9Table
         ref="filterRef"
-        :filterConfig="filterConfig"
         :config="tableConfig"
+        :filterConfig="filterConfig"
         @on-curr-page-change="onCurrPageChange"
         @on-page-size-change="onPageSizeChange"
     >
         <template #buttonslot>
             <el-button
-                class="global-btn-main"
-                @click="reloadTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-main"
+                @click="reloadTable"
             >
                 <i class="ri-search-line"></i>
                 <span>{{ $t('搜索') }}</span>
             </el-button>
             <el-button
-                class="global-btn-third"
-                @click="refreshTable"
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
+                class="global-btn-third"
+                @click="refreshTable"
             >
                 <i class="ri-refresh-line"></i>
                 <span>{{ $t('刷新') }}</span>
@@ -38,8 +38,8 @@
                 :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
                 :underline="false"
                 @click="openDoc(row)"
-                >{{ row.documentTitle == '' ? $t('未定义标题') : row.documentTitle }}</el-link
-            >
+                >{{ row.documentTitle == '' ? $t('未定义标题') : row.documentTitle }}
+            </el-link>
         </template>
         <template #itembox="{ row, column, index }">
             <font v-if="row.itembox == 'done'" style="color: #d81e06">{{ $t('办结') }}</font>
@@ -52,15 +52,15 @@
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
                 class="global-btn-third"
                 @click="openHistoryList(row)"
-                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}</el-button
-            >
+                ><i class="ri-sound-module-fill"></i>{{ $t('历程') }}
+            </el-button>
             <el-button
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
                 class="global-btn-third"
                 @click="handleDelete(row)"
-                ><i class="ri-delete-bin-line"></i>{{ $t('删除') }}</el-button
-            >
+                ><i class="ri-delete-bin-line"></i>{{ $t('删除') }}
+            </el-button>
         </template>
     </y9Table>
     <y9Dialog v-model:config="dialogConfig">
@@ -69,14 +69,14 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, defineProps, onMounted, watch, reactive, inject } from 'vue';
-    import { monitorBanjianList, getAllItemList, removeProcess } from '@/api/flowableUI/monitor';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
+    import { getAllItemList, monitorBanjianList, removeProcess } from '@/api/flowableUI/monitor';
     import HistoryList from '@/views/process/historyList.vue';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
-    import { computed } from 'vue';
+
     const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
@@ -98,7 +98,14 @@
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
                 { title: computed(() => t('类别')), key: 'itemName', width: '90' },
                 { title: computed(() => t('文件编号')), key: 'number', width: '190' },
-                { title: computed(() => t('标题')), key: 'documentTitle', width: 'auto', slot: 'title', align: 'left', minWidth: '200' },
+                {
+                    title: computed(() => t('标题')),
+                    key: 'documentTitle',
+                    width: 'auto',
+                    slot: 'title',
+                    align: 'left',
+                    minWidth: '200'
+                },
                 { title: computed(() => t('发起人')), key: 'creatUserName', width: '180' },
                 { title: computed(() => t('开始时间')), key: 'startTime', width: '155' },
                 { title: computed(() => t('结束时间')), key: 'endTime', width: '155' },
@@ -304,7 +311,7 @@
         Object.assign(dialogConfig.value, {
             show: true,
             width: '72%',
-            title: t('历程')+'【' + row.documentTitle + '】',
+            title: t('历程') + '【' + row.documentTitle + '】',
             showFooter: false
         });
     }
@@ -332,6 +339,7 @@
         tableConfig.value.pageConfig.currentPage = currPage;
         reloadTable();
     }
+
     //每页条数改变时触发
     function onPageSizeChange(pageSize) {
         tableConfig.value.pageConfig.pageSize = pageSize;
@@ -339,13 +347,17 @@
     }
 
     async function handleDelete(row) {
-        ElMessageBox.confirm(`${t('即将删除')}【${row.documentTitle}】<br>${t('删除后无法恢复！确定删除?')}'`, t('提示'), {
-            confirmButtonText: t('确定'),
-            cancelButtonText: t('取消'),
-            type: 'info',
-            appendTo: '.y9-table-div',
-            dangerouslyUseHTMLString: true
-        })
+        ElMessageBox.confirm(
+            `${t('即将删除')}【${row.documentTitle}】<br>${t('删除后无法恢复！确定删除?')}'`,
+            t('提示'),
+            {
+                confirmButtonText: t('确定'),
+                cancelButtonText: t('取消'),
+                type: 'info',
+                appendTo: '.y9-table-div',
+                dangerouslyUseHTMLString: true
+            }
+        )
             .then(async () => {
                 tableConfig.value.loading = true;
                 let res = await removeProcess(row.processInstanceId);
@@ -382,16 +394,20 @@
     :global(.el-message-box .el-message-box__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
+
     :global(.el-message-box .el-message-box__title) {
         font-size: v-bind('fontSizeObj.largeFontSize');
     }
+
     :global(.el-message-box .el-message-box__btns button) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
+
     /*notification */
     :global(.el-notification__title) {
         font-size: v-bind('fontSizeObj.mediumFontSize');
     }
+
     :global(.el-notification__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
