@@ -304,18 +304,19 @@ public class OpinionServiceImpl implements OpinionService {
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             List<Opinion> list =
                 opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-            if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && list.size() > 1) {// 按岗位排序号排序
-                for (Opinion Opinion : list) {
-                    String positionId = Opinion.getPositionId();
+            // 按岗位排序号排序
+            if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && list.size() > 1) {
+                for (Opinion opinion : list) {
+                    String positionId = opinion.getPositionId();
                     Position position = positionApi.get(tenantId, positionId).getData();
-                    Opinion.setOrderStr(
+                    opinion.setOrderStr(
                         (position != null && position.getOrderedPath() != null) ? position.getOrderedPath() : "");
                 }
                 list = list.stream().sorted().collect(Collectors.toList());
             }
             if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())) {
-                if (list.size() >= 1) {
+                if (!list.isEmpty()) {
                     model.setAddable(true);
                     for (Opinion opinion : list) {
                         OpinionListModel model0 = new OpinionListModel();
@@ -543,7 +544,8 @@ public class OpinionServiceImpl implements OpinionService {
                     }
                 }
             } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
-                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())) {
                 model.setAddable(false);
                 for (Opinion opinion : list) {
                     OpinionListModel model0 = new OpinionListModel();
