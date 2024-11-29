@@ -71,6 +71,20 @@ public interface DocumentApi {
                               @RequestParam("taskId") String taskId) throws Exception;
 
     /**
+     * 办件办结
+     *
+     * @param tenantId  租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId    任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @PostMapping("/completeSub")
+    Y9Result<Object> completeSub(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+                              @RequestParam("taskId") String taskId) throws Exception;
+
+    /**
      * 获取发送选人信息
      *
      * @param tenantId             租户id
@@ -140,21 +154,6 @@ public interface DocumentApi {
      */
     @GetMapping("/editDoing")
     Y9Result<DocumentDetailModel> editDoing(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-                                 @RequestParam("processInstanceId") String processInstanceId,
-                                 @RequestParam("mobile") boolean mobile);
-
-    /**
-     * 编辑文档
-     *
-     * @param tenantId          租户id
-     * @param orgUnitId         人员、岗位id
-     * @param processInstanceId 流程实例id
-     * @param mobile            是否手机端
-     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
-     * @since 9.6.6
-     */
-    @GetMapping("/editDone")
-    Y9Result<DocumentDetailModel> editDone(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
                                             @RequestParam("processInstanceId") String processInstanceId,
                                             @RequestParam("mobile") boolean mobile);
 
@@ -168,10 +167,25 @@ public interface DocumentApi {
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
      * @since 9.6.6
      */
-    @GetMapping("/editRecycle")
-    Y9Result<DocumentDetailModel> editRecycle(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+    @GetMapping("/editDone")
+    Y9Result<DocumentDetailModel> editDone(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
                                            @RequestParam("processInstanceId") String processInstanceId,
                                            @RequestParam("mobile") boolean mobile);
+
+    /**
+     * 编辑文档
+     *
+     * @param tenantId          租户id
+     * @param orgUnitId         人员、岗位id
+     * @param processInstanceId 流程实例id
+     * @param mobile            是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
+     * @since 9.6.6
+     */
+    @GetMapping("/editRecycle")
+    Y9Result<DocumentDetailModel> editRecycle(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
+                                              @RequestParam("processInstanceId") String processInstanceId,
+                                              @RequestParam("mobile") boolean mobile);
 
     /**
      * 解析用户
@@ -225,6 +239,30 @@ public interface DocumentApi {
                                        @RequestParam("userChoice") String userChoice,
                                        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid,
                                        @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> variables);
+
+    /**
+     * 带自定义变量发送
+     *
+     * @param tenantId      租户id
+     * @param orgUnitId     人员、岗位 id
+     * @param taskId        任务id
+     * @param sponsorHandle 是否主办人办理
+     * @param userChoice    选择的发送人员
+     * @param sponsorGuid   主办人id
+     * @param routeToTaskId 任务key
+     * @param variables     保存变量
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping(value = "/forwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<String> forwarding(@RequestParam("tenantId") String tenantId,
+                                @RequestParam("orgUnitId") String orgUnitId,
+                                @RequestParam("taskId") String taskId,
+                                @RequestParam("userChoice") String userChoice,
+                                @RequestParam("routeToTaskId") String routeToTaskId,
+                                @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
+                                @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid,
+                                @RequestBody Map<String, Object> variables);
 
     /**
      * 指定任务节点发送

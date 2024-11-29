@@ -12,6 +12,7 @@ import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.SysVariables;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -112,6 +113,21 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         ptModel.setId("");
 
         processTrackApi.saveOrUpdate(tenantId, ptModel);
+    }
+
+    @Override
+    public Y9Result<String> complete4Sub(String taskId, String taskDefName, String desc) throws Exception {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        String mainSenderId = variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAINSENDERID).getData();
+        if(StringUtils.isBlank(mainSenderId)){
+            return Y9Result.failure("办结失败：缺少主流程的发送人！");
+        }
+        /*
+          1办结
+         */
+        documentApi.completeSub(tenantId, positionId, taskId);
+        return Y9Result.successMsg("办结成功！");
     }
 
     @Override

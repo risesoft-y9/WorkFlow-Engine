@@ -108,6 +108,22 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
+     * 获取具体流程的某个节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 节点类型
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<FlowElementModel> getNode(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+                                        @RequestParam String taskDefKey) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return Y9Result.success(customProcessDefinitionService.getNode(processDefinitionId, taskDefKey));
+    }
+
+    /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
      *
      * @param tenantId 租户Id

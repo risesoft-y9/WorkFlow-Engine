@@ -60,6 +60,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
 
                 if (null != user) {
                     mapTemp.put(SysVariables.USER, user);
+                    System.out.println("###########user##"+user);
                 }
                 if (null != users && !users.isEmpty()) {
                     mapTemp.put(SysVariables.USERS, users);

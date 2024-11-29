@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.processadmin.FlowElementModel;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -150,10 +151,10 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             userAndDeptIdList.add(assignee);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             Y9LoginUserHolder.setOrgUnit(orgUnit);
-            String htiMultiInstance = processDefinitionApi
-                .getNodeType(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
+            FlowElementModel flowElementModel = processDefinitionApi
+                .getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
             Map<String, Object> variables =
-                CommonOpt.setVariables(orgUnitId, orgUnit.getName(), hti.getTaskDefinitionKey(), userAndDeptIdList, "");
+                CommonOpt.setVariables(orgUnitId, orgUnit.getName(), hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSECLAIMROLLBACK);
             variableApi.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
@@ -161,7 +162,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             /*
              * 如果上一任务是并行，则回退时设置主办人
              */
-            if (SysVariables.PARALLEL.equals(htiMultiInstance)) {
+            if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {
                 List<TaskModel> taskNextList1 =
                     taskApi.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId()).getData();
                 for (TaskModel taskModelNext : taskNextList1) {

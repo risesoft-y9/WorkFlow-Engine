@@ -40,6 +40,15 @@ public interface CustomProcessDefinitionService {
     String getNodeType(String processDefinitionId, String taskDefKey);
 
     /**
+     * 获取具体流程的某个节点
+     *
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @return
+     */
+    FlowElementModel getNode(String processDefinitionId, String taskDefKey);
+
+    /**
      * 根据taskId获取某个节点除去end节点和默认路由节点的所有的输出线路的个数
      *
      * @param taskId

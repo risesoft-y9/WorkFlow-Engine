@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import net.risesoft.api.processadmin.HistoricActivityApi;
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -111,6 +112,7 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /*
  * @author qinman
@@ -280,6 +282,15 @@ public class DocumentServiceImpl implements DocumentService {
          * 1办结流程
          */
         runtimeApi.complete(tenantId, Y9LoginUserHolder.getOrgUnitId(), processInstanceId, taskId);
+    }
+
+    @Override
+    public void completeSub(String taskId) throws Exception {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        /*
+         * 1办结流程
+         */
+        runtimeApi.completeSub(tenantId, Y9LoginUserHolder.getOrgUnitId(), taskId);
     }
 
     @Override
@@ -612,16 +623,16 @@ public class DocumentServiceImpl implements DocumentService {
             }
             OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-            String multiInstance =
-                    processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
+            FlowElementModel flowElementModel =
+                    processDefinitionApi.getNode(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
-                    CommonOpt.setVariables(orgUnitId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
+                    CommonOpt.setVariables(orgUnitId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             /*
              * 并行发送超过20人时，启用异步后台处理。
              */
             tooMuch = num > 20;
-            if (SysVariables.PARALLEL.equals(multiInstance) && tooMuch) {
+            if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance()) && tooMuch) {
                 TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
                 Date date = new Date();
                 if (taskVariable == null) {
@@ -636,11 +647,7 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
-                        sponsorGuid, taskId, multiInstance, variables, userList);
-            } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
-                Map<String, Object> vars = new HashMap<>(16);
-                vars.put("parentTaskId", taskId);
-                taskApi.createWithVariables(tenantId, orgUnitId, routeToTaskId, vars, userList);
+                        sponsorGuid, taskId, flowElementModel.getMultiInstance(), variables, userList);
             } else {
                 // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
                 if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
@@ -666,14 +673,14 @@ public class DocumentServiceImpl implements DocumentService {
                         taskVariable.setText("true:" + num);
                         taskVariableRepository.save(taskVariable);
                         asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
-                                sponsorGuid, taskId, multiInstance, variables, userList);
+                                sponsorGuid, taskId, flowElementModel.getMultiInstance(), variables, userList);
                     } else {
                         asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid,
-                                taskId, multiInstance, variables, userList);
+                                taskId, flowElementModel.getMultiInstance(), variables, userList);
                     }
                 } else {
                     asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid,
-                            taskId, multiInstance, variables, userList);
+                            taskId, flowElementModel.getMultiInstance(), variables, userList);
                 }
             }
             return Y9Result.success(processInstanceId, "发送成功!");
@@ -1749,10 +1756,10 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                     routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
-            String multiInstance =
-                    processDefinitionApi.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
+            FlowElementModel flowElementModel =
+                    processDefinitionApi.getNode(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult =
-                    this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
+                    this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", flowElementModel.getMultiInstance());
             if (!userResult.isSuccess()) {
                 return Y9Result.failure(userResult.getMsg());
             }
@@ -1761,8 +1768,8 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
-                    CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance,
+                    CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, flowElementModel.getMultiInstance(),
                     variables, userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {
@@ -1863,22 +1870,15 @@ public class DocumentServiceImpl implements DocumentService {
             processInstanceId = task.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-            String multiInstance =
-                    processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
+            FlowElementModel flowElementModel =
+                    processDefinitionApi.getNode(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
-                    CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
-            // 子流程信息
-            if (multiInstance.equals(SysVariables.CALLACTIVITY)) {
-                Map<String, Object> initDataMap = new HashMap<>(16);
-                initDataMap.put(SysVariables.PARENTPROCESSSERIALNUMBER,
-                        processParam != null ? processParam.getProcessSerialNumber() : "");
-                variables.put(SysVariables.INITDATAMAP, initDataMap);
-            }
+                    CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
             int num = userList.size();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             // 并行发送超过20人时，启用异步后台处理。
             boolean tooMuch = num > 20;
-            if (SysVariables.PARALLEL.equals(multiInstance) && tooMuch) {
+            if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance()) && tooMuch) {
                 TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
                 Date date = new Date();
                 if (taskVariable == null) {
@@ -1893,15 +1893,11 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, "", sponsorGuid,
-                        taskId, multiInstance, variables, userList);
-            } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
-                Map<String, Object> vars = new HashMap<>(16);
-                vars.put("parentTaskId", taskId);
-                taskApi.createWithVariables(tenantId, orgUnit.getId(), routeToTaskId, vars, userList);
+                        taskId, flowElementModel.getMultiInstance(), variables, userList);
             } else {
                 assert processParam != null;
                 asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", sponsorGuid, taskId,
-                        multiInstance, variables, userList);
+                        flowElementModel.getMultiInstance(), variables, userList);
             }
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
@@ -2010,7 +2006,7 @@ public class DocumentServiceImpl implements DocumentService {
             vars.put("routeToTaskId", startTaskDefKey);
 
             vars = CommonOpt.setVariables(orgUnit.getId(), orgUnit.getName(), "", Arrays.asList(userIds.split(",")),
-                    processSerialNumber, "", vars);
+                    processSerialNumber, null, vars);
             assert item != null;
             ProcessInstanceModel piModel = runtimeApi
                     .startProcessInstanceByKey(tenantId, orgUnit.getId(), processDefinitionKey, item.getSystemName(), vars)
@@ -2169,20 +2165,20 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                     routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
-            String multiInstance =
-                    processDefinitionApi.getNodeType(tenantId, processDefinitionId, routeToTaskId).getData();
+            FlowElementModel flowElementModel =
+                    processDefinitionApi.getNode(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId,
-                    routeToTaskName, processInstanceId, multiInstance);
+                    routeToTaskName, processInstanceId, flowElementModel.getMultiInstance());
             if (!userResult.isSuccess()) {
                 return Y9Result.failure(userResult.getMsg());
             }
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
-                    CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, multiInstance);
+                    CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
             String subProcessStr =
                     variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "subProcessNum").getData();
             if (subProcessStr != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
-                if (SysVariables.PARALLEL.equals(multiInstance)) {// 并行节点才执行
+                if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {// 并行节点才执行
                     String userChoice = userList.get(0);
                     Integer subProcessNum = Integer.parseInt(subProcessStr);
                     if (subProcessNum > 1 && userList.size() == 1) {
@@ -2193,7 +2189,7 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             }
             variables.put(SysVariables.USERS, userList);
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", "", taskId, multiInstance,
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", "", taskId, flowElementModel.getMultiInstance(),
                     variables, userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {
