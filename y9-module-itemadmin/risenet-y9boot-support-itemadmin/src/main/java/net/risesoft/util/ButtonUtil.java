@@ -617,7 +617,7 @@ public class ButtonUtil {
         Map<String, Object> map = new HashMap<>(16);
         String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21","22","23"};
-        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
+        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "退签", "办结", "收回",
                 "拒签", "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交","放入回收站","打印日志"};
         int[] buttonOrders = {3,23, 15, 10, 11, 22, 2, 4, 1, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
         boolean[] isButtonShow = new boolean[buttonIds.length];
@@ -829,41 +829,6 @@ public class ButtonUtil {
         isButtonShow[2] = false;
         /*----- 上面是返回按钮的设置 -----*/
 
-        /*----- 下面是退回按钮的设置 -----*/
-        if (isAssignee && !customItem) {
-            /*----- 下面是退出按钮的判断 -----*/
-            String returnDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-            String takeBackDoc =
-                    variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-            String repositionDoc =
-                    variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
-            // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
-            if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
-                isButtonShow[3] = false;
-            } else {
-                if (isParallel) {
-                    // if (sponsorStatus) {// 在基本配置中是否配置了主协办，没有配置为false，配置了使用主协办为true，不使用主协办为false
-                    // if (isParallelSponsor) {// 主协办状态下主办人在其他人没有办理的情况下可以退回
-                    // isButtonShow[3] = true;
-                    // }
-                    // } else {
-                    // isButtonShow[3] = true;
-                    // }
-                    // 并行状态下都可以退回，退回只退回自己的任务，不影响其他人
-                    isButtonShow[3] = true;
-                } else if (isSequential) {
-                    isButtonShow[3] = true;
-                } else {
-                    // 当前任务不是退出任务且发送人不等于当前人的时候才可以显示退回
-                    if (!taskSenderId.equals(orgUnitId)) {
-                        isButtonShow[3] = true;
-                    }
-                }
-            }
-            /*----- 上面是退出按钮的判断 -----*/
-        }
-        /*----- 上面是退回按钮的设置 -----*/
-
         /*----- 下面是协办状态下的完成按钮的设置 -----*/
         if (isAssignee) {
             // 此时说明用户在协办状态，发送按钮不再显示，完成按钮显示
@@ -931,19 +896,22 @@ public class ButtonUtil {
         // 签收、拒签按钮
         // 当user变量没有指定人员时，显示签收
         if (!isAssignee) {
+            //签收
             isButtonShow[9] = true;
+            //收回
             isButtonShow[12] = false;
-            isButtonShow[13] = true;
+            //拒签
+            //isButtonShow[13] = true;
             // 是否是最后一个拒签人员，如果是则提示是否拒签，如果拒签，则退回任务给发送人，发送人重新选择人员进行签收办理
-            List<IdentityLinkModel> identityLinkList =
+            /*List<IdentityLinkModel> identityLinkList =
                     identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
             if (identityLinkList.size() <= 1) {
                 map.put("isLastPerson4RefuseClaim", true);
-            }
+            }*/
         }
         /*----- 上面是签收按钮的设置 -----*/
 
-        /*----- 下面是撤销签收按钮的设置 -----*/
+        /*----- 下面是退签按钮的设置 -----*/
         // 撤销签收
         if (isAssignee) {
             // 判断当前流程实例经过的任务节点数和当前流程实例是否存在父流程实例
@@ -972,7 +940,41 @@ public class ButtonUtil {
                 }
             }
         }
-        /*----- 上面是撤销签收按钮的设置 -----*/
+        /*----- 上面是退签按钮的设置 -----*/
+
+        /*----- 下面是退回按钮的设置 -----*/
+        if (isAssignee && !customItem && !isButtonShow[10]) {
+            /*----- 下面是退出按钮的判断 -----*/
+            String returnDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+            String takeBackDoc =
+                    variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+            String repositionDoc =
+                    variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
+            if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
+                isButtonShow[3] = false;
+            } else {
+                if (isParallel) {
+                    // if (sponsorStatus) {// 在基本配置中是否配置了主协办，没有配置为false，配置了使用主协办为true，不使用主协办为false
+                    // if (isParallelSponsor) {// 主协办状态下主办人在其他人没有办理的情况下可以退回
+                    // isButtonShow[3] = true;
+                    // }
+                    // } else {
+                    // isButtonShow[3] = true;
+                    // }
+                    // 并行状态下都可以退回，退回只退回自己的任务，不影响其他人
+                    isButtonShow[3] = true;
+                } else if (isSequential) {
+                    isButtonShow[3] = true;
+                } else {
+                    // 当前任务不是退出任务且发送人不等于当前人的时候才可以显示退回
+                    if (!taskSenderId.equals(orgUnitId)) {
+                        isButtonShow[3] = true;
+                    }
+                }
+            }
+        }
+        /*----- 上面是退回按钮的设置 -----*/
 
         /*----- 下面是办结按钮的设置 -----*/
         // 办结
