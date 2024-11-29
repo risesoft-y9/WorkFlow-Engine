@@ -37,7 +37,7 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
             map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getOrgUnit().getName(), "",
-                Collections.singletonList(userId), processSerialNumber, "", map);
+                Collections.singletonList(userId), processSerialNumber, null, map);
             ProcessInstanceModel piModel =
                 runtimeApi.startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map).getData();
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况

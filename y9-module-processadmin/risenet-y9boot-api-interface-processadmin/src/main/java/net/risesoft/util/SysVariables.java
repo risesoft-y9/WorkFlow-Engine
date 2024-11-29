@@ -33,6 +33,10 @@ public class SysVariables {
     /** 自定义变量名称 用来记录当前流程的前发送人的中文姓名 */
     public static final String TASKSENDERID = "taskSenderId";
     /** 自定义变量名称 用来记录当前流程的前发送人的guid */
+    public static final String MAINSENDER = "mainSender";
+    /** 自定义变量名称 用来记录当前流程的前发送人的中文姓名 */
+    public static final String MAINSENDERID = "mainSenderId";
+    /** 自定义变量名称 用来记录当前流程的前发送人的guid */
     public static final String TASKSENDERPOSITIONID = "taskSenderPositionId";
     /** 自定义变量名称 用来记录当前流程的前发送人岗位的guid */
     public static final String PROCESSSERIALNUMBER = "processSerialNumber";

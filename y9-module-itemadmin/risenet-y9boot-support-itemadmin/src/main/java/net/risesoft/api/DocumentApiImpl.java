@@ -93,11 +93,11 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
-                                                          @RequestParam String itemId, @RequestParam String startTaskDefKey, @RequestParam boolean mobile) {
+                                                                @RequestParam String itemId, @RequestParam String startTaskDefKey, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        DocumentDetailModel model = documentService.addWithStartTaskDefKey(itemId,startTaskDefKey, mobile);
+        DocumentDetailModel model = documentService.addWithStartTaskDefKey(itemId, startTaskDefKey, mobile);
         return Y9Result.success(model);
     }
 
@@ -118,6 +118,26 @@ public class DocumentApiImpl implements DocumentApi {
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         documentService.complete(taskId);
+        return Y9Result.success();
+    }
+
+    /**
+     * 办件办结
+     *
+     * @param tenantId  租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId    任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @throws Exception Exception
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> completeSub(@RequestParam String tenantId, @RequestParam String orgUnitId,
+                                        @RequestParam String taskId) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        documentService.completeSub(taskId);
         return Y9Result.success();
     }
 
@@ -187,7 +207,7 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<DocumentDetailModel> editDoing(@RequestParam String tenantId, @RequestParam String orgUnitId,
-                                        @RequestParam String processInstanceId, @RequestParam boolean mobile) {
+                                                   @RequestParam String processInstanceId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
@@ -207,7 +227,7 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<DocumentDetailModel> editDone(@RequestParam String tenantId, @RequestParam String orgUnitId,
-                                                   @RequestParam String processInstanceId, @RequestParam boolean mobile) {
+                                                  @RequestParam String processInstanceId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
@@ -227,7 +247,7 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<DocumentDetailModel> editRecycle(@RequestParam String tenantId, @RequestParam String orgUnitId,
-                                                  @RequestParam String processInstanceId, @RequestParam boolean mobile) {
+                                                     @RequestParam String processInstanceId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
@@ -238,10 +258,10 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 编辑办件
      *
-     * @param tenantId          租户id
-     * @param orgUnitId         人员、岗位id
-     * @param taskId            任务id
-     * @param mobile            是否手机端
+     * @param tenantId  租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId    任务id
+     * @param mobile    是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
      * @since 9.6.6
      */
@@ -321,6 +341,35 @@ public class DocumentApiImpl implements DocumentApi {
             asyncUtilService.loopSending(tenantId, orgUnitId, itemId, y9Result.getData());
         }
         return y9Result;
+    }
+
+    /**
+     * 带自定义变量发送
+     *
+     * @param tenantId      租户id
+     * @param orgUnitId     人员、岗位 id
+     * @param taskId        任务id
+     * @param sponsorHandle 是否主办人办理
+     * @param userChoice    选择的发送人员
+     * @param sponsorGuid   主办人id
+     * @param routeToTaskId 任务key
+     * @param variables     保存变量
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<String> forwarding(@RequestParam String tenantId, @RequestParam String orgUnitId,
+                                       @RequestParam String taskId,
+                                       @RequestParam String userChoice,
+                                       @RequestParam String routeToTaskId,
+                                       @RequestParam(required = false) String sponsorHandle,
+                                       @RequestParam(required = false) String sponsorGuid,
+                                       @RequestBody Map<String, Object> variables) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        variableApi.setVariables(tenantId, taskId, variables);
+        return documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
     }
 
     /**
@@ -463,12 +512,12 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
-                                                          @RequestParam String itemId, @RequestParam String processSerialNumber,
-                                                          @RequestParam String processDefinitionKey,@RequestParam String theTaskKey) {
+                                                                      @RequestParam String itemId, @RequestParam String processSerialNumber,
+                                                                      @RequestParam String processDefinitionKey, @RequestParam String theTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        StartProcessResultModel model = documentService.startProcessByTheTaskKey(itemId, processSerialNumber, processDefinitionKey,theTaskKey);
+        StartProcessResultModel model = documentService.startProcessByTheTaskKey(itemId, processSerialNumber, processDefinitionKey, theTaskKey);
         return Y9Result.success(model);
     }
 
