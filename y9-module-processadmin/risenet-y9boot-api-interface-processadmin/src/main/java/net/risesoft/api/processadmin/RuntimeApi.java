@@ -64,7 +64,7 @@ public interface RuntimeApi {
      */
     @PostMapping("/completeSub")
     Y9Result<Object> completeSub(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-                                 @RequestParam("taskId") String taskId)
+                                 @RequestParam("taskId") String taskId, @RequestParam("userList") List<String> userList)
             throws Exception;
 
     /**

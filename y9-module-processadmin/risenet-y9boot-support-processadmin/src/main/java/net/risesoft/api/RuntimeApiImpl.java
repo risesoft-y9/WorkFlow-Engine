@@ -102,12 +102,12 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     public Y9Result<Object> completeSub(@RequestParam String tenantId, @RequestParam String orgUnitId,
-                                        @RequestParam String taskId) throws Exception {
+                                        @RequestParam String taskId, List<String> userList) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        customTaskService.completeSub(taskId);
+        customTaskService.completeSub(taskId, userList);
         return Y9Result.success();
     }
 

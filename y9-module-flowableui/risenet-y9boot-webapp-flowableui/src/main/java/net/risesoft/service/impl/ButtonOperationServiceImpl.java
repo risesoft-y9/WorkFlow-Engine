@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.collect.Lists;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.SysVariables;
+import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -120,13 +122,15 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         String mainSenderId = variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAINSENDERID).getData();
-        if(StringUtils.isBlank(mainSenderId)){
+        if (StringUtils.isBlank(mainSenderId)) {
             return Y9Result.failure("办结失败：缺少主流程的发送人！");
         }
         /*
           1办结
          */
-        documentApi.completeSub(tenantId, positionId, taskId);
+        List<String> userList = new ArrayList<>();
+        userList.add(Y9JsonUtil.readValue(mainSenderId, String.class));
+        documentApi.completeSub(tenantId, positionId, taskId, userList);
         return Y9Result.successMsg("办结成功！");
     }
 

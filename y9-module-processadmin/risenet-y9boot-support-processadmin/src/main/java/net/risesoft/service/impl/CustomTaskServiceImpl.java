@@ -40,6 +40,7 @@ import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author qinman
@@ -159,7 +160,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
 
     @Override
     @Transactional
-    public void completeSub(String taskId) throws Exception {
+    public void completeSub(String taskId, List<String> userList) throws Exception {
         String processInstanceId = "";
         try {
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
@@ -176,12 +177,13 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                     }
                 }
             }
-            Map<String, Object> variables =new HashMap<>();
+            Map<String, Object> variables = new HashMap<>();
             String endNodeKey = customProcessDefinitionService.getEndNodeKeyByTaskId(taskId);
             variables.put(SysVariables.ROUTETOTASKID, endNodeKey);
-            Object mainSenderId = taskService.getVariable(taskId, SysVariables.MAINSENDERID);
-            variables.put(SysVariables.USER, mainSenderId);
-            variables.put(SysVariables.USERS, List.of(mainSenderId));
+            if (userList.size() == 1) {
+                variables.put(SysVariables.USER, userList.stream().findFirst().get());
+            }
+            variables.put(SysVariables.USERS, userList);
             this.completeWithVariables(taskId, variables);
         } catch (Exception e) {
             final Writer result = new StringWriter();

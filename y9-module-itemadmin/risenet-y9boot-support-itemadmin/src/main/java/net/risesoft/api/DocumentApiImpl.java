@@ -133,11 +133,11 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<Object> completeSub(@RequestParam String tenantId, @RequestParam String orgUnitId,
-                                        @RequestParam String taskId) throws Exception {
+                                        @RequestParam String taskId, @RequestParam("userList") List<String> userList) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        documentService.completeSub(taskId);
+        documentService.completeSub(taskId, userList);
         return Y9Result.success();
     }
 

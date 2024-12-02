@@ -11,6 +11,7 @@ import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.pojo.Y9Result;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author qinman
@@ -53,7 +54,7 @@ public interface DocumentService {
      * @param taskId 任务id
      * @throws Exception
      */
-    void completeSub(String taskId) throws Exception;
+    void completeSub(String taskId, List<String> userList) throws Exception;
 
     /**
      * Description: 发送对象获取（单个串行-并行节点）

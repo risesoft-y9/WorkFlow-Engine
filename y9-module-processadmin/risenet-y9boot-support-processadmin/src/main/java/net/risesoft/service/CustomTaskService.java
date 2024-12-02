@@ -9,6 +9,7 @@ import org.flowable.task.api.Task;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author qinman
@@ -47,7 +48,7 @@ public interface CustomTaskService {
      * @param taskId
      * @throws Exception
      */
-    void completeSub(String taskId) throws Exception;
+    void completeSub(String taskId, List<String> userList) throws Exception;
 
     /**
      * 岗位使用
