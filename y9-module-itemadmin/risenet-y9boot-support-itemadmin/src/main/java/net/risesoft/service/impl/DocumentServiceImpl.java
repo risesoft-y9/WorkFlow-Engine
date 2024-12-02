@@ -113,6 +113,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /*
  * @author qinman
@@ -285,12 +286,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void completeSub(String taskId) throws Exception {
+    public void completeSub(String taskId, List<String> userList) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 1办结流程
          */
-        runtimeApi.completeSub(tenantId, Y9LoginUserHolder.getOrgUnitId(), taskId);
+        runtimeApi.completeSub(tenantId, Y9LoginUserHolder.getOrgUnitId(), taskId, userList);
     }
 
     @Override

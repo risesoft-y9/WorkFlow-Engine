@@ -82,7 +82,7 @@ public interface DocumentApi {
      */
     @PostMapping("/completeSub")
     Y9Result<Object> completeSub(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-                              @RequestParam("taskId") String taskId) throws Exception;
+                                 @RequestParam("taskId") String taskId, @RequestParam("userList") List<String> userList) throws Exception;
 
     /**
      * 获取发送选人信息
