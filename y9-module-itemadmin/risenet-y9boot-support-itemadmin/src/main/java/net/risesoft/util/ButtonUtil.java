@@ -68,7 +68,7 @@ public class ButtonUtil {
     private ItemButtonModel banLiWanCheng = new ItemButtonModel("09", "办理完成", ItemButtonTypeEnum.COMMON.getValue(), 13);
     private ItemButtonModel banJie = new ItemButtonModel("12", "办结", ItemButtonTypeEnum.COMMON.getValue(), 14);
     private ItemButtonModel jiaJianQian = new ItemButtonModel("19", "加减签", ItemButtonTypeEnum.COMMON.getValue(), 15);
-    private ItemButtonModel shouHui = new ItemButtonModel("13", "收回", ItemButtonTypeEnum.COMMON.getValue(), 16);
+    private ItemButtonModel shouHui = new ItemButtonModel("13", "取回", ItemButtonTypeEnum.COMMON.getValue(), 16);
     private ItemButtonModel juQian = new ItemButtonModel("14", "拒签", ItemButtonTypeEnum.COMMON.getValue(), 17);
     private ItemButtonModel chongDingWei = new ItemButtonModel("16", "重定位", ItemButtonTypeEnum.COMMON.getValue(), 18);
     private ItemButtonModel chaoSong = new ItemButtonModel("18", "抄送", ItemButtonTypeEnum.COMMON.getValue(), 19);
