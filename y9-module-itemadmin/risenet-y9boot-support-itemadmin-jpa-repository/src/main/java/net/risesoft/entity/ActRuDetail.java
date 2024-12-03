@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -135,4 +136,11 @@ public class ActRuDetail implements Serializable {
     @Comment("是否归档")
     @Column(name = "PLACEONFILE")
     private boolean placeOnFile;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DUEDATE")
+    @Comment("到期时间")
+    private Date dueDate;
 }

@@ -65,44 +65,46 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     @Transactional
     public ProcessParam saveOrUpdate(ProcessParam processParam) {
         String processSerialNumber = processParam.getProcessSerialNumber();
-        ProcessParam oldpp = processParamRepository.findByProcessSerialNumber(processSerialNumber);
-        if (null != oldpp) {
+        ProcessParam oldProcessParam = processParamRepository.findByProcessSerialNumber(processSerialNumber);
+        if (null != oldProcessParam) {
             if (StringUtils.isNotBlank(processParam.getCustomLevel())) {
-                oldpp.setCustomLevel(processParam.getCustomLevel());
+                oldProcessParam.setCustomLevel(processParam.getCustomLevel());
             }
             if (StringUtils.isNotBlank(processParam.getCustomNumber())) {
-                oldpp.setCustomNumber(processParam.getCustomNumber());
+                oldProcessParam.setCustomNumber(processParam.getCustomNumber());
             }
             if (StringUtils.isNotBlank(processParam.getTitle())) {
-                oldpp.setTitle(processParam.getTitle());
+                oldProcessParam.setTitle(processParam.getTitle());
             }
-            oldpp.setSearchTerm(processParam.getSearchTerm());
-            oldpp.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
-            oldpp.setSystemCnName(processParam.getSystemCnName());
+            oldProcessParam.setSearchTerm(processParam.getSearchTerm());
+            oldProcessParam.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
+            oldProcessParam.setSystemCnName(processParam.getSystemCnName());
             if (StringUtils.isNotBlank(processParam.getBureauIds())) {
-                oldpp.setBureauIds(processParam.getBureauIds());
+                oldProcessParam.setBureauIds(processParam.getBureauIds());
             }
             if (StringUtils.isNotBlank(processParam.getDeptIds())) {
-                oldpp.setDeptIds(processParam.getDeptIds());
+                oldProcessParam.setDeptIds(processParam.getDeptIds());
             }
-            oldpp.setIsSendSms(processParam.getIsSendSms());
-            oldpp.setIsShuMing(processParam.getIsShuMing());
-            oldpp.setSmsContent(processParam.getSmsContent());
-            oldpp.setSmsPersonId(processParam.getSmsPersonId());
-            oldpp.setCompleter(processParam.getCompleter());
-            oldpp.setProcessInstanceId(processParam.getProcessInstanceId());
-            oldpp.setStartor(processParam.getStartor());
-            oldpp.setStartorName(processParam.getStartorName());
-            oldpp.setSponsorGuid(processParam.getSponsorGuid());
-            oldpp.setSended(processParam.getSended());
-            oldpp.setTarget(processParam.getTarget());
-            processParamRepository.save(oldpp);
+            oldProcessParam.setIsSendSms(processParam.getIsSendSms());
+            oldProcessParam.setIsShuMing(processParam.getIsShuMing());
+            oldProcessParam.setSmsContent(processParam.getSmsContent());
+            oldProcessParam.setSmsPersonId(processParam.getSmsPersonId());
+            oldProcessParam.setCompleter(processParam.getCompleter());
+            oldProcessParam.setProcessInstanceId(processParam.getProcessInstanceId());
+            oldProcessParam.setStartor(processParam.getStartor());
+            oldProcessParam.setStartorName(processParam.getStartorName());
+            oldProcessParam.setSponsorGuid(processParam.getSponsorGuid());
+            oldProcessParam.setSended(processParam.getSended());
+            oldProcessParam.setTarget(processParam.getTarget());
+            oldProcessParam.setDueDate(processParam.getDueDate());
+            oldProcessParam.setDescription(processParam.getDescription());
+            processParamRepository.save(oldProcessParam);
             String tenantId = Y9LoginUserHolder.getTenantId();
             String processInstanceId = processParam.getProcessInstanceId();
             try {
                 if (StringUtils.isNotBlank(processInstanceId)) {
-                    boolean update = oldpp.getSearchTerm() != null && processParam.getSearchTerm() != null
-                            && !oldpp.getSearchTerm().equals(processParam.getSearchTerm());
+                    boolean update = oldProcessParam.getSearchTerm() != null && processParam.getSearchTerm() != null
+                            && !oldProcessParam.getSearchTerm().equals(processParam.getSearchTerm());
                     // 搜索字段不一样才修改
                     if (update) {
                         Map<String, Object> val = new HashMap<>();
@@ -113,7 +115,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return oldpp;
+            return oldProcessParam;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ProcessParam newpp = new ProcessParam();
@@ -143,6 +145,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newpp.setCreateTime(sdf.format(new Date()));
         newpp.setCustomItem(processParam.getCustomItem());
         newpp.setTarget(processParam.getTarget());
+        newpp.setDueDate(processParam.getDueDate());
+        newpp.setDescription(processParam.getDescription());
         processParamRepository.save(newpp);
         return newpp;
     }

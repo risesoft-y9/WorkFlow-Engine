@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 
+import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,6 +100,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final OrgUnitApi orgUnitApi;
 
     private final IdentityApi identityApi;
+
+    private final TaskRelatedApi taskRelatedApi;
 
     @Override
     public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
@@ -641,6 +645,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     if (Boolean.parseBoolean(rollBack)) {
                         mapTemp.put("rollBack", true);
                     }
+
+                    List<TaskRelatedModel> taskRelatedList =taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }

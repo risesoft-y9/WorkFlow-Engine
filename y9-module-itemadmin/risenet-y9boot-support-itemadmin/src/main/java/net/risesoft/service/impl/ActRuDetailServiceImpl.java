@@ -376,6 +376,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         String processSerialNumber = actRuDetail.getProcessSerialNumber();
         String assignee = actRuDetail.getAssignee();
         ActRuDetail oldActRuDetail = this.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         if (null != oldActRuDetail) {
             oldActRuDetail.setLastTime(actRuDetail.getLastTime());
             oldActRuDetail.setStatus(actRuDetail.getStatus());
@@ -384,6 +385,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
             oldActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
             oldActRuDetail.setStarted(actRuDetail.isStarted());
+            oldActRuDetail.setDueDate(processParam.getDueDate());
             actRuDetailRepository.save(oldActRuDetail);
             return true;
         }
@@ -407,14 +409,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         newActRuDetail.setItemId(actRuDetail.getItemId());
         newActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
         newActRuDetail.setStartTime(actRuDetail.getStartTime());
+        newActRuDetail.setItemId(processParam.getItemId());
+        newActRuDetail.setSystemName(processParam.getSystemName());
+        newActRuDetail.setDueDate(processParam.getDueDate());
 
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         newActRuDetail.setBureauId(bureau.getId());
         newActRuDetail.setBureauName(bureau.getName());
-
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-        newActRuDetail.setItemId(processParam.getItemId());
-        newActRuDetail.setSystemName(processParam.getSystemName());
         actRuDetailRepository.save(newActRuDetail);
         return true;
     }
