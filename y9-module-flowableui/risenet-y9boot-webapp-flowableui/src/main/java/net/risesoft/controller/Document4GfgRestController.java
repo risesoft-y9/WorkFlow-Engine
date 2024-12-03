@@ -307,18 +307,16 @@ public class Document4GfgRestController {
                                                     @RequestParam(required = false) String taskId,
                                                     @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice,
                                                     @RequestParam(required = false) String sponsorGuid, @RequestParam @NotBlank String routeToTaskId,
-                                                    @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
-                                                    @RequestParam(required = false) String smsContent) {
+                                                    @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String dueDate,
+                                                    @RequestParam(required = false) String description) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> variables = new HashMap<>(16);
         try {
             TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
             ProcessParamModel processParamModel = processParamApi
                     .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-            processParamModel.setIsSendSms(isSendSms);
-            processParamModel.setIsShuMing(isShuMing);
-            processParamModel.setSmsContent(smsContent);
-            processParamModel.setSmsPersonId("");
+            processParamModel.setIsShuMing(dueDate);
+            processParamModel.setSmsContent(description);
             processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
             Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
                     Y9LoginUserHolder.getPositionId(), taskId, userChoice, routeToTaskId, sponsorHandle, sponsorGuid, variables);
