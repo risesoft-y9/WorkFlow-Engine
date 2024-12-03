@@ -214,4 +214,6 @@ public class SysVariables {
     public static final String NUMBER = "number";// 自定义变量名称 文档编号
     public static final String LEVEL = "level";// 级别
     public static final String ISREMINDER = "isReminder";// 是否存在催办
+
+    public static final String TASKRELATEDLIST = "taskRelatedList";// 是否存在催办
 }

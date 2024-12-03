@@ -70,4 +70,67 @@
             <column name="ORDERINDEX" remarks="部门排序" type="INT"/>
         </createTable>
     </changeSet>
+    <changeSet id="1704700543333-4" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_TASK_RELATED"/>
+            </not>
+        </preConditions>
+        <createTable remarks="任务相关信息" tableName="FF_TASK_RELATED">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程序列号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKID" remarks="任务唯一标示" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INFOTYPE" remarks="信息类型" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MSGCONTENT" remarks="消息内容" type="VARCHAR(500)"/>
+            <column name="SENDERID" remarks="发送人id" type="VARCHAR(50)"/>
+            <column name="SENDERNAME" remarks="单位类型" type="VARCHAR(20)"/>
+            <column name="CREATETIME" remarks="创建时间" type="datetime"/>
+            <column name="MODIFYTIME" remarks="修改时间" type="datetime"/>
+            <column name="READTIME" remarks="阅读时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700543333-5" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="FF_TASK_RELATED" columnNames="TASKID"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ff_task_related_001_taskId" tableName="FF_TASK_RELATED">
+            <column name="TASKID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="1704700543333-6" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_PROCESS_PARAM" columnName="DUEDATE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_PROCESS_PARAM">
+            <column name="DUEDATE" type="date" remarks="到期时间"/>
+            <column name="DESCRIPTION" type="VARCHAR(20)" remarks="描述"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700543333-7" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ACT_RU_DETAIL" columnName="DUEDATE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_ACT_RU_DETAIL">
+            <column name="DUEDATE" type="date" remarks="到期时间"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

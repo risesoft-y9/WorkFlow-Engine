@@ -1,5 +1,7 @@
 package net.risesoft.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -307,16 +309,23 @@ public class Document4GfgRestController {
                                                     @RequestParam(required = false) String taskId,
                                                     @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice,
                                                     @RequestParam(required = false) String sponsorGuid, @RequestParam @NotBlank String routeToTaskId,
-                                                    @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String dueDate,
-                                                    @RequestParam(required = false) String description) {
+                                                    @RequestParam(required = false) String dueDate, @RequestParam(required = false) String description) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> variables = new HashMap<>(16);
         try {
             TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
             ProcessParamModel processParamModel = processParamApi
                     .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-            processParamModel.setIsShuMing(dueDate);
-            processParamModel.setSmsContent(description);
+            processParamModel.setDueDate(null);
+            if (StringUtils.isNotBlank(dueDate)) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    processParamModel.setDueDate(sdf.parse(dueDate));
+                } catch (ParseException e) {
+                    LOGGER.error("办理期限转换失败{}", dueDate);
+                }
+            }
+            processParamModel.setDescription(description);
             processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
             Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
                     Y9LoginUserHolder.getPositionId(), taskId, userChoice, routeToTaskId, sponsorHandle, sponsorGuid, variables);

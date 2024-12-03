@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.event.AbstractFlowableEventListener;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
@@ -38,12 +42,12 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void onEvent(FlowableEvent event) {
-        FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
+        FlowableEngineEventType type = (FlowableEngineEventType) event.getType();
         switch (type) {
             case TASK_CREATED:
                 org.flowable.common.engine.impl.event.FlowableEntityEventImpl entity =
-                    (org.flowable.common.engine.impl.event.FlowableEntityEventImpl)event;
-                TaskEntityImpl taskEntity = (TaskEntityImpl)entity.getEntity();
+                        (org.flowable.common.engine.impl.event.FlowableEntityEventImpl) event;
+                TaskEntityImpl taskEntity = (TaskEntityImpl) entity.getEntity();
                 String assignee = taskEntity.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
                     taskEntity.setVariable(assignee, assignee);
@@ -52,15 +56,17 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                  * 下面是添加其他业务逻辑需要的任务变量String taskSenderId=(String)
                  */
                 Map<String, Object> mapTemp = new HashMap<>(16);
-                String user = (String)taskEntity.getVariable(SysVariables.USER);
-                List<String> users = (List<String>)taskEntity.getVariable(SysVariables.USERS);
-                String taskSender = (String)taskEntity.getVariable(SysVariables.TASKSENDER);
-                String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASKSENDERID);
-                Integer priority = (Integer)taskEntity.getVariable(SysVariables.PRIORITY);
+                String user = (String) taskEntity.getVariable(SysVariables.USER);
+                List<String> users = (List<String>) taskEntity.getVariable(SysVariables.USERS);
+                String taskSender = (String) taskEntity.getVariable(SysVariables.TASKSENDER);
+                String taskSenderId = (String) taskEntity.getVariable(SysVariables.TASKSENDERID);
+                String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
+                String processSerialNumber = (String) taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
+                Integer priority = (Integer) taskEntity.getVariable(SysVariables.PRIORITY);
 
                 if (null != user) {
                     mapTemp.put(SysVariables.USER, user);
-                    System.out.println("###########user##"+user);
+                    System.out.println("###########user##" + user);
                 }
                 if (null != users && !users.isEmpty()) {
                     mapTemp.put(SysVariables.USERS, users);
@@ -78,7 +84,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                         taskEntity.setPriority(priority);
                         try {
                             Y9Context.getBean(CustomHistoricProcessService.class)
-                                .setPriority(taskEntity.getProcessInstanceId(), priority.toString());
+                                    .setPriority(taskEntity.getProcessInstanceId(), priority.toString());
                         } catch (Exception e) {
                             LOGGER.error("设置优先级失败", e);
                         }
@@ -86,8 +92,32 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 }
                 taskEntity.setVariablesLocal(mapTemp);
 
+                /**
+                 * 设置到期时间
+                 */
+                ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
+                ProcessParamModel processParamModel =
+                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                if (null != processParamModel.getDueDate()) {
+                    taskEntity.setDueDate(processParamModel.getDueDate());
+                }
+                /**
+                 * 设置办文说明
+                 */
+                if (null != processParamModel.getDescription()) {
+                    TaskRelatedApi taskRelatedApi = Y9Context.getBean(TaskRelatedApi.class);
+                    TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
+                    taskRelatedModel.setInfoType("1");
+                    taskRelatedModel.setTaskId(taskEntity.getId());
+                    taskRelatedModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
+                    taskRelatedModel.setProcessSerialNumber(processParamModel.getProcessSerialNumber());
+                    taskRelatedModel.setMsgContent(processParamModel.getDescription());
+                    taskRelatedModel.setSenderId(taskSenderId);
+                    taskRelatedModel.setSenderName(taskSender);
+                    taskRelatedApi.saveOrUpdate(tenantId, taskRelatedModel);
+                }
                 HistoricProcessInstance historicProcessInstance =
-                    Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
+                        Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
                 if (null != historicProcessInstance) {
                     String businessKey = historicProcessInstance.getBusinessKey();
                     taskEntity.setCategory(businessKey);
@@ -95,8 +125,9 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 break;
             case TASK_COMPLETED:
                 break;
-            case SEQUENCEFLOW_TAKEN:// 路由监听
-                FlowableSequenceFlowTakenEventImpl entity0 = (FlowableSequenceFlowTakenEventImpl)event;
+            case SEQUENCEFLOW_TAKEN:
+                // 路由监听
+                FlowableSequenceFlowTakenEventImpl entity0 = (FlowableSequenceFlowTakenEventImpl) event;
                 // 接口调用
                 InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
                 try {

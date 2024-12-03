@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -17,6 +21,7 @@ import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * @author qinman
@@ -147,5 +152,16 @@ public class ProcessParam implements Serializable {
     @Comment("目标")
     @Column(name = "TARGET", length = 100)
     private String target;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DUEDATE")
+    @Comment("到期时间")
+    private Date dueDate;
+
+    @Comment("描述")
+    @Column(name = "DESCRIPTION", length = 2000)
+    private String description;
 
 }

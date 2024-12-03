@@ -1,8 +1,11 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 流程参数模型
@@ -127,4 +130,15 @@ public class ProcessParamModel implements Serializable {
      * 目标，xxx使用
      */
     private String target;
+
+    /**
+     * 到期时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date dueDate;
+
+    /**
+     * 描述
+     */
+    private String description;
 }
