@@ -11,22 +11,28 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.permission.PositionResourceApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.Resource;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.processadmin.Y9FlowableCountModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -80,6 +86,10 @@ public class Main4GfgRestController {
     private final ProcessParamApi processParamApi;
 
     private final EntrustApi entrustApi;
+
+    private final PositionResourceApi positionResourceApi;
+
+    private final AppApi appApi;
 
     /**
      * 获取所有事项集合（包含监控管理员权限）
@@ -136,7 +146,7 @@ public class Main4GfgRestController {
                 draftCount = draftApi.getDraftCount(tenantId, positionId, itemId).getData();
                 draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, itemId).getData();
                 Y9FlowableCountModel flowableCountModel = processTodoApi
-                    .getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey).getData();
+                        .getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey).getData();
                 todoCount = flowableCountModel.getTodoCount();
                 doingCount = flowableCountModel.getDoingCount();
                 try {
@@ -203,7 +213,7 @@ public class Main4GfgRestController {
             draftCount = draftApi.countBySystemName(tenantId, positionId, systemName).getData();
             // draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, systemName);
             Y9FlowableCountModel flowableCountModel =
-                processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName).getData();
+                    processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName).getData();
             todoCount = flowableCountModel.getTodoCount();
             doingCount = flowableCountModel.getDoingCount();
             try {
@@ -288,7 +298,7 @@ public class Main4GfgRestController {
             todoCount = todotaskApi.countByReceiverId(tenantId, positionId).getData();
             // 统计流程在办件
             Y9Page<OfficeDoneInfoModel> y9Page =
-                officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
+                    officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
             doingCount = y9Page.getTotal();
             // 统计历史办结件
             doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
@@ -309,7 +319,7 @@ public class Main4GfgRestController {
      */
     @GetMapping(value = "/getPositionList")
     public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String systemName) {
+                                                         @RequestParam(required = false) String itemId, @RequestParam(required = false) String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resMap = new HashMap<>(16);
         List<Map<String, Object>> resList = new ArrayList<>();
@@ -326,13 +336,13 @@ public class Main4GfgRestController {
                 if (StringUtils.isNotBlank(itemId)) {
                     ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
                     todoCount = processTodoApi
-                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(), itemModel.getWorkflowGuid())
-                        .getData();
+                            .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(), itemModel.getWorkflowGuid())
+                            .getData();
                     allCount = allCount + todoCount;
                 } else if (StringUtils.isNotBlank(systemName)) {
                     // 单个事项获取待办数量
                     todoCount =
-                        processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName).getData();
+                            processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName).getData();
                     allCount = allCount + todoCount;
                 } else {// 工作台获取所有待办数量
                     try {
@@ -363,12 +373,12 @@ public class Main4GfgRestController {
                                 // 单个事项获取待办数量
                                 ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
                                 todoCount1 = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId,
-                                    orgUnit.getId(), itemModel.getWorkflowGuid()).getData();
+                                        orgUnit.getId(), itemModel.getWorkflowGuid()).getData();
                                 allCount = allCount + todoCount1;
                             } else if (StringUtils.isNotBlank(systemName)) {
                                 // 单个事项获取待办数量
                                 todoCount1 = processTodoApi
-                                    .getTodoCountByUserIdAndSystemName(tenantId, orgUnit.getId(), systemName).getData();
+                                        .getTodoCountByUserIdAndSystemName(tenantId, orgUnit.getId(), systemName).getData();
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {
@@ -427,14 +437,14 @@ public class Main4GfgRestController {
     /**
      * 获取流程任务信息
      *
-     * @param taskId 任务id
+     * @param taskId            任务id
      * @param processInstanceId 流程实例id
-     * @param type 类型
+     * @param type              类型
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/getTaskOrProcessInfo")
     public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String type) {
+                                                              @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String type) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         String processSerialNumber = "";
@@ -455,7 +465,7 @@ public class Main4GfgRestController {
                             processInstanceId = taskModel.getProcessInstanceId();
                         }
                         ProcessParamModel processParamModel =
-                            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String itemId = processParamModel.getItemId();
                         ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
                         map.put("itemModel", itemModel);
@@ -468,9 +478,9 @@ public class Main4GfgRestController {
                     taskId = "";// 等于空为办结件
 
                     HistoricProcessInstanceModel hisProcess =
-                        historicProcessApi.getById(tenantId, processInstanceId).getData();
+                            historicProcessApi.getById(tenantId, processInstanceId).getData();
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     processSerialNumber = processParamModel.getProcessSerialNumber();
                     String itemId = processParamModel.getItemId();
                     ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
@@ -483,13 +493,13 @@ public class Main4GfgRestController {
                         // 协作状态未办结
                         if (hisProcess.getEndTime() == null) {
                             List<TaskModel> list =
-                                taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                                    taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                             boolean isTodo = false;
                             if (list != null) {
                                 for (TaskModel task : list) {
                                     // 待办件
                                     if ((task.getAssignee() != null
-                                        && task.getAssignee().contains(Y9LoginUserHolder.getPositionId()))) {
+                                            && task.getAssignee().contains(Y9LoginUserHolder.getPositionId()))) {
                                         taskId = task.getId();
                                         isTodo = true;
                                         break;
@@ -508,10 +518,10 @@ public class Main4GfgRestController {
                 }
                 case "fromHistory": {
                     HistoricProcessInstanceModel processModel =
-                        historicProcessApi.getById(tenantId, processInstanceId).getData();
+                            historicProcessApi.getById(tenantId, processInstanceId).getData();
                     if (processModel == null || processModel.getId() == null) {
                         OfficeDoneInfoModel officeDoneInfoModel =
-                            officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         if (officeDoneInfoModel == null) {
                             processInstanceId = "";
                         } else {
@@ -519,7 +529,7 @@ public class Main4GfgRestController {
                         }
                     }
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     ItemModel itemModel = itemApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
                     map.put("itemModel", itemModel);
                     break;
@@ -534,4 +544,24 @@ public class Main4GfgRestController {
         return Y9Result.success(map, "获取成功");
     }
 
+    /**
+     * 获取当前岗有权限的菜单
+     *
+     * @return Y9Result<List < Resource>>
+     */
+    @GetMapping(value = "/getResources")
+    public Y9Result<List<Resource>> getResources(@RequestParam(required = false) String parentId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<Resource> resources = new ArrayList<>();
+        if (StringUtils.isBlank(parentId)) {
+            App app = appApi.findBySystemNameAndCustomId(Y9Context.getSystemName(), Y9Context.getSystemName()).getData();
+            if (null != app) {
+                parentId=app.getId();
+            }
+        }
+        if(StringUtils.isNotBlank(parentId)){
+            resources = positionResourceApi.listSubResources(tenantId, Y9LoginUserHolder.getPositionId(), AuthorityEnum.BROWSE, parentId).getData();
+        }
+        return Y9Result.success(resources, "获取成功");
+    }
 }
