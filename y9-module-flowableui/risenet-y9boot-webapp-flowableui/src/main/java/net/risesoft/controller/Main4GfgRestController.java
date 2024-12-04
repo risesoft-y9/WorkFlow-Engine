@@ -11,6 +11,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.permission.PersonResourceApi;
 import net.risesoft.api.platform.permission.PositionResourceApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.resource.AppApi;
@@ -26,6 +27,7 @@ import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Resource;
+import net.risesoft.model.platform.VueMenu;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.processadmin.Y9FlowableCountModel;
@@ -88,6 +90,8 @@ public class Main4GfgRestController {
     private final EntrustApi entrustApi;
 
     private final PositionResourceApi positionResourceApi;
+
+    private final PersonResourceApi personResourceApi;
 
     private final AppApi appApi;
 
@@ -550,18 +554,14 @@ public class Main4GfgRestController {
      * @return Y9Result<List < Resource>>
      */
     @GetMapping(value = "/getResources")
-    public Y9Result<List<Resource>> getResources(@RequestParam(required = false) String parentId) {
+    public Y9Result<List<VueMenu>> getResources() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Resource> resources = new ArrayList<>();
-        if (StringUtils.isBlank(parentId)) {
-            App app = appApi.findBySystemNameAndCustomId(Y9Context.getSystemName(), Y9Context.getSystemName()).getData();
-            if (null != app) {
-                parentId=app.getId();
-            }
+        List<VueMenu> vueMenuList = new ArrayList<>();
+        App app = appApi.findBySystemNameAndCustomId(Y9Context.getSystemName(), Y9Context.getSystemName()).getData();
+        if (null != app) {
+            //vueMenuList = positionResourceApi.listMenusRecursively(tenantId, Y9LoginUserHolder.getPositionId(), AuthorityEnum.BROWSE, app.getId()).getData();
+            vueMenuList = personResourceApi.listMenusRecursively(tenantId, Y9LoginUserHolder.getPersonId(), AuthorityEnum.BROWSE, app.getId()).getData();
         }
-        if(StringUtils.isNotBlank(parentId)){
-            resources = positionResourceApi.listSubResources(tenantId, Y9LoginUserHolder.getPositionId(), AuthorityEnum.BROWSE, parentId).getData();
-        }
-        return Y9Result.success(resources, "获取成功");
+        return Y9Result.success(vueMenuList, "获取成功");
     }
 }
