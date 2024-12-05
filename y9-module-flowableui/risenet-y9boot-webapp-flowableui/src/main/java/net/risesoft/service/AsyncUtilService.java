@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -108,8 +108,8 @@ public class AsyncUtilService {
             } else {
                 numberStr = String.valueOf(number);
             }
-            String sql = "update y9_form_fw set lsh = '"+characterValue+"[" + year + "]" + numberStr + "' where guid = '"
-                + processSerialNumber + "'";
+            String sql = "update y9_form_fw set lsh = '" + characterValue + "[" + year + "]" + numberStr
+                + "' where guid = '" + processSerialNumber + "'";
             jdbcTemplate.execute(sql);
         }
     }

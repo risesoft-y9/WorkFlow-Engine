@@ -3,12 +3,11 @@ package net.risesoft.controller;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,7 +60,8 @@ public class WorkList4GfgRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/doingList")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId,@RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         return workList4GfgService.doingList(itemId, page, rows);
     }
 
@@ -88,8 +88,8 @@ public class WorkList4GfgRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/doneList")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId,
-         @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         return workList4GfgService.doneList(itemId, page, rows);
     }
 
@@ -116,8 +116,8 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/recycleViewConf")
     public Y9Result<List<ItemViewConfModel>> recycleViewConf(@RequestParam String itemId) {
         List<ItemViewConfModel> itemViewConfList = itemViewConfApi
-                .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue())
-                .getData();
+            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue())
+            .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -130,8 +130,8 @@ public class WorkList4GfgRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/recycleList")
-    public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId,
-                                                @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         return workList4GfgService.recycleList(itemId, page, rows);
     }
 
@@ -215,8 +215,8 @@ public class WorkList4GfgRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/todoList")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
-                                                @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         return workList4GfgService.todoList(itemId, page, rows);
     }
 

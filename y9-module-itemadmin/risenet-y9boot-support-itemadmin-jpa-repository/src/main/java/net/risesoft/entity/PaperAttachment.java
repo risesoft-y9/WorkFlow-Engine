@@ -1,21 +1,18 @@
 package net.risesoft.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.Transient;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Date;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author qinman
@@ -25,7 +22,7 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "FF_ATTACHMENT_PAPER")
-@org.hibernate.annotations.Table(comment = "纸质附件信息表", appliesTo = "FF_ATTACHMENT_PAPER")
+@Comment("纸质附件信息表")
 public class PaperAttachment implements Serializable {
 
     private static final long serialVersionUID = 8483283215824280471L;

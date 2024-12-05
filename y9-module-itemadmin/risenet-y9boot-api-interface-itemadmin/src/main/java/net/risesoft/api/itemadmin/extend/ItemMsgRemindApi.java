@@ -1,6 +1,6 @@
 package net.risesoft.api.itemadmin.extend;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

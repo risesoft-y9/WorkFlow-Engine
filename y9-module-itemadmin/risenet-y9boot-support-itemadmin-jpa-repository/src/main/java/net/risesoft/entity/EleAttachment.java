@@ -1,17 +1,18 @@
 package net.risesoft.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.poi.hmef.Attachment;
+import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author qinman
@@ -21,9 +22,8 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "FF_ATTACHMENT_ELE")
-@org.hibernate.annotations.Table(comment = "电子附件信息表", appliesTo = "FF_ATTACHMENT_ELE")
+@Comment("电子附件信息表")
 public class EleAttachment implements Serializable {
-
 
     private static final long serialVersionUID = -6828867920921527416L;
 

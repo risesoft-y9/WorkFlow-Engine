@@ -1,9 +1,7 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.model.itemadmin.StartProcessResultModel;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ProcessParamService;
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.model.itemadmin.StartProcessResultModel;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ProcessParamService;
 
 /**
  * 自定义流程变量
@@ -41,10 +43,11 @@ public class ProcessParam4GfgRestController {
      */
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<StartProcessResultModel> saveOrUpdate(@RequestParam @NotBlank String itemId,
-                                                          @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String theTaskKey, @RequestParam(required = false) String processInstanceId,
-                                                          @RequestParam (required = false) String documentTitle, @RequestParam(required = false) String number,
-                                                          @RequestParam(required = false) String level, @RequestParam(required = false) Boolean customItem) {
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String theTaskKey,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String documentTitle,
+        @RequestParam(required = false) String number, @RequestParam(required = false) String level,
+        @RequestParam(required = false) Boolean customItem) {
         return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number,
-            level, customItem,theTaskKey);
+            level, customItem, theTaskKey);
     }
 }

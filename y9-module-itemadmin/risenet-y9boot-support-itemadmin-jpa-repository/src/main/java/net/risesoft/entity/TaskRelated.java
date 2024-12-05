@@ -1,21 +1,24 @@
 package net.risesoft.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
+import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author qinman
@@ -25,9 +28,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_TASK_RELATED",
-        indexes = {@Index(name = "ff_task_related_001_taskId", columnList = "taskId")})
-@org.hibernate.annotations.Table(comment = "任务相关信息", appliesTo = "FF_TASK_RELATED")
+@Table(name = "FF_TASK_RELATED", indexes = {@Index(name = "ff_task_related_001_taskId", columnList = "taskId")})
+@Comment("任务相关信息")
 public class TaskRelated implements Serializable {
 
     private static final long serialVersionUID = 879932521397158651L;
