@@ -559,8 +559,7 @@ public class Main4GfgRestController {
         List<VueMenu> vueMenuList = new ArrayList<>();
         App app = appApi.findBySystemNameAndCustomId(Y9Context.getSystemName(), Y9Context.getSystemName()).getData();
         if (null != app) {
-            //vueMenuList = positionResourceApi.listMenusRecursively(tenantId, Y9LoginUserHolder.getPositionId(), AuthorityEnum.BROWSE, app.getId()).getData();
-            vueMenuList = personResourceApi.listMenusRecursively(tenantId, Y9LoginUserHolder.getPersonId(), AuthorityEnum.BROWSE, app.getId()).getData();
+            vueMenuList = positionResourceApi.listMenusRecursively(tenantId, Y9LoginUserHolder.getPositionId(), AuthorityEnum.BROWSE, app.getId()).getData();
         }
         return Y9Result.success(vueMenuList, "获取成功");
     }
