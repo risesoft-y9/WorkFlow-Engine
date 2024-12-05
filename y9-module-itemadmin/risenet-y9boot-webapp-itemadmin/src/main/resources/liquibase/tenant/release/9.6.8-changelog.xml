@@ -119,7 +119,7 @@
         </preConditions>
         <addColumn tableName="FF_PROCESS_PARAM">
             <column name="DUEDATE" type="date" remarks="到期时间"/>
-            <column name="DESCRIPTION" type="VARCHAR(20)" remarks="描述"/>
+            <column name="DESCRIPTION" type="VARCHAR(500)" remarks="描述"/>
         </addColumn>
     </changeSet>
 

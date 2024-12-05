@@ -104,7 +104,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 /**
                  * 设置办文说明
                  */
-                if (null != processParamModel.getDescription()) {
+                if (StringUtils.isNotBlank(processParamModel.getDescription())) {
                     TaskRelatedApi taskRelatedApi = Y9Context.getBean(TaskRelatedApi.class);
                     TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
                     taskRelatedModel.setInfoType("1");

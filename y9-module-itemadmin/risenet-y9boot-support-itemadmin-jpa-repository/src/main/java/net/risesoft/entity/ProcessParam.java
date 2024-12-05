@@ -161,7 +161,7 @@ public class ProcessParam implements Serializable {
     private Date dueDate;
 
     @Comment("描述")
-    @Column(name = "DESCRIPTION", length = 2000)
+    @Column(name = "DESCRIPTION", length = 500)
     private String description;
 
 }
