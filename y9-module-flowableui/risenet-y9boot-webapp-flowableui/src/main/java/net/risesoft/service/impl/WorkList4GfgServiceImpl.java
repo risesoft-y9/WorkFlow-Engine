@@ -111,7 +111,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
         Y9Page<ActRuDetailModel> itemPage;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             itemPage = itemTodoApi.findByUserId(tenantId, positionId, queryParamModel);
             List<ActRuDetailModel> list = itemPage.getRows();
@@ -168,6 +167,16 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     if (Boolean.parseBoolean(rollBack)) {
                         mapTemp.put("rollBack", true);
                     }
+                    List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    /**
+                     * 红绿灯
+                     */
+                    LightColorModel lightColorModel = new LightColorModel();
+                    if (null != ardModel.getDueDate()) {
+                        lightColorModel = workDayService.getLightColor(new Date(), ardModel.getDueDate());
+                    }
+                    mapTemp.put("lightColor", lightColorModel);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
@@ -649,7 +658,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     if (Boolean.parseBoolean(rollBack)) {
                         mapTemp.put("rollBack", true);
                     }
-
                     List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     /**

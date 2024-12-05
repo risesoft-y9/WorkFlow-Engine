@@ -122,7 +122,7 @@ public class WorkDayServiceImpl implements WorkDayService {
                     title = "该文件已超时。";
                 }
                 lightColorModel.setColor(lightColor);
-                lightColorModel.setTitle(title+days);
+                lightColorModel.setTitle(title);
             }
         } catch (Exception e) {
             LOGGER.error("获取红绿灯状态异常", e);
