@@ -128,4 +128,10 @@ public class ActRuDetailModel implements Serializable {
      * 是否归档
      */
     private boolean placeOnFile;
+
+    /**
+     * 到期时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date dueDate;
 }

@@ -10,7 +10,9 @@ import java.util.Map;
 
 
 import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.model.LightColorModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.service.WorkDayService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,6 +105,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
 
     private final TaskRelatedApi taskRelatedApi;
 
+    private final WorkDayService workDayService;
+
     @Override
     public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
         Y9Page<ActRuDetailModel> itemPage;
@@ -128,7 +132,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     TaskModel task = taskApi.findById(tenantId, taskId).getData();
                     String taskAssignee = ardModel.getAssigneeName();
-                    if(StringUtils.isBlank(task.getAssignee())){
+                    if (StringUtils.isBlank(task.getAssignee())) {
                         taskAssignee = getAssigneeNames(taskId);
                     }
                     String taskName = task.getName();
@@ -614,8 +618,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     TaskModel task = taskApi.findById(tenantId, taskId).getData();
                     String taskAssignee = ardModel.getAssigneeName();
-                    if(StringUtils.isBlank(task.getAssignee())){
-                        taskAssignee=getAssigneeNames(taskId);
+                    if (StringUtils.isBlank(task.getAssignee())) {
+                        taskAssignee = getAssigneeNames(taskId);
                     }
                     String taskName = task.getName();
                     int priority = task.getPriority();
@@ -646,8 +650,16 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         mapTemp.put("rollBack", true);
                     }
 
-                    List<TaskRelatedModel> taskRelatedList =taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                    List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    /**
+                     * 红绿灯
+                     */
+                    LightColorModel lightColorModel = new LightColorModel();
+                    if (null != ardModel.getDueDate()) {
+                        lightColorModel = workDayService.getLightColor(new Date(), ardModel.getDueDate());
+                    }
+                    mapTemp.put("lightColor", lightColorModel);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
