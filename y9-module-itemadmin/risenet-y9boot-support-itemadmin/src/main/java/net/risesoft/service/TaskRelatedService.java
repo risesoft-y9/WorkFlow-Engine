@@ -11,4 +11,6 @@ public interface TaskRelatedService {
 
     void saveOrUpdate(TaskRelated taskRelated);
     List<TaskRelated> findByTaskId(String taskId);
+
+    TaskRelated findByTaskIdAndInfoType(String taskId,String infoType);
 }

@@ -63,6 +63,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
                 String processSerialNumber = (String) taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 Integer priority = (Integer) taskEntity.getVariable(SysVariables.PRIORITY);
+                Object actionName = taskEntity.getVariable(SysVariables.ACTIONNAME + ":" + taskSenderId);
 
                 if (null != user) {
                     mapTemp.put(SysVariables.USER, user);
@@ -116,6 +117,22 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                     taskRelatedModel.setSenderName(taskSender);
                     taskRelatedApi.saveOrUpdate(tenantId, taskRelatedModel);
                 }
+                /**
+                 * 设置任务的上一步操作
+                 */
+                if (null != actionName) {
+                    TaskRelatedApi taskRelatedApi = Y9Context.getBean(TaskRelatedApi.class);
+                    TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
+                    taskRelatedModel.setInfoType("2");
+                    taskRelatedModel.setTaskId(taskEntity.getId());
+                    taskRelatedModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
+                    taskRelatedModel.setProcessSerialNumber(processParamModel.getProcessSerialNumber());
+                    taskRelatedModel.setMsgContent(String.valueOf(actionName));
+                    taskRelatedModel.setSenderId(taskSenderId);
+                    taskRelatedModel.setSenderName(taskSender);
+                    taskRelatedApi.saveOrUpdate(tenantId, taskRelatedModel);
+                }
+
                 HistoricProcessInstance historicProcessInstance =
                         Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
                 if (null != historicProcessInstance) {

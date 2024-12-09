@@ -54,4 +54,9 @@ public class TaskRelatedServiceImpl implements TaskRelatedService {
     public List<TaskRelated> findByTaskId(String taskId) {
         return taskRelatedRepository.findByTaskIdOrderByCreateTimeAsc(taskId);
     }
+
+    @Override
+    public TaskRelated findByTaskIdAndInfoType(String taskId, String infoType) {
+        return taskRelatedRepository.findByTaskIdAndInfoType(taskId, infoType);
+    }
 }

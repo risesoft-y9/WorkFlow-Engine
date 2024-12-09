@@ -136,6 +136,29 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     }
 
     /**
+     * 获取流程历程数据列表(包含每个任务节点的特殊操作的历程)
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<List<HistoryProcessModel>>} 通用请求返回对象- data 是历程信息
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<HistoryProcessModel>> processTrackListWithActionName(@RequestParam String tenantId,
+                                                                @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        try {
+            List<HistoryProcessModel> items = processTrackService.listByProcessInstanceIdWithActionName(processInstanceId);
+            return Y9Result.success(items);
+        } catch (Exception e) {
+            LOGGER.error("获取历程列表异常", e);
+            return Y9Result.failure("获取历程列表异常 ");
+        }
+    }
+
+    /**
      * 获取流程历程信息数据（简单版）
      *
      * @param tenantId 租户id
