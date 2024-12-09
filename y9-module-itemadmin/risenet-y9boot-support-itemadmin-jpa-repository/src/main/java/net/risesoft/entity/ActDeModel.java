@@ -18,7 +18,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "ACT_DE_MODEL")
-public class ActDeModel  implements Serializable {
+public class ActDeModel implements Serializable {
 
     private static final long serialVersionUID = 2081551802722131038L;
 

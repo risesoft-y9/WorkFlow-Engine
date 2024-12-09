@@ -12,7 +12,7 @@ import net.risesoft.pojo.Y9Result;
 
 /**
  * 流程设计相关接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -60,7 +60,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return {@code List<Map<String, Object>>} 通用请求返回对象 - data 节点集合
+     * @return {@code List<FlowElementModel>>} 通用请求返回对象 - data 节点集合
      * @since 9.6.6
      */
     @GetMapping(value = "/getFlowElement")
@@ -100,7 +100,7 @@ public interface ProcessDefinitionApi {
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
      * @param isContainStartNode 是否包含开始节点
-     * @return {@code List<Map<String, Object>>} 通用请求返回对象 - data 节点信息集合
+     * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
      * @since 9.6.6
      */
     @GetMapping(value = "/getNodes")

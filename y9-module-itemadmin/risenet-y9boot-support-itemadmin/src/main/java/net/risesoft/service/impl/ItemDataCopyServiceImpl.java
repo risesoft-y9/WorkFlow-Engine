@@ -58,6 +58,7 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemPermissionRepository;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.service.CalendarConfigService;
@@ -1079,6 +1080,11 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /* 复制流程模型并部署 */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         SpmApproveItem item = itemService.findById(itemId);
+        Y9Result<Object> result = processDataCopyApi.copyModel(sourceTenantId, targetTenantId, item.getWorkflowGuid());
+        if (result.isSuccess()) {
+            LOGGER.error("复制流程模型数据失败");
+            return;
+        }
         /* 一复制事项 */
         this.copyItem(sourceTenantId, targetTenantId, itemId);
         /* 二复制动态角色 */

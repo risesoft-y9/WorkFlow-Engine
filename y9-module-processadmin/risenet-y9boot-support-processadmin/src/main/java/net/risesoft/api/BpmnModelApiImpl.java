@@ -110,6 +110,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
+        // modelService.deleteModel(modelId);
         return Y9Result.success();
     }
 
@@ -124,6 +125,15 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
+        // Model modelData = modelService.getModel(modelId);
+        // BpmnModel model = modelService.getBpmnModel(modelData);
+        // if (model.getProcesses().isEmpty()) {
+        // return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
+        // }
+        // byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
+        // String processName = modelData.getName() + ".bpmn20.xml";
+        // repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
+        //
         return Y9Result.success();
     }
 
@@ -202,7 +212,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
         for (FlowElement flowElement : flowElements) {
-            if (flowElement instanceof StartEvent startEvent) {
+            if (flowElement instanceof StartEvent) {
+                StartEvent startEvent = (StartEvent)flowElement;
                 GraphicInfo graphicInfo = infoMap.get(startEvent.getId());
                 txtFlowPath = startEvent.getId();
                 nodeDataArray.add(new FlowNodeModel(startEvent.getId(), "Start", "开始", "Circle", "#4fba4f", "1",
@@ -211,11 +222,13 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 List<SequenceFlow> list = startEvent.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
-                    if ((fe instanceof UserTask u)) {
+                    if ((fe instanceof UserTask)) {
+                        UserTask u = (UserTask)fe;
                         linkDataArray.add(new LinkNodeModel(startEvent.getId(), u.getId()));
                     }
                 }
-            } else if (flowElement instanceof UserTask userTask) {
+            } else if (flowElement instanceof UserTask) {
+                UserTask userTask = (UserTask)flowElement;
                 GraphicInfo graphicInfo = infoMap.get(userTask.getId());
                 nodeDataArray.add(new FlowNodeModel(userTask.getId(), "", userTask.getName(), "", "", "",
                     graphicInfo.getX() + " " + graphicInfo.getY(), "111111111"));
@@ -228,35 +241,44 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                         List<SequenceFlow> outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
-                            if (element instanceof UserTask task) {
+                            if (element instanceof UserTask) {
+                                UserTask task = (UserTask)element;
                                 linkDataArray.add(new LinkNodeModel(userTask.getId(), task.getId()));
-                            } else if (element instanceof EndEvent endEvent) {
+                            } else if (element instanceof EndEvent) {
+                                EndEvent endEvent = (EndEvent)element;
                                 linkDataArray.add(new LinkNodeModel(userTask.getId(), endEvent.getId()));
-                            } else if (element instanceof ParallelGateway parallelgateway) {
+                            } else if (element instanceof ParallelGateway) {
+                                ParallelGateway parallelgateway = (ParallelGateway)element;
                                 List<SequenceFlow> outgoingFlows1 = parallelgateway.getOutgoingFlows();
                                 for (SequenceFlow sf1 : outgoingFlows1) {
                                     FlowElement element1 = sf1.getTargetFlowElement();
-                                    if (element1 instanceof UserTask task1) {
+                                    if (element1 instanceof UserTask) {
+                                        UserTask task1 = (UserTask)element1;
                                         linkDataArray.add(new LinkNodeModel(userTask.getId(), task1.getId()));
                                     }
                                 }
                             }
                         }
-                    } else if ((fe instanceof UserTask u)) {
+                    } else if ((fe instanceof UserTask)) {
+                        UserTask u = (UserTask)fe;
                         linkDataArray.add(new LinkNodeModel(userTask.getId(), u.getId()));
-                    } else if (fe instanceof EndEvent endEvent) {
+                    } else if (fe instanceof EndEvent) {
+                        EndEvent endEvent = (EndEvent)fe;
                         linkDataArray.add(new LinkNodeModel(userTask.getId(), endEvent.getId()));
-                    } else if (fe instanceof ParallelGateway gateway) {
+                    } else if (fe instanceof ParallelGateway) {
+                        ParallelGateway gateway = (ParallelGateway)fe;
                         List<SequenceFlow> outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
-                            if (element instanceof UserTask task) {
+                            if (element instanceof UserTask) {
+                                UserTask task = (UserTask)element;
                                 linkDataArray.add(new LinkNodeModel(userTask.getId(), task.getId()));
                             }
                         }
                     }
                 }
-            } else if (flowElement instanceof EndEvent endEvent) {
+            } else if (flowElement instanceof EndEvent) {
+                EndEvent endEvent = (EndEvent)flowElement;
                 GraphicInfo graphicInfo = infoMap.get(endEvent.getId());
                 nodeDataArray.add(new FlowNodeModel(endEvent.getId(), "End", "结束", "Circle", "#CE0620", "4",
                     graphicInfo.getX() + " " + graphicInfo.getY(), ""));
@@ -461,6 +483,26 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<FlowableBpmnModel> items = new ArrayList<>();
+        // List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+        // ProcessDefinition processDefinition;
+        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // FlowableBpmnModel flowableBpmnModel;
+        // for (AbstractModel model : list) {
+        // flowableBpmnModel = new FlowableBpmnModel();
+        // flowableBpmnModel.setId(model.getId());
+        // flowableBpmnModel.setKey(model.getKey());
+        // flowableBpmnModel.setName(model.getName());
+        // flowableBpmnModel.setVersion(0);
+        // processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
+        // .latestVersion().singleResult();
+        // if (null != processDefinition) {
+        // flowableBpmnModel.setVersion(processDefinition.getVersion());
+        // }
+        //
+        // flowableBpmnModel.setCreateTime(sdf.format(model.getCreated()));
+        // flowableBpmnModel.setLastUpdateTime(sdf.format(model.getLastUpdated()));
+        // items.add(flowableBpmnModel);
+        // }
         return Y9Result.success(items, "获取成功");
     }
 
@@ -475,7 +517,19 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<FlowableBpmnModel> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return Y9Result.success(null, "获取成功");
+        FlowableBpmnModel flowableBpmnModel = new FlowableBpmnModel();
+        // try {
+        // Model model = modelService.getModel(modelId);
+        // flowableBpmnModel.setKey(model.getKey());
+        // flowableBpmnModel.setName(model.getName());
+        // byte[] bpmnBytes = modelService.getBpmnXML(model);
+        // if (null != bpmnBytes) {
+        // flowableBpmnModel.setXml(new String(bpmnBytes, StandardCharsets.UTF_8));
+        // }
+        // } catch (Exception e) {
+        // LOGGER.error("获取流程设计模型xml失败", e);
+        // }
+        return Y9Result.success(flowableBpmnModel);
     }
 
     /**
@@ -490,7 +544,66 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam MultipartFile file) {
-        return Y9Result.success();
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        try {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            // XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+            // InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+            // XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
+            //
+            // BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
+            // BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
+            // // 模板验证
+            // ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
+            // List<ValidationError> errors = validator.validate(bpmnModel);
+            // if (!errors.isEmpty()) {
+            // StringBuffer es = new StringBuffer();
+            // errors.forEach(ve -> es.append(ve.toString()).append("/n"));
+            // return Y9Result.failure("导入失败：模板验证失败，原因: " + es);
+            // }
+            // if (bpmnModel.getProcesses().isEmpty()) {
+            // return Y9Result.failure("导入失败： 上传的文件中不存在流程的信息");
+            // }
+            // if (bpmnModel.getLocationMap().isEmpty()) {
+            // BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+            // bpmnLayout.execute();
+            // }
+            // BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            // ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
+            // org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+            // String name = process.getId();
+            // if (StringUtils.isNotEmpty(process.getName())) {
+            // name = process.getName();
+            // }
+            // String description = process.getDocumentation();
+            // // ModelRepresentation model = modelService.getModelRepresentation(modelId);
+            // // model.setKey(process.getId());
+            // // model.setName(name);
+            // // model.setDescription(description);
+            // // model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            // // 查询是否已经存在流程模板
+            // Model newModel = new Model();
+            // List<Model> models = modelRepository.findByKeyAndType(process.getId(), AbstractModel.MODEL_TYPE_BPMN);
+            // if (!models.isEmpty()) {
+            // Model updateModel = models.get(0);
+            // newModel.setId(updateModel.getId());
+            // }
+            // newModel.setName(name);
+            // newModel.setKey(process.getId());
+            // newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            // newModel.setCreated(Calendar.getInstance().getTime());
+            // newModel.setCreatedBy(orgUnit.getName());
+            // newModel.setDescription(description);
+            // newModel.setModelEditorJson(modelNode.toString());
+            // newModel.setLastUpdated(Calendar.getInstance().getTime());
+            // newModel.setLastUpdatedBy(orgUnit.getName());
+            // newModel.setTenantId(tenantId);
+            // modelService.createModel(newModel, userId);
+            return Y9Result.success();
+        } catch (Exception e) {
+            LOGGER.error("导入流程模型失败", e);
+        }
+        return Y9Result.failure("导入失败");
     }
 
     /**
@@ -506,6 +619,66 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     public Y9Result<Object> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String modelId, @RequestParam MultipartFile file) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        try {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            // XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+            // InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+            // XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
+            //
+            // BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
+            // BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
+            // // 模板验证
+            // ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
+            // List<ValidationError> errors = validator.validate(bpmnModel);
+            // if (!errors.isEmpty()) {
+            // StringBuilder es = new StringBuilder();
+            // errors.forEach(ve -> es.append(ve.toString()).append("/n"));
+            // return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
+            // }
+            // if (bpmnModel.getProcesses().isEmpty()) {
+            // return Y9Result.failure("保存失败： 文件中不存在流程的信息");
+            // }
+            // if (bpmnModel.getLocationMap().isEmpty()) {
+            // BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+            // bpmnLayout.execute();
+            // }
+            // BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            // ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
+            // org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+            // String name = process.getId();
+            // if (StringUtils.isNotEmpty(process.getName())) {
+            // name = process.getName();
+            // }
+            // String description = process.getDocumentation();
+            //
+            // ModelRepresentation model = modelService.getModelRepresentation(modelId);
+            // model.setKey(process.getId());
+            // model.setName(name);
+            // model.setDescription(description);
+            // model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            // // 查询是否已经存在流程模板
+            // Model newModel = new Model();
+            // List<Model> models = modelRepository.findByKeyAndType(model.getKey(), model.getModelType());
+            // if (!models.isEmpty()) {
+            // Model updateModel = models.get(0);
+            // newModel.setId(updateModel.getId());
+            // }
+            // newModel.setName(model.getName());
+            // newModel.setKey(model.getKey());
+            // newModel.setModelType(model.getModelType());
+            // newModel.setCreated(Calendar.getInstance().getTime());
+            // newModel.setCreatedBy(orgUnit.getName());
+            // newModel.setDescription(model.getDescription());
+            // newModel.setModelEditorJson(modelNode.toString());
+            // newModel.setLastUpdated(Calendar.getInstance().getTime());
+            // newModel.setLastUpdatedBy(orgUnit.getName());
+            // newModel.setTenantId(tenantId);
+            // modelService.createModel(newModel, userId);
+            return Y9Result.success();
+        } catch (Exception e) {
+            LOGGER.error("保存模型xml失败", e);
+        }
         return Y9Result.failure("保存失败");
     }
 }

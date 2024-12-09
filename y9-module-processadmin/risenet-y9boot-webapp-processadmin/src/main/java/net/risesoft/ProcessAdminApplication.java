@@ -1,14 +1,21 @@
 package net.risesoft;
 
+import org.flowable.spring.boot.FlowableSecurityAutoConfiguration;
+import org.flowable.spring.boot.eventregistry.EventRegistryServicesAutoConfiguration;
+import org.flowable.spring.boot.idm.IdmEngineServicesAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, IdmEngineServicesAutoConfiguration.class,
+    FlowableSecurityAutoConfiguration.class, EventRegistryServicesAutoConfiguration.class,
+    OAuth2ClientAutoConfiguration.class})
 public class ProcessAdminApplication {
     public static void main(String[] args) {
         SpringApplication.run(ProcessAdminApplication.class, args);

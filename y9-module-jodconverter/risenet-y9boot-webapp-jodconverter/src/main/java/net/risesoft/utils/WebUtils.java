@@ -2,6 +2,8 @@ package net.risesoft.utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -144,6 +146,29 @@ public class WebUtils {
     }
 
     /**
+     * 对url中的文件名进行UTF-8编码
+     *
+     * @param url url
+     * @return 文件名编码后的url
+     */
+    public static String encodeUrlFileName(String url) {
+        // String encodedFileName;
+        // String noQueryUrl = url.substring(0, url.contains("?") ? url.indexOf("?") : url.length());
+        // int fileNameStartIndex = noQueryUrl.lastIndexOf('/') + 1;
+        // int fileNameEndIndex = noQueryUrl.lastIndexOf('.');
+        // if (fileNameEndIndex < fileNameStartIndex) {
+        // return url;
+        // }
+        // try {
+        // encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
+        // } catch (UnsupportedEncodingException e) {
+        // return null;
+        // }
+        // return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
+        return url;
+    }
+
+    /**
      * 从 ServletRequest 获取预览的源 url , 已 base64 解码
      *
      * @param request 请求 request
@@ -186,6 +211,53 @@ public class WebUtils {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * 将 Base64 字符串解码，再解码URL参数, 默认使用 UTF-8
+     *
+     * @param source 原始 Base64 字符串
+     * @return decoded string
+     *         <p>
+     *         aHR0cHM6Ly9maWxlLmtla2luZy5jbi9kZW1vL%2BS4reaWhy5wcHR4 ->
+     *         https://file.keking.cn/demo/%E4%B8%AD%E6%96%87.pptx -> https://file.keking.cn/demo/中文.pptx
+     */
+    public static String decodeUrl(String source) {
+        String url = source;
+        if (!StringUtils.isNotBlank(url)) {
+            return null;
+        }
+
+        return url;
+    }
+
+    /**
+     * 将 Base64 字符串使用指定字符集解码
+     *
+     * @param source 原始 Base64 字符串
+     * @param charsets 字符集
+     * @return decoded string
+     */
+    public static String decodeBase64String(String source, Charset charsets) {
+        /*
+         * url 传入的参数里加号会被替换成空格，导致解析出错，这里需要把空格替换回加号
+         * 有些 Base64 实现可能每 76 个字符插入换行符，也一并去掉
+         * https://github.com/kekingcn/kkFileView/pull/340
+         */
+        try {
+            if (source.isEmpty()) {
+                return "";
+            }
+            return new String(Base64.getDecoder().decode(source.replaceAll(" ", "+").replaceAll("\n", "")));
+            // return new String(Base64.decodeFromString(source.replaceAll(" ", "+").replaceAll("\n", "")), charsets);
+        } catch (Exception e) {
+            if (e.getMessage().toLowerCase().contains(BASE64_MSG)) {
+                LOGGER.error("url解码异常，接入方法错误未使用BASE64");
+            } else {
+                LOGGER.error("url解码异常，其他错误", e);
+            }
+            return null;
         }
     }
 

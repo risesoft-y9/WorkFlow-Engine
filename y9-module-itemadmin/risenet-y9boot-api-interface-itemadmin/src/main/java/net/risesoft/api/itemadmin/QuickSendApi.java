@@ -48,4 +48,5 @@ public interface QuickSendApi {
     Y9Result<String> saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("orgUnitId") @NotBlank String orgUnitId, @RequestParam("itemId") @NotBlank String itemId,
         @RequestParam("taskKey") @NotBlank String taskKey, @RequestParam("assignee") String assignee);
+
 }

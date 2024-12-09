@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -270,8 +269,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of((page < 1) ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
-if (StringUtils.isNotBlank(state)) {
+        Pageable pageable = PageRequest.of((page < 1) ? 0 : page - 1, rows, Direction.DESC, "startTime");
+        if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
                 pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
             }
@@ -324,7 +323,7 @@ if (StringUtils.isNotBlank(state)) {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
                 pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
@@ -618,7 +617,7 @@ if (StringUtils.isNotBlank(state)) {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Sort.Direction.DESC, "endTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
 
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
             .contains(userId).and("endTime").exists();
@@ -662,7 +661,7 @@ if (StringUtils.isNotBlank(state)) {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "endTime"));
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
 
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
             .contains(orgUnitId).and("endTime").exists();

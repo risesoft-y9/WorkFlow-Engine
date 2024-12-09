@@ -121,8 +121,7 @@ public class JumpCommand implements Command<Void> {
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
             org.flowable.engine.impl.util.CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity,
-                executionEntity,
-                Y9LoginUserHolder.getPersonId(), reason, new Date());
+                executionEntity, taskEntity.getAssignee(), reason, new Date());
             org.flowable.engine.impl.util.CommandContextUtil.getActivityInstanceEntityManager()
                 .recordActivityEnd(executionEntity, reason);
         }

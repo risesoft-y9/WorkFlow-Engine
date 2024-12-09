@@ -1,7 +1,8 @@
 package y9.client.rest.itemadmin;
 
-import net.risesoft.api.itemadmin.DocumentApi;
 import org.springframework.cloud.openfeign.FeignClient;
+
+import net.risesoft.api.itemadmin.DocumentApi;
 
 /**
  * @author qinman

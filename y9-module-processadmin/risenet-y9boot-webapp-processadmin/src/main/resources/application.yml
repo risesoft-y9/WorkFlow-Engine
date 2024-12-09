@@ -9,6 +9,11 @@ flowable:
             idmAdmin:
                 user: admin
                 password: 111111
+hibernate:
+    dialect:
+        mssql: org.hibernate.dialect.SQLServer2012Dialect
+        mysql: org.hibernate.dialect.MySQL8Dialect
+        oracle: org.hibernate.dialect.Oracle10gDialect
 logging:
     config: classpath:log4j2.xml
 management:
@@ -44,8 +49,8 @@ spring:
             config:
                 enabled: false
                 group: DEFAULT_GROUP
-                namespace: local
-                server-addr: http://localhost:8848
+                namespace: dev
+                server-addr: https://dev.youshengyun.com:443
                 username: nacos
                 password: ${NACOS_PASSWORD:111111}
             discovery:
@@ -55,55 +60,89 @@ spring:
             - optional:nacos:processAdmin.yml
             #- optional:nacos:test01.yml?group=group_02
             #- optional:nacos:test02.yml?group=group_03&refreshEnabled=false
-    data:
-        redis:
-            database: 8
-            host: localhost
-            port: 6379
-            username: default
-            password: '12345678'
-            ssl:
-                enabled: false
-            lettuce:
-                pool:
-                    max-active: 8
-                    max-idle: 8
-                    max-wait: -1
-                    min-idle: 1
-            repositories:
-                enabled: false
     datasource:
-        hikari:
-            tenantDefault: spring.datasource.hikari.flowable
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        druid:
+            filter:
+                stat:
+                    log-slow-sql: true
+                    mergeSql: true
+                    slow-sql-millis: 3000
+                wall:
+                    config:
+                        drop-table-allow: false
+                    enabled: true
+            stat-view-servlet:
+                enabled: false
+                url-pattern: /druid/*
+                login-username: admin
+                login-password: admin
+                reset-enable: false
+                allow: 127.0.0.1
+            web-stat-filter:
+                enabled: false
+                url-pattern: /*
+                exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/static/*'
+            tenantDefault: spring.datasource.druid.flowable
             y9-public:
-                driverClassName: com.mysql.cj.jdbc.Driver
-                jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                #driver-class-name: oracle.jdbc.OracleDriver
+                #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+                #username: Y9_PUBLIC
+                #password: '111111'
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://127.0.0.1:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
-                password: '12345678'
-                maximumPoolSize: 20
-                minimumIdle: 1
+                password: 111111
+                initialSize: 1
+                maxActive: 20
+                maxPoolPreparedStatementPerConnectionSize: 100
+                maxWait: 60000
+                minEvictableIdleTimeMillis: 300000
+                minIdle: 1
+                poolPreparedStatements: true
+                testOnBorrow: false
+                testOnReturn: false
+                testWhileIdle: true
+                timeBetweenEvictionRunsMillis: 60000
+                useGlobalDataSourceStat: true
+                validationQuery: SELECT 1 FROM DUAL
             flowable:
-                driverClassName: com.mysql.cj.jdbc.Driver
-                jdbcUrl: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
-                password: '12345678'
-                maximumPoolSize: 20
-                minimumIdle: 1
+                password: 111111
+                initialSize: 1
+                maxActive: 20
+                maxPoolPreparedStatementPerConnectionSize: 100
+                maxWait: 60000
+                minEvictableIdleTimeMillis: 300000
+                minIdle: 1
+                poolPreparedStatements: true
+                testOnBorrow: false
+                testOnReturn: false
+                testWhileIdle: true
+                timeBetweenEvictionRunsMillis: 60000
+                useGlobalDataSourceStat: true
+                validationQuery: SELECT 1 FROM DUAL
     jpa:
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQL8Dialect
-                hbm2ddl:
-                    auto: none
-                jdbc:
-                    batchSize: 100
-                showSql: true
+        generate-ddl: true
         hibernate:
-            ddl-auto: update
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         open-in-view: false
+        properties:
+            hibernate:
+                cache:
+                    use_query_cache: false
+                    use_second_level_cache: false
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                hbm2ddl:
+                    auto: none
+                jdbc:
+                    batch_size: 100
+                show_sql: false
     kafka:
         bootstrap-servers: localhost:9092
         consumer:
@@ -116,6 +155,20 @@ spring:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
+    redis:
+        database: 8
+        host: localhost
+        lettuce:
+            pool:
+                max-active: 8
+                max-idle: 8
+                max-wait: -1
+                min-idle: 0
+            shutdown-timeout: 100ms
+        password: y9i-83204585
+        port: 6379
+        ssl: false
+        timeout: 10000
     servlet:
         multipart:
             max-file-size: 200MB

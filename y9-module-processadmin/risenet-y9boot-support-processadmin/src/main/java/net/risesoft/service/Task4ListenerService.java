@@ -9,8 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -53,8 +51,7 @@ public class Task4ListenerService {
 
     private final Process4MsgRemindService process4MsgRemindService;
 
-    @Autowired
-    @Qualifier(value = "jdbcTemplate4Tenant")
+    @jakarta.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     /**

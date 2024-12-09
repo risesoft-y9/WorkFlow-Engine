@@ -171,8 +171,11 @@ public class TaoHongTemplateRestContronller {
     /**
      * 保存套红信息
      *
-     * @param taoHongInfo 套红信息
-     * @param file 文件
+     * @param templateGuid 模板id
+     * @param bureauGuid 委办局id
+     * @param bureauName 委办局名称
+     * @param templateType 模板类型
+     * @param file 模板文件
      * @return
      */
     @PostMapping(value = "/saveOrUpdate")

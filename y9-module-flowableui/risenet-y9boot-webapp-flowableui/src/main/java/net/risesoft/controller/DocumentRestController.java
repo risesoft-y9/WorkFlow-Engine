@@ -132,10 +132,13 @@ public class DocumentRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/addWithStartTaskDefKey")
-    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,@RequestParam @NotBlank String startTaskDefKey) {
+    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String startTaskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            DocumentDetailModel model = documentApi.addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false).getData();
+            DocumentDetailModel model = documentApi
+                .addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取新建办件数据失败", e);

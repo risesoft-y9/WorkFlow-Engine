@@ -31,7 +31,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -74,15 +73,15 @@ public class InterfaceMethodService {
     private final ItemInterfaceApi itemInterfaceApi;
     private final Y9FileStoreService y9FileStoreService;
     private final Y9Properties y9Config;
-    private final JdbcTemplate jdbcTemplate;
+    @jakarta.annotation.Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
 
     public InterfaceMethodService(ItemInterfaceApi itemInterfaceApi, Y9FileStoreService y9FileStoreService,
-        Y9Properties y9Config, ErrorLogApi errorLogApi,@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+        Y9Properties y9Config, ErrorLogApi errorLogApi) {
         this.itemInterfaceApi = itemInterfaceApi;
         this.y9FileStoreService = y9FileStoreService;
         this.y9Config = y9Config;
         this.errorLogApi = errorLogApi;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**

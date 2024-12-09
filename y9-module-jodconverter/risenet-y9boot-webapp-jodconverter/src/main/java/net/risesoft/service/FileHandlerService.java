@@ -71,6 +71,10 @@ public class FileHandlerService {
 
     private static final String PDF2JPG_IMAGE_FORMAT = ".jpg";
     private static final String PDF_PASSWORD_MSG = "password";
+    /**
+     * cad定义线程池
+     */
+    private static final ExecutorService pool = Executors.newFixedThreadPool(ConfigConstants.getCadThread());
     private final String fileDir = ConfigConstants.getFileDir();
     private final CacheService cacheService;
     @Value("${server.tomcat.uri-encoding:UTF-8}")
@@ -78,6 +82,15 @@ public class FileHandlerService {
 
     public FileHandlerService(CacheService cacheService) {
         this.cacheService = cacheService;
+    }
+
+    /**
+     * @param str 原字符串（待截取原串）
+     * @param posStr 指定字符串
+     * @return 截取截取指定字符串之后的数据
+     */
+    public static String getSubString(String str, String posStr) {
+        return str.substring(str.indexOf(posStr) + posStr.length());
     }
 
     /**
@@ -161,11 +174,6 @@ public class FileHandlerService {
     public void putImgCache(String fileKey, List<String> imgs) {
         cacheService.putImgCache(fileKey, imgs);
     }
-
-    /**
-     * cad定义线程池
-     */
-    private static final ExecutorService pool = Executors.newFixedThreadPool(ConfigConstants.getCadThread());
 
     /**
      * 对转换后的文件进行操作(改变编码方式)
@@ -403,15 +411,6 @@ public class FileHandlerService {
             source.dispose();
         }
         return "true";
-    }
-
-    /**
-     * @param str 原字符串（待截取原串）
-     * @param posStr 指定字符串
-     * @return 截取截取指定字符串之后的数据
-     */
-    public static String getSubString(String str, String posStr) {
-        return str.substring(str.indexOf(posStr) + posStr.length());
     }
 
     /**

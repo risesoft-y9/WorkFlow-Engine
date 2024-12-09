@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 
 import org.flowable.engine.RepositoryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,8 +46,7 @@ public class ProcessModelVueController {
 
     private final RepositoryService repositoryService;
 
-    @Autowired
-    private Y9Properties y9Config;
+    private final Y9Properties y9Config;
 
     /**
      * 创建模型

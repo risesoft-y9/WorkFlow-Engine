@@ -2,8 +2,6 @@ package net.risesoft.config;
 
 import javax.sql.DataSource;
 
-import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -81,6 +79,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
         filterBean.addUrlPatterns("/*");
         return filterBean;
     }
+
     @Bean
     public Y9Context y9Context() {
         return new Y9Context();
