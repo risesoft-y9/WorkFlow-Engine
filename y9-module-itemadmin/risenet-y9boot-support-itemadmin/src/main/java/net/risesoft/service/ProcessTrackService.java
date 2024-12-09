@@ -51,6 +51,14 @@ public interface ProcessTrackService {
      * @param processInstanceId
      * @return
      */
+    List<HistoryProcessModel> listByProcessInstanceIdWithActionName(String processInstanceId);
+
+    /**
+     * 获取历程列表(带自定义历程信息)
+     *
+     * @param processInstanceId
+     * @return
+     */
     List<HistoryProcessModel> listByProcessInstanceId4Simple(String processInstanceId);
 
     /**

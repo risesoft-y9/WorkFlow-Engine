@@ -69,6 +69,9 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
     /** 是否有抄送 */
     private Boolean isChaoSong;
 
+    /** 上一步操作 */
+    private String actionName;
+
     @Override
     public int compareTo(HistoryProcessModel o) {
         try {
