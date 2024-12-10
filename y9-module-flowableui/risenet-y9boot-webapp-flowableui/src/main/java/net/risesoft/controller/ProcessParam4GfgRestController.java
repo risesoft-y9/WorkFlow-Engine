@@ -75,26 +75,11 @@ public class ProcessParam4GfgRestController {
      * @return Y9Result<StartProcessResultModel>
      */
     @PostMapping(value = "/saveActionName")
-    public Y9Result<StartProcessResultModel> saveActionName(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String actionName, @RequestParam(required = false) boolean isStartProcess) {
+    public Y9Result<StartProcessResultModel> saveActionName(@RequestParam(required = false) String processInstanceId, @RequestParam (required = false) String actionName) {
         if (StringUtils.isNotBlank(processInstanceId) && StringUtils.isNotBlank(actionName)) {
             Map<String, Object> vars = new HashMap<>();
             vars.put("val", actionName);
             variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId, SysVariables.ACTIONNAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
-        }
-        if (isStartProcess) {
-            Position position = Y9LoginUserHolder.getPosition();
-            List<TaskModel> startTaskList = taskApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
-            for (TaskModel taskModel : startTaskList) {
-                TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
-                taskRelatedModel.setInfoType("2");
-                taskRelatedModel.setTaskId(taskModel.getId());
-                taskRelatedModel.setProcessInstanceId(taskModel.getProcessInstanceId());
-                taskRelatedModel.setProcessSerialNumber(processSerialNumber);
-                taskRelatedModel.setMsgContent(actionName);
-                taskRelatedModel.setSenderId(position.getId());
-                taskRelatedModel.setSenderName(position.getName());
-                taskRelatedApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), taskRelatedModel);
-            }
         }
         return Y9Result.success(null);
     }
