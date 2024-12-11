@@ -1049,7 +1049,7 @@ public class ButtonUtil {
         isButtonShow[16] = false;
         // 抄送
         isButtonShow[17] = false;
-        isButtonShow[22] = true;
+        isButtonShow[22] = false;
         map.put("buttonIds", buttonIds);
         map.put("buttonNames", buttonNames);
         map.put("isButtonShow", isButtonShow);
