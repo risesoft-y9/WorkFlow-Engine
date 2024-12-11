@@ -5,11 +5,21 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.entity.TaskRelated;
+import net.risesoft.enums.TaskRelatedEnum;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
+import net.risesoft.model.itemadmin.HistorySubProcessModel;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.model.processadmin.FlowElementModel;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -121,6 +131,8 @@ public class AsyncHandleService {
 
     private final ItemTaskConfService itemTaskConfService;
 
+    private final TaskRelatedService taskRelatedService;
+
     /**
      * 异步发送
      *
@@ -138,13 +150,13 @@ public class AsyncHandleService {
      */
     @Async
     public void forwarding(final String tenantId, final OrgUnit orgUnit, final String processInstanceId,
-        final ProcessParam processParam, final String sponsorHandle, final String sponsorGuid, final String taskId,
-        final String multiInstance, final Map<String, Object> variables, final List<String> userAndDeptIdList) {
+                           final ProcessParam processParam, final String sponsorHandle, final String sponsorGuid, final String taskId,
+                           final FlowElementModel flowElementModel, final Map<String, Object> variables, final List<String> userAndDeptIdList) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         try {
-            this.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance,
-                variables, userAndDeptIdList);
+            this.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, flowElementModel,
+                    variables, userAndDeptIdList);
         } catch (Exception e) {
             try {
                 final Writer result = new StringWriter();
@@ -182,13 +194,13 @@ public class AsyncHandleService {
     }
 
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
-        String sponsorGuid, String taskId, String multiInstance, Map<String, Object> variables, List<String> userList)
-        throws Exception {
+                                String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables, List<String> userList)
+            throws Exception {
         OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
-            processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+                processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
             sponsorHandle = "true";
         }
@@ -236,7 +248,59 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
 
-        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, multiInstance, sponsorGuid, processParam);
+        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, flowElementModel, sponsorGuid, processParam);
+    }
+
+    public void forwarding4Gfg(String processInstanceId, ProcessParam processParam, String sponsorHandle,
+                                String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables, List<String> userList)
+            throws Exception {
+        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
+                processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+        if (null != itemTaskConf && itemTaskConf.getSignTask()) {
+            sponsorHandle = "true";
+        }
+        // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
+        if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
+            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            for (TaskModel taskNext : taskNextList1) {
+                if (!(taskId.equals(taskNext.getId()))) {
+                    taskApi.complete(tenantId, taskNext.getId());
+                    historictaskApi.setTenantId(tenantId, taskNext.getId());
+                }
+            }
+        }
+        /**
+         * 主办设置类型，2为部门节点，3为人员节点
+         */
+        String type = "";
+        /**
+         * 主办部门或人员的id
+         */
+        String sponsor = "";
+        if (StringUtils.isNotBlank(sponsorGuid)) {
+            type = sponsorGuid.substring(0, 1);
+            sponsor = sponsorGuid.substring(2);
+            if (type.equals(String.valueOf(ItemPrincipalTypeEnum.DEPT.getValue()))) {
+                /**
+                 * 设置主办部门下的第一个人员为主办人
+                 */
+                sponsorGuid = this.getSponsorPosition("", sponsor);
+            } else {
+                sponsorGuid = sponsor;
+            }
+        }
+        processParam.setSended("true");
+        processParam.setSponsorGuid(sponsorGuid);
+        processParamService.saveOrUpdate(processParam);
+        taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
+
+        // 保存流程信息到ES
+        process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
+
+        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, flowElementModel, sponsorGuid, processParam);
     }
 
     /**
@@ -245,14 +309,14 @@ public class AsyncHandleService {
      * @param tenantId
      * @param taskId
      * @param processInstanceId
-     * @param multiInstance
+     * @param flowElementModel
      * @param sponsorGuid
      * @param processParam
      */
     @Async
     public void forwardingHandle(final String tenantId, final String orgUnitId, final String taskId,
-        final String processInstanceId, final String multiInstance, final String sponsorGuid,
-        final ProcessParam processParam) {
+                                 final String processInstanceId, final FlowElementModel flowElementModel, final String sponsorGuid,
+                                 final ProcessParam processParam) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -266,8 +330,16 @@ public class AsyncHandleService {
                     processTrackRepository.save(ptModel);
                 }
             }
-            // 保存下个任务节点的时限
+            /**
+             * 假如是发送至SubProcess子流程，则记录子流程信息
+             */
+            boolean isSubProcess = false;
+            if (null != flowElementModel && (flowElementModel.getType().equals(SysVariables.SUBPROCESS))) {
+                isSubProcess = true;
+            }
             List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<HistorySubProcessModel> modelList = new ArrayList<>();
+            HistorySubProcessModel historySubProcessModel;
             for (TaskModel taskNext : nextTaskList) {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.TASKSENDER, orgUnit.getName());
@@ -275,12 +347,32 @@ public class AsyncHandleService {
                 /**
                  * 并行状态且区分主协办情况下，如果受让人是主办人，则将主办人guid设为任务变量
                  */
-                if (SysVariables.PARALLEL.equals(multiInstance)) {
+                if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {
                     if (taskNext.getAssignee().equals(sponsorGuid)) {
                         vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
                     }
                 }
                 variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
+
+                if (isSubProcess) {
+                    OrgUnit bureau = orgUnitApi.getBureau(tenantId, taskNext.getAssignee()).getData();
+                    historySubProcessModel = new HistorySubProcessModel();
+                    historySubProcessModel.setId(taskNext.getExecutionId());
+                    historySubProcessModel.setActionName("并行会签【" + bureau.getName() + "】");
+                    modelList.add(historySubProcessModel);
+                }
+            }
+            if (isSubProcess) {
+                TaskRelated taskRelated = new TaskRelated();
+                taskRelated.setInfoType(TaskRelatedEnum.SUBINFO.getValue());
+                taskRelated.setTaskId(taskId);
+                taskRelated.setProcessInstanceId(processInstanceId);
+                taskRelated.setProcessSerialNumber(processParam.getProcessSerialNumber());
+                taskRelated.setMsgContent(Y9JsonUtil.writeValueAsString(modelList));
+                System.out.println("#####modelList"+Y9JsonUtil.writeValueAsString(modelList).length());
+                taskRelated.setSenderId(orgUnit.getId());
+                taskRelated.setSenderName(orgUnit.getName());
+                taskRelatedService.saveOrUpdate(taskRelated);
             }
         } catch (Exception e) {
             LOGGER.warn("*****forwardingHandle发送发生异常*****", e);
@@ -356,8 +448,8 @@ public class AsyncHandleService {
                 todo.setDocNumber(processParam.getCustomNumber());
                 todo.setProcessInstanceId(processInstanceId);
                 String url = todoTaskUrlPrefix.replace("index", "readIndex") + "?id=" + info.getId() + "&itemId="
-                    + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
-                    + "&type=fromTodo&appName=chaoSong";
+                        + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
+                        + "&type=fromTodo&appName=chaoSong";
                 todo.setUrl(url);
                 todo.setTaskId(id);
                 todo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -443,8 +535,8 @@ public class AsyncHandleService {
                 todo.setDocNumber(processParam.getCustomNumber());
                 todo.setProcessInstanceId(processInstanceId);
                 String url = todoTaskUrlPrefix.replace("index", "readIndex") + "?id=" + info.getId() + "&itemId="
-                    + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
-                    + "&type=fromTodo&appName=chaoSong";
+                        + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
+                        + "&type=fromTodo&appName=chaoSong";
                 todo.setUrl(url);
                 todo.setTaskId(id);
                 todo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -515,7 +607,7 @@ public class AsyncHandleService {
      */
     @Async
     public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber,
-        final String content) {
+                              final String content) {
         try {
             Boolean msgSwitch = y9ItemAdminProperties.getMsgSwitch();
             if (msgSwitch == null || !msgSwitch) {
@@ -531,13 +623,13 @@ public class AsyncHandleService {
                 String itemId = processParam.getItemId();
                 String todoTaskUrlPrefix = processParam.getTodoTaskUrlPrefix();
                 String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId="
-                    + processParam.getProcessInstanceId() + "&type=fromCplane";
+                        + processParam.getProcessInstanceId() + "&type=fromCplane";
                 Date date = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String newPersonIds = "";
                 String[] ids = personIds.split(",");
                 OfficeDoneInfo officeDoneInfo =
-                    officeDoneInfoService.findByProcessInstanceId(processParam.getProcessInstanceId());
+                        officeDoneInfoService.findByProcessInstanceId(processParam.getProcessInstanceId());
                 for (String id : ids) {
                     /**
                      * 参与该件的人才提醒
@@ -582,7 +674,7 @@ public class AsyncHandleService {
      */
     @Async
     public void startProcessHandle(final String tenantId, final String processSerialNumber, final String taskId,
-        final String processInstanceId, final String searchTerm) {
+                                   final String processInstanceId, final String searchTerm) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             try {
@@ -602,6 +694,27 @@ public class AsyncHandleService {
     }
 
     /**
+     * 启动流程后数据处理
+     *
+     * @param processSerialNumber
+     * @param taskId
+     * @param processInstanceId
+     * @param searchTerm
+     */
+    @Async
+    public void startProcessHandle4Gfg(final String tenantId, final String processSerialNumber, final String taskId,
+                                   final String processInstanceId, final String searchTerm) {
+        try {
+            Y9LoginUserHolder.setTenantId(tenantId);
+            opinionRepository.update(processInstanceId, taskId, processSerialNumber);
+            transactionFileService.update(processSerialNumber, processInstanceId, taskId);
+            transactionHistoryWordService.update(taskId, processSerialNumber);
+        } catch (Exception e) {
+            LOGGER.warn("*****startProcessSave发生异常*****", e);
+        }
+    }
+
+    /**
      * 异步抄送微信提醒
      *
      * @param tenantId
@@ -612,7 +725,7 @@ public class AsyncHandleService {
      */
     @Async
     public void weiXinRemind(final String tenantId, final String userId, final String processSerialNumber,
-        final List<ChaoSong> list) {
+                             final List<ChaoSong> list) {
         Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
         if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
@@ -645,7 +758,7 @@ public class AsyncHandleService {
                 LOGGER.info("##########################微信接口状态：" + code + "##########################");
                 if (code == HttpStatus.SC_OK) {
                     String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
-                        StandardCharsets.UTF_8);
+                            StandardCharsets.UTF_8);
                     LOGGER.info("##########################返回状态：" + response + "##########################");
                 }
             }
@@ -665,7 +778,7 @@ public class AsyncHandleService {
      */
     @Async
     public void weiXinRemind4ChaoSongInfo(final String tenantId, final String userId, final String processSerialNumber,
-        final List<ChaoSongInfo> list) {
+                                          final List<ChaoSongInfo> list) {
         Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
         if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
@@ -678,7 +791,7 @@ public class AsyncHandleService {
             String itemName = processParam.getItemName();
             Person person = personApi.get(tenantId, userId).getData();
             OfficeDoneInfo officeDoneInfo =
-                officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
+                    officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
             for (ChaoSongInfo cs : list) {
                 String assignee = cs.getUserId();
                 HttpClient client = new HttpClient();
@@ -700,7 +813,7 @@ public class AsyncHandleService {
                 LOGGER.info("##########################微信接口状态：" + code + "##########################");
                 if (code == HttpStatus.SC_OK) {
                     String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
-                        StandardCharsets.UTF_8);
+                            StandardCharsets.UTF_8);
                     LOGGER.info("##########################返回状态：" + response + "##########################");
                 }
             }

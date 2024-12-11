@@ -250,7 +250,6 @@ public interface DocumentApi {
      * @param userChoice    选择的发送人员
      * @param sponsorGuid   主办人id
      * @param routeToTaskId 任务key
-     * @param variables     保存变量
      * @return {@code Y9Result<String>} 通用请求返回对象
      * @since 9.6.6
      */
@@ -261,8 +260,7 @@ public interface DocumentApi {
                                 @RequestParam("userChoice") String userChoice,
                                 @RequestParam("routeToTaskId") String routeToTaskId,
                                 @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
-                                @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid,
-                                @RequestBody Map<String, Object> variables);
+                                @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
 
     /**
      * 指定任务节点发送

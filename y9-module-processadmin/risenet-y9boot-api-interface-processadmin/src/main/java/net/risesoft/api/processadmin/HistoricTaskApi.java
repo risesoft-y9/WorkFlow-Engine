@@ -59,6 +59,18 @@ public interface HistoricTaskApi {
         @RequestParam("taskId") String taskId);
 
     /**
+     * 根据任务Id获取任务实例
+     *
+     * @param tenantId 租户id
+     * @param taskId 任务id
+     * @return {@code Y9Result<HistoricTaskInstanceModel>} 通用请求返回对象 - data 任务实例列表
+     * @since 9.6.6
+     */
+    @GetMapping("/getByIdAndYear")
+    Y9Result<HistoricTaskInstanceModel> getById(@RequestParam("tenantId") String tenantId,
+                                                @RequestParam("taskId") String taskId,@RequestParam("year") String year);
+
+    /**
      * 根据流程实例获取所有历史任务实例
      *
      * @param tenantId 租户id

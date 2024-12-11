@@ -126,6 +126,14 @@ public interface CustomProcessDefinitionService {
     Boolean isSubProcessChildNode(String processDefinitionId, String taskDefKey);
 
     /**
+     * 判断流程定义的节点是否是SubProcess内的节点
+     *
+     * @param processDefinitionId
+     * @return
+     */
+    Y9Result<List<TargetModel>> getSubProcessChildNode(String processDefinitionId);
+
+    /**
      * 获取有办结权限的UserTask
      *
      * @param processDefinitionId

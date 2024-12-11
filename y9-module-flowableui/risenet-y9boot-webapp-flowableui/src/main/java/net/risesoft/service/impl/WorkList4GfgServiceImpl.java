@@ -9,11 +9,16 @@ import java.util.List;
 import java.util.Map;
 
 
+import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.model.LightColorModel;
+import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.service.WorkDayService;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,6 +112,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
 
     private final WorkDayService workDayService;
 
+    private final SignDeptInfoApi signDeptInfoApi;
+
     @Override
     public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
         Y9Page<ActRuDetailModel> itemPage;
@@ -195,8 +202,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     @Override
     public Y9Page<Map<String, Object>> doingList(String itemId, Integer page, Integer rows) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                     itemDoingApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
@@ -219,14 +226,22 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    if (!taskList.isEmpty()) {
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String assigneeNames = listTemp.get(2);
-                        mapTemp.put("taskAssignee", assigneeNames);
+                    boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId, taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
+                    if (isSubProcessChildNode) {
+                        boolean isSignDept = signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
+                        if (!isSignDept) {
+                            //针对SubProcess
+                            mapTemp.put("taskName", "送会签");
+                            mapTemp.put("taskAssignee", "");
+                        } else {
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                            mapTemp.put("taskName", listTemp.get(0));
+                            mapTemp.put("taskAssignee", listTemp.get(1));
+                        }
                     } else {
-                        mapTemp.put("taskName", "会签");
-                        mapTemp.put("taskAssignee", "会签办理");
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                        mapTemp.put("taskName", taskList.get(0).getName());
+                        mapTemp.put("taskAssignee", listTemp.get(0));
                     }
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName",
@@ -317,72 +332,120 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
      */
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "";
+        String assigneeNames = "";
         List<String> list = new ArrayList<>();
         int i = 0;
-        if (!taskList.isEmpty()) {
-            for (TaskModel task : taskList) {
-                if (StringUtils.isEmpty(taskIds)) {
-                    taskIds = task.getId();
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        assigneeIds = assignee;
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = personTemp.getName();
-                            i += 1;
-                        }
-                    } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList =
-                                identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                        if (!iList.isEmpty()) {
-                            int j = 0;
-                            for (IdentityLinkModel identityLink : iList) {
-                                String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser = orgUnitApi
-                                        .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
-                                if (j < 5) {
-                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
-                                } else {
-                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                    break;
-                                }
-                                j++;
+        for (TaskModel task : taskList) {
+            if (StringUtils.isEmpty(assigneeNames)) {
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    if (personTemp != null) {
+                        assigneeNames = personTemp.getName();
+                        i += 1;
+                    }
+                } else {// 处理单实例未签收的当前办理人显示
+                    List<IdentityLinkModel> iList =
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                    if (!iList.isEmpty()) {
+                        int j = 0;
+                        for (IdentityLinkModel identityLink : iList) {
+                            String assigneeId = identityLink.getUserId();
+                            OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                            if (j < 5) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+                            } else {
+                                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                                break;
                             }
+                            j++;
                         }
                     }
-                } else {
-                    taskIds = Y9Util.genCustomStr(taskIds, task.getId(), SysVariables.COMMA);
-                    String assignee = task.getAssignee();
-                    if (i < 5) {
-                        if (StringUtils.isNotBlank(assignee)) {
-                            assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                            if (personTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                                i += 1;
-                            }
+                }
+            } else {
+                String assignee = task.getAssignee();
+                if (i < 5) {
+                    if (StringUtils.isNotBlank(assignee)) {
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (personTemp != null) {
+                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            i += 1;
                         }
                     }
                 }
             }
-            if (taskList.size() > 5) {
-                assigneeNames += "等，共" + taskList.size() + "人";
-            }
-        } else {
-            /*
-             * List<HistoricActivityInstance> historicActivityInstanceList =
-             * historyService.createHistoricActivityInstanceQuery().
-             * processInstanceId(processInstanceId).activityType(SysVariables.
-             * CALLACTIVITY).list(); if (historicActivityInstanceList != null &&
-             * historicActivityInstanceList.size() > 0) { Map<String, Object> record =
-             * setTodoElement(historicActivityInstanceList.get(0), existAssigneeId,
-             * existAssigneeName); items.add(record); }
-             */
         }
-        list.add(taskIds);
-        list.add(assigneeIds);
+        if (taskList.size() > 5) {
+            assigneeNames += "等，共" + taskList.size() + "人";
+        }
+        list.add(assigneeNames);
+        return list;
+    }
+
+    /**
+     * 返回当前人参与过的子流程的任务
+     *
+     * @param taskList 当前子流程所有任务
+     * @param taskId   当前人参与过的任务
+     * @return
+     */
+    private List<String> getAssigneeIdsAndAssigneeNames4SignDept(List<TaskModel> taskList, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String taskName = "", assigneeNames = "";
+        List<String> list = new ArrayList<>();
+        int i = 0;
+        HistoricTaskInstanceModel hisTask = historicTaskApi.getById(tenantId, taskId).getData();
+        for (TaskModel task : taskList) {
+            if (!task.getExecutionId().equals(hisTask.getExecutionId())) {
+                continue;
+            }
+            taskName = task.getName();
+            if (StringUtils.isEmpty(assigneeNames)) {
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    if (personTemp != null) {
+                        assigneeNames = personTemp.getName();
+                        i += 1;
+                    }
+                } else {// 处理单实例未签收的当前办理人显示
+                    List<IdentityLinkModel> iList =
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                    if (!iList.isEmpty()) {
+                        int j = 0;
+                        for (IdentityLinkModel identityLink : iList) {
+                            String assigneeId = identityLink.getUserId();
+                            OrgUnit ownerUser = orgUnitApi
+                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                            if (j < 5) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+                            } else {
+                                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                                break;
+                            }
+                            j++;
+                        }
+                    }
+                }
+            } else {
+                String assignee = task.getAssignee();
+                if (i < 5) {
+                    if (StringUtils.isNotBlank(assignee)) {
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (personTemp != null) {
+                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            i += 1;
+                        }
+                    }
+                }
+            }
+        }
+        if (taskList.size() > 5) {
+            assigneeNames += "等，共" + taskList.size() + "人";
+        }
+
+        list.add(taskName);
         list.add(assigneeNames);
         return list;
     }

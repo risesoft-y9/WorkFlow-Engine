@@ -12,10 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
+import net.risesoft.entity.TaskRelated;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
+import net.risesoft.service.TaskRelatedService;
+import net.risesoft.y9.Y9Context;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -202,6 +208,8 @@ public class DocumentServiceImpl implements DocumentService {
     private final RoleService roleService;
 
     private final HistoricActivityApi historicActivityApi;
+
+    private final TaskRelatedService taskRelatedService;
 
     @Override
     public OpenDataModel add(String itemId, boolean mobile) {
@@ -648,7 +656,7 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
-                        sponsorGuid, taskId, flowElementModel.getMultiInstance(), variables, userList);
+                        sponsorGuid, taskId, flowElementModel, variables, userList);
             } else {
                 // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
                 if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
@@ -674,14 +682,14 @@ public class DocumentServiceImpl implements DocumentService {
                         taskVariable.setText("true:" + num);
                         taskVariableRepository.save(taskVariable);
                         asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
-                                sponsorGuid, taskId, flowElementModel.getMultiInstance(), variables, userList);
+                                sponsorGuid, taskId, flowElementModel, variables, userList);
                     } else {
-                        asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid,
-                                taskId, flowElementModel.getMultiInstance(), variables, userList);
+                        asyncHandleService.forwarding4Gfg(processInstanceId, processParam, sponsorHandle, sponsorGuid,
+                                taskId, flowElementModel, variables, userList);
                     }
                 } else {
-                    asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid,
-                            taskId, flowElementModel.getMultiInstance(), variables, userList);
+                    asyncHandleService.forwarding4Gfg(processInstanceId, processParam, sponsorHandle, sponsorGuid,
+                            taskId, flowElementModel, variables, userList);
                 }
             }
             return Y9Result.success(processInstanceId, "发送成功!");
@@ -1770,7 +1778,7 @@ public class DocumentServiceImpl implements DocumentService {
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
                     CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, flowElementModel.getMultiInstance(),
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, flowElementModel,
                     variables, userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {
@@ -1894,11 +1902,11 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, "", sponsorGuid,
-                        taskId, flowElementModel.getMultiInstance(), variables, userList);
+                        taskId, flowElementModel, variables, userList);
             } else {
                 assert processParam != null;
                 asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", sponsorGuid, taskId,
-                        flowElementModel.getMultiInstance(), variables, userList);
+                        flowElementModel, variables, userList);
             }
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
@@ -2127,13 +2135,7 @@ public class DocumentServiceImpl implements DocumentService {
             processParam.setSended("true");
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
-
             processParamService.saveOrUpdate(processParam);
-
-            // 异步处理数据
-            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
-                    task.getProcessInstanceId(), processParam.getSearchTerm());
-
             model = new StartProcessResultModel();
             model.setProcessDefinitionId(task.getProcessDefinitionId());
             model.setProcessInstanceId(task.getProcessInstanceId());
@@ -2190,7 +2192,7 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             }
             variables.put(SysVariables.USERS, userList);
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", "", taskId, flowElementModel.getMultiInstance(),
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", "", taskId, flowElementModel,
                     variables, userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {

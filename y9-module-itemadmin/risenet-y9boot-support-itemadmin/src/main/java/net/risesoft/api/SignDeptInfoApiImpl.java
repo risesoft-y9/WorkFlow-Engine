@@ -40,7 +40,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * 根据主键删除会签信息
      *
      * @param tenantId 租户ID
-     * @param id 主键
+     * @param id       主键
      * @return Y9Result<Object>
      * @since 9.6.0
      */
@@ -54,15 +54,15 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 根据流程实例id获取会签信息
      *
-     * @param tenantId 租户ID
-     * @param deptType 单位类型（0：委内，1：委外）
+     * @param tenantId          租户ID
+     * @param deptType          单位类型（0：委内，1：委外）
      * @param processInstanceId 流程实例id
-     * @return Y9Result<List<SignDeptModel>
+     * @return Y9Result<List < SignDeptModel>
      * @since 9.6.0
      */
     @Override
     public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String tenantId, @RequestParam String deptType,
-        @RequestParam String processInstanceId) {
+                                                         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processInstanceId, deptType);
         List<SignDeptModel> modelList = new ArrayList<>();
@@ -77,17 +77,17 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 保存会签信息
      *
-     * @param tenantId 租户ID
-     * @param positionId 岗位id
-     * @param deptIds 部门ids
-     * @param deptType 单位类型（0：委内，1：委外）
+     * @param tenantId          租户ID
+     * @param positionId        岗位id
+     * @param deptIds           部门ids
+     * @param deptType          单位类型（0：委内，1：委外）
      * @param processInstanceId 流程实例id
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @Override
     public Y9Result<Object> saveSignDept(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processInstanceId) {
+                                         @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
@@ -99,7 +99,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * 保存会签签名
      *
      * @param tenantId 租户ID
-     * @param id 主键
+     * @param id       主键
      * @param userName 签字人姓名
      * @return Y9Result<Object>
      * @since 9.6.0
@@ -109,5 +109,26 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         signDeptInfoService.saveSignDeptInfo(id, userName);
         return Y9Result.success();
+    }
+
+    /**
+     * 根据流程实例id和部门ID判断是否是会签部门
+     *
+     * @param tenantId          租户ID
+     * @param deptId            部门ID
+     * @param deptType          单位类型（0：委内，1：委外）
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<List < SignDeptModel>
+     * @since 9.6.0
+     */
+    @Override
+    public Y9Result<Boolean> isSignDept(@RequestParam String tenantId, @RequestParam String deptId,
+                                        @RequestParam String deptType, @RequestParam String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processInstanceId, deptType);
+        if (list.isEmpty()) {
+            return Y9Result.success(false);
+        }
+        return Y9Result.success(list.stream().anyMatch(signDeptInfo -> signDeptInfo.getDeptId().equals(deptId)));
     }
 }
