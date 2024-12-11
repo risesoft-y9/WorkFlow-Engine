@@ -275,4 +275,15 @@ public interface ProcessDefinitionApi {
     @GetMapping(value = "/isSubProcessChildNode")
     Y9Result<Boolean> isSubProcessChildNode(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+
+    /**
+     * 判断流程定义的节点是否是SubProcess内的节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getSubProcessChildNode")
+    Y9Result<List<TargetModel>> getSubProcessChildNode(@RequestParam("tenantId") String tenantId,@RequestParam("processDefinitionId") String processDefinitionId);
 }

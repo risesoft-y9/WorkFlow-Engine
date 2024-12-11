@@ -353,7 +353,6 @@ public class DocumentApiImpl implements DocumentApi {
      * @param userChoice    选择的发送人员
      * @param sponsorGuid   主办人id
      * @param routeToTaskId 任务key
-     * @param variables     保存变量
      * @return {@code Y9Result<String>} 通用请求返回对象
      * @since 9.6.6
      */
@@ -363,12 +362,10 @@ public class DocumentApiImpl implements DocumentApi {
                                        @RequestParam String userChoice,
                                        @RequestParam String routeToTaskId,
                                        @RequestParam(required = false) String sponsorHandle,
-                                       @RequestParam(required = false) String sponsorGuid,
-                                       @RequestBody Map<String, Object> variables) {
+                                       @RequestParam(required = false) String sponsorGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        variableApi.setVariables(tenantId, taskId, variables);
         return documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
     }
 

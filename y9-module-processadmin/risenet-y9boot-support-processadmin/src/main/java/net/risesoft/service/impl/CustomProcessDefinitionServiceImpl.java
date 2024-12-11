@@ -435,6 +435,28 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public Y9Result<List<TargetModel>> getSubProcessChildNode(String processDefinitionId) {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+        List<TargetModel> targetNodeList = new ArrayList<>();
+        List<FlowElement> flowElements = (List<FlowElement>) process.getFlowElements();
+        for (FlowElement flowElement : flowElements) {
+            if (flowElement instanceof SubProcess) {
+                SubProcess subProcess = (SubProcess) flowElement;
+                for (FlowElement fe : subProcess.getFlowElements()) {
+                    if (fe instanceof UserTask) {
+                        TargetModel targetModel = new TargetModel();
+                        targetModel.setTaskDefKey(fe.getId());
+                        targetModel.setTaskDefName(fe.getName());
+                        targetNodeList.add(targetModel);
+                    }
+                }
+            }
+        }
+        return Y9Result.success(targetNodeList);
+    }
+
+    @Override
     public Y9Result<List<TargetModel>> listContainEndEvent4UserTask(String processDefinitionId) {
         List<TargetModel> userTaskList = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);

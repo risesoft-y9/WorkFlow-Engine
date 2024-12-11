@@ -3,6 +3,7 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.util.StringUtils;
 
@@ -71,6 +72,11 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
 
     /** 上一步操作 */
     private String actionName;
+
+    /** 序号 */
+    private int tabIndex;
+
+    private List<HistoryProcessModel> children;
 
     @Override
     public int compareTo(HistoryProcessModel o) {

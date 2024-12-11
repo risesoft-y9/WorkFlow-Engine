@@ -12,12 +12,21 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 public interface CustomHistoricTaskService {
 
     /**
-     * 根据任务Id获取任务实例
+     * 根据任务Id获取任务实例（在办）
      *
      * @param taskId
      * @return
      */
     HistoricTaskInstance getById(String taskId);
+
+    /**
+     * 根据任务Id获取任务实例
+     *
+     * @param taskId
+     * @param year
+     * @return
+     */
+    HistoricTaskInstance getByIdAndYear(String taskId,String year);
 
     /**
      * 根据执行实例获取已经办理完成的任务数量

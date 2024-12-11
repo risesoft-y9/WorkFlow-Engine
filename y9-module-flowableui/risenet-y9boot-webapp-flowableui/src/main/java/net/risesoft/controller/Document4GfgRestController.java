@@ -298,9 +298,6 @@ public class Document4GfgRestController {
      * @param userChoice          收件人
      * @param sponsorGuid         主办人id
      * @param routeToTaskId       发送路由，任务key
-     * @param isSendSms           是否短信提醒
-     * @param isShuMing           是否署名
-     * @param smsContent          短信内容
      * @return Y9Result<Map < String, Object>>
      */
     @PostMapping(value = "/forwarding")
@@ -311,7 +308,6 @@ public class Document4GfgRestController {
                                                     @RequestParam(required = false) String sponsorGuid, @RequestParam @NotBlank String routeToTaskId,
                                                     @RequestParam(required = false) String dueDate, @RequestParam(required = false) String description) {
         Map<String, Object> map = new HashMap<>();
-        Map<String, Object> variables = new HashMap<>(16);
         try {
             TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
             ProcessParamModel processParamModel = processParamApi
@@ -328,7 +324,7 @@ public class Document4GfgRestController {
             processParamModel.setDescription(description);
             processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
             Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
-                    Y9LoginUserHolder.getPositionId(), taskId, userChoice, routeToTaskId, sponsorHandle, sponsorGuid, variables);
+                    Y9LoginUserHolder.getPositionId(), taskId, userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
             if (y9Result.isSuccess()) {
                 map.put("processInstanceId", y9Result.getData());
                 // 生成流水号

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import org.apache.commons.lang3.StringUtils;
@@ -108,7 +109,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 if (StringUtils.isNotBlank(processParamModel.getDescription())) {
                     TaskRelatedApi taskRelatedApi = Y9Context.getBean(TaskRelatedApi.class);
                     TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
-                    taskRelatedModel.setInfoType("1");
+                    taskRelatedModel.setInfoType(TaskRelatedEnum.BANWENSHUOMING.getValue());
                     taskRelatedModel.setTaskId(taskEntity.getId());
                     taskRelatedModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
                     taskRelatedModel.setProcessSerialNumber(processParamModel.getProcessSerialNumber());
@@ -123,7 +124,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 if (null != actionName) {
                     TaskRelatedApi taskRelatedApi = Y9Context.getBean(TaskRelatedApi.class);
                     TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
-                    taskRelatedModel.setInfoType("2");
+                    taskRelatedModel.setInfoType(TaskRelatedEnum.ACTIONNAME.getValue());
                     taskRelatedModel.setTaskId(taskEntity.getId());
                     taskRelatedModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
                     taskRelatedModel.setProcessSerialNumber(processParamModel.getProcessSerialNumber());

@@ -70,4 +70,18 @@ public interface SignDeptInfoApi {
     @PostMapping(value = "/saveSignDeptInfo")
     Y9Result<Object> saveSignDeptInfo(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
         @RequestParam(value = "userName", required = false) String userName);
+
+    /**
+     * 根据流程实例id和部门ID判断是否是会签部门
+     *
+     * @param tenantId 租户ID
+     * @param deptId 部门ID
+     * @param deptType 单位类型（0：委内，1：委外）
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<List<SignDeptModel>
+     * @since 9.6.0
+     */
+    @GetMapping(value = "/isSignDept")
+    Y9Result<Boolean> isSignDept(@RequestParam("tenantId") String tenantId,@RequestParam("deptId") String deptId,
+                                                  @RequestParam("deptType") String deptType, @RequestParam("processInstanceId") String processInstanceId);
 }
