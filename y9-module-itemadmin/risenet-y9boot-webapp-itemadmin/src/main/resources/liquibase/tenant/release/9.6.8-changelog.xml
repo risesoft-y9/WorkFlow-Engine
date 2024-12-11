@@ -92,7 +92,7 @@
             <column name="INFOTYPE" remarks="信息类型" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="MSGCONTENT" remarks="消息内容" type="VARCHAR(500)"/>
+            <column name="MSGCONTENT" remarks="消息内容" type="VARCHAR(1000)"/>
             <column name="SENDERID" remarks="发送人id" type="VARCHAR(50)"/>
             <column name="SENDERNAME" remarks="单位类型" type="VARCHAR(20)"/>
             <column name="CREATETIME" remarks="创建时间" type="datetime"/>
