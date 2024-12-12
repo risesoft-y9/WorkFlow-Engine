@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -41,13 +42,13 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ItemButtonBind;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.ItemPrintTemplateBind;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
+import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.Y9FormItemBind;
@@ -56,6 +57,8 @@ import net.risesoft.entity.form.Y9Form;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
+import net.risesoft.enums.SignStatusEnum;
 import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
@@ -67,6 +70,7 @@ import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.itemadmin.ItemFormModel;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.platform.CustomGroup;
@@ -79,7 +83,6 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
-import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
@@ -102,6 +105,7 @@ import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.RoleService;
+import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.TaskRelatedService;
 import net.risesoft.service.config.ItemButtonBindService;
@@ -116,6 +120,7 @@ import net.risesoft.util.ListUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /*
@@ -211,6 +216,8 @@ public class DocumentServiceImpl implements DocumentService {
     private final TaskRelatedService taskRelatedService;
 
     private final ActRuDetailService actRuDetailService;
+
+    private final SignDeptDetailService signDeptDetailService;
 
     @Override
     public OpenDataModel add(String itemId, boolean mobile) {
@@ -794,7 +801,6 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
         String taskDefinitionKey, boolean mobile, DocumentDetailModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // Y9表单
         String showOtherFlag = "";
         if (mobile) {
@@ -836,34 +842,31 @@ public class DocumentServiceImpl implements DocumentService {
         }
         model.setFormList(list);
         model.setShowOtherFlag(showOtherFlag);
-        model.setShowOpinionTab(false);
+        model.setSignStatus(SignStatusEnum.NOTSTART.getValue());
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())
             || model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())
             || model.getItembox().equals(ItemBoxTypeEnum.DONE.getValue())) {
-            HistoricVariableInstanceModel mainSenderId = null;
-            ProcessParam processParam = processParamService.findByProcessSerialNumber(model.getProcessSerialNumber());
-            if (StringUtils.isNotBlank(processParam.getCompleter())) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-                mainSenderId =
-                    historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, model.getProcessInstanceId(),
-                        SysVariables.MAINSENDERID, sdf.format(processParam.getCreateTime())).getData();
-            } else {
-                mainSenderId = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId,
-                    model.getProcessInstanceId(), SysVariables.MAINSENDERID, "").getData();
-            }
-            if (null != mainSenderId) {
-                ActRuDetail actRuDetail = actRuDetailService
-                    .findByProcessInstanceIdAndAssignee(model.getProcessInstanceId(), Y9LoginUserHolder.getOrgUnitId());
-                HistoricTaskInstanceModel hisTask =
-                    historictaskApi.getById(tenantId, actRuDetail.getTaskId()).getData();
-                boolean isSubProcessChildNode = processDefinitionApi
-                    .isSubProcessChildNode(tenantId, hisTask.getProcessDefinitionId(), hisTask.getTaskDefinitionKey())
-                    .getData();
-                if (!isSubProcessChildNode) {
-                    model.setShowOpinionTab(true);
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+            List<SignDeptDetail> signList =
+                signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
+            if (!signList.isEmpty()) {
+                boolean isSignDept = signDeptDetailService.isSignDept(model.getProcessSerialNumber(), bureau.getId());
+                if (isSignDept) {
+                    model.setSignStatus(SignStatusEnum.SUB.getValue());
+                } else {
+                    model.setSignStatus(SignStatusEnum.MAIN.getValue());
+                    List<SignDeptDetail> sddList =
+                        signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue()))
+                            .collect(Collectors.toList());
+                    List<SignDeptDetailModel> modelList = new ArrayList<>();
+                    sddList.forEach(sdd -> {
+                        SignDeptDetailModel ssdModel = new SignDeptDetailModel();
+                        Y9BeanUtil.copyProperties(sdd, ssdModel);
+                        modelList.add(ssdModel);
+                    });
+                    model.setSignDeptDetailList(modelList);
                 }
-            } else {
-                model.setShowOpinionTab(true);
             }
         }
         return model;

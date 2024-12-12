@@ -12,7 +12,11 @@ public interface SignDeptDetailService {
 
     List<SignDeptDetail> findByProcessSerialNumberAndDeptId(String processSerialNumber, String deptId);
 
+    List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber);
+
     List<SignDeptDetail> findByTaskId(String processInstanceId, String taskId);
 
     List<SignDeptDetail> findByProcessInstanceIdAndStatus(String processInstanceId, int status);
+
+    boolean isSignDept(String processSerialNumber, String deptId);
 }

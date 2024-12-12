@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.SignDeptInfo;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.SignDeptDetailRepository;
 import net.risesoft.service.SignDeptDetailService;
@@ -60,6 +61,8 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
         newDetail.setStatus(signDeptDetail.getStatus());
         newDetail.setCreateTime(new Date());
         newDetail.setNewed(false);
+        newDetail.setStatus(null == signDeptDetail.getStatus() ? SignDeptDetailStatusEnum.DOING.getValue()
+            : signDeptDetail.getStatus());
         List<SignDeptDetail> list =
             signDeptDetailRepository.findByProcessSerialNumberAndDeptIdAndStatusOrderByCreateTimeDesc(
                 signDeptDetail.getProcessSerialNumber(), deptId, 2);
@@ -87,6 +90,11 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     public List<SignDeptDetail> findByProcessSerialNumberAndDeptId(String processSerialNumber, String deptId) {
         return signDeptDetailRepository.findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber,
             deptId);
+    }
+
+    @Override
+    public List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber) {
+        return signDeptDetailRepository.findByProcessSerialNumberOrderByCreateTimeDesc(processSerialNumber);
     }
 
     @Override
@@ -121,5 +129,12 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
             });
         }
         return detailListTemp;
+    }
+
+    @Override
+    public boolean isSignDept(String processSerialNumber, String deptId) {
+        List<SignDeptDetail> list = signDeptDetailRepository
+            .findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber, deptId);
+        return !list.isEmpty();
     }
 }
