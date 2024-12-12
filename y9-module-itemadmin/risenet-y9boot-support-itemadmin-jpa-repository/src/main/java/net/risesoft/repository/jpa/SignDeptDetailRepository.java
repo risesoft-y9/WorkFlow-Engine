@@ -15,6 +15,8 @@ public interface SignDeptDetailRepository
     List<SignDeptDetail> findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(String processSerialNumber,
         String deptId);
 
+    List<SignDeptDetail> findByProcessSerialNumberOrderByCreateTimeDesc(String processSerialNumber);
+
     List<SignDeptDetail> findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(String processSerialNumber,
         int status);
 

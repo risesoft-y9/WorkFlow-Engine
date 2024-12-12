@@ -1,11 +1,10 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-import net.risesoft.model.platform.Department;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
 
 /**
  * 流程详情数据
@@ -78,14 +77,14 @@ public class DocumentDetailModel implements Serializable {
     private String showOtherFlag;
 
     /**
-     * 是否显示会签意见汇总
+     * 会签状态
      */
-    private boolean showOpinionTab;
+    private int signStatus;
 
     /**
      * 会签部门
      */
-    private List<Department> opinionDeptList;
+    private List<SignDeptDetailModel> signDeptDetailList;
 
     /**
      * 重定位选项
