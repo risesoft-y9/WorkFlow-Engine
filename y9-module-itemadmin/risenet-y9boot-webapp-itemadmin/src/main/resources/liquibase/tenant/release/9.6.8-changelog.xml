@@ -133,4 +133,30 @@
             <column name="DUEDATE" type="date" remarks="到期时间"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-8" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_SIGN_DEPT_DETAIL"/>
+            </not>
+        </preConditions>
+        <createTable remarks="会签详情表" tableName="FF_SIGN_DEPT_DETAIL">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程序列号" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)"/>
+            <column name="EXECUTIONID" remarks="流程执行实例Id" type="VARCHAR(50)"/>
+            <column name="TASKID" remarks="任务Id" type="VARCHAR(50)"/>
+            <column name="DEPTID" remarks="会签单位唯一标示" type="VARCHAR(50)"/>
+            <column name="DEPTNAME" remarks="会签单位名称" type="VARCHAR(100)"/>
+            <column name="USERNAME" remarks="签注人" type="VARCHAR(20)"/>
+            <column name="MOBILE" remarks="签注人电话" type="VARCHAR(20)"/>
+            <column name="FILESTOREID" remarks="正文文件id" type="VARCHAR(50)"/>
+            <column name="DEPTMANAGER" remarks="单位负责人" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="0" name="NEWED" remarks="是否是新的" type="INT"/>
+            <column name="STATUS" remarks="状态" type="INT"/>
+            <column name="CREATETIME" remarks="生成时间" type="datetime"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
