@@ -9,6 +9,8 @@ import org.springframework.util.StringUtils;
 
 import lombok.Data;
 
+import net.risesoft.model.platform.Person;
+
 /**
  * 历程信息
  *
@@ -77,6 +79,8 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
     private int tabIndex;
 
     private List<HistoryProcessModel> children;
+
+    private List<Person> personList;
 
     @Override
     public int compareTo(HistoryProcessModel o) {
