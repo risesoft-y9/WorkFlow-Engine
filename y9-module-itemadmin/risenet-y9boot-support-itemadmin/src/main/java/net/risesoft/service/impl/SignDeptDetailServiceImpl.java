@@ -82,6 +82,11 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     }
 
     @Override
+    public SignDeptDetail findById(String id) {
+        return signDeptDetailRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public List<SignDeptDetail> findByProcessSerialNumberAndDeptId(String processSerialNumber, String deptId) {
         return signDeptDetailRepository.findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber,
             deptId);
@@ -98,8 +103,8 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     }
 
     @Override
-    public List<SignDeptDetail> findByProcessInstanceIdAndStatus(String processInstanceId, int status) {
-        return signDeptDetailRepository.findByProcessInstanceIdAndStatusOrderByCreateTimeDesc(processInstanceId,
+    public List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processInstanceId, int status) {
+        return signDeptDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(processInstanceId,
             status);
     }
 
@@ -108,5 +113,14 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
         List<SignDeptDetail> list = signDeptDetailRepository
             .findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber, deptId);
         return !list.isEmpty();
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(String id) {
+        SignDeptDetail signDeptDetail = signDeptDetailRepository.findById(id).orElse(null);
+        assert signDeptDetail != null;
+        signDeptDetail.setStatus(SignDeptDetailStatusEnum.DELETED.getValue());
+        signDeptDetailRepository.save(signDeptDetail);
     }
 }
