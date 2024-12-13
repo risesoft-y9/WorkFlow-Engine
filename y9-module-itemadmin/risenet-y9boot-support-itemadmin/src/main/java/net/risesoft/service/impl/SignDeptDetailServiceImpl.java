@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,12 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.SignDeptDetail;
-import net.risesoft.entity.SignDeptInfo;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.SignDeptDetailRepository;
 import net.risesoft.service.SignDeptDetailService;
-import net.risesoft.service.SignDeptInfoService;
 
 /**
  * @author : qinman
@@ -27,8 +24,6 @@ import net.risesoft.service.SignDeptInfoService;
 public class SignDeptDetailServiceImpl implements SignDeptDetailService {
 
     private final SignDeptDetailRepository signDeptDetailRepository;
-
-    private final SignDeptInfoService signDeptInfoService;
 
     @Override
     @Transactional
@@ -99,36 +94,13 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
 
     @Override
     public List<SignDeptDetail> findByTaskId(String processInstanceId, String taskId) {
-        List<SignDeptInfo> infoList = signDeptInfoService.getSignDeptList(processInstanceId, "0");
-        List<SignDeptDetail> detailList = signDeptDetailRepository.findByTaskIdOrderByCreateTimeDesc(taskId);
-        List<SignDeptDetail> detailListTemp = new ArrayList<>();
-        for (SignDeptInfo signDeptInfo : infoList) {
-            detailList.forEach(detail -> {
-                if (detail.getDeptId().equals(signDeptInfo.getDeptId()) && taskId.equals(detail.getTaskId())) {
-                    detailListTemp.add(detail);
-                }
-            });
-        }
-        if (detailListTemp.isEmpty()) {
-            return detailList;
-        }
-        return detailListTemp;
+        return signDeptDetailRepository.findByTaskIdOrderByCreateTimeAsc(taskId);
     }
 
     @Override
     public List<SignDeptDetail> findByProcessInstanceIdAndStatus(String processInstanceId, int status) {
-        List<SignDeptInfo> infoList = signDeptInfoService.getSignDeptList(processInstanceId, "0");
-        List<SignDeptDetail> detailList =
-            signDeptDetailRepository.findByProcessInstanceIdAndStatusOrderByCreateTimeDesc(processInstanceId, status);
-        List<SignDeptDetail> detailListTemp = new ArrayList<>();
-        for (SignDeptInfo signDeptInfo : infoList) {
-            detailList.forEach(detail -> {
-                if (detail.getDeptId().equals(signDeptInfo.getDeptId())) {
-                    detailListTemp.add(detail);
-                }
-            });
-        }
-        return detailListTemp;
+        return signDeptDetailRepository.findByProcessInstanceIdAndStatusOrderByCreateTimeDesc(processInstanceId,
+            status);
     }
 
     @Override

@@ -156,7 +156,7 @@
             <column name="DEPTMANAGER" remarks="单位负责人" type="VARCHAR(50)"/>
             <column defaultValueNumeric="0" name="NEWED" remarks="是否是新的" type="INT"/>
             <column name="STATUS" remarks="状态" type="INT"/>
-            <column name="CREATETIME" remarks="生成时间" type="datetime"/>
+            <column name="CREATETIME" remarks="生成时间" type="timestamp(3)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

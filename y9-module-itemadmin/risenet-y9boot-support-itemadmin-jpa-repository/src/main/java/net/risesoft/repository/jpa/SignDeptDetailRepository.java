@@ -22,7 +22,7 @@ public interface SignDeptDetailRepository
 
     List<SignDeptDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeDesc(String processInstanceId, int status);
 
-    List<SignDeptDetail> findByTaskIdOrderByCreateTimeDesc(String taskId);
+    List<SignDeptDetail> findByTaskIdOrderByCreateTimeAsc(String taskId);
 
     SignDeptDetail findByExecutionIdAndDeptId(String executionId, String deptId);
 
