@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * 会签部门详情
+ * 
  * @author qinman
  * @date 2024/12/12
  */
