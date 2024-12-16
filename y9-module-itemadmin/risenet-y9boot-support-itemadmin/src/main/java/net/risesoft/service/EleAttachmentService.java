@@ -1,13 +1,9 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.EleAttachment;
-import net.risesoft.entity.TransactionFile;
-import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
+
+
+import net.risesoft.entity.EleAttachment;
 
 /**
  * @author qinman
@@ -40,6 +36,7 @@ public interface EleAttachmentService {
 
     /**
      * 根据流程编号和附件类型获取附件
+     * 
      * @param processSerialNumber
      * @param attachmentType
      * @return
@@ -52,4 +49,12 @@ public interface EleAttachmentService {
      * @param eleAttachment
      */
     void saveOrUpdate(EleAttachment eleAttachment);
+
+    /**
+     * 附件排序
+     * 
+     * @param id1
+     * @param id2
+     */
+    void saveOrder(String id1, String id2);
 }

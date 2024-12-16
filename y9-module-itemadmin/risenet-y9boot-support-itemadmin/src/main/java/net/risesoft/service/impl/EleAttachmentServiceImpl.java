@@ -1,43 +1,19 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.entity.EleAttachment;
-import net.risesoft.entity.TransactionFile;
-import net.risesoft.exception.GlobalErrorCodeEnum;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.EleAttachmentRepository;
-import net.risesoft.repository.jpa.TransactionFileRepository;
-import net.risesoft.service.EleAttachmentService;
-import net.risesoft.service.TransactionFileService;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9public.entity.Y9FileStore;
-import net.risesoft.y9public.service.Y9FileStoreService;
-import org.apache.commons.io.FilenameUtils;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.entity.EleAttachment;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.jpa.EleAttachmentRepository;
+import net.risesoft.service.EleAttachmentService;
+import net.risesoft.y9public.service.Y9FileStoreService;
 
 /**
  * @author qinman
@@ -52,10 +28,6 @@ public class EleAttachmentServiceImpl implements EleAttachmentService {
     private final EleAttachmentRepository eleAttachmentRepository;
 
     private final Y9FileStoreService y9FileStoreService;
-
-    private final OrgUnitApi orgUnitApi;
-
-    private final Y9Properties y9Config;
 
     @Override
     @Transactional
@@ -90,8 +62,10 @@ public class EleAttachmentServiceImpl implements EleAttachmentService {
     }
 
     @Override
-    public List<EleAttachment> findByProcessSerialNumberAndAttachmentType(String processSerialNumber, String attachmentType) {
-        return eleAttachmentRepository.findByProcessSerialNumberAndAttachmentTypeOrderByTabIndexAsc(processSerialNumber, attachmentType);
+    public List<EleAttachment> findByProcessSerialNumberAndAttachmentType(String processSerialNumber,
+        String attachmentType) {
+        return eleAttachmentRepository.findByProcessSerialNumberAndAttachmentTypeOrderByTabIndexAsc(processSerialNumber,
+            attachmentType);
     }
 
     @Override
@@ -107,8 +81,24 @@ public class EleAttachmentServiceImpl implements EleAttachmentService {
             return;
         }
         eleAttachment.setId(Y9IdGenerator.genId());
-        Integer tabIndex = eleAttachmentRepository.getMaxTabIndex(eleAttachment.getProcessSerialNumber(), eleAttachment.getAttachmentType());
+        Integer tabIndex = eleAttachmentRepository.getMaxTabIndex(eleAttachment.getProcessSerialNumber(),
+            eleAttachment.getAttachmentType());
         eleAttachment.setTabIndex(null == tabIndex ? 1 : tabIndex + 1);
         eleAttachmentRepository.save(eleAttachment);
+    }
+
+    @Override
+    @Transactional
+    public void saveOrder(String id1, String id2) {
+        EleAttachment eleAttachment1 = eleAttachmentRepository.findById(id1).orElse(null);
+        EleAttachment eleAttachment2 = eleAttachmentRepository.findById(id2).orElse(null);
+        if (eleAttachment1 != null && eleAttachment2 != null) {
+            Integer tabIndex1 = eleAttachment1.getTabIndex();
+            Integer tabIndex2 = eleAttachment2.getTabIndex();
+            eleAttachment1.setTabIndex(tabIndex2);
+            eleAttachment2.setTabIndex(tabIndex1);
+            eleAttachmentRepository.save(eleAttachment1);
+            eleAttachmentRepository.save(eleAttachment2);
+        }
     }
 }

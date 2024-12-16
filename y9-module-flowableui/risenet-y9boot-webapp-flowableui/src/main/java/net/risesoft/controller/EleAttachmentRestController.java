@@ -1,22 +1,25 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.EleAttachmentApi;
-import net.risesoft.enums.BrowserTypeEnum;
-import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.itemadmin.EleAttachmentModel;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9FileUtil;
-import net.risesoft.y9public.entity.Y9FileStore;
-import net.risesoft.y9public.service.Y9FileStoreService;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -27,24 +30,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.EleAttachmentApi;
+import net.risesoft.enums.BrowserTypeEnum;
+import net.risesoft.model.itemadmin.EleAttachmentModel;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9public.entity.Y9FileStore;
+import net.risesoft.y9public.service.Y9FileStoreService;
 
 /**
  * 附件
@@ -62,6 +59,19 @@ public class EleAttachmentRestController {
     private final Y9FileStoreService y9FileStoreService;
 
     private final EleAttachmentApi eleAttachmentApi;
+
+    /**
+     * 删除附件
+     *
+     * @param ids 附件ids，逗号隔开
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/delFile")
+    public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        eleAttachmentApi.delFile(tenantId, ids);
+        return Y9Result.successMsg("删除成功");
+    }
 
     /**
      * 附件下载
@@ -94,41 +104,32 @@ public class EleAttachmentRestController {
     }
 
     /**
-     * 删除附件
-     *
-     * @param ids 附件ids，逗号隔开
-     * @return Y9Result<String>
-     */
-    @PostMapping(value = "/delFile")
-    public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        eleAttachmentApi.delFile(tenantId, ids);
-        return Y9Result.successMsg("删除成功");
-    }
-
-    /**
      * 获取附件列表
      *
      * @param processSerialNumber 流程编号
-     * @param attachmentType      附件类型
+     * @param attachmentType 附件类型
      * @return Y9Result<List < EleAttachmentModel>>
      */
     @GetMapping(value = "/list")
-    public Y9Result<List<EleAttachmentModel>> list(@RequestParam @NotBlank String processSerialNumber, @RequestParam String attachmentType) {
-        return eleAttachmentApi.findByProcessSerialNumberAndAttachmentType(Y9LoginUserHolder.getTenantId(), processSerialNumber, attachmentType);
+    public Y9Result<List<EleAttachmentModel>> list(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam String attachmentType) {
+        return eleAttachmentApi.findByProcessSerialNumberAndAttachmentType(Y9LoginUserHolder.getTenantId(),
+            processSerialNumber, attachmentType);
     }
 
     /**
      * 附加打包zip下载
      *
      * @param processSerialNumber 流程编号
-     * @param attachmentType      附件类型
+     * @param attachmentType 附件类型
      */
     @GetMapping(value = "/packDownload")
-    public void packDownload(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String attachmentType, HttpServletResponse response, HttpServletRequest request) {
+    public void packDownload(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String attachmentType, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<EleAttachmentModel> list = eleAttachmentApi.findByProcessSerialNumberAndAttachmentType(tenantId, processSerialNumber, attachmentType).getData();
+            List<EleAttachmentModel> list = eleAttachmentApi
+                .findByProcessSerialNumberAndAttachmentType(tenantId, processSerialNumber, attachmentType).getData();
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
             String fileZip = base_name + ".zip";
@@ -193,21 +194,35 @@ public class EleAttachmentRestController {
     }
 
     /**
+     * 保存排序
+     *
+     * @param id1 主键id1
+     * @param id2 主键id2
+     * @return
+     */
+    @PostMapping(value = "/saveOrder")
+    public Y9Result<Object> saveOrder(String id1, String id2) {
+        return eleAttachmentApi.saveOrder(Y9LoginUserHolder.getTenantId(), id1, id2);
+    }
+
+    /**
      * 上传附件
      *
-     * @param file                文件
+     * @param file 文件
      * @param processSerialNumber 流程编号
-     * @param attachmentType      文件来源
+     * @param attachmentType 文件来源
      * @return Y9Result<String>
      */
     @PostMapping(value = "/upload")
-    public Y9Result<Object> upload(MultipartFile file, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String miJi, @RequestParam @NotBlank String attachmentType) {
+    public Y9Result<Object> upload(MultipartFile file, @RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String miJi, @RequestParam @NotBlank String attachmentType) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
-            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            String fullPath =
+                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             String storeId = y9FileStore.getId();
             EleAttachmentModel eleAttachmentModel = new EleAttachmentModel();
