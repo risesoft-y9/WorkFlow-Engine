@@ -159,4 +159,37 @@
             <column name="CREATETIME" remarks="生成时间" type="timestamp(3)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-9" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_opinion_sign"/>
+            </not>
+        </preConditions>
+        <createTable remarks="会签意见信息表" tableName="ff_opinion_sign">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="SIGNDEPTDETAILID" remarks="会签部门信息id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPINIONFRAMEMARK" remarks="意见框标识" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
+            <column name="CONTENT" remarks="意见内容" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEPTID" remarks="部门id" type="VARCHAR(50)"/>
+            <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
