@@ -3,6 +3,7 @@ package net.risesoft.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +29,10 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     @Override
     @Transactional
     public void saveOrUpdate(SignDeptDetail signDeptDetail) {
-        String executionId = signDeptDetail.getExecutionId();
-        String deptId = signDeptDetail.getDeptId();
-        SignDeptDetail oldDetail = signDeptDetailRepository.findByExecutionIdAndDeptId(executionId, deptId);
-        if (null != oldDetail) {
+        String id = signDeptDetail.getId();
+        if (StringUtils.isNotBlank(id)) {
+            SignDeptDetail oldDetail = signDeptDetailRepository.findById(id).orElse(null);
+            assert oldDetail != null;
             oldDetail.setUserName(signDeptDetail.getUserName());
             oldDetail.setMobile(signDeptDetail.getMobile());
             oldDetail.setFileStoreId(signDeptDetail.getFileStoreId());
@@ -40,14 +41,13 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
             signDeptDetailRepository.save(oldDetail);
             return;
         }
-
         SignDeptDetail newDetail = new SignDeptDetail();
         newDetail.setId(Y9IdGenerator.genId());
         newDetail.setProcessSerialNumber(signDeptDetail.getProcessSerialNumber());
         newDetail.setProcessInstanceId(signDeptDetail.getProcessInstanceId());
-        newDetail.setExecutionId(executionId);
+        newDetail.setExecutionId(signDeptDetail.getExecutionId());
         newDetail.setTaskId(signDeptDetail.getTaskId());
-        newDetail.setDeptId(deptId);
+        newDetail.setDeptId(signDeptDetail.getDeptId());
         newDetail.setDeptName(signDeptDetail.getDeptName());
         newDetail.setUserName(signDeptDetail.getUserName());
         newDetail.setMobile(signDeptDetail.getMobile());
@@ -58,9 +58,9 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
         newDetail.setNewed(false);
         newDetail.setStatus(null == signDeptDetail.getStatus() ? SignDeptDetailStatusEnum.DOING.getValue()
             : signDeptDetail.getStatus());
-        List<SignDeptDetail> list =
-            signDeptDetailRepository.findByProcessSerialNumberAndDeptIdAndStatusOrderByCreateTimeDesc(
-                signDeptDetail.getProcessSerialNumber(), deptId, 2);
+        List<SignDeptDetail> list = signDeptDetailRepository
+            .findByProcessSerialNumberAndDeptIdAndStatusOrderByCreateTimeDesc(signDeptDetail.getProcessSerialNumber(),
+                signDeptDetail.getDeptId(), SignDeptDetailStatusEnum.DONE.getValue());
         if (!list.isEmpty()) {
             list.forEach(detail -> {
                 detail.setNewed(false);
