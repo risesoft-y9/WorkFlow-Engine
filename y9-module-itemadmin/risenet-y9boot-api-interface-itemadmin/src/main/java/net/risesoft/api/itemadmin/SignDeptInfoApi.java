@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.SignDeptModel;
+import net.risesoft.model.platform.Department;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -43,6 +44,30 @@ public interface SignDeptInfoApi {
         @RequestParam("deptType") String deptType, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
+     * 获取委外会签部门选择树
+     *
+     * @param tenantId 租户ID
+     * @return Y9Result<List<Department>>
+     * @since 9.6.0
+     */
+    @GetMapping(value = "/getSignOutDeptTree")
+    Y9Result<List<Department>> getSignOutDeptTree(@RequestParam("tenantId") String tenantId);
+
+    /**
+     * 根据流程实例id和部门ID判断是否是会签部门
+     *
+     * @param tenantId 租户ID
+     * @param deptId 部门ID
+     * @param deptType 单位类型（0：委内，1：委外）
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<List<SignDeptModel>
+     * @since 9.6.0
+     */
+    @GetMapping(value = "/isSignDept")
+    Y9Result<Boolean> isSignDept(@RequestParam("tenantId") String tenantId, @RequestParam("deptId") String deptId,
+        @RequestParam("deptType") String deptType, @RequestParam("processInstanceId") String processInstanceId);
+
+    /**
      * 保存会签信息
      *
      * @param tenantId 租户ID
@@ -70,18 +95,4 @@ public interface SignDeptInfoApi {
     @PostMapping(value = "/saveSignDeptInfo")
     Y9Result<Object> saveSignDeptInfo(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
         @RequestParam(value = "userName", required = false) String userName);
-
-    /**
-     * 根据流程实例id和部门ID判断是否是会签部门
-     *
-     * @param tenantId 租户ID
-     * @param deptId 部门ID
-     * @param deptType 单位类型（0：委内，1：委外）
-     * @param processInstanceId 流程实例id
-     * @return Y9Result<List<SignDeptModel>
-     * @since 9.6.0
-     */
-    @GetMapping(value = "/isSignDept")
-    Y9Result<Boolean> isSignDept(@RequestParam("tenantId") String tenantId,@RequestParam("deptId") String deptId,
-                                                  @RequestParam("deptType") String deptType, @RequestParam("processInstanceId") String processInstanceId);
 }

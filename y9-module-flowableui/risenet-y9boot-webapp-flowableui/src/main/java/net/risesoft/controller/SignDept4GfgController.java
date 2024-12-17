@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.model.itemadmin.SignDeptModel;
+import net.risesoft.model.platform.Department;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -55,6 +56,16 @@ public class SignDept4GfgController {
     public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String processInstanceId,
         @RequestParam String deptType) {
         return signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), deptType, processInstanceId);
+    }
+
+    /**
+     * 获取委外会签部门树
+     *
+     * @return Y9Result<List<Department>>
+     */
+    @GetMapping(value = "/getSignOutDeptTree")
+    public Y9Result<List<Department>> getSignOutDeptTree() {
+        return signDeptInfoApi.getSignOutDeptTree(Y9LoginUserHolder.getTenantId());
     }
 
     /**

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.entity.SignDeptInfo;
+import net.risesoft.entity.SignOutDept;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.repository.jpa.SignDeptInfoRepository;
+import net.risesoft.repository.jpa.SignOutDeptRepository;
 import net.risesoft.service.SignDeptInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -33,6 +34,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     private final SignDeptInfoRepository signDeptInfoRepository;
+
+    private final SignOutDeptRepository signOutDeptRepository;
 
     private final DepartmentApi departmentApi;
 
@@ -68,8 +71,13 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 signDeptInfo.setOrderIndex(i + 1);
                 signDeptInfo.setDeptId(deptId);
                 signDeptInfo.setRecordTime(new Date());
-                Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
-                signDeptInfo.setDeptName(department != null ? department.getName() : "部门不存在");
+                if (deptType.equals("0")) {
+                    Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
+                    signDeptInfo.setDeptName(department != null ? department.getName() : "部门不存在");
+                } else {
+                    SignOutDept signOutDept = signOutDeptRepository.findById(Integer.valueOf(deptId)).orElse(null);
+                    signDeptInfo.setDeptName(signOutDept != null ? signOutDept.getDeptName() : "单位不存在");
+                }
                 signDeptInfo.setProcessInstanceId(processInstanceId);
                 signDeptInfo.setDeptType(deptType);
             }

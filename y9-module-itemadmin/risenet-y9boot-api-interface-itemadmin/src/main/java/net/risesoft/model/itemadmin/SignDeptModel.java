@@ -32,7 +32,7 @@ public class SignDeptModel implements Serializable {
     // 签字日期
     private String signDate;
 
-    // 单位类型（0：委内，1：委外）
+    // 单位类型（0：委内，1：委外，2：联合发文）
     private String deptType;
 
     // 录入时间
