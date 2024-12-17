@@ -17,4 +17,6 @@ public interface OpinionSignRepository
 
     List<OpinionSign> findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateDateAsc(String signDeptDetailId,
         String opinionFrameMark);
+
+    List<OpinionSign> findBySignDeptDetailIdOrderByCreateDateAsc(String signDeptDetailId);
 }

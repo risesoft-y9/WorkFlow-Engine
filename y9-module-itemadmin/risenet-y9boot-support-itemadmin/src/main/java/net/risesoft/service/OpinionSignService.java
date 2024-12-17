@@ -17,6 +17,8 @@ public interface OpinionSignService {
 
     List<OpinionSign> findBySignDeptDetailIdAndOpinionFrameMark(String signDeptDetailId, String opinionFrameMark);
 
+    List<OpinionSign> findBySignDeptDetailId(String signDeptDetailId);
+
     OpinionSign findById(String id);
 
     void deleteById(String id);
