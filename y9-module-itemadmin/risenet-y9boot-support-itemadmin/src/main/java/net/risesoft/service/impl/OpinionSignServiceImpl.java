@@ -295,6 +295,11 @@ public class OpinionSignServiceImpl implements OpinionSignService {
     }
 
     @Override
+    public List<OpinionSign> findBySignDeptDetailId(String signDeptDetailId) {
+        return opinionSignRepository.findBySignDeptDetailIdOrderByCreateDateAsc(signDeptDetailId);
+    }
+
+    @Override
     public OpinionSign findById(String id) {
         return opinionSignRepository.findById(id).orElse(null);
     }

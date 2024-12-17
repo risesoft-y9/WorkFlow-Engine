@@ -2,6 +2,7 @@ package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -89,4 +90,6 @@ public class SignDeptDetailModel implements Serializable {
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    private List<OpinionSignModel> opinionList;
 }

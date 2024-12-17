@@ -13,10 +13,13 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.entity.OpinionSign;
 import net.risesoft.entity.SignDeptDetail;
+import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.OpinionSignService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -35,6 +38,8 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     private final SignDeptDetailService signDeptDetailService;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final OpinionSignService opinionSignService;
 
     /**
      * 根据主键删除会签信息
@@ -72,6 +77,15 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
         if (null != signDeptDetail) {
             SignDeptDetailModel model = new SignDeptDetailModel();
             Y9BeanUtil.copyProperties(signDeptDetail, model);
+            List<OpinionSign> opinionList = opinionSignService.findBySignDeptDetailId(model.getId());
+            List<OpinionSignModel> osModelList = new ArrayList<>();
+            opinionList.forEach(os -> {
+                OpinionSignModel osModel = new OpinionSignModel();
+                Y9BeanUtil.copyProperties(os, osModel);
+                osModelList.add(osModel);
+            });
+            model.setOpinionList(osModelList);
+
             return Y9Result.success(model);
         }
         return Y9Result.failure("未找到会签部门详情");
@@ -96,6 +110,14 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
         for (SignDeptDetail signDeptDetail : list) {
             SignDeptDetailModel model = new SignDeptDetailModel();
             Y9BeanUtil.copyProperties(signDeptDetail, model);
+            List<OpinionSign> opinionList = opinionSignService.findBySignDeptDetailId(model.getId());
+            List<OpinionSignModel> osModelList = new ArrayList<>();
+            opinionList.forEach(os -> {
+                OpinionSignModel osModel = new OpinionSignModel();
+                Y9BeanUtil.copyProperties(os, osModel);
+                osModelList.add(osModel);
+            });
+            model.setOpinionList(osModelList);
             modelList.add(model);
         }
         return Y9Result.success(modelList);
