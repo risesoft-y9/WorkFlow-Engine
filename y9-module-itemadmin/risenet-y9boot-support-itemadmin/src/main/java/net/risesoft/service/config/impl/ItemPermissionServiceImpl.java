@@ -175,6 +175,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                         || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
                         map.put("existDepartment", true);
                     }
+                    DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
+                    String classFullPath = dynamicRole.getClassPath();
+                    if (classFullPath.contains("SignDeptSecretary")) {// 会签部门，只展示部门
+                        map.put("existPosition", false);
+                    }
                 }
             }
         }
