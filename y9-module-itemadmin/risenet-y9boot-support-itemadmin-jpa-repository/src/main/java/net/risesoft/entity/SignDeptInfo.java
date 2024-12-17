@@ -57,7 +57,7 @@ public class SignDeptInfo implements Serializable {
     @Column(name = "SIGNDATE", length = 20)
     private String signDate;
 
-    @Comment("单位类型（0：委内，1：委外）")
+    @Comment("单位类型（0：委内，1：委外，2：联合发文）")
     @Column(name = "DEPTTYPE", length = 20)
     private String deptType;
 
