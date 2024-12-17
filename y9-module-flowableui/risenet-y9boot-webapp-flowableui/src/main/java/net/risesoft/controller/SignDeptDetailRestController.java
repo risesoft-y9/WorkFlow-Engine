@@ -24,6 +24,7 @@ import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 常用语
@@ -91,12 +92,13 @@ public class SignDeptDetailRestController {
     /**
      * 保存会签信息
      *
-     * @param signDeptDetailModel 会签部门信息
+     * @param jsonData 会签部门信息
      * @return Y9Result<Object>
      * @since 9.6.8
      */
     @PostMapping(value = "/saveOrUpdate")
-    Y9Result<Object> saveOrUpdate(SignDeptDetailModel signDeptDetailModel) {
+    Y9Result<Object> saveOrUpdate(@RequestParam @NotBlank String jsonData) {
+        SignDeptDetailModel signDeptDetailModel = Y9JsonUtil.readValue(jsonData, SignDeptDetailModel.class);
         return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(),
             Y9LoginUserHolder.getUserInfo().getPositionId(), signDeptDetailModel);
     }
