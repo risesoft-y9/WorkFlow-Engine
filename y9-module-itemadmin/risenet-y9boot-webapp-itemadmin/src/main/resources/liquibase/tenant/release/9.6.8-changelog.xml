@@ -192,4 +192,26 @@
             <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-10" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_SIGN_OUT_DEPT"/>
+            </not>
+        </preConditions>
+        <createTable remarks="发文单位表,委外会签单位表" tableName="FF_SIGN_OUT_DEPT">
+            <column name="DEPTID" remarks="单位Id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DEPTTYPEID" remarks="单位类型Id" type="VARCHAR(50)"/>
+            <column name="DEPTNAME" remarks="单位名称" type="VARCHAR(100)"/>
+            <column name="DEPTORDER" remarks="单位序号" type="INT"/>
+            <column name="DEPTTYPE" remarks="单位类型" type="VARCHAR(50)"/>
+            <column name="SENDTYPE" remarks="发送类型" type="VARCHAR(50)"/>
+            <column name="DEPTCODE" remarks="单位代码" type="VARCHAR(50)"/>
+            <column name="DEPTNAMEMAX" remarks="单位全称" type="VARCHAR(100)"/>
+            <column name="FULLSPELL" remarks="全拼" type="VARCHAR(100)"/>
+            <column name="FIRSTSPELL" remarks="第一字母简拼" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
