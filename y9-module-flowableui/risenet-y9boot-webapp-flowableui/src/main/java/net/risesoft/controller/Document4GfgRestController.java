@@ -3,15 +3,12 @@ package net.risesoft.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
-import net.risesoft.api.processadmin.VariableApi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,18 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemListModel;
@@ -44,6 +44,7 @@ import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
@@ -98,6 +99,10 @@ public class Document4GfgRestController {
 
     private final AsyncUtilService asyncUtilService;
 
+    private final SignDeptDetailApi signDeptDetailApi;
+
+    private final ActRuDetailApi actRuDetailApi;
+
     /**
      * 获取新建办件初始化数据
      *
@@ -133,12 +138,12 @@ public class Document4GfgRestController {
      */
     @GetMapping(value = "/addWithStartTaskDefKey")
     public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,
-                                                                @RequestParam @NotBlank String startTaskDefKey) {
+        @RequestParam @NotBlank String startTaskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             DocumentDetailModel model = documentApi
-                    .addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false)
-                    .getData();
+                .addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取新建办件数据失败", e);
@@ -149,20 +154,20 @@ public class Document4GfgRestController {
     /**
      * 流程办结
      *
-     * @param taskId    任务id
+     * @param taskId 任务id
      * @param infoOvert 办结数据是否在数据中心公开
      * @return Y9Result<String>
      */
     @PostMapping(value = "/complete")
     public Y9Result<String> complete(@RequestParam @NotBlank String taskId,
-                                     @RequestParam(required = false) String infoOvert) {
+        @RequestParam(required = false) String infoOvert) {
         try {
             TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
             if (null == task) {
                 return Y9Result.failure("任务已办结，请刷新待办列表。");
             }
             boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(Y9LoginUserHolder.getTenantId(),
-                    task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+                task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             // 不是子流程，正常办结
             if (!isSubProcessChildNode) {
                 buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
@@ -170,14 +175,28 @@ public class Document4GfgRestController {
             }
             // 是子流程，判断是不是最后一个办结的，是就找办理人，设置发送
             List<TaskModel> taskList =
-                    taskApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId()).getData();
+                taskApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId()).getData();
             if (taskList.size() > 1) {
                 // 不是最后一个办结
                 buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
-                return Y9Result.successMsg("办结成功");
             } else {
-                return buttonOperationService.complete4Sub(taskId, "办结", "已办结");
+                buttonOperationService.complete4Sub(taskId, "办结", "已办结");
             }
+            ProcessParamModel processParamModel = processParamApi
+                .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId()).getData();
+            List<SignDeptDetailModel> sddList =
+                signDeptDetailApi
+                    .findByProcessSerialNumberAndStatus(Y9LoginUserHolder.getTenantId(),
+                        processParamModel.getProcessSerialNumber(), SignDeptDetailStatusEnum.DOING.getValue())
+                    .getData();
+            sddList.forEach(sdd -> {
+                if (sdd.getExecutionId().equals(task.getExecutionId())) {
+                    sdd.setStatus(SignDeptDetailStatusEnum.DONE.getValue());
+                    signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                        sdd);
+                }
+            });
+            return Y9Result.successMsg("办结成功");
         } catch (Exception e) {
             LOGGER.error("流程办结失败", e);
         }
@@ -187,22 +206,22 @@ public class Document4GfgRestController {
     /**
      * 获取编辑办件数据
      *
-     * @param itembox           办件状态
-     * @param taskId            任务id
+     * @param itembox 办件状态
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
-     * @param itemId            事项id
+     * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/edit")
     public Y9Result<OpenDataModel> edit(@RequestParam @NotBlank String itembox,
-                                        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processInstanceId,
-                                        @RequestParam @NotBlank String itemId) {
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String itemId) {
         if (itembox.equals("monitorDone") || itembox.equals("monitorRecycle")) {
             itembox = ItemBoxTypeEnum.DONE.getValue();
         }
         try {
             OpenDataModel model = documentApi.edit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    itembox, taskId, processInstanceId, itemId, false).getData();
+                itembox, taskId, processInstanceId, itemId, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -220,8 +239,8 @@ public class Document4GfgRestController {
     public Y9Result<DocumentDetailModel> editDoing(@RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
-                    .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId, false)
-                    .getData();
+                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId, false)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -239,8 +258,8 @@ public class Document4GfgRestController {
     public Y9Result<DocumentDetailModel> editDone(@RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
-                    .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId, false)
-                    .getData();
+                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId, false)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -258,7 +277,7 @@ public class Document4GfgRestController {
     public Y9Result<DocumentDetailModel> editRecycle(@RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi.editRecycle(Y9LoginUserHolder.getTenantId(),
-                    Y9LoginUserHolder.getPositionId(), processInstanceId, false).getData();
+                Y9LoginUserHolder.getPositionId(), processInstanceId, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -280,7 +299,7 @@ public class Document4GfgRestController {
                 return Y9Result.failure("当前待办已处理！");
             }
             DocumentDetailModel model = documentApi
-                    .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId, false).getData();
+                .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -291,27 +310,26 @@ public class Document4GfgRestController {
     /**
      * 办件发送
      *
-     * @param itemId              事项id
-     * @param sponsorHandle       是否主办办理
-     * @param taskId              任务id
+     * @param itemId 事项id
+     * @param sponsorHandle 是否主办办理
+     * @param taskId 任务id
      * @param processSerialNumber 流程编号
-     * @param userChoice          收件人
-     * @param sponsorGuid         主办人id
-     * @param routeToTaskId       发送路由，任务key
+     * @param userChoice 收件人
+     * @param sponsorGuid 主办人id
+     * @param routeToTaskId 发送路由，任务key
      * @return Y9Result<Map < String, Object>>
      */
     @PostMapping(value = "/forwarding")
     public Y9Result<Map<String, Object>> forwarding(@RequestParam @NotBlank String itemId,
-                                                    @RequestParam(required = false) String sponsorHandle,
-                                                    @RequestParam(required = false) String taskId,
-                                                    @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice,
-                                                    @RequestParam(required = false) String sponsorGuid, @RequestParam @NotBlank String routeToTaskId,
-                                                    @RequestParam(required = false) String dueDate, @RequestParam(required = false) String description) {
+        @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String taskId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice,
+        @RequestParam(required = false) String sponsorGuid, @RequestParam @NotBlank String routeToTaskId,
+        @RequestParam(required = false) String dueDate, @RequestParam(required = false) String description) {
         Map<String, Object> map = new HashMap<>();
         try {
             TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
             ProcessParamModel processParamModel = processParamApi
-                    .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
             processParamModel.setDueDate(null);
             if (StringUtils.isNotBlank(dueDate)) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -324,12 +342,12 @@ public class Document4GfgRestController {
             processParamModel.setDescription(description);
             processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
             Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
-                    Y9LoginUserHolder.getPositionId(), taskId, userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
+                Y9LoginUserHolder.getPositionId(), taskId, userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
             if (y9Result.isSuccess()) {
                 map.put("processInstanceId", y9Result.getData());
                 // 生成流水号
                 asyncUtilService.generateNumber(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-                        itemId, processSerialNumber, task);
+                    itemId, processSerialNumber, task);
                 return Y9Result.success(map, y9Result.getMsg());
             } else {
                 return Y9Result.failure(y9Result.getMsg());
@@ -349,7 +367,7 @@ public class Document4GfgRestController {
     @GetMapping(value = "/getAllStartTaskDefKey")
     public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam @NotBlank String itemId) {
         return documentApi.getAllStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                itemId);
+            itemId);
     }
 
     /**
@@ -360,7 +378,7 @@ public class Document4GfgRestController {
     @GetMapping(value = "/getBureau")
     public Y9Result<List<Department>> getBureau() {
         Organization organization =
-                orgUnitApi.getOrganization(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId()).getData();
+            orgUnitApi.getOrganization(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId()).getData();
         return departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), organization.getId());
     }
 
@@ -375,10 +393,10 @@ public class Document4GfgRestController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             List<ItemListModel> listMap =
-                    itemApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+                itemApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
             map.put("itemMap", listMap);
             map.put("notReadCount",
-                    chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
+                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
             // int followCount = officeFollowApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
             // map.put("followCount", followCount);
             // 公共角色
@@ -386,7 +404,7 @@ public class Document4GfgRestController {
             map.put("monitorManage", b);
 
             boolean b1 = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "人事统计角色", Y9LoginUserHolder.getPositionId())
-                    .getData();
+                .getData();
             map.put("leaveManage", b1);
 
             return Y9Result.success(map, "获取成功");
@@ -429,7 +447,7 @@ public class Document4GfgRestController {
             }
             for (Map<String, Object> nmap : list) {
                 long todoCount = processTodoApi
-                        .getTodoCountByUserIdAndSystemName(tenantId, positionId, (String) nmap.get("systemName")).getData();
+                    .getTodoCountByUserIdAndSystemName(tenantId, positionId, (String)nmap.get("systemName")).getData();
                 nmap.put("todoCount", todoCount);
                 List<ItemModel> itemList = new ArrayList<>();
                 for (ItemModel itemModel : listMap) {
@@ -442,7 +460,7 @@ public class Document4GfgRestController {
 
             map.put("systemList", list);
             map.put("notReadCount",
-                    chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
+                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
             // 公共角色
             boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
             map.put("monitorManage", b);
@@ -474,7 +492,7 @@ public class Document4GfgRestController {
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             String multiInstance = processDefinitionApi
-                    .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey()).getData();
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey()).getData();
             if (multiInstance.equals(SysVariables.PARALLEL)) {// 并行
                 map.put("isParallel", true);
                 list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true).getData();
@@ -506,12 +524,12 @@ public class Document4GfgRestController {
      * 批量恢复待办
      *
      * @param processInstanceIds 流程实例ids ，逗号隔开
-     * @param desc               原因
+     * @param desc 原因
      * @return Y9Result<String>
      */
     @PostMapping(value = "/multipleResumeToDo")
     public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceIds,
-                                               @RequestParam(required = false) String desc) {
+        @RequestParam(required = false) String desc) {
         try {
             buttonOperationService.multipleResumeToDo(processInstanceIds, desc);
             return Y9Result.successMsg("恢复成功");
@@ -524,51 +542,51 @@ public class Document4GfgRestController {
     /**
      * 获取签收任务配置（用于判断是否直接发送）
      *
-     * @param itemId              事项id
+     * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @param taskDefinitionKey   任务key
+     * @param taskDefinitionKey 任务key
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/signTaskConfig")
     public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam @NotBlank String itemId,
-                                                        @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
-                                                        @RequestParam @NotBlank String processSerialNumber) {
+        @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
+        @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return documentApi.signTaskConfig(tenantId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId,
-                taskDefinitionKey, processSerialNumber);
+            taskDefinitionKey, processSerialNumber);
     }
 
     /**
      * 办件发送
      *
-     * @param itemId              事项id
-     * @param taskId              任务id
+     * @param itemId 事项id
+     * @param taskId 任务id
      * @param processSerialNumber 流程编号
      * @return Y9Result<Object>
      */
     @PostMapping(value = "/submitTo")
     public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
-                                     @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
         return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId,
-                itemId, processSerialNumber);
+            itemId, processSerialNumber);
     }
 
     /**
      * 获取用户选人发送界面数据
      *
-     * @param itemId              事项id
-     * @param routeToTask         任务路由
+     * @param itemId 事项id
+     * @param routeToTask 任务路由
      * @param processDefinitionId 流程定义id
-     * @param taskId              任务id
-     * @param processInstanceId   流程实例id
+     * @param taskId 任务id
+     * @param processInstanceId 流程实例id
      * @return Y9Result<DocUserChoiseModel>
      */
     @GetMapping(value = "/userChoiseData")
     public Y9Result<DocUserChoiseModel> userChoiseData(@RequestParam @NotBlank String itemId,
-                                                       @RequestParam @NotBlank String routeToTask, @RequestParam @NotBlank String processDefinitionId,
-                                                       @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
+        @RequestParam @NotBlank String routeToTask, @RequestParam @NotBlank String processDefinitionId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-                Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
+            Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
     }
 }

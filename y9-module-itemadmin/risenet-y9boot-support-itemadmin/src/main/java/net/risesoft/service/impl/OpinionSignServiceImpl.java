@@ -213,6 +213,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                         if (isManager) {
                             model.setAddable(true);
                         }
+                        model.setAddable(true);
                     }
                 }
             } else if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())

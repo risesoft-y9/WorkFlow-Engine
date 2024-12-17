@@ -37,7 +37,9 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
             oldDetail.setMobile(signDeptDetail.getMobile());
             oldDetail.setFileStoreId(signDeptDetail.getFileStoreId());
             oldDetail.setDeptManager(signDeptDetail.getDeptManager());
-            oldDetail.setStatus(signDeptDetail.getStatus());
+            if (null != signDeptDetail.getStatus()) {
+                oldDetail.setStatus(signDeptDetail.getStatus());
+            }
             signDeptDetailRepository.save(oldDetail);
             return;
         }
