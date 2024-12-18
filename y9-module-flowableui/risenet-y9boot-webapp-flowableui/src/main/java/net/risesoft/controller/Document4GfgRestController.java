@@ -191,7 +191,8 @@ public class Document4GfgRestController {
                     .getData();
             sddList.forEach(sdd -> {
                 if (sdd.getExecutionId().equals(task.getExecutionId())) {
-                    sdd.setStatus(SignDeptDetailStatusEnum.DONE.getValue());
+                    sdd.setStatus(StringUtils.isBlank(sdd.getDeptManager())
+                        ? SignDeptDetailStatusEnum.ROLLBACK.getValue() : SignDeptDetailStatusEnum.DONE.getValue());
                     signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
                         sdd);
                 }
