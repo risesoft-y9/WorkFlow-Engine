@@ -8,6 +8,7 @@ import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.service.Task4ActRuDetaillService;
 import net.risesoft.service.Task4ListenerService;
@@ -69,9 +70,9 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
              */
             Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
             if (null != task.getAssignee()) {
-                task4ActRuDetaillService.saveOrUpdate(task, 0);
+                task4ActRuDetaillService.saveOrUpdate(task, ActRuDetailStatusEnum.TODO.getValue());
             } else {
-                task4ActRuDetaillService.saveOrUpdate4Sign(task, 0);
+                task4ActRuDetaillService.saveOrUpdate4Sign(task, ActRuDetailStatusEnum.TODO.getValue());
             }
 
             /*
@@ -111,7 +112,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
              */
             if (null != task.getAssignee()) {
                 Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
-                task4ActRuDetaillService.saveOrUpdate(task, 1);
+                task4ActRuDetaillService.saveOrUpdate(task, ActRuDetailStatusEnum.DOING.getValue());
             } else {
                 Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
                 task4ActRuDetaillService.saveOrUpdate4Reposition(task);

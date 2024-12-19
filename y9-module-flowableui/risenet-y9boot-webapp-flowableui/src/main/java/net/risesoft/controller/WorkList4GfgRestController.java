@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -92,6 +91,34 @@ public class WorkList4GfgRestController {
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
         return workList4GfgService.doneList(itemId, page, rows);
+    }
+
+    /**
+     * 获取已办（包括在办、办结）列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/haveDoneList")
+    public Y9Page<Map<String, Object>> haveDoneList(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        return workList4GfgService.haveDoneList(itemId, page, rows);
+    }
+
+    /**
+     * 获取所有本人经手件的列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/allList")
+    public Y9Page<Map<String, Object>> allList(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        return workList4GfgService.allList(itemId, page, rows);
     }
 
     /**

@@ -21,6 +21,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.OrgUnit;
@@ -202,19 +203,17 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows,
-        int page, Sort sort) {
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndEnded(String systemName, String assignee, boolean ended,
+        int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository
-            .findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee, pageable);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedFalse(systemName, assignee, ended, pageable);
     }
 
     @Override
     public Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows,
-                                                                     int page, Sort sort) {
+        int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository
-                .findBySystemNameAndAssigneeAndDeletedTrue(systemName, assignee, pageable);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedTrue(systemName, assignee, pageable);
     }
 
     @Override
@@ -243,6 +242,27 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 systemName, assignee, status, pageable);
         }
         return pageList;
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssignee(String systemName, String assignee, int rows, int page,
+        Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedFalse(systemName, assignee, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemName(String systemName, int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndDeletedFalse(systemName, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusEquals1(String systemName, String assignee, int rows,
+        int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
+            ActRuDetailStatusEnum.DOING.getValue(), pageable);
     }
 
     @Override

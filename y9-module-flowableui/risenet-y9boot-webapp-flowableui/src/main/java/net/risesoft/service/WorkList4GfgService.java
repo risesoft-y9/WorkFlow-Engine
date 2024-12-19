@@ -4,7 +4,6 @@ import java.util.Map;
 
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public interface WorkList4GfgService {
 
@@ -12,8 +11,8 @@ public interface WorkList4GfgService {
      * 获取待办列表
      *
      * @param itemId 事项Id
-     * @param page   页数
-     * @param rows   行数
+     * @param page 页数
+     * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> todoList(String itemId, Integer page, Integer rows);
@@ -22,28 +21,48 @@ public interface WorkList4GfgService {
      * 获取在办列表
      *
      * @param itemId 事项Id
-     * @param page   页数
-     * @param rows   行数
+     * @param page 页数
+     * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> doingList(String itemId, Integer page, Integer rows);
 
     /**
+     * 获取已办列表（包括在办、办结）
+     *
+     * @param itemId 事项Id
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> haveDoneList(String itemId, Integer page, Integer rows);
+
+    /**
      * 获取已办列表
      *
      * @param itemId 事项Id
-     * @param page   页数
-     * @param rows   行数
+     * @param page 页数
+     * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows);
 
     /**
+     * 获取所有本人经手件的列表
+     *
+     * @param itemId 事项Id
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> allList(String itemId, Integer page, Integer rows);
+
+    /**
      * 获取回收站列表
      *
      * @param itemId 事项Id
-     * @param page   页数
-     * @param rows   行数
+     * @param page 页数
+     * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> recycleList(String itemId, Integer page, Integer rows);
@@ -51,14 +70,15 @@ public interface WorkList4GfgService {
     /**
      * 待办列表
      *
-     * @param itemId       事项Id
-     * @param tableName    表名
+     * @param itemId 事项Id
+     * @param tableName 表名
      * @param searchMapStr 搜索条件
-     * @param page         页数
-     * @param rows         条数
+     * @param page 页数
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr, Integer page,
+        Integer rows);
 
     /**
      * 获取待办件列表

@@ -147,8 +147,8 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> pageBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page,
-        Sort sort);
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndEnded(String systemName, String assignee, boolean ended, int rows,
+        int page, Sort sort);
 
     /**
      * 查找个人删除列表
@@ -161,7 +161,7 @@ public interface ActRuDetailService {
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows, int page,
-                                                              Sort sort);
+        Sort sort);
 
     /**
      * 查找个人待办，在办列表
@@ -173,8 +173,7 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> pageByAssigneeAndStatus( String assignee, int status, int rows,
-        int page, Sort sort);
+    Page<ActRuDetail> pageByAssigneeAndStatus(String assignee, int status, int rows, int page, Sort sort);
 
     /**
      * 查找个人待办，在办列表
@@ -188,7 +187,43 @@ public interface ActRuDetailService {
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
-                                                           int page, Sort sort);
+        int page, Sort sort);
+
+    /**
+     * 查找个人所有件列表（不包含回收站）
+     *
+     * @param systemName
+     * @param assignee
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndAssignee(String systemName, String assignee, int rows, int page, Sort sort);
+
+    /**
+     * 查找所有件列表（不包含回收站）
+     *
+     * @param systemName
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemName(String systemName, int rows, int page, Sort sort);
+
+    /**
+     * 查找个人已办（在办、办结）
+     *
+     * @param systemName
+     * @param assignee
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusEquals1(String systemName, String assignee, int rows,
+        int page, Sort sort);
 
     /**
      * 标记流程为归档
