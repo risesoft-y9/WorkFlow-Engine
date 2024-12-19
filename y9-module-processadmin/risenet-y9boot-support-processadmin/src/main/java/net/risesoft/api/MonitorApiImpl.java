@@ -97,6 +97,23 @@ public class MonitorApiImpl implements MonitorApi {
     }
 
     /**
+     * 根据系统名称获取监控在办件
+     *
+     * @param tenantId 租户Id
+     * @param systemName 系统英文名称
+     * @param page 页码
+     * @param rows 行数
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<HistoricProcessInstanceModel> getAllListBySystemName(@RequestParam String tenantId,
+        @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return customMonitorService.pageDoingListBySystemName(systemName, page, rows);
+    }
+
+    /**
      * 根据流程定义Key获取监控办结件统计数量
      *
      * @param tenantId 租户Id
