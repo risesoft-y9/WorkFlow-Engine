@@ -71,6 +71,21 @@ public interface MonitorApi {
         @RequestParam("rows") Integer rows);
 
     /**
+     * 根据系统名称获取监控在办件
+     *
+     * @param tenantId 租户Id
+     * @param systemName 系统英文名称
+     * @param page 页码
+     * @param rows 行数
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getAllListBySystemName")
+    Y9Page<HistoricProcessInstanceModel> getAllListBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("systemName") String systemName, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
+
+    /**
      * 根据流程定义Key获取监控办结件统计
      *
      * @param tenantId 租户Id

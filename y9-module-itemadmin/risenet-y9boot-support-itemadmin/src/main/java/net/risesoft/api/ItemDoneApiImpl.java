@@ -104,7 +104,7 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
         Page<ActRuDetail> ardPage =
-            actRuDetailService.pageBySystemNameAndAssigneeAndEndedTrue(systemName, userId, rows, page, sort);
+            actRuDetailService.pageBySystemNameAndAssigneeAndEnded(systemName, userId, true, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
