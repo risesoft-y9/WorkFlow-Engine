@@ -2,11 +2,11 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_OPINION_SIGN")
-@org.hibernate.annotations.Table(comment = "会签意见信息表", appliesTo = "FF_OPINION_SIGN")
+@Comment("会签意见信息表")
 public class OpinionSign implements Serializable {
 
     private static final long serialVersionUID = 4287475181460776706L;
