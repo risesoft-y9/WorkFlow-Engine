@@ -127,27 +127,44 @@ public class ItemViewConfRestController {
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
-        List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         List<Map<String, Object>> tableField = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
             String formId = bind.getFormId();
             List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
             for (Y9FormField formField : formFieldList) {
-                if (!tableNameList.contains(formField.getTableName())) {
-                    Y9Table y9Table = y9TableService.findById(formField.getTableId());
-                    tableNameList.add(formField.getTableName());
+                Y9Table y9Table = y9TableService.findById(formField.getTableId());
+                if (!tableList.contains(y9Table)) {
                     tableList.add(y9Table);
-                    List<Y9FormField> fieldlist = new ArrayList<>();
-                    for (Y9FormField formField1 : formFieldList) {
-                        if (y9Table.getTableName().equals(formField1.getTableName())) {
-                            fieldlist.add(formField1);
-                        }
-                    }
-                    Map<String, Object> tableFieldMap = new HashMap<>();
+                }
+                List<Y9FormField> fieldlist = new ArrayList<>();
+                Map<String, Object> tableFieldMap = tableField.stream().filter(t -> {
+                    return t.get("tableName").equals(y9Table.getTableName());
+                }).findFirst().orElse(null);
+                if (tableFieldMap == null) {// 判断是否已经存在
+                    tableFieldMap = new HashMap<>();
                     tableFieldMap.put("tableName", y9Table.getTableName());
+                    if (y9Table.getTableName().equals(formField.getTableName())) {// 判断是否是同一张表
+                        fieldlist.add(formField);
+                    }
                     tableFieldMap.put("fieldlist", fieldlist);
                     tableField.add(tableFieldMap);
+                } else {
+                    fieldlist = (List<Y9FormField>)tableFieldMap.get("fieldlist");
+                    if (y9Table.getTableName().equals(formField.getTableName())) {// 判断是否是同一张表
+                        Y9FormField oldformField = fieldlist.stream().filter(t -> {
+                            return t.getFieldName().equals(formField.getFieldName());
+                        }).findFirst().orElse(null);
+                        if (oldformField == null) {// 判断是否已存在
+                            fieldlist.add(formField);
+                        }
+                    }
+                    tableFieldMap.put("fieldlist", fieldlist);
+                    for (Map<String, Object> map : tableField) {
+                        if (map.get("tableName").equals(y9Table.getTableName())) {
+                            map.put("fieldlist", fieldlist);
+                        }
+                    }
                 }
             }
         }
