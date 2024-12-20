@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.entity.ActRuDetail;
@@ -67,7 +68,10 @@ public interface ActRuDetailRepository
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalse(String systemName, String assignee, Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameAndDeletedFalse(String systemName, Pageable pageable);
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 GROUP BY PROCESSSERIALNUMBER",
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 GROUP BY PROCESSSERIALNUMBER) ALIAS")
+    Page<ActRuDetail> findBySystemNameNativeQuery(String systemName, Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee,
         Pageable pageable);
