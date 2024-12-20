@@ -286,7 +286,7 @@ public class Y9FormRestController {
             map.put("sign", personExt.getSign());// 签名
         }
         List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(Y9LoginUserHolder.getTenantId(),
-            parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue()).getData();
+            parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
         map.put("deptLeader", "未配置");// 岗位所在部门领导
         if (!leaders.isEmpty()) {
             List<Person> personLeaders =

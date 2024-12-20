@@ -45,14 +45,14 @@ public class StarterDeptLeaders extends AbstractDynamicRoleMember {
                 String userId = userIdAndDeptId.split(":")[0];
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
-                    DepartmentPropCategoryEnum.LEADER.getValue()).getData();
+                    DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
                 orgUnitList.addAll(leaders);
             }
         } else {
             String userId = Y9LoginUserHolder.getOrgUnitId();
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
             List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
-                DepartmentPropCategoryEnum.LEADER.getValue()).getData();
+                DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
             orgUnitList.addAll(leaders);
         }
         return orgUnitList;

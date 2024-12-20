@@ -29,8 +29,8 @@ import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.api.itemadmin.ItemRoleApi;
-import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -578,9 +578,8 @@ public class MobileDocumentController {
             if (personExt != null && personExt.getSign() != null) {
                 map.put("sign", personExt.getSign());// 签名
             }
-            List<OrgUnit> leaders = departmentApi
-                .listDepartmentPropOrgUnits(tenantId, parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue())
-                .getData();
+            List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, parent.getId(),
+                DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
             map.put("deptLeader", "未配置");// 岗位所在部门领导
             if (!leaders.isEmpty()) {
                 List<Person> personLeaders =
