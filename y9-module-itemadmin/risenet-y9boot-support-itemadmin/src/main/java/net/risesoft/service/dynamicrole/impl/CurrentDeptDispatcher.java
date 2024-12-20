@@ -34,7 +34,7 @@ public class CurrentDeptDispatcher extends AbstractDynamicRoleMember {
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         return departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
-            DepartmentPropCategoryEnum.DISPATCHER.getValue()).getData();
+            DepartmentPropCategoryEnum.DISPATCHER.getValue(), false).getData();
     }
 
 }

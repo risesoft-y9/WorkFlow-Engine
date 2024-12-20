@@ -34,7 +34,7 @@ public class CurrentDeptDeputyLeaders extends AbstractDynamicRoleMember {
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         return departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
-            DepartmentPropCategoryEnum.VICE_LEADER.getValue()).getData();
+            DepartmentPropCategoryEnum.VICE_LEADER.getValue(), false).getData();
     }
 
 }

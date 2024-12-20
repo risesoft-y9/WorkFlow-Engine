@@ -263,7 +263,8 @@ public class Y9FormRestController {
         String itemNumber = "〔" + year + "〕" + second + "号";
         OrgUnit parent =
             orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
-        OrgUnit bureau=orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+        OrgUnit bureau =
+            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /* 办件表单数据初始化 **/
         map.put("deptName", parent.getName());// 创建部门
@@ -285,7 +286,7 @@ public class Y9FormRestController {
             map.put("sign", personExt.getSign());// 签名
         }
         List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(Y9LoginUserHolder.getTenantId(),
-            parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue()).getData();
+            parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
         map.put("deptLeader", "未配置");// 岗位所在部门领导
         if (!leaders.isEmpty()) {
             List<Person> personLeaders =
