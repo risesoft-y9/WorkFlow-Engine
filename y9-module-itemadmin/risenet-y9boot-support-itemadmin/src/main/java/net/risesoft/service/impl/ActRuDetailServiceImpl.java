@@ -254,7 +254,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Override
     public Page<ActRuDetail> pageBySystemName(String systemName, int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameAndDeletedFalse(systemName, pageable);
+        return actRuDetailRepository.findBySystemNameNativeQuery(systemName, pageable);
     }
 
     @Override
