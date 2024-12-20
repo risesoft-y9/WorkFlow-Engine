@@ -467,311 +467,37 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 mainResults.add(hai);
             }
         }
+        int tabIndex = 1;
         if (isSignDept) {
             /*
              * 子流程历程
              */
-            HistoryProcessModel model;
-            int tabIndex = 1;
             for (HistoricTaskInstanceModel hai : subResults) {
                 if (!hai.getExecutionId().equals(executionId)) {
                     continue;
                 }
-                model = new HistoryProcessModel();
-                model.setTabIndex(tabIndex++);
-                String id = hai.getId();
-                model.setId(id);
-                String taskId = hai.getId();
-                model.setTaskId(taskId);
-                model.setAssignee("");
-                model.setName(hai.getName());
-                model.setActionName("");
-                TaskRelated taskRelated = taskRelatedService.findByTaskIdAndInfoType(taskId, "2");
-                if (null != taskRelated && StringUtils.isNotBlank(taskRelated.getMsgContent())) {
-                    model.setActionName(taskRelated.getMsgContent());
-                }
-                // 收件人
-                String assignee = hai.getAssignee();
-                if (StringUtils.isNotBlank(assignee)) {
-                    OrgUnit employee =
-                        orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
-                    model.setAssigneeId(assignee);
-                    // 承办人id,用于数据中心保存
-                    String employeeName = "";
-                    if (employee != null) {
-                        employeeName = employee.getName();
-                    }
-                    model.setAssignee(employeeName);
-                    model.setPersonList(
-                        positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), assignee).getData());
-                } else {// 处理单实例未签收的办理人显示
-                    List<IdentityLinkModel> iList = null;
-                    try {
-                        iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
-                    } catch (Exception e) {
-                        LOGGER.error("获取任务的用户信息失败", e);
-                    }
-                    if (null != iList && !iList.isEmpty()) {
-                        StringBuilder assignees = new StringBuilder();
-                        int j = 0;
-                        List<Person> personList = new ArrayList<>();
-                        for (IdentityLinkModel identityLink : iList) {
-                            String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = orgUnitApi
-                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
-                            if (j < 5) {
-                                assignees = Y9Util.genCustomStr(assignees,
-                                    ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
-                                personList.addAll(positionApi
-                                    .listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), assignee).getData());
-                            } else {
-                                assignees.append("等，共" + iList.size() + "人");
-                                break;
-                            }
-                            j++;
-                        }
-                        model.setPersonList(personList);
-                        model.setAssignee(assignees.toString());
-                    }
-                }
-                Integer newToDo = 0;
-                if (hai.getEndTime() == null) {
-                    TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-                    newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
-                        : (Integer.parseInt(taskModel.getFormKey()));
-                }
-                model.setNewToDo(newToDo);
-                model.setStartTime(hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
-                try {
-                    model.setStartTimes(
-                        hai.getStartTime() == null ? 0 : sdf.parse(DATE_FORMAT.format(hai.getStartTime())).getTime());
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                }
-                Date endTime1 = hai.getEndTime();
-                model.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
-                try {
-                    model.setEndTimes(endTime1 == null ? 0 : DATE_FORMAT.parse(sdf.format(endTime1)).getTime());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                model.setTime(longTime(hai.getStartTime(), endTime1));
-                items.add(model);
+                items.add(getHistoryProcessModel(hai, tabIndex++));
             }
         } else {
             /*
              * 主流程历程
              */
-            HistoryProcessModel mainModel;
-            int tabIndex = 1;
             for (HistoricTaskInstanceModel htiMain : mainResults) {
-                mainModel = new HistoryProcessModel();
-                mainModel.setTabIndex(tabIndex++);
-                mainModel.setChildren(new ArrayList<>());
-                String id = htiMain.getId();
-                String taskId = htiMain.getId();
-                mainModel.setId(id);
-                // 收件人
-                mainModel.setAssignee("");
-                // 任务名称
-                mainModel.setName(htiMain.getName());
-                mainModel.setTaskId(taskId);
-                mainModel.setActionName("");
-                TaskRelated taskRelated2 = taskRelatedService.findByTaskIdAndInfoType(taskId, "2");
-                if (null != taskRelated2 && StringUtils.isNotBlank(taskRelated2.getMsgContent())) {
-                    mainModel.setActionName(taskRelated2.getMsgContent());
-                }
-                // 收件人
-                String assigneeMain = htiMain.getAssignee();
-                if (StringUtils.isNotBlank(assigneeMain)) {
-                    OrgUnit employee =
-                        orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeMain).getData();
-                    mainModel.setAssigneeId(assigneeMain);
-                    String employeeName = "";
-                    if (employee != null) {
-                        employeeName = employee.getName();
-                    }
-                    mainModel.setPersonList(
-                        positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), assigneeMain).getData());
-                    mainModel.setAssignee(employeeName);
-                } else {// 处理单实例未签收的办理人显示
-                    List<IdentityLinkModel> iList = null;
-                    try {
-                        iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
-                    } catch (Exception e) {
-                        LOGGER.error("获取任务的用户信息失败", e);
-                    }
-                    if (null != iList && !iList.isEmpty()) {
-                        StringBuilder assignees = new StringBuilder();
-                        int j = 0;
-                        List<Person> personList = new ArrayList<>();
-                        for (IdentityLinkModel identityLink : iList) {
-                            String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = orgUnitApi
-                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
-                            if (j < 5) {
-                                assignees = Y9Util.genCustomStr(assignees,
-                                    ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
-                                personList.addAll(positionApi
-                                    .listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), assigneeId).getData());
-                            } else {
-                                assignees.append("等，共" + iList.size() + "人");
-                                break;
-                            }
-                            j++;
-                        }
-                        mainModel.setPersonList(personList);
-                        mainModel.setAssignee(assignees.toString());
-                    }
-                }
-                Integer newToDo = 0;
-                if (htiMain.getEndTime() == null) {
-                    TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-                    newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
-                        : (Integer.parseInt(taskModel.getFormKey()));
-                }
-                mainModel.setNewToDo(newToDo);
-                mainModel.setStartTime(htiMain.getStartTime() == null ? "" : sdf.format(htiMain.getStartTime()));
-                try {
-                    mainModel.setStartTimes(htiMain.getStartTime() == null ? 0
-                        : sdf.parse(DATE_FORMAT.format(htiMain.getStartTime())).getTime());
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                }
-                /*
-                 * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
-                 */
-                Date mainEndTime = htiMain.getEndTime();
-                List<ProcessTrack> ptList = this.listByTaskId(taskId);
-                if (!ptList.isEmpty()) {
-                    mainModel.setEndTime(mainEndTime == null ? "" : DATE_FORMAT.format(mainEndTime));
-                    try {
-                        mainModel.setEndTimes(
-                            mainEndTime == null ? 0 : DATE_FORMAT.parse(sdf.format(mainEndTime)).getTime());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    mainModel.setTime(longTime(htiMain.getStartTime(), mainEndTime));
-                } else {
-                    mainModel.setEndTime(mainEndTime == null ? "" : DATE_FORMAT.format(mainEndTime));
-                    try {
-                        mainModel.setEndTimes(
-                            mainEndTime == null ? 0 : DATE_FORMAT.parse(sdf.format(mainEndTime)).getTime());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    mainModel.setTime(longTime(htiMain.getStartTime(), mainEndTime));
-                }
-                items.add(mainModel);
+                items.add(getHistoryProcessModel(htiMain, tabIndex++));
                 /*
                  * 查看当前任务是否送了子流程
                  */
-                List<SignDeptDetail> signDeptDetailList = signDeptDetailService.findByTaskId(processInstanceId, taskId);
+                List<SignDeptDetail> signDeptDetailList =
+                    signDeptDetailService.findByTaskId(processInstanceId, htiMain.getId());
                 for (SignDeptDetail signDeptDetail : signDeptDetailList) {
                     HistoryProcessModel oneModel = new HistoryProcessModel();
+                    oneModel.setPersonList(List.of());
                     oneModel.setActionName("并行会签【" + signDeptDetail.getDeptName() + "】");
                     List<HistoryProcessModel> twoProcessList = new ArrayList<>();
                     int subTabIndex = 1;
                     for (HistoricTaskInstanceModel hti : subResults) {
                         if (hti.getExecutionId().equals(signDeptDetail.getExecutionId())) {
-                            String twoTaskId = hti.getId();
-                            HistoryProcessModel twoModel = new HistoryProcessModel();
-                            twoModel.setTabIndex(subTabIndex++);
-                            twoModel.setId(hti.getId());
-                            // 收件人
-                            twoModel.setAssignee("");
-                            // 任务名称
-                            twoModel.setName(hti.getName());
-                            twoModel.setTaskId(twoTaskId);
-                            twoModel.setActionName("");
-                            TaskRelated twoTaskRelated = taskRelatedService.findByTaskIdAndInfoType(twoTaskId, "2");
-                            if (null != twoTaskRelated && StringUtils.isNotBlank(twoTaskRelated.getMsgContent())) {
-                                twoModel.setActionName(twoTaskRelated.getMsgContent());
-                            }
-                            // 收件人
-                            String twoAssignee = hti.getAssignee();
-                            if (StringUtils.isNotBlank(twoAssignee)) {
-                                OrgUnit employee = orgUnitApi
-                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), twoAssignee).getData();
-                                twoModel.setAssigneeId(twoAssignee);
-                                String employeeName = "";
-                                if (employee != null) {
-                                    employeeName = employee.getName();
-                                }
-                                twoModel.setPersonList(positionApi
-                                    .listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), twoAssignee).getData());
-                                twoModel.setAssignee(employeeName);
-                            } else {// 处理单实例未签收的办理人显示
-                                List<IdentityLinkModel> iList = null;
-                                try {
-                                    iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
-                                } catch (Exception e) {
-                                    LOGGER.error("获取任务的用户信息失败", e);
-                                }
-                                if (null != iList && !iList.isEmpty()) {
-                                    StringBuilder assignees = new StringBuilder();
-                                    int j = 0;
-                                    List<Person> personList = new ArrayList<>();
-                                    for (IdentityLinkModel identityLink : iList) {
-                                        String assigneeId = identityLink.getUserId();
-                                        OrgUnit ownerUser = orgUnitApi
-                                            .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                                            .getData();
-                                        if (j < 5) {
-                                            assignees = Y9Util.genCustomStr(assignees,
-                                                ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
-                                            personList.addAll(positionApi
-                                                .listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), assigneeId)
-                                                .getData());
-                                        } else {
-                                            assignees.append("等，共" + iList.size() + "人");
-                                            break;
-                                        }
-                                        j++;
-                                    }
-                                    twoModel.setPersonList(personList);
-                                    twoModel.setAssignee(assignees.toString());
-                                }
-                            }
-                            Integer twoNewToDo = 0;
-                            if (hti.getEndTime() == null) {
-                                TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-                                twoNewToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
-                                    : (Integer.parseInt(taskModel.getFormKey()));
-                            }
-                            twoModel.setNewToDo(twoNewToDo);
-                            twoModel.setStartTime(hti.getStartTime() == null ? "" : sdf.format(hti.getStartTime()));
-                            try {
-                                twoModel.setStartTimes(hti.getStartTime() == null ? 0
-                                    : sdf.parse(DATE_FORMAT.format(hti.getStartTime())).getTime());
-                            } catch (Exception e2) {
-                                e2.printStackTrace();
-                            }
-                            /*
-                             * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
-                             */
-                            Date endTime2 = hti.getEndTime();
-                            List<ProcessTrack> ptList2 = this.listByTaskId(taskId);
-                            if (!ptList.isEmpty()) {
-                                twoModel.setEndTime(endTime2 == null ? "" : DATE_FORMAT.format(endTime2));
-                                try {
-                                    twoModel.setEndTimes(
-                                        endTime2 == null ? 0 : DATE_FORMAT.parse(sdf.format(endTime2)).getTime());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                twoModel.setTime(longTime(hti.getStartTime(), endTime2));
-                            } else {
-                                twoModel.setEndTime(endTime2 == null ? "" : DATE_FORMAT.format(endTime2));
-                                try {
-                                    twoModel.setEndTimes(
-                                        endTime2 == null ? 0 : DATE_FORMAT.parse(sdf.format(endTime2)).getTime());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                twoModel.setTime(longTime(hti.getStartTime(), endTime2));
-                            }
-                            twoProcessList.add(twoModel);
+                            twoProcessList.add(getHistoryProcessModel(hti, subTabIndex++));
                         }
                     }
                     oneModel.setTabIndex(tabIndex++);
@@ -782,6 +508,88 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         }
         // Collections.sort(items);
         return items;
+    }
+
+    private HistoryProcessModel getHistoryProcessModel(HistoricTaskInstanceModel hai, int tabIndex) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        HistoryProcessModel model = new HistoryProcessModel();
+        model.setChildren(new ArrayList<>());
+        model.setTabIndex(tabIndex);
+        model.setPersonList(new ArrayList<>());
+        model.setId(hai.getId());
+        String taskId = hai.getId();
+        model.setTaskId(taskId);
+        model.setAssignee("");
+        model.setName(hai.getName());
+        model.setActionName("");
+        TaskRelated taskRelated = taskRelatedService.findByTaskIdAndInfoType(taskId, "2");
+        if (null != taskRelated && StringUtils.isNotBlank(taskRelated.getMsgContent())) {
+            model.setActionName(taskRelated.getMsgContent());
+        }
+        // 收件人
+        String assignee = hai.getAssignee();
+        if (StringUtils.isNotBlank(assignee)) {
+            OrgUnit employee =
+                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+            model.setAssigneeId(assignee);
+            model.setAssignee(null == employee ? "" : employee.getName());
+            model.setPersonList(
+                positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), assignee).getData());
+        } else {
+            // 未签收
+            List<IdentityLinkModel> iList = null;
+            try {
+                iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            } catch (Exception e) {
+                LOGGER.error("获取任务的用户信息失败", e);
+            }
+            if (null != iList && !iList.isEmpty()) {
+                StringBuilder assignees = new StringBuilder();
+                int j = 0;
+                List<Person> personList = new ArrayList<>();
+                for (IdentityLinkModel identityLink : iList) {
+                    String positionId = identityLink.getUserId();
+                    OrgUnit ownerUser =
+                        orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), positionId).getData();
+                    if (j < 5) {
+                        assignees =
+                            Y9Util.genCustomStr(assignees, ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
+                        personList.addAll(
+                            positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), positionId).getData());
+                    } else {
+                        assignees.append("等，共").append(iList.size()).append("人");
+                        break;
+                    }
+                    j++;
+                }
+                model.setPersonList(personList);
+                model.setAssignee(assignees.toString());
+            }
+        }
+        int newToDo = 0;
+        if (hai.getEndTime() == null) {
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+            newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
+                : (Integer.parseInt(taskModel.getFormKey()));
+        }
+        model.setNewToDo(newToDo);
+        model.setStartTime(hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
+        try {
+            model.setStartTimes(
+                hai.getStartTime() == null ? 0 : sdf.parse(DATE_FORMAT.format(hai.getStartTime())).getTime());
+        } catch (Exception e2) {
+            e2.printStackTrace();
+        }
+        Date endTime = hai.getEndTime();
+        model.setEndTime(endTime == null ? "" : DATE_FORMAT.format(endTime));
+        try {
+            model.setEndTimes(endTime == null ? 0 : DATE_FORMAT.parse(sdf.format(endTime)).getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        model.setTime(longTime(hai.getStartTime(), endTime));
+        return model;
     }
 
     @SuppressWarnings("unchecked")
