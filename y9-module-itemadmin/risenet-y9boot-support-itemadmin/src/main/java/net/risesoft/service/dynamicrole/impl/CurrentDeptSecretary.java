@@ -34,7 +34,7 @@ public class CurrentDeptSecretary extends AbstractDynamicRoleMember {
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         return departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
-            DepartmentPropCategoryEnum.SECRETARY.getValue()).getData();
+            DepartmentPropCategoryEnum.SECRETARY.getValue(), false).getData();
     }
 
 }
