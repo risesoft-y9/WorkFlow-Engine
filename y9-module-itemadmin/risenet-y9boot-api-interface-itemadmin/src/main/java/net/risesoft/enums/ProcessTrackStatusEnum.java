@@ -35,7 +35,11 @@ public enum ProcessTrackStatusEnum {
     /**
      * 取回
      */
-    TAKE(5, "取回");
+    TAKE(5, "取回"),
+    /**
+     * 未签收
+     */
+    UNCLAIMED(6, "未签收");
 
     private final Integer value;
     private final String name;

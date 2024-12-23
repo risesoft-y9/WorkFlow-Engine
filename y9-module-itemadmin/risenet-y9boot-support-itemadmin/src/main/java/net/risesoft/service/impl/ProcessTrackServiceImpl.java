@@ -565,7 +565,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         });
                     } else {
                         personListTemp.forEach(p -> {
-                            p.setTabIndex(ProcessTrackStatusEnum.DONE.getValue());
+                            p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue());
                         });
                     }
                     personList.addAll(personListTemp);
@@ -607,7 +607,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     if (null == hai.getEndTime()) {
                         p.setTabIndex(ProcessTrackStatusEnum.CLAIM.getValue());
                     } else {
-                        p.setTabIndex(ProcessTrackStatusEnum.TAKE.getValue());
+                        p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue());
                     }
                 });
                 model.setPersonList(personList);
