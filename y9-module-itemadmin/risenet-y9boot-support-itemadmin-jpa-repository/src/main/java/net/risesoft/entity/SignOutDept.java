@@ -31,7 +31,7 @@ public class SignOutDept implements Serializable {
     @Column(name = "DEPTID", length = 10, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
-    private Integer deptId;
+    private String deptId;
 
     @Comment("单位类型Id")
     @Column(name = "DEPTTYPEID", length = 50)

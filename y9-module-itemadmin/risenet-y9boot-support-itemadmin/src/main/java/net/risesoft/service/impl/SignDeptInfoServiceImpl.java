@@ -1,10 +1,21 @@
 package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +63,43 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     }
 
     @Override
+    public Page<SignOutDept> listAll(String name, Integer page, Integer rows) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "deptOrder");
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return signOutDeptRepository.findAll(new Specification<SignOutDept>() {
+            @Override
+            public Predicate toPredicate(Root<SignOutDept> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<>();
+                if (StringUtils.isNotEmpty(name)) {
+                    list.add(builder.like(root.get("deptName"), "%" + name + "%"));
+                }
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void remove(String[] ids) {
+        for (String id : ids) {
+            signOutDeptRepository.deleteById(id);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void saveOrUpdate(SignOutDept info) {
+        if (StringUtils.isBlank(info.getDeptId())) {
+            info.setDeptId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            Integer maxDeptOrder = signOutDeptRepository.getMaxDeptOrder();
+            info.setDeptOrder(maxDeptOrder == null ? 1 : maxDeptOrder + 1);
+        }
+        signOutDeptRepository.save(info);
+    }
+
+    @Override
     @Transactional
     public void saveSignDept(String processInstanceId, String deptType, String deptIds) {
         String[] split = deptIds.split(",");
@@ -75,7 +123,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                     Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
                     signDeptInfo.setDeptName(department != null ? department.getName() : "部门不存在");
                 } else {
-                    SignOutDept signOutDept = signOutDeptRepository.findById(Integer.valueOf(deptId)).orElse(null);
+                    SignOutDept signOutDept = signOutDeptRepository.findById(deptId).orElse(null);
                     signDeptInfo.setDeptName(signOutDept != null ? signOutDept.getDeptName() : "单位不存在");
                 }
                 signDeptInfo.setProcessInstanceId(processInstanceId);
