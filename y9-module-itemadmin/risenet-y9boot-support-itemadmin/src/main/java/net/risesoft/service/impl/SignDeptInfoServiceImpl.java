@@ -57,8 +57,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     }
 
     @Override
-    public List<SignDeptInfo> getSignDeptList(String processInstanceId, String deptType) {
-        return signDeptInfoRepository.findByProcessInstanceIdAndDeptTypeOrderByOrderIndexAsc(processInstanceId,
+    public List<SignDeptInfo> getSignDeptList(String processSerialNumber, String deptType) {
+        return signDeptInfoRepository.findByProcessSerialNumberAndDeptTypeOrderByOrderIndexAsc(processSerialNumber,
             deptType);
     }
 
@@ -101,14 +101,15 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     @Override
     @Transactional
-    public void saveSignDept(String processInstanceId, String deptType, String deptIds) {
+    public void saveSignDept(String processSerialNumber, String deptType, String deptIds) {
         String[] split = deptIds.split(",");
         List<String> split1 = Arrays.asList(split);
-        signDeptInfoRepository.deleteByProcessInstanceIdAndDeptTypeAndDeptIdNotIn(processInstanceId, deptType, split1);
+        signDeptInfoRepository.deleteByProcessSerialNumberAndDeptTypeAndDeptIdNotIn(processSerialNumber, deptType,
+            split1);
         for (int i = 0; i < split.length; i++) {
             String deptId = split[i];
-            SignDeptInfo signDeptInfo =
-                signDeptInfoRepository.findByProcessInstanceIdAndDeptTypeAndDeptId(processInstanceId, deptType, deptId);
+            SignDeptInfo signDeptInfo = signDeptInfoRepository
+                .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
             if (signDeptInfo != null) {
                 signDeptInfo.setOrderIndex(i + 1);
             } else {
@@ -126,7 +127,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                     SignOutDept signOutDept = signOutDeptRepository.findById(deptId).orElse(null);
                     signDeptInfo.setDeptName(signOutDept != null ? signOutDept.getDeptName() : "单位不存在");
                 }
-                signDeptInfo.setProcessInstanceId(processInstanceId);
+                signDeptInfo.setProcessSerialNumber(processSerialNumber);
                 signDeptInfo.setDeptType(deptType);
             }
             signDeptInfoRepository.save(signDeptInfo);

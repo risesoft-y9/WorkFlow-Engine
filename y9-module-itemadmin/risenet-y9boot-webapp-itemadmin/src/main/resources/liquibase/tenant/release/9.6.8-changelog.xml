@@ -268,4 +268,37 @@
         </preConditions>
         <modifyDataType tableName="FF_SIGN_OUT_DEPT" columnName="DEPTID" newDataType="VARCHAR(50)"/>
     </changeSet>
+    <changeSet id="1704700547152-14" author="mengjuhua" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ITEM_WORD_CONF"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项正文组件权限配置" tableName="FF_ITEM_WORD_CONF">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLEIDS" remarks="角色Id" type="VARCHAR(500)"/>
+            <column name="TASKDEFKEY" remarks="流程节点Key" type="VARCHAR(100)"/>
+            <column name="TASKDEFNAME" remarks="流程节点名称" type="VARCHAR(100)"/>
+            <column name="WORDTYPE" remarks="正文类型" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700543333-15" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_DEPT_INFO" columnName="PROCESSSERIALNUMBER"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_DEPT_INFO">
+            <column name="PROCESSSERIALNUMBER" type="VARCHAR(100)" remarks="流程编号"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

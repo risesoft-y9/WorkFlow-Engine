@@ -48,14 +48,14 @@ public class SignDept4GfgController {
     /**
      * 获取会签信息
      *
-     * @param processInstanceId 流程实例id
+     * @param processSerialNumber 流程编号
      * @param deptType 部门类型
      * @return Y9Result<List<SignDeptModel>>
      */
     @GetMapping(value = "/getSignDeptList")
-    public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String processInstanceId,
+    public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String processSerialNumber,
         @RequestParam String deptType) {
-        return signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), deptType, processInstanceId);
+        return signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), deptType, processSerialNumber);
     }
 
     /**
@@ -71,16 +71,16 @@ public class SignDept4GfgController {
     /**
      * 保存会签部门
      *
-     * @param processInstanceId 流程实例id
+     * @param processSerialNumber 流程编号
      * @param deptType 部门类型
      * @param deptIds 部门id
      * @return Y9Result<Object>
      */
     @PostMapping(value = "/saveSignDept")
-    public Y9Result<Object> saveSignDept(@RequestParam String processInstanceId, @RequestParam String deptType,
+    public Y9Result<Object> saveSignDept(@RequestParam String processSerialNumber, @RequestParam String deptType,
         @RequestParam String deptIds) {
         return signDeptInfoApi.saveSignDept(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), deptIds,
-            deptType, processInstanceId);
+            deptType, processSerialNumber);
     }
 
     /**
