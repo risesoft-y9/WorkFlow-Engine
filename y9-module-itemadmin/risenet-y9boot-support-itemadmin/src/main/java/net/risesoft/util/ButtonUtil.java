@@ -630,7 +630,7 @@ public class ButtonUtil {
             "16", "17", "18", "19", "20", "21", "22"};
         String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "退签", "办结", "收回", "拒签",
             "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交", "放入回收站"};
-        int[] buttonOrders = {3, 15, 10, 11, 22, 2, 4, 1, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+        int[] buttonOrders = {3, 15, 10, 11, 22, 2, 1, 4, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
         boolean[] isButtonShow = new boolean[buttonIds.length];
         for (int i = 0; i < buttonIds.length; i++) {
             isButtonShow[i] = false;
@@ -1065,10 +1065,30 @@ public class ButtonUtil {
             // 下面是收回按钮
             if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
                 && rollbackObj == null && repositionObj == null) {
-                buttonModelList.add(shouHui);
+                Boolean isSub4Current = processDefinitionApi
+                    .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
+                if (isSub4Current) {
+                    OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
+                    OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+                    if (currentBureau.getId().equals(sendBureau.getId())) {
+                        buttonModelList.add(shouHui);
+                    }
+                } else {
+                    List<HistoricTaskInstanceModel> hisTaskList =
+                        historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
+                    if (!hisTaskList.isEmpty()) {
+                        Boolean isSubProcess4Send =
+                            processDefinitionApi.isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
+                                hisTaskList.stream().findFirst().get().getTaskDefinitionKey()).getData();
+                        if (!isSubProcess4Send) {
+                            buttonModelList.add(shouHui);
+                        }
+                    }
+                }
             }
         }
-        buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        buttonModelList = buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
         return buttonModelList;
     }
