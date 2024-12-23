@@ -299,25 +299,31 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                        taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
-                    if (isSubProcessChildNode) {
-                        boolean isSignDept =
-                            signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
-                        if (!isSignDept) {
-                            // 针对SubProcess
-                            mapTemp.put("taskName", "送会签");
-                            mapTemp.put("taskAssignee", "");
+                    if (StringUtils.isBlank(processParam.getCompleter())) {
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
+                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
+                        if (isSubProcessChildNode) {
+                            boolean isSignDept =
+                                signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
+                            if (!isSignDept) {
+                                // 针对SubProcess
+                                mapTemp.put("taskName", "送会签");
+                                mapTemp.put("taskAssignee", "");
+                            } else {
+                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                                mapTemp.put("taskName", listTemp.get(0));
+                                mapTemp.put("taskAssignee", listTemp.get(1));
+                            }
                         } else {
-                            List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
-                            mapTemp.put("taskName", listTemp.get(0));
-                            mapTemp.put("taskAssignee", listTemp.get(1));
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                            mapTemp.put("taskName", taskList.get(0).getName());
+                            mapTemp.put("taskAssignee", listTemp.get(0));
                         }
                     } else {
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskAssignee", listTemp.get(0));
+                        mapTemp.put("taskName", "已办结");
+                        mapTemp.put("taskAssignee", processParam.getCompleter());
                     }
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName",
@@ -378,25 +384,31 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                        taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
-                    if (isSubProcessChildNode) {
-                        boolean isSignDept =
-                            signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
-                        if (!isSignDept) {
-                            // 针对SubProcess
-                            mapTemp.put("taskName", "送会签");
-                            mapTemp.put("taskAssignee", "");
+                    if (StringUtils.isBlank(processParam.getCompleter())) {
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
+                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
+                        if (isSubProcessChildNode) {
+                            boolean isSignDept =
+                                signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
+                            if (!isSignDept) {
+                                // 针对SubProcess
+                                mapTemp.put("taskName", "送会签");
+                                mapTemp.put("taskAssignee", "");
+                            } else {
+                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                                mapTemp.put("taskName", listTemp.get(0));
+                                mapTemp.put("taskAssignee", listTemp.get(1));
+                            }
                         } else {
-                            List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
-                            mapTemp.put("taskName", listTemp.get(0));
-                            mapTemp.put("taskAssignee", listTemp.get(1));
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                            mapTemp.put("taskName", taskList.get(0).getName());
+                            mapTemp.put("taskAssignee", listTemp.get(0));
                         }
                     } else {
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskAssignee", listTemp.get(0));
+                        mapTemp.put("taskName", "已办结");
+                        mapTemp.put("taskAssignee", processParam.getCompleter());
                     }
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName",
