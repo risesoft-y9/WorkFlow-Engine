@@ -214,4 +214,58 @@
             <column name="FIRSTSPELL" remarks="第一字母简拼" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
+    <changeSet id="1704700543333-11" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_DOCUMENT_WORD"/>
+            </not>
+        </preConditions>
+        <createTable remarks="正文信息表" tableName="FF_DOCUMENT_WORD">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名" type="VARCHAR(200)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
+            <column name="USERID" remarks="上传人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="上传人员名称" type="VARCHAR(50)"/>
+            <column name="TYPE" remarks="数据类型" type="INT"/>
+            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
+            <column name="WORDTYPE" remarks="正文类别" type="VARCHAR(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700543333-12" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_DOCUMENT_WORD_HIS"/>
+            </not>
+        </preConditions>
+        <createTable remarks="历史正文表" tableName="FF_DOCUMENT_WORD_HIS">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名" type="VARCHAR(200)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
+            <column name="USERID" remarks="上传人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="上传人员名称" type="VARCHAR(50)"/>
+            <column name="TYPE" remarks="数据类型" type="INT"/>
+            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
+            <column name="WORDTYPE" remarks="正文类别" type="VARCHAR(10)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
+            <column name="UPDATEDATE" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1702001405829-1-13" author="zhangchongjie" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_SIGN_OUT_DEPT" columnName="DEPTID"/>
+        </preConditions>
+        <modifyDataType tableName="FF_SIGN_OUT_DEPT" columnName="DEPTID" newDataType="VARCHAR(50)"/>
+    </changeSet>
 </databaseChangeLog>
