@@ -16,8 +16,11 @@ import net.risesoft.entity.SignOutDept;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface SignOutDeptRepository
-    extends JpaRepository<SignOutDept, Integer>, JpaSpecificationExecutor<SignOutDept> {
+    extends JpaRepository<SignOutDept, String>, JpaSpecificationExecutor<SignOutDept> {
 
     @Query("FROM SignOutDept order by deptOrder asc")
     List<SignOutDept> findAllOrderByDeptOrderAsc();
+
+    @Query("select max(s.deptOrder) from SignOutDept s")
+    Integer getMaxDeptOrder();
 }
