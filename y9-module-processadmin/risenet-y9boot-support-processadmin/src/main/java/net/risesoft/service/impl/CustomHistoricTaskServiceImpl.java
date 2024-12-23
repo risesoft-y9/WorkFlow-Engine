@@ -7,8 +7,8 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
-import org.flowable.identitylink.api.IdentityLinkInfo;
 import org.flowable.task.api.history.HistoricTaskInstance;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -236,26 +236,10 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
 
     @Override
     public List<IdentityLinkModel> listIdentityLinksForTaskByTaskId(String taskId, String year) {
-        if (StringUtils.isNotEmpty(year)) {
-            String sql = "SELECT * FROM ACT_HI_IDENTITYLINK_" + year + " WHERE TASK_ID_ = '" + taskId + "'";
-            List<IdentityLinkModel> ilList = jdbcTemplate.queryForList(sql, IdentityLinkModel.class);
-            return ilList;
-        } else {
-            HistoricTaskInstance task =
-                historyService.createHistoricTaskInstanceQuery().includeIdentityLinks().taskId(taskId).singleResult();
-            List<? extends IdentityLinkInfo> identityLinks = task.getIdentityLinks();
-            List<IdentityLinkModel> ilList = new ArrayList<>();
-            identityLinks.forEach(identityLinkInfo -> {
-                IdentityLinkModel model = new IdentityLinkModel();
-                model.setTaskId(taskId);
-                model.setType(identityLinkInfo.getType());
-                model.setGroupId(identityLinkInfo.getGroupId());
-                model.setUserId(identityLinkInfo.getUserId());
-                model.setProcessInstanceId(task.getProcessInstanceId());
-                model.setProcessDefinitionId(task.getProcessDefinitionId());
-                ilList.add(model);
-            });
-            return ilList;
-        }
+        String sql =
+            "SELECT TASK_ID_ as taskId,TYPE_ as type ,user_id_ as userId FROM ACT_HI_IDENTITYLINK WHERE TASK_ID_ = '"
+                + taskId + "'";
+        List<IdentityLinkModel> ilList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(IdentityLinkModel.class));
+        return ilList;
     }
 }
