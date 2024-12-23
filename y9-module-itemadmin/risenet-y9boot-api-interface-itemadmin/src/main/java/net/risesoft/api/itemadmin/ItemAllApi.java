@@ -1,6 +1,6 @@
 package net.risesoft.api.itemadmin;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +22,7 @@ public interface ItemAllApi {
 
     /**
      * 根据用户id和系统名称查询待办数量 #TODO
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
