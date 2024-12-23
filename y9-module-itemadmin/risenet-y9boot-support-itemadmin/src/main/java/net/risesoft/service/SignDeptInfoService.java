@@ -16,7 +16,7 @@ public interface SignDeptInfoService {
 
     void deleteById(String id);
 
-    List<SignDeptInfo> getSignDeptList(String processInstanceId, String deptType);
+    List<SignDeptInfo> getSignDeptList(String processSerialNumber, String deptType);
 
     /**
      * 获取委外会签部门列表
@@ -43,7 +43,7 @@ public interface SignDeptInfoService {
      */
     void saveOrUpdate(SignOutDept info);
 
-    void saveSignDept(String processInstanceId, String deptType, String deptIds);
+    void saveSignDept(String processSerialNumber, String deptType, String deptIds);
 
     void saveSignDeptInfo(String id, String userName);
 }

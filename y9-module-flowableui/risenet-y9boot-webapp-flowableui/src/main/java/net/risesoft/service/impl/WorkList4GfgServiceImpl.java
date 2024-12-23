@@ -119,6 +119,91 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final SignDeptInfoApi signDeptInfoApi;
 
     @Override
+    public Y9Page<Map<String, Object>> allList(String itemId, Integer page, Integer rows) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            Y9Page<ActRuDetailModel> itemPage =
+                itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            List<ActRuDetailModel> list = itemPage.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
+            List<Map<String, Object>> items = new ArrayList<>();
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp;
+            ProcessParamModel processParam;
+            String processInstanceId;
+            Map<String, Object> formData;
+            for (ActRuDetailModel ardModel : taslList) {
+                mapTemp = new HashMap<>(16);
+                String taskId = ardModel.getTaskId();
+                processInstanceId = ardModel.getProcessInstanceId();
+                try {
+                    String processSerialNumber = ardModel.getProcessSerialNumber();
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    if (StringUtils.isBlank(processParam.getCompleter())) {
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
+                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
+                        if (isSubProcessChildNode) {
+                            boolean isSignDept = signDeptInfoApi
+                                .isSignDept(tenantId, bureau.getId(), "0", processSerialNumber).getData();
+                            if (!isSignDept) {
+                                // 针对SubProcess
+                                mapTemp.put("taskName", "送会签");
+                                mapTemp.put("taskAssignee", "");
+                            } else {
+                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                                mapTemp.put("taskName", listTemp.get(0));
+                                mapTemp.put("taskAssignee", listTemp.get(1));
+                            }
+                        } else {
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                            mapTemp.put("taskName", taskList.get(0).getName());
+                            mapTemp.put("taskAssignee", listTemp.get(0));
+                        }
+                    } else {
+                        mapTemp.put("taskName", "已办结");
+                        mapTemp.put("taskAssignee", processParam.getCompleter());
+                    }
+                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("bureauName",
+                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("taskId", taskId);
+                    /**
+                     * 暂时取表单所有字段数据
+                     */
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    mapTemp.putAll(formData);
+
+                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
+                        mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+                    } else {
+                        mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
+                            ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
+                    }
+                    mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
+                        ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
+                } catch (Exception e) {
+                    LOGGER.error("获取已办列表失败" + processInstanceId, e);
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取待办异常", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
+    @Override
     public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
         Y9Page<ActRuDetailModel> itemPage;
         try {
@@ -232,7 +317,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
                     if (isSubProcessChildNode) {
                         boolean isSignDept =
-                            signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
+                            signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processSerialNumber).getData();
                         if (!isSignDept) {
                             // 针对SubProcess
                             mapTemp.put("taskName", "送会签");
@@ -262,170 +347,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
-                }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
-            }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    @Override
-    public Y9Page<Map<String, Object>> allList(String itemId, Integer page, Integer rows) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
-            List<ActRuDetailModel> list = itemPage.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
-            List<Map<String, Object>> items = new ArrayList<>();
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            ProcessParamModel processParam;
-            String processInstanceId;
-            Map<String, Object> formData;
-            for (ActRuDetailModel ardModel : taslList) {
-                mapTemp = new HashMap<>(16);
-                String taskId = ardModel.getTaskId();
-                processInstanceId = ardModel.getProcessInstanceId();
-                try {
-                    String processSerialNumber = ardModel.getProcessSerialNumber();
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    if (StringUtils.isBlank(processParam.getCompleter())) {
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
-                        if (isSubProcessChildNode) {
-                            boolean isSignDept =
-                                signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
-                            if (!isSignDept) {
-                                // 针对SubProcess
-                                mapTemp.put("taskName", "送会签");
-                                mapTemp.put("taskAssignee", "");
-                            } else {
-                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
-                                mapTemp.put("taskName", listTemp.get(0));
-                                mapTemp.put("taskAssignee", listTemp.get(1));
-                            }
-                        } else {
-                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                            mapTemp.put("taskName", taskList.get(0).getName());
-                            mapTemp.put("taskAssignee", listTemp.get(0));
-                        }
-                    } else {
-                        mapTemp.put("taskName", "已办结");
-                        mapTemp.put("taskAssignee", processParam.getCompleter());
-                    }
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
-                    /**
-                     * 暂时取表单所有字段数据
-                     */
-                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    mapTemp.putAll(formData);
-
-                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
-                        mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
-                    } else {
-                        mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
-                            ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-                    }
-                    mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
-                        ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-                } catch (Exception e) {
-                    LOGGER.error("获取已办列表失败" + processInstanceId, e);
-                }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
-            }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    @Override
-    public Y9Page<Map<String, Object>> haveDoneList(String itemId, Integer page, Integer rows) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemHaveDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
-            List<ActRuDetailModel> list = itemPage.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
-            List<Map<String, Object>> items = new ArrayList<>();
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            ProcessParamModel processParam;
-            String processInstanceId;
-            Map<String, Object> formData;
-            for (ActRuDetailModel ardModel : taslList) {
-                mapTemp = new HashMap<>(16);
-                String taskId = ardModel.getTaskId();
-                processInstanceId = ardModel.getProcessInstanceId();
-                try {
-                    String processSerialNumber = ardModel.getProcessSerialNumber();
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    if (StringUtils.isBlank(processParam.getCompleter())) {
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
-                        if (isSubProcessChildNode) {
-                            boolean isSignDept =
-                                signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processInstanceId).getData();
-                            if (!isSignDept) {
-                                // 针对SubProcess
-                                mapTemp.put("taskName", "送会签");
-                                mapTemp.put("taskAssignee", "");
-                            } else {
-                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
-                                mapTemp.put("taskName", listTemp.get(0));
-                                mapTemp.put("taskAssignee", listTemp.get(1));
-                            }
-                        } else {
-                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                            mapTemp.put("taskName", taskList.get(0).getName());
-                            mapTemp.put("taskAssignee", listTemp.get(0));
-                        }
-                    } else {
-                        mapTemp.put("taskName", "已办结");
-                        mapTemp.put("taskAssignee", processParam.getCompleter());
-                    }
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
-                    /**
-                     * 暂时取表单所有字段数据
-                     */
-                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    mapTemp.putAll(formData);
-
-                    mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
-                        ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-                } catch (Exception e) {
-                    LOGGER.error("获取已办列表失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -640,6 +561,85 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             j++;
         }
         return assigneeNames;
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> haveDoneList(String itemId, Integer page, Integer rows) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            Y9Page<ActRuDetailModel> itemPage =
+                itemHaveDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            List<ActRuDetailModel> list = itemPage.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
+            List<Map<String, Object>> items = new ArrayList<>();
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp;
+            ProcessParamModel processParam;
+            String processInstanceId;
+            Map<String, Object> formData;
+            for (ActRuDetailModel ardModel : taslList) {
+                mapTemp = new HashMap<>(16);
+                String taskId = ardModel.getTaskId();
+                processInstanceId = ardModel.getProcessInstanceId();
+                try {
+                    String processSerialNumber = ardModel.getProcessSerialNumber();
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    if (StringUtils.isBlank(processParam.getCompleter())) {
+                        List<TaskModel> taskList =
+                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
+                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
+                        if (isSubProcessChildNode) {
+                            boolean isSignDept = signDeptInfoApi
+                                .isSignDept(tenantId, bureau.getId(), "0", processSerialNumber).getData();
+                            if (!isSignDept) {
+                                // 针对SubProcess
+                                mapTemp.put("taskName", "送会签");
+                                mapTemp.put("taskAssignee", "");
+                            } else {
+                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                                mapTemp.put("taskName", listTemp.get(0));
+                                mapTemp.put("taskAssignee", listTemp.get(1));
+                            }
+                        } else {
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                            mapTemp.put("taskName", taskList.get(0).getName());
+                            mapTemp.put("taskAssignee", listTemp.get(0));
+                        }
+                    } else {
+                        mapTemp.put("taskName", "已办结");
+                        mapTemp.put("taskAssignee", processParam.getCompleter());
+                    }
+                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("bureauName",
+                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("taskId", taskId);
+                    /**
+                     * 暂时取表单所有字段数据
+                     */
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    mapTemp.putAll(formData);
+
+                    mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
+                        ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
+                } catch (Exception e) {
+                    LOGGER.error("获取已办列表失败" + processInstanceId, e);
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取待办异常", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @Override

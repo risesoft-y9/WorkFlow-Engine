@@ -58,19 +58,19 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     }
 
     /**
-     * 根据流程实例id获取会签信息
+     * 根据流程编号获取会签信息
      *
      * @param tenantId 租户ID
      * @param deptType 单位类型（0：委内，1：委外）
-     * @param processInstanceId 流程实例id
+     * @param processSerialNumber 流程编号
      * @return Y9Result<List < SignDeptModel>
      * @since 9.6.0
      */
     @Override
     public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String tenantId, @RequestParam String deptType,
-        @RequestParam String processInstanceId) {
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processInstanceId, deptType);
+        List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processSerialNumber, deptType);
         List<SignDeptModel> modelList = new ArrayList<>();
         for (SignDeptInfo signDeptInfo : list) {
             SignDeptModel model = new SignDeptModel();
@@ -103,20 +103,20 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     }
 
     /**
-     * 根据流程实例id和部门ID判断是否是会签部门
+     * 根据流程编号和部门ID判断是否是会签部门
      *
      * @param tenantId 租户ID
      * @param deptId 部门ID
      * @param deptType 单位类型（0：委内，1：委外）
-     * @param processInstanceId 流程实例id
+     * @param processSerialNumber 流程编号
      * @return Y9Result<Boolean>
      * @since 9.6.0
      */
     @Override
     public Y9Result<Boolean> isSignDept(@RequestParam String tenantId, @RequestParam String deptId,
-        @RequestParam String deptType, @RequestParam String processInstanceId) {
+        @RequestParam String deptType, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processInstanceId, deptType);
+        List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processSerialNumber, deptType);
         if (list.isEmpty()) {
             return Y9Result.success(false);
         }
@@ -130,17 +130,17 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @param positionId 岗位id
      * @param deptIds 部门ids
      * @param deptType 单位类型（0：委内，1：委外）
-     * @param processInstanceId 流程实例id
+     * @param processSerialNumber 流程编号
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @Override
     public Y9Result<Object> saveSignDept(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processInstanceId) {
+        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        signDeptInfoService.saveSignDept(processInstanceId, deptType, deptIds);
+        signDeptInfoService.saveSignDept(processSerialNumber, deptType, deptIds);
         return Y9Result.success();
     }
 
