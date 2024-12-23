@@ -196,7 +196,7 @@ public class FlowableModelConvertUtil {
     }
 
     public static List<IdentityLinkModel> identityLinkList2ModelList(List<IdentityLink> ilList) {
-        List<IdentityLinkModel> ilModelList = new ArrayList<IdentityLinkModel>();
+        List<IdentityLinkModel> ilModelList = new ArrayList<>();
         for (IdentityLink il : ilList) {
             ilModelList.add(identityLink2Model(il));
         }

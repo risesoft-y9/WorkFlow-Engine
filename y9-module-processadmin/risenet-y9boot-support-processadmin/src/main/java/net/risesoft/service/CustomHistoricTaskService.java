@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.flowable.task.api.history.HistoricTaskInstance;
 
+import net.risesoft.model.processadmin.IdentityLinkModel;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -26,7 +28,7 @@ public interface CustomHistoricTaskService {
      * @param year
      * @return
      */
-    HistoricTaskInstance getByIdAndYear(String taskId,String year);
+    HistoricTaskInstance getByIdAndYear(String taskId, String year);
 
     /**
      * 根据执行实例获取已经办理完成的任务数量
@@ -94,4 +96,13 @@ public interface CustomHistoricTaskService {
      * @param taskId
      */
     void setTenantId(String taskId);
+
+    /**
+     * 获取任务的用户信息
+     *
+     * @param taskId
+     * @param year
+     * @return
+     */
+    List<IdentityLinkModel> listIdentityLinksForTaskByTaskId(String taskId, String year);
 }
