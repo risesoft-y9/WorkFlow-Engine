@@ -1,19 +1,22 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.CalendarConfigApi;
-import net.risesoft.model.LightColorModel;
-import net.risesoft.model.itemadmin.CalendarConfigModel;
-import net.risesoft.service.WorkDayService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.CalendarConfigApi;
+import net.risesoft.enums.TaskRelatedEnum;
+import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.service.WorkDayService;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author : qinman
@@ -26,7 +29,7 @@ public class WorkDayServiceImpl implements WorkDayService {
 
     private final CalendarConfigApi calendarConfigApi;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
 
     // 获取两个日期时间的相隔天数
     public int daysBetween(Date startDate, Date endDate) {
@@ -40,7 +43,7 @@ public class WorkDayServiceImpl implements WorkDayService {
         } catch (ParseException e) {
             LOGGER.error("日期格式错误", e);
         }
-        return (int) days;
+        return (int)days;
     }
 
     // 获取两个日期之间相隔天数，去除节假日
@@ -75,7 +78,8 @@ public class WorkDayServiceImpl implements WorkDayService {
         int days = -1;
         try {
             if (null != startDate && null != endDate) {
-                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, sdf.format(startDate)).getData();
+                CalendarConfigModel calendarConfigModel =
+                    calendarConfigApi.findByYear(tenantId, sdf.format(startDate)).getData();
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     days = daysBetween(startDate, endDate, everyYearHoliday);
@@ -90,15 +94,14 @@ public class WorkDayServiceImpl implements WorkDayService {
     }
 
     @Override
-    public LightColorModel getLightColor(Date startDate, Date endDate) {
+    public TaskRelatedModel getLightColor(Date startDate, Date endDate) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         int lightColor = 0;
-        String title = "";
-        LightColorModel lightColorModel = new LightColorModel();
         try {
             if (null != startDate && null != endDate) {
                 int days;
-                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, sdf.format(startDate)).getData();
+                CalendarConfigModel calendarConfigModel =
+                    calendarConfigApi.findByYear(tenantId, sdf.format(startDate)).getData();
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     days = daysBetween(startDate, endDate, everyYearHoliday);
@@ -107,26 +110,19 @@ public class WorkDayServiceImpl implements WorkDayService {
                 }
                 if (days <= 10 && days > 7) {
                     lightColor = 1;
-                    title = "该文件10个工作日内即将超时。";
                 } else if (days <= 7 && days > 5) {
                     lightColor = 2;
-                    title = "该文件7个工作日内即将超时。";
                 } else if (days <= 5 && days > 3) {
                     lightColor = 3;
-                    title = "该文件5个工作日内即将超时。";
                 } else if (days <= 3 && days > 0) {
                     lightColor = 4;
-                    title = "该文件3个工作日内即将超时。";
                 } else if (days <= 0) {
                     lightColor = 5;
-                    title = "该文件已超时。";
                 }
-                lightColorModel.setColor(lightColor);
-                lightColorModel.setTitle(title);
             }
         } catch (Exception e) {
             LOGGER.error("获取红绿灯状态异常", e);
         }
-        return lightColorModel;
+        return new TaskRelatedModel(TaskRelatedEnum.LIGHTCOLOR.getValue(), String.valueOf(lightColor));
     }
 }
