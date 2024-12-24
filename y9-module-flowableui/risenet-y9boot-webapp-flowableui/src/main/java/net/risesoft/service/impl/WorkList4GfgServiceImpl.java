@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.LightColorModel;
+import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -239,37 +240,31 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     Map<String, Object> formData =
                         formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData();
                     mapTemp.putAll(formData);
-
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
                     mapTemp.put("title", processParam.getTitle());
                     mapTemp.put("bureauName",
                         orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
                     mapTemp.put("taskName", taskName);
-
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("taskAssignee", taskAssignee);
-                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
-
-                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
                     mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-                    // 退回件
-                    if (Boolean.parseBoolean(rollBack)) {
-                        mapTemp.put("rollBack", true);
-                    }
                     List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
-                    /**
+                    if (isNewTodo == 1) {
+                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
+                    }
+                    /*
                      * 红绿灯
                      */
-                    LightColorModel lightColorModel = new LightColorModel();
                     if (null != ardModel.getDueDate()) {
-                        lightColorModel = workDayService.getLightColor(new Date(), ardModel.getDueDate());
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
                     }
-                    mapTemp.put("lightColor", lightColorModel);
+                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
+                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
@@ -855,9 +850,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         taskAssignee = getAssigneeNames(taskId);
                     }
                     String taskName = task.getName();
-                    int priority = task.getPriority();
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
-                    Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName",
@@ -868,30 +861,25 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("processDefinitionId", task.getProcessDefinitionId());
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("taskAssignee", taskAssignee);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
-
-                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
-                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
-                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-                    // 退回件
-                    if (Boolean.parseBoolean(rollBack)) {
-                        mapTemp.put("rollBack", true);
-                    }
                     List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
-                    /**
+                    if (isNewTodo == 1) {
+                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
+                    }
+                    /*
                      * 红绿灯
                      */
-                    LightColorModel lightColorModel = new LightColorModel();
                     if (null != ardModel.getDueDate()) {
-                        lightColorModel = workDayService.getLightColor(new Date(), ardModel.getDueDate());
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
                     }
-                    mapTemp.put("lightColor", lightColorModel);
+                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
+                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }

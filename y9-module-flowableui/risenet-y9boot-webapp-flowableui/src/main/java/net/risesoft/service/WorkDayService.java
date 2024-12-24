@@ -1,12 +1,12 @@
 package net.risesoft.service;
 
-import net.risesoft.model.LightColorModel;
-
 import java.util.Date;
+
+import net.risesoft.model.itemadmin.TaskRelatedModel;
 
 public interface WorkDayService {
 
     int getDay(Date startDate, Date endDate);
 
-    LightColorModel getLightColor(Date startDate, Date endDate);
+    TaskRelatedModel getLightColor(Date startDate, Date endDate);
 }
