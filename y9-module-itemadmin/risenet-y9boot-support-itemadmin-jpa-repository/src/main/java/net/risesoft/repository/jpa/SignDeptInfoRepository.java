@@ -2,7 +2,6 @@ package net.risesoft.repository.jpa;
 
 import java.util.List;
 
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,19 +16,20 @@ import net.risesoft.entity.SignDeptInfo;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface SignDeptInfoRepository
-        extends JpaRepository<SignDeptInfo, String>, JpaSpecificationExecutor<SignDeptInfo> {
+    extends JpaRepository<SignDeptInfo, String>, JpaSpecificationExecutor<SignDeptInfo> {
 
     @Modifying
     @Transactional
-    void deleteByProcessInstanceIdAndDeptType(String processInstanceId, String deptType);
+    void deleteByProcessSerialNumberAndDeptType(String processSerialNumber, String deptType);
 
     @Modifying
     @Transactional
-    void deleteByProcessInstanceIdAndDeptTypeAndDeptIdNotIn(String processInstanceId, String deptType,
-                                                            List<String> deptIds);
+    void deleteByProcessSerialNumberAndDeptTypeAndDeptIdNotIn(String processSerialNumber, String deptType,
+        List<String> deptIds);
 
-    SignDeptInfo findByProcessInstanceIdAndDeptTypeAndDeptId(String processInstanceId, String deptType, String deptId);
+    SignDeptInfo findByProcessSerialNumberAndDeptTypeAndDeptId(String processSerialNumber, String deptType,
+        String deptId);
 
-    List<SignDeptInfo> findByProcessInstanceIdAndDeptTypeOrderByOrderIndexAsc(String processInstanceId,
-                                                                              String deptType);
+    List<SignDeptInfo> findByProcessSerialNumberAndDeptTypeOrderByOrderIndexAsc(String processSerialNumber,
+        String deptType);
 }

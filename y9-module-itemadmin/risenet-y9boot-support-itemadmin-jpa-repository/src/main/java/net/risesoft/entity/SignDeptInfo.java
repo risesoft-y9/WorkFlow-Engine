@@ -45,9 +45,9 @@ public class SignDeptInfo implements Serializable {
     @Column(name = "DEPTNAME", length = 100)
     private String deptName;
 
-    @Comment("流程实例Id")
-    @Column(name = "PROCESSINSTANCEID", length = 50, nullable = false)
-    private String processInstanceId;
+    @Comment("流程编号")
+    @Column(name = "PROCESSSERIALNUMBER", length = 50, nullable = false)
+    private String processSerialNumber;
 
     @Comment("签字人姓名")
     @Column(name = "USERNAME", length = 50)

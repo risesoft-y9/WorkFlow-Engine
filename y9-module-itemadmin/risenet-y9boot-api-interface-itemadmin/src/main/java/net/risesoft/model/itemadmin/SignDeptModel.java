@@ -23,8 +23,8 @@ public class SignDeptModel implements Serializable {
     // 部门名称
     private String deptName;
 
-    // 流程实例Id
-    private String processInstanceId;
+    // 流程编号
+    private String processSerialNumber;
 
     // 签字人姓名
     private String userName;
