@@ -281,4 +281,126 @@ public class SignController {
         return Y9Result.success("", "获取成功");
     }
 
+    /**
+     * 计算天数和小时
+     *
+     * @param type 计算类型
+     * @param leaveStartTime 开始日期
+     * @param leaveEndTime 结束日期
+     * @param startSel 上午下午选项
+     * @param endSel 上午下午选项
+     * @param selStartTime 开始时间节点
+     * @param selEndTime 结束时间节点
+     * @return Y9Result<String>
+     */
+    @RequestMapping("/getCommonDayOrHour")
+    public Y9Result<String> getCommonDayOrHour(@RequestParam(required = false) String type, String leaveStartTime,
+        String leaveEndTime, @RequestParam(required = false) String startSel,
+        @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
+        @RequestParam(required = false) String selEndTime) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            switch (type) {
+                case "天": {
+                    if (leaveStartTime.equals(leaveEndTime)) {
+                        return Y9Result.success("0", "获取成功");
+                    }
+                    String tmp = leaveStartTime;
+                    int num = 0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        num++;
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    return Y9Result.success(String.valueOf(num), "获取成功");
+                }
+                case "半天": {
+                    if (leaveStartTime.equals(leaveEndTime)) {
+                        return Y9Result.success("0", "获取成功");
+                    }
+                    String tmp = leaveStartTime;
+                    int num = 0;
+                    double start = 0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && startSel.equals("下午")) {// 开始日期选择下午，算半天
+                            start += 0.5;
+                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            continue;
+                        }
+                        if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && endSel.equals("上午")) {// 结束日期选择上午，算半天
+                            start += 0.5;
+                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            continue;
+                        }
+                        num++;
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    if (start > 0) {
+                        return Y9Result.success(String.valueOf(num + start), "获取成功");
+                    }
+                    return Y9Result.success(String.valueOf(num), "获取成功");
+                }
+                case "小时": {
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                    if (leaveStartTime.equals(leaveEndTime)) {
+                        // 同一天，计算时间
+                        if (StringUtils.isBlank(selStartTime)) {
+                            selStartTime = "09:00";
+                        }
+                        if (StringUtils.isBlank(selEndTime)) {
+                            selEndTime = "17:30";
+                        }
+                        long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
+                        double hours = (double)time / (60 * 60 * 1000);
+                        BigDecimal a = BigDecimal.valueOf(hours);
+                        double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
+                        // 减去中间包含的1.5个小时
+                        if (Integer.parseInt(selStartTime.split(":")[0]) < 12
+                            && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
+                            waitTime = waitTime - 1.5;
+                        }
+                        return Y9Result.success(String.valueOf(waitTime), "获取成功");
+                    }
+                    String tmp = leaveStartTime;
+                    double timeCount = 0.0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
+                            long time = sdf.parse("17:30").getTime() - sdf.parse(selStartTime).getTime();
+                            double hours = (double)time / (60 * 60 * 1000);
+                            BigDecimal a = BigDecimal.valueOf(hours);
+                            double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
+                            if (Integer.parseInt(selStartTime.split(":")[0]) < 12) {
+                                waitTime = waitTime - 1.5;
+                            }
+                            timeCount = timeCount + waitTime;
+                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            continue;
+                        }
+                        if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
+                            long time = sdf.parse(selEndTime).getTime() - sdf.parse("09:00").getTime();
+                            double hours = (double)time / (60 * 60 * 1000);
+                            BigDecimal a = BigDecimal.valueOf(hours);
+                            double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
+                            if (Integer.parseInt(selEndTime.split(":")[0]) > 12) {
+                                waitTime = waitTime - 1.5;
+                            }
+                            timeCount = timeCount + waitTime;
+                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            continue;
+                        }
+                        timeCount = timeCount + 7;// 其余时间每天加7小时
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    return Y9Result.success(String.valueOf(timeCount), "获取成功");
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取时间日期时长失败", e);
+            return Y9Result.failure("获取失败");
+        }
+        return Y9Result.success("", "获取成功");
+    }
+
 }
