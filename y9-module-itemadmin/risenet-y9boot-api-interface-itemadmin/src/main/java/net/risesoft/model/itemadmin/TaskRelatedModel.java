@@ -1,9 +1,11 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.Data;
+
+import net.risesoft.enums.TaskRelatedEnum;
 
 /**
  * @author qinman
@@ -33,7 +35,7 @@ public class TaskRelatedModel implements Serializable {
      */
     private String taskId;
     /**
-     * 信息类型
+     * 信息类型 {@link TaskRelatedEnum}
      */
     private String infoType;
     /**

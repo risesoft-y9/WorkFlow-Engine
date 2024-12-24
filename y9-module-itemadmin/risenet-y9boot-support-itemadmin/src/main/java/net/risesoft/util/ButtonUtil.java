@@ -630,7 +630,7 @@ public class ButtonUtil {
             "16", "17", "18", "19", "20", "21", "22"};
         String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "退签", "办结", "收回", "拒签",
             "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交", "放入回收站"};
-        int[] buttonOrders = {3, 15, 10, 11, 22, 2, 1, 4, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
+        int[] buttonOrders = {3, 15, 10, 11, 22, 1, 2, 4, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
         boolean[] isButtonShow = new boolean[buttonIds.length];
         for (int i = 0; i < buttonIds.length; i++) {
             isButtonShow[i] = false;

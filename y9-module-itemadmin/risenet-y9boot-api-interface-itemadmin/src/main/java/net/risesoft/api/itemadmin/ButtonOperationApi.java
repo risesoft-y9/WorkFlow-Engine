@@ -98,6 +98,26 @@ public interface ButtonOperationApi {
         @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
 
     /**
+     * 退回至流转过的节点
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId 任务id
+     * @param routeToTaskId 任务key
+     * @param userChoice 岗位id集合
+     * @param reason 退回原因
+     * @param sponsorGuid 主办人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.8
+     */
+    @PostMapping(value = "/rollBack2History", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> rollBack2History(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId,
+        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("userChoice") List<String> userChoice,
+        @RequestParam(value = "reason", required = false) String reason,
+        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
+
+    /**
      * 退回操作
      *
      * @param tenantId 租户id

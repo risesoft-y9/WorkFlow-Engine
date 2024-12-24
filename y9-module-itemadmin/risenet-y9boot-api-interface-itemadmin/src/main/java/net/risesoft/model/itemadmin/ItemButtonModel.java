@@ -1,11 +1,11 @@
 package net.risesoft.model.itemadmin;
 
+import java.io.Serializable;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
-import java.io.Serializable;
 
 /**
  * 流程详情数据
@@ -15,6 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ItemButtonModel implements Serializable {
 
     private static final long serialVersionUID = -695604520841204814L;
@@ -35,6 +36,11 @@ public class ItemButtonModel implements Serializable {
     private Integer buttonType;
 
     /**
+     * 组织id
+     */
+    private List<String> orgUnitIds;
+
+    /**
      * 按钮描述
      */
     private String description;
@@ -50,7 +56,7 @@ public class ItemButtonModel implements Serializable {
         this.buttonType = buttonType;
     }
 
-    public ItemButtonModel(String key, String name, Integer buttonType,Integer tabIndex) {
+    public ItemButtonModel(String key, String name, Integer buttonType, Integer tabIndex) {
         this.key = key;
         this.name = name;
         this.buttonType = buttonType;

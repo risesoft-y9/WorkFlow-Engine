@@ -17,7 +17,9 @@ public enum TaskRelatedEnum {
     /** 操作名称 */
     ACTIONNAME("2", "操作名称"),
     /** 子流程信息 */
-    SUBINFO("3", "子流程信息");
+    SUBINFO("3", "子流程信息"),
+    /** 多步退回 */
+    ROLLBACK("4", "多步退回");
 
     private final String value;
     private final String name;

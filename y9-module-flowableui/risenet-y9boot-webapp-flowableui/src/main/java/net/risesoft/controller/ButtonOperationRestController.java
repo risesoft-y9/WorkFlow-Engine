@@ -1,7 +1,28 @@
 package net.risesoft.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import jakarta.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
@@ -35,22 +56,6 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.constraints.NotBlank;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 操作按钮方法
@@ -677,6 +682,34 @@ public class ButtonOperationRestController {
             LOGGER.error("reposition error", e);
         }
         return Y9Result.failure("重定向失败");
+    }
+
+    /**
+     * 退回至流转过的节点
+     *
+     * @param taskId 任务id
+     * @param routeToTaskId 任务key
+     * @param orgUnitIds 岗位id集合
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.8
+     */
+    @PostMapping(value = "/rollBack2History")
+    public Y9Result<String> rollBack2History(@RequestParam @NotBlank String taskId,
+        @RequestParam @NotBlank String routeToTaskId, @RequestParam String[] orgUnitIds) {
+        Position position = Y9LoginUserHolder.getPosition();
+        String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            if (null == task) {
+                return Y9Result.failure("该件已被处理！");
+            }
+            buttonOperationApi.rollBack2History(tenantId, positionId, taskId, routeToTaskId,
+                Arrays.stream(orgUnitIds).collect(Collectors.toList()), "", "");
+            return Y9Result.successMsg("多步退回成功");
+        } catch (Exception e) {
+            LOGGER.error("reposition error", e);
+        }
+        return Y9Result.failure("多步退回失败");
     }
 
     /**
