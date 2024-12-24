@@ -59,6 +59,31 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     }
 
     /**
+     * 退回至流转过的节点
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId 任务id
+     * @param routeToTaskId 任务key
+     * @param userChoice 岗位id集合
+     * @param reason 退回原因
+     * @param sponsorGuid 主办人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<Object> rollBack2History(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String taskId, @RequestParam String routeToTaskId,
+        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        operationService.rollBack2History(taskId, routeToTaskId, userChoice, reason, sponsorGuid);
+        return Y9Result.success();
+    }
+
+    /**
      * 退回
      *
      * @param tenantId 租户id

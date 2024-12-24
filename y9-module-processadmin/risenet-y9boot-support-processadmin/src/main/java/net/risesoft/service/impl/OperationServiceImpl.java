@@ -29,12 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.command.JumpCommand;
+import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomHistoricVariableService;
 import net.risesoft.service.CustomProcessDefinitionService;
@@ -79,6 +83,8 @@ public class OperationServiceImpl implements OperationService {
     private final ProcessParamApi processParamApi;
 
     private final ProcessTrackApi processTrackApi;
+
+    private final TaskRelatedApi taskRelatedApi;
 
     @Override
     @Transactional
@@ -133,6 +139,33 @@ public class OperationServiceImpl implements OperationService {
             }
             customVariableService.setVariablesLocal(task.getId(), vars);
         }
+    }
+
+    @Override
+    @Transactional
+    public void rollBack2History(String taskId, String targetTaskDefineKey, List<String> users, String reason,
+        String sponsorGuid) {
+        OrgUnit position = Y9LoginUserHolder.getOrgUnit();
+        Task currentTask = customTaskService.findById(taskId);
+        String processInstanceId = currentTask.getProcessInstanceId();
+        String processSerialNumber =
+            (String)customVariableService.getVariable(taskId, SysVariables.PROCESSSERIALNUMBER);
+        String reasonTemp =
+            "该任务已由" + position.getName() + "多步退回" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
+        managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reasonTemp));
+
+        List<Task> taskList = customTaskService.listByProcessInstanceId(processInstanceId);
+        taskList.forEach(task -> {
+            TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
+            taskRelatedModel.setInfoType(TaskRelatedEnum.ROLLBACK.getValue());
+            taskRelatedModel.setTaskId(task.getId());
+            taskRelatedModel.setProcessInstanceId(task.getProcessInstanceId());
+            taskRelatedModel.setProcessSerialNumber(processSerialNumber);
+            taskRelatedModel.setMsgContent(reasonTemp);
+            taskRelatedModel.setSenderId(position.getId());
+            taskRelatedModel.setSenderName(position.getName());
+            taskRelatedApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), taskRelatedModel);
+        });
     }
 
     @Override
