@@ -21,7 +21,19 @@ public interface OperationService {
     void reposition(String taskId, String targetTaskDefineKey, List<String> users, String reason, String sponsorGuid);
 
     /**
-     * 退回
+     * Description: 退回至流转过的节点
+     *
+     * @param taskId
+     * @param targetTaskDefineKey
+     * @param users
+     * @param reason
+     * @param sponsorGuid
+     */
+    void rollBack2History(String taskId, String targetTaskDefineKey, List<String> users, String reason,
+        String sponsorGuid);
+
+    /**
+     * 退回上一步
      *
      * @param taskId
      * @param reason

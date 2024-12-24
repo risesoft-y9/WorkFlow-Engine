@@ -3,6 +3,7 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +79,7 @@ import net.risesoft.model.platform.CustomGroup;
 import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Resource;
 import net.risesoft.model.processadmin.FlowElementModel;
@@ -1385,7 +1388,6 @@ public class DocumentServiceImpl implements DocumentService {
         String repositionName = "";
         String repositionKey = "";
         List<ItemButtonModel> buttonList = new ArrayList<>();
-        List<Map<String, Object>> repositionMap = new ArrayList<>();
         List<ItemButtonBind> bibList;
         // 生成按钮数组
         for (int i = buttonOrders.length - 1; i >= 0; i--) {
@@ -1480,8 +1482,8 @@ public class DocumentServiceImpl implements DocumentService {
                                 new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasrole) {
+                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                                if (hasRole) {
                                     buttonList.add(new ItemButtonModel(buttonCustomId, buttonName,
                                         ItemButtonTypeEnum.SEND.getValue()));
                                     break;
@@ -1491,11 +1493,60 @@ public class DocumentServiceImpl implements DocumentService {
                     }
                 }
             }
+
+            /*
+             * 假如退回按钮显示的话，去获取路由
+             */
+            String taskDefNameJson;
+            if (k == 3 && isButtonShow[3]) {
+                TaskModel task = taskApi.findById(tenantId, taskId).getData();
+                Boolean isSub =
+                    processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
+                List<HistoricTaskInstanceModel> results =
+                    historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
+                if (isSub) {
+                    String executionId = task.getExecutionId();
+                    results.stream().filter(r -> r.getExecutionId().equals(executionId) && null != r.getEndTime())
+                        .forEach(r -> {
+                            String taskName = r.getName() + "({0})";
+                            OrgUnit position = null;
+                            if (StringUtils.isNotBlank(r.getAssignee())) {
+                                position = orgUnitApi.getOrgUnit(tenantId, r.getAssignee()).getData();
+                            }
+                            taskName = MessageFormat.format(taskName, null == position ? "无" : position.getName());
+                            buttonList.add(new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
+                                ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null));
+                        });
+                } else {
+                    List<TargetModel> subNodeList =
+                        processDefinitionApi.getSubProcessChildNode(tenantId, processDefinitionId).getData();
+                    results.stream().filter(r -> null != r.getEndTime()).forEach(r -> {
+                        AtomicBoolean isSubNode = new AtomicBoolean(false);
+                        subNodeList.forEach(s -> {
+                            if (s.getTaskDefKey().equals(r.getTaskDefinitionKey())) {
+                                isSubNode.set(true);
+                            }
+                        });
+                        if (!isSubNode.get()) {
+                            String taskName = r.getName() + "({0})";
+                            List<Person> personList = new ArrayList<>();
+                            if (StringUtils.isNotBlank(r.getAssignee())) {
+                                personList = positionApi.listPersonsByPositionId(tenantId, r.getAssignee()).getData();
+                            }
+                            taskName = MessageFormat.format(taskName,
+                                personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
+                            buttonList.add(new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
+                                ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null));
+                        }
+                    });
+
+                }
+            }
             /*
              * 假如重定向按钮显示的话，去获取路由
              */
-            String taskDefNameJson;
             if (k == 15 && isButtonShow[15]) {
+                List<Map<String, Object>> repositionMap = new ArrayList<>();
                 List<TargetModel> taskNodes =
                     processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
                 for (TargetModel node : taskNodes) {

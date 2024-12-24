@@ -1,24 +1,22 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.itemadmin.TaskRelatedApi;
-import net.risesoft.api.itemadmin.TaskVariableApi;
-import net.risesoft.entity.TaskRelated;
-import net.risesoft.entity.TaskVariable;
-import net.risesoft.model.itemadmin.TaskRelatedModel;
-import net.risesoft.model.itemadmin.TaskVariableModel;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.TaskVariableRepository;
-import net.risesoft.service.TaskRelatedService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9BeanUtil;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.entity.TaskRelated;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.TaskRelatedService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 任务变量接口
@@ -52,15 +50,14 @@ public class TaskRelatedApiImpl implements TaskRelatedApi {
      * @since 9.6.8
      */
     @Override
-    public Y9Result<List<TaskRelatedModel>> findByTaskId(@RequestParam String tenantId,
-                                                                   @RequestParam String taskId) {
+    public Y9Result<List<TaskRelatedModel>> findByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<TaskRelated> list = taskRelatedService.findByTaskId(taskId);
         List<TaskRelatedModel> modelList = new ArrayList<>();
-        TaskRelatedModel taskRelatedModel = null;
-        for(TaskRelated taskRelated:list){
-            taskRelatedModel=new TaskRelatedModel();
-            Y9BeanUtil.copyProperties(taskRelated,taskRelatedModel);
+        TaskRelatedModel taskRelatedModel;
+        for (TaskRelated taskRelated : list) {
+            taskRelatedModel = new TaskRelatedModel();
+            Y9BeanUtil.copyProperties(taskRelated, taskRelatedModel);
             modelList.add(taskRelatedModel);
         }
         return Y9Result.success(modelList);

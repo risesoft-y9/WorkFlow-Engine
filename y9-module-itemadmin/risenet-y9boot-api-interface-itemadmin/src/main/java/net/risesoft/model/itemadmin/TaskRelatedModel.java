@@ -1,15 +1,19 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.TaskRelatedEnum;
 
 /**
  * @author qinman
  * @date 2024/12/03
  */
 @Data
+@NoArgsConstructor
 public class TaskRelatedModel implements Serializable {
 
     private static final long serialVersionUID = 879932521397158651L;
@@ -33,7 +37,7 @@ public class TaskRelatedModel implements Serializable {
      */
     private String taskId;
     /**
-     * 信息类型
+     * 信息类型 {@link TaskRelatedEnum}
      */
     private String infoType;
     /**
@@ -60,4 +64,9 @@ public class TaskRelatedModel implements Serializable {
      * 阅读时间
      */
     private Date readTime;
+
+    public TaskRelatedModel(String infoType, String msgContent) {
+        this.infoType = infoType;
+        this.msgContent = msgContent;
+    }
 }

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.model.processadmin.FlowElementModel;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +22,7 @@ import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -153,8 +153,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             Y9LoginUserHolder.setOrgUnit(orgUnit);
             FlowElementModel flowElementModel = processDefinitionApi
                 .getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
-            Map<String, Object> variables =
-                CommonOpt.setVariables(orgUnitId, orgUnit.getName(), hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
+            Map<String, Object> variables = CommonOpt.setVariables(orgUnitId, orgUnit.getName(),
+                hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSECLAIMROLLBACK);
             variableApi.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
@@ -198,6 +198,29 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         specialOperationApi.reposition(tenantId, orgUnitId, taskId, repositionToTaskId, userChoice, reason,
+            sponsorGuid);
+        return Y9Result.success();
+    }
+
+    /**
+     * 退回至流转过的节点
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId 任务id
+     * @param routeToTaskId 任务key
+     * @param userChoice 岗位id集合
+     * @param reason 退回原因
+     * @param sponsorGuid 主办人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<Object> rollBack2History(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String taskId, @RequestParam String routeToTaskId,
+        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        specialOperationApi.rollBack2History(tenantId, orgUnitId, taskId, routeToTaskId, userChoice, reason,
             sponsorGuid);
         return Y9Result.success();
     }

@@ -33,6 +33,7 @@ import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.TaskRelated;
 import net.risesoft.entity.TransactionHistoryWord;
 import net.risesoft.enums.ProcessTrackStatusEnum;
+import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
@@ -528,7 +529,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         model.setAssignee("");
         model.setName(hai.getName());
         model.setActionName("");
-        TaskRelated taskRelated = taskRelatedService.findByTaskIdAndInfoType(taskId, "2");
+        TaskRelated taskRelated =
+            taskRelatedService.findByTaskIdAndInfoType(taskId, TaskRelatedEnum.ACTIONNAME.getValue());
         if (null != taskRelated && StringUtils.isNotBlank(taskRelated.getMsgContent())) {
             model.setActionName(taskRelated.getMsgContent());
         }
