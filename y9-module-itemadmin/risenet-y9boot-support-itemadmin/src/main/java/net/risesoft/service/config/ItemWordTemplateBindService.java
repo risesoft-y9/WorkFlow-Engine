@@ -96,7 +96,7 @@ public interface ItemWordTemplateBindService {
      * @param bindValue
      * @return
      */
-    Y9Result<String> saveTemplateValue(String id, String bindValue);
+    Y9Result<String> saveTemplateValue(String id, String itemId, String bindValue);
 
     /**
      * 更新绑定状态
