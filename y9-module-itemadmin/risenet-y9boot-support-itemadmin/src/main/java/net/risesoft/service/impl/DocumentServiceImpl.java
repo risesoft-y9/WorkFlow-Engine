@@ -1389,12 +1389,6 @@ public class DocumentServiceImpl implements DocumentService {
         String repositionKey = "";
         List<ItemButtonModel> buttonList = new ArrayList<>();
         List<ItemButtonBind> bibList;
-
-        List<TargetModel> taskNodesa = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
-        taskNodesa.forEach(aaa -> {
-            System.out.println(aaa.getTaskDefKey());
-        });
-
         // 生成按钮数组
         for (int i = buttonOrders.length - 1; i >= 0; i--) {
             int k = buttonOrders[i] - 1;

@@ -619,40 +619,40 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 } else if (callActivity.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                     targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                 }
-            } /* else if (activity instanceof SubProcess) {
-                 targetModel.setTaskDefName(activity.getName() + "【子】");
-                 targetModel.setMultiInstance(SysVariables.COMMON);
-                 SubProcess subProcess = (SubProcess) activity;
-                 if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                     targetModel.setMultiInstance(SysVariables.PARALLEL);
-                 } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                     targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
-                 }
-                 // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-                 List<FlowElement> subProcessListCache = (List<FlowElement>) subProcess.getFlowElements();
-                 List<FlowElement> subProcessList = new ArrayList<>();
-                 if (!subProcessListCache.isEmpty()) {
-                     subProcessList.addAll(subProcessListCache);
-                 }
-                 subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
-                         || e instanceof SequenceFlow);
-                 for (FlowElement subProcessFe : subProcessList) {
-                     TargetModel subTargetModel = new TargetModel();
-                     subTargetModel.setTaskDefKey(subProcessFe.getId());
-                     subTargetModel.setTaskDefName(subProcessFe.getName() + "[子]");
-                     if (subProcessFe instanceof UserTask) {
-                         UserTask userTask = (UserTask) subProcessFe;
-                         if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                             subTargetModel.setMultiInstance(SysVariables.SEQUENTIAL);
-                         } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                             subTargetModel.setMultiInstance(SysVariables.PARALLEL);
-                         } else {
-                             subTargetModel.setMultiInstance(SysVariables.COMMON);
-                         }
-                     }
-                     list.add(subTargetModel);
-                 }
-              }*/
+            } else if (activity instanceof SubProcess) {
+                targetModel.setTaskDefName(activity.getName() + "【子】");
+                targetModel.setMultiInstance(SysVariables.COMMON);
+                SubProcess subProcess = (SubProcess)activity;
+                if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.PARALLEL);
+                } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                    targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                }
+                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
+                /*List<FlowElement> subProcessListCache = (List<FlowElement>) subProcess.getFlowElements();
+                List<FlowElement> subProcessList = new ArrayList<>();
+                if (!subProcessListCache.isEmpty()) {
+                    subProcessList.addAll(subProcessListCache);
+                }
+                subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
+                        || e instanceof SequenceFlow);
+                for (FlowElement subProcessFe : subProcessList) {
+                    TargetModel subTargetModel = new TargetModel();
+                    subTargetModel.setTaskDefKey(subProcessFe.getId());
+                    subTargetModel.setTaskDefName(subProcessFe.getName() + "[子]");
+                    if (subProcessFe instanceof UserTask) {
+                        UserTask userTask = (UserTask) subProcessFe;
+                        if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                            subTargetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+                        } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                            subTargetModel.setMultiInstance(SysVariables.PARALLEL);
+                        } else {
+                            subTargetModel.setMultiInstance(SysVariables.COMMON);
+                        }
+                    }
+                    list.add(subTargetModel);
+                }*/
+            }
             // if (!(activity instanceof SubProcess)) {// 子流程不加入list
             list.add(targetModel);
             // }
