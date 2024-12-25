@@ -37,6 +37,7 @@ import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
+import net.risesoft.api.itemadmin.UrgeInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -54,6 +55,7 @@ import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
+import net.risesoft.model.itemadmin.UrgeInfoModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
@@ -63,6 +65,7 @@ import net.risesoft.service.WorkDayService;
 import net.risesoft.service.WorkList4GfgService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
@@ -118,6 +121,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final WorkDayService workDayService;
 
     private final SignDeptInfoApi signDeptInfoApi;
+
+    private final UrgeInfoApi urgeInfoApi;
 
     @Override
     public Y9Page<Map<String, Object>> allList(String itemId, Integer page, Integer rows) {
@@ -263,6 +268,24 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }
                     taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
                         .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
+                    List<UrgeInfoModel> urgeInfoList =
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    boolean isSub = processDefinitionApi
+                        .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                        .getData();
+                    if (isSub) {
+                        urgeInfoList = urgeInfoList.stream()
+                            .filter(
+                                urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(task.getExecutionId()))
+                            .collect(Collectors.toList());
+                    } else {
+                        urgeInfoList =
+                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+                    }
+                    if (!urgeInfoList.isEmpty()) {
+                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
+                    }
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                 } catch (Exception e) {
@@ -843,7 +866,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     TaskModel task = taskApi.findById(tenantId, taskId).getData();
                     String taskAssignee = ardModel.getAssigneeName();
                     if (StringUtils.isBlank(task.getAssignee())) {
@@ -878,8 +900,27 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }
                     taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
                         .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
+                    List<UrgeInfoModel> urgeInfoList =
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    boolean isSub = processDefinitionApi
+                        .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                        .getData();
+                    if (isSub) {
+                        urgeInfoList = urgeInfoList.stream()
+                            .filter(
+                                urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(task.getExecutionId()))
+                            .collect(Collectors.toList());
+                    } else {
+                        urgeInfoList =
+                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+                    }
+                    if (!urgeInfoList.isEmpty()) {
+                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
+                    }
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
