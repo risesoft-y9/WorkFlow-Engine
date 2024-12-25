@@ -30,10 +30,10 @@ public interface SignDeptDetailApi {
     Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
-     * 根据流程实例id获取会签信息
+     * 根据流程序列号获取最新会签信息
      *
      * @param tenantId 租户ID
-     * @param processSerialNumber 流程实例id
+     * @param processSerialNumber 流程序列号
      * @param deptId 单位ID
      * @return Y9Result<SignDeptDetailModel>
      * @since 9.6.8
@@ -43,7 +43,7 @@ public interface SignDeptDetailApi {
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("deptId") String deptId);
 
     /**
-     * 根据流程实例id获取会签信息
+     * 根据会签部门详情id获取会签信息
      *
      * @param tenantId 租户ID
      * @param id 会签部门详情id
@@ -54,7 +54,7 @@ public interface SignDeptDetailApi {
     Y9Result<SignDeptDetailModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
-     * 根据流程实例id获取会签信息
+     * 根据流程序列号和会签状态获取会签信息
      *
      * @param tenantId 租户ID
      * @param processSerialNumber 流程序列号
@@ -65,6 +65,18 @@ public interface SignDeptDetailApi {
     @GetMapping(value = "/findByProcessSerialNumberAndStatus")
     Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("status") int status);
+
+    /**
+     * 根据流程序列号获取会签信息
+     *
+     * @param tenantId 租户ID
+     * @param processSerialNumber 流程序列号
+     * @return Y9Result<List<SignDeptDetailModel>
+     * @since 9.6.8
+     */
+    @GetMapping(value = "/findByProcessSerialNumber")
+    Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存会签信息

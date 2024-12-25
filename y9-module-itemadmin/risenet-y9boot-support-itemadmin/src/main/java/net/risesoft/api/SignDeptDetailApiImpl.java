@@ -92,7 +92,7 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     }
 
     /**
-     * 根据流程实例id获取会签信息
+     * 根据流程序列号和会签状态获取会签信息
      *
      * @param tenantId 租户ID
      * @param processSerialNumber 流程序列号
@@ -118,6 +118,28 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
                 osModelList.add(osModel);
             });
             model.setOpinionList(osModelList);
+            modelList.add(model);
+        }
+        return Y9Result.success(modelList);
+    }
+
+    /**
+     * 根据流程序列号获取会签信息
+     *
+     * @param tenantId 租户ID
+     * @param processSerialNumber 流程序列号
+     * @return Y9Result<List<SignDeptModel>
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<SignDeptDetail> list = signDeptDetailService.findByProcessSerialNumber(processSerialNumber);
+        List<SignDeptDetailModel> modelList = new ArrayList<>();
+        for (SignDeptDetail signDeptDetail : list) {
+            SignDeptDetailModel model = new SignDeptDetailModel();
+            Y9BeanUtil.copyProperties(signDeptDetail, model);
             modelList.add(model);
         }
         return Y9Result.success(modelList);
