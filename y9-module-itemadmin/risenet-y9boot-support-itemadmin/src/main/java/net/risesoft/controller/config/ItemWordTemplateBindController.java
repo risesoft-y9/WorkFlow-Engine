@@ -223,8 +223,9 @@ public class ItemWordTemplateBindController {
      * @return
      */
     @PostMapping(value = "/saveTemplateValue")
-    public Y9Result<String> saveTemplateValue(@RequestParam String id, @RequestParam String bindValue) {
-        return itemWordTemplateBindService.saveTemplateValue(id, bindValue);
+    public Y9Result<String> saveTemplateValue(@RequestParam String id, @RequestParam String itemId,
+        @RequestParam String bindValue) {
+        return itemWordTemplateBindService.saveTemplateValue(id, itemId, bindValue);
     }
 
     /**
