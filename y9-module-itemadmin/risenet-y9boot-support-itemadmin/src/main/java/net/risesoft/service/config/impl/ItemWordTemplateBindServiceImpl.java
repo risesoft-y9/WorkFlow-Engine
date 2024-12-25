@@ -199,9 +199,9 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
 
     @Override
     @Transactional
-    public Y9Result<String> saveTemplateValue(String id, String bindValue) {
+    public Y9Result<String> saveTemplateValue(String id, String itemId, String bindValue) {
         try {
-            List<ItemWordTemplateBind> list = wordTemplateBindRepository.findByItemIdOrderByBindValueAsc(id);
+            List<ItemWordTemplateBind> list = wordTemplateBindRepository.findByItemIdOrderByBindValueAsc(itemId);
             for (ItemWordTemplateBind itemWordTemplateBind : list) {
                 if (bindValue.equals(itemWordTemplateBind.getBindValue())) {
                     return Y9Result.failure("模板绑定值已经存在！请不要设置相同的值");

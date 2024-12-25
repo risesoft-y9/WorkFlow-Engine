@@ -43,6 +43,7 @@ import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.config.ItemViewConfService;
+import net.risesoft.service.config.ItemWordConfService;
 import net.risesoft.service.config.ItemWordTemplateBindService;
 import net.risesoft.service.config.RelatedProcessService;
 import net.risesoft.service.config.TaskTimeConfService;
@@ -84,6 +85,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final ItemButtonBindService itemButtonBindService;
     private final ItemViewConfService itemViewConfService;
     private final TaskTimeConfService taskTimeConfService;
+    private final ItemWordConfService itemWordConfService;
 
     @Override
     @Transactional
@@ -107,6 +109,8 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             itemButtonBindService.copyBind(itemId, processDefinitionId);
             // 复制任务时间配置
             taskTimeConfService.copyTaskConf(itemId, processDefinitionId);
+            // 复制正文组件权限配置
+            itemWordConfService.copyWordConf(itemId, processDefinitionId);
             return Y9Result.successMsg("复制成功");
         } catch (Exception e) {
             LOGGER.error("复制事项异常", e);

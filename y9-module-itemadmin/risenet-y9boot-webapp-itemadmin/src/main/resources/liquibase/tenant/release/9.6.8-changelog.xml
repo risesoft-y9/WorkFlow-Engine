@@ -60,7 +60,7 @@
             </column>
             <column name="DEPTID" remarks="部门Id" type="VARCHAR(50)"/>
             <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
-            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="签字人姓名" type="VARCHAR(50)"/>
             <column name="SIGNDATE" remarks="签字日期" type="VARCHAR(20)"/>
             <column name="DEPTTYPE" remarks="单位类型" type="VARCHAR(20)"/>
@@ -298,7 +298,7 @@
             </not>
         </preConditions>
         <addColumn tableName="FF_SIGN_DEPT_INFO">
-            <column name="PROCESSSERIALNUMBER" type="VARCHAR(100)" remarks="流程编号"/>
+            <column name="PROCESSSERIALNUMBER" type="VARCHAR(50)" remarks="流程编号"/>
         </addColumn>
     </changeSet>
     <changeSet id="1704700543333-16" author="qinMan" runOnChange="true">
