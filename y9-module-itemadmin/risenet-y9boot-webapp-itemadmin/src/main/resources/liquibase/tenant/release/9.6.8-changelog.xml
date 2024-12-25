@@ -301,4 +301,35 @@
             <column name="PROCESSSERIALNUMBER" type="VARCHAR(100)" remarks="流程编号"/>
         </addColumn>
     </changeSet>
+    <changeSet id="1704700543333-16" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_URGEINFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="催办信息表" tableName="FF_URGEINFO">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程序列号" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)"/>
+            <column name="EXECUTIONID" remarks="流程执行实例Id" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="0" name="ISSUB" remarks="是否是对子流程的催办信息" type="INT"/>
+            <column name="USERID" remarks="催办人员唯一标识" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="催办人员姓名" type="VARCHAR(20)"/>
+            <column name="MSGCONTENT" remarks="签注人电话" type="VARCHAR(1000)"/>
+            <column name="CREATETIME" remarks="生成时间" type="timestamp(3)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700543333-17" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="FF_URGEINFO" columnNames="PROCESSSERIALNUMBER"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ff_urgeinfo_index_001" tableName="FF_URGEINFO">
+            <column name="PROCESSSERIALNUMBER"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
