@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -552,8 +553,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             List<Person> personList;
             if (null != hai.getClaimTime()) {
                 personList = new ArrayList<>();
-                List<IdentityLinkModel> iList =
-                    historicIdentityApi.getIdentityLinksForTask(tenantId, taskId, year).getData();
+                List<IdentityLinkModel> iList = historicIdentityApi.getIdentityLinksForTask(tenantId, taskId).getData();
                 iList.stream().filter(i -> i.getType().equals(IdentityLinkType.CANDIDATE)).forEach(i -> {
                     List<Person> personListTemp =
                         positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), i.getUserId()).getData();
@@ -586,34 +586,29 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             model.setPersonList(personList);
         } else {
             try {
-                List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
-                StringBuilder assignees = new StringBuilder();
-                int j = 0;
-                List<Person> personList = new ArrayList<>();
-                for (IdentityLinkModel identityLink : iList) {
-                    String positionId = identityLink.getUserId();
-                    OrgUnit ownerUser =
-                        orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), positionId).getData();
-                    if (j < 5) {
-                        assignees =
-                            Y9Util.genCustomStr(assignees, ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
-                        personList.addAll(
-                            positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), positionId).getData());
+                List<IdentityLinkModel> iList = historicIdentityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+                List<IdentityLinkModel> candidateList = iList.stream()
+                    .filter(i -> i.getType().equals(IdentityLinkType.CANDIDATE)).collect(Collectors.toList());
+                if (!candidateList.isEmpty()) {
+                    String positionId = iList.get(0).getUserId();
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, positionId).getData();
+                    if (candidateList.size() > 1) {
+                        String sb = (null == orgUnit ? "岗位已删除" : orgUnit.getName()) + "等" + candidateList.size() + "人";
+                        model.setAssignee(sb);
                     } else {
-                        assignees.append("等，共").append(iList.size()).append("人");
-                        break;
+                        model.setAssignee(null == orgUnit ? "岗位已删除" : orgUnit.getName());
                     }
-                    j++;
                 }
-                personList.forEach(p -> {
-                    if (null == hai.getEndTime()) {
-                        p.setTabIndex(ProcessTrackStatusEnum.CLAIM.getValue());
-                    } else {
+                List<Person> personList = new ArrayList<>();
+                candidateList.forEach(candidate -> {
+                    List<Person> personListTemp = positionApi
+                        .listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), candidate.getUserId()).getData();
+                    personListTemp.forEach(p -> {
                         p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue());
-                    }
+                    });
+                    personList.addAll(personListTemp);
                 });
                 model.setPersonList(personList);
-                model.setAssignee(assignees.toString());
             } catch (Exception e) {
                 LOGGER.error("获取任务的用户信息失败", e);
             }
