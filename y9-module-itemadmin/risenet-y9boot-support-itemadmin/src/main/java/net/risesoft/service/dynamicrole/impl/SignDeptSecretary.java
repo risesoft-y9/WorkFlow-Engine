@@ -3,7 +3,6 @@ package net.risesoft.service.dynamicrole.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -47,9 +46,14 @@ public class SignDeptSecretary extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(processInstanceId)) {
+            String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+            OrgUnit position = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(officeDoneInfo.getProcessSerialNumber(), "0");
             for (SignDeptInfo signDeptInfo : list) {
+                if (position.getDn().split(",o=")[0].contains(signDeptInfo.getDeptName())) {// 排除本司局
+                    continue;
+                }
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, signDeptInfo.getDeptId()).getData();
                 if (orgUnit != null) {
                     orgUnitList.add(orgUnit);
