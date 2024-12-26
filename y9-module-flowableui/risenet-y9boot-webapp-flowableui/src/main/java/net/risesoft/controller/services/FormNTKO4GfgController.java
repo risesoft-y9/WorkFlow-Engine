@@ -12,6 +12,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,14 +28,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWordModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
@@ -63,8 +62,6 @@ public class FormNTKO4GfgController {
     private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
-
-    private final ProcessParamApi processParamApi;
 
     private final DocumentWordApi documentWordApi;
 
@@ -233,12 +230,8 @@ public class FormNTKO4GfgController {
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
-        String title;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            ProcessParamModel processModel =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            title = processModel != null ? processModel.getTitle() : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, wordType + fileType);
             DocumentWordModel model = new DocumentWordModel();
