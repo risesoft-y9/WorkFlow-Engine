@@ -47,11 +47,13 @@ public interface SignDeptInfoApi {
      * 获取委外会签部门选择树
      *
      * @param tenantId 租户ID
+     * @param id 部门ID
      * @return Y9Result<List<Department>>
      * @since 9.6.0
      */
     @GetMapping(value = "/getSignOutDeptTree")
-    Y9Result<List<Department>> getSignOutDeptTree(@RequestParam("tenantId") String tenantId);
+    Y9Result<List<Department>> getSignOutDeptTree(@RequestParam("tenantId") String tenantId,
+        @RequestParam("id") String id);
 
     /**
      * 根据流程编号和部门ID判断是否是会签部门
