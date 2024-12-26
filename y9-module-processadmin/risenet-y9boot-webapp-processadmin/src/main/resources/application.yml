@@ -222,6 +222,9 @@ y9:
             packagesToScanRepositoryTenant: net.risesoft.repository
         liquibase:
             public-enabled: true
+        multi-tenant:
+            # kafka, db
+            event-source: kafka
         log:
             enabled: true
             # kafka, api
@@ -232,6 +235,11 @@ y9:
                 maxInactiveIntervalInSeconds: 3600
         security:
             enabled: true
+            csrf:
+                accepted-referer:
+                    - youshengyun.com
+                    - localhost
+                    - 127.0.0.1
             cors:
                 allowCredentials: true
                 allowed-headers: '*'

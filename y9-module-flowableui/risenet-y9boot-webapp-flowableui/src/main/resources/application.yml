@@ -172,6 +172,8 @@ y9:
         todoBaseUrl: https://test.youshengyun.com/todo
         todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
         jodconverterBaseUrl: http://localhost:7055/jodconverter/onlinePreview?url=
+        logBaseUrl: http://localhost:7056/log
+        userOnlineBaseUrl: http://localhost:7056/userOnline
     feature:
         apisix:
             enabled: false
@@ -213,8 +215,13 @@ y9:
             packagesToScanEntityTenant: net.risesoft.entity
             packagesToScanRepositoryPublic: net.risesoft.y9public.repository
             packagesToScanRepositoryTenant: net.risesoft.repository
+        multi-tenant:
+            # kafka, db
+            event-source: kafka
         log:
             enabled: true
+            # kafka, api
+            logSaveTarget: kafka
         session:
             redis:
                 enabled: true
