@@ -101,8 +101,7 @@ public interface CustomHistoricTaskService {
      * 获取任务的用户信息
      *
      * @param taskId
-     * @param year
      * @return
      */
-    List<IdentityLinkModel> listIdentityLinksForTaskByTaskId(String taskId, String year);
+    List<IdentityLinkModel> listIdentityLinksForTaskByTaskId(String taskId);
 }
