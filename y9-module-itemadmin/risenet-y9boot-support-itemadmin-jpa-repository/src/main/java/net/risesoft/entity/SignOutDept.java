@@ -69,4 +69,16 @@ public class SignOutDept implements Serializable {
     @Column(name = "FIRSTSPELL", length = 100)
     private String firstSpell;
 
+    @Comment("是否禁止")
+    @Column(name = "ISFORBIDDEN")
+    private Integer isForbidden = 0;
+
+    @Comment("领导称谓")
+    @Column(name = "LDCW", length = 50)
+    private String ldcw;
+
+    @Comment("单位后缀")
+    @Column(name = "DEPTSUFFIX", length = 50)
+    private String deptSuffix;
+
 }

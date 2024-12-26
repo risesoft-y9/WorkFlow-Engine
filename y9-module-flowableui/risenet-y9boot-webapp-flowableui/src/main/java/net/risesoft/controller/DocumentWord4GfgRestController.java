@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -24,8 +25,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.model.user.UserInfo;
@@ -52,10 +51,6 @@ public class DocumentWord4GfgRestController {
     private final Y9FileStoreService y9FileStoreService;
 
     private final DocumentWordApi documentWordApi;
-
-    private final OrgUnitApi orgUnitApi;
-
-    private final ProcessParamApi processParamApi;
 
     /**
      * 下载正文

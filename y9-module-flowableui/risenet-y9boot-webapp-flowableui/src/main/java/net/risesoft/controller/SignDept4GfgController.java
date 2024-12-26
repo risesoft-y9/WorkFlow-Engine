@@ -60,12 +60,13 @@ public class SignDept4GfgController {
 
     /**
      * 获取委外会签部门树
-     *
+     * 
+     * @param id 部门id
      * @return Y9Result<List<Department>>
      */
     @GetMapping(value = "/getSignOutDeptTree")
-    public Y9Result<List<Department>> getSignOutDeptTree() {
-        return signDeptInfoApi.getSignOutDeptTree(Y9LoginUserHolder.getTenantId());
+    public Y9Result<List<Department>> getSignOutDeptTree(@RequestParam(required = false) String id) {
+        return signDeptInfoApi.getSignOutDeptTree(Y9LoginUserHolder.getTenantId(), id);
     }
 
     /**
