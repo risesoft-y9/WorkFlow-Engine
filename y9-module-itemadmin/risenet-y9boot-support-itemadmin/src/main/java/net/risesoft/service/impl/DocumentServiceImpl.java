@@ -640,7 +640,10 @@ public class DocumentServiceImpl implements DocumentService {
             int num = userList.size();
             boolean tooMuch = num > 100;
             if (tooMuch) {
-                return Y9Result.failure("发送人数过多");
+                return Y9Result.failure("发送人数过多!");
+            }
+            if (userList.isEmpty()) {
+                return Y9Result.failure("未匹配到发送人!");
             }
             OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
@@ -1520,25 +1523,29 @@ public class DocumentServiceImpl implements DocumentService {
                 } else {
                     List<TargetModel> subNodeList =
                         processDefinitionApi.getSubProcessChildNode(tenantId, processDefinitionId).getData();
-                    results.stream().filter(r -> null != r.getEndTime()).forEach(r -> {
-                        AtomicBoolean isSubNode = new AtomicBoolean(false);
-                        subNodeList.forEach(s -> {
-                            if (s.getTaskDefKey().equals(r.getTaskDefinitionKey())) {
-                                isSubNode.set(true);
+                    results.stream()
+                        .filter(
+                            hisTask -> null != hisTask.getEndTime() && StringUtils.isNotBlank(hisTask.getAssignee()))
+                        .forEach(hisTask -> {
+                            AtomicBoolean isSubNode = new AtomicBoolean(false);
+                            subNodeList.forEach(s -> {
+                                if (s.getTaskDefKey().equals(hisTask.getTaskDefinitionKey())) {
+                                    isSubNode.set(true);
+                                }
+                            });
+                            if (!isSubNode.get()) {
+                                String taskName = hisTask.getName() + "({0})";
+                                List<Person> personList = new ArrayList<>();
+                                if (StringUtils.isNotBlank(hisTask.getAssignee())) {
+                                    personList =
+                                        positionApi.listPersonsByPositionId(tenantId, hisTask.getAssignee()).getData();
+                                }
+                                taskName = MessageFormat.format(taskName,
+                                    personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
+                                buttonList.add(new ItemButtonModel(hisTask.getTaskDefinitionKey(), taskName,
+                                    ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(hisTask.getAssignee()), "", null));
                             }
                         });
-                        if (!isSubNode.get()) {
-                            String taskName = r.getName() + "({0})";
-                            List<Person> personList = new ArrayList<>();
-                            if (StringUtils.isNotBlank(r.getAssignee())) {
-                                personList = positionApi.listPersonsByPositionId(tenantId, r.getAssignee()).getData();
-                            }
-                            taskName = MessageFormat.format(taskName,
-                                personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
-                            buttonList.add(new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
-                                ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null));
-                        }
-                    });
 
                 }
             }
@@ -1898,7 +1905,8 @@ public class DocumentServiceImpl implements DocumentService {
                                 processParam.getProcessInstanceId(), "").getData();
                         for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                             // 获取相同任务
-                            if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)) {
+                            if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
+                                && StringUtils.isNotBlank(hisTask.getAssignee())) {
                                 searchPerson = false;
                                 model.setUserChoice("6:" + hisTask.getAssignee());
                                 break;

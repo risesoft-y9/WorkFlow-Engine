@@ -38,10 +38,10 @@ public class HistoricIdentityApiImpl implements HistoricIdentityApi {
      */
     @Override
     public Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam String tenantId,
-        @RequestParam String taskId, @RequestParam String year) {
+        @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<IdentityLinkModel> list = customHistoricTaskService.listIdentityLinksForTaskByTaskId(taskId, year);
+        List<IdentityLinkModel> list = customHistoricTaskService.listIdentityLinksForTaskByTaskId(taskId);
         return Y9Result.success(list);
     }
 }
