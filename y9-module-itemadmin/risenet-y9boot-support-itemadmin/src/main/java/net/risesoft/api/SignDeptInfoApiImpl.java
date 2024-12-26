@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,13 +15,16 @@ import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.SignDeptInfo;
 import net.risesoft.entity.SignOutDept;
+import net.risesoft.entity.SignOutDeptType;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SignOutDeptRepository;
+import net.risesoft.repository.jpa.SignOutDeptTypeRepository;
 import net.risesoft.service.SignDeptInfoService;
+import net.risesoft.service.SignDeptOutService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -39,6 +43,10 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     private final SignDeptInfoService signDeptInfoService;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final SignDeptOutService signDeptOutService;
+
+    private final SignOutDeptTypeRepository signOutDeptTypeRepository;
 
     private final SignOutDeptRepository signOutDeptRepository;
 
@@ -88,16 +96,30 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<List<Department>> getSignOutDeptTree(@RequestParam String tenantId) {
+    public Y9Result<List<Department>> getSignOutDeptTree(@RequestParam String tenantId,
+        @RequestParam(required = false) String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Department> modelList = new ArrayList<>();
-        List<SignOutDept> list = signOutDeptRepository.findAllOrderByDeptOrderAsc();
-        for (SignOutDept signOutDept : list) {
-            Department department = new Department();
-            department.setId(String.valueOf(signOutDept.getDeptId()));
-            department.setOrgType(OrgTypeEnum.DEPARTMENT);
-            department.setName(signOutDept.getDeptName());
-            modelList.add(department);
+        if (StringUtils.isBlank(id)) {
+            List<SignOutDeptType> typelist = signOutDeptTypeRepository.findByIsForbiddenOrderByTabIndexAsc(0);
+            for (SignOutDeptType info : typelist) {
+                Department department = new Department();
+                department.setId(String.valueOf(info.getDeptTypeId()));
+                department.setOrgType(OrgTypeEnum.DEPARTMENT);
+                department.setName(info.getDeptType());
+                department.setParentId("");
+                modelList.add(department);
+            }
+        } else {
+            List<SignOutDept> list = signOutDeptRepository.findByDeptTypeIdAndIsForbiddenOrderByDeptOrderAsc(id, 0);
+            for (SignOutDept signOutDept : list) {
+                Department department = new Department();
+                department.setId(signOutDept.getDeptId());
+                department.setOrgType(OrgTypeEnum.DEPARTMENT);
+                department.setName(signOutDept.getDeptName());
+                department.setParentId(signOutDept.getDeptTypeId());
+                modelList.add(department);
+            }
         }
         return Y9Result.success(modelList);
     }
