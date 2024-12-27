@@ -129,9 +129,9 @@ public class RoleServiceImpl implements RoleService {
                             for (OrgUnit orgUnit : orgList) {
                                 ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                                 model.setId(orgUnit.getId());
-                                model.setParentId(id);
+                                model.setParentId(org.getId());
                                 model.setName(orgUnit.getName());
-                                model.setIsParent(org.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                                model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                                 model.setOrgType(orgUnit.getOrgType().getValue());
                                 model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                                     ? ItemPermissionEnum.DEPARTMENT.getValue()
@@ -147,11 +147,10 @@ public class RoleServiceImpl implements RoleService {
                         } else if (OrgTypeEnum.DEPARTMENT.equals(org.getOrgType())) {
                             ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                             model.setId(org.getId());
-                            model.setParentId(id);
+                            model.setParentId(org.getParentId());
                             model.setName(org.getName());
                             model.setIsParent(true);
-                            model.setOrgType(org.getOrgType() == null ? OrgTypeEnum.ORGANIZATION.getEnName()
-                                : org.getOrgType().getValue());
+                            model.setOrgType(org.getOrgType().getValue());
                             model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
                             if (itemList.contains(model)) {
                                 continue;// 去重
