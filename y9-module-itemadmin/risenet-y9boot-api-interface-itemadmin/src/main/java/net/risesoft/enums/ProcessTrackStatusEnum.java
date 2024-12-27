@@ -13,9 +13,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ProcessTrackStatusEnum {
     /**
-     * 等待签收
+     * 未签收,等待签收
      */
-    WAITCLAIM(0, "等待签收"),
+    WAITCLAIM(0, "未签收"),
     /**
      * 未阅
      */
@@ -37,9 +37,9 @@ public enum ProcessTrackStatusEnum {
      */
     TAKE(5, "取回"),
     /**
-     * 未签收,已被其他人签收或者被取回导致未签收
+     * 已被其他人签收或者被取回导致未签收
      */
-    UNCLAIMED(6, "未签收");
+    UNCLAIMED(6, "-");
 
     private final Integer value;
     private final String name;
