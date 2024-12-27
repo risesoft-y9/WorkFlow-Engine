@@ -447,20 +447,15 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         }
         ActRuDetail actRuDetail =
             actRuDetailService.findByProcessInstanceIdAndAssignee(processInstanceId, Y9LoginUserHolder.getOrgUnitId());
-        HistoricTaskInstanceModel historicTaskInstanceModel;
-        if (StringUtils.isNotBlank(year)) {
-            historicTaskInstanceModel = historictaskApi.getById(tenantId, actRuDetail.getTaskId(), year).getData();
-        } else {
-            historicTaskInstanceModel = historictaskApi.getById(tenantId, actRuDetail.getTaskId(), year).getData();
-        }
-        List<TargetModel> subTargetModelList = processDefinitionApi
+        HistoricTaskInstanceModel historicTaskInstanceModel =
+            historictaskApi.getById(tenantId, actRuDetail.getTaskId(), year).getData();
+        List<TargetModel> subNodeList = processDefinitionApi
             .getSubProcessChildNode(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
         List<HistoricTaskInstanceModel> mainResults = new ArrayList<>();
         List<HistoricTaskInstanceModel> subResults = new ArrayList<>();
         boolean isSignDeptTemp;
         for (HistoricTaskInstanceModel hai : results) {
-            isSignDeptTemp =
-                subTargetModelList.stream().anyMatch(t -> t.getTaskDefKey().equals(hai.getTaskDefinitionKey()));
+            isSignDeptTemp = subNodeList.stream().anyMatch(t -> t.getTaskDefKey().equals(hai.getTaskDefinitionKey()));
             if (isSignDeptTemp) {
                 /*
                  * 子流程任务
