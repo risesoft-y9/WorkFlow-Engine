@@ -12,7 +12,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
+import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -68,6 +68,8 @@ public class FormNTKO4GfgController {
     private final WordTemplateApi wordTemplateApi;
 
     private final TransactionWordApi transactionWordApi;
+
+    private final SignDeptDetailApi signDeptDetailApi;
 
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
@@ -220,20 +222,43 @@ public class FormNTKO4GfgController {
      * @return Y9Result<DocumentWordModel>
      */
     @PostMapping(value = "/uploadWord")
-    public Y9Result<DocumentWordModel> uploadWord(@RequestParam(required = false) String fileType,
-        @RequestParam(required = false) Integer type, @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String wordType, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, HttpServletRequest request) {
+    public Y9Result<DocumentWordModel> uploadWord(@RequestParam String fileType, @RequestParam Integer type,
+        @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam String wordType, @RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam(required = false) String signId, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
         try {
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, wordType + fileType);
+            if (StringUtils.isNotBlank(signId)) {// 会签意见保存
+                Y9Result res =
+                    signDeptDetailApi.updateFileStoreId(Y9LoginUserHolder.getTenantId(), signId, y9FileStore.getId());
+                if (!res.isSuccess()) {
+                    return Y9Result.failure("保存失败");
+                }
+                DocumentWordModel model = new DocumentWordModel();
+                model.setId(Y9IdGenerator.genId());
+                model.setFileType(fileType);
+                model.setFileName(wordType + fileType);
+                model.setFileSize(y9FileStore.getDisplayFileSize());
+                model.setUserId(userId);
+                model.setUserName(person.getName());
+                model.setType(type);
+                model.setSaveDate(sdf.format(new Date()));
+                model.setProcessSerialNumber(processSerialNumber);
+                model.setProcessInstanceId(processInstanceId);
+                model.setWordType(wordType);
+                model.setTaskId(taskId);
+                model.setUpdateDate(sdf.format(new Date()));
+                model.setFileStoreId(y9FileStore.getId());
+                return Y9Result.success(model);
+            }
             DocumentWordModel model = new DocumentWordModel();
             model.setId(Y9IdGenerator.genId());
             model.setFileType(fileType);

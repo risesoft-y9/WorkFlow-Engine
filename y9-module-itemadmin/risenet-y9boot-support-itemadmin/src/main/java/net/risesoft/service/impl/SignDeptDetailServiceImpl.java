@@ -28,6 +28,59 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
 
     @Override
     @Transactional
+    public void deleteById(String id) {
+        SignDeptDetail signDeptDetail = signDeptDetailRepository.findById(id).orElse(null);
+        assert signDeptDetail != null;
+        signDeptDetail.setStatus(SignDeptDetailStatusEnum.DELETED.getValue());
+        signDeptDetailRepository.save(signDeptDetail);
+    }
+
+    @Override
+    public SignDeptDetail findById(String id) {
+        return signDeptDetailRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber) {
+        return signDeptDetailRepository.findByProcessSerialNumberOrderByCreateTimeDesc(processSerialNumber);
+    }
+
+    @Override
+    public List<SignDeptDetail> findByProcessSerialNumberAndDeptId(String processSerialNumber, String deptId) {
+        return signDeptDetailRepository.findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber,
+            deptId);
+    }
+
+    @Override
+    public SignDeptDetail findByProcessSerialNumberAndDeptId4Latest(String processSerialNumber, String deptId) {
+        List<SignDeptDetail> list = signDeptDetailRepository
+            .findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber, deptId);
+        if (!list.isEmpty()) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processInstanceId, int status) {
+        return signDeptDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(processInstanceId,
+            status);
+    }
+
+    @Override
+    public List<SignDeptDetail> findByTaskId(String processInstanceId, String taskId) {
+        return signDeptDetailRepository.findByTaskIdOrderByCreateTimeAsc(taskId);
+    }
+
+    @Override
+    public boolean isSignDept(String processSerialNumber, String deptId) {
+        List<SignDeptDetail> list = signDeptDetailRepository
+            .findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber, deptId);
+        return !list.isEmpty();
+    }
+
+    @Override
+    @Transactional
     public void saveOrUpdate(SignDeptDetail signDeptDetail) {
         String id = signDeptDetail.getId();
         if (StringUtils.isNotBlank(id)) {
@@ -74,55 +127,12 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     }
 
     @Override
-    public SignDeptDetail findByProcessSerialNumberAndDeptId4Latest(String processSerialNumber, String deptId) {
-        List<SignDeptDetail> list = signDeptDetailRepository
-            .findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber, deptId);
-        if (!list.isEmpty()) {
-            return list.get(0);
-        }
-        return null;
-    }
-
-    @Override
-    public SignDeptDetail findById(String id) {
-        return signDeptDetailRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public List<SignDeptDetail> findByProcessSerialNumberAndDeptId(String processSerialNumber, String deptId) {
-        return signDeptDetailRepository.findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber,
-            deptId);
-    }
-
-    @Override
-    public List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber) {
-        return signDeptDetailRepository.findByProcessSerialNumberOrderByCreateTimeDesc(processSerialNumber);
-    }
-
-    @Override
-    public List<SignDeptDetail> findByTaskId(String processInstanceId, String taskId) {
-        return signDeptDetailRepository.findByTaskIdOrderByCreateTimeAsc(taskId);
-    }
-
-    @Override
-    public List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processInstanceId, int status) {
-        return signDeptDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(processInstanceId,
-            status);
-    }
-
-    @Override
-    public boolean isSignDept(String processSerialNumber, String deptId) {
-        List<SignDeptDetail> list = signDeptDetailRepository
-            .findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(processSerialNumber, deptId);
-        return !list.isEmpty();
-    }
-
-    @Override
     @Transactional
-    public void deleteById(String id) {
-        SignDeptDetail signDeptDetail = signDeptDetailRepository.findById(id).orElse(null);
-        assert signDeptDetail != null;
-        signDeptDetail.setStatus(SignDeptDetailStatusEnum.DELETED.getValue());
-        signDeptDetailRepository.save(signDeptDetail);
+    public void updateFileStoreId(String signId, String fileStoreId) {
+        SignDeptDetail signDeptDetail = signDeptDetailRepository.findById(signId).orElse(null);
+        if (signDeptDetail != null) {
+            signDeptDetail.setFileStoreId(fileStoreId);
+            signDeptDetailRepository.save(signDeptDetail);
+        }
     }
 }
