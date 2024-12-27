@@ -200,7 +200,7 @@
             </not>
         </preConditions>
         <createTable remarks="发文单位表,委外会签单位表" tableName="FF_SIGN_OUT_DEPT">
-            <column name="DEPTID" remarks="单位Id" type="INT">
+            <column name="DEPTID" remarks="单位Id" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="DEPTTYPEID" remarks="单位类型Id" type="VARCHAR(50)"/>
@@ -301,7 +301,35 @@
             <column name="PROCESSSERIALNUMBER" type="VARCHAR(50)" remarks="流程编号"/>
         </addColumn>
     </changeSet>
+
     <changeSet id="1704700543333-16" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_OUT_DEPT" columnName="ISFORBIDDEN"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_OUT_DEPT">
+            <column name="ISFORBIDDEN" type="INT" defaultValueNumeric="0" remarks="是否禁止"/>
+            <column name="LDCW" type="VARCHAR(50)" remarks="领导称谓"/>
+            <column name="DEPTSUFFIX" type="VARCHAR(50)" remarks="单位后缀"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1704700543333-17" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_SIGN_OUT_DEPT_TYPE"/>
+            </not>
+        </preConditions>
+        <createTable remarks="委外会签单位类型表" tableName="FF_SIGN_OUT_DEPT_TYPE">
+            <column name="DEPTTYPEID" remarks="单位类型Id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DEPTTYPE" remarks="单位类型" type="VARCHAR(50)"/>
+            <column name="ISFORBIDDEN" type="INT" defaultValueNumeric="0" remarks="是否禁止"/>
+            <column name="TABINDEX" type="INT" remarks="序号"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700543333-18" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="FF_URGEINFO"/>
@@ -322,7 +350,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1704700543333-17" author="qinMan" runOnChange="true">
+    <changeSet id="1704700543333-19" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <indexExists tableName="FF_URGEINFO" columnNames="PROCESSSERIALNUMBER"/>
