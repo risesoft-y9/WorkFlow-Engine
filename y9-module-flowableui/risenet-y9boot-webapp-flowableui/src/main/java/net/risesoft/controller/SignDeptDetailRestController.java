@@ -102,4 +102,5 @@ public class SignDeptDetailRestController {
         return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(),
             Y9LoginUserHolder.getUserInfo().getPositionId(), signDeptDetailModel);
     }
+
 }
