@@ -1517,8 +1517,11 @@ public class DocumentServiceImpl implements DocumentService {
                                 position = orgUnitApi.getOrgUnit(tenantId, r.getAssignee()).getData();
                             }
                             taskName = MessageFormat.format(taskName, null == position ? "无" : position.getName());
-                            buttonList.add(new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
-                                ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null));
+                            ItemButtonModel itemButtonModel = new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
+                                ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null);
+                            if (!buttonList.contains(itemButtonModel)) {
+                                buttonList.add(itemButtonModel);
+                            }
                         });
                 } else {
                     List<TargetModel> subNodeList =
@@ -1542,8 +1545,12 @@ public class DocumentServiceImpl implements DocumentService {
                                 }
                                 taskName = MessageFormat.format(taskName,
                                     personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
-                                buttonList.add(new ItemButtonModel(hisTask.getTaskDefinitionKey(), taskName,
-                                    ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(hisTask.getAssignee()), "", null));
+                                ItemButtonModel itemButtonModel = new ItemButtonModel(hisTask.getTaskDefinitionKey(),
+                                    taskName, ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(hisTask.getAssignee()),
+                                    "", null);
+                                if (!buttonList.contains(itemButtonModel)) {
+                                    buttonList.add(itemButtonModel);
+                                }
                             }
                         });
 
