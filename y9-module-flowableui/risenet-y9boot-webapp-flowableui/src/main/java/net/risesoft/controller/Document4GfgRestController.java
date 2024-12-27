@@ -30,12 +30,14 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemListModel;
@@ -102,6 +104,8 @@ public class Document4GfgRestController {
     private final SignDeptDetailApi signDeptDetailApi;
 
     private final ActRuDetailApi actRuDetailApi;
+
+    private final RoleApi roleApi;
 
     /**
      * 获取新建办件初始化数据
@@ -474,6 +478,30 @@ public class Document4GfgRestController {
             LOGGER.error("获取事项系统列表失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取办件发起人领导
+     *
+     * @param processInstanceId 流程实例id
+     * @param roleId 司局领导角色id
+     * @return Y9Result<Boolean>
+     */
+    @GetMapping(value = "/getLeader")
+    public Y9Result<Boolean> getLeader(@RequestParam String processInstanceId, @RequestParam String roleId) {
+        ProcessParamModel processParam =
+            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+        String startor = processParam.getStartor();
+        List<OrgUnit> list =
+            roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData();
+        OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), startor).getData();
+        for (OrgUnit orgUnit : list) {
+            OrgUnit newbureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+            if (bureau != null && newbureau != null && newbureau.getId().equals(bureau.getId())) {
+                return Y9Result.success(true);
+            }
+        }
+        return Y9Result.success(false);
     }
 
     /**
