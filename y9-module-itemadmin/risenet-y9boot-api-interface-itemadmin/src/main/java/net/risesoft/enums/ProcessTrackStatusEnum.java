@@ -13,17 +13,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ProcessTrackStatusEnum {
     /**
-     * 待签收
+     * 等待签收
      */
-    CLAIM(0, "待签收"),
+    WAITCLAIM(0, "等待签收"),
     /**
      * 未阅
      */
     UNOPENED(1, "未阅"),
     /**
-     * 待办-已签收
+     * 已签收
      */
-    TODO_CLAIM(2, "待办-已签收"),
+    CLAIMED(2, "已签收"),
     /**
      * 待办
      */
@@ -37,7 +37,7 @@ public enum ProcessTrackStatusEnum {
      */
     TAKE(5, "取回"),
     /**
-     * 未签收
+     * 未签收,已被其他人签收或者被取回导致未签收
      */
     UNCLAIMED(6, "未签收");
 
