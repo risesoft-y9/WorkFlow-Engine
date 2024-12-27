@@ -33,7 +33,7 @@ import net.risesoft.api.itemadmin.ItemTodoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.itemadmin.SignDeptInfoApi;
+import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
@@ -120,7 +120,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
 
     private final WorkDayService workDayService;
 
-    private final SignDeptInfoApi signDeptInfoApi;
+    private final SignDeptDetailApi signDeptDetailApi;
 
     private final UrgeInfoApi urgeInfoApi;
 
@@ -155,12 +155,16 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
                             taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
                         if (isSubProcessChildNode) {
-                            boolean isSignDept = signDeptInfoApi
-                                .isSignDept(tenantId, bureau.getId(), "0", processSerialNumber).getData();
+                            boolean isSignDept = signDeptDetailApi
+                                .findByProcessSerialNumber(tenantId, processSerialNumber).getData().stream().anyMatch(
+                                    signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
                             if (!isSignDept) {
                                 // 针对SubProcess
+                                String mainSender = variableApi.getVariableByProcessInstanceId(tenantId,
+                                    processInstanceId, SysVariables.MAINSENDER).getData();
+                                mapTemp.put("taskAssignee", StringUtils.isBlank(mainSender) ? "无"
+                                    : Y9JsonUtil.readValue(mainSender, String.class));
                                 mapTemp.put("taskName", "送会签");
-                                mapTemp.put("taskAssignee", "");
                             } else {
                                 List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
                                 mapTemp.put("taskName", listTemp.get(0));
@@ -332,12 +336,17 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
                         taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
                     if (isSubProcessChildNode) {
-                        boolean isSignDept =
-                            signDeptInfoApi.isSignDept(tenantId, bureau.getId(), "0", processSerialNumber).getData();
+                        boolean isSignDept = signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber)
+                            .getData().stream()
+                            .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
                         if (!isSignDept) {
                             // 针对SubProcess
+                            String mainSender = variableApi
+                                .getVariableByProcessInstanceId(tenantId, processInstanceId, SysVariables.MAINSENDER)
+                                .getData();
+                            mapTemp.put("taskAssignee",
+                                StringUtils.isBlank(mainSender) ? "无" : Y9JsonUtil.readValue(mainSender, String.class));
                             mapTemp.put("taskName", "送会签");
-                            mapTemp.put("taskAssignee", "");
                         } else {
                             List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
                             mapTemp.put("taskName", listTemp.get(0));
@@ -610,12 +619,16 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
                             taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
                         if (isSubProcessChildNode) {
-                            boolean isSignDept = signDeptInfoApi
-                                .isSignDept(tenantId, bureau.getId(), "0", processSerialNumber).getData();
+                            boolean isSignDept = signDeptDetailApi
+                                .findByProcessSerialNumber(tenantId, processSerialNumber).getData().stream().anyMatch(
+                                    signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
                             if (!isSignDept) {
                                 // 针对SubProcess
+                                String mainSender = variableApi.getVariableByProcessInstanceId(tenantId,
+                                    processInstanceId, SysVariables.MAINSENDER).getData();
                                 mapTemp.put("taskName", "送会签");
-                                mapTemp.put("taskAssignee", "");
+                                mapTemp.put("taskAssignee", StringUtils.isBlank(mainSender) ? "无"
+                                    : Y9JsonUtil.readValue(mainSender, String.class));
                             } else {
                                 List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
                                 mapTemp.put("taskName", listTemp.get(0));
