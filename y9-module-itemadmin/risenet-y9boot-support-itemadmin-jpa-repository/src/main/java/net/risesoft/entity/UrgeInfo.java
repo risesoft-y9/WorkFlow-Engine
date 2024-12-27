@@ -3,19 +3,19 @@ package net.risesoft.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@org.hibernate.annotations.Table(comment = "催办信息表", appliesTo = "FF_URGEINFO")
+@Comment("催办信息表")
 @Table(name = "FF_URGEINFO", indexes = {@Index(name = "ff_urgeinfo_index_001", columnList = "processSerialNumber")})
 public class UrgeInfo implements Serializable {
 
@@ -52,7 +52,7 @@ public class UrgeInfo implements Serializable {
     @Column(name = "EXECUTIONID", length = 50, nullable = false)
     private String executionId;
 
-    @Type(type = "numeric_boolean")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("是否是对子流程的催办信息")
     @Column(name = "ISSUB")

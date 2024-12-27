@@ -2,11 +2,11 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_SIGN_OUT_DEPT_TYPE")
-@org.hibernate.annotations.Table(comment = "委外会签单位类型表", appliesTo = "FF_SIGN_OUT_DEPT_TYPE")
+@Comment("委外会签单位类型表")
 public class SignOutDeptType implements Serializable {
 
     @Id
