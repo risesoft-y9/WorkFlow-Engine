@@ -478,6 +478,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 signDeptDetailService.findByTaskId(processInstanceId, htiMain.getId());
             for (SignDeptDetail signDeptDetail : signDeptDetailList) {
                 HistoryProcessModel oneModel = new HistoryProcessModel();
+                oneModel.setId(signDeptDetail.getId());
                 oneModel.setPersonList(List.of());
                 oneModel.setActionName("并行会签【" + signDeptDetail.getDeptName() + "】");
                 List<HistoryProcessModel> twoProcessList = new ArrayList<>();
