@@ -540,7 +540,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     if (assignee.equals(i.getUserId())) {
                         personListTemp.forEach(p -> {
                             if (null == hai.getEndTime()) {
-                                p.setTabIndex(ProcessTrackStatusEnum.TODO_CLAIM.getValue());
+                                p.setTabIndex(ProcessTrackStatusEnum.CLAIMED.getValue());
                             } else {
                                 p.setTabIndex(ProcessTrackStatusEnum.DONE.getValue());
                             }
@@ -584,7 +584,11 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     List<Person> personListTemp = positionApi
                         .listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), candidate.getUserId()).getData();
                     personListTemp.forEach(p -> {
-                        p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue());
+                        if (null != hai.getEndTime()) {
+                            p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue());
+                        } else {
+                            p.setTabIndex(ProcessTrackStatusEnum.WAITCLAIM.getValue());
+                        }
                     });
                     personList.addAll(personListTemp);
                 });
