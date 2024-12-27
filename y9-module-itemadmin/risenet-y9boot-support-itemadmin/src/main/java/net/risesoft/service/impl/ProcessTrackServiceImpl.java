@@ -429,7 +429,6 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
 
     @Override
     public List<HistoryProcessModel> listByProcessInstanceIdWithActionName(String processInstanceId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<HistoryProcessModel> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> results =
@@ -454,11 +453,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         } else {
             historicTaskInstanceModel = historictaskApi.getById(tenantId, actRuDetail.getTaskId(), year).getData();
         }
-        String executionId = historicTaskInstanceModel.getExecutionId();
         List<TargetModel> subTargetModelList = processDefinitionApi
             .getSubProcessChildNode(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
-        boolean isSignDept = subTargetModelList.stream()
-            .anyMatch(t -> t.getTaskDefKey().equals(historicTaskInstanceModel.getTaskDefinitionKey()));
         List<HistoricTaskInstanceModel> mainResults = new ArrayList<>();
         List<HistoricTaskInstanceModel> subResults = new ArrayList<>();
         boolean isSignDeptTemp;
@@ -475,42 +471,30 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             }
         }
         int tabIndex = 1;
-        if (isSignDept) {
+        /*
+         * 主流程历程
+         */
+        for (HistoricTaskInstanceModel htiMain : mainResults) {
+            items.add(getHistoryProcessModel(htiMain, tabIndex++, year));
             /*
-             * 子流程历程
+             * 查看当前任务是否送了子流程
              */
-            for (HistoricTaskInstanceModel hai : subResults) {
-                if (!hai.getExecutionId().equals(executionId)) {
-                    continue;
-                }
-                items.add(getHistoryProcessModel(hai, tabIndex++, year));
-            }
-        } else {
-            /*
-             * 主流程历程
-             */
-            for (HistoricTaskInstanceModel htiMain : mainResults) {
-                items.add(getHistoryProcessModel(htiMain, tabIndex++, year));
-                /*
-                 * 查看当前任务是否送了子流程
-                 */
-                List<SignDeptDetail> signDeptDetailList =
-                    signDeptDetailService.findByTaskId(processInstanceId, htiMain.getId());
-                for (SignDeptDetail signDeptDetail : signDeptDetailList) {
-                    HistoryProcessModel oneModel = new HistoryProcessModel();
-                    oneModel.setPersonList(List.of());
-                    oneModel.setActionName("并行会签【" + signDeptDetail.getDeptName() + "】");
-                    List<HistoryProcessModel> twoProcessList = new ArrayList<>();
-                    int subTabIndex = 1;
-                    for (HistoricTaskInstanceModel hti : subResults) {
-                        if (hti.getExecutionId().equals(signDeptDetail.getExecutionId())) {
-                            twoProcessList.add(getHistoryProcessModel(hti, subTabIndex++, year));
-                        }
+            List<SignDeptDetail> signDeptDetailList =
+                signDeptDetailService.findByTaskId(processInstanceId, htiMain.getId());
+            for (SignDeptDetail signDeptDetail : signDeptDetailList) {
+                HistoryProcessModel oneModel = new HistoryProcessModel();
+                oneModel.setPersonList(List.of());
+                oneModel.setActionName("并行会签【" + signDeptDetail.getDeptName() + "】");
+                List<HistoryProcessModel> twoProcessList = new ArrayList<>();
+                int subTabIndex = 1;
+                for (HistoricTaskInstanceModel hti : subResults) {
+                    if (hti.getExecutionId().equals(signDeptDetail.getExecutionId())) {
+                        twoProcessList.add(getHistoryProcessModel(hti, subTabIndex++, year));
                     }
-                    oneModel.setTabIndex(tabIndex++);
-                    oneModel.setChildren(twoProcessList);
-                    items.add(oneModel);
                 }
+                oneModel.setTabIndex(tabIndex++);
+                oneModel.setChildren(twoProcessList);
+                items.add(oneModel);
             }
         }
         // Collections.sort(items);
