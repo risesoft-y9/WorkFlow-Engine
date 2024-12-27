@@ -497,7 +497,9 @@ public class Document4GfgRestController {
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), startor).getData();
         for (OrgUnit orgUnit : list) {
             OrgUnit newbureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-            if (bureau != null && newbureau != null && newbureau.getId().equals(bureau.getId())) {
+            // 判断当前人是司局领导，且跟起草人司局相同
+            if (orgUnit.getId().equals(Y9LoginUserHolder.getPositionId()) && bureau != null && newbureau != null
+                && newbureau.getId().equals(bureau.getId())) {
                 return Y9Result.success(true);
             }
         }
