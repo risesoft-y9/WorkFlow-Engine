@@ -37,7 +37,7 @@ public enum ProcessTrackStatusEnum {
      */
     TAKE(5, "取回"),
     /**
-     * 已被其他人签收或者被取回导致未签收
+     * 已被其他人签收或者被取回导致不能进行签收
      */
     UNCLAIMED(6, "-");
 
