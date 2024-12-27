@@ -1555,6 +1555,12 @@ public class DocumentServiceImpl implements DocumentService {
                         });
 
                 }
+                boolean isRollback = buttonList.stream().anyMatch(
+                    itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK.getValue()));
+                if (isRollback) {
+                    buttonList
+                        .add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
+                }
             }
             /*
              * 假如重定向按钮显示的话，去获取路由
@@ -1585,7 +1591,7 @@ public class DocumentServiceImpl implements DocumentService {
                 model.setTaskDefNameJson(taskDefNameJson);
             }
 
-            if (k != 1 && isButtonShow[k]) {
+            if (k != 1 && k != 3 && isButtonShow[k]) {
                 buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
             }
         }
