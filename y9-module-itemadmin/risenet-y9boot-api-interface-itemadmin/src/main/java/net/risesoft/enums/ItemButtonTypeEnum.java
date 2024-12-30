@@ -17,7 +17,9 @@ public enum ItemButtonTypeEnum {
     /** 发送按钮 */
     SEND(2, "发送按钮"),
     /** 退回按钮 */
-    ROLLBACK(3, "退回按钮");
+    ROLLBACK(3, "退回按钮"),
+    /** 重定位按钮 */
+    REPOSITION(4, "重定位按钮");
 
     private final Integer value;
     private final String name;
