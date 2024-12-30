@@ -25,4 +25,6 @@ public interface Y9FieldPermRepository
 
     Y9FieldPerm findByFormIdAndFieldNameAndTaskDefKey(String formId, String fieldName, String taskDefKey);
 
+    List<Y9FieldPerm> findByFormIdAndFieldName(String formId, String fieldName);
+
 }

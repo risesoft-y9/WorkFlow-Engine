@@ -173,6 +173,11 @@ public class Y9FieldPermController {
             map.put("taskDefName", targetModel.getTaskDefName());
             resList.add(map);
         }
+        List<Y9FieldPerm> oldList = y9FieldPermRepository.findByFormIdAndFieldName(formId, fieldName);
+        oldList.stream()
+            .filter(y9FieldPerm -> targetList.stream()
+                .noneMatch(targetModel -> targetModel.getTaskDefKey().equals(y9FieldPerm.getTaskDefKey())))
+            .forEach(y9FieldPermRepository::delete);
         return Y9Result.success(resList, "获取成功");
     }
 
