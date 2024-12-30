@@ -16,16 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
 import net.risesoft.entity.form.Y9FieldPerm;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.jpa.Y9FormItemBindRepository;
 import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
+import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -45,6 +49,10 @@ public class Y9FieldPermController {
     private final Y9FieldPermRepository y9FieldPermRepository;
 
     private final ProcessDefinitionApi processDefinitionApi;
+
+    private final RepositoryApi repositoryApi;
+
+    private final SpmApproveItemService itemService;
 
     /**
      * 获取该字段是否配置权限
@@ -125,32 +133,45 @@ public class Y9FieldPermController {
         List<String> list = new ArrayList<>();
         list.add(formId);
         List<Y9FormItemBind> bindList = y9FormItemBindRepository.findByFormIdList(list);
-        String processDefinitionId = "";
+        String itemId = "";
         if (!bindList.isEmpty()) {
-            processDefinitionId = bindList.get(0).getProcessDefinitionId();
+            itemId = bindList.get(0).getItemId();
         }
         // 手机端表单
         if (bindList.isEmpty()) {
             List<Y9FormItemMobileBind> bindList1 = y9FormItemMobileBindRepository.findByFormIdList(list);
             if (!bindList1.isEmpty()) {
-                processDefinitionId = bindList1.get(0).getProcessDefinitionId();
+                itemId = bindList1.get(0).getItemId();
             }
         }
-        if (StringUtils.isNotBlank(processDefinitionId)) {
-            List<TargetModel> targetList =
-                processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
-            Map<String, Object> map;
-            for (TargetModel targetModel : targetList) {
-                Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName,
-                    targetModel.getTaskDefKey());
-                map = new HashMap<>();
-                map.put("writeRoleId", y9FieldPerm != null ? y9FieldPerm.getWriteRoleId() : "");
-                map.put("writeRoleName", y9FieldPerm != null ? y9FieldPerm.getWriteRoleName() : "");
-                map.put("id", y9FieldPerm != null ? y9FieldPerm.getId() : "");
-                map.put("taskDefKey", targetModel.getTaskDefKey());
-                map.put("taskDefName", targetModel.getTaskDefName());
-                resList.add(map);
-            }
+        if (StringUtils.isBlank(itemId)) {
+            return Y9Result.failure("该表单未绑定事项!");
+        }
+        SpmApproveItem item = itemService.findById(itemId);
+        if (null == item) {
+            return Y9Result.failure("表单绑定的事项不存在!");
+        }
+        if (StringUtils.isBlank(item.getWorkflowGuid())) {
+            return Y9Result.failure("表单绑定的事项未绑定流程定义!");
+        }
+        ProcessDefinitionModel processDefinitionModel =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
+        if (null == processDefinitionModel) {
+            return Y9Result.failure("事项绑定的流程定义不存在!");
+        }
+        List<TargetModel> targetList =
+            processDefinitionApi.getNodes(tenantId, processDefinitionModel.getId(), false).getData();
+        Map<String, Object> map;
+        for (TargetModel targetModel : targetList) {
+            Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName,
+                targetModel.getTaskDefKey());
+            map = new HashMap<>();
+            map.put("writeRoleId", y9FieldPerm != null ? y9FieldPerm.getWriteRoleId() : "");
+            map.put("writeRoleName", y9FieldPerm != null ? y9FieldPerm.getWriteRoleName() : "");
+            map.put("id", y9FieldPerm != null ? y9FieldPerm.getId() : "");
+            map.put("taskDefKey", targetModel.getTaskDefKey());
+            map.put("taskDefName", targetModel.getTaskDefName());
+            resList.add(map);
         }
         return Y9Result.success(resList, "获取成功");
     }
