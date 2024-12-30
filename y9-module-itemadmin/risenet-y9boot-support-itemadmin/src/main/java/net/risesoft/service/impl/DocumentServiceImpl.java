@@ -119,6 +119,7 @@ import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.util.ButtonUtil;
 import net.risesoft.util.CommonOpt;
+import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -1382,225 +1383,156 @@ public class DocumentServiceImpl implements DocumentService {
         String taskId, DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        Map<String, Object> map = buttonUtil.showButton4Todo(itemId, taskId);
-        String[] buttonIds = (String[])map.get("buttonIds");
-        String[] buttonNames = (String[])map.get("buttonNames");
-        String sponsorHandle = (String)map.get("sponsorHandle");
-        int[] buttonOrders = (int[])map.get("buttonOrders");
-        boolean[] isButtonShow = (boolean[])map.get("isButtonShow");
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Todo(itemId, taskId);
         String repositionName = "";
         String repositionKey = "";
-        List<ItemButtonModel> buttonList = new ArrayList<>();
+        List<ItemButtonModel> buttonList4Return = new ArrayList<>();
         List<ItemButtonBind> bibList;
-        // 生成按钮数组
-        for (int i = buttonOrders.length - 1; i >= 0; i--) {
-            int k = buttonOrders[i] - 1;
+        if (buttonList.contains(ItemButton.baoCun)) {
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                processDefinitionId, taskDefKey);
+            for (ItemButtonBind bind : bibList) {
+                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+                if (!"发送".equals(buttonName)) {
+                    List<String> roleIds = bind.getRoleIds();
+                    if (roleIds.isEmpty()) {
+                        buttonList
+                            .add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
+                    } else {
+                        for (String roleId : roleIds) {
+                            boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                            if (hasRole) {
+                                buttonList.add(new ItemButtonModel(buttonCustomId, buttonName,
+                                    ItemButtonTypeEnum.COMMON.getValue()));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (buttonList.contains(ItemButton.faSong) && StringUtils.isNotBlank(taskDefKey)) {
             /*
-             * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
+             * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
              */
-            if (k == 0 && isButtonShow[0]) {
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+            AtomicBoolean haveSendButton = new AtomicBoolean(false);
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                processDefinitionId, taskDefKey);
+            bibList.stream().takeWhile(bib -> "发送".equals(bib.getButtonName()) && !haveSendButton.get())
+                .forEach(bib -> {
+                    List<String> roleIds = bib.getRoleIds();
+                    if (roleIds.isEmpty()) {
+                        buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(),
+                            ItemButtonTypeEnum.COMMON.getValue()));
+                        haveSendButton.set(true);
+                    } else {
+                        for (String roleId : roleIds) {
+                            boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                            if (hasRole) {
+                                buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(),
+                                    ItemButtonTypeEnum.COMMON.getValue()));
+                                haveSendButton.set(true);
+                            }
+                        }
+                    }
+                });
+            if (!haveSendButton.get()) {
+                /*
+                 * 添加发送下面的路由
+                 */
+                List<TargetModel> routeToTasks =
+                    processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+                for (TargetModel m : routeToTasks) {
+                    // 退回、路由网关不显示在发送下面
+                    if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
+                        buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(),
+                            ItemButtonTypeEnum.SEND.getValue()));
+                    }
+                }
+                /*
+                 * 添加自定义按钮到发送
+                 */
+                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
                     processDefinitionId, taskDefKey);
                 for (ItemButtonBind bind : bibList) {
+                    List<String> roleIds = bind.getRoleIds();
                     String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                    if (!"发送".equals(buttonName)) {
-                        List<String> roleIds = bind.getRoleIds();
-                        if (roleIds.isEmpty()) {
-                            buttonList.add(
-                                new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasRole) {
-                                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName,
-                                        ItemButtonTypeEnum.COMMON.getValue()));
-                                    break;
-                                }
+                    if (roleIds.isEmpty()) {
+                        buttonList
+                            .add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
+                    } else {
+                        for (String roleId : roleIds) {
+                            boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                            if (hasRole) {
+                                buttonList.add(new ItemButtonModel(buttonCustomId, buttonName,
+                                    ItemButtonTypeEnum.SEND.getValue()));
+                                break;
                             }
                         }
                     }
                 }
             }
-
-            /*
-             * 假如发送按钮显示的话，去获取发送下面的路由
-             */
-            if (k == 1 && isButtonShow[1] && StringUtils.isNotBlank(taskDefKey)) {
-                /*
-                 * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
-                 */
-                boolean haveSendButton = false;
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
-                    processDefinitionId, taskDefKey);
-                bibFor:
-                for (ItemButtonBind bib : bibList) {
-                    if ("发送".equals(bib.getButtonName())) {
-                        List<String> roleIds = bib.getRoleIds();
-                        if (roleIds.isEmpty()) {
-                            buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(),
-                                ItemButtonTypeEnum.COMMON.getValue()));
-                            haveSendButton = true;
-                            break;
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasrole) {
-                                    buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(),
-                                        ItemButtonTypeEnum.COMMON.getValue()));
-                                    haveSendButton = true;
-                                    break bibFor;
-                                }
-                            }
+        }
+        if (buttonList.contains(ItemButton.tuiHui)) {
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            Boolean isSub =
+                processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
+            List<HistoricTaskInstanceModel> results =
+                historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
+            if (isSub) {
+                String executionId = task.getExecutionId();
+                results.stream().filter(r -> r.getExecutionId().equals(executionId) && null != r.getEndTime())
+                    .forEach(r -> {
+                        String taskName = r.getName() + "({0})";
+                        OrgUnit position = null;
+                        if (StringUtils.isNotBlank(r.getAssignee())) {
+                            position = orgUnitApi.getOrgUnit(tenantId, r.getAssignee()).getData();
                         }
-                    }
-                }
-                if (!haveSendButton) {
-                    /*
-                     * 没有配置自定义“发送”按钮的话，添加上默认的“发送”按钮
-                     */
-                    buttonList
-                        .add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
-                    /*
-                     * 添加发送下面的路由
-                     */
-                    List<TargetModel> routeToTasks =
-                        processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-                    for (TargetModel m : routeToTasks) {
-                        // 退回、路由网关不显示在发送下面
-                        if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
-                            buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(),
-                                ItemButtonTypeEnum.SEND.getValue()));
+                        taskName = MessageFormat.format(taskName, null == position ? "无" : position.getName());
+                        ItemButtonModel itemButtonModel = new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
+                            ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null);
+                        if (!buttonList.contains(itemButtonModel)) {
+                            buttonList.add(itemButtonModel);
                         }
-                    }
-                    /*
-                     * 添加自定义按钮到发送
-                     */
-                    bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
-                        processDefinitionId, taskDefKey);
-                    for (ItemButtonBind bind : bibList) {
-                        List<String> roleIds = bind.getRoleIds();
-                        String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                        if (roleIds.isEmpty()) {
-                            buttonList.add(
-                                new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasRole) {
-                                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName,
-                                        ItemButtonTypeEnum.SEND.getValue()));
-                                    break;
-                                }
+                    });
+            } else {
+                List<TargetModel> subNodeList =
+                    processDefinitionApi.getSubProcessChildNode(tenantId, processDefinitionId).getData();
+                results.stream()
+                    .filter(hisTask -> null != hisTask.getEndTime() && StringUtils.isNotBlank(hisTask.getAssignee()))
+                    .forEach(hisTask -> {
+                        AtomicBoolean isSubNode = new AtomicBoolean(false);
+                        subNodeList.forEach(s -> {
+                            if (s.getTaskDefKey().equals(hisTask.getTaskDefinitionKey())) {
+                                isSubNode.set(true);
                             }
-                        }
-                    }
-                }
-            }
-
-            /*
-             * 假如退回按钮显示的话，去获取路由
-             */
-            String taskDefNameJson;
-            if (k == 3 && isButtonShow[3]) {
-                TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                Boolean isSub =
-                    processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
-                List<HistoricTaskInstanceModel> results =
-                    historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
-                if (isSub) {
-                    String executionId = task.getExecutionId();
-                    results.stream().filter(r -> r.getExecutionId().equals(executionId) && null != r.getEndTime())
-                        .forEach(r -> {
-                            String taskName = r.getName() + "({0})";
-                            OrgUnit position = null;
-                            if (StringUtils.isNotBlank(r.getAssignee())) {
-                                position = orgUnitApi.getOrgUnit(tenantId, r.getAssignee()).getData();
+                        });
+                        if (!isSubNode.get()) {
+                            String taskName = hisTask.getName() + "({0})";
+                            List<Person> personList = new ArrayList<>();
+                            if (StringUtils.isNotBlank(hisTask.getAssignee())) {
+                                personList =
+                                    positionApi.listPersonsByPositionId(tenantId, hisTask.getAssignee()).getData();
                             }
-                            taskName = MessageFormat.format(taskName, null == position ? "无" : position.getName());
-                            ItemButtonModel itemButtonModel = new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
-                                ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null);
+                            taskName = MessageFormat.format(taskName,
+                                personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
+                            ItemButtonModel itemButtonModel =
+                                new ItemButtonModel(hisTask.getTaskDefinitionKey(), taskName,
+                                    ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(hisTask.getAssignee()), "", null);
                             if (!buttonList.contains(itemButtonModel)) {
                                 buttonList.add(itemButtonModel);
                             }
-                        });
-                } else {
-                    List<TargetModel> subNodeList =
-                        processDefinitionApi.getSubProcessChildNode(tenantId, processDefinitionId).getData();
-                    results.stream()
-                        .filter(
-                            hisTask -> null != hisTask.getEndTime() && StringUtils.isNotBlank(hisTask.getAssignee()))
-                        .forEach(hisTask -> {
-                            AtomicBoolean isSubNode = new AtomicBoolean(false);
-                            subNodeList.forEach(s -> {
-                                if (s.getTaskDefKey().equals(hisTask.getTaskDefinitionKey())) {
-                                    isSubNode.set(true);
-                                }
-                            });
-                            if (!isSubNode.get()) {
-                                String taskName = hisTask.getName() + "({0})";
-                                List<Person> personList = new ArrayList<>();
-                                if (StringUtils.isNotBlank(hisTask.getAssignee())) {
-                                    personList =
-                                        positionApi.listPersonsByPositionId(tenantId, hisTask.getAssignee()).getData();
-                                }
-                                taskName = MessageFormat.format(taskName,
-                                    personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
-                                ItemButtonModel itemButtonModel = new ItemButtonModel(hisTask.getTaskDefinitionKey(),
-                                    taskName, ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(hisTask.getAssignee()),
-                                    "", null);
-                                if (!buttonList.contains(itemButtonModel)) {
-                                    buttonList.add(itemButtonModel);
-                                }
-                            }
-                        });
+                        }
+                    });
 
-                }
-                boolean isRollback = buttonList.stream().anyMatch(
-                    itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK.getValue()));
-                if (isRollback) {
-                    buttonList
-                        .add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
-                }
             }
-            /*
-             * 假如重定向按钮显示的话，去获取路由
-             */
-            if (k == 15 && isButtonShow[15]) {
-                List<Map<String, Object>> repositionMap = new ArrayList<>();
-                List<TargetModel> taskNodes =
-                    processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
-                for (TargetModel node : taskNodes) {
-                    Map<String, Object> map3 = new HashMap<>(16);
-                    // 流程不显示在重定向按钮下面
-                    if (!"流程".equals(node.getTaskDefName())) {
-                        repositionName = Y9Util.genCustomStr(repositionName, node.getTaskDefName());
-                        repositionKey = Y9Util.genCustomStr(repositionKey, node.getTaskDefKey());
-                        map3.put("repositionName", node.getTaskDefName());
-                        map3.put("repositionKey", node.getTaskDefKey());
-                        repositionMap.add(map3);
-                    }
-                }
-                model.setRepositionMap(repositionMap);
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    taskDefNameJson = mapper.writeValueAsString(repositionMap);
-                } catch (JsonProcessingException e) {
-                    LOGGER.error("解析重定向按钮失败！", e);
-                    taskDefNameJson = "[]";
-                }
-                model.setTaskDefNameJson(taskDefNameJson);
-            }
-
-            if (k != 1 && k != 3 && isButtonShow[k]) {
-                buttonList.add(new ItemButtonModel(buttonIds[k], buttonNames[k], ItemButtonTypeEnum.COMMON.getValue()));
+            if (buttonList.stream().noneMatch(
+                itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK.getValue()))) {
+                buttonList.remove(ItemButton.tuiHui);
             }
         }
         model.setButtonList(buttonList);
-        model.setSponsorHandle(sponsorHandle);
-        model.setLastPerson4RefuseClaim(
-            map.get("isLastPerson4RefuseClaim") != null ? (Boolean)map.get("isLastPerson4RefuseClaim") : false);
-        model.setMultiInstance(map.get("multiInstance") != null ? (String)map.get("multiInstance") : "");
-        model.setNextNode(map.get("nextNode") != null ? (Boolean)map.get("nextNode") : false);
         return model;
     }
 
