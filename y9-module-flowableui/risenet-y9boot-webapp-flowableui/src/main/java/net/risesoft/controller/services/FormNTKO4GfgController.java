@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
+import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.WordTemplateApi;
@@ -72,6 +74,8 @@ public class FormNTKO4GfgController {
 
     private final SignDeptDetailApi signDeptDetailApi;
 
+    private final FormDataApi formDataApi;
+
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
@@ -109,6 +113,24 @@ public class FormNTKO4GfgController {
         } catch (Exception e) {
             LOGGER.error("下载正文失败", e);
         }
+    }
+
+    /**
+     * 获取正文数据
+     *
+     * @param processSerialNumber 流程编号id
+     * @param itemId 表单id
+     * @param processInstanceId 流程实例id
+     * @param tenantId 租户id
+     * @return 正文数据
+     */
+    @RequestMapping(value = "/getFormData")
+    public Y9Result<Map<String, Object>> getFormData(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String processInstanceId,
+        @RequestParam String tenantId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+        return Y9Result.success(formData);
     }
 
     /**
