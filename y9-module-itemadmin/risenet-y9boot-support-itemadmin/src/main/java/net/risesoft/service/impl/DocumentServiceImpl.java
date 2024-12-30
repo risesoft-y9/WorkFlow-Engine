@@ -618,6 +618,21 @@ public class DocumentServiceImpl implements DocumentService {
         return model;
     }
 
+    @Override
+    public List<ItemButtonModel> getButtons(String taskId) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String itemId, processDefinitionId, taskDefinitionKey;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        String processInstanceId = task.getProcessInstanceId();
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        itemId = processParam.getItemId();
+        processDefinitionId = task.getProcessDefinitionId();
+        taskDefinitionKey = task.getTaskDefinitionKey();
+        model = this.menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
+        return model.getButtonList();
+    }
+
     /*
      * Description:
      *

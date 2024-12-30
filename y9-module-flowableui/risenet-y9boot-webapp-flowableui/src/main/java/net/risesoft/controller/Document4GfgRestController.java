@@ -40,6 +40,7 @@ import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
+import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
@@ -306,6 +307,28 @@ public class Document4GfgRestController {
             DocumentDetailModel model = documentApi
                 .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId, false).getData();
             return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取待办按钮
+     * 
+     * @param taskId 任务id
+     * @return {@code Y9Result<List<ItemButtonModel>>} 通用请求返回对象 - data是按钮集合
+     */
+    @GetMapping(value = "/getButtons")
+    public Y9Result<List<ItemButtonModel>> getButtons(@RequestParam @NotBlank String taskId) {
+        try {
+            TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+            if (null == task) {
+                return Y9Result.failure("当前待办已处理！");
+            }
+            List<ItemButtonModel> buttonList = documentApi
+                .getButtons(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId).getData();
+            return Y9Result.success(buttonList, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
         }
