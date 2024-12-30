@@ -34,6 +34,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWordModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
@@ -160,17 +161,26 @@ public class FormNTKO4GfgController {
      */
     @RequestMapping("/showWord")
     public Y9Result<DocumentWordModel> showWord(@RequestParam String processSerialNumber, @RequestParam String wordType,
-        @RequestParam String itemId, @RequestParam(required = false) String positionId, @RequestParam String tenantId,
-        @RequestParam String userId) {
+        @RequestParam String itemId, @RequestParam(required = false) String signId,
+        @RequestParam(required = false) String positionId, @RequestParam String tenantId, @RequestParam String userId) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            List<DocumentWordModel> list =
-                documentWordApi.findByProcessSerialNumberAndWordType(tenantId, processSerialNumber, wordType).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
             OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
             DocumentWordModel wordInfo;
+            if (StringUtils.isNotBlank(signId)) {// 意见签注
+                SignDeptDetailModel sign = signDeptDetailApi.findById(tenantId, signId).getData();
+                wordInfo = new DocumentWordModel();
+                wordInfo.setId(sign.getId());
+                wordInfo.setFileStoreId(sign.getFileStoreId());
+                wordInfo.setCurrentBureauId(currentBureau != null ? currentBureau.getId() : "");
+                wordInfo.setCurrentUserName(person.getName());
+                return Y9Result.success(wordInfo, "获取信息成功");
+            }
+            List<DocumentWordModel> list =
+                documentWordApi.findByProcessSerialNumberAndWordType(tenantId, processSerialNumber, wordType).getData();
             if (list != null && list.size() > 0) {
                 wordInfo = list.get(0);
             } else {
