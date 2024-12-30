@@ -21,7 +21,6 @@ import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
@@ -54,38 +53,6 @@ public class ButtonUtil {
     private final CustomProcessInfoService customProcessInfoService;
     private final SpmApproveItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
-    private final ItemButtonModel fanHui = new ItemButtonModel("03", "返回", ItemButtonTypeEnum.COMMON.getValue(), 1);
-    private final ItemButtonModel teShuBanJie =
-        new ItemButtonModel("15", "特殊办结", ItemButtonTypeEnum.COMMON.getValue(), 2);
-    private final ItemButtonModel qianShou = new ItemButtonModel("10", "签收", ItemButtonTypeEnum.COMMON.getValue(), 3);
-    private final ItemButtonModel cheXiaoQianShou =
-        new ItemButtonModel("11", "撤销签收", ItemButtonTypeEnum.COMMON.getValue(), 4);
-    private final ItemButtonModel baoCun = new ItemButtonModel("01", "保存", ItemButtonTypeEnum.COMMON.getValue(), 5);
-    private final ItemButtonModel faSong = new ItemButtonModel("02", "发送", ItemButtonTypeEnum.COMMON.getValue(), 6);
-    private final ItemButtonModel tiJIao = new ItemButtonModel("21", "提交", ItemButtonTypeEnum.COMMON.getValue(), 7);
-    private final ItemButtonModel tuiHui = new ItemButtonModel("04", "退回", ItemButtonTypeEnum.COMMON.getValue(), 8);
-    private final ItemButtonModel weiTuo = new ItemButtonModel("05", "委托", ItemButtonTypeEnum.COMMON.getValue(), 9);
-    private final ItemButtonModel xieShang = new ItemButtonModel("06", "协商", ItemButtonTypeEnum.COMMON.getValue(), 10);
-    private final ItemButtonModel wanCheng = new ItemButtonModel("07", "完成", ItemButtonTypeEnum.COMMON.getValue(), 11);
-    private final ItemButtonModel songXiaYiRen =
-        new ItemButtonModel("08", "送下一人", ItemButtonTypeEnum.COMMON.getValue(), 12);
-    private final ItemButtonModel banLiWanCheng =
-        new ItemButtonModel("09", "办理完成", ItemButtonTypeEnum.COMMON.getValue(), 13);
-    private final ItemButtonModel banJie = new ItemButtonModel("12", "办结", ItemButtonTypeEnum.COMMON.getValue(), 14);
-    private final ItemButtonModel jiaJianQian =
-        new ItemButtonModel("19", "加减签", ItemButtonTypeEnum.COMMON.getValue(), 15);
-    private final ItemButtonModel shouHui = new ItemButtonModel("13", "取回", ItemButtonTypeEnum.COMMON.getValue(), 16);
-    private final ItemButtonModel juQian = new ItemButtonModel("14", "拒签", ItemButtonTypeEnum.COMMON.getValue(), 17);
-    private final ItemButtonModel chongDingWei =
-        new ItemButtonModel("16", "重定位", ItemButtonTypeEnum.COMMON.getValue(), 18);
-    private final ItemButtonModel chaoSong = new ItemButtonModel("18", "抄送", ItemButtonTypeEnum.COMMON.getValue(), 19);
-    private final ItemButtonModel huiFuDaiBan =
-        new ItemButtonModel("20", "恢复待办", ItemButtonTypeEnum.COMMON.getValue(), 20);
-    private final ItemButtonModel daYin = new ItemButtonModel("17", "打印", ItemButtonTypeEnum.COMMON.getValue(), 21);
-    private final ItemButtonModel huiFu =
-        new ItemButtonModel("huiFu", "从回收站恢复", ItemButtonTypeEnum.COMMON.getValue(), 22);
-    private final ItemButtonModel cheDiShanChu =
-        new ItemButtonModel("cheDiShanChu", "彻底删除", ItemButtonTypeEnum.COMMON.getValue(), 23);
     private List<TargetModel> nodeList = new ArrayList<>();
 
     public ButtonUtil() {
@@ -612,29 +579,20 @@ public class ButtonUtil {
 
     public List<ItemButtonModel> showButton4Add(String itemId) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(baoCun);
+        buttonModelList.add(ItemButton.baoCun);
         SpmApproveItem item = itemService.findById(itemId);
         boolean showSubmitButton = item.isShowSubmitButton();
         if (showSubmitButton) {
-            buttonModelList.add(tiJIao);
+            buttonModelList.add(ItemButton.tiJiao);
         } else {
-            buttonModelList.add(faSong);
+            buttonModelList.add(ItemButton.faSong);
         }
         return buttonModelList;
     }
 
-    public Map<String, Object> showButton4Todo(String itemId, String taskId) {
+    public List<ItemButtonModel> showButton4Todo(String itemId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        Map<String, Object> map = new HashMap<>(16);
-        String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
-            "16", "17", "18", "19", "20", "21", "22"};
-        String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "退签", "办结", "收回", "拒签",
-            "特殊办结", "重定位", "打印", "抄送", "加减签", "恢复待办", "提交", "放入回收站"};
-        int[] buttonOrders = {3, 15, 10, 11, 22, 1, 2, 4, 21, 5, 6, 7, 8, 9, 12, 19, 13, 14, 16, 18, 20, 17};
-        boolean[] isButtonShow = new boolean[buttonIds.length];
-        for (int i = 0; i < buttonIds.length; i++) {
-            isButtonShow[i] = false;
-        }
+        List<ItemButtonModel> buttonList = new ArrayList<>();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         Map<String, Object> vars;
         String varsUser = "";
@@ -736,10 +694,6 @@ public class ButtonUtil {
                 }
             }
         }
-        // 用于判定是否需要发送下一个节点
-        map.put("nextNode", false);
-        // 节点类型，用于判定按钮调用的方法
-        map.put("multiInstance", multiInstance);
         String assignee = task.getAssignee();
         String currentProcInstanceId = task.getProcessInstanceId();
         /**
@@ -751,115 +705,71 @@ public class ButtonUtil {
         int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
         String processDefinitionId = task.getProcessDefinitionId();
         String taskDefKey = task.getTaskDefinitionKey();
-        /*----- 下面是保存按钮的设置 -----*/
-        // 如果未签收了，除了签收、拒签、返回按钮都不显示
         if (isAssignee) {
-            isButtonShow[0] = true;
+            buttonList.add(ItemButton.baoCun);
         }
-        /*----- 上面是保存按钮的设置 -----*/
         /*----- 下面是可以打开选人界面的发送按钮的设置 -----*/
-        // DelegationState.PENDING ==
-        // task.getDelegationState()：表示当前用户是在协办状态，发送按钮不再显示，完成按钮显示
-        // isSequential：在串行状态下且不是users里面的最后一个用户，isSequential为true
-        // outPutNodeCount>0表示存在发送节点
-        // 当outPutNodeCount==1 &&
-        // isContainEndEvent时，表示只有一个发送节点且是办结节点，此时不再显示发送按钮
         if (DelegationState.PENDING != task.getDelegationState() && isAssignee && outPutNodeCount > 0) {
             // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示发送按钮，否则不显示
             if (isParallel) {
                 if (isParallelSponsor) {
-                    // isParallelSponsor：表示当前用户是并行状态下主办人员
                     if (showSubmitButton) {
-                        isButtonShow[20] = true;
+                        buttonList.add(ItemButton.tiJiao);
                     } else {
-                        isButtonShow[1] = true;
+                        buttonList.add(ItemButton.faSong);
                     }
-                    // 主办办理
-                    map.put("sponsorHandle", "true");
                 } else {
                     ItemTaskConf itemTaskConf = itemTaskConfService
                         .findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
                     if (null != itemTaskConf && itemTaskConf.getSignTask()) {
                         if (showSubmitButton) {
-                            isButtonShow[20] = true;
+                            buttonList.add(ItemButton.tiJiao);
                         } else {
-                            isButtonShow[1] = true;
+                            buttonList.add(ItemButton.faSong);
                         }
                     }
                 }
                 if (isLastParallel) {
                     if (showSubmitButton) {
-                        isButtonShow[20] = true;
+                        buttonList.add(ItemButton.tiJiao);
                     } else {
-                        isButtonShow[1] = true;
+                        buttonList.add(ItemButton.faSong);
                     }
                 }
             } else if (isSequential) {
                 // 如果在串行状态下，那么就要看是不是最后一个用户，如果是则显示发送按钮，否则不显示
                 if (isLastSequential) {
                     if (showSubmitButton) {
-                        isButtonShow[20] = true;
+                        buttonList.add(ItemButton.tiJiao);
                     } else {
-                        isButtonShow[1] = true;
+                        buttonList.add(ItemButton.faSong);
                     }
                 }
             } else {
                 // 如果既不是并行也不是串行
                 if (showSubmitButton) {
-                    isButtonShow[20] = true;
+                    buttonList.add(ItemButton.tiJiao);
                 } else {
-                    isButtonShow[1] = true;
+                    buttonList.add(ItemButton.faSong);
                 }
             }
             // 定制流程处理,有发送按钮说明需要进入下一个定制任务**************************************************
             if (customItem) {
                 // 定制流程的任务都以办理完成往下走
-                isButtonShow[8] = true;
-                if (isButtonShow[1]) {
-                    // 不显示发送
-                    isButtonShow[1] = false;
-                    // 用于判定是否需要发送下一个节点
-                    map.put("nextNode", true);
-                }
-            }
-
-            // 没有发送按钮的时候，串并行显示加减签按钮
-            boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
-                && !isButtonShow[1];
-            if (b) {
-                // isButtonShow[18] = true;
+                buttonList.add(ItemButton.banLiWanCheng);
+                buttonList.removeIf(button -> button.getKey().equals(ItemButton.faSong.getKey()));
             }
         }
         /*----- 上面是可以打开选人界面的发送按钮的设置 -----*/
 
-        /*----- 下面是返回按钮的设置 -----*/
-        isButtonShow[2] = false;
-        /*----- 上面是返回按钮的设置 -----*/
-
-        /*----- 下面是协办状态下的完成按钮的设置 -----*/
-        if (isAssignee) {
-            // 此时说明用户在协办状态，发送按钮不再显示，完成按钮显示
-            if (DelegationState.PENDING == task.getDelegationState()) {
-                // 协办状态下，不再允许转办
-                isButtonShow[4] = false;
-                // 协办状态下，不再允许协办
-                isButtonShow[5] = false;
-                isButtonShow[6] = true;
-            }
-        }
-
-        /*----- 上面是完成按钮的设置 -----*/
-
         /*----- 下面是送下一人状态下的完成按钮的设置 -----*/
         if (isSequential && !isLastSequential && isAssignee && DelegationState.PENDING != task.getDelegationState()) {
-            isButtonShow[7] = true;
-            isButtonShow[12] = false;
             // 定制流程处理**************************************************
             if (customItem) {
-                // 不显示送下一人
-                isButtonShow[7] = false;
                 // 定制流程的任务都以办理完成往下走
-                isButtonShow[8] = true;
+                buttonList.add(ItemButton.banLiWanCheng);
+            } else {
+                buttonList.add(ItemButton.songXiaYiRen);
             }
         }
         /*----- 上面是送下一人按钮的设置 -----*/
@@ -868,7 +778,6 @@ public class ButtonUtil {
         // 办理完成，并行状态下存在
         // 人员已经指定，在并行状态下并且不是并行状态下主办，同时用户设置了存在主协办
         if (isAssignee && isParallel && DelegationState.PENDING != task.getDelegationState()) {
-            // if (sponsorStatus) {// 在基本是否配置了主协办，没有配置为false，配置了使用主协办为true，不使用主协办为false
             // 如果不是主办人，并且不是最后一个处理人，显示办理完成按钮
             if (!isParallelSponsor && !isLastParallel) {
                 ItemTaskConf itemTaskConf = itemTaskConfService
@@ -876,23 +785,15 @@ public class ButtonUtil {
                 if (null != itemTaskConf && itemTaskConf.getSignTask()) {
                     if (outPutNodeCount > 0) {
                         if (showSubmitButton) {
-                            isButtonShow[20] = true;
+                            buttonList.add(ItemButton.tiJiao);
                         } else {
-                            isButtonShow[1] = true;
+                            buttonList.add(ItemButton.faSong);
                         }
-                    } else {
-                        isButtonShow[8] = false;
                     }
                 } else {
-                    isButtonShow[8] = true;
+                    buttonList.add(ItemButton.banLiWanCheng);
                 }
             }
-            // } else {// sponsorStatus，此时如果是最后一个处理人，上面的发送按钮要显示，如果不是，要显示办理完成按钮
-            // if (!isLastParallel) {
-            // isButtonShow[8] = true;
-            // isButtonShow[12] = false;
-            // }
-            // }
         }
 
         /*----- 上面是办理完成按钮的设置 -----*/
@@ -901,18 +802,7 @@ public class ButtonUtil {
         // 签收、拒签按钮
         // 当user变量没有指定人员时，显示签收
         if (!isAssignee) {
-            // 签收
-            isButtonShow[9] = true;
-            // 收回
-            isButtonShow[12] = false;
-            // 拒签
-            // isButtonShow[13] = true;
-            // 是否是最后一个拒签人员，如果是则提示是否拒签，如果拒签，则退回任务给发送人，发送人重新选择人员进行签收办理
-            /*List<IdentityLinkModel> identityLinkList =
-                    identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
-            if (identityLinkList.size() <= 1) {
-                map.put("isLastPerson4RefuseClaim", true);
-            }*/
+            buttonList.add(ItemButton.qianShou);
         }
         /*----- 上面是签收按钮的设置 -----*/
 
@@ -927,7 +817,7 @@ public class ButtonUtil {
                     procInstanceRelationshipService.getParentProcInstanceId(currentProcInstanceId);
                 // 是父子流程
                 if (StringUtils.isNotBlank(superProcessInstanceId)) {
-                    isButtonShow[10] = true;
+                    buttonList.add(ItemButton.tuiQian);
                 }
             } else {
                 List<IdentityLinkModel> identityLinkList =
@@ -936,7 +826,7 @@ public class ButtonUtil {
                 if (identityLinkList.size() > size) {
                     for (IdentityLinkModel i : identityLinkList) {
                         if (i.getUserId().contains(orgUnitId) && "candidate".equals(i.getType())) {
-                            isButtonShow[10] = true;
+                            buttonList.add(ItemButton.tuiQian);
                             break;
                         }
                     }
@@ -946,14 +836,14 @@ public class ButtonUtil {
         /*----- 上面是退签按钮的设置 -----*/
 
         /*----- 下面是退回按钮的设置 -----*/
-        if (isAssignee && !customItem && !isButtonShow[10]) {
+        if (isAssignee && !customItem && !buttonList.contains(ItemButton.tuiQian)) {
             Boolean isSub4Current =
                 processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
             if (isSub4Current) {
                 OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
                 OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, taskSenderId).getData();
                 if (currentBureau.getId().equals(sendBureau.getId())) {
-                    isButtonShow[3] = true;
+                    buttonList.add(ItemButton.tuiHui);
                 }
             } else {
                 List<HistoricTaskInstanceModel> hisTaskList =
@@ -962,7 +852,7 @@ public class ButtonUtil {
                     Boolean isSubProcess4Send = processDefinitionApi.isSubProcessChildNode(tenantId,
                         processDefinitionId, hisTaskList.stream().findFirst().get().getTaskDefinitionKey()).getData();
                     if (!isSubProcess4Send) {
-                        isButtonShow[3] = true;
+                        buttonList.add(ItemButton.tuiHui);
                     }
                 }
             }
@@ -974,56 +864,41 @@ public class ButtonUtil {
         // 当前节点的目标节点存在ENDEVENT类型节点时，显示办结按钮
         if (isAssignee && null != endNode) {
             // 改变办结按钮名称
-            buttonNames[11] = endNode.getTaskDefName();
+            ItemButton.banJie.setName(endNode.getTaskDefName());
             // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示办结按钮，否则不显示
             if (isParallel) {
                 ItemTaskConf itemTaskConf = itemTaskConfService
                     .findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
                 if (null != itemTaskConf && itemTaskConf.getSignTask()) {
-                    isButtonShow[11] = true;
+                    buttonList.add(ItemButton.banJie);
                 } else {
                     if (isParallelSponsor || isLastParallel) {
-                        isButtonShow[11] = true;
+                        buttonList.add(ItemButton.banJie);
                     }
                 }
 
             } else if (isSequential) {
                 // 如果在串行状态下，那么就要看是不是最后一个用户，如果是则显示办结按钮，否则不显示
                 if (isLastSequential) {
-                    isButtonShow[11] = true;
+                    buttonList.add(ItemButton.banJie);
                 }
             } else {// 如果既不是并行也不是串行
-                isButtonShow[11] = true;
+                buttonList.add(ItemButton.banJie);
             }
-            isButtonShow[12] = false;
             if (customItem) {
                 // 定制流程处理,办结按钮处理**************************************************
                 CustomProcessInfo info =
                     customProcessInfoService.getCurrentTaskNextNode((String)vars.get(SysVariables.PROCESSSERIALNUMBER));
                 // 如果当前运行任务的下一个节点是办结,且显示办结按钮,则隐藏办理完成按钮
                 if (info.getTaskType().equals(SysVariables.ENDEVENT)) {
-                    boolean isButtonShow11 = isButtonShow[11];
-                    if (isButtonShow11) {
+                    if (buttonList.stream().anyMatch(button -> button.getKey().equals(ItemButton.banJie.getKey()))) {
                         // 办理完成按钮隐藏
-                        isButtonShow[8] = false;
-                        // 用于判定是否需要发送下一个节点
-                        map.put("nextNode", true);
+                        buttonList.removeIf(button -> button.getKey().equals(ItemButton.banLiWanCheng.getKey()));
                     }
-                } else {// 如果当前运行任务的下一个节点不是办结,隐藏办结按钮
-                    isButtonShow[11] = false;
                 }
             }
         }
         /*----- 上面是办结按钮的设置 -----*/
-        // 下面是加减签按钮,待办件，自己发的件，可加减签，主办可加减签。
-        boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
-            && !customItem && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId)
-            || (StringUtils.isNotBlank(varsSponsorGuid) && orgUnitId.equals(varsSponsorGuid));
-        if (b) {
-            // isButtonShow[18] = true;
-        }
-        // 上面是加减签按钮
-
         // 下面是放入回收站按钮
         if (isAssignee) {
             if (nodeList.isEmpty()) {
@@ -1035,20 +910,13 @@ public class ButtonUtil {
             boolean canDelete =
                 nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
             if (canDelete) {
-                isButtonShow[21] = true;
+                buttonList.add(ItemButton.fangRuHuiShouZhan);
             }
         }
         // 上面是放入回收站按钮
-
-        // 打印
-        isButtonShow[16] = false;
-        // 抄送
-        isButtonShow[17] = false;
-        map.put("buttonIds", buttonIds);
-        map.put("buttonNames", buttonNames);
-        map.put("isButtonShow", isButtonShow);
-        map.put("buttonOrders", buttonOrders);
-        return map;
+        buttonList =
+            buttonList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
+        return buttonList;
     }
 
     public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
@@ -1072,7 +940,7 @@ public class ButtonUtil {
                     OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
                     OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
                     if (currentBureau.getId().equals(sendBureau.getId())) {
-                        buttonModelList.add(shouHui);
+                        buttonModelList.add(ItemButton.shouHui);
                     }
                 } else {
                     List<HistoricTaskInstanceModel> hisTaskList =
@@ -1082,34 +950,31 @@ public class ButtonUtil {
                             processDefinitionApi.isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
                                 hisTaskList.stream().findFirst().get().getTaskDefinitionKey()).getData();
                         if (!isSubProcess4Send) {
-                            buttonModelList.add(shouHui);
+                            buttonModelList.add(ItemButton.shouHui);
                         }
                     }
                 }
             }
         }
-        buttonModelList = buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
-        return buttonModelList;
     }
 
     public List<ItemButtonModel> showButton4Done(String itemId) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(huiFuDaiBan);
-        buttonModelList.add(chaoSong);
-        buttonModelList.add(daYin);
-        buttonModelList.add(fanHui);
-        buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        buttonModelList.add(ItemButton.huiFuDaiBan);
+        buttonModelList.add(ItemButton.chaoSong);
+        buttonModelList.add(ItemButton.daYin);
+        buttonModelList.add(ItemButton.fanHui);
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
-        return new ArrayList<>();
     }
 
     public List<ItemButtonModel> showButton4Recycle() {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(huiFu);
-        buttonModelList.add(cheDiShanChu);
-        buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        buttonModelList.add(ItemButton.huiFu);
+        buttonModelList.add(ItemButton.cheDiShanChu);
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
-        return buttonModelList;
     }
 }
