@@ -872,7 +872,6 @@ public class DocumentServiceImpl implements DocumentService {
         if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())
             || model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())
             || model.getItembox().equals(ItemBoxTypeEnum.DONE.getValue())) {
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
             List<SignDeptDetail> signList =
                 signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
             if (!signList.isEmpty()) {
