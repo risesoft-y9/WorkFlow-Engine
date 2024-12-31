@@ -42,9 +42,10 @@ public class CurrentDeptLeadersExtend extends AbstractDynamicRoleMember {
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
             List<OrgUnit> deptList =
                 orgUnitApi.getSubTree(tenantId, bureau.getId(), OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
-            deptList.stream().filter(dept -> !dept.getId().equals(orgUnit.getParentId())).forEach(dept -> {
+            deptList.forEach(dept -> {
                 List<OrgUnit> deptLeaders = departmentApi.listDepartmentPropOrgUnits(tenantId, dept.getId(),
                     DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
+                deptLeaders.removeIf(leader -> leader.getId().equals(orgUnitId));
                 leaders.addAll(deptLeaders);
             });
         }
