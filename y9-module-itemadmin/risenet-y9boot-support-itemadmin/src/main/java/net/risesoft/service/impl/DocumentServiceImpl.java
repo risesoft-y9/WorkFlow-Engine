@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -44,6 +46,7 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ItemButtonBind;
 import net.risesoft.entity.ItemPermission;
@@ -873,8 +876,20 @@ public class DocumentServiceImpl implements DocumentService {
             List<SignDeptDetail> signList =
                 signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
             if (!signList.isEmpty()) {
-                boolean isSignDept = signDeptDetailService.isSignDept(model.getProcessSerialNumber(), bureau.getId());
-                if (isSignDept) {
+                ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
+                    model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
+                HistoricTaskInstanceModel hisTask =
+                    historictaskApi.getById(tenantId, actRuDetail.getTaskId()).getData();
+                if (null == hisTask) {
+                    LocalDate createTime =
+                        actRuDetail.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    hisTask = historictaskApi
+                        .getById(tenantId, actRuDetail.getTaskId(), String.valueOf(createTime.getYear())).getData();
+                }
+                boolean isSub = processDefinitionApi
+                    .isSubProcessChildNode(tenantId, hisTask.getProcessDefinitionId(), hisTask.getTaskDefinitionKey())
+                    .getData();
+                if (isSub) {
                     model.setSignStatus(SignStatusEnum.SUB.getValue());
                 } else {
                     model.setSignStatus(SignStatusEnum.MAIN.getValue());
@@ -1420,16 +1435,15 @@ public class DocumentServiceImpl implements DocumentService {
             AtomicBoolean haveSendButton = new AtomicBoolean(false);
             bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
                 processDefinitionId, taskDefKey);
-            bibList.stream().takeWhile(bib -> "发送".equals(bib.getButtonName()) && !haveSendButton.get())
-                .forEach(bib -> {
-                    List<String> roleIds = bib.getRoleIds();
-                    if (roleIds.isEmpty() || roleIds.stream()
-                        .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                        buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(),
-                            ItemButtonTypeEnum.COMMON.getValue()));
-                        haveSendButton.set(true);
-                    }
-                });
+            bibList.stream().filter(bib -> "发送".equals(bib.getButtonName())).forEach(bib -> {
+                List<String> roleIds = bib.getRoleIds();
+                if (roleIds.isEmpty() || roleIds.stream()
+                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
+                    buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(),
+                        ItemButtonTypeEnum.COMMON.getValue()));
+                    haveSendButton.set(true);
+                }
+            });
             if (!haveSendButton.get()) {
                 /*
                  * 添加发送下面的路由
