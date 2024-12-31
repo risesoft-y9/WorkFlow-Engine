@@ -863,8 +863,9 @@ public class ButtonUtil {
         // 办结
         // 当前节点的目标节点存在ENDEVENT类型节点时，显示办结按钮
         if (isAssignee && null != endNode) {
-            // 改变办结按钮名称
-            ItemButton.banJie.setName(endNode.getTaskDefName());
+            if (StringUtils.isNotBlank(endNode.getTaskDefName())) {
+                ItemButton.banJie.setName(endNode.getTaskDefName());
+            }
             // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示办结按钮，否则不显示
             if (isParallel) {
                 ItemTaskConf itemTaskConf = itemTaskConfService
@@ -876,7 +877,6 @@ public class ButtonUtil {
                         buttonList.add(ItemButton.banJie);
                     }
                 }
-
             } else if (isSequential) {
                 // 如果在串行状态下，那么就要看是不是最后一个用户，如果是则显示办结按钮，否则不显示
                 if (isLastSequential) {
