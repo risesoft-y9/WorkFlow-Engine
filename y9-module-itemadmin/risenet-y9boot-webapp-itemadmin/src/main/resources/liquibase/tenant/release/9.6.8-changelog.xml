@@ -332,4 +332,29 @@
             <column name="PROCESSSERIALNUMBER"/>
         </createIndex>
     </changeSet>
+    <changeSet id="1704700543333-20" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_TYPESETTING_INFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="发文单排版信息表" tableName="FF_TYPESETTING_INFO">
+            <column name="ID" remarks="主键id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="way" remarks="排版方式" type="VARCHAR(50)"/>
+            <column name="template" type="VARCHAR(100)" remarks="模板"/>
+            <column name="processSerialNumber" type="VARCHAR(50)" remarks="流程编号"/>
+            <column name="qingyangFile" type="VARCHAR(50)" remarks="清样文件"/>
+            <column name="banshiFile" type="VARCHAR(50)" remarks="板式文件"/>
+            <column name="typeSettingOpinion" type="VARCHAR(500)" remarks="排版意见"/>
+            <column name="typeSettingUserName" type="VARCHAR(50)" remarks="排版人"/>
+            <column name="typeSettingTime" type="VARCHAR(50)" remarks="排版时间"/>
+            <column name="checkOpinion" type="VARCHAR(500)" remarks="校对意见"/>
+            <column name="shenheOpinion" type="VARCHAR(500)" remarks="校对审核意见"/>
+            <column name="checkUserName" type="VARCHAR(50)" remarks="校对审核人"/>
+            <column name="checkTime" type="VARCHAR(50)" remarks="校对时间"/>
+            <column name="tabIndex" type="INT" remarks="排序号"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
