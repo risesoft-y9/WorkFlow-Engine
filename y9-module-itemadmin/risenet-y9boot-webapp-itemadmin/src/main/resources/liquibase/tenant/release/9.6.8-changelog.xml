@@ -357,4 +357,24 @@
             <column name="tabIndex" type="INT" remarks="排序号"/>
         </createTable>
     </changeSet>
+    <changeSet id="1704700543333-21" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_PRINT_LOG"/>
+            </not>
+        </preConditions>
+        <createTable remarks="打印日志信息表" tableName="FF_PRINT_LOG">
+            <column name="ID" remarks="主键id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="processSerialNumber" type="VARCHAR(50)" remarks="流程编号"/>
+            <column name="actionContent" type="VARCHAR(50)" remarks="操作内容"/>
+            <column name="actionType" type="VARCHAR(50)" remarks="操作类型"/>
+            <column name="ip" type="VARCHAR(50)" remarks="ip"/>
+            <column name="userName" type="VARCHAR(50)" remarks="打印人"/>
+            <column name="userId" type="VARCHAR(50)" remarks="打印人id"/>
+            <column name="deptId" type="VARCHAR(50)" remarks="打印人部门id"/>
+            <column name="printTime" type="VARCHAR(50)" remarks="打印时间"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
