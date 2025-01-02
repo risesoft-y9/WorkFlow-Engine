@@ -682,6 +682,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
@@ -740,6 +741,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                             List<String> taskNameAndAssigneeNames =
                                 getTaskNameAndAssigneeNames(finalTaskList, sdd.getExecutionId());
                             Map<String, Object> childrenMap = new HashMap<>(finalMapTemp);
+                            childrenMap.put("id", sdd.getId());
                             childrenMap.put("taskName", taskNameAndAssigneeNames.get(0));
                             childrenMap.put("taskAssignee", taskNameAndAssigneeNames.get(1));
                             childrenMap.put("children", List.of());

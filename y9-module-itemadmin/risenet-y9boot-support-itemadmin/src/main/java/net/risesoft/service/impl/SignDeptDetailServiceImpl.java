@@ -36,6 +36,15 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     }
 
     @Override
+    @Transactional
+    public void recoverById(String id) {
+        SignDeptDetail signDeptDetail = signDeptDetailRepository.findById(id).orElse(null);
+        assert signDeptDetail != null;
+        signDeptDetail.setStatus(SignDeptDetailStatusEnum.DOING.getValue());
+        signDeptDetailRepository.save(signDeptDetail);
+    }
+
+    @Override
     public SignDeptDetail findById(String id) {
         return signDeptDetailRepository.findById(id).orElse(null);
     }
