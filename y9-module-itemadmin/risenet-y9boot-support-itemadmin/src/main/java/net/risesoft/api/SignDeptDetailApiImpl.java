@@ -56,6 +56,21 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
         return Y9Result.success();
     }
 
+    /**
+     * 根据主键恢复会签信息
+     *
+     * @param tenantId 租户ID
+     * @param id 主键
+     * @return Y9Result<Object>
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<Object> recoverById(@RequestParam String tenantId, @RequestParam String id) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        signDeptDetailService.recoverById(id);
+        return Y9Result.success();
+    }
+
     @Override
     public Y9Result<SignDeptDetailModel> findById(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);

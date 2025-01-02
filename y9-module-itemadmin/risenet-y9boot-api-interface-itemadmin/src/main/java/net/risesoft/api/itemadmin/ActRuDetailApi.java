@@ -33,16 +33,16 @@ public interface ActRuDetailApi {
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 根据执行实例id标记流程为办结
+     * 根据执行实例id标记流程为删除
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
-    @PostMapping("/endByExecutionId")
-    Y9Result<Object> endByExecutionId(@RequestParam("tenantId") String tenantId,
-                                            @RequestParam("executionId") String executionId);
+    @PostMapping("/deleteByExecutionId")
+    Y9Result<Object> deleteByExecutionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("executionId") String executionId);
 
     /**
      * 根据流程编号标记流程为办结
@@ -129,7 +129,19 @@ public interface ActRuDetailApi {
      */
     @PostMapping("/recoveryByProcessSerialNumber")
     Y9Result<Object> recoveryByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-                                                 @RequestParam("processSerialNumber") String processSerialNumber);
+        @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
+     * 恢复会签流程的办件详情
+     *
+     * @param tenantId 租户id
+     * @param executionId 流程序列号
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/recoveryByExecutionId")
+    Y9Result<Object> recoveryByExecutionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("executionId") String executionId);
 
     /**
      * 根据流程实例id删除整个流程的办件详情
@@ -165,7 +177,7 @@ public interface ActRuDetailApi {
      */
     @PostMapping("/deleteByProcessSerialNumber")
     Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-                                                 @RequestParam("processSerialNumber") String processSerialNumber);
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 删除某个参与人的办件详情

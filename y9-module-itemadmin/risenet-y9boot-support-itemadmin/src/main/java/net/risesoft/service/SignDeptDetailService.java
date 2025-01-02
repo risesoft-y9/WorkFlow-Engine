@@ -2,12 +2,13 @@ package net.risesoft.service;
 
 import java.util.List;
 
-
 import net.risesoft.entity.SignDeptDetail;
 
 public interface SignDeptDetailService {
 
     void deleteById(String id);
+
+    void recoverById(String id);
 
     SignDeptDetail findById(String id);
 

@@ -17,11 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
+import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -43,6 +49,12 @@ public class SignDeptDetailRestController {
 
     private final OrgUnitApi orgUnitApi;
 
+    private final ActRuDetailApi actRuDetailApi;
+
+    private final TaskApi taskApi;
+
+    private final TaskRelatedApi taskRelatedApi;
+
     /**
      * 根据主键删除会签信息
      *
@@ -52,7 +64,67 @@ public class SignDeptDetailRestController {
      */
     @PostMapping(value = "/deleteById")
     Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
-        return signDeptDetailApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        SignDeptDetailModel ssd = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+        /*
+         * 1、删除流程参与信息
+         */
+        actRuDetailApi.deleteByExecutionId(tenantId, ssd.getExecutionId());
+        /*
+         * 2、删除会签信息
+         */
+        signDeptDetailApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
+        /*
+         * 3、修改历程信息
+         */
+        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, ssd.getProcessInstanceId()).getData();
+        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
+            .forEach(tm -> {
+                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
+                taskRelatedModels.stream()
+                    .filter(trm -> StringUtils.equals(trm.getInfoType(), TaskRelatedEnum.ACTIONNAME.getValue()))
+                    .forEach(trm -> {
+                        trm.setMsgContent("减签");
+                        taskRelatedApi.saveOrUpdate(tenantId, trm);
+                    });
+            });
+        return Y9Result.success();
+    }
+
+    /**
+     * 根据主键恢复会签信息
+     *
+     * @param id 主键
+     * @return Y9Result<Object>
+     * @since 9.6.8
+     */
+    @PostMapping(value = "/recoverById")
+    Y9Result<Object> recoverById(@RequestParam @NotBlank String id) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        SignDeptDetailModel ssd = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+        /*
+         * 1、恢复流程参与信息
+         */
+        actRuDetailApi.recoveryByExecutionId(tenantId, ssd.getExecutionId());
+        /*
+         * 2、恢复会签信息
+         */
+        signDeptDetailApi.recoverById(Y9LoginUserHolder.getTenantId(), id);
+        /*
+         * 3、修改历程信息
+         */
+        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, ssd.getProcessInstanceId()).getData();
+        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
+            .forEach(tm -> {
+                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
+                taskRelatedModels.stream()
+                    .filter(trm -> StringUtils.equals(trm.getInfoType(), TaskRelatedEnum.ACTIONNAME.getValue()))
+                    .forEach(trm -> {
+                        trm.setMsgContent("恢复");
+                        taskRelatedApi.saveOrUpdate(tenantId, trm);
+                    });
+            });
+        return Y9Result.success();
     }
 
     /**
@@ -102,5 +174,4 @@ public class SignDeptDetailRestController {
         return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(),
             Y9LoginUserHolder.getUserInfo().getPositionId(), signDeptDetailModel);
     }
-
 }

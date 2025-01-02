@@ -65,7 +65,7 @@ public interface ActRuDetailService {
      * @param executionId
      * @return
      */
-    boolean endByExecutionId(String executionId);
+    boolean deleteByExecutionId(String executionId);
 
     /**
      * 标记流程为办结
@@ -248,6 +248,14 @@ public interface ActRuDetailService {
      * @return
      */
     boolean recoveryByProcessSerialNumber(String processSerialNumber);
+
+    /**
+     * 恢复流程的办理详情
+     *
+     * @param executionId
+     * @return
+     */
+    void recoveryByExecutionId(String executionId);
 
     /**
      *
