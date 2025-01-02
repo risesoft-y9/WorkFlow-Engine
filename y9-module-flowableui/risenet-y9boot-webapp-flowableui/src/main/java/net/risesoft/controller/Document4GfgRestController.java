@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ItemApi;
@@ -108,6 +109,8 @@ public class Document4GfgRestController {
 
     private final RoleApi roleApi;
 
+    private final ButtonOperationApi buttonOperationApi;
+
     /**
      * 获取新建办件初始化数据
      *
@@ -179,22 +182,39 @@ public class Document4GfgRestController {
                 return Y9Result.successMsg("办结成功");
             }
             // 是子流程，判断是不是最后一个办结的，是就找办理人，设置发送
-            List<TaskModel> taskList =
-                taskApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId()).getData();
-            if (taskList.size() > 1) {
-                // 不是最后一个办结
-                buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
-            } else {
-                buttonOperationService.complete4Sub(taskId, "办结", "已办结");
-            }
             ProcessParamModel processParamModel = processParamApi
                 .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId()).getData();
-            List<SignDeptDetailModel> sddList =
+            List<SignDeptDetailModel> doingList =
                 signDeptDetailApi
                     .findByProcessSerialNumberAndStatus(Y9LoginUserHolder.getTenantId(),
                         processParamModel.getProcessSerialNumber(), SignDeptDetailStatusEnum.DOING.getValue())
                     .getData();
-            sddList.forEach(sdd -> {
+            if (doingList.size() > 1) {
+                buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
+            } else {
+                List<TaskModel> taskList = taskApi
+                    .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId()).getData();
+                List<SignDeptDetailModel> deleteList = signDeptDetailApi
+                    .findByProcessSerialNumberAndStatus(Y9LoginUserHolder.getTenantId(),
+                        processParamModel.getProcessSerialNumber(), SignDeptDetailStatusEnum.DELETED.getValue())
+                    .getData();
+                deleteList.parallelStream().forEach(sdd -> {
+                    taskList.stream().filter(t -> t.getExecutionId().equals(sdd.getExecutionId())).findFirst()
+                        .ifPresent(t -> {
+                            try {
+                                buttonOperationApi.specialComplete(Y9LoginUserHolder.getTenantId(),
+                                    Y9LoginUserHolder.getPositionId(), t.getId(), "减签后的特殊办结");
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                });
+                buttonOperationService.complete4Sub(taskId, "办结", "已办结");
+            }
+            /*
+            通过是否有领导签名来表示正常办结
+             */
+            doingList.forEach(sdd -> {
                 if (sdd.getExecutionId().equals(task.getExecutionId())) {
                     sdd.setStatus(StringUtils.isBlank(sdd.getDeptManager())
                         ? SignDeptDetailStatusEnum.ROLLBACK.getValue() : SignDeptDetailStatusEnum.DONE.getValue());

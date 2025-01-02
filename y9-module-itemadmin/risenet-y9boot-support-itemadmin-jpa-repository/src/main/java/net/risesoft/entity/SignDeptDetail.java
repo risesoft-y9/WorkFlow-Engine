@@ -51,7 +51,7 @@ public class SignDeptDetail implements Serializable {
     @Column(name = "EXECUTIONID", length = 50, nullable = false)
     private String executionId;
 
-    @Comment("任务Id")
+    @Comment("主流程送会签时的任务Id")
     @Column(name = "TASKID", length = 50, nullable = false)
     private String taskId;
 
