@@ -29,13 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
 import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.PrintLogApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWordModel;
+import net.risesoft.model.itemadmin.PrintLogModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -75,6 +78,8 @@ public class FormNTKO4GfgController {
     private final SignDeptDetailApi signDeptDetailApi;
 
     private final FormDataApi formDataApi;
+
+    private final PrintLogApi printLogApi;
 
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
@@ -169,6 +174,38 @@ public class FormNTKO4GfgController {
                 LOGGER.error("关闭流失败", e);
             }
         }
+    }
+
+    /**
+     * 保存打印日志
+     *
+     * @param processSerialNumber 流程编号id
+     * @param actionContent 动作内容
+     * @param actionType 动作类型
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param request 请求
+     * @return {@link Y9Result<Object>}
+     */
+    @RequestMapping(value = "/savePrintLog")
+    public Y9Result<Object> savePrintLog(@RequestParam String processSerialNumber, @RequestParam String actionContent,
+        @RequestParam String actionType, @RequestParam String tenantId, @RequestParam String userId,
+        HttpServletRequest request) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        PrintLogModel printLog = new PrintLogModel();
+        printLog.setProcessSerialNumber(processSerialNumber);
+        printLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        printLog.setPrintTime(sdf.format(new Date()));
+        printLog.setUserId(userId);
+        printLog.setUserName(person.getName());
+        printLog.setActionContent(actionContent);
+        printLog.setActionType(actionType);
+        printLog.setIp(Y9Context.getIpAddr(request));
+        printLog.setDeptId(person.getParentId());
+        return printLogApi.savePrintLog(Y9LoginUserHolder.getTenantId(), printLog);
     }
 
     /**
