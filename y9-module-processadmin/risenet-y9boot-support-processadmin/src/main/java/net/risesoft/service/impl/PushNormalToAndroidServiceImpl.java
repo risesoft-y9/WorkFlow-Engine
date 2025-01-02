@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.Y9Push;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -77,7 +76,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             if (StringUtils.isBlank(send) || UtilConsts.FALSE.equals(send)) {
                 return;
             }
-            Y9Push.pushNormalMessage(list, itemName, title);
+            // Y9Push.pushNormalMessage(list, itemName, title);
         } catch (Exception e) {
             LOGGER.warn("##########################消息推送提醒发生异常-taskId:{}##########################", task.getId(), e);
         }
