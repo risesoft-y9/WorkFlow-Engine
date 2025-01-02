@@ -30,6 +30,17 @@ public interface SignDeptDetailApi {
     Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
+     * 根据主键恢复会签信息
+     *
+     * @param tenantId 租户ID
+     * @param id 主键
+     * @return Y9Result<Object>
+     * @since 9.6.8
+     */
+    @PostMapping(value = "/recoverById")
+    Y9Result<Object> recoverById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+
+    /**
      * 根据会签部门详情id获取会签信息
      *
      * @param tenantId 租户ID

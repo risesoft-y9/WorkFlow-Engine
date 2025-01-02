@@ -514,6 +514,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             taskRelatedService.findByTaskIdAndInfoType(taskId, TaskRelatedEnum.ACTIONNAME.getValue());
         if (null != taskRelated && StringUtils.isNotBlank(taskRelated.getMsgContent())) {
             model.setActionName(taskRelated.getMsgContent());
+            if ("减签".equals(taskRelated.getMsgContent())) {
+                return model;
+            }
         }
         int newToDo;
         if (hai.getEndTime() == null) {

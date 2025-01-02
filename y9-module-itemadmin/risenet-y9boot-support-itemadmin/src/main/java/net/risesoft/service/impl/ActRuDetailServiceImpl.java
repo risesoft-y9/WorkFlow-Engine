@@ -3,6 +3,7 @@ package net.risesoft.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
+import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.ProcessParam;
@@ -25,6 +27,7 @@ import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -59,6 +62,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     private final IdentityApi identityApi;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final RuntimeApi runtimeApi;
 
     @Override
     @Transactional
@@ -141,14 +146,16 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     @Transactional
-    public boolean endByExecutionId(String executionId) {
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionId);
-        List<ActRuDetail> listTemp = new ArrayList<>();
-        for (ActRuDetail actRuDetail : list) {
-            actRuDetail.setEnded(true);
-            listTemp.add(actRuDetail);
-        }
-        actRuDetailRepository.saveAll(listTemp);
+    public boolean deleteByExecutionId(String executionId) {
+        ExecutionModel executionModel =
+            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
+        list = list.stream()
+            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
+                .getData().getExecutionId().equals(executionId))
+            .collect(Collectors.toList());
+        list.forEach(actRuDetail -> actRuDetail.setDeleted(true));
+        actRuDetailRepository.saveAll(list);
         return true;
     }
 
@@ -308,6 +315,20 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         }
         actRuDetailRepository.saveAll(listTemp);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public void recoveryByExecutionId(String executionId) {
+        ExecutionModel executionModel =
+            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
+        list = list.stream()
+            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
+                .getData().getExecutionId().equals(executionId))
+            .collect(Collectors.toList());
+        list.forEach(actRuDetail -> actRuDetail.setDeleted(false));
+        actRuDetailRepository.saveAll(list);
     }
 
     @Override
