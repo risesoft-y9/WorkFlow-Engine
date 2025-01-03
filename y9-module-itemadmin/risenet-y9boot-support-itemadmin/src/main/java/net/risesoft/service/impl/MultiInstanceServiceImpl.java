@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -59,6 +60,17 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // variableApi.setVariable(tenantId, taskId,
         // SysVariables.NROFACTIVEINSTANCES, (int)nrOfActiveInstances + 1);
         // }
+    }
+
+    @Override
+    public Y9Result<Object> addMultiInstanceExecution(String activityId, String parentExecutionId, String elementUser) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        /*
+         * 新增执行实例
+         */
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("elementUser", elementUser);
+        return runtimeApi.addMultiInstanceExecution(tenantId, activityId, parentExecutionId, map);
     }
 
     @SuppressWarnings("unchecked")
