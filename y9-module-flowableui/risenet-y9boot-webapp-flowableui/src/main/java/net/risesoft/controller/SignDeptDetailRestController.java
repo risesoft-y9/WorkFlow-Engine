@@ -65,11 +65,17 @@ public class SignDeptDetailRestController {
     @PostMapping(value = "/deleteById")
     Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SignDeptDetailModel ssd = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+        SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+        List<SignDeptDetailModel> signDeptDetailModels =
+            signDeptDetailApi.findByProcessSerialNumber(tenantId, signDeptDetail.getProcessSerialNumber()).getData();
+        if (signDeptDetailModels.stream()
+            .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())).count() == 1) {
+            return Y9Result.failure("仅剩一个会签部门，不能删除会签信息");
+        }
         /*
          * 1、删除流程参与信息
          */
-        actRuDetailApi.deleteByExecutionId(tenantId, ssd.getExecutionId());
+        actRuDetailApi.deleteByExecutionId(tenantId, signDeptDetail.getExecutionId());
         /*
          * 2、删除会签信息
          */
@@ -77,8 +83,9 @@ public class SignDeptDetailRestController {
         /*
          * 3、修改历程信息
          */
-        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, ssd.getProcessInstanceId()).getData();
-        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
+        List<TaskModel> taskModelList =
+            taskApi.findByProcessInstanceId(tenantId, signDeptDetail.getProcessInstanceId()).getData();
+        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), signDeptDetail.getExecutionId()))
             .forEach(tm -> {
                 List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
                 taskRelatedModels.stream()

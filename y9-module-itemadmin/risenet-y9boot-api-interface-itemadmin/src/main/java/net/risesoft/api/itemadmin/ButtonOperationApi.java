@@ -34,6 +34,21 @@ public interface ButtonOperationApi {
         @RequestParam("taskId") String taskId, @RequestParam("elementUser") String elementUser);
 
     /**
+     * 加签
+     *
+     * @param tenantId 租户id
+     * @param activityId 活动Id
+     * @param parentExecutionId 父执行实例id
+     * @param elementUser 选择人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/addMultiInstanceExecutionByActivityId")
+    Y9Result<Object> addMultiInstanceExecutionByActivityId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId,
+        @RequestParam("elementUser") String elementUser);
+
+    /**
      * 减签
      *
      * @param tenantId 租户id

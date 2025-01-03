@@ -108,6 +108,17 @@ public class WorkList4GfgRestController {
     }
 
     /**
+     * 获取流程序列号的所有会签流程信息
+     *
+     * @param processSerialNumber 流程序列号
+     * @return Y9Result<List<Map<String, Object>>>
+     */
+    @GetMapping(value = "/getSignDeptDetailList")
+    public Y9Result<List<Map<String, Object>>> getSignDeptDetailList(@RequestParam String processSerialNumber) {
+        return workList4GfgService.getSignDeptDetailList(processSerialNumber);
+    }
+
+    /**
      * 获取所有本人经手件的列表
      *
      * @param itemId 事项id

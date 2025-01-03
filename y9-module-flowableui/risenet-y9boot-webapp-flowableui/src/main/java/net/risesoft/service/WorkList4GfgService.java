@@ -1,9 +1,11 @@
 package net.risesoft.service;
 
+import java.util.List;
 import java.util.Map;
 
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 public interface WorkList4GfgService {
 
@@ -36,6 +38,14 @@ public interface WorkList4GfgService {
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> haveDoneList(String itemId, Integer page, Integer rows);
+
+    /**
+     * 获取流程序列号的所有会签流程信息
+     *
+     * @param processSerialNumber 流程序列号
+     * @return List<Map < String, Object>>
+     */
+    Y9Result<List<Map<String, Object>>> getSignDeptDetailList(String processSerialNumber);
 
     /**
      * 获取已办列表

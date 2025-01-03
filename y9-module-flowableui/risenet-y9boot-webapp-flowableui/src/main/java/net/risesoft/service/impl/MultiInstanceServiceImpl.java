@@ -14,11 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.MultiInstanceService;
@@ -46,6 +48,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final Process4SearchService process4SearchService;
 
+    private final SignDeptDetailApi signDeptDetailApi;
+
     @Override
     public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms,
         String isShuMing, String smsContent) throws Exception {
@@ -72,6 +76,34 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         if (processParamModel != null) {
             process4SearchService.saveToDataCenter1(tenantId, taskId, processParamModel);
         }
+    }
+
+    @Override
+    public void addExecutionId(ProcessParamModel processParamModel, String activityId, String userChoice) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), processInstanceId = processParamModel.getProcessInstanceId(),
+            processSerialNumber = processParamModel.getProcessSerialNumber(),
+            positionId = Y9LoginUserHolder.getPositionId();
+        String[] users = userChoice.split(";");
+        for (String user : users) {
+            buttonOperationApi.addMultiInstanceExecutionByActivityId(tenantId, activityId, processInstanceId, user);
+        }
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<SignDeptDetailModel> signDeptDetailModels =
+            signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        String taskId = signDeptDetailModels.get(0).getTaskId();
+        taskList.forEach(task -> {
+            if (signDeptDetailModels.stream().noneMatch(sdd -> sdd.getExecutionId().equals(task.getExecutionId()))) {
+                OrgUnit bureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+                SignDeptDetailModel signDeptDetail = new SignDeptDetailModel();
+                signDeptDetail.setProcessSerialNumber(processSerialNumber);
+                signDeptDetail.setProcessInstanceId(processInstanceId);
+                signDeptDetail.setExecutionId(task.getExecutionId());
+                signDeptDetail.setTaskId(taskId);
+                signDeptDetail.setDeptId(bureau.getId());
+                signDeptDetail.setDeptName(bureau.getName());
+                signDeptDetailApi.saveOrUpdate(tenantId, positionId, signDeptDetail);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")

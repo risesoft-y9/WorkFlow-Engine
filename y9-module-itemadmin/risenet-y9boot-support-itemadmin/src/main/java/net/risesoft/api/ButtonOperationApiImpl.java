@@ -84,6 +84,23 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     }
 
     /**
+     * 加签
+     *
+     * @param tenantId 租户id
+     * @param activityId 活动Id
+     * @param parentExecutionId 父执行实例id
+     * @param elementUser 选择人id
+     * @return {@code Y9Result<ExecutionModel>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> addMultiInstanceExecutionByActivityId(@RequestParam String tenantId,
+        @RequestParam String activityId, @RequestParam String parentExecutionId, @RequestParam String elementUser) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return multiInstanceService.addMultiInstanceExecution(activityId, parentExecutionId, elementUser);
+    }
+
+    /**
      * 减签
      *
      * @param tenantId 租户id

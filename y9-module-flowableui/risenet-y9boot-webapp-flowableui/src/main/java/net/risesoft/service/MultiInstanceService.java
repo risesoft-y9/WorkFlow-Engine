@@ -3,6 +3,8 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.itemadmin.ProcessParamModel;
+
 public interface MultiInstanceService {
 
     /**
@@ -17,6 +19,15 @@ public interface MultiInstanceService {
      */
     void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms, String isShuMing,
         String smsContent) throws Exception;
+
+    /**
+     * 并行加签
+     *
+     * @param processParamModel 流程对象
+     * @param activityId 任务id
+     * @param userChoice 选择人
+     */
+    void addExecutionId(ProcessParamModel processParamModel, String activityId, String userChoice);
 
     /**
      * 串行加签
