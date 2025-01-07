@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -419,7 +420,7 @@ public class Document4GfgRestController {
     }
 
     /**
-     * 获取主办司局（暂时取组织下的部门）
+     * 获取主办司局（取组织下的为委办局的部门）
      *
      * @return Y9Result<List < Department>>
      */
@@ -427,7 +428,10 @@ public class Document4GfgRestController {
     public Y9Result<List<Department>> getBureau() {
         Organization organization =
             orgUnitApi.getOrganization(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId()).getData();
-        return departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), organization.getId());
+        List<Department> deptList =
+            departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), organization.getId()).getData();
+        deptList = deptList.stream().filter(Department::isBureau).collect(Collectors.toList());
+        return Y9Result.success(deptList);
     }
 
     /**
