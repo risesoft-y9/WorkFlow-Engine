@@ -62,7 +62,7 @@ public interface Y9TableService {
      *
      * @return
      */
-    String getAlltableName();
+    List<Y9Table> getAllTable();
 
     /**
      * Description: 获取数据库表

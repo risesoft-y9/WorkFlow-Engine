@@ -183,21 +183,8 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    public String getAlltableName() {
-        StringBuilder tableNames = new StringBuilder();
-        try {
-            List<Y9Table> list = y9TableRepository.findAll();
-            for (Y9Table y9Table : list) {
-                if (tableNames.length() != 0) {
-                    tableNames.append(",").append(y9Table.getTableName());
-                } else {
-                    tableNames.append(y9Table.getTableName());
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取所有表名失败", e);
-        }
-        return tableNames.toString();
+    public List<Y9Table> getAllTable() {
+        return y9TableRepository.findAll();
     }
 
     @Override
