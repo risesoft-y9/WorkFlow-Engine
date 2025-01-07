@@ -33,6 +33,20 @@ public class TypeSettingInfoApiImpl implements TypeSettingInfoApi {
     private final TypeSettingInfoService typeSettingInfoService;
 
     /**
+     * 删除排版信息
+     *
+     * @param tenantId 租户id
+     * @param id 排版信息id
+     * @return Y9Result<Object>
+     */
+    @Override
+    public Y9Result<Object> delTypeSetting(@RequestParam String tenantId, @RequestParam String id) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        typeSettingInfoService.delTypeSetting(id);
+        return Y9Result.success();
+    }
+
+    /**
      * 获取排版信息
      *
      * @param tenantId 租户id

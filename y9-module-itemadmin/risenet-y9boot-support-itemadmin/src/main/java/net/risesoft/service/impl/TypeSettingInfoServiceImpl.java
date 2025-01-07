@@ -30,6 +30,12 @@ public class TypeSettingInfoServiceImpl implements TypeSettingInfoService {
     private final TypeSettingInfoRepository typeSettingInfoRepository;
 
     @Override
+    @Transactional
+    public void delTypeSetting(String id) {
+        typeSettingInfoRepository.deleteById(id);
+    }
+
+    @Override
     public List<TypeSettingInfo> findByProcessSerialNumber(String processSerialNumber) {
         return typeSettingInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
     }
