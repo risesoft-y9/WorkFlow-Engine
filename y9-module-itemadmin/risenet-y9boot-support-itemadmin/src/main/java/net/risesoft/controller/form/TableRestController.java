@@ -100,7 +100,14 @@ public class TableRestController {
     public Y9Result<Map<String, Object>> getAllTables(@RequestParam(required = false) String name) {
         Map<String, Object> map = new HashMap<>();
         List<Map<String, String>> list = y9TableService.getAllTables(name);
-        String tableNames = y9TableService.getAlltableName();
+        List<Y9Table> allTable = y9TableService.getAllTable();
+        StringBuffer tableNames = new StringBuffer();
+        allTable.forEach(y9Table -> {
+            if (tableNames.length() > 0) {
+                tableNames.append(",");
+            }
+            tableNames.append(y9Table.getTableName());
+        });
         map.put("rows", list);
         map.put("tableNames", tableNames);
         return Y9Result.success(map, "获取成功");
@@ -148,8 +155,25 @@ public class TableRestController {
                 Y9Table y9Table = y9TableService.findById(id);
                 map.put("y9Table", y9Table);
             }
-            String tableNames = y9TableService.getAlltableName();
+            List<Y9Table> allTable = y9TableService.getAllTable();
+            StringBuffer tableNames = new StringBuffer();
+            allTable.forEach(y9Table -> {
+                if (tableNames.length() > 0) {
+                    tableNames.append(",");
+                }
+                tableNames.append(y9Table.getTableName());
+            });
             map.put("tableNames", tableNames);
+            StringBuffer tableAlias = new StringBuffer();
+            allTable.forEach(y9Table -> {
+                if (tableAlias.length() > 0) {
+                    tableAlias.append(",");
+                }
+                if (StringUtils.isNotBlank(y9Table.getTableAlias())) {
+                    tableAlias.append(y9Table.getTableAlias());
+                }
+            });
+            map.put("tableAlias", tableAlias);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取数据库表失败", e);
