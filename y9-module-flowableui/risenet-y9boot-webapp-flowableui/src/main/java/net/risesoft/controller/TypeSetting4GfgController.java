@@ -2,7 +2,7 @@ package net.risesoft.controller;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.MediaType;
