@@ -12,6 +12,8 @@ import net.risesoft.entity.TypeSettingInfo;
  */
 public interface TypeSettingInfoService {
 
+    void delTypeSetting(String id);
+
     List<TypeSettingInfo> findByProcessSerialNumber(String processSerialNumber);
 
     void saveTypeSetting(String processSerialNumber, String jsonData);

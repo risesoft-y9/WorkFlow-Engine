@@ -44,6 +44,17 @@ public class TypeSetting4GfgController {
     private final Y9FileStoreService y9FileStoreService;
 
     /**
+     * 删除排版信息
+     *
+     * @param id 主键id
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/delTypeSetting")
+    public Y9Result<Object> delTypeSetting(@RequestParam String id) {
+        return typeSettingInfoApi.delTypeSetting(Y9LoginUserHolder.getTenantId(), id);
+    }
+
+    /**
      * 获取排版信息
      *
      * @param processSerialNumber 流程编号

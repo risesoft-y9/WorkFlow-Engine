@@ -19,6 +19,16 @@ import net.risesoft.pojo.Y9Result;
 public interface TypeSettingInfoApi {
 
     /**
+     * 删除排版信息
+     *
+     * @param tenantId 租户id
+     * @param id 排版信息id
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/delTypeSetting")
+    Y9Result<Object> delTypeSetting(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+
+    /**
      * 获取排版信息
      *
      * @param tenantId 租户id
