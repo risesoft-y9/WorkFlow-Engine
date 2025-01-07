@@ -232,7 +232,6 @@ public class WorkList4GfgRestController {
      * 获取待办件多条件查询列表
      *
      * @param itemId 事项id
-     * @param tableName 表名
      * @param searchMapStr 搜索列和值
      * @param page 页码
      * @param rows 条数
@@ -240,9 +239,8 @@ public class WorkList4GfgRestController {
      */
     @PostMapping(value = "/searchTodoList")
     public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId,
-        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.todoList(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -256,7 +254,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.todoList(itemId, page, rows);
+        return workList4GfgService.todoList(itemId, "", page, rows);
     }
 
     /**

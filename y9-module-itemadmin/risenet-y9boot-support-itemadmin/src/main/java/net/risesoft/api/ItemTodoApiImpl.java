@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemTodoApi;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.entity.form.Y9Table;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
@@ -26,6 +27,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ItemPageService;
+import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -45,6 +47,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     private final ItemPageService itemPageService;
 
     private final ActRuDetailService actRuDetailService;
+
+    private final Y9TableService y9TableService;
 
     /**
      * 根据用户id和系统名称查询待办数量
@@ -118,7 +122,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             StringBuilder sql1 = new StringBuilder();
             Object object = queryParamModel;
             Class queryParamModelClazz = object.getClass();
-            Field fields[] = queryParamModelClazz.getDeclaredFields();
+            Field[] fields = queryParamModelClazz.getDeclaredFields();
             for (Field f : fields) {
                 f.setAccessible(true);
                 if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName())
@@ -130,8 +134,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
                     fieldValue = f.get(object);
                     if (null != fieldValue) {
                         if ("systemName".equals(f.getName())) {
-                            systemNameSql =
-                                StringUtils.isBlank(queryParamModel.getSystemName()) ? "" : "AND T.SYSTEMNAME = '"+fieldValue+"' ";
+                            systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
+                                : "AND T.SYSTEMNAME = '" + fieldValue + "' ";
                         } else {
                             sql1.append("AND INSTR(F.").append(f.getName().toUpperCase()).append(",'")
                                 .append(fieldValue).append("') > 0 ");
@@ -189,7 +193,6 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @param tableName 表名称
      * @param searchMapStr 搜索集合
      * @param page page
      * @param rows rows
@@ -198,22 +201,36 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
-        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
-        StringBuilder sql1 = new StringBuilder();
+        StringBuilder innerSql = new StringBuilder();
+        StringBuilder whereSql = new StringBuilder();
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
-        for (String columnName : searchMap.keySet()) {
-            sql1.append("AND INSTR(F.").append(columnName.toUpperCase()).append(",'")
-                .append(searchMap.get(columnName).toString()).append("') > 0 ");
+        List<String> tableAliasList = new ArrayList<>();
+        for (String key : searchMap.keySet()) {
+            if (key.contains(".")) {
+                String[] aliasAndColumnName = key.split("\\.");
+                String alias = aliasAndColumnName[0];
+                whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                    .append(searchMap.get(key).toString()).append("') > 0 ");
+                if (!tableAliasList.contains(alias)) {
+                    tableAliasList.add(alias);
+                    Y9Table y9Table = y9TableService.findByTableAlias(alias);
+                    if (null == y9Table) {
+                        return Y9Page.failure(page, rows, 0, null, "别名" + alias + "对应的表不存在", 0);
+                    }
+                    innerSql.append("INNER JOIN ").append(y9Table.getTableName().toUpperCase()).append(" ")
+                        .append(alias.toUpperCase()).append(" ON T.PROCESSSERIALNUMBER = ").append(alias.toUpperCase())
+                        .append(".GUID ");
+                }
+            }
         }
-        String orderBy = "T.CREATETIME DESC";
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
-            + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY " + orderBy;
-        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0
-            + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE "
+            + whereSql + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + innerSql
+            + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + whereSql;
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;

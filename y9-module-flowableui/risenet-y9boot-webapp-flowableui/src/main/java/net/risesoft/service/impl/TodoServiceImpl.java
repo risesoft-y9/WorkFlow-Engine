@@ -354,8 +354,8 @@ public class TodoServiceImpl implements TodoService {
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, systemName, page, rows);
             } else {
-                itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, systemName, tableName,
-                    searchMapStr, page, rows);
+                itemPage =
+                    itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, systemName, searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

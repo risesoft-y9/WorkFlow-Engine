@@ -64,12 +64,11 @@ public interface ItemTodoApi {
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
-     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
+     * 根据用户id和系统名称、搜索集合查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @param tableName 表名称
      * @param searchMapStr 搜索集合
      * @param page page
      * @param rows rows
@@ -79,7 +78,6 @@ public interface ItemTodoApi {
     @PostMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam(value = "tableName") String tableName, @RequestBody String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }
