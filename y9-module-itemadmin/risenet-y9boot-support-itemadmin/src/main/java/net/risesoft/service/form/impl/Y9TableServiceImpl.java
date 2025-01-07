@@ -183,6 +183,11 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
+    public Y9Table findByTableAlias(String tableAlias) {
+        return y9TableRepository.findByTableAlias(tableAlias);
+    }
+
+    @Override
     public List<Y9Table> getAllTable() {
         return y9TableRepository.findAll();
     }

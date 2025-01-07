@@ -58,6 +58,14 @@ public interface Y9TableService {
     Y9Table findByTableName(String tableName);
 
     /**
+     * Description:
+     *
+     * @param tableAlias
+     * @return
+     */
+    Y9Table findByTableAlias(String tableAlias);
+
+    /**
      * 获取所有表名称
      *
      * @return

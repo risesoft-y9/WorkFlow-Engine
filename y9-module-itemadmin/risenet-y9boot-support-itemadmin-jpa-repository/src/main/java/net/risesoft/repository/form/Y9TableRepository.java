@@ -24,5 +24,7 @@ public interface Y9TableRepository extends JpaRepository<Y9Table, String>, JpaSp
 
     Y9Table findByTableName(String tableName);
 
+    Y9Table findByTableAlias(String tableAlias);
+
     List<Y9Table> findByTableType(Integer tableType);
 }

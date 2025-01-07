@@ -13,11 +13,12 @@ public interface WorkList4GfgService {
      * 获取待办列表
      *
      * @param itemId 事项Id
+     * @param searchMapStr 查找条件
      * @param page 页数
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> todoList(String itemId, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取在办列表
@@ -81,14 +82,12 @@ public interface WorkList4GfgService {
      * 待办列表
      *
      * @param itemId 事项Id
-     * @param tableName 表名
      * @param searchMapStr 搜索条件
      * @param page 页数
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr, Integer page,
-        Integer rows);
+    Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取待办件列表
