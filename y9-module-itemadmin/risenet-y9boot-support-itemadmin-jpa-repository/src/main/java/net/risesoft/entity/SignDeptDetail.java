@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_SIGN_DEPT_DETAIL")
-@org.hibernate.annotations.Table(comment = "会签部门详情", appliesTo = "FF_SIGN_DEPT_DETAIL")
+@Comment("会签部门详情")
 public class SignDeptDetail implements Serializable {
 
     private static final long serialVersionUID = -832654023448013336L;
