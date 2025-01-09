@@ -217,7 +217,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int rows, int page, Sort sort) {
+    public Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int page, int rows, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return actRuDetailRepository.findBySystemNameAndEndedNativeQuery(systemName, ended, pageable);
     }
@@ -230,7 +230,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int rows, int page, Sort sort) {
+    public Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int page, int rows, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return actRuDetailRepository.findBySystemNameAndDeletedTrueNativeQuery(systemName, pageable);
     }

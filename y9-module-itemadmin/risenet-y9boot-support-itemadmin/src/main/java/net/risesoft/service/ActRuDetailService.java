@@ -159,7 +159,7 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int rows, int page, Sort sort);
+    Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int page, int rows, Sort sort);
 
     /**
      * 查找个人删除列表
@@ -183,7 +183,7 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int rows, int page, Sort sort);
+    Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int page, int rows, Sort sort);
 
     /**
      * 查找个人删除列表

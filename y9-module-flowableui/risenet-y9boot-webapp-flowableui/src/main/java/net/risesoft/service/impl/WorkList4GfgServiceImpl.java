@@ -1345,7 +1345,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     @Override
     public Y9Page<Map<String, Object>> recycleList4All(String itemId, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemRecycleApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
