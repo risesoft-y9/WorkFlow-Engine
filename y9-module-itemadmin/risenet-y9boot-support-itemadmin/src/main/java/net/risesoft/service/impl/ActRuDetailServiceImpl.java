@@ -74,19 +74,19 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             SpmApproveItem item = itemService.findById(itemId);
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(oldProcessSerialNumber);
             List<ActRuDetail> listTemp = new ArrayList<>();
-            ActRuDetail neward;
+            ActRuDetail ard;
             for (ActRuDetail actRuDetail : list) {
-                neward = new ActRuDetail();
-                Y9BeanUtil.copyProperties(actRuDetail, neward);
-                neward.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                neward.setProcessSerialNumber(newProcessSerialNumber);
-                neward.setProcessInstanceId(newProcessInstanceId);
-                neward.setStarted(true);
-                neward.setItemId(processParam.getItemId());
-                neward.setProcessDefinitionKey(item.getWorkflowGuid());
-                neward.setStatus(ActRuDetail.DOING);
-                neward.setTaskId("");
-                listTemp.add(neward);
+                ard = new ActRuDetail();
+                Y9BeanUtil.copyProperties(actRuDetail, ard);
+                ard.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                ard.setProcessSerialNumber(newProcessSerialNumber);
+                ard.setProcessInstanceId(newProcessInstanceId);
+                ard.setStarted(true);
+                ard.setItemId(processParam.getItemId());
+                ard.setProcessDefinitionKey(item.getWorkflowGuid());
+                ard.setStatus(ActRuDetail.DOING);
+                ard.setTaskId("");
+                listTemp.add(ard);
             }
             actRuDetailRepository.saveAll(listTemp);
         } catch (Exception e) {
@@ -217,10 +217,32 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
+    public Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndEndedNativeQuery(systemName, ended, pageable);
+    }
+
+    @Override
     public Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows,
         int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedTrue(systemName, assignee, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndDeletedTrueNativeQuery(systemName, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId, boolean isBureau,
+        int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        if (isBureau) {
+            return actRuDetailRepository.findBySystemNameAndBureauIdAndDeletedTrue(systemName, deptId, pageable);
+        }
+        return actRuDetailRepository.findBySystemNameAndDeptIdAndDeletedTrue(systemName, deptId, pageable);
     }
 
     @Override
@@ -247,6 +269,21 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         } else {
             pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(
                 systemName, assignee, status, pageable);
+        }
+        return pageList;
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndDeptIdAndEnded(String systemName, String deptId, boolean isBureau,
+        boolean ended, int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ActRuDetail> pageList;
+        if (isBureau) {
+            pageList = actRuDetailRepository.findBySystemNameAndBureauIdAndEndedAndDeletedFalseNativeQuery(systemName,
+                deptId, ended, pageable);
+        } else {
+            pageList = actRuDetailRepository.findBySystemNameAndDeptIdAndEndedAndDeletedFalseNativeQuery(systemName,
+                deptId, ended, pageable);
         }
         return pageList;
     }

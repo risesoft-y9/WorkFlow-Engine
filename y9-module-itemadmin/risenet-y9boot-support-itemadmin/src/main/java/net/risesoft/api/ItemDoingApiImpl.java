@@ -75,17 +75,16 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     @Override
     public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
         @RequestParam Integer page, @RequestParam Integer rows) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
         Y9LoginUserHolder.setTenantId(tenantId);
-        String sql =
-            "SELECT A.* FROM ( SELECT T.*, ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.STATUS = 0 AND T.DELETED = FALSE AND T.SYSTEMNAME = ? ORDER BY T.LASTTIME DESC) A WHERE A.RS_NUM=1";
-        String countSql =
-            "SELECT COUNT(DISTINCT T.PROCESSSERIALNUMBER) FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME= ? AND T.STATUS=0 AND T.DELETED = FALSE ";
-        Object[] args = new Object[1];
-        args[0] = systemName;
-        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
-            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
-        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
-            itemPage.getRows());
+        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemNameAndEnded(systemName, false, page, rows, sort);
+        List<ActRuDetailModel> modelList = new ArrayList<>();
+        ardPage.getContent().forEach(ard -> {
+            ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
+            Y9BeanUtil.copyProperties(ard, actRuDetailModel);
+            modelList.add(actRuDetailModel);
+        });
+        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
     }
 
     /**
@@ -107,6 +106,36 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
         Page<ActRuDetail> ardPage =
             actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId, 1, rows, page, sort);
+        List<ActRuDetail> ardList = ardPage.getContent();
+        ActRuDetailModel actRuDetailModel;
+        List<ActRuDetailModel> modelList = new ArrayList<>();
+        for (ActRuDetail actRuDetail : ardList) {
+            actRuDetailModel = new ActRuDetailModel();
+            Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
+            modelList.add(actRuDetailModel);
+        }
+        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+    }
+
+    /**
+     * 根据科室id和系统名称查询当前人的在办列表
+     *
+     * @param tenantId 租户id
+     * @param deptId 科室id
+     * @param systemName 系统名称
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> findByDeptIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String deptId, @RequestParam("isBureau") boolean isBureau, @RequestParam String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
+        Page<ActRuDetail> ardPage =
+            actRuDetailService.pageBySystemNameAndDeptIdAndEnded(systemName, deptId, isBureau, false, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();

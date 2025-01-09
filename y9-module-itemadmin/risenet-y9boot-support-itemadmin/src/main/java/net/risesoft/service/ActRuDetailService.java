@@ -151,6 +151,17 @@ public interface ActRuDetailService {
         int page, Sort sort);
 
     /**
+     * 查找系统在办、办结列表
+     *
+     * @param systemName
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int rows, int page, Sort sort);
+
+    /**
      * 查找个人删除列表
      *
      * @param systemName
@@ -162,6 +173,31 @@ public interface ActRuDetailService {
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows, int page,
         Sort sort);
+
+    /**
+     * 查找系统删除列表
+     *
+     * @param systemName
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int rows, int page, Sort sort);
+
+    /**
+     * 查找个人删除列表
+     *
+     * @param systemName
+     * @param deptId
+     * @param isBureau
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId, boolean isBureau,
+        int rows, int page, Sort sort);
 
     /**
      * 查找个人待办，在办列表
@@ -188,6 +224,20 @@ public interface ActRuDetailService {
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
         int page, Sort sort);
+
+    /**
+     * 查找科室在办，办结列表
+     *
+     * @param systemName
+     * @param deptId
+     * @param ended 是否办结
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndDeptIdAndEnded(String systemName, String deptId, boolean isBureau,
+        boolean ended, int rows, int page, Sort sort);
 
     /**
      * 查找个人所有件列表（不包含回收站）

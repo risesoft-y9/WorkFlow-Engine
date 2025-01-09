@@ -65,6 +65,24 @@ public interface ItemDoneApi {
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
+     * 根据科室id和系统名称查询办结列表
+     *
+     * @param tenantId 租户id
+     * @param deptId 科室id
+     * @param isBureau 是否是部门
+     * @param systemName 系统名称
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
+     * @since 9.6.6
+     */
+    @GetMapping("/findByDeptIdAndSystemName")
+    Y9Page<ActRuDetailModel> findByDeptIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("deptId") String deptId, @RequestParam("isBureau") boolean isBureau,
+        @RequestParam("systemName") String systemName, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
+
+    /**
      * 根据系统名称、表名称、搜索内容查询办结列表
      *
      * @param tenantId 租户id
