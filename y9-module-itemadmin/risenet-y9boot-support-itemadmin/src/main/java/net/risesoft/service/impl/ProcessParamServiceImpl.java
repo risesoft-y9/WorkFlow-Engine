@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.service.SpmApproveItemService;
-import net.risesoft.y9.util.Y9BeanUtil;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +19,9 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ProcessParamRepository;
 import net.risesoft.service.ProcessParamService;
+import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * @author qinman
@@ -63,6 +63,23 @@ public class ProcessParamServiceImpl implements ProcessParamService {
 
     @Override
     @Transactional
+    public void initCallActivity(String processSerialNumber, String subProcessSerialNumber, String subProcessInstanceId,
+        String itemId, String itemName) {
+        ProcessParam parent = processParamRepository.findByProcessSerialNumber(processSerialNumber);
+        if (null != parent) {
+            ProcessParam newProcessParam = new ProcessParam();
+            Y9BeanUtil.copyProperties(parent, newProcessParam);
+            newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newProcessParam.setProcessSerialNumber(subProcessSerialNumber);
+            newProcessParam.setProcessInstanceId(subProcessInstanceId);
+            newProcessParam.setItemId(itemId);
+            newProcessParam.setItemName(itemName);
+            processParamRepository.save(newProcessParam);
+        }
+    }
+
+    @Override
+    @Transactional
     public ProcessParam saveOrUpdate(ProcessParam processParam) {
         String processSerialNumber = processParam.getProcessSerialNumber();
         ProcessParam oldProcessParam = processParamRepository.findByProcessSerialNumber(processSerialNumber);
@@ -90,7 +107,9 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             oldProcessParam.setSmsContent(processParam.getSmsContent());
             oldProcessParam.setSmsPersonId(processParam.getSmsPersonId());
             oldProcessParam.setCompleter(processParam.getCompleter());
-            oldProcessParam.setProcessInstanceId(processParam.getProcessInstanceId());
+            if (StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
+                oldProcessParam.setProcessInstanceId(processParam.getProcessInstanceId());
+            }
             oldProcessParam.setStartor(processParam.getStartor());
             oldProcessParam.setStartorName(processParam.getStartorName());
             oldProcessParam.setSponsorGuid(processParam.getSponsorGuid());
@@ -104,7 +123,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             try {
                 if (StringUtils.isNotBlank(processInstanceId)) {
                     boolean update = oldProcessParam.getSearchTerm() != null && processParam.getSearchTerm() != null
-                            && !oldProcessParam.getSearchTerm().equals(processParam.getSearchTerm());
+                        && !oldProcessParam.getSearchTerm().equals(processParam.getSearchTerm());
                     // 搜索字段不一样才修改
                     if (update) {
                         Map<String, Object> val = new HashMap<>();
@@ -172,7 +191,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             Map<String, Object> val = new HashMap<>();
             val.put("val", pp.getSearchTerm());
             variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId, "searchTerm",
-                    val);
+                val);
         }
     }
 
@@ -185,21 +204,5 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             e.printStackTrace();
         }
 
-    }
-
-    @Override
-    @Transactional
-    public void initCallActivity(String processSerialNumber, String subProcessSerialNumber,String subProcessInstanceId,String itemId,String itemName) {
-        ProcessParam parent = processParamRepository.findByProcessSerialNumber(processSerialNumber);
-        if (null != parent) {
-            ProcessParam newProcessParam=new ProcessParam();
-            Y9BeanUtil.copyProperties(parent, newProcessParam);
-            newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newProcessParam.setProcessSerialNumber(subProcessSerialNumber);
-            newProcessParam.setProcessInstanceId(subProcessInstanceId);
-            newProcessParam.setItemId(itemId);
-            newProcessParam.setItemName(itemName);
-            processParamRepository.save(newProcessParam);
-        }
     }
 }
