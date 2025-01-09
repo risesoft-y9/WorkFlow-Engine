@@ -73,8 +73,45 @@ public interface ActRuDetailRepository
         countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 GROUP BY PROCESSSERIALNUMBER) ALIAS")
     Page<ActRuDetail> findBySystemNameNativeQuery(String systemName, Pageable pageable);
 
+    /**
+     * 某个系统标识的在办、办结件
+     * 
+     * @param systemName 系统名称
+     * @param ended 是否办结
+     * @param pageable 分页信息
+     * @return
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 and ENDED =?2 and  DELETED = false  GROUP BY PROCESSSERIALNUMBER",
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1  and ENDED =?2 and  DELETED = false   GROUP BY PROCESSSERIALNUMBER) ALIAS")
+    Page<ActRuDetail> findBySystemNameAndEndedNativeQuery(String systemName, boolean ended, Pageable pageable);
+
+    /**
+     * 某个系统标识的删除件
+     *
+     * @param systemName 系统名称
+     * @param pageable 分页信息
+     * @return
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 and  DELETED = true  GROUP BY PROCESSSERIALNUMBER",
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 and DELETED = true  GROUP BY PROCESSSERIALNUMBER) ALIAS")
+    Page<ActRuDetail> findBySystemNameAndDeletedTrueNativeQuery(String systemName, Pageable pageable);
+
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee,
         Pageable pageable);
+
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND DEPTID = ?2 AND ENDED = ?3 AND  DELETED = false  GROUP BY PROCESSSERIALNUMBER",
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND DEPTID = ?2 AND ENDED = ?3   AND DELETED = true  GROUP BY PROCESSSERIALNUMBER) ALIAS")
+    Page<ActRuDetail> findBySystemNameAndDeptIdAndEndedAndDeletedFalseNativeQuery(String systemName, String deptId,
+        boolean ended, Pageable pageable);
+
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND BUREAUID = ?2 AND ENDED = ?3 AND  DELETED = false  GROUP BY PROCESSSERIALNUMBER",
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND BUREAUID = ?2 AND ENDED = ?3   AND DELETED = true  GROUP BY PROCESSSERIALNUMBER) ALIAS")
+    Page<ActRuDetail> findBySystemNameAndBureauIdAndEndedAndDeletedFalseNativeQuery(String systemName, String bureauId,
+        boolean ended, Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee,
         Pageable pageable);
@@ -86,6 +123,10 @@ public interface ActRuDetailRepository
         Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, Pageable pageable);
+
+    Page<ActRuDetail> findBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId, Pageable pageable);
+
+    Page<ActRuDetail> findBySystemNameAndBureauIdAndDeletedTrue(String systemName, String deptId, Pageable pageable);
 
     List<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
         int status);

@@ -66,6 +66,34 @@ public class WorkList4GfgRestController {
     }
 
     /**
+     * 获取科室在办件列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/doingList4Dept")
+    public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.doingList4Dept(itemId, isBureau, page, rows);
+    }
+
+    /**
+     * 获取所有在办件
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/doingList4All")
+    public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        return workList4GfgService.doingList4All(itemId, page, rows);
+    }
+
+    /**
      * 获取在办列表视图配置
      *
      * @param itemId 事项id
@@ -91,6 +119,35 @@ public class WorkList4GfgRestController {
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
         return workList4GfgService.doneList(itemId, page, rows);
+    }
+
+    /**
+     * 获取科室办结件列表
+     *
+     * @param itemId 事项id
+     * @param isBureau 是否是委办局
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/doneList4Dept")
+    public Y9Page<Map<String, Object>> doneList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.doneList4Dept(itemId, isBureau, page, rows);
+    }
+
+    /**
+     * 获取科室办结件列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/doneList4All")
+    public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        return workList4GfgService.doneList4All(itemId, page, rows);
     }
 
     /**
@@ -172,6 +229,34 @@ public class WorkList4GfgRestController {
     public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
         return workList4GfgService.recycleList(itemId, page, rows);
+    }
+
+    /**
+     * 获取回收站列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/recycleList4Dept")
+    public Y9Page<Map<String, Object>> recycleList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.recycleList4Dept(itemId, isBureau, page, rows);
+    }
+
+    /**
+     * 获取回收站列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/recycleList4All")
+    public Y9Page<Map<String, Object>> recycleList4All(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        return workList4GfgService.recycleList4All(itemId, page, rows);
     }
 
     /**

@@ -31,6 +31,27 @@ public interface WorkList4GfgService {
     Y9Page<Map<String, Object>> doingList(String itemId, Integer page, Integer rows);
 
     /**
+     * 获取科室在办列表
+     *
+     * @param itemId 事项Id
+     * @param isBureau 是否委办局
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> doingList4Dept(String itemId, boolean isBureau, Integer page, Integer rows);
+
+    /**
+     * 获取所有在办
+     *
+     * @param itemId 事项Id
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> doingList4All(String itemId, Integer page, Integer rows);
+
+    /**
      * 获取已办列表（包括在办、办结）
      *
      * @param itemId 事项Id
@@ -59,6 +80,27 @@ public interface WorkList4GfgService {
     Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows);
 
     /**
+     * 获取已办列表
+     *
+     * @param itemId 事项Id
+     * @param isBureau 是否委办局数据
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> doneList4Dept(String itemId, boolean isBureau, Integer page, Integer rows);
+
+    /**
+     * 获取已办列表
+     *
+     * @param itemId 事项Id
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> doneList4All(String itemId, Integer page, Integer rows);
+
+    /**
      * 获取所有本人经手件的列表
      *
      * @param itemId 事项Id
@@ -77,6 +119,27 @@ public interface WorkList4GfgService {
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> recycleList(String itemId, Integer page, Integer rows);
+
+    /**
+     * 获取回收站列表
+     *
+     * @param itemId 事项Id
+     * @param isBureau 是否是委办局数据
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> recycleList4Dept(String itemId, boolean isBureau, Integer page, Integer rows);
+
+    /**
+     * 获取回收站列表
+     *
+     * @param itemId 事项Id
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
+    Y9Page<Map<String, Object>> recycleList4All(String itemId, Integer page, Integer rows);
 
     /**
      * 待办列表
