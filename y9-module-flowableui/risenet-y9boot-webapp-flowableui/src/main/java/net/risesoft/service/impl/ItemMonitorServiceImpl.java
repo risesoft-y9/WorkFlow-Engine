@@ -79,7 +79,6 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     public Y9Page<Map<String, Object>> pageAllList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemMonitorApi.findBySystemName(tenantId, positionId, item.getSystemName(), page, rows);
