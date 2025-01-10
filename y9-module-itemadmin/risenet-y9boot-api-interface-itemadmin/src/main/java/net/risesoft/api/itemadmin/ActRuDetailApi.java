@@ -216,4 +216,15 @@ public interface ActRuDetailApi {
     Y9Result<Object> syncByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
+    /**
+     * 恢复整个流程的办件详情
+     *
+     * @param tenantId 租户id
+     * @param id 流程详情id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/setRead")
+    Y9Result<Object> setRead(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+
 }

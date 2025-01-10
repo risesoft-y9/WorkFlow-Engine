@@ -361,6 +361,8 @@ public interface ActRuDetailService {
      */
     boolean saveOrUpdate(ActRuDetail actRuDetail);
 
+    void setRead(String id);
+
     /**
      * 恢复流程的办理详情
      *

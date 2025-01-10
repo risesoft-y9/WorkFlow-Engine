@@ -24,7 +24,6 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemAllApi;
 import net.risesoft.api.itemadmin.ItemApi;
@@ -45,7 +44,6 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
@@ -74,13 +72,14 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 
+/**
+ * @author qinman
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WorkList4GfgServiceImpl implements WorkList4GfgService {
-
-    private final ProcessTodoApi processTodoApi;
 
     private final ItemApi itemApi;
 
@@ -91,8 +90,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final ProcessParamApi processParamApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
-
-    private final ChaoSongApi chaoSongApi;
 
     private final FormDataApi formDataApi;
 
@@ -155,6 +152,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
+                    mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     if (StringUtils.isBlank(processParam.getCompleter())) {
@@ -193,7 +191,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -240,36 +238,26 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                    String taskAssignee = ardModel.getAssigneeName();
-                    if (StringUtils.isBlank(task.getAssignee())) {
-                        taskAssignee = getAssigneeNames(taskId);
-                    }
-                    String taskName = task.getName();
-                    int priority = task.getPriority();
-                    int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
-                    Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     Map<String, Object> formData =
                         formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData();
                     mapTemp.putAll(formData);
+                    mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
                     mapTemp.put("title", processParam.getTitle());
                     mapTemp.put("bureauName",
                         orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
-                    mapTemp.put("taskName", taskName);
+                    mapTemp.put("taskName", ardModel.getTaskDefName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
-                    mapTemp.put("taskAssignee", taskAssignee);
-                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
+                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
                     List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (isNewTodo == 1) {
+                    if (ardModel.isStarted()) {
                         taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
                     }
                     /*
@@ -282,13 +270,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
                     List<UrgeInfoModel> urgeInfoList =
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    boolean isSub = processDefinitionApi
-                        .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                        .getData();
-                    if (isSub) {
-                        urgeInfoList = urgeInfoList.stream()
-                            .filter(
-                                urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(task.getExecutionId()))
+                    if (ardModel.isSub()) {
+                        urgeInfoList = urgeInfoList.stream().filter(
+                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
                             .collect(Collectors.toList());
                     } else {
                         urgeInfoList =
@@ -371,7 +355,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -455,7 +439,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -532,7 +516,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -587,7 +571,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("completer", completer);
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -649,7 +633,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("completer", completer);
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -672,9 +656,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     @Override
     public Y9Page<Map<String, Object>> doneList4All(String itemId, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            Position position = Y9LoginUserHolder.getPosition();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemDoneApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
@@ -705,7 +687,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("completer", completer);
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -769,7 +751,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     if (StringUtils.isNotBlank(assignee)) {
                         OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
-                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            // 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             i += 1;
                         }
                     }
@@ -788,7 +771,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
      *
      * @param taskList 当前子流程所有任务
      * @param taskId 当前人参与过的任务
-     * @return
+     * @return List<String>
      */
     private List<String> getAssigneeIdsAndAssigneeNames4SignDept(List<TaskModel> taskList, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -855,7 +838,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
      *
      * @param taskList 当前流程正在运行的所有任务
      * @param executionId 会签流程的执行id
-     * @return
+     * @return List<String>
      */
     private List<String> getTaskNameAndAssigneeNames(List<TaskModel> taskList, String executionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -1143,7 +1126,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
-                    Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
+                    // 催办的时候任务的优先级+5
+                    Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("processDefinitionKey", processDefinitionId.split(":")[0]);
                     mapTemp.put("processDefinitionId", processDefinitionId);
@@ -1424,30 +1408,23 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
-                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                    String taskAssignee = ardModel.getAssigneeName();
-                    if (StringUtils.isBlank(task.getAssignee())) {
-                        taskAssignee = getAssigneeNames(taskId);
-                    }
-                    String taskName = task.getName();
-                    int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName",
                         orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
-                    mapTemp.put("taskName", taskName);
+                    mapTemp.put("taskName", ardModel.getTaskDefName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionId", task.getProcessDefinitionId());
                     mapTemp.put("taskId", taskId);
-                    mapTemp.put("taskAssignee", taskAssignee);
+                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
                     /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (isNewTodo == 1) {
+                    if (ardModel.isStarted()) {
                         taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
                     }
                     /*
@@ -1460,13 +1437,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
                     List<UrgeInfoModel> urgeInfoList =
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    boolean isSub = processDefinitionApi
-                        .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                        .getData();
-                    if (isSub) {
-                        urgeInfoList = urgeInfoList.stream()
-                            .filter(
-                                urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(task.getExecutionId()))
+                    if (ardModel.isSub()) {
+                        urgeInfoList = urgeInfoList.stream().filter(
+                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
                             .collect(Collectors.toList());
                     } else {
                         urgeInfoList =
