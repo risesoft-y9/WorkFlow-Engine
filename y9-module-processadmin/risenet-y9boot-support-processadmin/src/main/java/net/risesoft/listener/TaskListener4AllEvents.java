@@ -29,13 +29,10 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
     public void notify(DelegateTask task) {
         String eventName = task.getEventName();
         if (TaskListener.EVENTNAME_ASSIGNMENT.equals(eventName)) {
-
             Map<String, Object> variables = task.getVariables();
-
             //////////////// 异步处理,自定义变量科室id保存，消息提醒
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
             task4ListenerService.task4AssignmentListener(task, variables);
-
             /*
              * 1、签收的时候保存已办详情 2、委托的时候更改assignee的时候
              */

@@ -118,7 +118,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     public Y9Result<FlowElementModel> getNode(@RequestParam String tenantId, @RequestParam String processDefinitionId,
-                                        @RequestParam String taskDefKey) {
+        @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return Y9Result.success(customProcessDefinitionService.getNode(processDefinitionId, taskDefKey));
     }
@@ -350,7 +350,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
-     * 判断流程定义的节点是否是SubProcess内的节点
+     * 获取流程定义的是SubProcess内的节点
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
@@ -358,7 +358,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<TargetModel>> getSubProcessChildNode(@RequestParam String tenantId,@RequestParam String processDefinitionId) {
+    public Y9Result<List<TargetModel>> getSubProcessChildNode(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getSubProcessChildNode(processDefinitionId);
     }

@@ -2,7 +2,9 @@ package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ActRuDetail;
@@ -30,6 +33,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.repository.jpa.ActRuDetailRepository;
 import net.risesoft.service.ActRuDetailService;
@@ -49,6 +53,8 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Transactional(readOnly = true)
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
+    private static final Map<String, List<String>> subNodeMap = new HashMap<>();
+
     private final ActRuDetailRepository actRuDetailRepository;
 
     private final HistoricTaskApi historictaskApi;
@@ -64,6 +70,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     private final OrgUnitApi orgUnitApi;
 
     private final RuntimeApi runtimeApi;
+
+    private final ProcessDefinitionApi processDefinitionApi;
 
     @Override
     @Transactional
@@ -448,9 +456,19 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         return false;
     }
 
+    private void initSubNodeMap(String processDefinitionId) {
+        if (null == subNodeMap.get(processDefinitionId)) {
+            List<String> subTaskDefKeys =
+                processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
+                    .getData().stream().map(TargetModel::getTaskDefKey).collect(Collectors.toList());
+            subNodeMap.put(processDefinitionId, subTaskDefKeys);
+        }
+    }
+
     @Override
     @Transactional
     public boolean saveOrUpdate(ActRuDetail actRuDetail) {
+        initSubNodeMap(actRuDetail.getProcessDefinitionId());
         String processSerialNumber = actRuDetail.getProcessSerialNumber();
         String assignee = actRuDetail.getAssignee();
         ActRuDetail oldActRuDetail = this.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
@@ -464,6 +482,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             oldActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
             oldActRuDetail.setStarted(actRuDetail.isStarted());
             oldActRuDetail.setDueDate(processParam.getDueDate());
+            oldActRuDetail.setProcessDefinitionId(actRuDetail.getProcessDefinitionId());
+            oldActRuDetail.setAssigneeName(actRuDetail.getAssigneeName());
+            oldActRuDetail.setTaskDefKey(actRuDetail.getTaskDefKey());
+            oldActRuDetail.setTaskDefName(actRuDetail.getTaskDefName());
+            oldActRuDetail.setExecutionId(actRuDetail.getExecutionId());
+            oldActRuDetail.setSub(subNodeMap.get(actRuDetail.getProcessDefinitionId()).stream()
+                .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
             actRuDetailRepository.save(oldActRuDetail);
             return true;
         }
@@ -479,6 +504,10 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         newActRuDetail.setCreateTime(actRuDetail.getCreateTime());
         newActRuDetail.setLastTime(actRuDetail.getLastTime());
         newActRuDetail.setProcessDefinitionKey(actRuDetail.getProcessDefinitionKey());
+        newActRuDetail.setProcessDefinitionId(actRuDetail.getProcessDefinitionId());
+        newActRuDetail.setTaskDefKey(actRuDetail.getTaskDefKey());
+        newActRuDetail.setTaskDefName(actRuDetail.getTaskDefName());
+        newActRuDetail.setExecutionId(actRuDetail.getExecutionId());
         newActRuDetail.setSystemName(actRuDetail.getSystemName());
         newActRuDetail.setStatus(actRuDetail.getStatus());
         newActRuDetail.setTaskId(actRuDetail.getTaskId());
@@ -490,12 +519,22 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         newActRuDetail.setItemId(processParam.getItemId());
         newActRuDetail.setSystemName(processParam.getSystemName());
         newActRuDetail.setDueDate(processParam.getDueDate());
-
+        newActRuDetail.setSub(subNodeMap.get(actRuDetail.getProcessDefinitionId()).stream()
+            .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         newActRuDetail.setBureauId(bureau.getId());
         newActRuDetail.setBureauName(bureau.getName());
         actRuDetailRepository.save(newActRuDetail);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public void setRead(String id) {
+        actRuDetailRepository.findById(id).ifPresent(actRuDetail -> {
+            actRuDetail.setStarted(false);
+            actRuDetailRepository.save(actRuDetail);
+        });
     }
 
     @Override

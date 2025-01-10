@@ -53,6 +53,26 @@ public class ActRuDetailModel implements Serializable {
     private String processDefinitionKey;
 
     /**
+     * 执行实例Id
+     */
+    private String executionId;
+
+    /**
+     * 流程定义id
+     */
+    private String processDefinitionId;
+
+    /**
+     * 任务key
+     */
+    private String taskDefKey;
+
+    /**
+     * 任务节点名称
+     */
+    private String taskDefName;
+
+    /**
      * 流程启动时间
      */
     private String startTime;
@@ -128,6 +148,11 @@ public class ActRuDetailModel implements Serializable {
      * 是否归档
      */
     private boolean placeOnFile;
+
+    /**
+     * 是否子流程的节点任务
+     */
+    private boolean sub;
 
     /**
      * 到期时间

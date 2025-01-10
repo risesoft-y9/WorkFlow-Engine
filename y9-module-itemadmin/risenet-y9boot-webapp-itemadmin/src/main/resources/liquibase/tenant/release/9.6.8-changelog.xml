@@ -377,4 +377,19 @@
             <column name="printTime" type="VARCHAR(50)" remarks="打印时间"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-22" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ACT_RU_DETAIL" columnName="PROCESSDEFINITIONID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_ACT_RU_DETAIL">
+            <column name="EXECUTIONID" type="VARCHAR(50)" remarks="执行实例Id"/>
+            <column name="PROCESSDEFINITIONID" type="VARCHAR(100)" remarks="流程定义id"/>
+            <column name="TASKDEFKEY" type="VARCHAR(100)" remarks="任务key"/>
+            <column name="TASKDEFNAME" type="VARCHAR(50)" remarks="任务名称"/>
+            <column name="SUB" type="INT" defaultValueNumeric="0" remarks="是否子流程的节点任务"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -320,4 +320,11 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         actRuDetailService.syncByProcessInstanceId(processInstanceId);
         return Y9Result.success();
     }
+
+    @Override
+    public Y9Result<Object> setRead(String tenantId, String id) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        actRuDetailService.setRead(id);
+        return Y9Result.success();
+    }
 }

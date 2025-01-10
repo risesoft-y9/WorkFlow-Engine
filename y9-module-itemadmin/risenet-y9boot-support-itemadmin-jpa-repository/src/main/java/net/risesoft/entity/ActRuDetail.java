@@ -11,12 +11,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,25 +45,41 @@ public class ActRuDetail implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @Comment("事项Id")
-    @Column(name = "ITEMID", length = 50)
-    private String itemId;
+    @Comment("序列号")
+    @Column(name = "PROCESSSERIALNUMBER", length = 50)
+    private String processSerialNumber;
 
     @Comment("流程实例Id")
     @Column(name = "PROCESSINSTANCEID", length = 50)
     private String processInstanceId;
 
-    @Comment("序列号")
-    @Column(name = "PROCESSSERIALNUMBER", length = 50)
-    private String processSerialNumber;
+    @Comment("执行实例Id")
+    @Column(name = "EXECUTIONID", length = 50)
+    private String executionId;
 
     @Comment("任务Id")
     @Column(name = "TASKID", length = 50)
     private String taskId;
 
+    @Comment("流程定义id")
+    @Column(name = "PROCESSDEFINITIONID", length = 100)
+    private String processDefinitionId;
+
     @Comment("流程定义key")
     @Column(name = "PROCESSDEFINITIONKEY", length = 100)
     private String processDefinitionKey;
+
+    @Comment("任务key")
+    @Column(name = "TASKDEFKEY", length = 100)
+    private String taskDefKey;
+
+    @Comment("任务节点名称")
+    @Column(name = "TASKDEFName", length = 100)
+    private String taskDefName;
+
+    @Comment("事项Id")
+    @Column(name = "ITEMID", length = 50)
+    private String itemId;
 
     @Comment("事项所属系统英文名称")
     @Column(name = "SYSTEMNAME", length = 100)
@@ -130,6 +147,12 @@ public class ActRuDetail implements Serializable {
     @Comment("是否删除")
     @Column(name = "DELETED")
     private boolean deleted;
+
+    @Type(type = "numeric_boolean")
+    @ColumnDefault("0")
+    @Comment("是否子流程的节点任务")
+    @Column(name = "SUB")
+    private boolean sub;
 
     @Type(type = "numeric_boolean")
     @ColumnDefault("0")

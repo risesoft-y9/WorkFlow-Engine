@@ -1,6 +1,8 @@
 package net.risesoft.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,14 +26,16 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * @author qinman
+ * @author zhangchongjie
+ */
 @Slf4j
 @Service(value = "task4ActRuDetaillService")
 public class Task4ActRuDetaillService {
 
     private final ActRuDetailApi actRuDetailApi;
-
     private final OrgUnitApi orgUnitApi;
-
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
@@ -63,6 +67,10 @@ public class Task4ActRuDetaillService {
                 actRuDetailModel.setAssigneeName(orgUnit.getName());
                 actRuDetailModel.setDeptId(orgUnit.getParentId());
                 actRuDetailModel.setLastTime(new Date());
+                actRuDetailModel.setProcessDefinitionId(taskEntity.getProcessDefinitionId());
+                actRuDetailModel.setTaskDefKey(taskEntity.getTaskDefinitionKey());
+                actRuDetailModel.setTaskDefName(taskEntity.getName());
+                actRuDetailModel.setExecutionId(taskEntity.getExecutionId());
                 actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
                 actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
                 actRuDetailModel.setProcessSerialNumber(processSerialNumber);
@@ -118,7 +126,11 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setAssigneeName(orgUnit.getName());
                     actRuDetailModel.setDeptId(orgUnit.getParentId());
                     actRuDetailModel.setLastTime(new Date());
+                    actRuDetailModel.setProcessDefinitionId(taskEntity.getProcessDefinitionId());
                     actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
+                    actRuDetailModel.setTaskDefKey(taskEntity.getTaskDefinitionKey());
+                    actRuDetailModel.setTaskDefName(taskEntity.getName());
+                    actRuDetailModel.setExecutionId(taskEntity.getExecutionId());
                     actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
                     actRuDetailModel.setProcessSerialNumber(processSerialNumber);
                     actRuDetailModel.setTaskId(taskEntity.getId());
@@ -151,7 +163,6 @@ public class Task4ActRuDetaillService {
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
-
                 String sql0 =
                     "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
                         + taskEntity.getProcessInstanceId() + "'";
@@ -169,6 +180,10 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setAssigneeName(orgUnit.getName());
                     actRuDetailModel.setDeptId(orgUnit.getParentId());
                     actRuDetailModel.setLastTime(new Date());
+                    actRuDetailModel.setProcessDefinitionId(taskEntity.getProcessDefinitionId());
+                    actRuDetailModel.setTaskDefKey(taskEntity.getTaskDefinitionKey());
+                    actRuDetailModel.setTaskDefName(taskEntity.getName());
+                    actRuDetailModel.setExecutionId(taskEntity.getExecutionId());
                     actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
                     actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
                     actRuDetailModel.setProcessSerialNumber(processSerialNumber);
@@ -206,17 +221,26 @@ public class Task4ActRuDetaillService {
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
 
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
-                Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                for (IdentityLink link : linkSet) {
+                StringBuffer names = new StringBuffer();
+                List<ActRuDetailModel> ardList = new ArrayList<>();
+                taskEntity.getCandidates().forEach(link -> {
                     String userId = link.getUserId();
                     OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
-                    actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
+                    try {
+                        actRuDetailModel.setCreateTime(sdf.parse(sdf.format(taskEntity.getCreateTime())));
+                    } catch (ParseException e) {
+                        LOGGER.error("格式化时间失败！");
+                    }
                     actRuDetailModel.setAssignee(userId);
                     actRuDetailModel.setAssigneeName(orgUnit.getName());
                     actRuDetailModel.setDeptId(orgUnit.getParentId());
                     actRuDetailModel.setLastTime(new Date());
+                    actRuDetailModel.setProcessDefinitionId(taskEntity.getProcessDefinitionId());
+                    actRuDetailModel.setTaskDefKey(taskEntity.getTaskDefinitionKey());
+                    actRuDetailModel.setTaskDefName(taskEntity.getName());
+                    actRuDetailModel.setExecutionId(taskEntity.getExecutionId());
                     actRuDetailModel.setProcessDefinitionKey(taskEntity.getProcessDefinitionId().split(":")[0]);
                     actRuDetailModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
                     actRuDetailModel.setProcessSerialNumber(processSerialNumber);
@@ -225,8 +249,17 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setStarted(true);
                     actRuDetailModel.setEnded(false);
                     actRuDetailModel.setStartTime(list.get(0).get("START_TIME_").toString());
-                    actRuDetailApi.saveOrUpdate(tenantId, actRuDetailModel);
-                }
+                    if (ardList.isEmpty()) {
+                        names.append(orgUnit.getName());
+                    } else {
+                        names.append("、").append(orgUnit.getName());
+                    }
+                    ardList.add(actRuDetailModel);
+                });
+                ardList.forEach(ard -> {
+                    ard.setAssigneeName(names.toString());
+                    actRuDetailApi.saveOrUpdate(tenantId, ard);
+                });
             }
         } catch (Exception e) {
             LOGGER.warn(
