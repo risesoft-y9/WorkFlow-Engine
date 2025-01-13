@@ -94,6 +94,36 @@ public class WorkDayServiceImpl implements WorkDayService {
     }
 
     @Override
+    public String getDate(Date startDate, int days) throws ParseException {
+        SimpleDateFormat sdfMmd = new SimpleDateFormat("yyyy-MM-dd");
+        if (days <= 0) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            startDate = sdfMmd.parse(sdfMmd.format(cal.getTime()));
+            return sdfMmd.format(startDate);
+        }
+        Calendar cal = Calendar.getInstance();
+        CalendarConfigModel calendarConfigModel =
+            calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), sdf.format(startDate)).getData();
+        String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
+        String endDate = "";
+        if (StringUtils.isNotBlank(everyYearHoliday)) {
+            int i = 1;
+            while (i < days) {
+                String startDateString = sdfMmd.format(startDate);
+                if (!everyYearHoliday.contains(startDateString)) {
+                    i++;
+                }
+                cal.setTime(startDate);
+                cal.add(Calendar.DAY_OF_MONTH, +1);
+                startDate = sdfMmd.parse(sdfMmd.format(cal.getTime()));
+            }
+            endDate = sdfMmd.format(startDate);
+        }
+        return endDate;
+    }
+
+    @Override
     public TaskRelatedModel getLightColor(Date startDate, Date endDate) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         int lightColor = 0;
