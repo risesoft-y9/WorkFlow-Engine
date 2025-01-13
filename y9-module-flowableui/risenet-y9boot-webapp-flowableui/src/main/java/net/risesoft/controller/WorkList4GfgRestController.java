@@ -66,6 +66,21 @@ public class WorkList4GfgRestController {
     }
 
     /**
+     * 获取在办件列表
+     *
+     * @param itemId 事项id
+     * @param days 过期天数
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/doingList4DuBan")
+    public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId, @RequestParam Integer days,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.doingList4DuBan(itemId, days, page, rows);
+    }
+
+    /**
      * 获取科室在办件列表
      *
      * @param itemId 事项id

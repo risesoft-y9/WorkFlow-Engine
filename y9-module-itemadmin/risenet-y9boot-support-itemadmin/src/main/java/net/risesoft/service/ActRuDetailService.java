@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -224,6 +226,17 @@ public interface ActRuDetailService {
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
         int page, Sort sort);
+
+    /**
+     * 查找个人待办，在办列表
+     *
+     * @param systemName
+     * @param date
+     * @param rows
+     * @param page
+     * @return
+     */
+    Y9Page<ActRuDetailModel> pageBySystemName4DuBan(String systemName, String date, int rows, int page);
 
     /**
      * 查找科室在办，办结列表
