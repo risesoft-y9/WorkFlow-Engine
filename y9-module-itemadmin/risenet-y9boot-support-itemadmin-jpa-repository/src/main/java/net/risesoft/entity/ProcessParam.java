@@ -125,6 +125,14 @@ public class ProcessParam implements Serializable {
     @Column(name = "sponsorGuid", length = 50)
     private String sponsorGuid;
 
+    @Comment("主办部门或者委办局ID")
+    @Column(name = "HOSTDEPTID", length = 50)
+    private String hostDeptId;
+
+    @Comment("主办部门或者委办局名称")
+    @Column(name = "HOSTDEPTNAME", length = 50)
+    private String hostDeptName;
+
     @Comment("流程的启动人员id")
     @Column(name = "STARTOR", length = 100)
     private String startor;
