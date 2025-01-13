@@ -7,6 +7,9 @@ import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
+/**
+ * @author qinman
+ */
 public interface WorkList4GfgService {
 
     /**
@@ -140,17 +143,6 @@ public interface WorkList4GfgService {
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> recycleList4All(String itemId, Integer page, Integer rows);
-
-    /**
-     * 待办列表
-     *
-     * @param itemId 事项Id
-     * @param searchMapStr 搜索条件
-     * @param page 页数
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取待办件列表

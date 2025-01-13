@@ -1,10 +1,8 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,10 +50,8 @@ import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.QueryParamModel;
-import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
-import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.itemadmin.UrgeInfoModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
@@ -186,8 +181,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         mapTemp.put("taskAssignee", processParam.getCompleter());
                     }
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
@@ -239,18 +233,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    /*
-                     * 暂时取表单所有字段数据
-                     */
-                    Map<String, Object> formData =
-                        formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData();
-                    mapTemp.putAll(formData);
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
                     mapTemp.put("title", processParam.getTitle());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
@@ -350,8 +337,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         mapTemp.put("taskAssignee", listTemp.get(0));
                     }
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
@@ -434,8 +420,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         mapTemp.put("taskAssignee", listTemp.get(0));
                     }
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
@@ -511,8 +496,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         mapTemp.put("taskAssignee", listTemp.get(0));
                     }
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
@@ -561,16 +545,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    String completer =
-                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                    mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("completer", completer);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put("completer",
+                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     /*
                      * 暂时取表单所有字段数据
                      */
@@ -623,16 +605,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    String completer =
-                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                    mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("completer", completer);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put("completer",
+                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     /*
                      * 暂时取表单所有字段数据
                      */
@@ -677,16 +657,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    String completer =
-                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                    mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("completer", completer);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put("completer",
+                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     /*
                      * 暂时取表单所有字段数据
                      */
@@ -817,7 +795,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     if (StringUtils.isNotBlank(assignee)) {
                         OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
-                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            // 并行时，领导选取时存在顺序，因此这里也存在顺序
+                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             i += 1;
                         }
                     }
@@ -898,31 +877,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         return list;
     }
 
-    /**
-     * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
-     *
-     * @return List<String>
-     */
-    private String getAssigneeNames(String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String assigneeNames = "";
-        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
-        int j = 0;
-        for (IdentityLinkModel identityLink : iList) {
-            String assigneeId = identityLink.getUserId();
-            OrgUnit ownerUser =
-                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
-            if (j < 5) {
-                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-            } else {
-                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                break;
-            }
-            j++;
-        }
-        return assigneeNames;
-    }
-
     @Override
     public Y9Page<Map<String, Object>> haveDoneList(String itemId, Integer page, Integer rows) {
         try {
@@ -950,8 +904,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -1046,7 +999,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             mapTemp.put("id", processSerialNumber);
             mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
             mapTemp.put("systemCNName", processParam.getSystemCnName());
-            mapTemp.put("bureauName", orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+            mapTemp.put("bureauName", processParam.getHostDeptName());
             mapTemp.put("itemId", processParam.getItemId());
             mapTemp.put("processInstanceId", processParam.getProcessInstanceId());
             mapTemp.putAll(formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData());
@@ -1079,138 +1032,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page, Integer rows) {
-        Y9Page<ActRuDetailModel> itemPage;
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            String systemName = item.getSystemName(), itemName = item.getName();
-            if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, systemName, page, rows);
-            } else {
-                itemPage =
-                    itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, systemName, searchMapStr, page, rows);
-            }
-            List<ActRuDetailModel> list = itemPage.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
-            List<Map<String, Object>> items = new ArrayList<>();
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> vars;
-            Collection<String> keys;
-            Map<String, Object> mapTemp;
-            Map<String, Object> formDataMap;
-            ProcessParamModel processParam;
-            String processInstanceId;
-            for (ActRuDetailModel ardModel : taslList) {
-                mapTemp = new HashMap<>(16);
-                String taskId = ardModel.getTaskId();
-                processInstanceId = ardModel.getProcessInstanceId();
-                try {
-                    String processSerialNumber = ardModel.getProcessSerialNumber();
-                    Date taskCreateTime = ardModel.getCreateTime();
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    mapTemp.put("itemId", itemId);
-                    mapTemp.put("itemName", itemName);
-                    mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
-                    TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                    mapTemp.put("taskId", taskId);
-                    String processDefinitionId = task.getProcessDefinitionId();
-                    String taskAssignee = ardModel.getAssignee();
-                    String taskDefinitionKey = task.getTaskDefinitionKey();
-                    String taskName = task.getName();
-                    int priority = task.getPriority();
-                    keys = new ArrayList<>();
-                    keys.add(SysVariables.TASKSENDER);
-                    vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
-                    int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
-                    // 催办的时候任务的优先级+5
-                    Boolean isReminder = String.valueOf(priority).contains("8");
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("processDefinitionKey", processDefinitionId.split(":")[0]);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("description", "");
-                    mapTemp.put("taskDefinitionKey", taskDefinitionKey);
-                    mapTemp.put("taskName", taskName);
-                    mapTemp.put("taskAssignee", taskAssignee);
-                    mapTemp.put(SysVariables.TASKSENDER, taskSender);
-                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
-                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
-                    String multiInstance = processDefinitionApi
-                        .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
-                    mapTemp.put("isZhuBan", "");
-                    if (multiInstance.equals(SysVariables.PARALLEL)) {
-                        mapTemp.put("isZhuBan", "false");
-                        String sponsorGuid = processParam.getSponsorGuid();
-                        if (StringUtils.isNotBlank(sponsorGuid)) {
-                            if (task.getAssignee().equals(sponsorGuid)) {
-                                mapTemp.put("isZhuBan", "true");
-                            }
-                        }
-                        String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(),
-                            SysVariables.NROFACTIVEINSTANCES).getData();
-                        int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
-                        if (nrOfActiveInstances == 1) {
-                            mapTemp.put("isZhuBan", "true");
-                        }
-                        if (StringUtils.isNotBlank(task.getOwner()) && !task.getOwner().equals(task.getAssignee())) {
-                            mapTemp.put("isZhuBan", "");
-                        }
-                    }
-                    mapTemp.put("isForwarding", false);
-                    TaskVariableModel taskVariableModel =
-                        taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding").getData();
-                    if (taskVariableModel != null) {// 是否正在发送标识
-                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
-                    }
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    /*if (formDataMap.get("leaveType") != null) {
-                        String leaveType = (String)formDataMap.get("leaveType");
-                        ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
-                        for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
-                            if (leaveType.equals(leaveTypeEnum.getValue())) {
-                                formDataMap.put("leaveType", leaveTypeEnum.getName());
-                                break;
-                            }
-                        }
-                    }*/
-                    mapTemp.putAll(formDataMap);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    int speakInfoNum = speakInfoApi
-                        .getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
-                    mapTemp.put("speakInfoNum", speakInfoNum);
-                    mapTemp.put("remindSetting", false);
-                    RemindInstanceModel remindInstanceModel = remindInstanceApi
-                        .getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
-                    if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
-                        mapTemp.put("remindSetting", true);
-                    }
-
-                    int countFollow =
-                        officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-                    mapTemp.put("follow", countFollow > 0);
-
-                    String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-                    if (Boolean.parseBoolean(rollBack)) {// 退回件
-                        mapTemp.put("rollBack", true);
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
-                }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
-            }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办列表失败", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    @Override
     public Y9Page<Map<String, Object>> recycleList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -1234,24 +1055,22 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    String completer =
-                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                    mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("completer", completer);
-                    mapTemp.put("taskId", taskId);
-                    /**
+                    mapTemp.put("completer",
+                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -1296,24 +1115,22 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    String completer =
-                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                    mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("completer", completer);
-                    mapTemp.put("taskId", taskId);
-                    /**
+                    mapTemp.put("completer",
+                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取部门回收站列表失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -1350,24 +1167,22 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    String completer =
-                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("completer", completer);
+                    mapTemp.put("completer",
+                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     mapTemp.put("taskId", taskId);
-                    /**
+                    /*
                      * 暂时取表单所有字段数据
                      */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -1411,8 +1226,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);

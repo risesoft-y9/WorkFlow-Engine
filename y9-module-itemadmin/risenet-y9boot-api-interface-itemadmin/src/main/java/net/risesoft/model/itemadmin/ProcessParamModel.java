@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 流程参数模型
@@ -102,6 +102,16 @@ public class ProcessParamModel implements Serializable {
      * 主办人id
      */
     private String sponsorGuid;
+
+    /**
+     * 主办部门或者委办局ID
+     */
+    private String hostDeptId;
+
+    /**
+     * 主办部门或者委办局名称
+     */
+    private String hostDeptName;
     /**
      * 流程的启动人员id
      */

@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,6 +112,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             oldProcessParam.setStartor(processParam.getStartor());
             oldProcessParam.setStartorName(processParam.getStartorName());
             oldProcessParam.setSponsorGuid(processParam.getSponsorGuid());
+            oldProcessParam.setHostDeptId(processParam.getHostDeptId());
+            oldProcessParam.setHostDeptName(processParam.getHostDeptName());
             oldProcessParam.setSended(processParam.getSended());
             oldProcessParam.setTarget(processParam.getTarget());
             oldProcessParam.setDueDate(processParam.getDueDate());
@@ -166,6 +167,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newpp.setTarget(processParam.getTarget());
         newpp.setDueDate(processParam.getDueDate());
         newpp.setDescription(processParam.getDescription());
+        newpp.setHostDeptId(processParam.getHostDeptId());
+        newpp.setHostDeptName(processParam.getHostDeptName());
         processParamRepository.save(newpp);
         return newpp;
     }
