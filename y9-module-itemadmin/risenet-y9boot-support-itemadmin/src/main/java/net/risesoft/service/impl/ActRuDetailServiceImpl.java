@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +30,18 @@ import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.ActRuDetailRepository;
 import net.risesoft.service.ActRuDetailService;
+import net.risesoft.service.ItemPageService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -72,6 +77,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     private final RuntimeApi runtimeApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
+
+    private final ItemPageService itemPageService;
 
     @Override
     @Transactional
@@ -279,6 +286,21 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 systemName, assignee, status, pageable);
         }
         return pageList;
+    }
+
+    @Override
+    public Y9Page<ActRuDetailModel> pageBySystemName4DuBan(String systemName, String date, int rows, int page) {
+        String sql =
+            "SELECT FW.DBSX,DE.* FROM FF_ACT_RU_DETAIL DE INNER JOIN Y9_FORM_FW FW ON  DE.PROCESSSERIALNUMBER = FW.GUID  WHERE SYSTEMNAME =? AND DE.DELETED =FALSE AND DE.ENDED=FALSE AND FW.DBSX <= ? GROUP BY DE.PROCESSSERIALNUMBER ORDER BY FW.DBSX DESC";
+        String countSql =
+            "SELECT COUNT(*) FROM (SELECT * FROM FF_ACT_RU_DETAIL DE INNER JOIN Y9_FORM_FW FW ON  DE.PROCESSSERIALNUMBER = FW.GUID  WHERE SYSTEMNAME =? AND DE.DELETED =FALSE AND DE.ENDED=FALSE AND FW.DBSX <=  ? GROUP BY DE.PROCESSSERIALNUMBER) ALIAS";
+        Object[] args = new Object[2];
+        args[0] = systemName;
+        args[1] = date;
+        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
+            itemPage.getRows());
     }
 
     @Override

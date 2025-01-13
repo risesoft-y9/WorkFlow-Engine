@@ -118,6 +118,25 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     }
 
     /**
+     * 根据用户id和系统名称查询当前人的在办列表
+     *
+     * @param tenantId 租户id
+     * @param date 用户id
+     * @param systemName 系统名称
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> findBySystemName4DuBan(@RequestParam String tenantId,
+        @RequestParam String systemName, @RequestParam String date, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return actRuDetailService.pageBySystemName4DuBan(systemName, date, rows, page);
+    }
+
+    /**
      * 根据科室id和系统名称查询当前人的在办列表
      *
      * @param tenantId 租户id

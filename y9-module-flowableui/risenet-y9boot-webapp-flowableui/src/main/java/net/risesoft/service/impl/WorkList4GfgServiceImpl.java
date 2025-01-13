@@ -29,13 +29,9 @@ import net.risesoft.api.itemadmin.ItemDoneApi;
 import net.risesoft.api.itemadmin.ItemHaveDoneApi;
 import net.risesoft.api.itemadmin.ItemRecycleApi;
 import net.risesoft.api.itemadmin.ItemTodoApi;
-import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
-import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
-import net.risesoft.api.itemadmin.TaskVariableApi;
 import net.risesoft.api.itemadmin.UrgeInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -87,14 +83,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final ProcessDefinitionApi processDefinitionApi;
 
     private final FormDataApi formDataApi;
-
-    private final TaskVariableApi taskvariableApi;
-
-    private final SpeakInfoApi speakInfoApi;
-
-    private final RemindInstanceApi remindInstanceApi;
-
-    private final OfficeFollowApi officeFollowApi;
 
     private final ItemTodoApi itemTodoApi;
 
@@ -294,6 +282,87 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemDoingApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            List<ActRuDetailModel> list = itemPage.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
+            List<Map<String, Object>> items = new ArrayList<>();
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp;
+            ProcessParamModel processParam;
+            String processInstanceId;
+            Map<String, Object> formData;
+            for (ActRuDetailModel ardModel : taslList) {
+                mapTemp = new HashMap<>(16);
+                String taskId = ardModel.getTaskId();
+                processInstanceId = ardModel.getProcessInstanceId();
+                try {
+                    String processSerialNumber = ardModel.getProcessSerialNumber();
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
+                        taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
+                    if (isSubProcessChildNode) {
+                        boolean isSignDept = signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber)
+                            .getData().stream()
+                            .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
+                        if (!isSignDept) {
+                            // 针对SubProcess
+                            String mainSender = variableApi
+                                .getVariableByProcessInstanceId(tenantId, processInstanceId, SysVariables.MAINSENDER)
+                                .getData();
+                            mapTemp.put("taskAssignee",
+                                StringUtils.isBlank(mainSender) ? "无" : Y9JsonUtil.readValue(mainSender, String.class));
+                            mapTemp.put("taskName", "送会签");
+                        } else {
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                            mapTemp.put("taskName", listTemp.get(0));
+                            mapTemp.put("taskAssignee", listTemp.get(1));
+                        }
+                    } else {
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                        mapTemp.put("taskName", taskList.get(0).getName());
+                        mapTemp.put("taskAssignee", listTemp.get(0));
+                    }
+                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("taskId", taskId);
+                    /*
+                     * 暂时取表单所有字段数据
+                     */
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    mapTemp.putAll(formData);
+
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
+                } catch (Exception e) {
+                    LOGGER.error("获取在办列表失败" + processInstanceId, e);
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取待办异常", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, Integer days, Integer page, Integer rows) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            String dueDate = workDayService.getDate(new Date(), days);
+            System.out.println(dueDate);
+            if (StringUtils.isBlank(dueDate)) {
+                return Y9Page.failure(0, 0, 0, new ArrayList<>(), "未设置日历", 500);
+            }
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            Y9Page<ActRuDetailModel> itemPage =
+                itemDoingApi.findBySystemName4DuBan(tenantId, dueDate, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
