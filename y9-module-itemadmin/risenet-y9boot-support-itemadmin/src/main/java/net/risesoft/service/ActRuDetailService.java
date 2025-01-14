@@ -231,6 +231,21 @@ public interface ActRuDetailService {
      * 查找个人待办，在办列表
      *
      * @param systemName
+     * @param assignee
+     * @param status 0为待办，1位在办
+     * @param taskDefKey 任务key
+     * @param rows
+     * @param page
+     * @param sort
+     * @return
+     */
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(String systemName, String assignee, int status,
+        String taskDefKey, int rows, int page, Sort sort);
+
+    /**
+     * 查找个人待办，在办列表
+     *
+     * @param systemName
      * @param date
      * @param rows
      * @param page

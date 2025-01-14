@@ -289,6 +289,21 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(String systemName, String assignee,
+        int status, String taskDefKey, int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        Page<ActRuDetail> pageList;
+        if (0 == status) {
+            pageList = actRuDetailRepository.findBySystemNameAndTaskDefKeyAndAssigneeAndStatusAndDeletedFalse(
+                systemName, taskDefKey, assignee, status, pageable);
+        } else {
+            pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(
+                systemName, assignee, status, pageable);
+        }
+        return pageList;
+    }
+
+    @Override
     public Y9Page<ActRuDetailModel> pageBySystemName4DuBan(String systemName, String date, int rows, int page) {
         String sql =
             "SELECT FW.DBSX,DE.* FROM FF_ACT_RU_DETAIL DE INNER JOIN Y9_FORM_FW FW ON  DE.PROCESSSERIALNUMBER = FW.GUID  WHERE SYSTEMNAME =? AND DE.DELETED =FALSE AND DE.ENDED=FALSE AND FW.DBSX <= ? GROUP BY DE.PROCESSSERIALNUMBER ORDER BY FW.DBSX DESC";

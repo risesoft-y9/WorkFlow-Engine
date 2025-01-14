@@ -64,6 +64,24 @@ public interface ItemTodoApi {
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param taskDefKey 任务key
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @GetMapping("/findByUserIdAndSystemNameAndTaskDefKey")
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestParam("taskDefKey") @NotBlank String taskDefKey, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
+
+    /**
      * 根据用户id和系统名称、搜索集合查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id
@@ -79,5 +97,24 @@ public interface ItemTodoApi {
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    /**
+     * 根据用户id和系统名称、搜索集合查询待办列表(以发送时间排序)
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param taskDefKey 任务key
+     * @param searchMapStr 搜索集合
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @PostMapping("/searchByUserIdAndSystemNameAndTaskDefKey")
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestParam("taskDefKey") @NotBlank String taskDefKey, @RequestBody String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }
