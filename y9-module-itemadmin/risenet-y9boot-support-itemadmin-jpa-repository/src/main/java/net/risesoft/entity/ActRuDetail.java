@@ -154,7 +154,7 @@ public class ActRuDetail implements Serializable {
     @Column(name = "SUB")
     private boolean sub;
 
-    @Type(type = "numeric_boolean")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("是否归档")
     @Column(name = "PLACEONFILE")
