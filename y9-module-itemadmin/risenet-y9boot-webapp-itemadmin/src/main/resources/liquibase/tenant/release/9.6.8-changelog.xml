@@ -403,4 +403,86 @@
             <column name="HOSTDEPTNAME" type="VARCHAR(50)" remarks="主办部门或者委办局名称"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-24" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_GW_LWINFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="来文信息表" tableName="FF_GW_LWINFO">
+            <column name="ID" remarks="主键id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="processSerialNumber" type="VARCHAR(50)" remarks="流程编号"/>
+            <column name="WNBH" type="VARCHAR(50)" remarks="收文文号（委内编号）"/>
+            <column name="LWCODE" type="VARCHAR(50)" remarks="收文条码编号"/>
+            <column name="LWWH" type="VARCHAR(50)" remarks="来文文号"/>
+            <column name="LWTITLE" type="VARCHAR(500)" remarks="来文标题"/>
+            <column name="WJTYPE" type="VARCHAR(50)" remarks="文件类型"/>
+            <column name="LWDATE" type="VARCHAR(50)" remarks="来文日期"/>
+            <column name="LWDEPT" type="VARCHAR(255)" remarks="来文单位"/>
+            <column name="MIJI" type="VARCHAR(20)" remarks="来文密级"/>
+            <column name="HUANJI" type="VARCHAR(50)" remarks="来文缓急"/>
+            <column name="LWSX" type="VARCHAR(50)" remarks="来文时限"/>
+            <column name="LWFS" type="VARCHAR(20)" remarks="来文份数"/>
+            <column name="BANFOU" type="VARCHAR(20)" remarks="是否受理类(1受理，0不受理)"/>
+            <column name="ZBDEPT" type="VARCHAR(255)" remarks="主办单位"/>
+            <column name="FILEPROPERTY" type="VARCHAR(50)" remarks="文件属性（三级分类，4位一组）"/>
+            <column name="SHB" type="VARCHAR(50)" remarks="审核备（汉字审、核、备）"/>
+            <column name="LIMITTIME" type="VARCHAR(50)" remarks="时限"/>
+            <column name="RECORDTIME" type="VARCHAR(50)" remarks="记录插入时间"/>
+            <column name="ISDEBUG" type="VARCHAR(20)" remarks="是否是debug数据标识(0:否，1是)"/>
+            <column name="HANDLESTATUS" type="VARCHAR(20)" remarks="收文流程处理状态,默认'0'"/>
+            <column name="LWINFOUID" type="VARCHAR(50)" remarks="lwinfo唯一键收文流程businesskey来使用"/>
+            <column name="BUREAUMINISTERMIND" type="VARCHAR(200)" remarks="控制司局长意见的权限"/>
+            <column name="OFFICEMINISTERMIND" type="VARCHAR(200)" remarks="控制处长意见的权限"/>
+            <column name="BUREAUSECERTARYMIND" type="VARCHAR(200)" remarks="控制司局秘书意见的权限"/>
+            <column name="UNDERTAKEPERSONMIND" type="VARCHAR(200)" remarks="控制承办人的意见的权限"/>
+            <column name="TOPPROPERTY" type="VARCHAR(50)" remarks="一级属性"/>
+            <column name="SECONDPROPERTY" type="VARCHAR(50)" remarks="二级属性"/>
+            <column name="THIRDPROPERTY" type="VARCHAR(50)" remarks="三级属性"/>
+            <column name="ACCEPTORNOT" type="VARCHAR(50)" remarks="是否受理类‘是’表示是受理类"/>
+            <column name="HALLINDEX" type="VARCHAR(50)" remarks="大厅主键"/>
+            <column name="HALLREG" type="VARCHAR(50)" remarks="大厅登记码"/>
+            <column name="QQSXBTN" type="VARCHAR(50)" remarks="收文前期事项权限"/>
+            <column name="CREATETIME" type="VARCHAR(50)" remarks="记录创建时间"/>
+            <column name="NEEDDO" type="VARCHAR(20)" remarks="办否 1是，0否"/>
+            <column name="DCEDIT" type="VARCHAR(20)" remarks="是否督查系统修改主办单位 1是,0否"/>
+            <column name="OVERACCEPTTIME" type="VARCHAR(20)" remarks="是否已做超3天受理处理，默认为0，1为已经处理超时的数据"/>
+            <column name="TOUCHUSER" type="VARCHAR(50)" remarks="来文单位联系人(大厅会传)"/>
+            <column name="TOUCHTEL" type="VARCHAR(50)" remarks="来文单位联系人电话"/>
+            <column name="ACCEPTTYPE" type="VARCHAR(50)" remarks="受理方式(受理、自动受理、不予受理、空)"/>
+            <column name="SENDDEPT" type="VARCHAR(200)" remarks="大厅发文司局"/>
+            <column name="APPDEPT" type="VARCHAR(200)" remarks="大厅来件申报单位"/>
+            <column name="NOPERMITCZYJ" type="VARCHAR(50)" remarks="不予行政许可处长意见的权限控制"/>
+            <column name="HANDLETYPE" type="VARCHAR(10)" remarks="办理方式"/>
+            <column name="FINISHTYPE" type="VARCHAR(10)" remarks="办结方式"/>
+            <column name="XMMC" type="VARCHAR(200)" remarks="项目名称"/>
+            <column name="XMDM" type="VARCHAR(50)" remarks="项目代码"/>
+            <column name="SFXS" type="VARCHAR(10)" remarks="是否限时，0 不限时，1限时，默认为1"/>
+            <column name="ISFLWDJ" type="VARCHAR(10)" remarks="是否为非联网登记文件 1：是"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700543333-25" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_GW_LWINFO" columnName="LIMITTIME"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_GW_LWINFO">
+            <column name="LIMITTIME" type="VARCHAR(50)" remarks="时限"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1704700543333-26" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_GW_LWINFO" columnName="NOPERMITSZYJ"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_GW_LWINFO">
+            <column name="NOPERMITSZYJ" type="VARCHAR(50)" remarks="不予行政许可司长意见的权限控制"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
