@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -355,6 +356,20 @@ public class WorkList4GfgRestController {
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
         return workList4GfgService.todoList(itemId, "", page, rows);
+    }
+
+    /**
+     * 获取待办件列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/todoList4TaskDefKey")
+    public Y9Page<Map<String, Object>> todoList4TaskDefKey(@RequestParam String itemId,
+        @RequestParam @NotBlank String taskDefKey, @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, "", page, rows);
     }
 
     /**

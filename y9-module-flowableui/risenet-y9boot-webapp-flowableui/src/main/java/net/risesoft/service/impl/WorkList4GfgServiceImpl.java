@@ -1348,4 +1348,90 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
+
+    @Override
+    public Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
+        Integer page, Integer rows) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            Y9Page<ActRuDetailModel> itemPage;
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage = itemTodoApi.findByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
+                    item.getSystemName(), taskDefKey, page, rows);
+            } else {
+                itemPage = itemTodoApi.searchByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
+                    item.getSystemName(), taskDefKey, searchMapStr, page, rows);
+            }
+            List<ActRuDetailModel> list = itemPage.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
+            List<Map<String, Object>> items = new ArrayList<>();
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp;
+            ProcessParamModel processParam;
+            String processInstanceId;
+            Map<String, Object> formData;
+            for (ActRuDetailModel ardModel : taslList) {
+                mapTemp = new HashMap<>(16);
+                String taskId = ardModel.getTaskId();
+                processInstanceId = ardModel.getProcessInstanceId();
+                try {
+                    String processSerialNumber = ardModel.getProcessSerialNumber();
+                    processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    mapTemp.put("actRuDetailId", ardModel.getId());
+                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put("taskName", ardModel.getTaskDefName());
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("taskId", taskId);
+                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
+                    /*
+                     * 暂时取表单所有字段数据
+                     */
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    mapTemp.putAll(formData);
+                    List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                    if (ardModel.isStarted()) {
+                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
+                    }
+                    /*
+                     * 红绿灯
+                     */
+                    if (null != ardModel.getDueDate()) {
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                    }
+                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
+                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
+                    List<UrgeInfoModel> urgeInfoList =
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    if (ardModel.isSub()) {
+                        urgeInfoList = urgeInfoList.stream().filter(
+                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
+                            .collect(Collectors.toList());
+                    } else {
+                        urgeInfoList =
+                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+                    }
+                    if (!urgeInfoList.isEmpty()) {
+                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
+                    }
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                } catch (Exception e) {
+                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取待办异常", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
 }

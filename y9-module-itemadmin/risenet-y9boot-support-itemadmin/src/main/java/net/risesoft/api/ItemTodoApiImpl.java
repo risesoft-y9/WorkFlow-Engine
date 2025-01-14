@@ -98,6 +98,38 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     /**
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param taskDefKey 任务key
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestParam String taskDefKey,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(systemName,
+            userId, 0, taskDefKey, rows, page, sort);
+        List<ActRuDetail> ardList = ardPage.getContent();
+        ActRuDetailModel actRuDetailModel;
+        List<ActRuDetailModel> modelList = new ArrayList<>();
+        for (ActRuDetail actRuDetail : ardList) {
+            actRuDetailModel = new ActRuDetailModel();
+            Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
+            modelList.add(actRuDetailModel);
+        }
+
+        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+    }
+
+    /**
      * 根据用户id查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id
@@ -239,4 +271,58 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
+    /**
+     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param taskDefKey 任务key
+     * @param searchMapStr 搜索集合
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestParam String taskDefKey,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        StringBuilder innerSql = new StringBuilder();
+        StringBuilder whereSql = new StringBuilder();
+        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+        assert searchMap != null;
+        List<String> tableAliasList = new ArrayList<>();
+        for (String key : searchMap.keySet()) {
+            if (key.contains(".")) {
+                String[] aliasAndColumnName = key.split("\\.");
+                String alias = aliasAndColumnName[0];
+                whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                    .append(searchMap.get(key).toString()).append("') > 0 ");
+                if (!tableAliasList.contains(alias)) {
+                    tableAliasList.add(alias);
+                    Y9Table y9Table = y9TableService.findByTableAlias(alias);
+                    if (null == y9Table) {
+                        return Y9Page.failure(page, rows, 0, null, "别名" + alias + "对应的表不存在", 0);
+                    }
+                    innerSql.append("INNER JOIN ").append(y9Table.getTableName().toUpperCase()).append(" ")
+                        .append(alias.toUpperCase()).append(" ON T.PROCESSSERIALNUMBER = ").append(alias.toUpperCase())
+                        .append(".GUID ");
+                }
+            }
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE "
+            + whereSql + " AND T.SYSTEMNAME = ? AND T.TASKDEFKEY = ? AND T.ASSIGNEE = ?ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + innerSql
+            + " WHERE T.SYSTEMNAME= ? AND T.TASKDEFKEY = ? AND T.ASSIGNEE= ?  AND T.STATUS=0 AND T.DELETED = FALSE "
+            + whereSql;
+        Object[] args = new Object[3];
+        args[0] = systemName;
+        args[1] = taskDefKey;
+        args[2] = userId;
+        ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+    }
 }
