@@ -378,7 +378,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 default:
                     startDate = "2025-01-01";
             }
-            System.out.println("startDate:" + startDate + "  endDate:" + endDate);
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
