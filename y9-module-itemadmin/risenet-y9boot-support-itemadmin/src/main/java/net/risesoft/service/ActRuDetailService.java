@@ -246,12 +246,14 @@ public interface ActRuDetailService {
      * 查找个人待办，在办列表
      *
      * @param systemName
-     * @param date
+     * @param startDate 开始时间(例：2025-01-01)
+     * @param endDate 结束时间(例：2025-01-14)
      * @param rows
      * @param page
      * @return
      */
-    Y9Page<ActRuDetailModel> pageBySystemName4DuBan(String systemName, String date, int rows, int page);
+    Y9Page<ActRuDetailModel> pageBySystemName4DuBan(String systemName, String startDate, String endDate, int rows,
+        int page);
 
     /**
      * 查找科室在办，办结列表

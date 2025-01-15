@@ -58,7 +58,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Transactional(readOnly = true)
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
-    private static final Map<String, List<String>> subNodeMap = new HashMap<>();
+    private static final Map<String, List<String>> SUB_NODE_MAP = new HashMap<>();
 
     private final ActRuDetailRepository actRuDetailRepository;
 
@@ -304,14 +304,16 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public Y9Page<ActRuDetailModel> pageBySystemName4DuBan(String systemName, String date, int rows, int page) {
+    public Y9Page<ActRuDetailModel> pageBySystemName4DuBan(String systemName, String startDate, String endDate,
+        int rows, int page) {
         String sql =
-            "SELECT FW.DBSX,DE.* FROM FF_ACT_RU_DETAIL DE INNER JOIN Y9_FORM_FW FW ON  DE.PROCESSSERIALNUMBER = FW.GUID  WHERE SYSTEMNAME =? AND DE.DELETED =FALSE AND DE.ENDED=FALSE AND FW.DBSX <= ? GROUP BY DE.PROCESSSERIALNUMBER ORDER BY FW.DBSX DESC";
+            "SELECT FW.DBSX,DE.* FROM FF_ACT_RU_DETAIL DE INNER JOIN Y9_FORM_FW FW ON  DE.PROCESSSERIALNUMBER = FW.GUID WHERE DE.DELETED =FALSE AND DE.ENDED=FALSE AND SYSTEMNAME =? AND FW.DBSX >= ? AND FW.DBSX <= ? GROUP BY DE.PROCESSSERIALNUMBER ORDER BY FW.DBSX DESC";
         String countSql =
-            "SELECT COUNT(*) FROM (SELECT * FROM FF_ACT_RU_DETAIL DE INNER JOIN Y9_FORM_FW FW ON  DE.PROCESSSERIALNUMBER = FW.GUID  WHERE SYSTEMNAME =? AND DE.DELETED =FALSE AND DE.ENDED=FALSE AND FW.DBSX <=  ? GROUP BY DE.PROCESSSERIALNUMBER) ALIAS";
-        Object[] args = new Object[2];
+            "SELECT COUNT(*) FROM (SELECT * FROM FF_ACT_RU_DETAIL DE INNER JOIN Y9_FORM_FW FW ON  DE.PROCESSSERIALNUMBER = FW.GUID  WHERE DE.DELETED =FALSE AND DE.ENDED=FALSE AND SYSTEMNAME =? AND FW.DBSX >= ? AND FW.DBSX <=  ? GROUP BY DE.PROCESSSERIALNUMBER) ALIAS";
+        Object[] args = new Object[3];
         args[0] = systemName;
-        args[1] = date;
+        args[1] = startDate;
+        args[2] = endDate;
         ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
@@ -494,11 +496,11 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     private void initSubNodeMap(String processDefinitionId) {
-        if (null == subNodeMap.get(processDefinitionId)) {
+        if (null == SUB_NODE_MAP.get(processDefinitionId)) {
             List<String> subTaskDefKeys =
                 processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
                     .getData().stream().map(TargetModel::getTaskDefKey).collect(Collectors.toList());
-            subNodeMap.put(processDefinitionId, subTaskDefKeys);
+            SUB_NODE_MAP.put(processDefinitionId, subTaskDefKeys);
         }
     }
 
@@ -524,7 +526,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             oldActRuDetail.setTaskDefKey(actRuDetail.getTaskDefKey());
             oldActRuDetail.setTaskDefName(actRuDetail.getTaskDefName());
             oldActRuDetail.setExecutionId(actRuDetail.getExecutionId());
-            oldActRuDetail.setSub(subNodeMap.get(actRuDetail.getProcessDefinitionId()).stream()
+            oldActRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
                 .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
             actRuDetailRepository.save(oldActRuDetail);
             return true;
@@ -556,7 +558,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         newActRuDetail.setItemId(processParam.getItemId());
         newActRuDetail.setSystemName(processParam.getSystemName());
         newActRuDetail.setDueDate(processParam.getDueDate());
-        newActRuDetail.setSub(subNodeMap.get(actRuDetail.getProcessDefinitionId()).stream()
+        newActRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
             .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         newActRuDetail.setBureauId(bureau.getId());
