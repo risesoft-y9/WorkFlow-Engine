@@ -121,7 +121,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * 根据用户id和系统名称查询当前人的在办列表
      *
      * @param tenantId 租户id
-     * @param date 用户id
+     * @param startDate 开始时间(例：2025-01-01)
+     * @param endDate 结束时间(例：2025-01-14)
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
@@ -130,10 +131,10 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> findBySystemName4DuBan(@RequestParam String tenantId,
-        @RequestParam String systemName, @RequestParam String date, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam String systemName, @RequestParam String startDate, @RequestParam String endDate,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.pageBySystemName4DuBan(systemName, date, rows, page);
+        return actRuDetailService.pageBySystemName4DuBan(systemName, startDate, endDate, rows, page);
     }
 
     /**

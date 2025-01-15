@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -354,15 +355,34 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, Integer days, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            String dueDate = workDayService.getDate(new Date(), days);
-            System.out.println(dueDate);
-            if (StringUtils.isBlank(dueDate)) {
+            Date currentDate = new Date();
+            String endDate = workDayService.getDate(currentDate, days);
+            if (StringUtils.isBlank(endDate)) {
                 return Y9Page.failure(0, 0, 0, new ArrayList<>(), "未设置日历", 500);
             }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String startDate;
+            switch (days) {
+                case 3:
+                    startDate = sdf.format(currentDate);
+                    break;
+                case 5:
+                    startDate = workDayService.getDate(currentDate, 4);
+                    break;
+                case 7:
+                    startDate = workDayService.getDate(currentDate, 6);
+                    break;
+                case 10:
+                    startDate = workDayService.getDate(currentDate, 8);
+                    break;
+                default:
+                    startDate = "2025-01-01";
+            }
+            System.out.println("startDate:" + startDate + "  endDate:" + endDate);
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                itemDoingApi.findBySystemName4DuBan(tenantId, dueDate, item.getSystemName(), page, rows);
+                itemDoingApi.findBySystemName4DuBan(tenantId, startDate, endDate, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
