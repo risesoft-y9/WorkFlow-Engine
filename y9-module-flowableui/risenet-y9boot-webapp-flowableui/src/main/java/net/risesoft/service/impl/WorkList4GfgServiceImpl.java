@@ -1,8 +1,6 @@
 package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -895,8 +893,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             assigneeNames += "等，共" + taskList.size() + "人";
         }
 
-        list.add(taskName);
-        list.add(assigneeNames);
+        list.add(StringUtils.isBlank(taskName) ? "会签结束" : taskName);
+        list.add(StringUtils.isBlank(assigneeNames) ? "无" : assigneeNames);
         return list;
     }
 
@@ -960,7 +958,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         if (taskList.size() > 5) {
             assigneeNames += "等，共" + taskList.size() + "人";
         }
-        list.add(StringUtils.isBlank(taskName) ? "已办结" : taskName);
+        list.add(StringUtils.isBlank(taskName) ? "会签结束" : taskName);
         list.add(StringUtils.isBlank(assigneeNames) ? "无" : assigneeNames);
         return list;
     }
@@ -999,26 +997,15 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
                         ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-                    HistoricTaskInstanceModel hisTask;
-                    if (ardModel.isEnded()) {
-                        LocalDate createTime =
-                            ardModel.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                        hisTask = historictaskApi
-                            .getById(tenantId, ardModel.getTaskId(), String.valueOf(createTime.getYear())).getData();
-                    } else {
-                        hisTask = historictaskApi.getById(tenantId, ardModel.getTaskId()).getData();
-                    }
-                    mapTemp.put("processDefinitionId", hisTask.getProcessDefinitionId());
-                    boolean isSub = processDefinitionApi.isSubProcessChildNode(tenantId,
-                        hisTask.getProcessDefinitionId(), hisTask.getTaskDefinitionKey()).getData();
-                    List<TaskModel> taskList = new ArrayList<>();
+                    mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
                     List<SignDeptDetailModel> signDeptDetailModels = new ArrayList<>();
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     if (!ardModel.isEnded()) {
-                        taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
-                        if (isSubProcessChildNode) {
-                            if (!isSub) {
+                        if (!ardModel.isSub()) {
+                            boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
+                                taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey())
+                                .getData();
+                            if (isSubProcessChildNode) {
                                 String mainSender = variableApi.getVariableByProcessInstanceId(tenantId,
                                     processInstanceId, SysVariables.MAINSENDER).getData();
                                 signDeptDetailModels = signDeptDetailApi
@@ -1028,21 +1015,21 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                                 mapTemp.put("taskAssignee", StringUtils.isBlank(mainSender) ? "无"
                                     : Y9JsonUtil.readValue(mainSender, String.class));
                             } else {
-                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
-                                mapTemp.put("taskName", listTemp.get(0));
-                                mapTemp.put("taskAssignee", listTemp.get(1));
+                                List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                                mapTemp.put("taskName", taskList.get(0).getName());
+                                mapTemp.put("taskAssignee", listTemp.get(0));
                             }
                         } else {
-                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                            mapTemp.put("taskName", taskList.get(0).getName());
-                            mapTemp.put("taskAssignee", listTemp.get(0));
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                            mapTemp.put("taskName", listTemp.get(0));
+                            mapTemp.put("taskAssignee", listTemp.get(1));
                         }
                     } else {
                         mapTemp.put("taskName", "已办结");
                         mapTemp.put("taskAssignee", processParam.getCompleter());
                     }
                     List<Map<String, Object>> childrenList = new ArrayList<>();
-                    if (!isSub) {
+                    if (!ardModel.isSub()) {
                         List<TaskModel> finalTaskList = taskList;
                         Map<String, Object> finalMapTemp = mapTemp;
                         AtomicInteger count = new AtomicInteger(0);
