@@ -58,7 +58,7 @@ public class UrgeInfoRestController {
     /**
      * 保存催办信息
      *
-     * @param processSerialNumbers 流程序列号
+     * @param processSerialNumbers isSub:processSerialNumber:executionId 组成的数据
      * @param msgContent 催办消息
      * @return
      */
