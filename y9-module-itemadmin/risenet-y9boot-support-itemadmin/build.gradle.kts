@@ -1,0 +1,32 @@
+plugins {
+    id("net.risesoft.y9.conventions-java")
+    id("net.risesoft.y9.lombok")
+    /*alias(libs.plugins.y9.aspectj)*/
+    id("net.risesoft.y9.smart-doc")
+}
+
+dependencies {
+    api(project(":y9-module-itemadmin:risenet-y9boot-api-interface-itemadmin"))
+    api(project(":y9-module-itemadmin:risenet-y9boot-support-itemadmin-jpa-repository"))
+    api(project(":y9-module-processadmin:risenet-y9boot-api-feignclient-processadmin"))
+    api("net.risesoft:risenet-y9boot-properties")
+    api("net.risesoft:risenet-y9boot-common-model")
+    api("net.risesoft:risenet-y9boot-common-util")
+    api("net.risesoft:risenet-y9boot-common-sqlddl")
+    api("net.risesoft:risenet-y9boot-starter-log")
+    api("net.risesoft:risenet-y9boot-starter-jpa-public")
+    api("net.risesoft:risenet-y9boot-starter-jpa-tenant")
+    api("net.risesoft:risenet-y9boot-starter-cache-redis")
+    api("net.risesoft:risenet-y9boot-starter-listener-kafka")
+    api("net.risesoft:risenet-y9boot-support-file-service-ftp")
+    api("net.risesoft:risenet-y9boot-api-feignclient-platform")
+
+    api(y9libs.google.guava)
+    api(libs.jodd.mail)
+    api(libs.fluent)
+    api(libs.jxl)
+
+    compileOnly("jakarta.servlet:jakarta.servlet-api")
+}
+
+description = "risenet-y9boot-support-itemadmin"

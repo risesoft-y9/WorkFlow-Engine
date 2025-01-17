@@ -29,3 +29,11 @@ vue/y9vue-flowableUI/flowableUI/
 vue/y9vue-itemAdmin/itemAdmin/
 
 .flattened-pom.xml
+
+#gradle
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
