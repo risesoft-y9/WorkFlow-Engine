@@ -102,21 +102,14 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPersonId();
         AtomicInteger errorCount = new AtomicInteger();
         AtomicInteger successCount = new AtomicInteger();
-        AtomicInteger doneCount = new AtomicInteger();
         Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            if (StringUtils.isBlank(processParamModel.getCompleter())) {
-                if (urgeInfoApi.save(tenantId, userId, processSerialNumber, msgContent).isSuccess()) {
-                    successCount.getAndIncrement();
-                } else {
-                    errorCount.getAndIncrement();
-                }
+            if (urgeInfoApi.save(tenantId, userId, processSerialNumber, msgContent).isSuccess()) {
+                successCount.getAndIncrement();
             } else {
-                doneCount.getAndIncrement();
+                errorCount.getAndIncrement();
             }
         });
-        return Y9Result.successMsg("共" + processSerialNumbers.length + "条记录，成功" + successCount.get() + "条，失败"
-            + errorCount.get() + "条，已办结" + doneCount.get() + "条");
+        return Y9Result.successMsg(
+            "共" + processSerialNumbers.length + "条记录，成功" + successCount.get() + "条，失败" + errorCount.get() + "条。");
     }
 }

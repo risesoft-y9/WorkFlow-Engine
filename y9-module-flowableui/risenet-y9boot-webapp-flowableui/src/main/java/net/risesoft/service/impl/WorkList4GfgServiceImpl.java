@@ -987,12 +987,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("isSub", false);
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("executionId", ardModel.getExecutionId());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
@@ -1020,6 +1022,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                                 mapTemp.put("taskAssignee", listTemp.get(0));
                             }
                         } else {
+                            mapTemp.put("isSub", true);
                             List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
                             mapTemp.put("taskName", listTemp.get(0));
                             mapTemp.put("taskAssignee", listTemp.get(1));
@@ -1028,9 +1031,26 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         mapTemp.put("taskName", "已办结");
                         mapTemp.put("taskAssignee", processParam.getCompleter());
                     }
+                    List<UrgeInfoModel> urgeInfoList4All =
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
+                    if (ardModel.isSub()) {
+                        urgeInfoList = urgeInfoList.stream().filter(
+                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
+                            .collect(Collectors.toList());
+                    } else {
+                        urgeInfoList =
+                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+                    }
+                    List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
+                    if (!urgeInfoList.isEmpty()) {
+                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
+                    }
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+
                     List<Map<String, Object>> childrenList = new ArrayList<>();
                     if (!ardModel.isSub()) {
-                        List<TaskModel> finalTaskList = taskList;
                         Map<String, Object> finalMapTemp = mapTemp;
                         AtomicInteger count = new AtomicInteger(0);
                         if (signDeptDetailModels.isEmpty()) {
@@ -1039,15 +1059,27 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         }
                         signDeptDetailModels.forEach(sdd -> {
                             List<String> taskNameAndAssigneeNames =
-                                getTaskNameAndAssigneeNames(finalTaskList, sdd.getExecutionId());
+                                getTaskNameAndAssigneeNames(taskList, sdd.getExecutionId());
                             Map<String, Object> childrenMap = new HashMap<>(finalMapTemp);
                             childrenMap.put("id", sdd.getId());
+                            childrenMap.put("isSub", true);
                             childrenMap.put("serialNumber", count.incrementAndGet());
                             childrenMap.put("taskName", taskNameAndAssigneeNames.get(0));
                             childrenMap.put("taskAssignee", taskNameAndAssigneeNames.get(1));
                             childrenMap.put("children", List.of());
                             childrenMap.put("status", sdd.getStatus());
                             childrenMap.put("bureauName", sdd.getDeptName());
+                            childrenMap.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                            childrenMap.put("executionId", sdd.getExecutionId());
+                            List<UrgeInfoModel> subUrgeInfoList = urgeInfoList4All.stream().filter(
+                                urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(sdd.getExecutionId()))
+                                .collect(Collectors.toList());
+                            List<TaskRelatedModel> subTaskRelatedList = new ArrayList<>();
+                            if (!subUrgeInfoList.isEmpty()) {
+                                subTaskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                                    Y9JsonUtil.writeValueAsString(subUrgeInfoList)));
+                            }
+                            childrenMap.put(SysVariables.TASKRELATEDLIST, subTaskRelatedList);
                             childrenList.add(childrenMap);
                         });
                     }
