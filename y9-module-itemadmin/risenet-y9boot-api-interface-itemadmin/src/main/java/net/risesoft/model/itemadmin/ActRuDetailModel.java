@@ -158,5 +158,6 @@ public class ActRuDetailModel implements Serializable {
      * 到期时间
      */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dueDate;
 }
