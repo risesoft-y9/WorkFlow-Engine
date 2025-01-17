@@ -115,7 +115,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> allList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
@@ -134,34 +133,39 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
+                    mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("children", List.of());
                     mapTemp.put("actRuDetailId", ardModel.getId());
+                    mapTemp.put("isSub", false);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put("executionId", ardModel.getExecutionId());
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    if (StringUtils.isBlank(processParam.getCompleter())) {
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                            taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
-                        if (isSubProcessChildNode) {
-                            boolean isSignDept = signDeptDetailApi
-                                .findByProcessSerialNumber(tenantId, processSerialNumber).getData().stream().anyMatch(
-                                    signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
-                            if (!isSignDept) {
-                                // 针对SubProcess
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    List<SignDeptDetailModel> signDeptDetailModels = new ArrayList<>();
+                    if (!ardModel.isEnded()) {
+                        if (!ardModel.isSub()) {
+                            boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
+                                taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey())
+                                .getData();
+                            if (isSubProcessChildNode) {
                                 String mainSender = variableApi.getVariableByProcessInstanceId(tenantId,
                                     processInstanceId, SysVariables.MAINSENDER).getData();
+                                signDeptDetailModels = signDeptDetailApi
+                                    .findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                                mapTemp.put("taskName", historictaskApi
+                                    .getById(tenantId, signDeptDetailModels.get(0).getTaskId()).getData().getName());
                                 mapTemp.put("taskAssignee", StringUtils.isBlank(mainSender) ? "无"
                                     : Y9JsonUtil.readValue(mainSender, String.class));
-                                mapTemp.put("taskName", "送会签");
                             } else {
-                                List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
-                                mapTemp.put("taskName", listTemp.get(0));
-                                mapTemp.put("taskAssignee", listTemp.get(1));
+                                List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                                mapTemp.put("taskName", taskList.get(0).getName());
+                                mapTemp.put("taskAssignee", listTemp.get(0));
                             }
                         } else {
-                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                            mapTemp.put("taskName", taskList.get(0).getName());
-                            mapTemp.put("taskAssignee", listTemp.get(0));
+                            List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                            mapTemp.put("taskName", listTemp.get(0));
+                            mapTemp.put("taskAssignee", listTemp.get(1));
+                            mapTemp.put("isSub", true);
                         }
                     } else {
                         mapTemp.put("taskName", "已办结");
@@ -178,12 +182,85 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
 
+                    List<UrgeInfoModel> urgeInfoList4All =
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
+                    if (ardModel.isSub()) {
+                        urgeInfoList = urgeInfoList.stream().filter(
+                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
+                            .collect(Collectors.toList());
+                    } else {
+                        urgeInfoList =
+                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+                    }
+                    List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
+                    /*
+                     * 催办信息
+                     */
+                    if (!urgeInfoList.isEmpty()) {
+                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
+                    }
                     if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
                         mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+                        taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                        /*if (ardModel.isStarted()) {
+                            taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
+                        }*/
+                        /*
+                         * 红绿灯
+                         */
+                        if (null != ardModel.getDueDate()) {
+                            taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                        }
+                        taskRelatedList =
+                            taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
+                                .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
                     } else {
-                        mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
-                            ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
+                        if (!ardModel.isEnded()) {
+                            mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
+                        } else {
+                            mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
+                        }
+
+                        List<Map<String, Object>> childrenList = new ArrayList<>();
+                        if (!ardModel.isSub()) {
+                            Map<String, Object> finalMapTemp = mapTemp;
+                            AtomicInteger count = new AtomicInteger(0);
+                            if (signDeptDetailModels.isEmpty()) {
+                                signDeptDetailModels = signDeptDetailApi
+                                    .findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                            }
+                            signDeptDetailModels.forEach(sdd -> {
+                                List<String> taskNameAndAssigneeNames =
+                                    getTaskNameAndAssigneeNames(taskList, sdd.getExecutionId());
+                                Map<String, Object> childrenMap = new HashMap<>(finalMapTemp);
+                                childrenMap.put("id", sdd.getId());
+                                childrenMap.put("isSub", true);
+                                childrenMap.put("serialNumber", count.incrementAndGet());
+                                childrenMap.put("taskName", taskNameAndAssigneeNames.get(0));
+                                childrenMap.put("taskAssignee", taskNameAndAssigneeNames.get(1));
+                                childrenMap.put("children", List.of());
+                                childrenMap.put("status", sdd.getStatus());
+                                childrenMap.put("bureauName", sdd.getDeptName());
+                                childrenMap.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                                childrenMap.put("executionId", sdd.getExecutionId());
+                                List<UrgeInfoModel> subUrgeInfoList = urgeInfoList4All.stream()
+                                    .filter(urgeInfo -> urgeInfo.isSub()
+                                        && urgeInfo.getExecutionId().equals(sdd.getExecutionId()))
+                                    .collect(Collectors.toList());
+                                List<TaskRelatedModel> subTaskRelatedList = new ArrayList<>();
+                                if (!subUrgeInfoList.isEmpty()) {
+                                    subTaskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                                        Y9JsonUtil.writeValueAsString(subUrgeInfoList)));
+                                }
+                                childrenMap.put(SysVariables.TASKRELATEDLIST, subTaskRelatedList);
+                                childrenList.add(childrenMap);
+                            });
+                        }
+                        mapTemp.put("children", childrenList);
                     }
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                 } catch (Exception e) {
                     LOGGER.error("获取已办列表失败" + processInstanceId, e);
                 }
