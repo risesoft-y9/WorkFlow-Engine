@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,7 @@ import net.risesoft.y9.FlowableTenantInfoHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/conditionParser")
+@RequestMapping(value = "/services/rest/conditionParser", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ConditionParserApiImpl implements ConditionParserApi {
 
     private final CustomConditionParser customConditionParser;

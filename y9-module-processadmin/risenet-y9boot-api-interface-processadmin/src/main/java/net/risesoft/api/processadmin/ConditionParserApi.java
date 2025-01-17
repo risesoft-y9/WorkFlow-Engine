@@ -2,7 +2,8 @@ package net.risesoft.api.processadmin;
 
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,7 +26,7 @@ public interface ConditionParserApi {
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
-    @GetMapping("/parser")
+    @PostMapping(value = "/parser", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Boolean> parser(@RequestParam("tenantId") String tenantId,
         @RequestParam("conditionExpression") String conditionExpression, @RequestBody Map<String, Object> variables);
 }
