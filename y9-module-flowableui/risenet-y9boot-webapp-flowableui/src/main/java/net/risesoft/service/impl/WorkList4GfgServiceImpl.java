@@ -1253,6 +1253,34 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
+
+                    List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                    if (ardModel.isStarted()) {
+                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
+                    }
+                    /*
+                     * 红绿灯
+                     */
+                    if (null != ardModel.getDueDate()) {
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                    }
+                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
+                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
+                    List<UrgeInfoModel> urgeInfoList =
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    if (ardModel.isSub()) {
+                        urgeInfoList = urgeInfoList.stream().filter(
+                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
+                            .collect(Collectors.toList());
+                    } else {
+                        urgeInfoList =
+                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+                    }
+                    if (!urgeInfoList.isEmpty()) {
+                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
+                    }
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
