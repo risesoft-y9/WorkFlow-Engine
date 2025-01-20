@@ -573,7 +573,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 List<IdentityLinkModel> candidateList = iList.stream()
                     .filter(i -> i.getType().equals(IdentityLinkType.CANDIDATE)).collect(Collectors.toList());
                 if (!candidateList.isEmpty()) {
-                    String positionId = iList.get(0).getUserId();
+                    String positionId = candidateList.get(0).getUserId();
                     OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, positionId).getData();
                     if (candidateList.size() > 1) {
                         String sb = (null == orgUnit ? "岗位已删除" : orgUnit.getName()) + "等" + candidateList.size() + "人";
