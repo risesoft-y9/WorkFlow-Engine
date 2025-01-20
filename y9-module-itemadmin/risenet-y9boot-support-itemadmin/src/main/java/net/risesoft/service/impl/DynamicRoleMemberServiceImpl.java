@@ -61,7 +61,7 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
     @Override
     public List<OrgUnit> listByDynamicRoleIdAndProcessInstanceId(String dynamicRoleId, String processInstanceId) {
         DynamicRole dynamicRole = dynamicRoleService.getById(dynamicRoleId);
-        List<OrgUnit> orgUnitList = new ArrayList<>();
+        List<OrgUnit> orgUnitList;
         String classFullPath = dynamicRole.getClassPath();
         ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext)Y9Context.getAc();
         DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);

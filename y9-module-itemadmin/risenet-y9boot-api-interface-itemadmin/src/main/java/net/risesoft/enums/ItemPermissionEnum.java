@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 拒绝类型
+ * 事项权限类型
  * 
  * @author qinman
  * @date 2022/12/20

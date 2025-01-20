@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -456,16 +457,16 @@ public class RoleServiceImpl implements RoleService {
                 if (StringUtils.isBlank(id)) {
                     List<OrgUnit> deptList = new ArrayList<>();
                     for (ItemPermission o : list) {
-                        if (o.getRoleType() == 1) {
+                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
                             deptList.addAll(
                                 roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData());
                             deptList.addAll(
                                 roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData());
                         }
-                        if (o.getRoleType() == 2) {
+                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())) {
                             deptList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                         }
-                        if (o.getRoleType() == 4) {
+                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
                             List<OrgUnit> orgUnitList = dynamicRoleMemberService
                                 .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                             for (OrgUnit orgUnit : orgUnitList) {
@@ -519,8 +520,8 @@ public class RoleServiceImpl implements RoleService {
                         orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgunit : orgList) {
                         ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                        String orgunitId = orgunit.getId();
-                        model.setId(orgunitId);
+                        String orgUnitId = orgunit.getId();
+                        model.setId(orgUnitId);
                         model.setParentId(id);
                         model.setName(orgunit.getName());
                         model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
@@ -542,14 +543,14 @@ public class RoleServiceImpl implements RoleService {
                 // 岗位
                 List<OrgUnit> orgList = new ArrayList<>();
                 for (ItemPermission o : list) {
-                    if (o.getRoleType() == 1) {
+                    if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
                         orgList
                             .addAll(roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData());
                     }
-                    if (o.getRoleType() == 6) {
+                    if (Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())) {
                         orgList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                     }
-                    if (o.getRoleType() == 4) {
+                    if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
                         List<OrgUnit> orgUnitList = dynamicRoleMemberService
                             .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
                         for (OrgUnit orgUnit : orgUnitList) {

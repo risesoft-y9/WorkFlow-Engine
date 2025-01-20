@@ -51,17 +51,18 @@ public class SignDeptSecretary extends AbstractDynamicRoleMember {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(officeDoneInfo.getProcessSerialNumber(), "0");
             for (SignDeptInfo signDeptInfo : list) {
-                if (position.getDn().split(",o=")[0].contains(signDeptInfo.getDeptName())) {// 排除本司局
+                // 排除本司局
+                if (position.getDn().split(",o=")[0].contains(signDeptInfo.getDeptName())) {
                     continue;
                 }
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, signDeptInfo.getDeptId()).getData();
                 if (orgUnit != null) {
                     orgUnitList.add(orgUnit);
-                    List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getId(),
-                        DepartmentPropCategoryEnum.SECRETARY.getValue(), false).getData();
-                    for (OrgUnit leader : leaders) {
-                        leader.setParentId(orgUnit.getId());
-                        orgUnitList.add(leader);
+                    List<OrgUnit> secretaryList = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getId(),
+                        DepartmentPropCategoryEnum.SECRETARY.getValue(), true).getData();
+                    for (OrgUnit secretary : secretaryList) {
+                        secretary.setParentId(orgUnit.getId());
+                        orgUnitList.add(secretary);
                     }
                 }
             }
