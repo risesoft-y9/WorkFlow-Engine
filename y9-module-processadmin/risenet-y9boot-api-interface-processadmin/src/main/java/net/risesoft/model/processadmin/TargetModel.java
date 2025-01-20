@@ -1,6 +1,7 @@
 package net.risesoft.model.processadmin;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import lombok.Data;
 
@@ -68,4 +69,21 @@ public class TargetModel implements Serializable {
      * 节点绑定的角色信息
      */
     private String roleNames;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TargetModel that = (TargetModel)o;
+        return Objects.equals(taskDefKey, that.taskDefKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskDefKey);
+    }
 }

@@ -10,13 +10,15 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 当前人所在委办局下面的综合部
+ * 当前人/流程启动人所在委办局下面的综合部
  *
  * @author qinman
  * @author zhangchongjie
@@ -30,13 +32,18 @@ public class CurrentDeptExtend extends AbstractDynamicRoleMember {
 
     private final OrgUnitApi orgUnitApi;
 
+    private final RuntimeApi runtimeApi;
+
     @Override
-    public Department getDepartment() {
+    public Department getDepartment(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        OrgUnit bureau = orgUnitApi.getBureau(tenantId, user.getParentId()).getData();
         Department department = null;
+        if (StringUtils.isNotBlank(processInstanceId)) {
+            ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
+            orgUnitId = processInstance.getStartUserId();
+        }
+        OrgUnit bureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
         for (Department datum : departmentApi.listRecursivelyByParentId(tenantId, bureau.getId()).getData()) {
             if (StringUtils.isNotBlank(datum.getDeptGivenName()) && "综合部".equals(datum.getDeptGivenName())) {
                 department = datum;
@@ -48,7 +55,14 @@ public class CurrentDeptExtend extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList() {
         List<OrgUnit> orgUnitList = new ArrayList<>();
-        orgUnitList.add(getDepartment());
+        orgUnitList.add(getDepartment(""));
+        return orgUnitList;
+    }
+
+    @Override
+    public List<OrgUnit> getOrgUnitList(String processInstanceId) {
+        List<OrgUnit> orgUnitList = new ArrayList<>();
+        orgUnitList.add(getDepartment(processInstanceId));
         return orgUnitList;
     }
 
