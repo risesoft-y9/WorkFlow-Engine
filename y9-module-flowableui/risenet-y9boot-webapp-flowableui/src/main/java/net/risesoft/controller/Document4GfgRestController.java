@@ -205,6 +205,9 @@ public class Document4GfgRestController {
                             try {
                                 buttonOperationApi.specialComplete(Y9LoginUserHolder.getTenantId(),
                                     Y9LoginUserHolder.getPositionId(), t.getId(), "减签后的特殊办结");
+                                sdd.setStatus(SignDeptDetailStatusEnum.DELETED_DONE.getValue());
+                                signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(),
+                                    Y9LoginUserHolder.getPositionId(), sdd);
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
