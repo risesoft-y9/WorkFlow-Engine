@@ -78,6 +78,7 @@ public class Task4ActRuDetaillService {
                 actRuDetailModel.setTaskId(taskEntity.getId());
                 actRuDetailModel.setStarted(true);
                 actRuDetailModel.setEnded(false);
+                actRuDetailModel.setDeleted(false);
                 actRuDetailModel
                     .setStartTime(list.isEmpty() ? sdf.format(new Date()) : list.get(0).get("START_TIME_").toString());
                 actRuDetailApi.saveOrUpdate(tenantId, actRuDetailModel);
@@ -136,6 +137,7 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setTaskId(taskEntity.getId());
                     actRuDetailModel.setStarted(true);
                     actRuDetailModel.setEnded(false);
+                    actRuDetailModel.setDeleted(false);
                     actRuDetailModel.setStartTime(list.get(0).get("START_TIME_").toString());
                     if (assignee.equals(userId)) {
                         actRuDetailModel.setStatus(0);
@@ -190,6 +192,7 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setTaskId(taskEntity.getId());
                     actRuDetailModel.setStarted(true);
                     actRuDetailModel.setEnded(false);
+                    actRuDetailModel.setDeleted(false);
                     actRuDetailModel.setStatus(1);
                     actRuDetailModel.setStartTime(list.get(0).get("START_TIME_").toString());
                     actRuDetailApi.saveOrUpdate(tenantId, actRuDetailModel);
@@ -248,6 +251,7 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setTaskId(taskEntity.getId());
                     actRuDetailModel.setStarted(true);
                     actRuDetailModel.setEnded(false);
+                    actRuDetailModel.setDeleted(false);
                     actRuDetailModel.setStartTime(list.get(0).get("START_TIME_").toString());
                     if (ardList.isEmpty()) {
                         names.append(orgUnit.getName());

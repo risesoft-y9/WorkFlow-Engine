@@ -520,6 +520,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
             oldActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
             oldActRuDetail.setStarted(actRuDetail.isStarted());
+            oldActRuDetail.setDeleted(false);
             oldActRuDetail.setDueDate(processParam.getDueDate());
             oldActRuDetail.setProcessDefinitionId(actRuDetail.getProcessDefinitionId());
             oldActRuDetail.setAssigneeName(actRuDetail.getAssigneeName());
@@ -551,6 +552,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         newActRuDetail.setStatus(actRuDetail.getStatus());
         newActRuDetail.setTaskId(actRuDetail.getTaskId());
         newActRuDetail.setStarted(actRuDetail.isStarted());
+        newActRuDetail.setDeleted(false);
         newActRuDetail.setEnded(actRuDetail.isEnded());
         newActRuDetail.setItemId(actRuDetail.getItemId());
         newActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
