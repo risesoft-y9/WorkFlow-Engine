@@ -76,7 +76,7 @@ public class SignDeptDetailModel implements Serializable {
     private String deptManager;
 
     /**
-     * 状态:1是在办、2是正常办结、3是退回办结、4是减签
+     * 状态:1是在办、2是正常办结、3是退回办结、4是减签、5是减签后的特殊办结
      */
     private Integer status;
 

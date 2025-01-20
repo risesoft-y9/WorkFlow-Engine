@@ -19,7 +19,9 @@ public enum SignDeptDetailStatusEnum {
     /** 退回办结 */
     ROLLBACK(3, "退回办结"),
     /** 减签 */
-    DELETED(4, "减签");
+    DELETED(4, "减签"),
+    /** 减签后办结 */
+    DELETED_DONE(5, "减签后办结");
 
     private final Integer value;
     private final String name;
