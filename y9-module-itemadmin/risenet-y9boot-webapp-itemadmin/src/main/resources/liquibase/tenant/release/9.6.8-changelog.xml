@@ -505,5 +505,57 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="1704700547152-28" author="mengjuhua" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_PREWORK_INFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="前期工作事项信息表" tableName="FF_PREWORK_INFO">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="QQSXNAME" remarks="前期工作事项名称" type="VARCHAR(255)"/>
+            <column name="STARTTIME" remarks="开始时间" type="VARCHAR(50)"/>
+            <column name="ENDTIME" remarks="结束时间(收文：预计结束时间)" type="VARCHAR(50)"/>
+            <column name="QBH" remarks="签报号" type="VARCHAR(255)"/>
+            <column name="WTPGWH" remarks="委托评估文号" type="VARCHAR(255)"/>
+            <column name="BLJG" remarks="办理结果" type="VARCHAR(500)"/>
+            <column name="INPUTPERSON" remarks="录入人" type="VARCHAR(255)"/>
+            <column name="RECORDTIME" remarks="录入时间" type="VARCHAR(50)"/>
+            <column name="INPUTPERSONID" remarks="录入人ID" type="VARCHAR(50)"/>
+            <column name="STATUS" remarks="事项状态(0,不计算督办时限,1:计算)" type="VARCHAR(10)"/>
+            <column name="ADDPERSON" remarks="添加人的id" type="VARCHAR(50)"/>
+            <column name="ADDPERSONNAME" remarks="添加人的姓名" type="VARCHAR(50)"/>
+            <column name="SXTYPE" remarks="事项类型（0：办文 1：收文）" type="VARCHAR(10)"/>
+            <column name="SYNC_FLAG" remarks="是否已同步过0未同步过，1已同步过" type="VARCHAR(10)"/>
+            <column name="REALENDTIME" remarks="实际结束时间（收文用）" type="VARCHAR(50)"/>
+            <column name="MASTERQQSXUID" remarks="记录下并案时主件添加的工作事项的id" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-29" author="mengjuhua" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_AFTERWORK_INFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="核稿后工作事项信息表" tableName="FF_AFTERWORK_INFO">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="HGHSXNAME" remarks="核稿后工作事项" type="VARCHAR(255)"/>
+            <column name="STARTTIME" remarks="开始时间" type="VARCHAR(50)"/>
+            <column name="ENDTIME" remarks="结束时间" type="VARCHAR(50)"/>
+            <column name="BLJG" remarks="办理结果" type="VARCHAR(500)"/>
+            <column name="INPUTPERSON" remarks="录入人" type="VARCHAR(255)"/>
+            <column name="RECORDTIME" remarks="录入时间" type="VARCHAR(50)"/>
+            <column name="INPUTPERSONID" remarks="录入人ID" type="VARCHAR(50)"/>
+            <column name="STATUS" remarks="事项状态(0,不计算督办时限,1:计算)" type="VARCHAR(10)"/>
+            <column name="ADDPERSON" remarks="添加人的id" type="VARCHAR(50)"/>
+            <column name="ADDPERSONNAME" remarks="添加人的姓名" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>
