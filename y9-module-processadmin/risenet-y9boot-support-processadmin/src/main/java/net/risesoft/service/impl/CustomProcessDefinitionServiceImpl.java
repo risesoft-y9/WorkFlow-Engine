@@ -597,6 +597,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             TargetModel targetModel = new TargetModel();
             targetModel.setTaskDefKey(activity.getId());
             targetModel.setTaskDefName(activity.getName());
+            System.out.println(activity.getName() + ":" + activity.getParentContainer());
             if (activity instanceof UserTask) {
                 UserTask userTask = (UserTask)activity;
                 if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
@@ -625,19 +626,19 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                 }
                 // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-                /*List<FlowElement> subProcessListCache = (List<FlowElement>) subProcess.getFlowElements();
+                List<FlowElement> subProcessListCache = (List<FlowElement>)subProcess.getFlowElements();
                 List<FlowElement> subProcessList = new ArrayList<>();
                 if (!subProcessListCache.isEmpty()) {
                     subProcessList.addAll(subProcessListCache);
                 }
                 subProcessList.removeIf(e -> e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
-                        || e instanceof SequenceFlow);
+                    || e instanceof SequenceFlow);
                 for (FlowElement subProcessFe : subProcessList) {
                     TargetModel subTargetModel = new TargetModel();
                     subTargetModel.setTaskDefKey(subProcessFe.getId());
                     subTargetModel.setTaskDefName(subProcessFe.getName() + "[子]");
                     if (subProcessFe instanceof UserTask) {
-                        UserTask userTask = (UserTask) subProcessFe;
+                        UserTask userTask = (UserTask)subProcessFe;
                         if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                             subTargetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                         } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
@@ -646,12 +647,14 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             subTargetModel.setMultiInstance(SysVariables.COMMON);
                         }
                     }
-                    list.add(subTargetModel);
-                }*/
+                    if (!list.contains(subTargetModel)) {
+                        list.add(subTargetModel);
+                    }
+                }
             }
-            // if (!(activity instanceof SubProcess)) {// 子流程不加入list
-            list.add(targetModel);
-            // }
+            if (!list.contains(targetModel)) {
+                list.add(targetModel);
+            }
         }
         TargetModel targetModel = new TargetModel();
         targetModel.setTaskDefKey("");
