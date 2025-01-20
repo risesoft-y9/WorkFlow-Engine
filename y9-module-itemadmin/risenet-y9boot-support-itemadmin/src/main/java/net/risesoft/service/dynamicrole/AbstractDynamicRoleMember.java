@@ -31,6 +31,10 @@ public abstract class AbstractDynamicRoleMember {
         return null;
     }
 
+    public Department getDepartment(String processInstanceId) {
+        return null;
+    }
+
     public Organization getOrg() {
         return null;
     }
