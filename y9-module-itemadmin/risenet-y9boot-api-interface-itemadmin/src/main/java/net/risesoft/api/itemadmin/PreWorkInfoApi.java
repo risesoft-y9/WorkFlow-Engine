@@ -28,6 +28,7 @@ public interface PreWorkInfoApi {
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
+    @PostMapping("/delPreWork")
     Y9Result<Object> delPreWork(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
