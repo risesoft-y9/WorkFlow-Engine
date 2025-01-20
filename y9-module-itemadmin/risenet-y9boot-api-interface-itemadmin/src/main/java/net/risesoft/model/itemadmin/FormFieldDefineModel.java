@@ -34,4 +34,14 @@ public class FormFieldDefineModel implements Serializable {
      */
     private String columnName;
 
+    /**
+     * 表名
+     */
+    private String tableName;
+
+    /**
+     * 开启查询条件
+     */
+    private String querySign;
+
 }
