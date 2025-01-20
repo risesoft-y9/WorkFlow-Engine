@@ -20,15 +20,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
+import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
+import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.itemadmin.Y9FormOptionValueModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -36,6 +40,7 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.PersonExt;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -66,6 +71,10 @@ public class Y9FormRestController {
     private final OptionClassApi optionClassApi;
 
     private final DepartmentApi departmentApi;
+
+    private final ItemApi itemApi;
+
+    private final RepositoryApi repositoryApi;
 
     /**
      * 删除子表单数据
@@ -191,6 +200,22 @@ public class Y9FormRestController {
     }
 
     /**
+     * 获取事项绑定的表单
+     *
+     * @param itemId 事项id
+     * @return Y9Result<List < BindFormModel>>
+     */
+    @GetMapping(value = "/getFormBindByItemId")
+    public Y9Result<List<BindFormModel>> getFormBindByItemId(@RequestParam @NotBlank String itemId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel processDefinitionModel =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        return formDataApi.findFormItemBind(tenantId, itemId, processDefinitionModel.getId(), "");
+    }
+
+    /**
      * 获取表单数据
      *
      * @param formId 表单id
@@ -215,6 +240,18 @@ public class Y9FormRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return formDataApi.getFormField(tenantId, itemId);
 
+    }
+
+    /**
+     * 根据formId获取表单字段
+     *
+     * @param formId 表单id
+     * @return Y9Result<List < FormFieldDefineModel>>
+     */
+    @GetMapping(value = "/getFormFieldByFormId")
+    public Y9Result<List<FormFieldDefineModel>> getFormFieldByFormId(@RequestParam @NotBlank String formId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return formDataApi.getFormFieldDefine(tenantId, formId);
     }
 
     /**

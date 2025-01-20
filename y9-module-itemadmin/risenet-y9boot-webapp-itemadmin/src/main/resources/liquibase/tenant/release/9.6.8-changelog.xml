@@ -484,5 +484,26 @@
             <column name="NOPERMITSZYJ" type="VARCHAR(50)" remarks="不予行政许可司长意见的权限控制"/>
         </addColumn>
     </changeSet>
+    <changeSet id="1704700547152-27" author="mengjuhua" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_CUSTOM_VIEW"/>
+            </not>
+        </preConditions>
+        <createTable remarks="自定义视图表" tableName="FF_CUSTOM_VIEW">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="FIELDID" remarks="字段id" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+            <column name="VIEWTYPE" remarks="视图类型" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>

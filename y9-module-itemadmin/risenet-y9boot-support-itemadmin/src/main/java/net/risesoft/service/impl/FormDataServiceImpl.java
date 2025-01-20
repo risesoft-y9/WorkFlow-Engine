@@ -295,6 +295,10 @@ public class FormDataServiceImpl implements FormDataService {
                 model.setFormCtrlName(formElement.getFieldName());
                 model.setColumnName(formElement.getFieldName());
                 model.setDisChinaName(formElement.getFieldCnName());
+                model.setQuerySign(formElement.getQuerySign());
+                model.setTableName(formElement.getTableName());
+                model.setId(formElement.getId());
+                model.setFormId(formElement.getFormId());
                 if (!list.contains(model)) {
                     list.add(model);
                 }

@@ -15,6 +15,17 @@ import lombok.Data;
 public class FormFieldDefineModel implements Serializable {
 
     private static final long serialVersionUID = -289965118765346868L;
+
+    /**
+     * 字段id
+     */
+    private String id;
+
+    /**
+     * 表单id
+     */
+    private String formId;
+
     /**
      * 字段类型
      */
@@ -33,5 +44,15 @@ public class FormFieldDefineModel implements Serializable {
      * 表列名
      */
     private String columnName;
+
+    /**
+     * 表名
+     */
+    private String tableName;
+
+    /**
+     * 开启查询条件
+     */
+    private String querySign;
 
 }
