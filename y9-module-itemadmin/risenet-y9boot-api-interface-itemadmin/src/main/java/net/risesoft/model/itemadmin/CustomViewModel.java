@@ -22,6 +22,9 @@ public class CustomViewModel implements Serializable {
     // 事项Id
     private String itemId;
 
+    // 表单Id
+    private String formId;
+
     // 视图类型
     private String viewType;
 
