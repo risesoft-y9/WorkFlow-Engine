@@ -31,6 +31,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
@@ -128,6 +129,8 @@ public class AsyncHandleService {
 
     private final SignDeptDetailService signDeptDetailService;
 
+    private final ProcessDefinitionApi processDefinitionApi;
+
     /**
      * 异步发送
      *
@@ -188,6 +191,59 @@ public class AsyncHandleService {
         }
     }
 
+    public void forwarding4Gfg(String processInstanceId, ProcessParam processParam, String sponsorHandle,
+        String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables,
+        List<String> userList) throws Exception {
+        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
+            processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+        if (null != itemTaskConf && itemTaskConf.getSignTask()) {
+            sponsorHandle = "true";
+        }
+        // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
+        if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
+            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            for (TaskModel taskNext : taskNextList1) {
+                if (!(taskId.equals(taskNext.getId()))) {
+                    taskApi.complete(tenantId, taskNext.getId());
+                    historictaskApi.setTenantId(tenantId, taskNext.getId());
+                }
+            }
+        }
+        /**
+         * 主办设置类型，2为部门节点，3为人员节点
+         */
+        String type = "";
+        /**
+         * 主办部门或人员的id
+         */
+        String sponsor = "";
+        if (StringUtils.isNotBlank(sponsorGuid)) {
+            type = sponsorGuid.substring(0, 1);
+            sponsor = sponsorGuid.substring(2);
+            if (type.equals(String.valueOf(ItemPrincipalTypeEnum.DEPT.getValue()))) {
+                /**
+                 * 设置主办部门下的第一个人员为主办人
+                 */
+                sponsorGuid = this.getSponsorPosition("", sponsor);
+            } else {
+                sponsorGuid = sponsor;
+            }
+        }
+        processParam.setSended("true");
+        processParam.setSponsorGuid(sponsorGuid);
+        processParamService.saveOrUpdate(processParam);
+        taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
+
+        // 保存流程信息到ES
+        process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
+
+        this.forwardingHandle(tenantId, orgUnitId, taskId, task.getExecutionId(), processInstanceId, flowElementModel,
+            sponsorGuid, processParam, userList);
+    }
+
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
         String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables,
         List<String> userList) throws Exception {
@@ -243,61 +299,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
 
-        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, flowElementModel, sponsorGuid,
-            processParam, userList);
-    }
-
-    public void forwarding4Gfg(String processInstanceId, ProcessParam processParam, String sponsorHandle,
-        String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables,
-        List<String> userList) throws Exception {
-        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
-            processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
-        if (null != itemTaskConf && itemTaskConf.getSignTask()) {
-            sponsorHandle = "true";
-        }
-        // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
-        if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            for (TaskModel taskNext : taskNextList1) {
-                if (!(taskId.equals(taskNext.getId()))) {
-                    taskApi.complete(tenantId, taskNext.getId());
-                    historictaskApi.setTenantId(tenantId, taskNext.getId());
-                }
-            }
-        }
-        /**
-         * 主办设置类型，2为部门节点，3为人员节点
-         */
-        String type = "";
-        /**
-         * 主办部门或人员的id
-         */
-        String sponsor = "";
-        if (StringUtils.isNotBlank(sponsorGuid)) {
-            type = sponsorGuid.substring(0, 1);
-            sponsor = sponsorGuid.substring(2);
-            if (type.equals(String.valueOf(ItemPrincipalTypeEnum.DEPT.getValue()))) {
-                /**
-                 * 设置主办部门下的第一个人员为主办人
-                 */
-                sponsorGuid = this.getSponsorPosition("", sponsor);
-            } else {
-                sponsorGuid = sponsor;
-            }
-        }
-        processParam.setSended("true");
-        processParam.setSponsorGuid(sponsorGuid);
-        processParamService.saveOrUpdate(processParam);
-        taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
-
-        // 保存流程信息到ES
-        process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
-
-        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, flowElementModel, sponsorGuid,
-            processParam, userList);
+        this.forwardingHandle(tenantId, orgUnitId, taskId, task.getExecutionId(), processInstanceId, flowElementModel,
+            sponsorGuid, processParam, userList);
     }
 
     /**
@@ -312,8 +315,8 @@ public class AsyncHandleService {
      */
     @Async
     public void forwardingHandle(final String tenantId, final String orgUnitId, final String taskId,
-        final String processInstanceId, final FlowElementModel flowElementModel, final String sponsorGuid,
-        final ProcessParam processParam, List<String> userList) {
+        final String executionId, final String processInstanceId, final FlowElementModel flowElementModel,
+        final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -346,7 +349,16 @@ public class AsyncHandleService {
                         vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
                     }
                 }
-                variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
+                Boolean isSubProcessChildNode = processDefinitionApi
+                    .isSubProcessChildNode(tenantId, taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
+                    .getData();
+                if (isSubProcessChildNode) {// 子流程节点，只更新对应的子流程任务变量
+                    if (executionId.equals(taskNext.getExecutionId())) {
+                        variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
+                    }
+                } else {
+                    variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
+                }
                 if (isSubProcess) {
                     OrgUnit bureau = orgUnitApi.getBureau(tenantId, taskNext.getAssignee()).getData();
                     SignDeptDetail signDeptDetail = new SignDeptDetail();
