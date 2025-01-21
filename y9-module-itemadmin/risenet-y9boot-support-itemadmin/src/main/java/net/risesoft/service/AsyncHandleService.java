@@ -31,7 +31,6 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
@@ -128,8 +127,6 @@ public class AsyncHandleService {
     private final TaskRelatedService taskRelatedService;
 
     private final SignDeptDetailService signDeptDetailService;
-
-    private final ProcessDefinitionApi processDefinitionApi;
 
     /**
      * 异步发送
@@ -240,8 +237,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
 
-        this.forwardingHandle(tenantId, orgUnitId, taskId, task.getExecutionId(), processInstanceId, flowElementModel,
-            sponsorGuid, processParam, userList);
+        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, flowElementModel, sponsorGuid,
+            processParam, userList);
     }
 
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
@@ -299,8 +296,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
 
-        this.forwardingHandle(tenantId, orgUnitId, taskId, task.getExecutionId(), processInstanceId, flowElementModel,
-            sponsorGuid, processParam, userList);
+        this.forwardingHandle(tenantId, orgUnitId, taskId, processInstanceId, flowElementModel, sponsorGuid,
+            processParam, userList);
     }
 
     /**
@@ -315,8 +312,8 @@ public class AsyncHandleService {
      */
     @Async
     public void forwardingHandle(final String tenantId, final String orgUnitId, final String taskId,
-        final String executionId, final String processInstanceId, final FlowElementModel flowElementModel,
-        final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
+        final String processInstanceId, final FlowElementModel flowElementModel, final String sponsorGuid,
+        final ProcessParam processParam, List<String> userList) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -349,16 +346,7 @@ public class AsyncHandleService {
                         vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
                     }
                 }
-                Boolean isSubProcessChildNode = processDefinitionApi
-                    .isSubProcessChildNode(tenantId, taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
-                    .getData();
-                if (isSubProcessChildNode) {// 子流程节点，只更新对应的子流程任务变量
-                    if (executionId.equals(taskNext.getExecutionId())) {
-                        variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
-                    }
-                } else {
-                    variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
-                }
+                variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
                 if (isSubProcess) {
                     OrgUnit bureau = orgUnitApi.getBureau(tenantId, taskNext.getAssignee()).getData();
                     SignDeptDetail signDeptDetail = new SignDeptDetail();
