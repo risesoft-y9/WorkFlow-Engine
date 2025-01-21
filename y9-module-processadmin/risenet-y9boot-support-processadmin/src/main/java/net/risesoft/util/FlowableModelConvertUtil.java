@@ -130,24 +130,27 @@ public class FlowableModelConvertUtil {
     }
 
     public static HistoricTaskInstanceModel historicTaskInstance2Model(HistoricTaskInstance hti) {
-        HistoricTaskInstanceModel histim = new HistoricTaskInstanceModel();
-        histim.setId(hti.getId());
-        histim.setName(hti.getName());
-        histim.setAssignee(hti.getAssignee());
-        histim.setOwner(hti.getOwner());
-        histim.setClaimTime(hti.getClaimTime());
-        histim.setDeleteReason(hti.getDeleteReason());
-        histim.setDescription(hti.getDescription());
-        histim.setDueDate(hti.getDueDate());
-        histim.setStartTime(hti.getCreateTime());
-        histim.setEndTime(hti.getEndTime());
-        histim.setExecutionId(hti.getExecutionId());
-        histim.setParentTaskId(hti.getParentTaskId());
-        histim.setProcessDefinitionId(hti.getProcessDefinitionId());
-        histim.setProcessInstanceId(hti.getProcessInstanceId());
-        histim.setTaskDefinitionKey(hti.getTaskDefinitionKey());
-        histim.setTenantId(hti.getTenantId());
-        histim.setScopeType(hti.getScopeType());
+        HistoricTaskInstanceModel histim = null;
+        if (hti != null) {
+            histim = new HistoricTaskInstanceModel();
+            histim.setId(hti.getId());
+            histim.setName(hti.getName());
+            histim.setAssignee(hti.getAssignee());
+            histim.setOwner(hti.getOwner());
+            histim.setClaimTime(hti.getClaimTime());
+            histim.setDeleteReason(hti.getDeleteReason());
+            histim.setDescription(hti.getDescription());
+            histim.setDueDate(hti.getDueDate());
+            histim.setStartTime(hti.getCreateTime());
+            histim.setEndTime(hti.getEndTime());
+            histim.setExecutionId(hti.getExecutionId());
+            histim.setParentTaskId(hti.getParentTaskId());
+            histim.setProcessDefinitionId(hti.getProcessDefinitionId());
+            histim.setProcessInstanceId(hti.getProcessInstanceId());
+            histim.setTaskDefinitionKey(hti.getTaskDefinitionKey());
+            histim.setTenantId(hti.getTenantId());
+            histim.setScopeType(hti.getScopeType());
+        }
         return histim;
     }
 
