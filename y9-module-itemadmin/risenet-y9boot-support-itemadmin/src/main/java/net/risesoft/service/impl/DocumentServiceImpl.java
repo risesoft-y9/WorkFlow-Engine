@@ -462,9 +462,25 @@ public class DocumentServiceImpl implements DocumentService {
         itemId = processParam.getItemId();
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         if (!taskList.isEmpty()) {
-            TaskModel taskTemp = taskList.get(0);
-            taskDefinitionKey = taskTemp.getTaskDefinitionKey();
-            taskId = taskTemp.getId();
+            boolean hasTaskId = false;
+            for (TaskModel task : taskList) {// 获取同一个委办局下的任务,子流程收回等
+                if (StringUtils.isBlank(task.getAssignee())) {
+                    continue;
+                }
+                OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+                OrgUnit taskBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+                if (currentBureau.getId().equals(taskBureau.getId())) {
+                    taskDefinitionKey = task.getTaskDefinitionKey();
+                    taskId = task.getId();
+                    hasTaskId = true;
+                    break;
+                }
+            }
+            if (!hasTaskId) {// 找不到同一个委办局下的任务， 获取第一个任务
+                TaskModel taskTemp = taskList.get(0);
+                taskDefinitionKey = taskTemp.getTaskDefinitionKey();
+                taskId = taskTemp.getId();
+            }
         } else {
             // callActivity
             List<HistoricActivityInstanceModel> haiList =
@@ -607,21 +623,6 @@ public class DocumentServiceImpl implements DocumentService {
         model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
         model = this.menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
         return model;
-    }
-
-    @Override
-    public List<ItemButtonModel> getButtons(String taskId) {
-        DocumentDetailModel model = new DocumentDetailModel();
-        String itemId, processDefinitionId, taskDefinitionKey;
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        String processInstanceId = task.getProcessInstanceId();
-        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        itemId = processParam.getItemId();
-        processDefinitionId = task.getProcessDefinitionId();
-        taskDefinitionKey = task.getTaskDefinitionKey();
-        model = this.menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
-        return model.getButtonList();
     }
 
     /*
@@ -905,6 +906,21 @@ public class DocumentServiceImpl implements DocumentService {
         for (Department dept : deptList) {
             this.getAllPosition(list, dept.getId());
         }
+    }
+
+    @Override
+    public List<ItemButtonModel> getButtons(String taskId) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String itemId, processDefinitionId, taskDefinitionKey;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        String processInstanceId = task.getProcessInstanceId();
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        itemId = processParam.getItemId();
+        processDefinitionId = task.getProcessDefinitionId();
+        taskDefinitionKey = task.getTaskDefinitionKey();
+        model = this.menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
+        return model.getButtonList();
     }
 
     @Override
