@@ -1,9 +1,8 @@
 plugins {
-    id("net.risesoft.y9.conventions-war")
-    id("net.risesoft.y9.lombok")
-    id("net.risesoft.y9.docker")
-    id("net.risesoft.y9.smart-doc")
-    alias(y9libs.plugins.org.springframework.boot)
+    alias(libs.plugins.y9.conventions.war)
+    alias(libs.plugins.y9.lombok)
+    alias(libs.plugins.y9.docker)
+    alias(libs.plugins.y9.smart.doc)
 }
 
 dependencies {
@@ -40,14 +39,17 @@ dependencies {
     api(libs.poi.scratchpad)
     api(libs.graph.java.client)
 
+    compileOnly("jakarta.servlet:jakarta.servlet-api")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 }
 
 description = "risenet-y9boot-webapp-flowableui"
 
 val finalName = "flowableUI"
-jib.container.appRoot = "/usr/local/tomcat/webapps/${finalName}"
+y9Docker {
+    appName = finalName
+}
 
-tasks.bootWar {
-    archiveFileName.set("${finalName}.${archiveExtension.get()}")
+y9War {
+    archiveBaseName = finalName
 }

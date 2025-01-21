@@ -1,11 +1,14 @@
 plugins {
-    id("net.risesoft.y9.conventions-java")
-    id("net.risesoft.y9.lombok")
-    /*alias(libs.plugins.y9.aspectj)*/
-    id("net.risesoft.y9.smart-doc")
+    alias(libs.plugins.y9.conventions.java)
+    alias(libs.plugins.y9.aspectj)
+    alias(libs.plugins.y9.lombok)
+    alias(libs.plugins.y9.smart.doc)
 }
 
 dependencies {
+    api(platform(libs.y9.digitalbase.bom))
+    api(platform(libs.y9.digitalbase.dependencies))
+
     api(project(":y9-module-itemadmin:risenet-y9boot-api-interface-itemadmin"))
     api(project(":y9-module-itemadmin:risenet-y9boot-support-itemadmin-jpa-repository"))
     api(project(":y9-module-processadmin:risenet-y9boot-api-feignclient-processadmin"))

@@ -1,13 +1,11 @@
 [versions]
-y9-plugin = "9.7.0-03"
+y9-plugin = "9.7.0-08"
 y9-digitalbase = "9.7.0-SNAPSHOT"
 
 flowable-spring-boot = "7.1.0"
 
 # database
 com-oracle-database-jdbc-ojdbc11 = "21.9.0.0"
-com-dameng-dmdialect-for-hibernate5-v6 = "8.1.3.140"
-com-dameng-dmjdbcdriver18 = "8.1.3.140"
 kingbase-hibernate-dialect = "5.4.6.Finaldialect"
 kingbase-hibernate-jpa-api = "2.1.0.Final"
 kingbase-kingbase8 = "8.6.1"
@@ -18,11 +16,7 @@ com-alibaba-fastjson = "2.0.53"
 com-belerweb-pinyin4j = "2.5.1"
 com-deepoove-poi-tl = "1.12.1"
 com-github-alexheretic-fluent = "2.0"
-com-google-guava-guava = "33.3.1-jre"
 com-jxl-jxl = "2.6"
-commons-codec-commons-codec = "1.17.1"
-commons-httpclient-commons-httpclient = "3.1"
-commons-io-commons-io = "2.18.0"
 net-coobird-thumbnailator = "0.4.20"
 org-jodd-jodd-mail = "7.1.0"
 
@@ -32,26 +26,26 @@ cn-hutool-hutool-http = "5.8.23"
 com-aspose-aspose-cad = "23.3"
 com-googlecode-juniversalchardet-juniversalchardet = "1.0.3"
 com-googlecode-concurrentlinkedhashmap-concurrentlinkedhashmap-lru = "1.4.2"
-com-github-jai-imageio = "1.4.0" 
+com-github-jai-imageio = "1.4.0"
 com-github-junrar-junrar = "7.5.4"
 com-itextpdf-itextpdf = "5.5.13.3"
 com-thoughtworks-xstream-xstream = "1.4.20"
 commons-cli-commons-cli = "1.2"
 commons-net-commons-net = "3.11.1"
-fr-opensagres-xdocreport = "1.0.6" 
+fr-opensagres-xdocreport = "1.0.6"
 io-mola-galimatias-galimatias = "0.2.1"
 javax-media-jai-core = "1.1.3"
-net-sf-sevenzipjbinding = "16.02-2.01" 
+net-sf-sevenzipjbinding = "16.02-2.01"
 net-sourceforge-jchardet-jchardet = "1.0"
 org-jodconverter-jodconverter-local = "4.4.6"
-org-apache-poi-poi = "5.2.3" 
-org-apache-poi-poi-ooxml-schemas = "4.1.2"  
+org-apache-poi-poi = "5.2.3"
+org-apache-poi-poi-ooxml-schemas = "4.1.2"
 org-apache-pdfbox-jbig2-imageio = "3.0.4"
-org-apache-pdfbox-pdfbox = "2.0.27" 
+org-apache-pdfbox-pdfbox = "2.0.27"
 org-bytedeco-javacv = "1.5.2"
 org-bytedeco-ffmpeg = "4.2.1-1.5.2"
 org-bytedeco-javacpp = "1.5.2"
-org-bytedeco-openblas = "0.3.6-1.5.1"
+org-bytedeco-openblas = "0.3.28-1.5.11"
 org-bytedeco-opencv = "4.1.2-1.5.2"
 org-redisson-redisson = "3.2.0"
 org-rocksdb-rocksdbjni = "5.17.2"
@@ -65,17 +59,12 @@ y9-digitalbase-dependencies = { module = "net.risesoft:y9-digitalbase-dependenci
 flowable-spring-boot-starter-process = { module = "org.flowable:flowable-spring-boot-starter-process", version.ref = "flowable-spring-boot" }
 
 # database
-com-dameng-dmdialect-for-hibernate5-v6 = { module = "com.dameng:DmDialect-for-hibernate5.6", version.ref = "com-dameng-dmdialect-for-hibernate5-v6" }
-com-dameng-dmjdbcdriver18 = { module = "com.dameng:DmJdbcDriver18", version.ref = "com-dameng-dmjdbcdriver18" }
 com-oracle-database-jdbc-ojdbc11 = { module = "com.oracle.database.jdbc:ojdbc11", version.ref = "com-oracle-database-jdbc-ojdbc11" }
 kingbase-hibernate-dialect = { module = "cn.com.kingbase:hibernate-dialect", version.ref = "kingbase-hibernate-dialect" }
 kingbase-hibernate-jpa-api = { module = "cn.com.kingbase:hibernate-jpa-api", version.ref = "kingbase-hibernate-jpa-api" }
 kingbase-kingbase8 = { module = "cn.com.kingbase:kingbase8", version.ref = "kingbase-kingbase8" }
 
 com-baidu-ueditor = { module = "cn.songxinqiang:com.baidu.ueditor", version.ref = "cn-songxinqiang-com-baidu-ueditor" }
-com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-guava" }
-commons-codec-commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec-commons-codec" }
-commons-io-commons-io = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
 graph-java-client = { module = "cn.wps.yun:graph-java-client", version.ref = "cn-wps-yun-graph-java-client" }
 fastjson = { module = "com.alibaba:fastjson", version.ref = "com-alibaba-fastjson" }
 fluent = { module = "com.github.alexheretic:fluent", version.ref = "com-github-alexheretic-fluent" }
@@ -94,8 +83,8 @@ org-apache-poi-xwpf-converter-core = { module = "fr.opensagres.xdocreport:org.ap
 org-apache-poi-xwpf-converter-xhtml = { module = "fr.opensagres.xdocreport:org.apache.poi.xwpf.converter.xhtml", version.ref = "fr-opensagres-xdocreport" }
 poi = { module = "org.apache.poi:poi", version.ref = "org-apache-poi-poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "org-apache-poi-poi" }
-poi-ooxml-schemas = { module = "org.apache.poi:poi-ooxml-schemas", version.ref = "org-apache-poi-poi-ooxml-schemas" } 
-poi-scratchpad = { module = "org.apache.poi:poi-scratchpad", version.ref = "org-apache-poi-poi" } 
+poi-ooxml-schemas = { module = "org.apache.poi:poi-ooxml-schemas", version.ref = "org-apache-poi-poi-ooxml-schemas" }
+poi-scratchpad = { module = "org.apache.poi:poi-scratchpad", version.ref = "org-apache-poi-poi" }
 sevenzipjbinding = { module = "net.sf.sevenzipjbinding:sevenzipjbinding", version.ref = "net-sf-sevenzipjbinding" }
 sevenzipjbinding-all-platforms = { module = "net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms", version.ref = "net-sf-sevenzipjbinding" }
 redisson = { module = "org.redisson:redisson", version.ref = "org-redisson-redisson" }

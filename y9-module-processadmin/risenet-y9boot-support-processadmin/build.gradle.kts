@@ -1,8 +1,9 @@
 plugins {
-    id("net.risesoft.y9.conventions-java")
-    id("net.risesoft.y9.lombok")
-    id("net.risesoft.y9.aspectj")
-    id("net.risesoft.y9.smart-doc")
+
+    alias(libs.plugins.y9.conventions.java)
+    alias(libs.plugins.y9.aspectj)
+    alias(libs.plugins.y9.lombok)
+    alias(libs.plugins.y9.smart.doc)
 }
 
 dependencies {

@@ -2,7 +2,6 @@ plugins {
     id("net.risesoft.y9.conventions-war")
     id("net.risesoft.y9.lombok")
     id("net.risesoft.y9.docker")
-    alias(y9libs.plugins.org.springframework.boot)
 }
 
 dependencies {
@@ -18,14 +17,17 @@ dependencies {
     api("net.risesoft:risenet-y9boot-common-nacos")
     api("org.apache.commons:commons-pool2")
 
+    compileOnly("jakarta.servlet:jakarta.servlet-api")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 }
 
 description = "risenet-y9boot-webapp-itemadmin"
 
 val finalName = "itemAdmin"
-jib.container.appRoot = "/usr/local/tomcat/webapps/${finalName}"
+y9Docker {
+    appName = finalName
+}
 
-tasks.bootWar {
-    archiveFileName.set("${finalName}.${archiveExtension.get()}")
+y9War {
+    archiveBaseName = finalName
 }

@@ -1,10 +1,9 @@
 plugins {
-    id("net.risesoft.y9.conventions-war")
-    id("net.risesoft.y9.lombok")
-    id("net.risesoft.y9.docker")
-    alias(y9libs.plugins.org.springframework.boot)
+    alias(libs.plugins.y9.conventions.war)
+    alias(libs.plugins.y9.lombok)
+    alias(libs.plugins.y9.docker)
 }
-
+  
 dependencies {
     api(platform(libs.y9.digitalbase.bom))
     api(platform(libs.y9.digitalbase.dependencies))
@@ -46,37 +45,14 @@ dependencies {
     api(libs.galimatias)
     api(libs.org.bytedeco.javacv)
     api(libs.org.bytedeco.javacpp)
-    implementation(libs.org.bytedeco.opencv) {
-        artifact {
-            classifier = 'linux-x86_64'
-        }
-    }
-    implementation(libs.org.bytedeco.opencv)
-    {
-        artifact {
-            classifier = 'windows-x86_64'
-        }
-    }
-    implementation(libs.org.bytedeco.openblas) {
-        artifact {
-            classifier = 'linux-x86_64'
-        }
-    }
-    implementation(libs.org.bytedeco.openblas) {
-        artifact {
-            classifier = 'windows-x86_64'
-        }
-    }
-    implementation(libs.org.bytedeco.ffmpeg) {
-        artifact {
-            classifier = 'linux-x86_64'
-        }
-    }
-    implementation(libs.org.bytedeco.ffmpeg) {
-        artifact {
-            classifier = 'windows-x86_64'
-        }
-    }
+
+    api(variantOf(libs.org.bytedeco.opencv) { classifier("linux-x86_64") })
+    implementation(variantOf(libs.org.bytedeco.opencv) { classifier("windows-x86_64") })
+    api(variantOf(libs.org.bytedeco.openblas) { classifier("linux-x86_64") })
+    implementation(variantOf(libs.org.bytedeco.openblas) { classifier("windows-x86_64") })
+    api(variantOf(libs.org.bytedeco.ffmpeg) { classifier("linux-x86_64") })
+    implementation(variantOf(libs.org.bytedeco.ffmpeg) { classifier("windows-x86_64") })
+
     api(libs.itextpdf)
     api(libs.jai.codec)
     api(libs.jai.core)
@@ -90,13 +66,17 @@ dependencies {
 
     providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+
+
 }
 
 description = "risenet-y9boot-webapp-jodconverter"
 
 val finalName = "jodconverter"
-jib.container.appRoot = "/usr/local/tomcat/webapps/${finalName}"
+y9Docker {
+    appName = finalName
+}
 
-tasks.bootWar {
-    archiveFileName.set("${finalName}.${archiveExtension.get()}")
+y9War {
+    archiveBaseName = finalName
 }

@@ -1,6 +1,6 @@
 plugins {
-    id("net.risesoft.y9.conventions-java")
-    id("net.risesoft.y9.lombok")
+    alias(libs.plugins.y9.conventions.java)
+    alias(libs.plugins.y9.lombok)
 }
 
 dependencies {

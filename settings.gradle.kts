@@ -1,4 +1,5 @@
 pluginManagement {
+    // Include 'plugins build' to define convention plugins.
     //includeBuild("build-logic")
 
     repositories {
@@ -6,6 +7,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 
 dependencyResolutionManagement {
     repositories {

@@ -1,8 +1,7 @@
 plugins {
-    id("net.risesoft.y9.conventions-war")
-    id("net.risesoft.y9.lombok")
-    id("net.risesoft.y9.docker")
-    alias(y9libs.plugins.org.springframework.boot)
+    alias(libs.plugins.y9.conventions.war)
+    alias(libs.plugins.y9.lombok)
+    alias(libs.plugins.y9.docker)
 }
 
 dependencies {
@@ -41,14 +40,17 @@ dependencies {
     api(libs.kingbase.hibernate.jpa.api)
     api(libs.kingbase.kingbase8)
 
+    compileOnly("jakarta.servlet:jakarta.servlet-api")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 }
 
 description = "risenet-y9boot-webapp-processadmin"
 
 val finalName = "processAdmin"
-jib.container.appRoot = "/usr/local/tomcat/webapps/${finalName}"
+y9Docker {
+    appName = finalName
+}
 
-tasks.bootWar {
-    archiveFileName.set("${finalName}.${archiveExtension.get()}")
+y9War {
+    archiveBaseName = finalName
 }
