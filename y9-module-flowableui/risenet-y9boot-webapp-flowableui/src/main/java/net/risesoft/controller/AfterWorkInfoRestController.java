@@ -73,6 +73,18 @@ public class AfterWorkInfoRestController {
     }
 
     /**
+     * 新增核稿后工作事项
+     *
+     * @return Y9Result<AfterWorkModel>
+     */
+    @GetMapping(value = "/newAfterWork")
+    public Y9Result<AfterWorkModel> newAfterWork() {
+        AfterWorkModel afterWorkModel = new AfterWorkModel();
+        afterWorkModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        return Y9Result.success(afterWorkModel);
+    }
+
+    /**
      * 保存核稿后工作事项信息
      *
      * @param afterWorkModel 核稿后工作事项信息

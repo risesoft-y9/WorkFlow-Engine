@@ -73,6 +73,18 @@ public class PreWorkInfoRestController {
     }
 
     /**
+     * 新增前期工作事项
+     *
+     * @return Y9Result<PreWorkModel>
+     */
+    @GetMapping(value = "/newPreWork")
+    public Y9Result<PreWorkModel> newPreWork() {
+        PreWorkModel preWorkModel = new PreWorkModel();
+        preWorkModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        return Y9Result.success(preWorkModel);
+    }
+
+    /**
      * 保存前期工作事项信息
      *
      * @param preWorkModel 前期工作事项信息
