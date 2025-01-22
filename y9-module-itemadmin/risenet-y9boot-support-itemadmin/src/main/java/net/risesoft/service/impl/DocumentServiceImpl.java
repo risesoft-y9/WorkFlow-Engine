@@ -598,6 +598,13 @@ public class DocumentServiceImpl implements DocumentService {
         taskDefinitionKey = task.getTaskDefinitionKey();
         processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
         activitiUser = task.getAssignee();
+        /*
+         * 设为已读
+         */
+        if (StringUtils.isBlank(task.getFormKey())) {
+            task.setFormKey("0");
+            taskApi.saveTask(tenantId, task);
+        }
         // 获取第一节点任务key,可能多个,用于非权限表单时，是否是起草节点，用来开启编辑所有表单所有字段的权限
         String startTaskDefKey = "";
         String startNode =
