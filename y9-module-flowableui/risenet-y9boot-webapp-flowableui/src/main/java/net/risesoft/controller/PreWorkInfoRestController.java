@@ -7,7 +7,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -71,6 +70,18 @@ public class PreWorkInfoRestController {
             LOGGER.error("获取前期工作事项列表异常", e);
         }
         return Y9Result.failure("获取前期工作事项失败");
+    }
+
+    /**
+     * 新增前期工作事项
+     *
+     * @return Y9Result<PreWorkModel>
+     */
+    @GetMapping(value = "/newPreWork")
+    public Y9Result<PreWorkModel> newPreWork() {
+        PreWorkModel preWorkModel = new PreWorkModel();
+        preWorkModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        return Y9Result.success(preWorkModel);
     }
 
     /**
