@@ -36,15 +36,6 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     }
 
     @Override
-    @Transactional
-    public void recoverById(String id) {
-        SignDeptDetail signDeptDetail = signDeptDetailRepository.findById(id).orElse(null);
-        assert signDeptDetail != null;
-        signDeptDetail.setStatus(SignDeptDetailStatusEnum.DOING.getValue());
-        signDeptDetailRepository.save(signDeptDetail);
-    }
-
-    @Override
     public SignDeptDetail findById(String id) {
         return signDeptDetailRepository.findById(id).orElse(null);
     }
@@ -90,6 +81,15 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
 
     @Override
     @Transactional
+    public void recoverById(String id) {
+        SignDeptDetail signDeptDetail = signDeptDetailRepository.findById(id).orElse(null);
+        assert signDeptDetail != null;
+        signDeptDetail.setStatus(SignDeptDetailStatusEnum.DOING.getValue());
+        signDeptDetailRepository.save(signDeptDetail);
+    }
+
+    @Override
+    @Transactional
     public void saveOrUpdate(SignDeptDetail signDeptDetail) {
         String id = signDeptDetail.getId();
         if (StringUtils.isNotBlank(id)) {
@@ -97,7 +97,7 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
             assert oldDetail != null;
             oldDetail.setUserName(signDeptDetail.getUserName());
             oldDetail.setMobile(signDeptDetail.getMobile());
-            oldDetail.setFileStoreId(signDeptDetail.getFileStoreId());
+            // oldDetail.setFileStoreId(signDeptDetail.getFileStoreId());不用更新
             oldDetail.setDeptManager(signDeptDetail.getDeptManager());
             if (null != signDeptDetail.getStatus()) {
                 oldDetail.setStatus(signDeptDetail.getStatus());
