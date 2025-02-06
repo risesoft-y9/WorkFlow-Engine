@@ -53,7 +53,8 @@ public class RedissonConfig {
             .setReconnectionTimeout(reconnectionTimeout).setTimeout(timeout).setConnectTimeout(connectTimeout)
             .setIdleConnectionTimeout(idleConnectionTimeout).setPingTimeout(pingTimeout)
             .setPassword(StringUtils.trimToNull(password));
-        Codec codec = (Codec)ClassUtils.forName(getCodec(), ClassUtils.getDefaultClassLoader()).newInstance();
+        Codec codec = (Codec)ClassUtils.forName(getCodec(), ClassUtils.getDefaultClassLoader()).getDeclaredConstructor()
+            .newInstance();
         config.setCodec(codec);
         config.setThreads(thread);
         config.setEventLoopGroup(new NioEventLoopGroup());

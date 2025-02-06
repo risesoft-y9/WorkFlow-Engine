@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -94,7 +95,7 @@ public class PdfFilePreviewImpl implements FilePreview {
                         fileHandlerService.addConvertedFile(pdfName, fileHandlerService.getRelativePath(outFilePath));
                     }
                 } else {
-                    pdfName = URLEncoder.encode(pdfName).replaceAll("\\+", "%20");
+                    pdfName = URLEncoder.encode(pdfName, Charset.defaultCharset()).replaceAll("\\+", "%20");
                     model.addAttribute("pdfUrl", pdfName);
                 }
             } else {
