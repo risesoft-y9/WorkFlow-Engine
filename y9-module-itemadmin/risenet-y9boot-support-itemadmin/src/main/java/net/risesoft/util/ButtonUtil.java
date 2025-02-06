@@ -962,10 +962,10 @@ public class ButtonUtil {
 
     public List<ItemButtonModel> showButton4Done(String itemId) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(ItemButton.huiFuDaiBan);
+        /*buttonModelList.add(ItemButton.huiFuDaiBan);
         buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
-        buttonModelList.add(ItemButton.fanHui);
+        buttonModelList.add(ItemButton.fanHui);*/
         return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
     }
