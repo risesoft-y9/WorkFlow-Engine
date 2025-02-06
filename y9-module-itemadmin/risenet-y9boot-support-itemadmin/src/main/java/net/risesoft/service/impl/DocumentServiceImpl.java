@@ -5,8 +5,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -864,7 +862,6 @@ public class DocumentServiceImpl implements DocumentService {
         model.setFormList(list);
         model.setShowOtherFlag(showOtherFlag);
         model.setSignStatus(SignStatusEnum.NOTSTART.getValue());
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())
             || model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())
             || model.getItembox().equals(ItemBoxTypeEnum.DONE.getValue())) {
@@ -873,18 +870,7 @@ public class DocumentServiceImpl implements DocumentService {
             if (!signList.isEmpty()) {
                 ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
                     model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
-                HistoricTaskInstanceModel hisTask =
-                    historictaskApi.getById(tenantId, actRuDetail.getTaskId()).getData();
-                if (null == hisTask) {
-                    LocalDate createTime =
-                        actRuDetail.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    hisTask = historictaskApi
-                        .getById(tenantId, actRuDetail.getTaskId(), String.valueOf(createTime.getYear())).getData();
-                }
-                boolean isSub = processDefinitionApi
-                    .isSubProcessChildNode(tenantId, hisTask.getProcessDefinitionId(), hisTask.getTaskDefinitionKey())
-                    .getData();
-                if (isSub) {
+                if (actRuDetail.isSub()) {
                     model.setSignStatus(SignStatusEnum.SUB.getValue());
                 } else {
                     model.setSignStatus(SignStatusEnum.MAIN.getValue());
