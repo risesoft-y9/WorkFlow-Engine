@@ -25,6 +25,7 @@ import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
+import net.risesoft.enums.ItemTableTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Page;
@@ -834,28 +835,38 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == 2) {
+                if (y9Table.getTableType().equals(ItemTableTypeEnum.SUB.getValue())) {
                     continue;
                 }
-                String actionType = "0";
+                String actionType;
                 Map<String, Object> m = this.getData(guid, tableName);
-                if (m.get("edittype").equals("0")) {
+                if ("0".equals(m.get("edittype"))) {
                     actionType = "0";
                 } else {
                     actionType = "1";
                 }
                 List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableName(tableName);
-                if (actionType.equals("0")) {
+                if ("0".equals(actionType)) {
                     List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("insert into \"" + tableName + "\" (");
+                        sqlStr.append("insert into \"").append(tableName).append("\" (");
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("insert into " + tableName + " (");
+                        sqlStr.append("insert into ").append(tableName).append(" (");
                     }
                     StringBuilder sqlStr1 = new StringBuilder(") values (");
                     boolean isHaveField = false;
+                    /*
+                    一个表单绑定多个表的时候只会绑定一个guid，其他没有绑定guid的表，需要加上guid字段
+                     */
+                    boolean isHaveGuid =
+                        elementList.stream().anyMatch(element -> "GUID".equalsIgnoreCase(element.getFieldName()));
+                    if (!isHaveGuid) {
+                        Y9FormField guidField = new Y9FormField();
+                        guidField.setFieldName("GUID");
+                        elementList.add(guidField);
+                    }
                     for (Y9FormField element : elementList) {
                         String fieldName = element.getFieldName();
                         Y9TableField y9TableField = null;
@@ -896,7 +907,8 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd')");
+                                    sqlStr1.append("TO_DATE('").append(keyValue.get(fieldName))
+                                        .append("','yyyy-MM-dd')");
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                         ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -905,25 +917,23 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1
-                                        .append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                    sqlStr1.append("TO_DATE('").append(keyValue.get(fieldName))
+                                        .append("','yyyy-MM-dd HH24:mi:ss')");
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                         ? "'" + keyValue.get(fieldName) + "'" : "''");
                                 }
                             } else {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals("Z_GUID")
-                                    || fieldName.equals("z_guid")) {
+                                if (fieldName.equalsIgnoreCase("guid") || fieldName.equalsIgnoreCase("Z_GUID")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
+                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
                                     } else {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
-                                } else if (fieldName.equals("processInstanceId")
-                                    || fieldName.equals("PROCESSINSTANCEID")) {
+                                } else if (fieldName.equalsIgnoreCase("processInstanceId")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
+                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
                                     } else {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -952,9 +962,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("update \"" + tableName + "\" set ");
+                        sqlStr.append("update \"").append(tableName).append("\" set ");
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("update " + tableName + " set ");
+                        sqlStr.append("update ").append(tableName).append(" set ");
                     }
                     StringBuilder sqlStr1 = new StringBuilder();
                     boolean isHaveField = false;
