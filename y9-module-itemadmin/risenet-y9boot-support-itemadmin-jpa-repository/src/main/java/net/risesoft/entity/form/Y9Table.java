@@ -51,7 +51,7 @@ public class Y9Table implements Serializable {
     private String tableMemo;
 
     /**
-     * {@link #ItemTableTypeEnum}
+     * {@link net.risesoft.enums.ItemTableTypeEnum}
      */
     @Column(name = "TABLETYPE")
     @Comment("表类型")
