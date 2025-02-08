@@ -26,6 +26,7 @@ import net.risesoft.entity.form.Y9FieldPerm;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9Table;
+import net.risesoft.enums.ItemTableTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.FieldPermModel;
@@ -137,24 +138,20 @@ public class FormDataServiceImpl implements FormDataService {
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
-            List<Map<String, Object>> list = null;
-            for (Y9FormItemBind bind : formList) {
+            formList.forEach(bind -> {
                 String formId = bind.getFormId();
-                // 获取表单绑定的表,可能多个
                 List<String> tableNameList = y9FormRepository.findBindTableName(formId);
-                for (String tableName : tableNameList) {
+                tableNameList.forEach(tableName -> {
                     Y9Table y9Table = y9TableService.findByTableName(tableName);
-                    // 只获取主表
-                    if (y9Table.getTableType() == 1) {
-                        list = jdbcTemplate.queryForList("SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?",
-                            processSerialNumber);
+                    if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN.getValue())) {
+                        List<Map<String, Object>> list = jdbcTemplate.queryForList(
+                            "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", processSerialNumber);
                         if (!list.isEmpty()) {
                             retMap.putAll(list.get(0));
                         }
                     }
-                }
-            }
-
+                });
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
