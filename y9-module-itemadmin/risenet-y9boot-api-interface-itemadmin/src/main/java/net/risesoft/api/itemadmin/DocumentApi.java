@@ -202,6 +202,21 @@ public interface DocumentApi {
         @RequestParam("mobile") boolean mobile);
 
     /**
+     * 编辑文档
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param processSerialNumber 流程序列号
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
+     * @since 9.6.8
+     */
+    @GetMapping("/editCopy")
+    Y9Result<DocumentDetailModel> editCopy(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("mobile") boolean mobile);
+
+    /**
      * 解析用户
      *
      * @param tenantId 租户id

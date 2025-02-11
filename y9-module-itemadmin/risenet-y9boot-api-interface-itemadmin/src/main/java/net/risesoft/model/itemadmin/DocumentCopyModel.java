@@ -67,4 +67,24 @@ public class DocumentCopyModel implements Serializable {
      * 更新时间
      */
     private String updateTime;
+
+    /**
+     * 事项分类中文名称
+     */
+    private String systemCnName;
+
+    /**
+     * 标题
+     */
+    private String title;
+
+    /**
+     * 主办司局
+     */
+    private String hostDeptName;
+
+    /**
+     * 编号
+     */
+    private String customNumber;
 }

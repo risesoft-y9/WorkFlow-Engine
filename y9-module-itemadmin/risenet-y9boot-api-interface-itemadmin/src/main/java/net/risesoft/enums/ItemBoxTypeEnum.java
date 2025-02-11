@@ -24,6 +24,8 @@ public enum ItemBoxTypeEnum {
     DONE("done", "办结"),
     /** 回收站 */
     RECYCLE("recycle", "回收站"),
+    /** 回收站 */
+    COPY("copy", "回收站"),
     /** 监控在办 */
     MONITORDOING("monitorDoing", "监控在办"),
     /** 监控办结 */

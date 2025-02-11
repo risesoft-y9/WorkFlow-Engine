@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,10 +24,13 @@ import net.risesoft.entity.OpinionCopy;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentCopyModel;
+import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
+import net.risesoft.service.ItemPageService;
 import net.risesoft.service.OpinionCopyService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -52,20 +55,50 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
 
     private final OpinionCopyService opinionCopyService;
 
+    private final ItemPageService itemPageService;
+
     @Override
-    public Y9Page<DocumentCopyModel> findByUserId(String tenantId, String userId, String orgUnitId, Integer page,
-        Integer rows) {
+    public Y9Page<DocumentCopyModel> findByUserId(String tenantId, String userId, String orgUnitId,
+        QueryParamModel queryParamModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        Page<DocumentCopy> pageResult =
-            documentCopyService.findByUserIdAndStatusLessThan(orgUnitId, 8, rows, page, sort);
-        List<DocumentCopyModel> modelList = new ArrayList<>();
-        pageResult.getContent().forEach(documentCopy -> {
-            DocumentCopyModel model = new DocumentCopyModel();
-            Y9BeanUtil.copyProperties(documentCopy, model);
-            modelList.add(model);
-        });
-        return Y9Page.success(page, pageResult.getTotalPages(), pageResult.getTotalElements(), modelList);
+        int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
+        String systemNameSql = "";
+        StringBuilder paramSql = new StringBuilder();
+        Object object = queryParamModel;
+        Class queryParamModelClazz = object.getClass();
+        Field[] fields = queryParamModelClazz.getDeclaredFields();
+        for (Field f : fields) {
+            f.setAccessible(true);
+            if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName()) || "rows".equals(f.getName())) {
+                continue;
+            }
+            Object fieldValue;
+            try {
+                fieldValue = f.get(object);
+                if (null != fieldValue) {
+                    if ("systemName".equals(f.getName())) {
+                        systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
+                            : "AND P.SYSTEMNAME = '" + fieldValue + "' ";
+                    } else {
+                        paramSql.append("AND INSTR(P.").append(f.getName().toUpperCase()).append(",'")
+                            .append(fieldValue).append("') > 0 ");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
+        String bySql = "GROUP BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC";
+        String allSql = "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C "
+            + processParamSql + " WHERE C.STATUS < 8 " + paramSql + systemNameSql + " AND C.USERID = ? " + bySql;
+        String countSql = "SELECT COUNT(C.ID) FROM FF_DOCUMENT_COPY C " + processParamSql
+            + " WHERE C.USERID= ? AND C.STATUS < 8 " + paramSql + systemNameSql;
+        Object[] args = new Object[1];
+        args[0] = orgUnitId;
+        ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
+            new BeanPropertyRowMapper<>(DocumentCopyModel.class), countSql, args, page, rows);
+        return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
     }
 
     @Override
