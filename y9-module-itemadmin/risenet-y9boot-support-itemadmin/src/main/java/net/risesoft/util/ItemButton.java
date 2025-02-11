@@ -46,4 +46,10 @@ public class ItemButton {
         new ItemButtonModel("fangRuHuiShouZhan", "放入回收站", ItemButtonTypeEnum.COMMON.getValue(), 24);
 
     public static ItemButtonModel baoCun = new ItemButtonModel("01", "保存", ItemButtonTypeEnum.COMMON.getValue(), 25);
+
+    public static ItemButtonModel chuanQianJiLu =
+        new ItemButtonModel("chuanQianJiLu", "传签记录", ItemButtonTypeEnum.COMMON.getValue(), 26);
+
+    public static ItemButtonModel chuanQianYiJian =
+        new ItemButtonModel("chuanQianYiJian", "传签意见", ItemButtonTypeEnum.COMMON.getValue(), 27);
 }

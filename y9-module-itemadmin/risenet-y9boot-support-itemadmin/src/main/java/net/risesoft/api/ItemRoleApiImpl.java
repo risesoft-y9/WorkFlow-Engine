@@ -102,6 +102,28 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     }
 
     /**
+     * 获取抄送选人组织机构数据
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param orgUnitId 人员、岗位id
+     * @param id 唯一标识
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser4Bureau(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String orgUnitId, String id) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        List<ItemRoleOrgUnitModel> list = roleService.listCsUser4Bureau(id);
+        return Y9Result.success(list);
+    }
+
+    /**
      * 获取委办局组织机构数据
      *
      * @param tenantId 租户id

@@ -37,6 +37,14 @@ public interface RoleService {
     List<ItemRoleOrgUnitModel> listCsUser(String id, Integer principalType, String processInstanceId);
 
     /**
+     * Description:
+     *
+     * @param id
+     * @return
+     */
+    List<ItemRoleOrgUnitModel> listCsUser4Bureau(String id);
+
+    /**
      * Description: 抄送选人搜索
      *
      * @param name
