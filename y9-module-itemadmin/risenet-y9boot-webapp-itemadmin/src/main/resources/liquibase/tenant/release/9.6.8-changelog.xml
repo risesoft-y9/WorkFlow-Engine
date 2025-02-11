@@ -449,7 +449,8 @@
             <column name="CREATETIME" type="VARCHAR(50)" remarks="记录创建时间"/>
             <column name="NEEDDO" type="VARCHAR(20)" remarks="办否 1是，0否"/>
             <column name="DCEDIT" type="VARCHAR(20)" remarks="是否督查系统修改主办单位 1是,0否"/>
-            <column name="OVERACCEPTTIME" type="VARCHAR(20)" remarks="是否已做超3天受理处理，默认为0，1为已经处理超时的数据"/>
+            <column name="OVERACCEPTTIME" type="VARCHAR(20)"
+                    remarks="是否已做超3天受理处理，默认为0，1为已经处理超时的数据"/>
             <column name="TOUCHUSER" type="VARCHAR(50)" remarks="来文单位联系人(大厅会传)"/>
             <column name="TOUCHTEL" type="VARCHAR(50)" remarks="来文单位联系人电话"/>
             <column name="ACCEPTTYPE" type="VARCHAR(50)" remarks="受理方式(受理、自动受理、不予受理、空)"/>
@@ -558,4 +559,92 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="1704700547152-30" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_DOCUMENT_COPY"/>
+            </not>
+        </preConditions>
+        <createTable remarks="抄送信息表" tableName="FF_DOCUMENT_COPY">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="OPINIONCOPYID" remarks="传签意见唯一标示" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="抄送的流程序列号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCEID" remarks="抄送的流程实例" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="抄送目标人员Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="抄送目标人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENDERID" remarks="操作人Id" type="VARCHAR(100)"/>
+            <column name="SENDERNAME" remarks="操作人名称" type="VARCHAR(50)"/>
+            <column name="STATUS" remarks="传阅状态" type="INT"/>
+            <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700547152-31" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_OPINION_COPY"/>
+            </not>
+        </preConditions>
+        <createTable remarks="抄送信息表" tableName="FF_OPINION_COPY">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="抄送的流程序列号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTENT" remarks="意见内容" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEND" type="INT" defaultValueNumeric="0" remarks="是否是发送意见"/>
+            <column name="USERID" remarks="人员唯一标示" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700547152-32" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="FF_DOCUMENT_COPY" columnNames="OPINIONCOPYID"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ff_document_copy_001" tableName="FF_DOCUMENT_COPY">
+            <column name="SENDERID"/>
+        </createIndex>
+        <createIndex indexName="ff_document_copy_002" tableName="FF_DOCUMENT_COPY">
+            <column name="OPINIONCOPYID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="1704700547152-33" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="FF_OPINION_COPY" columnNames="PROCESSSERIALNUMBER"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ff_opinion_copy_001" tableName="FF_OPINION_COPY">
+            <column name="PROCESSSERIALNUMBER"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
