@@ -580,6 +580,45 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public DocumentDetailModel editCopy(String processSerialNumber, boolean mobile) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String processInstanceId = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
+            activitiUser = "", itemId = "";
+        String startor;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+        processInstanceId = processParam.getProcessInstanceId();
+        startor = processParam.getStartor();
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+        if (officeDoneInfo == null) {
+            String year = processParam.getCreateTime().substring(0, 4);
+            HistoricProcessInstanceModel hpi =
+                historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+            processDefinitionId = hpi.getProcessDefinitionId();
+            processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+        } else {
+            processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+            processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
+        }
+        processSerialNumber = processParam.getProcessSerialNumber();
+        itemId = processParam.getItemId();
+        model.setTitle(processParam.getTitle());
+        model.setStartor(startor);
+        model.setItembox(ItemBoxTypeEnum.COPY.getValue());
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setProcessDefinitionKey(processDefinitionKey);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId(processInstanceId);
+        model.setActivitiUser(activitiUser);
+        model.setItemId(itemId);
+
+        model = this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = this.menuControl4Copy(itemId, processDefinitionId, taskDefinitionKey, model);
+        return model;
+    }
+
+    @Override
     public DocumentDetailModel editTodo(String taskId, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
         String processSerialNumber, processDefinitionId, taskDefinitionKey, processDefinitionKey, activitiUser, itemId,
@@ -1400,6 +1439,15 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
         List<ItemButtonModel> buttonList = buttonUtil.showButton4Recycle();
+        model.setButtonList(buttonList);
+        return model;
+    }
+
+    @Override
+    public DocumentDetailModel menuControl4Copy(String itemId, String processDefinitionId, String taskDefKey,
+        DocumentDetailModel model) {
+        ButtonUtil buttonUtil = new ButtonUtil();
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Copy();
         model.setButtonList(buttonList);
         return model;
     }

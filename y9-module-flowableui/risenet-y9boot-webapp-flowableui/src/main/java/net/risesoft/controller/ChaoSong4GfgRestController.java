@@ -30,6 +30,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
+import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
@@ -177,15 +178,26 @@ public class ChaoSong4GfgRestController {
     }
 
     /**
-     * 获取抄送信息列表
+     * 传签记录
      *
      * @param processSerialNumber 流程序列号
-     * @return Y9Page<ChaoSongModel>
+     * @return Y9Result<List<DocumentCopyModel>>
      */
-    @GetMapping(value = "/list")
-    public Y9Result<List<DocumentCopyModel>> list(@RequestParam @NotBlank String processSerialNumber) {
+    @GetMapping(value = "/list4Sender")
+    public Y9Result<List<DocumentCopyModel>> list4Sender(@RequestParam @NotBlank String processSerialNumber) {
         return documentCopyApi.findByProcessSerialNumberAndSenderId(Y9LoginUserHolder.getTenantId(),
             Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), processSerialNumber);
+    }
+
+    /**
+     * 传签件列表
+     * 
+     * @return Y9Page<DocumentCopyModel>
+     */
+    @GetMapping(value = "/list4Receive")
+    public Y9Page<DocumentCopyModel> list4Receive(QueryParamModel queryParamModel) {
+        return documentCopyApi.findByUserId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), queryParamModel);
     }
 
     /**

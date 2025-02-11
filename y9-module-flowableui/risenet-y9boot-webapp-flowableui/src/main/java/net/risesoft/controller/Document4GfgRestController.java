@@ -316,6 +316,24 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 获取传签件办件数据
+     * 
+     * @param processSerialNumber 流程序列号
+     * @return
+     */
+    @GetMapping(value = "/editCopy")
+    public Y9Result<DocumentDetailModel> editCopy(@RequestParam @NotBlank String processSerialNumber) {
+        try {
+            DocumentDetailModel model = documentApi.editCopy(Y9LoginUserHolder.getTenantId(),
+                Y9LoginUserHolder.getPositionId(), processSerialNumber, false).getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
      * 获取编辑办件数据
      *
      * @param taskId 任务id

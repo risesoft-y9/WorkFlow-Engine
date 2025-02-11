@@ -990,4 +990,14 @@ public class ButtonUtil {
         return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
     }
+
+    public List<ItemButtonModel> showButton4Copy() {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(ItemButton.siNeiChuanQian);
+        buttonModelList.add(ItemButton.chuanQianJiLu);
+        buttonModelList.add(ItemButton.chuanQianYiJian);
+        buttonModelList.add(ItemButton.shanChuChuanQianJian);
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
 }

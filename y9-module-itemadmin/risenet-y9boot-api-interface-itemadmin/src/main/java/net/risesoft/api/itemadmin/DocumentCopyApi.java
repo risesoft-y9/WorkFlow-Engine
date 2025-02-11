@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.DocumentCopyModel;
+import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
@@ -17,10 +19,10 @@ import net.risesoft.pojo.Y9Result;
  **/
 public interface DocumentCopyApi {
 
-    @GetMapping("/findByUserId")
+    @PostMapping("/findByUserId")
     Y9Page<DocumentCopyModel> findByUserId(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestBody QueryParamModel queryParamModel);
 
     @GetMapping("/findByProcessSerialNumberAndSenderId")
     Y9Result<List<DocumentCopyModel>> findByProcessSerialNumberAndSenderId(@RequestParam("tenantId") String tenantId,
