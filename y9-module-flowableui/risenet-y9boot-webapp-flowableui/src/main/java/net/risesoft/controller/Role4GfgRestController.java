@@ -57,4 +57,15 @@ public class Role4GfgRestController {
             processInstanceId);
     }
 
+    /**
+     * 获取司内会签选人组织机构数据
+     *
+     * @param id 父节点id
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @GetMapping(value = "/findCsUser")
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(required = false) String id) {
+        return itemRoleApi.findCsUser4Bureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), id);
+    }
 }

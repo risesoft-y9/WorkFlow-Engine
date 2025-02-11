@@ -349,6 +349,37 @@ public class RoleServiceImpl implements RoleService {
         return item;
     }
 
+    @Override
+    public List<ItemRoleOrgUnitModel> listCsUser4Bureau(String id) {
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            if (StringUtils.isBlank(id) || UtilConsts.NULL.equals(id)) {
+                id = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnit().getId()).getData().getId();
+            }
+            List<OrgUnit> orgUnitList =
+                orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+            String finalId = id;
+            orgUnitList.forEach(orgUnit -> {
+                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                model.setId(orgUnit.getId());
+                model.setParentId(finalId);
+                model.setName(orgUnit.getName());
+                model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                model.setOrgType(orgUnit.getOrgType().getValue());
+                model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                    ? ItemPermissionEnum.DEPARTMENT.getValue() : ItemPermissionEnum.POSITION.getValue());
+                if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                    model.setPerson("6:" + orgUnit.getId());
+                }
+                item.add(model);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return item;
+    }
+
     /*
      * Description:
      *

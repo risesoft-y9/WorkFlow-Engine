@@ -1409,7 +1409,7 @@ public class DocumentServiceImpl implements DocumentService {
         String taskId, DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        List<ItemButtonModel> buttonList = buttonUtil.showButton4Todo(itemId, taskId);
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Todo(itemId, taskId, model);
         List<ItemButtonBind> bibList;
         if (buttonList.contains(ItemButton.baoCun)) {
             bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),

@@ -21,6 +21,7 @@ import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
@@ -28,7 +29,9 @@ import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.CustomProcessInfoService;
+import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.ProcInstanceRelationshipService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemTaskConfService;
@@ -53,6 +56,9 @@ public class ButtonUtil {
     private final CustomProcessInfoService customProcessInfoService;
     private final SpmApproveItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
+    private final DocumentCopyService documentCopyService;
+
+    private final ActRuDetailService actRuDetailService;
     private List<TargetModel> nodeList = new ArrayList<>();
 
     public ButtonUtil() {
@@ -67,6 +73,8 @@ public class ButtonUtil {
         this.itemService = Y9Context.getBean(SpmApproveItemService.class);
         this.itemTaskConfService = Y9Context.getBean(ItemTaskConfService.class);
         this.orgUnitApi = Y9Context.getBean(OrgUnitApi.class);
+        this.documentCopyService = Y9Context.getBean(DocumentCopyService.class);
+        this.actRuDetailService = Y9Context.getBean(ActRuDetailService.class);
     }
 
     public Map<String, Object> showButton(String itemId, String taskId, String itembox) {
@@ -590,7 +598,7 @@ public class ButtonUtil {
         return buttonModelList;
     }
 
-    public List<ItemButtonModel> showButton4Todo(String itemId, String taskId) {
+    public List<ItemButtonModel> showButton4Todo(String itemId, String taskId, DocumentDetailModel model) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonList = new ArrayList<>();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
@@ -914,6 +922,11 @@ public class ButtonUtil {
             }
         }
         // 上面是放入回收站按钮
+        if (isAssignee && !documentCopyService
+            .findByProcessSerialNumberAndSenderId(model.getProcessSerialNumber(), orgUnitId).isEmpty()) {
+            buttonList.add(ItemButton.chuanQianJiLu);
+            buttonList.add(ItemButton.chuanQianYiJian);
+        }
         buttonList =
             buttonList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
         return buttonList;

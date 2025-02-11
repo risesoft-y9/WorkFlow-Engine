@@ -60,6 +60,21 @@ public interface ItemRoleApi {
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
+     * 获取抄送选人
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param orgUnitId 岗位id
+     * @param id 唯一标识
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     * @since 9.6.6
+     */
+    @GetMapping("/findCsUser4Bureau")
+    Y9Result<List<ItemRoleOrgUnitModel>> findCsUser4Bureau(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam(value = "id", required = false) String id);
+
+    /**
      * 获取委办局
      *
      * @param tenantId 租户id
