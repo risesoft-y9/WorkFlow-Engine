@@ -307,6 +307,8 @@ y9:
                     - fields
                     - formJsonData
                     - searchMapStr
+                    - title
+                    - documentTitle
                     - fileName
         oauth2:
             resource:
