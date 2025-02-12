@@ -23,4 +23,7 @@ public interface DocumentCopyRepository
 
     List<DocumentCopy> findByProcessSerialNumberAndSenderIdOrderByCreateTimeAsc(String processSerialNumber,
         String senderId);
+
+    List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
+        Integer status);
 }

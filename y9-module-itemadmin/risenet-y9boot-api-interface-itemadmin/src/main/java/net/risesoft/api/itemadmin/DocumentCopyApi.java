@@ -38,4 +38,9 @@ public interface DocumentCopyApi {
     Y9Result<Object> setStatus(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("id") String id,
         @RequestParam(value = "status") Integer status);
+
+    @PostMapping("/deleteByProcessSerialNumber")
+    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 }
