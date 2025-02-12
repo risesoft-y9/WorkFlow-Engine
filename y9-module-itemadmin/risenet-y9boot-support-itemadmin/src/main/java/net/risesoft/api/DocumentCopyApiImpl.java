@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.DocumentCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.OpinionCopy;
 import net.risesoft.entity.ProcessParam;
@@ -28,6 +29,7 @@ import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
@@ -52,11 +54,13 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
 
     private final ProcessParamService processParamService;
 
-    private final OrgUnitApi orgUnitApi;
-
     private final OpinionCopyService opinionCopyService;
 
     private final ItemPageService itemPageService;
+
+    private final PersonApi personApi;
+
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     public Y9Page<DocumentCopyModel> findByUserId(String tenantId, String userId, String orgUnitId,
@@ -123,13 +127,13 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     public Y9Result<Object> save(String tenantId, String userId, String orgUnitId, String processSerialNumber,
         String users, String opinion) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
         OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
         OpinionCopy newOc = new OpinionCopy();
         newOc.setId(Y9IdGenerator.genId());
         newOc.setProcessSerialNumber(processSerialNumber);
         newOc.setContent(StringUtils.isBlank(opinion) ? "无" : opinion);
-        newOc.setUserId(orgUnit.getId());
-        newOc.setUserName(orgUnit.getName());
         newOc.setSend(true);
         Optional<OpinionCopy> optional = opinionCopyService.saveOrUpdate(newOc);
         if (optional.isPresent()) {

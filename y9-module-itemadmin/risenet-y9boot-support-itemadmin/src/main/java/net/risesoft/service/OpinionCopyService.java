@@ -17,4 +17,6 @@ public interface OpinionCopyService {
     List<OpinionCopy> findByProcessSerialNumber(String processSerialNumber);
 
     Optional<OpinionCopy> saveOrUpdate(OpinionCopy opinionCopy);
+
+    void deleteById(String id);
 }
