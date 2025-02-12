@@ -22,6 +22,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.OpinionCopy;
 import net.risesoft.entity.ProcessParam;
+import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.ItemPage;
@@ -91,9 +92,11 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
         String bySql = "GROUP BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC";
         String allSql = "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C "
-            + processParamSql + " WHERE C.STATUS < 8 " + paramSql + systemNameSql + " AND C.USERID = ? " + bySql;
-        String countSql = "SELECT COUNT(C.ID) FROM FF_DOCUMENT_COPY C " + processParamSql
-            + " WHERE C.USERID= ? AND C.STATUS < 8 " + paramSql + systemNameSql;
+            + processParamSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql
+            + systemNameSql + " AND C.USERID = ? " + bySql;
+        String countSql =
+            "SELECT COUNT(C.ID) FROM FF_DOCUMENT_COPY C " + processParamSql + " WHERE C.USERID= ? AND C.STATUS < "
+                + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql + systemNameSql;
         Object[] args = new Object[1];
         args[0] = orgUnitId;
         ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
@@ -145,7 +148,7 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 documentCopy.setUserId(nameAndId[1]);
                 documentCopy.setSenderId(orgUnitId);
                 documentCopy.setSenderName(orgUnit.getName());
-                documentCopy.setStatus(1);
+                documentCopy.setStatus(DocumentCopyStatusEnum.TODO_SIGN.getValue());
                 documentCopy.setSystemName(processParam.getSystemName());
                 documentCopy.setCreateTime(sdf.format(new Date()));
                 documentCopy.setUpdateTime(sdf.format(new Date()));
@@ -161,13 +164,30 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     @Override
     public Y9Result<Object> setStatus(String tenantId, String userId, String orgUnitId, String id, Integer status) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Optional<DocumentCopy> optional = documentCopyService.findById(id);
         if (optional.isPresent()) {
             DocumentCopy documentCopy = optional.get();
             documentCopy.setStatus(status);
+            documentCopy.setUpdateTime(sdf.format(new Date()));
             documentCopyService.save(documentCopy);
             return Y9Result.success();
         }
         return Y9Result.failure("传签件不存在");
+    }
+
+    @Override
+    public Y9Result<Object> deleteByProcessSerialNumber(String tenantId, String userId, String orgUnitId,
+        String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<DocumentCopy> dcList = documentCopyService.findByProcessSerialNumberAndUserIdAndStatus(processSerialNumber,
+            orgUnitId, DocumentCopyStatusEnum.TODO_SIGN.getValue());
+        dcList.forEach(documentCopy -> {
+            documentCopy.setStatus(DocumentCopyStatusEnum.DELETE.getValue());
+            documentCopy.setUpdateTime(sdf.format(new Date()));
+            documentCopyService.save(documentCopy);
+        });
+        return Y9Result.success();
     }
 }

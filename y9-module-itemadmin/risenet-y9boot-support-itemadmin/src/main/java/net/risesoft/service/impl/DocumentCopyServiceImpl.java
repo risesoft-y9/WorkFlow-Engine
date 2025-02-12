@@ -43,6 +43,12 @@ public class DocumentCopyServiceImpl implements DocumentCopyService {
     }
 
     @Override
+    public List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
+        Integer status) {
+        return documentCopyRepository.findByProcessSerialNumberAndUserIdAndStatus(processSerialNumber, userId, status);
+    }
+
+    @Override
     @Transactional
     public void save(List<DocumentCopy> documentCopyList) {
         documentCopyRepository.saveAll(documentCopyList);

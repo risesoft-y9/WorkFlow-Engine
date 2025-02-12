@@ -951,6 +951,8 @@ public class DocumentServiceImpl implements DocumentService {
         itemId = processParam.getItemId();
         processDefinitionId = task.getProcessDefinitionId();
         taskDefinitionKey = task.getTaskDefinitionKey();
+        model.setProcessSerialNumber(processParam.getProcessSerialNumber());
+        model.setProcessInstanceId(processInstanceId);
         model = this.menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
         return model.getButtonList();
     }

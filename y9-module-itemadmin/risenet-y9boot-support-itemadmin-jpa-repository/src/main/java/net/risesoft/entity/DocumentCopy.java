@@ -66,7 +66,7 @@ public class DocumentCopy implements Serializable {
     private String senderId;
 
     /**
-     * 1:待填写意见,2:已填写意见,8:取消,9:删除
+     * 1:待填写意见,2:已填写意见,8:已取消,9:已删除
      */
     @Comment("传阅状态")
     @Column(name = "STATUS", length = 2)
