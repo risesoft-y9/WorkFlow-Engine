@@ -28,6 +28,7 @@ import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.SecretLevelRecordApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -111,6 +112,8 @@ public class Document4GfgRestController {
     private final RoleApi roleApi;
 
     private final ButtonOperationApi buttonOperationApi;
+
+    private final SecretLevelRecordApi secretLevelRecordApi;
 
     /**
      * 获取新建办件初始化数据
@@ -687,5 +690,29 @@ public class Document4GfgRestController {
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
+    }
+
+    /**
+     * 保存秘密等级记录
+     *
+     * @param processSerialNumber 流程编号
+     * @param secretLevel 秘密等级
+     * @param secretBasis 秘密依据
+     * @param secretItem 秘密事项
+     * @param description 描述
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/saveSecretLevelRecord")
+    public Y9Result<String> saveSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String secretLevel, @RequestParam @NotBlank String secretBasis,
+        @RequestParam @NotBlank String secretItem, @RequestParam(required = false) String description) {
+        try {
+            secretLevelRecordApi.saveRecord(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+                processSerialNumber, secretLevel, secretBasis, secretItem, description);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            LOGGER.error("保存失败", e);
+        }
+        return Y9Result.failure("保存失败");
     }
 }

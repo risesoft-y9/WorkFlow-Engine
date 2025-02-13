@@ -13,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.OpinionCopy;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.OpinionCopyRepository;
 import net.risesoft.service.OpinionCopyService;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author : qinman
@@ -52,15 +54,22 @@ public class OpinionCopyServiceImpl implements OpinionCopyService {
                 return Optional.of(opinionCopyRepository.save(oldOc));
             }
         }
+        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         OpinionCopy newOc = new OpinionCopy();
         newOc.setId(Y9IdGenerator.genId());
         newOc.setProcessSerialNumber(opinionCopy.getProcessSerialNumber());
         newOc.setContent(opinionCopy.getContent());
-        newOc.setUserId(opinionCopy.getUserId());
-        newOc.setUserName(opinionCopy.getUserName());
+        newOc.setUserId(userInfo.getPersonId());
+        newOc.setUserName(userInfo.getName());
         newOc.setCreateTime(sdf.format(new Date()));
         newOc.setUpdateTime(sdf.format(new Date()));
         newOc.setSend(opinionCopy.isSend());
         return Optional.of(opinionCopyRepository.save(newOc));
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(String id) {
+        opinionCopyRepository.deleteById(id);
     }
 }

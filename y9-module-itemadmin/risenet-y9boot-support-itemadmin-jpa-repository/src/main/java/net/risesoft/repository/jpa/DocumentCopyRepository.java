@@ -26,4 +26,8 @@ public interface DocumentCopyRepository
 
     List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
         Integer status);
+
+    List<DocumentCopy> findByProcessSerialNumberAndUserId(String processSerialNumber, String userId);
+
+    List<DocumentCopy> findByOpinionCopyIdOrderByCreateTimeAsc(String opinionCopyId);
 }

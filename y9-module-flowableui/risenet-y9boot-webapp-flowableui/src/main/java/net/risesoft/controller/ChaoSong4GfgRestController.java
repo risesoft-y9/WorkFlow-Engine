@@ -17,12 +17,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentCopyApi;
+import net.risesoft.api.itemadmin.OpinionCopyApi;
 import net.risesoft.model.itemadmin.DocumentCopyModel;
+import net.risesoft.model.itemadmin.OpinionCopyModel;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 抄送
@@ -38,6 +41,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ChaoSong4GfgRestController {
 
     private final DocumentCopyApi documentCopyApi;
+
+    private final OpinionCopyApi opinionCopyApi;
 
     /**
      * 批量删除传签件
@@ -125,5 +130,54 @@ public class ChaoSong4GfgRestController {
             LOGGER.error("抄送", e);
         }
         return Y9Result.failure("取消失败");
+    }
+
+    /**
+     * 传签意见
+     *
+     * @param processSerialNumber 流程序列号
+     * @return Y9Result<List<OpinionCopyModel>>
+     */
+    @GetMapping(value = "/opinionCopyList")
+    public Y9Result<List<OpinionCopyModel>> opinionCopyList(@RequestParam @NotBlank String processSerialNumber) {
+        return opinionCopyApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),
+            Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), processSerialNumber);
+    }
+
+    /**
+     * 保存意见
+     *
+     * @param jsonData 意见实体json
+     * @return Y9Result<OpinionModel>
+     */
+    @PostMapping(value = "/saveOrUpdate")
+    public Y9Result<OpinionCopyModel> save(@RequestParam @NotBlank String jsonData) {
+        try {
+            UserInfo person = Y9LoginUserHolder.getUserInfo();
+            String userId = person.getPersonId(), tenantId = person.getTenantId();
+            OpinionCopyModel opinion = Y9JsonUtil.readValue(jsonData, OpinionCopyModel.class);
+            String positionId = Y9LoginUserHolder.getPositionId();
+            return opinionCopyApi.saveOrUpdate(tenantId, userId, positionId, opinion);
+        } catch (Exception e) {
+            LOGGER.error("保存意见失败", e);
+        }
+        return Y9Result.failure("保存失败");
+    }
+
+    /**
+     * 删除意见
+     *
+     * @param id 意见id
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/deleteById")
+    public Y9Result<String> deleteById(@RequestParam @NotBlank String id) {
+        try {
+            opinionCopyApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
+            return Y9Result.successMsg("刪除成功");
+        } catch (Exception e) {
+            LOGGER.error("删除意见失败！", e);
+        }
+        return Y9Result.failure("删除失败");
     }
 }

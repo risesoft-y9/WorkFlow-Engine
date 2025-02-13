@@ -43,9 +43,19 @@ public class DocumentCopyServiceImpl implements DocumentCopyService {
     }
 
     @Override
+    public List<DocumentCopy> findByOpinionCopyId(String opinionCopyId) {
+        return documentCopyRepository.findByOpinionCopyIdOrderByCreateTimeAsc(opinionCopyId);
+    }
+
+    @Override
     public List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
         Integer status) {
         return documentCopyRepository.findByProcessSerialNumberAndUserIdAndStatus(processSerialNumber, userId, status);
+    }
+
+    @Override
+    public List<DocumentCopy> findByProcessSerialNumberAndUserId(String processSerialNumber, String userId) {
+        return documentCopyRepository.findByProcessSerialNumberAndUserId(processSerialNumber, userId);
     }
 
     @Override
