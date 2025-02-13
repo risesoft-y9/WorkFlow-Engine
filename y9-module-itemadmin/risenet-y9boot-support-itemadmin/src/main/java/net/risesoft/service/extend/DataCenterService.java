@@ -29,5 +29,5 @@ public interface DataCenterService {
      * @param processDefinitionId 流程定义ID
      * @return boolean
      */
-    boolean saveToDateCenter1(String processInstanceId, String processDefinitionId);
+    boolean saveToDateCenter1(String processInstanceId, String year, String processDefinitionId);
 }

@@ -26,7 +26,7 @@ public class DataCenterServiceImpl implements DataCenterService {
     }
 
     @Override
-    public boolean saveToDateCenter1(String processInstanceId, String processDefinitionId) {
+    public boolean saveToDateCenter1(String processInstanceId, String year, String processDefinitionId) {
         return true;
     }
 }
