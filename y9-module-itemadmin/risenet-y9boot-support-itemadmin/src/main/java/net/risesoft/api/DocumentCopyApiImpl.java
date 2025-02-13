@@ -185,13 +185,14 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<DocumentCopy> dcList = documentCopyService.findByProcessSerialNumberAndUserIdAndStatus(processSerialNumber,
-            orgUnitId, DocumentCopyStatusEnum.TODO_SIGN.getValue());
-        dcList.forEach(documentCopy -> {
-            documentCopy.setStatus(DocumentCopyStatusEnum.DELETE.getValue());
-            documentCopy.setUpdateTime(sdf.format(new Date()));
-            documentCopyService.save(documentCopy);
-        });
+        List<DocumentCopy> dcList =
+            documentCopyService.findByProcessSerialNumberAndUserId(processSerialNumber, orgUnitId);
+        dcList.stream().filter(documentCopy -> documentCopy.getStatus() < DocumentCopyStatusEnum.CANCEL.getValue())
+            .forEach(documentCopy -> {
+                documentCopy.setStatus(DocumentCopyStatusEnum.DELETE.getValue());
+                documentCopy.setUpdateTime(sdf.format(new Date()));
+                documentCopyService.save(documentCopy);
+            });
         return Y9Result.success();
     }
 }

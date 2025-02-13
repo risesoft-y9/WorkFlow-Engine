@@ -24,6 +24,8 @@ public interface DocumentCopyService {
     List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
         Integer status);
 
+    List<DocumentCopy> findByProcessSerialNumberAndUserId(String processSerialNumber, String userId);
+
     void save(List<DocumentCopy> documentCopyList);
 
     void save(DocumentCopy documentCopy);
