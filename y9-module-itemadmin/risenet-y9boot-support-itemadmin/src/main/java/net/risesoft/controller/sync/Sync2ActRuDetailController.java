@@ -162,7 +162,8 @@ public class Sync2ActRuDetailController {
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
                     + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_" + year + " P" + " WHERE"
-                    + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL AND p.END_TIME_ > '2025-01-22'"
+                    + "   P .END_TIME_ IS NOT NULL"
+                    + " AND P .DELETE_REASON_ IS NULL AND p.END_TIME_ < '2025-02-13' AND p.END_TIME_ > '2025-01-22'"
                     + " ORDER BY" + "  P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
