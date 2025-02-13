@@ -86,7 +86,7 @@ public class Sync2ActRuDetailController {
     }
 
     @RequestMapping(value = "/tongbu2DataCenter")
-    public void tongbu2DataCenter(String tenantId, HttpServletResponse response) {
+    public void tongbu2DataCenter(String tenantId, String year, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -100,7 +100,7 @@ public class Sync2ActRuDetailController {
             String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
-                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_" + year + " P" + " WHERE"
                     + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY"
                     + "  P .START_TIME_ DESC";
             }
@@ -112,7 +112,7 @@ public class Sync2ActRuDetailController {
                 try {
                     processInstanceId = (String)map.get("PROC_INST_ID_");
                     String processDefinitionId = (String)map.get("PROC_DEF_ID_");
-                    dataCenterService.saveToDateCenter1(processInstanceId, processDefinitionId);
+                    dataCenterService.saveToDateCenter1(processInstanceId, year, processDefinitionId);
                 } catch (Exception e) {
                     i = i + 1;
                     final Writer result = new StringWriter();
