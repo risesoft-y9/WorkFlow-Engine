@@ -40,6 +40,17 @@ public interface TypeSettingInfoApi {
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
+     * 获取排版信息
+     *
+     * @param tenantId 租户id
+     * @param id 排版信息id
+     * @return Y9Result<TypeSettingInfoModel>
+     */
+    @GetMapping(value = "/getTypeSetting")
+    Y9Result<TypeSettingInfoModel> getTypeSetting(@RequestParam("tenantId") String tenantId,
+        @RequestParam("id") String id);
+
+    /**
      * 保存排版信息
      *
      * @param tenantId 租户id
@@ -50,4 +61,16 @@ public interface TypeSettingInfoApi {
     @PostMapping(value = "/saveTypeSetting")
     Y9Result<Object> saveTypeSetting(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("jsonData") String jsonData);
+
+    /**
+     * 更新排版信息
+     *
+     * @param tenantId 租户id
+     * @param id 排版信息id
+     * @param fileId 文件id
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/updateFile")
+    Y9Result<Object> updateFile(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
+        @RequestParam("fileId") String fileId);
 }

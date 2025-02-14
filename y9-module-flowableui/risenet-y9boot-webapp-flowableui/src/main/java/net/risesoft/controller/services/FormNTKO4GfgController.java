@@ -32,6 +32,7 @@ import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.PrintLogApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.TypeSettingInfoApi;
 import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -80,6 +81,8 @@ public class FormNTKO4GfgController {
     private final FormDataApi formDataApi;
 
     private final PrintLogApi printLogApi;
+
+    private final TypeSettingInfoApi typeSettingInfoApi;
 
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
@@ -276,6 +279,37 @@ public class FormNTKO4GfgController {
             currentBureauGuid = orgUnit.getParentId();
         }
         return transactionWordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
+    }
+
+    /**
+     * 保存清样文件
+     *
+     * @param fileType 文件类型
+     * @param processSerialNumber 流程编号
+     * @param id 清样文件id
+     * @param request 请求
+     * @return Y9Result<DocumentWordModel>
+     */
+    @PostMapping(value = "/uploadQingyang")
+    public Y9Result<String> uploadQingyang(@RequestParam String fileType, @RequestParam String processSerialNumber,
+        @RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
+        HttpServletRequest request) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
+        try {
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, "清样文件" + fileType);
+            Boolean flag = typeSettingInfoApi.updateFile(tenantId, id, y9FileStore.getId()).isSuccess();
+            if (flag) {
+                return Y9Result.success(y9FileStore.getId());
+            }
+        } catch (Exception e) {
+            LOGGER.error("保存正文失败", e);
+        }
+        return Y9Result.failure("保存正文失败");
     }
 
     /**
