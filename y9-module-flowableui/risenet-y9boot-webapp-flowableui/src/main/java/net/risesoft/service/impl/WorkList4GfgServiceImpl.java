@@ -1471,6 +1471,34 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("completer",
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     mapTemp.put("taskId", taskId);
+
+                    List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                    if (ardModel.isStarted()) {
+                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
+                    }
+                    /*
+                     * 红绿灯
+                     */
+                    if (null != ardModel.getDueDate()) {
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                    }
+                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
+                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
+                    List<UrgeInfoModel> urgeInfoList =
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    if (ardModel.isSub()) {
+                        urgeInfoList = urgeInfoList.stream().filter(
+                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
+                            .collect(Collectors.toList());
+                    } else {
+                        urgeInfoList =
+                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+                    }
+                    if (!urgeInfoList.isEmpty()) {
+                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
+                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
+                    }
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     /*
                      * 暂时取表单所有字段数据
                      */
