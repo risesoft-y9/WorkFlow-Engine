@@ -2,11 +2,11 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_SECRET_LEVEL_RECORD")
-@org.hibernate.annotations.Table(comment = "密级记录表", appliesTo = "FF_SECRET_LEVEL_RECORD")
+@Comment("密级记录表")
 public class SecretLevelRecord implements Serializable {
 
     private static final long serialVersionUID = -2859284532731967688L;

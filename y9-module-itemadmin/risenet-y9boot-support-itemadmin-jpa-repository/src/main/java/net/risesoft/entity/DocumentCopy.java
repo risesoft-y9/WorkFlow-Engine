@@ -2,12 +2,12 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "FF_DOCUMENT_COPY",
     indexes = {@Index(name = "ff_document_copy_001", columnList = "senderId"),
         @Index(name = "ff_document_copy_002", columnList = "opinionCopyId")})
-@org.hibernate.annotations.Table(comment = "办件副本信息表", appliesTo = "FF_DOCUMENT_COPY")
+@Comment("办件副本信息表")
 public class DocumentCopy implements Serializable {
 
     private static final long serialVersionUID = 7926782499224720763L;

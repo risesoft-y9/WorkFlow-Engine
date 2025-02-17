@@ -8,6 +8,7 @@ dependencies {
     api(platform(libs.y9.digitalbase.dependencies))
     api("net.risesoft:risenet-y9boot-starter-jpa-public")
     api("net.risesoft:risenet-y9boot-starter-elasticsearch")
+    api("net.risesoft:risenet-y9boot-support-history")
 }
 
 description = "risenet-y9boot-support-itemadmin-jpa-repository"
