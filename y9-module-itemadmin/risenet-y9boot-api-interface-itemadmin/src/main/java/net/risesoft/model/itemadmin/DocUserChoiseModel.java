@@ -65,6 +65,11 @@ public class DocUserChoiseModel implements Serializable {
     private boolean sponsorStatus;
 
     /**
+     * 是否抢占式签收，针对单人节点
+     */
+    private boolean signTask;
+
+    /**
      * 任务路由
      */
     private String routeToTask;
