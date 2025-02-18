@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -63,7 +62,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/doingList")
     public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.doingList(itemId, page, rows);
+        return this.workList4GfgService.doingList(itemId, page, rows);
     }
 
     /**
@@ -78,7 +77,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/doingList4DuBan")
     public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId, @RequestParam Integer days,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doingList4DuBan(itemId, days, page, rows);
+        return this.workList4GfgService.doingList4DuBan(itemId, days, page, rows);
     }
 
     /**
@@ -92,7 +91,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/doingList4Dept")
     public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doingList4Dept(itemId, isBureau, page, rows);
+        return this.workList4GfgService.doingList4Dept(itemId, isBureau, page, rows);
     }
 
     /**
@@ -106,7 +105,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/doingList4All")
     public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.doingList4All(itemId, page, rows);
+        return this.workList4GfgService.doingList4All(itemId, page, rows);
     }
 
     /**
@@ -117,7 +116,7 @@ public class WorkList4GfgRestController {
      */
     @GetMapping(value = "/doingViewConf")
     public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -134,7 +133,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/doneList")
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.doneList(itemId, page, rows);
+        return this.workList4GfgService.doneList(itemId, page, rows);
     }
 
     /**
@@ -149,7 +148,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/doneList4Dept")
     public Y9Page<Map<String, Object>> doneList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doneList4Dept(itemId, isBureau, page, rows);
+        return this.workList4GfgService.doneList4Dept(itemId, isBureau, page, rows);
     }
 
     /**
@@ -163,7 +162,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/doneList4All")
     public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.doneList4All(itemId, page, rows);
+        return this.workList4GfgService.doneList4All(itemId, page, rows);
     }
 
     /**
@@ -177,7 +176,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/haveDoneList")
     public Y9Page<Map<String, Object>> haveDoneList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.haveDoneList(itemId, page, rows);
+        return this.workList4GfgService.haveDoneList(itemId, page, rows);
     }
 
     /**
@@ -188,7 +187,7 @@ public class WorkList4GfgRestController {
      */
     @GetMapping(value = "/getSignDeptDetailList")
     public Y9Result<List<Map<String, Object>>> getSignDeptDetailList(@RequestParam String processSerialNumber) {
-        return workList4GfgService.getSignDeptDetailList(processSerialNumber);
+        return this.workList4GfgService.getSignDeptDetailList(processSerialNumber);
     }
 
     /**
@@ -202,7 +201,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/allList")
     public Y9Page<Map<String, Object>> allList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.allList(itemId, page, rows);
+        return this.workList4GfgService.allList(itemId, page, rows);
     }
 
     /**
@@ -213,7 +212,7 @@ public class WorkList4GfgRestController {
      */
     @GetMapping(value = "/doneViewConf")
     public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -227,7 +226,7 @@ public class WorkList4GfgRestController {
      */
     @GetMapping(value = "/recycleViewConf")
     public Y9Result<List<ItemViewConfModel>> recycleViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -244,7 +243,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/recycleList")
     public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.recycleList(itemId, page, rows);
+        return this.workList4GfgService.recycleList(itemId, page, rows);
     }
 
     /**
@@ -258,7 +257,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/recycleList4Dept")
     public Y9Page<Map<String, Object>> recycleList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.recycleList4Dept(itemId, isBureau, page, rows);
+        return this.workList4GfgService.recycleList4Dept(itemId, isBureau, page, rows);
     }
 
     /**
@@ -272,7 +271,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/recycleList4All")
     public Y9Page<Map<String, Object>> recycleList4All(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.recycleList4All(itemId, page, rows);
+        return this.workList4GfgService.recycleList4All(itemId, page, rows);
     }
 
     /**
@@ -292,7 +291,7 @@ public class WorkList4GfgRestController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
+        return this.queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -309,7 +308,7 @@ public class WorkList4GfgRestController {
     public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return doingService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
+        return this.doingService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -326,7 +325,7 @@ public class WorkList4GfgRestController {
     public Y9Page<Map<String, Object>> searchDoneList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return doneService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
+        return this.doneService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -341,7 +340,7 @@ public class WorkList4GfgRestController {
     @PostMapping(value = "/searchTodoList")
     public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.todoList(itemId, searchMapStr, page, rows);
+        return this.workList4GfgService.todoList(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -355,7 +354,7 @@ public class WorkList4GfgRestController {
     @GetMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return workList4GfgService.todoList(itemId, "", page, rows);
+        return this.workList4GfgService.todoList(itemId, "", page, rows);
     }
 
     /**
@@ -368,8 +367,9 @@ public class WorkList4GfgRestController {
      */
     @GetMapping(value = "/todoList4TaskDefKey")
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(@RequestParam String itemId,
-        @RequestParam @NotBlank String taskDefKey, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, "", page, rows);
+        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        return this.workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, searchMapStr, page, rows);
     }
 
     /**
@@ -380,7 +380,7 @@ public class WorkList4GfgRestController {
      */
     @GetMapping(value = "/todoViewConf")
     public Y9Result<List<ItemViewConfModel>> todoViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -394,7 +394,7 @@ public class WorkList4GfgRestController {
      */
     @GetMapping(value = "/allTodoList")
     public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
-        return workList4GfgService.allTodoList(queryParamModel);
+        return this.workList4GfgService.allTodoList(queryParamModel);
     }
 
     /**
@@ -408,7 +408,7 @@ public class WorkList4GfgRestController {
     public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId,
         @RequestParam(required = false) String viewType) {
         List<ItemViewConfModel> itemViewConfList =
-            itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, viewType).getData();
+            this.itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, viewType).getData();
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 }
