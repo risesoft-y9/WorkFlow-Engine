@@ -78,7 +78,7 @@ public interface ItemTodoApi {
     @GetMapping("/findByUserIdAndSystemNameAndTaskDefKey")
     Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("taskDefKey") @NotBlank String taskDefKey, @RequestParam("page") Integer page,
+        @RequestParam(value = "taskDefKey", required = false) String taskDefKey, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
     /**
@@ -114,7 +114,7 @@ public interface ItemTodoApi {
     @PostMapping("/searchByUserIdAndSystemNameAndTaskDefKey")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("taskDefKey") @NotBlank String taskDefKey, @RequestBody String searchMapStr,
+        @RequestParam(value = "taskDefKey", required = false) String taskDefKey, @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }
