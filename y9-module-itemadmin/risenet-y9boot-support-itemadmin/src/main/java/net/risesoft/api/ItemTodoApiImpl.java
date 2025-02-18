@@ -63,7 +63,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 0));
+        return Y9Result.success(this.actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 0));
     }
 
     /**
@@ -84,7 +84,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         Page<ActRuDetail> ardPage =
-            actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
+            this.actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -115,8 +115,14 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(systemName,
-            userId, 0, taskDefKey, rows, page, sort);
+        Page<ActRuDetail> ardPage;
+        if (StringUtils.isNotBlank(taskDefKey)) {
+            ardPage = this.actRuDetailService.pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(systemName, userId, 0,
+                taskDefKey, rows, page, sort);
+        } else {
+            ardPage =
+                this.actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
+        }
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -145,9 +151,9 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
         Page<ActRuDetail> ardPage;
-        boolean isEmpty = checkObjAllFieldsIsNull(queryParamModel);
+        boolean isEmpty = this.checkObjAllFieldsIsNull(queryParamModel);
         if (isEmpty) {
-            ardPage = actRuDetailService.pageByAssigneeAndStatus(userId, 0, rows, page, sort);
+            ardPage = this.actRuDetailService.pageByAssigneeAndStatus(userId, 0, rows, page, sort);
         } else {
             String systemNameSql = "",
                 processParamSql = "LEFT JOIN FF_PROCESS_PARAM F ON T.PROCESSSERIALNUMBER = F.PROCESSSERIALNUMBER ";
@@ -185,7 +191,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
                 + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1 + systemNameSql;
             Object[] args = new Object[1];
             args[0] = userId;
-            ItemPage<ActRuDetailModel> ardModelPage = itemPageService.page(sql, args,
+            ItemPage<ActRuDetailModel> ardModelPage = this.itemPageService.page(sql, args,
                 new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
             return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
         }
@@ -249,7 +255,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
                     .append(searchMap.get(key).toString()).append("') > 0 ");
                 if (!tableAliasList.contains(alias)) {
                     tableAliasList.add(alias);
-                    Y9Table y9Table = y9TableService.findByTableAlias(alias);
+                    Y9Table y9Table = this.y9TableService.findByTableAlias(alias);
                     if (null == y9Table) {
                         return Y9Page.failure(page, rows, 0, null, "别名" + alias + "对应的表不存在", 0);
                     }
@@ -266,7 +272,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
-        ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
+        ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
@@ -286,7 +292,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam String taskDefKey,
+        @RequestParam String userId, @RequestParam String systemName, @RequestParam(required = false) String taskDefKey,
         @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         StringBuilder innerSql = new StringBuilder();
@@ -298,11 +304,16 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             if (key.contains(".")) {
                 String[] aliasAndColumnName = key.split("\\.");
                 String alias = aliasAndColumnName[0];
-                whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
-                    .append(searchMap.get(key).toString()).append("') > 0 ");
+                if (null != searchMap.get(key) && StringUtils.isNotBlank(searchMap.get(key).toString())) {
+                    whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                        .append(searchMap.get(key).toString()).append("') > 0 ");
+                } else {
+                    whereSql.append("AND (").append(key.toUpperCase()).append("= '' OR ").append(key.toUpperCase())
+                        .append(" IS NULL)");
+                }
                 if (!tableAliasList.contains(alias)) {
                     tableAliasList.add(alias);
-                    Y9Table y9Table = y9TableService.findByTableAlias(alias);
+                    Y9Table y9Table = this.y9TableService.findByTableAlias(alias);
                     if (null == y9Table) {
                         return Y9Page.failure(page, rows, 0, null, "别名" + alias + "对应的表不存在", 0);
                     }
@@ -312,16 +323,25 @@ public class ItemTodoApiImpl implements ItemTodoApi {
                 }
             }
         }
+        Object[] args;
+        String taskDefKeySql = "";
+        if (StringUtils.isNotBlank(taskDefKey)) {
+            args = new Object[3];
+            args[0] = systemName;
+            args[1] = taskDefKey;
+            args[2] = userId;
+            taskDefKeySql = "AND T.TASKDEFKEY = ?";
+        } else {
+            args = new Object[2];
+            args[0] = systemName;
+            args[1] = userId;
+        }
         String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE "
-            + whereSql + " AND T.SYSTEMNAME = ? AND T.TASKDEFKEY = ? AND T.ASSIGNEE = ?ORDER BY T.CREATETIME DESC";
+            + whereSql + " AND T.SYSTEMNAME = ? " + taskDefKeySql + " AND T.ASSIGNEE = ?ORDER BY T.CREATETIME DESC";
         String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + innerSql
-            + " WHERE T.SYSTEMNAME= ? AND T.TASKDEFKEY = ? AND T.ASSIGNEE= ?  AND T.STATUS=0 AND T.DELETED = FALSE "
+            + " WHERE T.SYSTEMNAME= ? " + taskDefKeySql + " AND T.ASSIGNEE= ?  AND T.STATUS=0 AND T.DELETED = FALSE "
             + whereSql;
-        Object[] args = new Object[3];
-        args[0] = systemName;
-        args[1] = taskDefKey;
-        args[2] = userId;
-        ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
+        ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
