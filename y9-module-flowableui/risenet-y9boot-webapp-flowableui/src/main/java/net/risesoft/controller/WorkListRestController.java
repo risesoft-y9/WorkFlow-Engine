@@ -60,7 +60,7 @@ public class WorkListRestController {
     @GetMapping(value = "/doingList")
     public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return doingService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
+        return this.doingService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
     }
 
     /**
@@ -71,7 +71,7 @@ public class WorkListRestController {
      */
     @GetMapping(value = "/doingViewConf")
     public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -89,7 +89,7 @@ public class WorkListRestController {
     @GetMapping(value = "/doneList")
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return doneService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
+        return this.doneService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
     }
 
     /**
@@ -100,7 +100,7 @@ public class WorkListRestController {
      */
     @GetMapping(value = "/doneViewConf")
     public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -123,14 +123,13 @@ public class WorkListRestController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
+        return this.queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
 
     /**
      * 获取已办件多条件查询列表
      *
      * @param itemId 事项id
-     * @param tableName 表名
      * @param searchMapStr 搜索列和值
      * @param page 页码
      * @param rows 条数
@@ -138,9 +137,9 @@ public class WorkListRestController {
      */
     @PostMapping(value = "/searchDoingList")
     public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
-        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return doingService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
+        return this.doingService.pageSearchList(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -157,7 +156,7 @@ public class WorkListRestController {
     public Y9Page<Map<String, Object>> searchDoneList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return doneService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
+        return this.doneService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -174,7 +173,7 @@ public class WorkListRestController {
     public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return todoService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
+        return this.todoService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 
     /**
@@ -189,7 +188,7 @@ public class WorkListRestController {
     @GetMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return todoService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
+        return this.todoService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
     }
 
     /**
@@ -200,7 +199,7 @@ public class WorkListRestController {
      */
     @GetMapping(value = "/todoViewConf")
     public Y9Result<List<ItemViewConfModel>> todoViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -217,7 +216,7 @@ public class WorkListRestController {
     public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId,
         @RequestParam(required = false) String viewType) {
         List<ItemViewConfModel> itemViewConfList =
-            itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, viewType).getData();
+            this.itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, viewType).getData();
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 }

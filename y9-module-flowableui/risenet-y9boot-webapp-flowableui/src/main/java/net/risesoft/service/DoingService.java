@@ -34,12 +34,11 @@ public interface DoingService {
      * 在办列表
      *
      * @param itemId 事项Id
-     * @param tableName 表名
      * @param searchMapStr 搜索条件
      * @param page 页码
      * @param rows 每页条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> pageSearchList(String itemId, String tableName, String searchMapStr, Integer page,
+    Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page,
         Integer rows);
 }
