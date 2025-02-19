@@ -843,12 +843,17 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> doneList4All(String itemId, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> doneList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                this.itemDoneApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+            Y9Page<ActRuDetailModel> itemPage;
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage = this.itemDoneApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+            } else {
+                itemPage =
+                    this.itemDoneApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
+            }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});

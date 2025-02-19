@@ -161,9 +161,10 @@ public class WorkList4GfgRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/doneList4All")
-    public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId, @RequestParam Integer page,
+    public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.doneList4All(itemId, page, rows);
+        return this.workList4GfgService.doneList4All(itemId, searchMapStr, page, rows);
     }
 
     /**

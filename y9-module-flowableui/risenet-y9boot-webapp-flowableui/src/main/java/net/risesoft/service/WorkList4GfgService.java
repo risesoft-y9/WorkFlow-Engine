@@ -124,7 +124,7 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doneList4All(String itemId, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> doneList4All(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取所有本人经手件的列表
