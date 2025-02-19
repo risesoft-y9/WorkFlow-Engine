@@ -103,9 +103,10 @@ public class WorkList4GfgRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/doingList4All")
-    public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId, @RequestParam Integer page,
+    public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.doingList4All(itemId, page, rows);
+        return this.workList4GfgService.doingList4All(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -298,7 +299,6 @@ public class WorkList4GfgRestController {
      * 获取已办件多条件查询列表
      *
      * @param itemId 事项id
-     * @param tableName 表名
      * @param searchMapStr 搜索列和值
      * @param page 页码
      * @param rows 条数
@@ -306,9 +306,9 @@ public class WorkList4GfgRestController {
      */
     @PostMapping(value = "/searchDoingList")
     public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
-        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.doingService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
+        return this.doingService.pageSearchList(itemId, searchMapStr, page, rows);
     }
 
     /**

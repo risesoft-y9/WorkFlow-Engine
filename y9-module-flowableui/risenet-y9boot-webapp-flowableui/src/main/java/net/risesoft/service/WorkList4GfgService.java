@@ -75,7 +75,7 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doingList4All(String itemId, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> doingList4All(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取已办列表（包括在办、办结）

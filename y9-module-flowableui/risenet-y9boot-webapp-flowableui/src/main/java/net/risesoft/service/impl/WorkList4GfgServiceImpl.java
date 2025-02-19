@@ -508,7 +508,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                             this.signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),
                                 processParam.getProcessSerialNumber()).getData();
                     }
-                    System.out.println("getProcessSerialNumber=" + processParam.getProcessSerialNumber());
                     taskName =
                         this.historictaskApi.getById(tenantId, signDeptDetailList.get(0).getTaskId()).getData()
                             .getName();
@@ -627,13 +626,17 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> doingList4All(String itemId, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> doingList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            OrgUnit bureau = this.orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                this.itemDoingApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+            Y9Page<ActRuDetailModel> itemPage = null;
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage = this.itemDoingApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+            } else {
+                itemPage =
+                    this.itemDoingApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
+            }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});

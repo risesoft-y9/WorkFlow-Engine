@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -18,12 +19,14 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemDoingApi;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.entity.form.Y9Table;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ItemPageService;
+import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -45,6 +48,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
 
     private final ActRuDetailService actRuDetailService;
 
+    private final Y9TableService y9TableService;
+
     /**
      * 根据系统名称查询当前人的在办数量
      *
@@ -58,7 +63,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int count = actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 1);
+        int count = this.actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 1);
         return Y9Result.success(count);
     }
 
@@ -77,7 +82,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         @RequestParam Integer page, @RequestParam Integer rows) {
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
         Y9LoginUserHolder.setTenantId(tenantId);
-        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemNameAndEnded(systemName, false, page, rows, sort);
+        Page<ActRuDetail> ardPage =
+            this.actRuDetailService.pageBySystemNameAndEnded(systemName, false, page, rows, sort);
         List<ActRuDetailModel> modelList = new ArrayList<>();
         ardPage.getContent().forEach(ard -> {
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
@@ -105,7 +111,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
         Page<ActRuDetail> ardPage =
-            actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId, 1, rows, page, sort);
+            this.actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId, 1, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -134,7 +140,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         @RequestParam String systemName, @RequestParam String startDate, @RequestParam String endDate,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.pageBySystemName4DuBan(systemName, startDate, endDate, rows, page);
+        return this.actRuDetailService.pageBySystemName4DuBan(systemName, startDate, endDate, rows, page);
     }
 
     /**
@@ -155,7 +161,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
         Page<ActRuDetail> ardPage =
-            actRuDetailService.pageBySystemNameAndDeptIdAndEnded(systemName, deptId, isBureau, false, rows, page, sort);
+            this.actRuDetailService.pageBySystemNameAndDeptIdAndEnded(systemName, deptId, isBureau, false, rows, page,
+                sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -172,7 +179,6 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      *
      * @param tenantId 租户id
      * @param systemName 系统名称
-     * @param tableName 表名称
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
@@ -181,27 +187,47 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
-        @RequestParam String tableName, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestBody String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
-        StringBuilder sql1 = new StringBuilder();
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
-        for (String columnName : searchMap.keySet()) {
-            sql1.append("AND INSTR(F.").append(columnName.toUpperCase()).append(",'")
-                .append(searchMap.get(columnName).toString()).append("') > 0 ");
+        List<String> tableAliasList = new ArrayList<>();
+        StringBuilder innerSql = new StringBuilder();
+        StringBuilder whereSql = new StringBuilder();
+        for (String key : searchMap.keySet()) {
+            if (key.contains(".")) {
+                String[] aliasAndColumnName = key.split("\\.");
+                String alias = aliasAndColumnName[0];
+                if (null != searchMap.get(key) && StringUtils.isNotBlank(searchMap.get(key).toString())) {
+                    whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                        .append(searchMap.get(key).toString()).append("') > 0 ");
+                } else {
+                    whereSql.append("AND (").append(key.toUpperCase()).append("= '' OR ").append(key.toUpperCase())
+                        .append(" IS NULL)");
+                }
+                if (!tableAliasList.contains(alias)) {
+                    tableAliasList.add(alias);
+                    Y9Table y9Table = this.y9TableService.findByTableAlias(alias);
+                    if (null == y9Table) {
+                        return Y9Page.failure(page, rows, 0, null, "别名" + alias + "对应的表不存在", 0);
+                    }
+                    innerSql.append("INNER JOIN ").append(y9Table.getTableName().toUpperCase()).append(" ")
+                        .append(alias.toUpperCase()).append(" ON T.PROCESSSERIALNUMBER = ").append(alias.toUpperCase())
+                        .append(".GUID ");
+                }
+            }
         }
-        String orderBy = "T.LASTTIME DESC";
+        String orderBySql = " ORDER BY T.STARTTIME DESC";
         String sql =
-            "SELECT A.* FROM ( SELECT T.*, ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1 + " AND T.SYSTEMNAME = ?  ORDER BY "
-                + orderBy + ") A WHERE A.RS_NUM=1";
-        String countSql = "SELECT COUNT(DISTINCT T.PROCESSSERIALNUMBER) FROM FF_ACT_RU_DETAIL T " + sql0
-            + " WHERE T.SYSTEMNAME= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
+            "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql
+                + " WHERE T.SYSTEMNAME = ? AND T.ENDED = FALSE AND  T.DELETED = FALSE " + whereSql
+                + " GROUP BY T.PROCESSSERIALNUMBER ";
+        String countSql = "SELECT COUNT(*) FROM (" + sql + ") ALIAS";
+        sql += orderBySql;
         Object[] args = new Object[1];
         args[0] = systemName;
-        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+        ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
@@ -243,7 +269,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
-        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+        ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
