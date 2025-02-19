@@ -263,6 +263,24 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 获取传签件办件数据
+     *
+     * @param processSerialNumber 流程序列号
+     * @return
+     */
+    @GetMapping(value = "/editCopy")
+    public Y9Result<DocumentDetailModel> editCopy(@RequestParam @NotBlank String processSerialNumber) {
+        try {
+            DocumentDetailModel model = documentApi.editCopy(Y9LoginUserHolder.getTenantId(),
+                Y9LoginUserHolder.getPositionId(), processSerialNumber, false).getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
      * 获取编辑办件数据
      *
      * @param processInstanceId 流程实例id
@@ -319,24 +337,6 @@ public class Document4GfgRestController {
     }
 
     /**
-     * 获取传签件办件数据
-     * 
-     * @param processSerialNumber 流程序列号
-     * @return
-     */
-    @GetMapping(value = "/editCopy")
-    public Y9Result<DocumentDetailModel> editCopy(@RequestParam @NotBlank String processSerialNumber) {
-        try {
-            DocumentDetailModel model = documentApi.editCopy(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPositionId(), processSerialNumber, false).getData();
-            return Y9Result.success(model, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取编辑办件数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
-    }
-
-    /**
      * 获取编辑办件数据
      *
      * @param taskId 任务id
@@ -352,28 +352,6 @@ public class Document4GfgRestController {
             DocumentDetailModel model = documentApi
                 .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId, false).getData();
             return Y9Result.success(model, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取编辑办件数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
-    }
-
-    /**
-     * 获取待办按钮
-     * 
-     * @param taskId 任务id
-     * @return {@code Y9Result<List<ItemButtonModel>>} 通用请求返回对象 - data是按钮集合
-     */
-    @GetMapping(value = "/getButtons")
-    public Y9Result<List<ItemButtonModel>> getButtons(@RequestParam @NotBlank String taskId) {
-        try {
-            TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
-            if (null == task) {
-                return Y9Result.failure("当前待办已处理！");
-            }
-            List<ItemButtonModel> buttonList = documentApi
-                .getButtons(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId).getData();
-            return Y9Result.success(buttonList, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
         }
@@ -456,6 +434,28 @@ public class Document4GfgRestController {
             departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), organization.getId()).getData();
         deptList = deptList.stream().filter(Department::isBureau).collect(Collectors.toList());
         return Y9Result.success(deptList);
+    }
+
+    /**
+     * 获取待办按钮
+     *
+     * @param taskId 任务id
+     * @return {@code Y9Result<List<ItemButtonModel>>} 通用请求返回对象 - data是按钮集合
+     */
+    @GetMapping(value = "/getButtons")
+    public Y9Result<List<ItemButtonModel>> getButtons(@RequestParam @NotBlank String taskId) {
+        try {
+            TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+            if (null == task) {
+                return Y9Result.failure("当前待办已处理！");
+            }
+            List<ItemButtonModel> buttonList = documentApi
+                .getButtons(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId).getData();
+            return Y9Result.success(buttonList, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
     }
 
     /**
@@ -642,6 +642,33 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 保存秘密等级记录
+     *
+     * @param processSerialNumber 流程编号
+     * @param secretLevel 秘密等级
+     * @param secretBasis 秘密依据
+     * @param secretItem 秘密事项
+     * @param tableName 表名
+     * @param fieldName 字段名
+     * @param description 描述
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/saveSecretLevelRecord")
+    public Y9Result<String> saveSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String secretLevel, @RequestParam @NotBlank String secretBasis,
+        @RequestParam @NotBlank String secretItem, @RequestParam @NotBlank String tableName,
+        @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String description) {
+        try {
+            secretLevelRecordApi.saveRecord(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+                processSerialNumber, secretLevel, secretBasis, secretItem, description, tableName, fieldName);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            LOGGER.error("保存失败", e);
+        }
+        return Y9Result.failure("保存失败");
+    }
+
+    /**
      * 获取签收任务配置（用于判断是否直接发送）
      *
      * @param itemId 事项id
@@ -690,29 +717,5 @@ public class Document4GfgRestController {
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
-    }
-
-    /**
-     * 保存秘密等级记录
-     *
-     * @param processSerialNumber 流程编号
-     * @param secretLevel 秘密等级
-     * @param secretBasis 秘密依据
-     * @param secretItem 秘密事项
-     * @param description 描述
-     * @return Y9Result<String>
-     */
-    @PostMapping(value = "/saveSecretLevelRecord")
-    public Y9Result<String> saveSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String secretLevel, @RequestParam @NotBlank String secretBasis,
-        @RequestParam @NotBlank String secretItem, @RequestParam(required = false) String description) {
-        try {
-            secretLevelRecordApi.saveRecord(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-                processSerialNumber, secretLevel, secretBasis, secretItem, description);
-            return Y9Result.successMsg("保存成功");
-        } catch (Exception e) {
-            LOGGER.error("保存失败", e);
-        }
-        return Y9Result.failure("保存失败");
     }
 }
