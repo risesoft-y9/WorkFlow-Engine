@@ -82,6 +82,8 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
 
     private List<Person> personList;
 
+    private List<TaskRelatedModel> taskRelatedList;
+
     @Override
     public int compareTo(HistoryProcessModel o) {
         try {
