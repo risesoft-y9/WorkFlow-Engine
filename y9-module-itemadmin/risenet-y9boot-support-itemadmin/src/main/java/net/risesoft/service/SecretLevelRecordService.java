@@ -10,7 +10,9 @@ public interface SecretLevelRecordService {
      * @param secretBasis 密级依据
      * @param secretItem 密级项目
      * @param description 说明
+     * @param tableName 表名
+     * @param fieldName 字段名
      */
-    void save(String processSerialNumber, String secretLevel, String secretBasis, String secretItem,
-        String description);
+    void save(String processSerialNumber, String secretLevel, String secretBasis, String secretItem, String description,
+        String tableName, String fieldName);
 }

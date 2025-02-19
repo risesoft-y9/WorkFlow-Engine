@@ -33,18 +33,22 @@ public class SecretLevelRecordApiImpl implements SecretLevelRecordApi {
      * @param secretBasis 定密依据
      * @param secretItem 具体事项
      * @param description 说明
+     * @param tableName 表名
+     * @param fieldName 字段名
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.8
      */
     @Override
     public Y9Result<Object> saveRecord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String secretLevel, @RequestParam String secretBasis,
-        @RequestParam String secretItem, String description) {
+        @RequestParam String secretItem, String description, @RequestParam String tableName,
+        @RequestParam String fieldName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPersonId(userId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(person.toUserInfo());
-        secretLevelRecordService.save(processSerialNumber, secretLevel, secretBasis, secretItem, description);
+        secretLevelRecordService.save(processSerialNumber, secretLevel, secretBasis, secretItem, description, tableName,
+            fieldName);
         return Y9Result.successMsg("保存成功");
     }
 }
