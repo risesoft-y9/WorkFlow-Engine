@@ -23,6 +23,8 @@ public interface SecretLevelRecordApi {
      * @param secretBasis 定密依据
      * @param secretItem 具体事项
      * @param description 说明
+     * @param tableName 表名
+     * @param fieldName 字段名
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.8
      */
@@ -31,6 +33,7 @@ public interface SecretLevelRecordApi {
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam(value = "secretLevel") String secretLevel,
         @RequestParam(value = "secretBasis") String secretBasis, @RequestParam(value = "secretItem") String secretItem,
-        @RequestParam(value = "description", required = false) String description);
+        @RequestParam(value = "description", required = false) String description,
+        @RequestParam(value = "tableName") String tableName, @RequestParam(value = "fieldName") String fieldName);
 
 }
