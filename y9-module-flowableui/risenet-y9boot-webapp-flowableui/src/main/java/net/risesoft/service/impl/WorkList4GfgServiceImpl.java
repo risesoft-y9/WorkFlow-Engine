@@ -39,7 +39,9 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
+import net.risesoft.enums.FlwdjEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.JjcdEnum;
 import net.risesoft.enums.TableColumnEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -1240,35 +1242,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
-
-                    List<TaskRelatedModel> taskRelatedList =
-                        taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (ardModel.isStarted()) {
-                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
-                    }
-                    /*
-                     * 红绿灯
-                     */
-                    if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
-                    }
-                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
-                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
-                    List<UrgeInfoModel> urgeInfoList =
-                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    if (ardModel.isSub()) {
-                        urgeInfoList = urgeInfoList.stream().filter(
-                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
-                            .collect(Collectors.toList());
-                    } else {
-                        urgeInfoList =
-                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
-                    }
-                    if (!urgeInfoList.isEmpty()) {
-                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
-                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
-                    }
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
@@ -1329,34 +1303,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
-                    List<TaskRelatedModel> taskRelatedList =
-                        taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (ardModel.isStarted()) {
-                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
-                    }
-                    /*
-                     * 红绿灯
-                     */
-                    if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
-                    }
-                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
-                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
-                    List<UrgeInfoModel> urgeInfoList =
-                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    if (ardModel.isSub()) {
-                        urgeInfoList = urgeInfoList.stream().filter(
-                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
-                            .collect(Collectors.toList());
-                    } else {
-                        urgeInfoList =
-                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
-                    }
-                    if (!urgeInfoList.isEmpty()) {
-                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
-                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
-                    }
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
                 } catch (Exception e) {
                     LOGGER.error("获取部门回收站列表失败" + processInstanceId, e);
                 }
@@ -1405,40 +1352,10 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("taskName", taskList.get(0).getName());
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     mapTemp.put("taskAssignee", listTemp.get(0));
-                    List<TaskRelatedModel> taskRelatedList =
-                        taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (ardModel.isStarted()) {
-                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
-                    }
-                    /*
-                     * 红绿灯
-                     */
-                    if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
-                    }
-                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
-                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
-                    List<UrgeInfoModel> urgeInfoList =
-                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    if (ardModel.isSub()) {
-                        urgeInfoList = urgeInfoList.stream().filter(
-                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
-                            .collect(Collectors.toList());
-                    } else {
-                        urgeInfoList =
-                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
-                    }
-                    if (!urgeInfoList.isEmpty()) {
-                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
-                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
-                    }
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
-                    /*
-                     * 暂时取表单所有字段数据
-                     */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
@@ -1528,13 +1445,36 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             if (ardModel.isStarted()) {
                 taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
             }
-            // 红绿灯,这里根据表单中的字段督办时限来判断
-            if (ToolUtil.isObjectNotNullAndStringNotEmpty(formData.get(TableColumnEnum.DBSX.getValue()))) {
+            // 督办时限：红绿灯,这里根据表单中的字段督办时限来判断
+            Object dbsx = formData.get(TableColumnEnum.DBSX.getValue());
+            if (ToolUtil.isObjectNotNullAndStringNotEmpty(dbsx)) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 TaskRelatedModel taskRelatedModel = workDayService.getLightColor(new Date(),
-                    sdf.parse(String.valueOf(formData.get(TableColumnEnum.DBSX.getValue()))));
+                    sdf.parse(String.valueOf(dbsx)));
                 if (null != taskRelatedModel) {
                     taskRelatedList.add(taskRelatedModel);
+                }
+            }
+            // 条码号
+            Object thm = formData.get(TableColumnEnum.TMH.getValue());
+            if (ToolUtil.isObjectNotNullAndStringNotEmpty(thm)) {
+                taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.TMH.getValue(), String.valueOf(thm)));
+            }
+            // 紧急程度
+            Object jjcd = formData.get(TableColumnEnum.JJCD.getValue());
+            if (ToolUtil.isObjectNotNullAndStringNotEmpty(jjcd)) {
+                Integer jjcdInt = Integer.parseInt(String.valueOf(jjcd));
+                if (jjcdInt.equals(JjcdEnum.TEJI.getValue())) {
+                    taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.JJCD.getValue(), String.valueOf(jjcd)));
+                }
+            }
+            // 非联网登记
+            Object flwdj = formData.get(TableColumnEnum.FLWDJ.getValue());
+            if (ToolUtil.isObjectNotNullAndStringNotEmpty(flwdj)) {
+                Integer flwdjInt = Integer.parseInt(String.valueOf(flwdj));
+                if (flwdjInt.equals(FlwdjEnum.YES.getValue())) {
+                    taskRelatedList
+                        .add(new TaskRelatedModel(TaskRelatedEnum.FLWDJ.getValue(), String.valueOf(flwdjInt)));
                 }
             }
             taskRelatedList = taskRelatedList.stream()
