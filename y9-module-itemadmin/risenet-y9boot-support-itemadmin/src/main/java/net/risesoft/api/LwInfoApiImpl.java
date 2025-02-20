@@ -36,6 +36,21 @@ public class LwInfoApiImpl implements LwInfoApi {
     private final GwLwInfoRepository gwLwInfoRepository;
 
     /**
+     * 删除来文信息
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> delLwInfo(String tenantId, String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        gwLwInfoRepository.deleteByProcessSerialNumber(processSerialNumber);
+        return Y9Result.success();
+    }
+
+    /**
      * 获取来文信息列表
      *
      * @param tenantId 租户id
