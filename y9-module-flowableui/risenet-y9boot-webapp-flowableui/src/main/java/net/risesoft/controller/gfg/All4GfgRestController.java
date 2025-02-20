@@ -1,0 +1,46 @@
+package net.risesoft.controller.gfg;
+
+import java.util.Map;
+
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.service.WorkList4GfgService;
+
+/**
+ * 所有件
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Slf4j
+@Validated
+@RequiredArgsConstructor
+@RestController
+@RequestMapping(value = "/vue/all/gfg", produces = MediaType.APPLICATION_JSON_VALUE)
+public class All4GfgRestController {
+
+    private final WorkList4GfgService workList4GfgService;
+
+    /**
+     * 获取所有本人经手件的列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @GetMapping(value = "/allList")
+    public Y9Page<Map<String, Object>> allList(@RequestParam String itemId, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        return this.workList4GfgService.allList(itemId, page, rows);
+    }
+}
