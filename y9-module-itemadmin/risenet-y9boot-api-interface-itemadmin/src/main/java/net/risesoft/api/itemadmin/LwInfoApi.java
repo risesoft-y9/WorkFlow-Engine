@@ -21,6 +21,18 @@ import net.risesoft.pojo.Y9Result;
 public interface LwInfoApi {
 
     /**
+     * 删除来文信息
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping(value = "/delLwInfo")
+    Y9Result<Object> delLwInfo(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
      * 获取来文信息列表
      *
      * @param tenantId 租户id
