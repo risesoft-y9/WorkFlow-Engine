@@ -128,4 +128,20 @@ public interface SpecialOperationApi {
     Y9Result<Object> takeBack(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam("taskId") String taskId, @RequestParam(value = "reason", required = false) String reason);
 
+    /**
+     * 收回
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId 任务id
+     * @param taskDefKey 指定节点
+     * @param reason 收回的原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
+     */
+    @PostMapping("/takeBack2TaskDefKey")
+    Y9Result<Object> takeBack2TaskDefKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId,
+        @RequestParam("taskDefKey") String taskDefKey, @RequestParam(value = "reason", required = false) String reason);
+
 }

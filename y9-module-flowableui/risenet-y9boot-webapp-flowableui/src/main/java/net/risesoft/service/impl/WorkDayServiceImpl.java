@@ -149,10 +149,13 @@ public class WorkDayServiceImpl implements WorkDayService {
                 } else if (days <= 0) {
                     lightColor = 5;
                 }
+                if (lightColor > 0) {
+                    return new TaskRelatedModel(TaskRelatedEnum.LIGHTCOLOR.getValue(), String.valueOf(lightColor));
+                }
             }
         } catch (Exception e) {
             LOGGER.error("获取红绿灯状态异常", e);
         }
-        return new TaskRelatedModel(TaskRelatedEnum.LIGHTCOLOR.getValue(), String.valueOf(lightColor));
+        return null;
     }
 }

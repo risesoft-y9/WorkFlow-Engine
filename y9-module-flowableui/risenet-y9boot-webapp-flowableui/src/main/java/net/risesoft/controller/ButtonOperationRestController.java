@@ -971,6 +971,27 @@ public class ButtonOperationRestController {
     }
 
     /**
+     * 任务收回
+     *
+     * @param taskId 任务id
+     * @param reason 收回原因
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/takeBack2TaskDefKey")
+    public Y9Result<String> takeBack2TaskDefKey(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String reason) {
+        Position position = Y9LoginUserHolder.getPosition();
+        String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            buttonOperationApi.takeBack2TaskDefKey(tenantId, positionId, taskId, reason);
+            return Y9Result.successMsg("收回成功");
+        } catch (Exception e) {
+            LOGGER.error("takeback error", e);
+        }
+        return Y9Result.failure("收回失败");
+    }
+
+    /**
      * 撤销签收的任务（用户签收后，可以进行撤销签收，撤销签收后，重新进行抢占式办理）
      *
      * @param taskId 任务id

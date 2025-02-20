@@ -22,5 +22,11 @@ public interface WorkDayService {
      */
     String getDate(Date date, int days) throws ParseException;
 
+    /**
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     TaskRelatedModel getLightColor(Date startDate, Date endDate);
 }

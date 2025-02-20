@@ -70,4 +70,13 @@ public interface OperationService {
      * @param reason
      */
     void takeBack(String taskId, String reason);
+
+    /**
+     * 收回
+     *
+     * @param taskId
+     * @param taskDefKey
+     * @param reason
+     */
+    void takeBack2TaskDefKey(String taskId, String taskDefKey, String reason);
 }
