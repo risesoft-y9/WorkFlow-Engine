@@ -40,6 +40,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.TableColumnEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -58,6 +59,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkDayService;
 import net.risesoft.service.WorkList4GfgService;
 import net.risesoft.util.SysVariables;
+import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -115,9 +117,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> allList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                this.itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -138,12 +140,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("executionId", ardModel.getExecutionId());
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList = new ArrayList<>();
                     mapTemp.putAll(
-                        this.getTaskNameAndUserName(processParam, taskList, ardModel.isSub(), taskId,
+                        getTaskNameAndUserName(processParam, taskList, ardModel.isSub(), taskId,
                             signDeptDetailList));
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -153,11 +155,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
 
                     List<UrgeInfoModel> urgeInfoList4All =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
                     if (ardModel.isSub()) {
                         urgeInfoList = urgeInfoList.stream().filter(
@@ -177,12 +179,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }
                     if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
                         mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
-                        taskRelatedList = this.taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                        taskRelatedList = taskRelatedApi.findByTaskId(tenantId, taskId).getData();
                         /*
                          * 红绿灯
                          */
                         if (null != ardModel.getDueDate()) {
-                            taskRelatedList.add(this.workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                            taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
                         }
                         taskRelatedList =
                             taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
@@ -193,7 +195,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         } else {
                             mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                         }
-                        mapTemp.put("children", ardModel.isSub() ? List.of() : this.getChildren(processSerialNumber,
+                        mapTemp.put("children", ardModel.isSub() ? List.of() : getChildren(processSerialNumber,
                             mapTemp,
                             taskList, urgeInfoList4All, signDeptDetailList));
                     }
@@ -217,7 +219,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         Y9Page<ActRuDetailModel> itemPage;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            itemPage = this.itemTodoApi.findByUserId(tenantId, positionId, queryParamModel);
+            itemPage = itemTodoApi.findByUserId(tenantId, positionId, queryParamModel);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -226,6 +228,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             Map<String, Object> mapTemp;
             ProcessParamModel processParam;
             String processInstanceId;
+            Map<String, Object> formData;
             for (ActRuDetailModel ardModel : taslList) {
                 mapTemp = new HashMap<>(16);
                 String taskId = ardModel.getTaskId();
@@ -234,7 +237,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam =
-                        this.processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
@@ -245,34 +248,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("taskAssignee", ardModel.getAssigneeName());
-                    List<TaskRelatedModel> taskRelatedList =
-                        this.taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (ardModel.isStarted()) {
-                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
-                    }
-                    /*
-                     * 红绿灯
-                     */
-                    if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(this.workDayService.getLightColor(new Date(), ardModel.getDueDate()));
-                    }
-                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
-                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
-                    List<UrgeInfoModel> urgeInfoList =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    if (ardModel.isSub()) {
-                        urgeInfoList = urgeInfoList.stream().filter(
-                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
-                            .collect(Collectors.toList());
-                    } else {
-                        urgeInfoList =
-                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
-                    }
-                    if (!urgeInfoList.isEmpty()) {
-                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
-                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
-                    }
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    formData = formDataApi.getData(tenantId, ardModel.getItemId(), processSerialNumber).getData();
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -293,10 +270,10 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> doingList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            OrgUnit bureau = this.orgUnitApi.getBureau(tenantId, positionId).getData();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                this.itemDoingApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemDoingApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -313,13 +290,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList =
-                        this.signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.putAll(
-                        this.getTaskNameAndUserName(processParam, taskList, ardModel.isSub(), taskId,
+                        getTaskNameAndUserName(processParam, taskList, ardModel.isSub(), taskId,
                             signDeptDetailList));
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -329,7 +306,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
 
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
@@ -352,7 +329,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             Date currentDate = new Date();
-            String endDate = this.workDayService.getDate(currentDate, days);
+            String endDate = workDayService.getDate(currentDate, days);
             if (StringUtils.isBlank(endDate)) {
                 return Y9Page.failure(0, 0, 0, new ArrayList<>(), "未设置日历", 500);
             }
@@ -363,20 +340,20 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     startDate = sdf.format(currentDate);
                     break;
                 case 5:
-                    startDate = this.workDayService.getDate(currentDate, 4);
+                    startDate = workDayService.getDate(currentDate, 4);
                     break;
                 case 7:
-                    startDate = this.workDayService.getDate(currentDate, 6);
+                    startDate = workDayService.getDate(currentDate, 6);
                     break;
                 case 10:
-                    startDate = this.workDayService.getDate(currentDate, 8);
+                    startDate = workDayService.getDate(currentDate, 8);
                     break;
                 default:
                     startDate = "2025-01-01";
             }
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                this.itemDoingApi.findBySystemName4DuBan(tenantId, startDate, endDate, item.getSystemName(), page,
+                itemDoingApi.findBySystemName4DuBan(tenantId, startDate, endDate, item.getSystemName(), page,
                     rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -395,11 +372,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList = new ArrayList<>();
-                    mapTemp.putAll(this.getTaskNameAndUserName(processParam, taskList, false, "", signDeptDetailList));
+                    mapTemp.putAll(getTaskNameAndUserName(processParam, taskList, false, "", signDeptDetailList));
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
@@ -408,14 +385,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
                     /*
                      *催办信息
                      */
                     List<UrgeInfoModel> urgeInfoList4All =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
                     urgeInfoList =
                         urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
@@ -426,7 +403,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     mapTemp.put("children",
-                        this.getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All, signDeptDetailList));
+                        getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All, signDeptDetailList));
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
                 }
@@ -455,11 +432,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         List<Map<String, Object>> childrenList = new ArrayList<>();
         AtomicInteger count = new AtomicInteger(0);
         if (signDeptDetailList.isEmpty()) {
-            signDeptDetailList = this.signDeptDetailApi
+            signDeptDetailList = signDeptDetailApi
                 .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
         }
         signDeptDetailList.forEach(sdd -> {
-            List<String> taskNameAndAssigneeNames = this.getTaskNameAndAssigneeNames(taskList, sdd.getExecutionId());
+            List<String> taskNameAndAssigneeNames = getTaskNameAndAssigneeNames(taskList, sdd.getExecutionId());
             Map<String, Object> childrenMap = new HashMap<>(parentMap);
             childrenMap.put("id", sdd.getId());
             childrenMap.put("isSub", true);
@@ -494,34 +471,34 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             /*
              * 当前节点如果是子流程的节点
              */
-            boolean currentTaskIsSubNode = this.processDefinitionApi.isSubProcessChildNode(tenantId,
+            boolean currentTaskIsSubNode = processDefinitionApi.isSubProcessChildNode(tenantId,
                 taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
             if (currentTaskIsSubNode) {
                 if (!isSignDept) {
                     /*
                      * 非会签司局看到的是送会签的人和发送会签的节点
                      */
-                    String mainSender = this.variableApi
+                    String mainSender = variableApi
                         .getVariableByProcessInstanceId(tenantId, processInstanceId, SysVariables.MAINSENDER).getData();
                     if (signDeptDetailList.isEmpty()) {
                         signDeptDetailList =
-                            this.signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),
+                            signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),
                                 processParam.getProcessSerialNumber()).getData();
                     }
                     taskName =
-                        this.historictaskApi.getById(tenantId, signDeptDetailList.get(0).getTaskId()).getData()
+                        historictaskApi.getById(tenantId, signDeptDetailList.get(0).getTaskId()).getData()
                             .getName();
                     userName = StringUtils.isBlank(mainSender) ? "无" : Y9JsonUtil.readValue(mainSender, String.class);
                 } else {
                     /*
                      * 会签司局看到的是子流程的当前办理人和办理节点
                      */
-                    List<String> listTemp = this.getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
+                    List<String> listTemp = getAssigneeIdsAndAssigneeNames4SignDept(taskList, taskId);
                     taskName = listTemp.get(0);
                     userName = listTemp.get(1);
                 }
             } else {
-                List<String> listTemp = this.getAssigneeIdsAndAssigneeNames(taskList);
+                List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                 taskName = taskList.get(0).getName();
                 userName = listTemp.get(0);
             }
@@ -539,15 +516,15 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             Position position = Y9LoginUserHolder.getPosition();
-            OrgUnit bureau = this.orgUnitApi.getBureau(tenantId, positionId).getData();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (isBureau) {
-                itemPage = this.itemDoingApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
+                itemPage = itemDoingApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
                     item.getSystemName(),
                     page, rows);
             } else {
-                itemPage = this.itemDoingApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
+                itemPage = itemDoingApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
                     item.getSystemName(), page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
@@ -567,15 +544,15 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList =
-                        this.signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     boolean isSignDept = signDeptDetailList.stream()
                         .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
                     mapTemp
-                        .putAll(this.getTaskNameAndUserName(processParam, taskList, isSignDept, taskId,
+                        .putAll(getTaskNameAndUserName(processParam, taskList, isSignDept, taskId,
                             signDeptDetailList));
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -585,14 +562,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
                     /*
                      * 催办信息
                      */
                     List<UrgeInfoModel> urgeInfoList4All =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
                     if (isSignDept) {
                         urgeInfoList = urgeInfoList.stream().filter(
@@ -609,7 +586,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     mapTemp.put("children", isSignDept ? List.of()
-                        : this.getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All,
+                        : getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All,
                             signDeptDetailList));
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
@@ -629,13 +606,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> doingList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage = null;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = this.itemDoingApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+                itemPage = itemDoingApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
             } else {
                 itemPage =
-                    this.itemDoingApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
+                    itemDoingApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -654,13 +631,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList =
-                        this.signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp
-                        .putAll(this.getTaskNameAndUserName(processParam, taskList, false, taskId, signDeptDetailList));
+                        .putAll(getTaskNameAndUserName(processParam, taskList, false, taskId, signDeptDetailList));
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
@@ -668,7 +645,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("taskId", taskId);
 
                     List<UrgeInfoModel> urgeInfoList4All =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
                     urgeInfoList =
                         urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
@@ -682,11 +659,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
                     mapTemp.put("children",
-                        this.getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All, signDeptDetailList));
+                        getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All, signDeptDetailList));
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
                 }
@@ -705,9 +682,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                this.itemDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -724,7 +701,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -736,7 +713,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                 } catch (Exception e) {
@@ -758,15 +735,15 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             Position position = Y9LoginUserHolder.getPosition();
-            OrgUnit bureau = this.orgUnitApi.getBureau(tenantId, positionId).getData();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (isBureau) {
-                itemPage = this.itemDoneApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
+                itemPage = itemDoneApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
                     item.getSystemName(),
                     page, rows);
             } else {
-                itemPage = this.itemDoneApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
+                itemPage = itemDoneApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
                     item.getSystemName(), page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
@@ -786,7 +763,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -798,18 +775,18 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                     List<SignDeptDetailModel> signDeptDetailList =
-                        this.signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     boolean isSignDept = signDeptDetailList.stream()
                         .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
                     /*
                      * 催办信息
                      */
                     List<UrgeInfoModel> urgeInfoList4All =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
                     if (isSignDept) {
                         urgeInfoList = urgeInfoList.stream().filter(
@@ -826,7 +803,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     mapTemp.put("children", isSignDept ? List.of()
-                        : this.getChildren(processSerialNumber, mapTemp, List.of(), urgeInfoList4All,
+                        : getChildren(processSerialNumber, mapTemp, List.of(), urgeInfoList4All,
                             signDeptDetailList));
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -846,13 +823,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> doneList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = this.itemDoneApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+                itemPage = itemDoneApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
             } else {
                 itemPage =
-                    this.itemDoneApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
+                    itemDoneApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -871,7 +848,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -881,7 +858,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("completer",
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     List<UrgeInfoModel> urgeInfoList4All =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
                     urgeInfoList =
                         urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
@@ -894,11 +871,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                     mapTemp.put("children",
-                        this.getChildren(processSerialNumber, mapTemp, List.of(), urgeInfoList4All, List.of()));
+                        getChildren(processSerialNumber, mapTemp, List.of(), urgeInfoList4All, List.of()));
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
@@ -927,19 +904,19 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             if (StringUtils.isEmpty(assigneeNames)) {
                 String assignee = task.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
-                    OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                     if (personTemp != null) {
                         assigneeNames = personTemp.getName();
                         i += 1;
                     }
                 } else {// 处理单实例未签收的当前办理人显示
                     List<IdentityLinkModel> iList =
-                        this.identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                     if (!iList.isEmpty()) {
                         int j = 0;
                         for (IdentityLinkModel identityLink : iList) {
                             String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = this.orgUnitApi
+                            OrgUnit ownerUser = orgUnitApi
                                 .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                             if (j < 5) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
@@ -955,7 +932,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             // 并行时，领导选取时存在顺序，因此这里也存在顺序
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
@@ -984,7 +961,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         String taskName = "", assigneeNames = "";
         List<String> list = new ArrayList<>();
         int i = 0;
-        HistoricTaskInstanceModel hisTask = this.historicTaskApi.getById(tenantId, taskId).getData();
+        HistoricTaskInstanceModel hisTask = historicTaskApi.getById(tenantId, taskId).getData();
         for (TaskModel task : taskList) {
             if (!task.getExecutionId().equals(hisTask.getExecutionId())) {
                 continue;
@@ -993,19 +970,19 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             if (StringUtils.isEmpty(assigneeNames)) {
                 String assignee = task.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
-                    OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                     if (personTemp != null) {
                         assigneeNames = personTemp.getName();
                         i += 1;
                     }
                 } else {// 处理单实例未签收的当前办理人显示
                     List<IdentityLinkModel> iList =
-                        this.identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                     if (!iList.isEmpty()) {
                         int j = 0;
                         for (IdentityLinkModel identityLink : iList) {
                             String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = this.orgUnitApi
+                            OrgUnit ownerUser = orgUnitApi
                                 .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                             if (j < 5) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
@@ -1021,7 +998,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             // 并行时，领导选取时存在顺序，因此这里也存在顺序
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
@@ -1060,19 +1037,19 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             if (StringUtils.isEmpty(assigneeNames)) {
                 String assignee = task.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
-                    OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                     if (personTemp != null) {
                         assigneeNames = personTemp.getName();
                         i += 1;
                     }
                 } else {// 处理单实例未签收的当前办理人显示
                     List<IdentityLinkModel> iList =
-                        this.identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                     if (!iList.isEmpty()) {
                         int j = 0;
                         for (IdentityLinkModel identityLink : iList) {
                             String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = this.orgUnitApi
+                            OrgUnit ownerUser = orgUnitApi
                                 .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                             if (j < 5) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
@@ -1088,7 +1065,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             i += 1;
@@ -1109,9 +1086,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> haveDoneList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                this.itemHaveDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemHaveDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -1127,7 +1104,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put("isSub", false);
                     mapTemp.put("serialNumber", ++serialNumber);
@@ -1137,20 +1114,20 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("executionId", ardModel.getExecutionId());
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
                         ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
                     mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
                     List<SignDeptDetailModel> signDeptDetailList =
-                        this.signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.putAll(
-                        this.getTaskNameAndUserName(processParam, taskList, ardModel.isSub(), taskId,
+                        getTaskNameAndUserName(processParam, taskList, ardModel.isSub(), taskId,
                             signDeptDetailList));
                     List<UrgeInfoModel> urgeInfoList4All =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList = urgeInfoList4All;
                     if (ardModel.isSub()) {
                         urgeInfoList = urgeInfoList.stream().filter(
@@ -1167,7 +1144,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     }
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
                     mapTemp.put("children", ardModel.isSub() ? List.of()
-                        : this.getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All,
+                        : getChildren(processSerialNumber, mapTemp, taskList, urgeInfoList4All,
                             signDeptDetailList));
                 } catch (Exception e) {
                     LOGGER.error("获取已办列表失败" + processInstanceId, e);
@@ -1186,7 +1163,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ProcessParamModel processParam =
-                this.processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             Map<String, Object> mapTemp = new HashMap<>();
             mapTemp.put("id", processSerialNumber);
             mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
@@ -1194,18 +1171,18 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             mapTemp.put("bureauName", processParam.getHostDeptName());
             mapTemp.put("itemId", processParam.getItemId());
             mapTemp.put("processInstanceId", processParam.getProcessInstanceId());
-            mapTemp.putAll(this.formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData());
+            mapTemp.putAll(formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData());
             mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
                 ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
             List<SignDeptDetailModel> signDeptDetailList =
-                this.signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             List<TaskModel> finalTaskList =
-                this.taskApi.findByProcessInstanceId(tenantId, processParam.getProcessInstanceId()).getData();
+                taskApi.findByProcessInstanceId(tenantId, processParam.getProcessInstanceId()).getData();
             AtomicInteger count = new AtomicInteger(0);
             List<Map<String, Object>> childrenList = new ArrayList<>();
             signDeptDetailList.forEach(sdd -> {
                 List<String> taskNameAndAssigneeNames =
-                    this.getTaskNameAndAssigneeNames(finalTaskList, sdd.getExecutionId());
+                    getTaskNameAndAssigneeNames(finalTaskList, sdd.getExecutionId());
                 Map<String, Object> childrenMap = new HashMap<>(mapTemp);
                 childrenMap.put("id", sdd.getId());
                 childrenMap.put("serialNumber", count.incrementAndGet());
@@ -1227,9 +1204,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> recycleList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                this.itemRecycleApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemRecycleApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -1246,26 +1223,26 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskName", taskList.get(0).getName());
-                    List<String> listTemp = this.getAssigneeIdsAndAssigneeNames(taskList);
+                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     mapTemp.put("taskAssignee", listTemp.get(0));
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
 
                     List<TaskRelatedModel> taskRelatedList =
-                        this.taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                        taskRelatedApi.findByTaskId(tenantId, taskId).getData();
                     if (ardModel.isStarted()) {
                         taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
                     }
@@ -1273,12 +1250,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                      * 红绿灯
                      */
                     if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(this.workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
                     }
                     taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
                         .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
                     List<UrgeInfoModel> urgeInfoList =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     if (ardModel.isSub()) {
                         urgeInfoList = urgeInfoList.stream().filter(
                             urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
@@ -1311,14 +1288,14 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             Position position = Y9LoginUserHolder.getPosition();
-            OrgUnit bureau = this.orgUnitApi.getBureau(tenantId, positionId).getData();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (isBureau) {
-                itemPage = this.itemRecycleApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
+                itemPage = itemRecycleApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
                     item.getSystemName(), page, rows);
             } else {
-                itemPage = this.itemRecycleApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
+                itemPage = itemRecycleApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
                     item.getSystemName(), page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
@@ -1337,7 +1314,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -1349,11 +1326,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                     List<TaskRelatedModel> taskRelatedList =
-                        this.taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                        taskRelatedApi.findByTaskId(tenantId, taskId).getData();
                     if (ardModel.isStarted()) {
                         taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
                     }
@@ -1361,12 +1338,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                      * 红绿灯
                      */
                     if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(this.workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
                     }
                     taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
                         .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
                     List<UrgeInfoModel> urgeInfoList =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     if (ardModel.isSub()) {
                         urgeInfoList = urgeInfoList.stream().filter(
                             urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
@@ -1398,9 +1375,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> recycleList4All(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
-                this.itemRecycleApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+                itemRecycleApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -1417,19 +1394,19 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
                     List<TaskModel> taskList =
-                        this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskName", taskList.get(0).getName());
-                    List<String> listTemp = this.getAssigneeIdsAndAssigneeNames(taskList);
+                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     mapTemp.put("taskAssignee", listTemp.get(0));
                     List<TaskRelatedModel> taskRelatedList =
-                        this.taskRelatedApi.findByTaskId(tenantId, taskId).getData();
+                        taskRelatedApi.findByTaskId(tenantId, taskId).getData();
                     if (ardModel.isStarted()) {
                         taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
                     }
@@ -1437,12 +1414,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                      * 红绿灯
                      */
                     if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(this.workDayService.getLightColor(new Date(), ardModel.getDueDate()));
+                        taskRelatedList.add(workDayService.getLightColor(new Date(), ardModel.getDueDate()));
                     }
                     taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
                         .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
                     List<UrgeInfoModel> urgeInfoList =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     if (ardModel.isSub()) {
                         urgeInfoList = urgeInfoList.stream().filter(
                             urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
@@ -1459,7 +1436,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
                 } catch (Exception e) {
@@ -1480,13 +1457,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage =
-                    this.itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                    itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             } else {
-                itemPage = this.itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
                     searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
@@ -1505,7 +1482,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam =
-                        this.processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -1517,36 +1494,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
-                    List<TaskRelatedModel> taskRelatedList =
-                        this.taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (ardModel.isStarted()) {
-                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
-                    }
-                    /*
-                     * 红绿灯
-                     */
-                    if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(this.workDayService.getLightColor(new Date(), ardModel.getDueDate()));
-                    }
-                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
-                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
-                    List<UrgeInfoModel> urgeInfoList =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    if (ardModel.isSub()) {
-                        urgeInfoList = urgeInfoList.stream().filter(
-                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
-                            .collect(Collectors.toList());
-                    } else {
-                        urgeInfoList =
-                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
-                    }
-                    if (!urgeInfoList.isEmpty()) {
-                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
-                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
-                    }
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                 } catch (Exception e) {
@@ -1563,18 +1513,66 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
+    /**
+     * 1、新 2、红绿灯 3、催办 4、其他所有
+     * 
+     * @param ardModel
+     * @param formData
+     * @return
+     */
+    private List<TaskRelatedModel> getTaskRelated4Todo(ActRuDetailModel ardModel, Map<String, Object> formData) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            List<TaskRelatedModel> taskRelatedList =
+                taskRelatedApi.findByTaskId(tenantId, ardModel.getTaskId()).getData();
+            if (ardModel.isStarted()) {
+                taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
+            }
+            // 红绿灯,这里根据表单中的字段督办时限来判断
+            if (ToolUtil.isObjectNotNullAndStringNotEmpty(formData.get(TableColumnEnum.DBSX.getValue()))) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                TaskRelatedModel taskRelatedModel = workDayService.getLightColor(new Date(),
+                    sdf.parse(String.valueOf(formData.get(TableColumnEnum.DBSX.getValue()))));
+                if (null != taskRelatedModel) {
+                    taskRelatedList.add(taskRelatedModel);
+                }
+            }
+            taskRelatedList = taskRelatedList.stream()
+                .filter(
+                    t -> Integer.parseInt(t.getInfoType()) < Integer.parseInt(TaskRelatedEnum.ACTIONNAME.getValue()))
+                .collect(Collectors.toList());
+            List<UrgeInfoModel> urgeInfoList =
+                urgeInfoApi.findByProcessSerialNumber(tenantId, ardModel.getProcessSerialNumber()).getData();
+            if (ardModel.isSub()) {
+                urgeInfoList = urgeInfoList.stream()
+                    .filter(urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
+                    .collect(Collectors.toList());
+            } else {
+                urgeInfoList = urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
+            }
+            if (!urgeInfoList.isEmpty()) {
+                taskRelatedList.add(
+                    new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(), Y9JsonUtil.writeValueAsString(urgeInfoList)));
+            }
+            return taskRelatedList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return List.of();
+    }
+
     @Override
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
         Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = this.itemTodoApi.findByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
+                itemPage = itemTodoApi.findByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
                     item.getSystemName(), taskDefKey, page, rows);
             } else {
-                itemPage = this.itemTodoApi.searchByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
+                itemPage = itemTodoApi.searchByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
                     item.getSystemName(), taskDefKey, searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
@@ -1593,7 +1591,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam =
-                        this.processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -1605,36 +1603,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     /*
                      * 暂时取表单所有字段数据
                      */
-                    formData = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
-                    List<TaskRelatedModel> taskRelatedList =
-                        this.taskRelatedApi.findByTaskId(tenantId, taskId).getData();
-                    if (ardModel.isStarted()) {
-                        taskRelatedList.add(0, new TaskRelatedModel(TaskRelatedEnum.NEWTODO.getValue(), "新"));
-                    }
-                    /*
-                     * 红绿灯
-                     */
-                    if (null != ardModel.getDueDate()) {
-                        taskRelatedList.add(this.workDayService.getLightColor(new Date(), ardModel.getDueDate()));
-                    }
-                    taskRelatedList = taskRelatedList.stream().filter(t -> Integer.parseInt(t.getInfoType()) < Integer
-                        .parseInt(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
-                    List<UrgeInfoModel> urgeInfoList =
-                        this.urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    if (ardModel.isSub()) {
-                        urgeInfoList = urgeInfoList.stream().filter(
-                            urgeInfo -> urgeInfo.isSub() && urgeInfo.getExecutionId().equals(ardModel.getExecutionId()))
-                            .collect(Collectors.toList());
-                    } else {
-                        urgeInfoList =
-                            urgeInfoList.stream().filter(urgeInfo -> !urgeInfo.isSub()).collect(Collectors.toList());
-                    }
-                    if (!urgeInfoList.isEmpty()) {
-                        taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(),
-                            Y9JsonUtil.writeValueAsString(urgeInfoList)));
-                    }
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                 } catch (Exception e) {

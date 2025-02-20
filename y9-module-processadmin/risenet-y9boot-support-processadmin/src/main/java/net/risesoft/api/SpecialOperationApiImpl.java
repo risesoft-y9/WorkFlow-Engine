@@ -186,4 +186,25 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         operationService.takeBack(taskId, reason);
         return Y9Result.success();
     }
+
+    /**
+     * 收回
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId 任务id
+     * @param reason 收回的原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> takeBack2TaskDefKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String taskId, @RequestParam String taskDefKey, String reason) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        operationService.takeBack2TaskDefKey(taskId, taskDefKey, reason);
+        return Y9Result.success();
+    }
 }

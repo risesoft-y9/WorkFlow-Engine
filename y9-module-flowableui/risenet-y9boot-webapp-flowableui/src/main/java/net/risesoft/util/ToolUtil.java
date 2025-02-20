@@ -26,4 +26,12 @@ public class ToolUtil {
         }
         return repl;
     }
+
+    public static boolean isObjectNotNullAndStringNotEmpty(Object obj) {
+        if (obj != null) {
+            String str = obj.toString();
+            return !str.isEmpty();
+        }
+        return false;
+    }
 }

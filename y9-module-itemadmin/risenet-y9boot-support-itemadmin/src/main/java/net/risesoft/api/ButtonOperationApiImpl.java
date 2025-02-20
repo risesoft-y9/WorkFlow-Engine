@@ -21,12 +21,14 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.CommonOpt;
@@ -63,6 +65,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     private final RuntimeApi runtimeApi;
 
     private final SpecialOperationApi specialOperationApi;
+
+    private final ActRuDetailService actRuDetailService;
 
     /**
      * 加签
@@ -324,5 +328,26 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(specialOperationApi.takeBack(tenantId, orgUnitId, taskId, reason).isSuccess());
+    }
+
+    /**
+     * 收回操作
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId 任务id
+     * @param reason 原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> takeBack2TaskDefKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String taskId, String reason) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        ActRuDetail actRuDetail =
+            actRuDetailService.findByProcessInstanceIdAndAssignee(task.getProcessInstanceId(), orgUnitId);
+        return Y9Result.success(specialOperationApi
+            .takeBack2TaskDefKey(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey(), reason).isSuccess());
     }
 }

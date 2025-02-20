@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
@@ -155,7 +156,12 @@ public class OperationServiceImpl implements OperationService {
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reasonTemp));
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
-        taskList.stream().filter(task -> task.getExecutionId().equals(currentTask.getExecutionId())).forEach(task -> {
+        if (customProcessDefinitionService.isSubProcessChildNode(currentTask.getProcessDefinitionId(),
+            currentTask.getTaskDefinitionKey())) {
+            taskList = taskList.stream().filter(task -> task.getExecutionId().equals(currentTask.getExecutionId()))
+                .collect(Collectors.toList());
+        }
+        taskList.forEach(task -> {
             TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
             taskRelatedModel.setInfoType(TaskRelatedEnum.ROLLBACK.getValue());
             taskRelatedModel.setTaskId(task.getId());
@@ -316,6 +322,32 @@ public class OperationServiceImpl implements OperationService {
         this.managementService
             .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "撤回：" + reason));
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
+        for (Task task : taskList) {
+            this.customVariableService.setVariableLocal(task.getId(), SysVariables.TAKEBACK, true);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void takeBack2TaskDefKey(String taskId, String taskDefKey, String reason) {
+        String userName = Y9LoginUserHolder.getOrgUnit().getName();
+        Task currentTask = customTaskService.findById(taskId);
+        String processInstanceId = currentTask.getProcessInstanceId();
+        /*
+         * 设置任务的完成动作
+         */
+        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTIONNAME, SysVariables.TAKEBACK);
+        String user = Y9LoginUserHolder.getOrgUnitId();
+        List<String> users = new ArrayList<>();
+        users.add(user);
+        this.managementService
+            .executeCommand(new JumpCommand(taskId, taskDefKey, users, "该任务由" + userName + "撤回：" + reason));
+        List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
+        if (customProcessDefinitionService.isSubProcessChildNode(currentTask.getProcessDefinitionId(),
+            currentTask.getTaskDefinitionKey())) {
+            taskList = taskList.stream().filter(task -> task.getExecutionId().equals(currentTask.getExecutionId()))
+                .collect(Collectors.toList());
+        }
         for (Task task : taskList) {
             this.customVariableService.setVariableLocal(task.getId(), SysVariables.TAKEBACK, true);
         }

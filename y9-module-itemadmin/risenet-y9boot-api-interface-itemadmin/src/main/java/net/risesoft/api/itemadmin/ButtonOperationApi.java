@@ -203,4 +203,19 @@ public interface ButtonOperationApi {
     Y9Result<Object> takeback(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam("taskId") String taskId, @RequestParam(value = "reason", required = false) String reason);
 
+    /**
+     * 收回操作
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param taskId 任务id
+     * @param reason 原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/takeBack2TaskDefKey")
+    Y9Result<Object> takeBack2TaskDefKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId,
+        @RequestParam(value = "reason", required = false) String reason);
+
 }
