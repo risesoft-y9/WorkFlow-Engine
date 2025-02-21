@@ -1146,7 +1146,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Recycle(ardModel, formData));
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Recycle(ardModel, formData, false));
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
@@ -1207,7 +1207,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Recycle(ardModel, formData));
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Recycle(ardModel, formData, false));
                 } catch (Exception e) {
                     LOGGER.error("获取部门回收站列表失败" + processInstanceId, e);
                 }
@@ -1259,7 +1259,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
-                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Recycle(ardModel, formData));
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Recycle(ardModel, formData, true));
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
@@ -1269,7 +1269,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取异常", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
@@ -1376,7 +1376,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
      * @param formData
      * @return
      */
-    private List<TaskRelatedModel> getTaskRelated4Recycle(ActRuDetailModel ardModel, Map<String, Object> formData) {
+    private List<TaskRelatedModel> getTaskRelated4Recycle(ActRuDetailModel ardModel, Map<String, Object> formData,
+        boolean isManager) {
         try {
             List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
             // 1、红绿灯
@@ -1385,7 +1386,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             taskRelatedList.addAll(getTaskRelated4Public(formData));
             // 5、催办
             taskRelatedList.addAll(getTaskRelated4Urge(ardModel.getProcessSerialNumber(), ardModel.isSub(),
-                ardModel.getExecutionId(), false));
+                ardModel.getExecutionId(), isManager));
             return taskRelatedList;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1555,7 +1556,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
 
     /**
      * 所有列表的状态，主看主，子看子，监控所有件的管理员看所有 1、催办
-     * 
+     *
      * @param processSerialNumber
      * @param isSub
      * @param executionId
