@@ -138,6 +138,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("children", List.of());
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
@@ -182,8 +183,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取已办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -217,6 +216,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam =
                         processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
@@ -233,8 +233,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(queryParamModel.getPage(), itemPage.getTotalPages(), itemPage.getTotal(), items,
@@ -243,63 +241,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             LOGGER.error("获取待办列表失败", e);
         }
         return Y9Page.success(queryParamModel.getPage(), 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    @Override
-    public Y9Page<Map<String, Object>> doingList(String itemId, Integer page, Integer rows) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemDoingApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
-            List<ActRuDetailModel> list = itemPage.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
-            List<Map<String, Object>> items = new ArrayList<>();
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            ProcessParamModel processParam;
-            String processInstanceId;
-            Map<String, Object> formData;
-            for (ActRuDetailModel ardModel : taslList) {
-                mapTemp = new HashMap<>(16);
-                String taskId = ardModel.getTaskId();
-                processInstanceId = ardModel.getProcessInstanceId();
-                try {
-                    String processSerialNumber = ardModel.getProcessSerialNumber();
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    List<TaskModel> taskList =
-                        taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    List<SignDeptDetailModel> signDeptDetailList =
-                        signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    mapTemp.putAll(
-                        getTaskNameAndUserName(processParam, taskList, ardModel.isSub(), taskId,
-                            signDeptDetailList));
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
-                    /*
-                     * 暂时取表单所有字段数据
-                     */
-                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    mapTemp.putAll(formData);
-
-                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
-                } catch (Exception e) {
-                    LOGGER.error("获取在办列表失败" + processInstanceId, e);
-                }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
-            }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @Override
@@ -349,6 +290,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList =
@@ -375,8 +317,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -511,6 +451,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList =
@@ -542,8 +483,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -581,6 +520,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList =
@@ -606,8 +546,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -641,6 +579,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -658,8 +597,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -701,6 +638,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
@@ -730,8 +668,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -769,6 +705,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
@@ -792,8 +729,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -1131,6 +1066,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
@@ -1150,8 +1086,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -1194,6 +1128,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskId", taskId);
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
@@ -1211,8 +1146,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取部门回收站列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -1246,6 +1179,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
@@ -1263,8 +1197,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -1305,6 +1237,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     processParam =
                         processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("actRuDetailId", ardModel.getId());
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
@@ -1312,9 +1245,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("taskAssignee", ardModel.getAssigneeName());
-                    /*
-                     * 暂时取表单所有字段数据
-                     */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
@@ -1323,8 +1253,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
@@ -1625,15 +1553,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("taskAssignee", ardModel.getAssigneeName());
-                    /*
-                     * 暂时取表单所有字段数据
-                     */
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
                     mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
@@ -1642,8 +1568,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
