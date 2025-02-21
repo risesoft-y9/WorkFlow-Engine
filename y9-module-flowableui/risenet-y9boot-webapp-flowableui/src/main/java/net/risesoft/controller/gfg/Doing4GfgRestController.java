@@ -46,20 +46,6 @@ public class Doing4GfgRestController {
      * 获取在办件列表
      *
      * @param itemId 事项id
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @GetMapping(value = "/doingList")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        return this.workList4GfgService.doingList(itemId, page, rows);
-    }
-
-    /**
-     * 获取在办件列表
-     *
-     * @param itemId 事项id
      * @param days 过期天数
      * @param page 页码
      * @param rows 条数
