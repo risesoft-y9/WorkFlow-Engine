@@ -173,8 +173,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                             taskRelatedList =
                                 getTaskRelated4Done(ardModel, formData, ardModel.isSub(), urgeInfoList, false);
                         }
-                        mapTemp.put("children", ardModel.isSub() ? List.of()
-                            : getChildren(ardModel,
+                        mapTemp.put("children",
+                            getChildren(ardModel,
                             mapTemp,
                                 taskList, urgeInfoList, signDeptDetailList, false));
                     }
@@ -537,8 +537,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put(SysVariables.TASKRELATEDLIST,
                         getTaskRelated4Doing(ardModel, formData, isSignDept, urgeInfoList, false));
-                    mapTemp.put("children", isSignDept ? List.of()
-                        : getChildren(ardModel, mapTemp, taskList, urgeInfoList, signDeptDetailList, false));
+                    mapTemp.put("children",
+                        getChildren(ardModel, mapTemp, taskList, urgeInfoList, signDeptDetailList, false));
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
                 }
@@ -725,8 +725,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put(SysVariables.TASKRELATEDLIST,
                         getTaskRelated4Done(ardModel, formData, isSignDept, urgeInfoList, false));
-                    mapTemp.put("children", isSignDept ? List.of()
-                        : getChildren(ardModel, mapTemp, List.of(), urgeInfoList, signDeptDetailList, false));
+                    mapTemp.put("children",
+                        getChildren(ardModel, mapTemp, List.of(), urgeInfoList, signDeptDetailList, false));
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
@@ -1050,8 +1050,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                             getTaskRelated4Doing(ardModel, formData, ardModel.isSub(), urgeInfoList, false);
                     }
                     mapTemp.put(SysVariables.TASKRELATEDLIST, taskRelatedList);
-                    mapTemp.put("children", ardModel.isSub() ? List.of()
-                        : getChildren(ardModel, mapTemp, taskList, urgeInfoList, signDeptDetailList, false));
+                    mapTemp.put("children",
+                        getChildren(ardModel, mapTemp, taskList, urgeInfoList, signDeptDetailList, false));
                 } catch (Exception e) {
                     LOGGER.error("获取已办列表失败" + processInstanceId, e);
                 }
