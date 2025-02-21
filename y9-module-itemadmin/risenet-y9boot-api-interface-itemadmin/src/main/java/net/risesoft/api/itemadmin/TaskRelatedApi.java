@@ -1,15 +1,15 @@
 package net.risesoft.api.itemadmin;
 
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.TaskRelatedModel;
-import net.risesoft.pojo.Y9Result;
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -39,4 +39,16 @@ public interface TaskRelatedApi {
     @GetMapping("/findByTaskId")
     Y9Result<List<TaskRelatedModel>> findByTaskId(@RequestParam("tenantId") String tenantId,
                                                   @RequestParam("taskId") String taskId);
+
+    /**
+     * 根据任务id查找任务相关信息
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程序列号
+     * @return {@code Y9Result<List<TaskRelatedModel>>} 通用请求返回对象 - data 是任务相关信息
+     * @since 9.6.6
+     */
+    @GetMapping("/findByProcessSerialNumber")
+    Y9Result<List<TaskRelatedModel>> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 }
