@@ -63,4 +63,26 @@ public class TaskRelatedApiImpl implements TaskRelatedApi {
         return Y9Result.success(modelList);
     }
 
+    /**
+     * 根据任务id获取任务相关信息
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程序列号
+     * @return {@code Y9Result<List<TaskRelatedModel>>} 通用请求返回对象 - data 是任务相关信息
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<List<TaskRelatedModel>> findByProcessSerialNumber(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<TaskRelated> list = taskRelatedService.findByProcessSerialNumber(processSerialNumber);
+        List<TaskRelatedModel> modelList = new ArrayList<>();
+        TaskRelatedModel taskRelatedModel;
+        for (TaskRelated taskRelated : list) {
+            taskRelatedModel = new TaskRelatedModel();
+            Y9BeanUtil.copyProperties(taskRelated, taskRelatedModel);
+            modelList.add(taskRelatedModel);
+        }
+        return Y9Result.success(modelList);
+    }
 }

@@ -113,7 +113,6 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.RoleService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.SpmApproveItemService;
-import net.risesoft.service.TaskRelatedService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
@@ -219,8 +218,6 @@ public class DocumentServiceImpl implements DocumentService {
     private final RoleService roleService;
 
     private final HistoricActivityApi historicActivityApi;
-
-    private final TaskRelatedService taskRelatedService;
 
     private final ActRuDetailService actRuDetailService;
 

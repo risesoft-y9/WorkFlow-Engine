@@ -125,8 +125,6 @@ public class AsyncHandleService {
 
     private final ItemTaskConfService itemTaskConfService;
 
-    private final TaskRelatedService taskRelatedService;
-
     private final SignDeptDetailService signDeptDetailService;
 
     private final ProcessDefinitionApi processDefinitionApi;

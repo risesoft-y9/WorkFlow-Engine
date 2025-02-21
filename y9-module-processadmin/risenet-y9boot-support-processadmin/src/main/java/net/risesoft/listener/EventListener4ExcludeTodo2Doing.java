@@ -4,11 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.TaskRelatedApi;
-import net.risesoft.enums.TaskRelatedEnum;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.TaskRelatedModel;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.event.AbstractFlowableEventListener;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
@@ -20,7 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.enums.TaskRelatedEnum;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
@@ -106,12 +107,18 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 /**
                  * 设置办文说明
                  */
+                CustomProcessDefinitionService customProcessDefinitionService =
+                    Y9Context.getBean(CustomProcessDefinitionService.class);
+                boolean isSub = customProcessDefinitionService
+                    .isSubProcessChildNode(taskEntity.getProcessDefinitionId(), taskEntity.getTaskDefinitionKey());
                 if (StringUtils.isNotBlank(processParamModel.getDescription())) {
                     TaskRelatedApi taskRelatedApi = Y9Context.getBean(TaskRelatedApi.class);
                     TaskRelatedModel taskRelatedModel = new TaskRelatedModel();
                     taskRelatedModel.setInfoType(TaskRelatedEnum.BANWENSHUOMING.getValue());
                     taskRelatedModel.setTaskId(taskEntity.getId());
                     taskRelatedModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
+                    taskRelatedModel.setExecutionId(taskEntity.getExecutionId());
+                    taskRelatedModel.setSub(isSub);
                     taskRelatedModel.setProcessSerialNumber(processParamModel.getProcessSerialNumber());
                     taskRelatedModel.setMsgContent(processParamModel.getDescription());
                     taskRelatedModel.setSenderId(taskSenderId);
@@ -127,6 +134,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                     taskRelatedModel.setInfoType(TaskRelatedEnum.ACTIONNAME.getValue());
                     taskRelatedModel.setTaskId(taskEntity.getId());
                     taskRelatedModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
+                    taskRelatedModel.setExecutionId(taskEntity.getExecutionId());
+                    taskRelatedModel.setSub(isSub);
                     taskRelatedModel.setProcessSerialNumber(processParamModel.getProcessSerialNumber());
                     taskRelatedModel.setMsgContent(String.valueOf(actionName));
                     taskRelatedModel.setSenderId(taskSenderId);

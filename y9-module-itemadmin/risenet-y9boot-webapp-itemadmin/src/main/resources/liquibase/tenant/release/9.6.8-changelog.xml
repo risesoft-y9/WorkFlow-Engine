@@ -647,4 +647,16 @@
             <column name="PROCESSSERIALNUMBER"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="1704700543333-34" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_TASK_RELATED" columnName="EXECUTIONID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_TASK_RELATED">
+            <column name="EXECUTIONID" remarks="流程执行实例Id" type="VARCHAR(50)"/>
+            <column name="SUB" type="INT" defaultValueNumeric="0" remarks="是否子流程的节点任务"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

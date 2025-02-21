@@ -1,11 +1,12 @@
 package net.risesoft.repository.jpa;
 
-import net.risesoft.entity.TaskRelated;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import net.risesoft.entity.TaskRelated;
 
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface TaskRelatedRepository
@@ -14,4 +15,6 @@ public interface TaskRelatedRepository
     List<TaskRelated> findByTaskIdOrderByCreateTimeAsc(String taskId);
 
     TaskRelated findByTaskIdAndInfoType(String taskId,String infoType);
+
+    List<TaskRelated> findByProcessSerialNumberOrderByCreateTimeDesc(String processSerialNumber);
 }

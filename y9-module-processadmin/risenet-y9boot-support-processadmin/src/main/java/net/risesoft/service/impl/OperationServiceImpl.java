@@ -156,8 +156,9 @@ public class OperationServiceImpl implements OperationService {
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reasonTemp));
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
-        if (customProcessDefinitionService.isSubProcessChildNode(currentTask.getProcessDefinitionId(),
-            currentTask.getTaskDefinitionKey())) {
+        boolean isSub = customProcessDefinitionService.isSubProcessChildNode(currentTask.getProcessDefinitionId(),
+            currentTask.getTaskDefinitionKey());
+        if (isSub) {
             taskList = taskList.stream().filter(task -> task.getExecutionId().equals(currentTask.getExecutionId()))
                 .collect(Collectors.toList());
         }
@@ -166,10 +167,12 @@ public class OperationServiceImpl implements OperationService {
             taskRelatedModel.setInfoType(TaskRelatedEnum.ROLLBACK.getValue());
             taskRelatedModel.setTaskId(task.getId());
             taskRelatedModel.setProcessInstanceId(task.getProcessInstanceId());
+            taskRelatedModel.setExecutionId(task.getExecutionId());
             taskRelatedModel.setProcessSerialNumber(processSerialNumber);
             taskRelatedModel.setMsgContent(reasonTemp);
             taskRelatedModel.setSenderId(position.getId());
             taskRelatedModel.setSenderName(position.getName());
+            taskRelatedModel.setSub(isSub);
             this.taskRelatedApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), taskRelatedModel);
         });
     }

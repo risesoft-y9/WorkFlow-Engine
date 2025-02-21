@@ -1,10 +1,7 @@
 package net.risesoft.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.GenericGenerator;
+import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,8 +11,16 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Date;
+
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author qinman
@@ -46,6 +51,16 @@ public class TaskRelated implements Serializable {
     @Comment("流程实例id")
     @Column(name = "PROCESSINSTANCEID", length = 50, nullable = false)
     private String processInstanceId;
+
+    @Comment("流程执行实例Id")
+    @Column(name = "EXECUTIONID", length = 50, nullable = false)
+    private String executionId;
+
+    @Type(type = "numeric_boolean")
+    @ColumnDefault("0")
+    @Comment("是否子流程的节点任务")
+    @Column(name = "SUB")
+    private boolean sub;
 
     @Comment("任务唯一标示")
     @Column(name = "TASKID", length = 50, nullable = false)

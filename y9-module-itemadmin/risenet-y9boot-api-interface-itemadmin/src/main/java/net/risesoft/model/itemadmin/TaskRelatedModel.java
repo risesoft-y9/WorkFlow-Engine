@@ -33,6 +33,14 @@ public class TaskRelatedModel implements Serializable {
      */
     private String processInstanceId;
     /**
+     * 流程执行实例Id
+     */
+    private String executionId;
+    /**
+     * 是否子流程的节点任务
+     */
+    private boolean sub;
+    /**
      * 任务唯一标示
      */
     private String taskId;

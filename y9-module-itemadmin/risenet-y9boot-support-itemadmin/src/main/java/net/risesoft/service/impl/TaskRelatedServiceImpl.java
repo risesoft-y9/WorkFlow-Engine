@@ -1,16 +1,18 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.TaskRelated;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.TaskRelatedRepository;
-import net.risesoft.service.TaskRelatedService;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.TaskRelated;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.jpa.TaskRelatedRepository;
+import net.risesoft.service.TaskRelatedService;
 
 /**
  * @author : qinman
@@ -43,6 +45,8 @@ public class TaskRelatedServiceImpl implements TaskRelatedService {
         newTaskRelated.setTaskId(taskRelated.getTaskId());
         newTaskRelated.setProcessSerialNumber(taskRelated.getProcessSerialNumber());
         newTaskRelated.setProcessInstanceId(taskRelated.getProcessInstanceId());
+        newTaskRelated.setExecutionId(taskRelated.getExecutionId());
+        newTaskRelated.setSub(taskRelated.isSub());
         newTaskRelated.setSenderId(taskRelated.getSenderId());
         newTaskRelated.setSenderName(taskRelated.getSenderName());
         newTaskRelated.setCreateTime(new Date());
@@ -53,6 +57,11 @@ public class TaskRelatedServiceImpl implements TaskRelatedService {
     @Override
     public List<TaskRelated> findByTaskId(String taskId) {
         return taskRelatedRepository.findByTaskIdOrderByCreateTimeAsc(taskId);
+    }
+
+    @Override
+    public List<TaskRelated> findByProcessSerialNumber(String processSerialNumber) {
+        return taskRelatedRepository.findByProcessSerialNumberOrderByCreateTimeDesc(processSerialNumber);
     }
 
     @Override
