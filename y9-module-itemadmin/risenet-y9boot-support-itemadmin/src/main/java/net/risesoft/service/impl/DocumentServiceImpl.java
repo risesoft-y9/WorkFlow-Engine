@@ -491,7 +491,75 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel editDoing(String processInstanceId, boolean mobile) {
+    public DocumentDetailModel editDoing(String processInstanceId, String documentId) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
+            activitiUser = "", itemId = "", taskId = "";
+        String startor;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        model.setMeeting(false);
+        model.setDocumentId(documentId);
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        startor = processParam.getStartor();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+        processDefinitionId = hpi.getProcessDefinitionId();
+        processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+        assert officeDoneInfo != null;
+        processSerialNumber = processParam.getProcessSerialNumber();
+        itemId = processParam.getItemId();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        if (!taskList.isEmpty()) {
+            boolean hasTaskId = false;
+            for (TaskModel task : taskList) {// 获取同一个委办局下的任务,子流程收回等
+                OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+                OrgUnit taskBureau;
+                if (StringUtils.isBlank(task.getAssignee())) {
+                    List<IdentityLinkModel> ilList =
+                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                    taskBureau = orgUnitApi.getBureau(tenantId, ilList.get(0).getUserId()).getData();
+                } else {
+                    taskBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+                }
+                if (currentBureau.getId().equals(taskBureau.getId())) {
+                    taskDefinitionKey = task.getTaskDefinitionKey();
+                    taskId = task.getId();
+                    hasTaskId = true;
+                    break;
+                }
+            }
+            // 找不到同一个委办局下的任务， 获取第一个任务
+            if (!hasTaskId) {
+                TaskModel taskTemp = taskList.get(0);
+                taskDefinitionKey = taskTemp.getTaskDefinitionKey();
+                taskId = taskTemp.getId();
+            }
+        } else {
+            // callActivity
+            List<HistoricActivityInstanceModel> haiList =
+                historicActivityApi.getByProcessInstanceId(tenantId, processInstanceId).getData();
+            HistoricActivityInstanceModel last = haiList.stream().reduce((first, second) -> second).orElse(null);
+            taskDefinitionKey = last.getActivityId();
+        }
+        model.setTitle(processParam.getTitle());
+        model.setStartor(startor);
+        model.setItembox(ItemBoxTypeEnum.DOING.getValue());
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setProcessDefinitionKey(processDefinitionKey);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId(processInstanceId);
+        model.setTaskDefKey(taskDefinitionKey);
+        model.setTaskId(taskId);
+        model.setActivitiUser(activitiUser);
+        model.setItemId(itemId);
+        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, false, model);
+        model = menuControl4Doing(itemId, taskId, model);
+        return model;
+    }
+
+    @Override
+    public DocumentDetailModel editDoing4Admin(String processInstanceId) {
         DocumentDetailModel model = new DocumentDetailModel();
         String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
             activitiUser = "", itemId = "", taskId = "";
@@ -552,7 +620,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTaskId(taskId);
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, true, model);
         model = menuControl4Doing(itemId, taskId, model);
         return model;
     }
@@ -679,7 +747,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
         model.setItembox(ItemBoxTypeEnum.TODO.getValue());
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, false, model);
         model = menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
         return model;
     }
@@ -873,29 +941,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
-        String taskDefinitionKey, boolean mobile, DocumentDetailModel model) {
-        // Y9表单
+        String taskDefinitionKey, boolean isAdmin, DocumentDetailModel model) {
         String showOtherFlag = "";
-        if (mobile) {
-            List<Y9FormItemMobileBind> eformTaskBinds = y9FormItemBindService
-                .listByItemIdAndProcDefIdAndTaskDefKey4Mobile(itemId, processDefinitionId, taskDefinitionKey);
-            ItemFormModel itemFormModel = new ItemFormModel();
-            if (!eformTaskBinds.isEmpty()) {
-                Y9FormItemMobileBind eftb = eformTaskBinds.get(0);
-                itemFormModel.setFormId(eftb.getFormId());
-                String formName = eftb.getFormName();
-                boolean b = formName.contains("(");
-                if (b) {
-                    formName = formName.substring(0, formName.indexOf("("));
-                }
-                itemFormModel.setFormName(formName);
-                Y9Form y9Form = y9FormRepository.findById(eftb.getFormId()).orElse(null);
-                assert y9Form != null;
-                itemFormModel.setFormJson(y9Form.getFormJson());
-                model.setFormList(List.of(itemFormModel));
-            }
-            return model;
-        }
         List<Y9FormItemBind> y9FormTaskBinds =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
         List<ItemFormModel> list = new ArrayList<>();
@@ -915,31 +962,33 @@ public class DocumentServiceImpl implements DocumentService {
         }
         model.setFormList(list);
         model.setShowOtherFlag(showOtherFlag);
-        model.setSignStatus(SignStatusEnum.NOTSTART.getValue());
-        if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())
-            || model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())
-            || model.getItembox().equals(ItemBoxTypeEnum.DONE.getValue())) {
-            List<SignDeptDetail> signList =
-                signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
+        ActRuDetail actRuDetail = actRuDetailService
+            .findByProcessSerialNumberAndAssignee(model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
+        List<SignDeptDetail> signList = signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
+        Integer signStatus = SignStatusEnum.NOTSTART.getValue();
+        if (StringUtils.isNotBlank(model.getDocumentId())
+            && model.getDocumentId().equals(model.getProcessSerialNumber())) {
+            // 打开的是主办
+            signStatus = SignStatusEnum.NONE.getValue();
+        } else {
             if (!signList.isEmpty()) {
-                ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
-                    model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
-                if (actRuDetail.isSub()) {
-                    model.setSignStatus(SignStatusEnum.SUB.getValue());
-                } else {
-                    model.setSignStatus(SignStatusEnum.MAIN.getValue());
-                    List<SignDeptDetail> sddList =
-                        signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue()))
-                            .collect(Collectors.toList());
-                    List<SignDeptDetailModel> modelList = new ArrayList<>();
-                    sddList.forEach(sdd -> {
-                        SignDeptDetailModel ssdModel = new SignDeptDetailModel();
-                        Y9BeanUtil.copyProperties(sdd, ssdModel);
-                        modelList.add(ssdModel);
-                    });
-                    model.setSignDeptDetailList(modelList);
-                }
+                signStatus = isAdmin ? SignStatusEnum.ADMIN.getValue()
+                    : actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
             }
+        }
+        model.setSignStatus(signStatus);
+        if (model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())
+            || model.getItembox().equals(ItemBoxTypeEnum.DONE.getValue())) {
+            List<SignDeptDetailModel> modelList = new ArrayList<>();
+            List<SignDeptDetail> sddList =
+                signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue()))
+                    .collect(Collectors.toList());
+            sddList.forEach(sdd -> {
+                SignDeptDetailModel ssdModel = new SignDeptDetailModel();
+                Y9BeanUtil.copyProperties(sdd, ssdModel);
+                modelList.add(ssdModel);
+            });
+            model.setSignDeptDetailList(modelList);
         }
         return model;
     }

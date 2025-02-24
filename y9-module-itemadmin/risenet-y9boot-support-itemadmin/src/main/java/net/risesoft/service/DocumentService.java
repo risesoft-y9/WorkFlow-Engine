@@ -95,10 +95,18 @@ public interface DocumentService {
      * Description: 办件办理
      *
      * @param processInstanceId 流程实例id
-     * @param mobile
+     * @param documentId
      * @return
      */
-    DocumentDetailModel editDoing(String processInstanceId, boolean mobile);
+    DocumentDetailModel editDoing(String processInstanceId, String documentId);
+
+    /**
+     * Description: 办件办理
+     *
+     * @param processInstanceId 流程实例id
+     * @return
+     */
+    DocumentDetailModel editDoing4Admin(String processInstanceId);
 
     /**
      * Description: 办件办理
@@ -154,12 +162,12 @@ public interface DocumentService {
      * @param processDefinitionKey 流程定义key
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务节点key
-     * @param mobile
+     * @param isAdmin 是否是管理员
      * @param model
      * @return
      */
     DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
-        String taskDefinitionKey, boolean mobile, DocumentDetailModel model);
+        String taskDefinitionKey, boolean isAdmin, DocumentDetailModel model);
 
     /**
      * Description: 获取首个事项id
