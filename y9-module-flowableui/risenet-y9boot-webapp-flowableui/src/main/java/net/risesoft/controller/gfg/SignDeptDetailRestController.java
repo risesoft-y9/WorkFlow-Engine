@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.util.Collections;
 import java.util.List;
@@ -99,6 +99,40 @@ public class SignDeptDetailRestController {
     }
 
     /**
+     * 根据流程序列号获取会签信息
+     *
+     * @param processSerialNumber 流程实例id
+     * @return Y9Result<SignDeptDetailModel>
+     * @since 9.6.8
+     */
+    @GetMapping(value = "/getSignDeptDetail")
+    Y9Result<SignDeptDetailModel> getSignDeptDetail(@RequestParam @NotBlank String processSerialNumber) {
+        OrgUnit bureau = orgUnitApi
+            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPositionId()).getData();
+        return signDeptDetailApi.findByProcessSerialNumberAndDeptId4Latest(Y9LoginUserHolder.getTenantId(),
+            processSerialNumber, bureau.getId());
+    }
+
+    /**
+     * 根据流程序列号和唯一标示获取会签信息
+     *
+     * @param processSerialNumber 流程实序列号
+     * @param signDepIdtDetailId 唯一标示
+     * @return Y9Result<SignDeptDetailModel>
+     * @since 9.6.8
+     */
+    @GetMapping(value = "/getSignDeptDetailById")
+    Y9Result<List<SignDeptDetailModel>> getSignDeptDetailById(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String signDepIdtDetailId) {
+        if (StringUtils.isBlank(signDepIdtDetailId)) {
+            return signDeptDetailApi.findByProcessSerialNumberAndStatus(Y9LoginUserHolder.getTenantId(),
+                processSerialNumber, SignDeptDetailStatusEnum.DONE.getValue());
+        }
+        return Y9Result.success(Collections
+            .singletonList(signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDepIdtDetailId).getData()));
+    }
+
+    /**
      * 根据主键恢复会签信息
      *
      * @param id 主键
@@ -132,40 +166,6 @@ public class SignDeptDetailRestController {
                     });
             });
         return Y9Result.success();
-    }
-
-    /**
-     * 根据流程序列号获取会签信息
-     *
-     * @param processSerialNumber 流程实例id
-     * @return Y9Result<SignDeptDetailModel>
-     * @since 9.6.8
-     */
-    @GetMapping(value = "/getSignDeptDetail")
-    Y9Result<SignDeptDetailModel> getSignDeptDetail(@RequestParam @NotBlank String processSerialNumber) {
-        OrgUnit bureau = orgUnitApi
-            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPositionId()).getData();
-        return signDeptDetailApi.findByProcessSerialNumberAndDeptId4Latest(Y9LoginUserHolder.getTenantId(),
-            processSerialNumber, bureau.getId());
-    }
-
-    /**
-     * 根据流程序列号和唯一标示获取会签信息
-     *
-     * @param processSerialNumber 流程实序列号
-     * @param signDepIdtDetailId 唯一标示
-     * @return Y9Result<SignDeptDetailModel>
-     * @since 9.6.8
-     */
-    @GetMapping(value = "/getSignDeptDetailById")
-    Y9Result<List<SignDeptDetailModel>> getSignDeptDetailById(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String signDepIdtDetailId) {
-        if (StringUtils.isBlank(signDepIdtDetailId)) {
-            return signDeptDetailApi.findByProcessSerialNumberAndStatus(Y9LoginUserHolder.getTenantId(),
-                processSerialNumber, SignDeptDetailStatusEnum.DONE.getValue());
-        }
-        return Y9Result.success(Collections
-            .singletonList(signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDepIdtDetailId).getData()));
     }
 
     /**

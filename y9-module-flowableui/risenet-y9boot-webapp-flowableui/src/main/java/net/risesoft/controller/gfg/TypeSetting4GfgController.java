@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

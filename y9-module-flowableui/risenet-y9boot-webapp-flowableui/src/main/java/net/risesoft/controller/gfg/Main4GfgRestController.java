@@ -1,7 +1,24 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import jakarta.validation.constraints.NotBlank;
+
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.itemadmin.EntrustApi;
@@ -26,7 +43,6 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
-import net.risesoft.model.platform.Resource;
 import net.risesoft.model.platform.VueMenu;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -36,19 +52,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 事项，统计相关
@@ -421,6 +424,24 @@ public class Main4GfgRestController {
     }
 
     /**
+     * 获取当前岗有权限的菜单
+     *
+     * @return Y9Result<List < Resource>>
+     */
+    @GetMapping(value = "/getResources")
+    public Y9Result<List<VueMenu>> getResources() {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<VueMenu> vueMenuList = new ArrayList<>();
+        App app = appApi.findBySystemNameAndCustomId(Y9Context.getSystemName(), Y9Context.getSystemName()).getData();
+        if (null != app) {
+            vueMenuList = positionResourceApi
+                .listMenusRecursively(tenantId, Y9LoginUserHolder.getPositionId(), AuthorityEnum.BROWSE, app.getId())
+                .getData();
+        }
+        return Y9Result.success(vueMenuList, "获取成功");
+    }
+
+    /**
      * 获取当前人的角色权限
      *
      * @return Y9Result<Map < String, Object>>
@@ -546,23 +567,5 @@ public class Main4GfgRestController {
         map.put("processInstanceId", processInstanceId);
         map.put("processSerialNumber", processSerialNumber);
         return Y9Result.success(map, "获取成功");
-    }
-
-    /**
-     * 获取当前岗有权限的菜单
-     *
-     * @return Y9Result<List < Resource>>
-     */
-    @GetMapping(value = "/getResources")
-    public Y9Result<List<VueMenu>> getResources() {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<VueMenu> vueMenuList = new ArrayList<>();
-        App app = appApi.findBySystemNameAndCustomId(Y9Context.getSystemName(), Y9Context.getSystemName()).getData();
-        if (null != app) {
-            vueMenuList = positionResourceApi
-                .listMenusRecursively(tenantId, Y9LoginUserHolder.getPositionId(), AuthorityEnum.BROWSE, app.getId())
-                .getData();
-        }
-        return Y9Result.success(vueMenuList, "获取成功");
     }
 }

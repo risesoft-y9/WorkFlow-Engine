@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +45,23 @@ public class ChaoSong4GfgRestController {
     private final OpinionCopyApi opinionCopyApi;
 
     /**
+     * 删除意见
+     *
+     * @param id 意见id
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/deleteById")
+    public Y9Result<String> deleteById(@RequestParam @NotBlank String id) {
+        try {
+            opinionCopyApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
+            return Y9Result.successMsg("刪除成功");
+        } catch (Exception e) {
+            LOGGER.error("删除意见失败！", e);
+        }
+        return Y9Result.failure("删除失败");
+    }
+
+    /**
      * 批量删除传签件
      *
      * @param processSerialNumbers 传签件流程序列号
@@ -65,6 +82,17 @@ public class ChaoSong4GfgRestController {
     }
 
     /**
+     * 传签件列表
+     * 
+     * @return Y9Page<DocumentCopyModel>
+     */
+    @GetMapping(value = "/list4Receive")
+    public Y9Page<DocumentCopyModel> list4Receive(QueryParamModel queryParamModel) {
+        return documentCopyApi.findByUserId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), queryParamModel);
+    }
+
+    /**
      * 传签记录
      *
      * @param processSerialNumber 流程序列号
@@ -77,14 +105,35 @@ public class ChaoSong4GfgRestController {
     }
 
     /**
-     * 传签件列表
-     * 
-     * @return Y9Page<DocumentCopyModel>
+     * 传签意见
+     *
+     * @param processSerialNumber 流程序列号
+     * @return Y9Result<List<OpinionCopyModel>>
      */
-    @GetMapping(value = "/list4Receive")
-    public Y9Page<DocumentCopyModel> list4Receive(QueryParamModel queryParamModel) {
-        return documentCopyApi.findByUserId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), queryParamModel);
+    @GetMapping(value = "/opinionCopyList")
+    public Y9Result<List<OpinionCopyModel>> opinionCopyList(@RequestParam @NotBlank String processSerialNumber) {
+        return opinionCopyApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),
+            Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), processSerialNumber);
+    }
+
+    /**
+     * 保存意见
+     *
+     * @param jsonData 意见实体json
+     * @return Y9Result<OpinionModel>
+     */
+    @PostMapping(value = "/saveOrUpdate")
+    public Y9Result<OpinionCopyModel> save(@RequestParam @NotBlank String jsonData) {
+        try {
+            UserInfo person = Y9LoginUserHolder.getUserInfo();
+            String userId = person.getPersonId(), tenantId = person.getTenantId();
+            OpinionCopyModel opinion = Y9JsonUtil.readValue(jsonData, OpinionCopyModel.class);
+            String positionId = Y9LoginUserHolder.getPositionId();
+            return opinionCopyApi.saveOrUpdate(tenantId, userId, positionId, opinion);
+        } catch (Exception e) {
+            LOGGER.error("保存意见失败", e);
+        }
+        return Y9Result.failure("保存失败");
     }
 
     /**
@@ -130,54 +179,5 @@ public class ChaoSong4GfgRestController {
             LOGGER.error("抄送", e);
         }
         return Y9Result.failure("取消失败");
-    }
-
-    /**
-     * 传签意见
-     *
-     * @param processSerialNumber 流程序列号
-     * @return Y9Result<List<OpinionCopyModel>>
-     */
-    @GetMapping(value = "/opinionCopyList")
-    public Y9Result<List<OpinionCopyModel>> opinionCopyList(@RequestParam @NotBlank String processSerialNumber) {
-        return opinionCopyApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),
-            Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), processSerialNumber);
-    }
-
-    /**
-     * 保存意见
-     *
-     * @param jsonData 意见实体json
-     * @return Y9Result<OpinionModel>
-     */
-    @PostMapping(value = "/saveOrUpdate")
-    public Y9Result<OpinionCopyModel> save(@RequestParam @NotBlank String jsonData) {
-        try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
-            OpinionCopyModel opinion = Y9JsonUtil.readValue(jsonData, OpinionCopyModel.class);
-            String positionId = Y9LoginUserHolder.getPositionId();
-            return opinionCopyApi.saveOrUpdate(tenantId, userId, positionId, opinion);
-        } catch (Exception e) {
-            LOGGER.error("保存意见失败", e);
-        }
-        return Y9Result.failure("保存失败");
-    }
-
-    /**
-     * 删除意见
-     *
-     * @param id 意见id
-     * @return Y9Result<String>
-     */
-    @PostMapping(value = "/deleteById")
-    public Y9Result<String> deleteById(@RequestParam @NotBlank String id) {
-        try {
-            opinionCopyApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
-            return Y9Result.successMsg("刪除成功");
-        } catch (Exception e) {
-            LOGGER.error("删除意见失败！", e);
-        }
-        return Y9Result.failure("删除失败");
     }
 }

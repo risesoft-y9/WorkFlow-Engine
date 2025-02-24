@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.util.List;
 
@@ -34,6 +34,18 @@ public class Role4GfgRestController {
     private final ItemRoleApi itemRoleApi;
 
     /**
+     * 获取司内会签选人组织机构数据
+     *
+     * @param id 父节点id
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @GetMapping(value = "/findCsUser")
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(required = false) String id) {
+        return itemRoleApi.findCsUser4Bureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), id);
+    }
+
+    /**
      * 获取发送选人组织机构数据
      *
      * @param itemId 事项id
@@ -55,17 +67,5 @@ public class Role4GfgRestController {
         return itemRoleApi.findAllPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id,
             processInstanceId);
-    }
-
-    /**
-     * 获取司内会签选人组织机构数据
-     *
-     * @param id 父节点id
-     * @return Y9Result<List < Map < String, Object>>>
-     */
-    @GetMapping(value = "/findCsUser")
-    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(required = false) String id) {
-        return itemRoleApi.findCsUser4Bureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), id);
     }
 }

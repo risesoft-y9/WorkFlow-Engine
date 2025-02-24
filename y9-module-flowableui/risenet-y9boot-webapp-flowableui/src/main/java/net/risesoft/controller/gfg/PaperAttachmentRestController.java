@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +39,19 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class PaperAttachmentRestController {
 
     private final PaperAttachmentApi paperAttachmentApi;
+
+    /**
+     * 删除附件
+     *
+     * @param ids 附件ids，逗号隔开
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/delPaperAttachments")
+    public Y9Result<String> delPaperAttachments(@RequestParam @NotBlank String ids) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        paperAttachmentApi.delFile(tenantId, ids);
+        return Y9Result.successMsg("删除成功");
+    }
 
     /**
      * 获取纸质附件列表
@@ -75,18 +89,5 @@ public class PaperAttachmentRestController {
             LOGGER.error("保存纸质附件异常", e);
         }
         return Y9Result.failure("保存失败");
-    }
-
-    /**
-     * 删除附件
-     *
-     * @param ids 附件ids，逗号隔开
-     * @return Y9Result<String>
-     */
-    @PostMapping(value = "/delPaperAttachments")
-    public Y9Result<String> delPaperAttachments(@RequestParam @NotBlank String ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        paperAttachmentApi.delFile(tenantId, ids);
-        return Y9Result.successMsg("删除成功");
     }
 }

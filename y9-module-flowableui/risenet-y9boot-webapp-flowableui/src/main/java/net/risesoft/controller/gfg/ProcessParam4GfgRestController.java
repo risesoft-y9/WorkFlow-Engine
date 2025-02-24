@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +44,24 @@ public class ProcessParam4GfgRestController {
     /**
      * 保存流程变量
      *
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<StartProcessResultModel>
+     */
+    @PostMapping(value = "/saveActionName")
+    public Y9Result<StartProcessResultModel> saveActionName(@RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String actionName) {
+        if (StringUtils.isNotBlank(processInstanceId) && StringUtils.isNotBlank(actionName)) {
+            Map<String, Object> vars = new HashMap<>();
+            vars.put("val", actionName);
+            variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
+                SysVariables.ACTIONNAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
+        }
+        return Y9Result.success(null);
+    }
+
+    /**
+     * 保存流程变量
+     *
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
@@ -61,24 +79,6 @@ public class ProcessParam4GfgRestController {
         @RequestParam(required = false) Boolean customItem) {
         return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number,
             level, customItem, theTaskKey);
-    }
-
-    /**
-     * 保存流程变量
-     *
-     * @param processInstanceId 流程实例id
-     * @return Y9Result<StartProcessResultModel>
-     */
-    @PostMapping(value = "/saveActionName")
-    public Y9Result<StartProcessResultModel> saveActionName(@RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = false) String actionName) {
-        if (StringUtils.isNotBlank(processInstanceId) && StringUtils.isNotBlank(actionName)) {
-            Map<String, Object> vars = new HashMap<>();
-            vars.put("val", actionName);
-            variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
-                SysVariables.ACTIONNAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
-        }
-        return Y9Result.success(null);
     }
 
     /**

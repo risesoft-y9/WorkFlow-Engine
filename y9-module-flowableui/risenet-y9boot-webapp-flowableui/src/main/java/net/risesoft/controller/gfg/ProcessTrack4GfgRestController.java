@@ -1,8 +1,9 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
+
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
