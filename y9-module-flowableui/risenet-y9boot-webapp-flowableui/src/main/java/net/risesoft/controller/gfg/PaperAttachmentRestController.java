@@ -1,14 +1,13 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.ChaoSongApi;
-import net.risesoft.api.itemadmin.PaperAttachmentApi;
-import net.risesoft.model.itemadmin.PaperAttachmentModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.PaperAttachmentApi;
+import net.risesoft.model.itemadmin.PaperAttachmentModel;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 纸质附件接口
@@ -38,6 +39,19 @@ import java.util.List;
 public class PaperAttachmentRestController {
 
     private final PaperAttachmentApi paperAttachmentApi;
+
+    /**
+     * 删除附件
+     *
+     * @param ids 附件ids，逗号隔开
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/delPaperAttachments")
+    public Y9Result<String> delPaperAttachments(@RequestParam @NotBlank String ids) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        paperAttachmentApi.delFile(tenantId, ids);
+        return Y9Result.successMsg("删除成功");
+    }
 
     /**
      * 获取纸质附件列表
@@ -65,7 +79,7 @@ public class PaperAttachmentRestController {
     @PostMapping(value = "/save")
     public Y9Result<Object> save(@Valid PaperAttachmentModel paperAttachmentModel) {
         try {
-            SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             paperAttachmentModel.setPersonId(userInfo.getPersonId());
             paperAttachmentModel.setPersonName(userInfo.getName());
@@ -75,18 +89,5 @@ public class PaperAttachmentRestController {
             LOGGER.error("保存纸质附件异常", e);
         }
         return Y9Result.failure("保存失败");
-    }
-
-    /**
-     * 删除附件
-     *
-     * @param ids 附件ids，逗号隔开
-     * @return Y9Result<String>
-     */
-    @PostMapping(value = "/delPaperAttachments")
-    public Y9Result<String> delPaperAttachments(@RequestParam @NotBlank String ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        paperAttachmentApi.delFile(tenantId, ids);
-        return Y9Result.successMsg("删除成功");
     }
 }

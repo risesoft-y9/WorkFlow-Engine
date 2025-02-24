@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.gfg;
 
 import java.util.Collections;
 import java.util.List;
@@ -98,42 +98,6 @@ public class SignDeptDetailRestController {
     }
 
     /**
-     * 根据主键恢复会签信息
-     *
-     * @param id 主键
-     * @return Y9Result<Object>
-     * @since 9.6.8
-     */
-    @PostMapping(value = "/recoverById")
-    Y9Result<Object> recoverById(@RequestParam @NotBlank String id) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        SignDeptDetailModel ssd = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
-        /*
-         * 1、恢复流程参与信息
-         */
-        actRuDetailApi.recoveryByExecutionId(tenantId, ssd.getExecutionId());
-        /*
-         * 2、恢复会签信息
-         */
-        signDeptDetailApi.recoverById(Y9LoginUserHolder.getTenantId(), id);
-        /*
-         * 3、修改历程信息
-         */
-        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, ssd.getProcessInstanceId()).getData();
-        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
-            .forEach(tm -> {
-                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
-                taskRelatedModels.stream()
-                    .filter(trm -> StringUtils.equals(trm.getInfoType(), TaskRelatedEnum.ACTIONNAME.getValue()))
-                    .forEach(trm -> {
-                        trm.setMsgContent("恢复");
-                        taskRelatedApi.saveOrUpdate(tenantId, trm);
-                    });
-            });
-        return Y9Result.success();
-    }
-
-    /**
      * 根据流程序列号获取会签信息
      *
      * @param processSerialNumber 流程序列号
@@ -174,6 +138,42 @@ public class SignDeptDetailRestController {
         }
         return Y9Result.success(Collections
             .singletonList(signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDepIdtDetailId).getData()));
+    }
+
+    /**
+     * 根据主键恢复会签信息
+     *
+     * @param id 主键
+     * @return Y9Result<Object>
+     * @since 9.6.8
+     */
+    @PostMapping(value = "/recoverById")
+    Y9Result<Object> recoverById(@RequestParam @NotBlank String id) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        SignDeptDetailModel ssd = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+        /*
+         * 1、恢复流程参与信息
+         */
+        actRuDetailApi.recoveryByExecutionId(tenantId, ssd.getExecutionId());
+        /*
+         * 2、恢复会签信息
+         */
+        signDeptDetailApi.recoverById(Y9LoginUserHolder.getTenantId(), id);
+        /*
+         * 3、修改历程信息
+         */
+        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, ssd.getProcessInstanceId()).getData();
+        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
+            .forEach(tm -> {
+                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
+                taskRelatedModels.stream()
+                    .filter(trm -> StringUtils.equals(trm.getInfoType(), TaskRelatedEnum.ACTIONNAME.getValue()))
+                    .forEach(trm -> {
+                        trm.setMsgContent("恢复");
+                        taskRelatedApi.saveOrUpdate(tenantId, trm);
+                    });
+            });
+        return Y9Result.success();
     }
 
     /**
