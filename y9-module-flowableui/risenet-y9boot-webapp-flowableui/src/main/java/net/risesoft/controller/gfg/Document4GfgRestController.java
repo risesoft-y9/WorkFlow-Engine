@@ -327,10 +327,12 @@ public class Document4GfgRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/editDone")
-    public Y9Result<DocumentDetailModel> editDone(@RequestParam @NotBlank String processInstanceId) {
+    public Y9Result<DocumentDetailModel> editDone(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String documentId) {
         try {
             DocumentDetailModel model = documentApi
-                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId, false)
+                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    documentId)
                 .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {

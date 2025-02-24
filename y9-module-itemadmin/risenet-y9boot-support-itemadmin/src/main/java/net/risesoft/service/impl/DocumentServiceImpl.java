@@ -626,7 +626,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel editDone(String processInstanceId, boolean mobile) {
+    public DocumentDetailModel editDone(String processInstanceId, String documentId) {
         DocumentDetailModel model = new DocumentDetailModel();
         String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
             activitiUser = "", itemId = "";
@@ -647,6 +647,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
         processSerialNumber = processParam.getProcessSerialNumber();
         itemId = processParam.getItemId();
+        model.setDocumentId(documentId);
         model.setTitle(processParam.getTitle());
         model.setStartor(startor);
         model.setItembox(ItemBoxTypeEnum.DONE.getValue());
@@ -658,7 +659,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
 
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, false, model);
         model = menuControl4Done(itemId, processDefinitionId, taskDefinitionKey, model);
         return model;
     }
