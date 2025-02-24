@@ -240,17 +240,17 @@ public class DocumentApiImpl implements DocumentApi {
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
-     * @param mobile 是否手机端
+     * @param documentId
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
      * @since 9.6.6
      */
     @Override
     public Y9Result<DocumentDetailModel> editDone(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId, @RequestParam boolean mobile) {
+        @RequestParam String processInstanceId, @RequestParam String documentId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        DocumentDetailModel model = documentService.editDone(processInstanceId, mobile);
+        DocumentDetailModel model = documentService.editDone(processInstanceId, documentId);
         return Y9Result.success(model);
     }
 

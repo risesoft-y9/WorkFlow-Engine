@@ -112,10 +112,10 @@ public interface DocumentService {
      * Description: 办件办理
      *
      * @param processInstanceId 流程实例id
-     * @param mobile
+     * @param documentId
      * @return
      */
-    DocumentDetailModel editDone(String processInstanceId, boolean mobile);
+    DocumentDetailModel editDone(String processInstanceId, String documentId);
 
     /**
      * Description: 办件办理
