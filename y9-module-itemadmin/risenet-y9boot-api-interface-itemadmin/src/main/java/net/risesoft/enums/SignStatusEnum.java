@@ -17,7 +17,11 @@ public enum SignStatusEnum {
     /** 主办司局 */
     MAIN(1, "主办司局"),
     /** 会签司局 */
-    SUB(2, "会签司局");
+    SUB(2, "会签司局"),
+    /** 管理员 */
+    ADMIN(3, "管理员"),
+    /** 不显示 */
+    NONE(4, "不显示");
 
     private final Integer value;
     private final String name;

@@ -26,7 +26,6 @@ import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
-import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -137,16 +136,25 @@ public class SignDeptDetailRestController {
     /**
      * 根据流程序列号获取会签信息
      *
-     * @param processSerialNumber 流程实例id
+     * @param processSerialNumber 流程序列号
+     * @param signDeptDetailId 会签部门详情id
      * @return Y9Result<SignDeptDetailModel>
      * @since 9.6.8
      */
     @GetMapping(value = "/getSignDeptDetail")
-    Y9Result<SignDeptDetailModel> getSignDeptDetail(@RequestParam @NotBlank String processSerialNumber) {
-        OrgUnit bureau = orgUnitApi
-            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPositionId()).getData();
+    Y9Result<SignDeptDetailModel> getSignDeptDetail(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String signDeptDetailId) {
+        String bureauId = "";
+        if (StringUtils.isBlank(signDeptDetailId)) {
+            bureauId =
+                orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPositionId())
+                    .getData().getId();
+        } else {
+            bureauId =
+                signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDeptDetailId).getData().getDeptId();
+        }
         return signDeptDetailApi.findByProcessSerialNumberAndDeptId4Latest(Y9LoginUserHolder.getTenantId(),
-            processSerialNumber, bureau.getId());
+            processSerialNumber, bureauId);
     }
 
     /**

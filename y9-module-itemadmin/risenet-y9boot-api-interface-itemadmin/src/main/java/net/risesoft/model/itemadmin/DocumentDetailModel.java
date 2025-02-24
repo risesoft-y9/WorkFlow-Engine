@@ -16,6 +16,11 @@ import lombok.Data;
 public class DocumentDetailModel implements Serializable {
 
     private static final long serialVersionUID = 4115564591151087066L;
+
+    /**
+     * 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
+     */
+    private String documentId;
     /**
      * 事项Id
      */
