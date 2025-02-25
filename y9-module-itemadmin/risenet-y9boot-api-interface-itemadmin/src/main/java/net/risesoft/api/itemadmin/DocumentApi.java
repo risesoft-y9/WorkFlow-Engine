@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -169,20 +170,9 @@ public interface DocumentApi {
     @GetMapping("/editDoing")
     Y9Result<DocumentDetailModel> editDoing(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentId") String documentId);
+        @RequestParam("documentId") String documentId, @RequestParam("isAdmin") boolean isAdmin,
+        @RequestParam("itemBox") ItemBoxTypeEnum itemBox);
 
-    /**
-     * 编辑文档
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
-     * @since 9.6.6
-     */
-    @GetMapping("/editDoing4Admin")
-    Y9Result<DocumentDetailModel> editDoing4Admin(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 编辑文档
@@ -197,7 +187,8 @@ public interface DocumentApi {
     @GetMapping("/editDone")
     Y9Result<DocumentDetailModel> editDone(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentId") String documentId);
+        @RequestParam("documentId") String documentId, @RequestParam("isAdmin") boolean isAdmin,
+        @RequestParam("itemBox") ItemBoxTypeEnum itemBox);
 
     /**
      * 编辑文档
