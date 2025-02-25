@@ -1444,6 +1444,11 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         .add(new TaskRelatedModel(TaskRelatedEnum.FLWDJ.getValue(), String.valueOf(flwdjInt)));
                 }
             }
+            // 发文文号
+            Object fwwh = formData.get(TableColumnEnum.FWWH.getValue());
+            if (ToolUtil.isObjectNotNullAndStringNotEmpty(fwwh)) {
+                taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.FWWH.getValue(), String.valueOf(fwwh)));
+            }
             return taskRelatedList;
         } catch (Exception e) {
             e.printStackTrace();
