@@ -546,6 +546,7 @@ public class OpinionServiceImpl implements OpinionService {
             } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.COPY.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDOING.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())) {
                 model.setAddable(false);
