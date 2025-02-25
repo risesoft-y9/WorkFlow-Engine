@@ -28,7 +28,6 @@ import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
 import net.risesoft.model.itemadmin.OpinionSignListModel;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.platform.DepartmentProp;
-import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
@@ -218,7 +217,9 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                 }
             } else if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
                 || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())) {
+                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())
+                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDOING.getValue())
+                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())) {
                 model.setAddable(false);
                 for (OpinionSign opinionSign : list) {
                     OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
@@ -232,52 +233,11 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                     Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
                     opinionSignListModel.setOpinionSignModel(opinionSignModel);
                     opinionSignListModel.setEditable(false);
-                    resList.add(opinionSignListModel);
-                }
-            } else if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.YUEJIAN.getValue())) {
-                // 是否已办结
-                boolean isEnd = false;
-                try {
-                    ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-                    // 办结件，阅件不可填写意见
-                    if (processParam != null) {
-                        HistoricProcessInstanceModel historicProcessInstanceModel =
-                            historicProcessApi.getById(tenantId, processParam.getProcessInstanceId()).getData();
-                        boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null
-                            && historicProcessInstanceModel.getEndTime() != null);
-                        if (b) {
-                            model.setAddable(false);
-                            isEnd = true;
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                for (OpinionSign opinion : list) {
-                    OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
-                    opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
-                    if (!opinion.getCreateDate().equals(opinion.getModifyDate())) {
-                        opinionSignListModel.setIsEdit(true);
-                    }
-                    opinion.setModifyDate(sdf1.format(sdf.parse(opinion.getModifyDate())));
-                    opinion.setCreateDate(sdf1.format(sdf.parse(opinion.getCreateDate())));
-                    OpinionSignModel opinionSignModel = new OpinionSignModel();
-                    Y9BeanUtil.copyProperties(opinion, opinionSignModel);
-                    opinionSignListModel.setOpinionSignModel(opinionSignModel);
-                    opinionSignListModel.setEditable(false);
-                    if (personId.equals(opinion.getUserId()) && !isEnd) {
+                    if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDOING.getValue())
+                        || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())) {
                         opinionSignListModel.setEditable(true);
-                        model.setAddable(false);
                     }
                     resList.add(opinionSignListModel);
-                }
-                /**
-                 * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
-                 */
-                Boolean addableTemp = model.getAddable();
-                if (Boolean.TRUE.equals(addableTemp)) {
-                    model.setAddable(false);
-
                 }
             }
             resList.add(model);
