@@ -292,7 +292,7 @@ public class Document4GfgRestController {
         try {
             DocumentDetailModel model = documentApi
                 .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId)
+                    documentId, false, ItemBoxTypeEnum.DOING)
                 .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
@@ -308,10 +308,12 @@ public class Document4GfgRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/editDoing4Admin")
-    public Y9Result<DocumentDetailModel> editDoing4Admin(@RequestParam @NotBlank String processInstanceId) {
+    public Y9Result<DocumentDetailModel> editDoing4Admin(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String documentId) {
         try {
             DocumentDetailModel model = documentApi
-                .editDoing4Admin(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId)
+                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    documentId, true, ItemBoxTypeEnum.MONITORDOING)
                 .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
@@ -332,8 +334,28 @@ public class Document4GfgRestController {
         try {
             DocumentDetailModel model = documentApi
                 .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId)
+                    documentId, false, ItemBoxTypeEnum.DONE)
                 .getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取编辑办件数据
+     *
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/editDone4Admin")
+    public Y9Result<DocumentDetailModel> editDone4Admin(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String documentId) {
+        try {
+            DocumentDetailModel model =
+                documentApi.editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                    processInstanceId, documentId, true, ItemBoxTypeEnum.MONITORDONE).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);

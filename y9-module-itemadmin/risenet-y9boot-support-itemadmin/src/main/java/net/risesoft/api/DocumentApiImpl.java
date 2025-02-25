@@ -18,6 +18,7 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ProcessParam;
+import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -207,30 +208,12 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<DocumentDetailModel> editDoing(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId, @RequestParam String documentId) {
+        @RequestParam String processInstanceId, @RequestParam String documentId, @RequestParam boolean isAdmin,
+        @RequestParam ItemBoxTypeEnum itemBox) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        DocumentDetailModel model = documentService.editDoing(processInstanceId, documentId);
-        return Y9Result.success(model);
-    }
-
-    /**
-     * 编辑办件
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<DocumentDetailModel> editDoing4Admin(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
-        DocumentDetailModel model = documentService.editDoing4Admin(processInstanceId);
+        DocumentDetailModel model = documentService.editDoing(processInstanceId, documentId, isAdmin, itemBox);
         return Y9Result.success(model);
     }
 
@@ -246,11 +229,12 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<DocumentDetailModel> editDone(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId, @RequestParam String documentId) {
+        @RequestParam String processInstanceId, @RequestParam String documentId, @RequestParam boolean isAdmin,
+        @RequestParam ItemBoxTypeEnum itemBox) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        DocumentDetailModel model = documentService.editDone(processInstanceId, documentId);
+        DocumentDetailModel model = documentService.editDone(processInstanceId, documentId, isAdmin, itemBox);
         return Y9Result.success(model);
     }
 
