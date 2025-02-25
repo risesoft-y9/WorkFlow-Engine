@@ -26,7 +26,6 @@ import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.Opinion;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
@@ -448,11 +447,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 results = this.historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
             }
         }
-        ActRuDetail actRuDetail =
-            this.actRuDetailService.findByProcessInstanceIdAndAssignee(processInstanceId,
-                Y9LoginUserHolder.getOrgUnitId());
         HistoricTaskInstanceModel historicTaskInstanceModel =
-            this.historictaskApi.getById(tenantId, actRuDetail.getTaskId(), year).getData();
+            this.historictaskApi.getById(tenantId, results.get(0).getId(), year).getData();
         List<TargetModel> subNodeList = this.processDefinitionApi
             .getSubProcessChildNode(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
         List<HistoricTaskInstanceModel> mainResults = new ArrayList<>();
