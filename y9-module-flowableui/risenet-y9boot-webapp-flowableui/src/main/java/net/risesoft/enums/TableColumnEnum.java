@@ -19,7 +19,9 @@ public enum TableColumnEnum {
     /** 紧急程度 */
     JJCD("jjcd"),
     /** 非联网登记 */
-    FLWDJ("flwdj");
+    FLWDJ("flwdj"),
+    /** 发文文号 */
+    FWWH("fwwh");
 
     private final String value;
 }
