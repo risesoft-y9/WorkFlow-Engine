@@ -284,7 +284,7 @@ public class DocumentServiceImpl implements DocumentService {
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         model.setItembox(ItemBoxTypeEnum.ADD.getValue());
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, startTaskDefKey, mobile, model);
+        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, startTaskDefKey, false, model);
         model = menuControl4Add(itemId, processDefinitionId, startTaskDefKey, model);
         model.setProcessDefinitionId(processDefinitionId);
         model.setTaskDefKey(startTaskDefKey);
@@ -897,8 +897,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
         model.setFormList(list);
         model.setShowOtherFlag(showOtherFlag);
-        ActRuDetail actRuDetail = actRuDetailService
-            .findByProcessSerialNumberAndAssignee(model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
         List<SignDeptDetail> signList = signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
         Integer signStatus = SignStatusEnum.NOTSTART.getValue();
         if (StringUtils.isNotBlank(model.getDocumentId())
@@ -907,6 +905,8 @@ public class DocumentServiceImpl implements DocumentService {
             signStatus = SignStatusEnum.NONE.getValue();
         } else {
             if (!signList.isEmpty()) {
+                ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
+                    model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
                 signStatus = isAdmin ? SignStatusEnum.ADMIN.getValue()
                     : actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
             }
