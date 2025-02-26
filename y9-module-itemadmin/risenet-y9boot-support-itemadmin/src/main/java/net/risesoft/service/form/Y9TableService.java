@@ -66,6 +66,14 @@ public interface Y9TableService {
     Y9Table findByTableAlias(String tableAlias);
 
     /**
+     * 获取where条件和表连接语句
+     * 
+     * @param searchMap 表单字段查询条件
+     * @return
+     */
+    List<String> getSql(Map<String, Object> searchMap);
+
+    /**
      * 获取所有表名称
      *
      * @return

@@ -35,6 +35,7 @@ import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.service.ItemWorkDayService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
@@ -62,16 +63,19 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final SpmApproveItemRepository approveItemRepository;
 
+    private final ItemWorkDayService itemWorkDayService;
+
     public Y9TableServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository,
         Y9FormFieldRepository y9FormFieldRepository, TableManagerService tableManagerService,
-        SpmApproveItemRepository approveItemRepository) {
+        SpmApproveItemRepository approveItemRepository, ItemWorkDayService itemWorkDayService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
         this.y9FormFieldRepository = y9FormFieldRepository;
         this.tableManagerService = tableManagerService;
         this.approveItemRepository = approveItemRepository;
+        this.itemWorkDayService = itemWorkDayService;
     }
 
     @Override
@@ -185,6 +189,57 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Override
     public Y9Table findByTableAlias(String tableAlias) {
         return y9TableRepository.findByTableAlias(tableAlias);
+    }
+
+    @Override
+    public List<String> getSql(Map<String, Object> searchMap) {
+        StringBuilder innerSql = new StringBuilder();
+        StringBuilder whereSql = new StringBuilder();
+        List<String> tableAliasList = new ArrayList<>();
+        for (String key : searchMap.keySet()) {
+            if (key.contains(".")) {
+                String[] aliasColumnNameType = key.split("\\.");
+                String alias = aliasColumnNameType[0];
+                if (!tableAliasList.contains(alias)) {
+                    tableAliasList.add(alias);
+                    Y9Table y9Table = this.findByTableAlias(alias);
+                    if (null == y9Table) {
+                        return List.of();
+                    }
+                    innerSql.append("INNER JOIN ").append(y9Table.getTableName().toUpperCase()).append(" ")
+                        .append(alias.toUpperCase()).append(" ON T.PROCESSSERIALNUMBER = ").append(alias.toUpperCase())
+                        .append(".GUID ");
+                }
+                switch (aliasColumnNameType.length) {
+                    case 2:
+                        if ("dbsx".equalsIgnoreCase(aliasColumnNameType[1])) {
+                            int days = Integer.parseInt(searchMap.get(key).toString());
+                            List<String> start_end = itemWorkDayService.getDb(days);
+                            whereSql.append(" AND ").append(key.toUpperCase()).append(" >='").append(start_end.get(0))
+                                .append("' AND ").append(key.toUpperCase()).append(" <='").append(start_end.get(1))
+                                .append("'");
+                        } else {
+                            whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                                .append(searchMap.get(key).toString()).append("') > 0 ");
+                        }
+                        break;
+                    case 3:
+                        String aliasColumnName = aliasColumnNameType[0] + "." + aliasColumnNameType[1];
+                        String type = aliasColumnNameType[2];
+                        if ("equal".equals(type)) {
+                            whereSql.append(" AND ").append(aliasColumnName.toUpperCase()).append("='")
+                                .append(searchMap.get(key).toString()).append("' ");
+                        } else if ("date".equals(type)) {
+                            ArrayList<String> list = (ArrayList<String>)searchMap.get(key);
+                            whereSql.append(" AND ").append(aliasColumnName.toUpperCase()).append(" >='")
+                                .append(list.get(0)).append("' AND ").append(aliasColumnName.toUpperCase())
+                                .append(" <='").append(list.get(1)).append("'");
+                        }
+                        break;
+                }
+            }
+        }
+        return List.of(innerSql.toString(), whereSql.toString());
     }
 
     @Override
