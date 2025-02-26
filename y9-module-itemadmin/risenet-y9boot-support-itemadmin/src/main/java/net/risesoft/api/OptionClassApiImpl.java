@@ -56,4 +56,20 @@ public class OptionClassApiImpl implements OptionClassApi {
         return Y9Result.success(listMap);
     }
 
+    @Override
+    public Y9Result<List<Y9FormOptionValueModel>> findAll(String tenantId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<Y9FormOptionValue> list = y9FormOptionClassService.listAllOptionValue();
+        List<Y9FormOptionValueModel> listMap = new ArrayList<>();
+        for (Y9FormOptionValue option : list) {
+            Y9FormOptionValueModel map = new Y9FormOptionValueModel();
+            map.setCode(option.getCode());
+            map.setName(option.getName());
+            map.setType(option.getType());
+            map.setDefaultSelected(option.getDefaultSelected());
+            listMap.add(map);
+        }
+        return Y9Result.success(listMap);
+    }
+
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,7 +82,8 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
 
     @Override
     public List<Y9FormOptionValue> listAllOptionValue() {
-        return y9FormOptionValueRepository.findAll();
+        Sort sort = Sort.by(Sort.Direction.ASC, "tabIndex");
+        return y9FormOptionValueRepository.findAll(sort);
     }
 
     @Override
