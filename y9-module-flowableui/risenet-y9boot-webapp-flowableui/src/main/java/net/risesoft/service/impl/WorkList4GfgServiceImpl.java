@@ -1236,15 +1236,34 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     @Override
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId(),
+                positionName = Y9LoginUserHolder.getPosition().getName();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage =
                     itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             } else {
-                itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                    searchMapStr, page, rows);
+                Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+                assert searchMap != null;
+                boolean sign = null != searchMap.get("sign");
+                boolean noSign = null != searchMap.get("noSign");
+                boolean haveAssigneeName = null != searchMap.get("assigneeName");
+                if (haveAssigneeName && !positionName.contains(String.valueOf(searchMap.get("assigneeName")))) {
+                    return Y9Page.success(page, 0, 0, List.of(), "获取列表成功");
+                }
+                if (sign || noSign) {
+                    if (sign && noSign) {
+                        itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                            searchMapStr, page, rows);
+                    } else {
+                        itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                            searchMapStr, page, rows);
+                    }
+                } else {
+                    itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                        searchMapStr, page, rows);
+                }
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -1288,6 +1307,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
+
 
     /**
      * 1、红绿灯 2、条码号 3、紧急程度 4、非联网登记 5、新 6、催办 7、多步退回 8、办文说明
@@ -1357,7 +1377,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
      * @param formData
      * @param isChildren
      * @param urgeInfoList
-     * @param isAdmin
      * @return
      */
     private List<TaskRelatedModel> getTaskRelated4Doing(String processSerialNumber, String executionId,
