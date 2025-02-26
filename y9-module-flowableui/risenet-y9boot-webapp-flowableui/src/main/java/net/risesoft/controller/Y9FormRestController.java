@@ -348,6 +348,16 @@ public class Y9FormRestController {
     }
 
     /**
+     * 获取数据字典值
+     *
+     * @return Y9Result<List<Y9FormOptionValueModel>>
+     */
+    @GetMapping(value = "/getAllOptionValueList")
+    public Y9Result<List<Y9FormOptionValueModel>> getAllOptionValueList() {
+        return optionClassApi.findAll(Y9LoginUserHolder.getTenantId());
+    }
+
+    /**
      * 获取前置表单数据
      *
      * @param formId 表单id

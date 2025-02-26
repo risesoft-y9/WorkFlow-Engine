@@ -1457,10 +1457,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             // 非联网登记
             Object flwdj = formData.get(TableColumnEnum.FLWDJ.getValue());
             if (ToolUtil.isObjectNotNullAndStringNotEmpty(flwdj)) {
-                Integer flwdjInt = Integer.parseInt(String.valueOf(flwdj));
-                if (flwdjInt.equals(FlwdjEnum.YES.getValue())) {
+                if (String.valueOf(flwdj).equals(FlwdjEnum.YES.getValue())) {
                     taskRelatedList
-                        .add(new TaskRelatedModel(TaskRelatedEnum.FLWDJ.getValue(), String.valueOf(flwdjInt)));
+                        .add(new TaskRelatedModel(TaskRelatedEnum.FLWDJ.getValue(), ""));
                 }
             }
             // 发文文号

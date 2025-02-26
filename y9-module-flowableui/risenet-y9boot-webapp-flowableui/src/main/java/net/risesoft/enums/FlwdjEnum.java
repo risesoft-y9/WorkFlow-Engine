@@ -14,10 +14,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FlwdjEnum {
 
-    /** 否 */
-    NO(0),
     /** 是 */
-    YES(1);
+    YES("[\"1\"]");
 
-    private final Integer value;
+    private final String value;
 }
