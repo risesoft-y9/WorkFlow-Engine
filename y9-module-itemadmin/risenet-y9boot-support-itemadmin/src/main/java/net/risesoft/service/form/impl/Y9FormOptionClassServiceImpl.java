@@ -130,9 +130,9 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
                     : optionValue.getId());
                 Integer tabIndex = y9FormOptionValueRepository.getMaxTabIndex(optionValue.getType());
                 y9FormOptionValue.setTabIndex((tabIndex == null || tabIndex == 0) ? 1 : tabIndex + 1);
-                if ((tabIndex == null || tabIndex == 0)) {
-                    y9FormOptionValue.setDefaultSelected(1);
-                }
+                // if ((tabIndex == null || tabIndex == 0)) {
+                // y9FormOptionValue.setDefaultSelected(1);
+                // }
             } else {
                 y9FormOptionValue.setTabIndex(optionValue.getTabIndex());
             }
