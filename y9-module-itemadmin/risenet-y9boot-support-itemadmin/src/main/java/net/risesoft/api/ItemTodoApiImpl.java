@@ -30,7 +30,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ItemPageService;
-import net.risesoft.service.ItemWorkDayService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -56,8 +55,6 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     private final Y9TableService y9TableService;
 
     private final PositionApi positionApi;
-
-    private final ItemWorkDayService itemWorkDayService;
 
     /**
      * 根据用户id和系统名称查询待办数量
@@ -252,58 +249,14 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();
-        StringBuilder innerSql = new StringBuilder();
-        StringBuilder whereSql = new StringBuilder();
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
         boolean haveAssigneeName = null != searchMap.get("assigneeName");
         if (haveAssigneeName && !position.getName().contains(String.valueOf(searchMap.get("assigneeName")))) {
             return Y9Page.success(page, 0, 0, List.of(), "获取列表成功");
         }
-        List<String> tableAliasList = new ArrayList<>();
-        for (String key : searchMap.keySet()) {
-            if (key.contains(".")) {
-                String[] aliasColumnNameType = key.split("\\.");
-                String alias = aliasColumnNameType[0];
-                if (!tableAliasList.contains(alias)) {
-                    tableAliasList.add(alias);
-                    Y9Table y9Table = this.y9TableService.findByTableAlias(alias);
-                    if (null == y9Table) {
-                        return Y9Page.failure(page, rows, 0, null, "别名" + alias + "对应的表不存在", 0);
-                    }
-                    innerSql.append("INNER JOIN ").append(y9Table.getTableName().toUpperCase()).append(" ")
-                        .append(alias.toUpperCase()).append(" ON T.PROCESSSERIALNUMBER = ").append(alias.toUpperCase())
-                        .append(".GUID ");
-                }
-                switch (aliasColumnNameType.length) {
-                    case 2:
-                        if ("dbsx".equalsIgnoreCase(aliasColumnNameType[1])) {
-                            int days = Integer.parseInt(searchMap.get(key).toString());
-                            List<String> start_end = itemWorkDayService.getDb(days);
-                            whereSql.append(" AND ").append(key.toUpperCase()).append(" >='").append(start_end.get(0))
-                                .append("' AND ").append(key.toUpperCase()).append(" <='").append(start_end.get(1))
-                                .append("'");
-                        } else {
-                            whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
-                                .append(searchMap.get(key).toString()).append("') > 0 ");
-                        }
-                        break;
-                    case 3:
-                        String aliasColumnName = aliasColumnNameType[0] + "." + aliasColumnNameType[1];
-                        String type = aliasColumnNameType[2];
-                        if ("equal".equals(type)) {
-                            whereSql.append(" AND ").append(aliasColumnName.toUpperCase()).append("='")
-                                .append(searchMap.get(key).toString()).append("' ");
-                        } else if ("date".equals(type)) {
-                            ArrayList<String> list = (ArrayList<String>)searchMap.get(key);
-                            whereSql.append(" AND ").append(aliasColumnName.toUpperCase()).append(" >='")
-                                .append(list.get(0)).append("' AND ").append(aliasColumnName.toUpperCase())
-                                .append(" <='").append(list.get(1)).append("'");
-                        }
-                        break;
-                }
-            }
-        }
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1);
         String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE "
             + whereSql + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY T.CREATETIME DESC";
         String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + innerSql
