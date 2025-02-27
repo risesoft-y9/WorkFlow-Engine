@@ -66,11 +66,11 @@ public class Todo4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/todoList4TaskDefKey")
+    @PostMapping(value = "/todoList4TaskDefKey")
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(@RequestParam String itemId,
         @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, searchMapStr, page, rows);
+        @RequestParam(required = false) String queryMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        return this.workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, searchMapStr, queryMapStr, page, rows);
     }
 
     /**

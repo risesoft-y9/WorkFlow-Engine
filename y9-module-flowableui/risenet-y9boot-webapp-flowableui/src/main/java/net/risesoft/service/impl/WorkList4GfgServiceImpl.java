@@ -1580,17 +1580,29 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
 
     @Override
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
+        String queryMapStr,
         Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            Map<String, Object> allMap = new HashMap<>();
+            if (StringUtils.isNotBlank(searchMapStr)) {
+                Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+                assert searchMap != null;
+                allMap.putAll(searchMap);
+            }
+            if (StringUtils.isNotBlank(queryMapStr)) {
+                Map<String, Object> queryMap = Y9JsonUtil.readHashMap(queryMapStr);
+                assert queryMap != null;
+                allMap.putAll(queryMap);
+            }
             Y9Page<ActRuDetailModel> itemPage;
-            if (StringUtils.isBlank(searchMapStr)) {
+            if (allMap.isEmpty()) {
                 itemPage = itemTodoApi.findByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
                     item.getSystemName(), taskDefKey, page, rows);
             } else {
                 itemPage = itemTodoApi.searchByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
-                    item.getSystemName(), taskDefKey, searchMapStr, page, rows);
+                    item.getSystemName(), taskDefKey, Y9JsonUtil.writeValueAsString(allMap), page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

@@ -32,7 +32,8 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr, Integer page,
+    Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
+        String queryMapStr, Integer page,
         Integer rows);
 
     /**
