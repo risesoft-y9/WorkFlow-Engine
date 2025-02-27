@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,13 +34,15 @@ public class All4GfgRestController {
      * 获取所有本人经手件的列表
      *
      * @param itemId 事项id
+     * @param searchMapStr 查询参数
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/allList")
-    public Y9Page<Map<String, Object>> allList(@RequestParam String itemId, @RequestParam Integer page,
+    @PostMapping(value = "/allList")
+    public Y9Page<Map<String, Object>> allList(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.allList(itemId, page, rows);
+        return this.workList4GfgService.allList(itemId, searchMapStr, page, rows);
     }
 }

@@ -195,6 +195,8 @@ public class Y9TableServiceImpl implements Y9TableService {
     public List<String> getSql(Map<String, Object> searchMap) {
         StringBuilder innerSql = new StringBuilder();
         StringBuilder whereSql = new StringBuilder();
+        StringBuilder assigneeNameInnerSql = new StringBuilder();
+        StringBuilder assigneeNameWhereSql = new StringBuilder();
         List<String> tableAliasList = new ArrayList<>();
         for (String key : searchMap.keySet()) {
             // 表单字段
@@ -245,12 +247,15 @@ public class Y9TableServiceImpl implements Y9TableService {
                         .append((boolean)searchMap.get(key));
                 } else if ("assigneeName".equals(key)) {
                     // 查询条件#当前办理人
-                    whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
-                        .append(searchMap.get(key).toString()).append("') > 0 ");
+                    assigneeNameInnerSql
+                        .append(" JOIN FF_ACT_RU_DETAIL TT ON T.PROCESSSERIALNUMBER = TT.PROCESSSERIALNUMBER");
+                    assigneeNameWhereSql.append(" AND INSTR(TT.").append(key.toUpperCase()).append(",'")
+                        .append(searchMap.get(key).toString()).append("') > 0 ").append(" AND TT.STATUS = 0 ");
                 }
             }
         }
-        return List.of(innerSql.toString(), whereSql.toString());
+        return List.of(innerSql.toString(), whereSql.toString(), assigneeNameInnerSql.toString(),
+            assigneeNameWhereSql.toString());
     }
 
     @Override

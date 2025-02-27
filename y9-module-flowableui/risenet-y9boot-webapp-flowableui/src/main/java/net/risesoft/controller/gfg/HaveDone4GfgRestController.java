@@ -34,6 +34,7 @@ public class HaveDone4GfgRestController {
      * 获取已办（包括在办、办结）列表
      *
      * @param itemId 事项id
+     * @param searchMapStr 查询参数
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>

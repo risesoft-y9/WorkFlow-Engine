@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemAllApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
@@ -26,6 +27,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ItemPageService;
+import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -44,6 +46,10 @@ public class ItemAllApiImpl implements ItemAllApi {
     private final ItemPageService itemPageService;
 
     private final ActRuDetailService actRuDetailService;
+
+    private final Y9TableService y9TableService;
+
+    private final PositionApi positionApi;
 
     /**
      * 根据用户id和系统名称查询待办数量
@@ -188,7 +194,6 @@ public class ItemAllApiImpl implements ItemAllApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @param tableName 表名称
      * @param searchMapStr 搜索集合
      * @param page page
      * @param rows rows
@@ -197,22 +202,19 @@ public class ItemAllApiImpl implements ItemAllApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
+        @RequestParam String userId, @RequestParam String systemName,
         @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
-        StringBuilder sql1 = new StringBuilder();
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
-        for (String columnName : searchMap.keySet()) {
-            sql1.append("AND INSTR(F.").append(columnName.toUpperCase()).append(",'")
-                .append(searchMap.get(columnName).toString()).append("') > 0 ");
-        }
-        String orderBy = "T.CREATETIME DESC";
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
-            + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY " + orderBy;
-        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0
-            + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
+            assigneeNameWhereSql = sqlList.get(3);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
+            + " ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql;
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
