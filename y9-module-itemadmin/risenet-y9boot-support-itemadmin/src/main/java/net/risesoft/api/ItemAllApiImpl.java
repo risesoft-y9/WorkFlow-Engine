@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemAllApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
@@ -48,8 +47,6 @@ public class ItemAllApiImpl implements ItemAllApi {
     private final ActRuDetailService actRuDetailService;
 
     private final Y9TableService y9TableService;
-
-    private final PositionApi positionApi;
 
     /**
      * 根据用户id和系统名称查询待办数量
