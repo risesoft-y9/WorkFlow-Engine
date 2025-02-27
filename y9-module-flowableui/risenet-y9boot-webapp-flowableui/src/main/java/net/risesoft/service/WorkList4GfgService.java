@@ -56,7 +56,8 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doingList4Dept(String itemId, boolean isBureau, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> doingList4Dept(String itemId, boolean isBureau, String searchMapStr, Integer page,
+        Integer rows);
 
     /**
      * 获取所有在办

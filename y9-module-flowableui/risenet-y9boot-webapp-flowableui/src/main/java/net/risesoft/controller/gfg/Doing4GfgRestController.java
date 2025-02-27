@@ -65,10 +65,11 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/doingList4Dept")
+    @PostMapping(value = "/doingList4Dept")
     public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+        @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.doingList4Dept(itemId, isBureau, page, rows);
+        return this.workList4GfgService.doingList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
     /**
