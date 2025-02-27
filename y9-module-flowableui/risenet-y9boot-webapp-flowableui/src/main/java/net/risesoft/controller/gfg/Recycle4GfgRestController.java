@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,10 +61,11 @@ public class Recycle4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/recycleList")
-    public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId, @RequestParam Integer page,
+    @PostMapping(value = "/recycleList")
+    public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.recycleList(itemId, page, rows);
+        return this.workList4GfgService.recycleList(itemId, searchMapStr, page, rows);
     }
 
     /**
