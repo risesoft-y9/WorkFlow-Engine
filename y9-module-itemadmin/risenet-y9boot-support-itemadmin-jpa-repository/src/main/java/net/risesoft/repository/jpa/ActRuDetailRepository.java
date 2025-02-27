@@ -103,13 +103,13 @@ public interface ActRuDetailRepository
 
     @Query(nativeQuery = true,
         value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND DEPTID = ?2 AND ENDED = ?3 AND  DELETED = false  GROUP BY PROCESSSERIALNUMBER",
-        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND DEPTID = ?2 AND ENDED = ?3   AND DELETED = true  GROUP BY PROCESSSERIALNUMBER) ALIAS")
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND DEPTID = ?2 AND ENDED = ?3   AND DELETED = false  GROUP BY PROCESSSERIALNUMBER) ALIAS")
     Page<ActRuDetail> findBySystemNameAndDeptIdAndEndedAndDeletedFalseNativeQuery(String systemName, String deptId,
         boolean ended, Pageable pageable);
 
     @Query(nativeQuery = true,
         value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND BUREAUID = ?2 AND ENDED = ?3 AND  DELETED = false  GROUP BY PROCESSSERIALNUMBER",
-        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND BUREAUID = ?2 AND ENDED = ?3   AND DELETED = true  GROUP BY PROCESSSERIALNUMBER) ALIAS")
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 AND BUREAUID = ?2 AND ENDED = ?3   AND DELETED = false  GROUP BY PROCESSSERIALNUMBER) ALIAS")
     Page<ActRuDetail> findBySystemNameAndBureauIdAndEndedAndDeletedFalseNativeQuery(String systemName, String bureauId,
         boolean ended, Pageable pageable);
 
