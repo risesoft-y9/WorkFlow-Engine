@@ -222,8 +222,13 @@ public class Y9TableServiceImpl implements Y9TableService {
                                 .append("' AND ").append(key.toUpperCase()).append(" <='").append(start_end.get(1))
                                 .append("'");
                         } else {
-                            whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
-                                .append(searchMap.get(key).toString()).append("') > 0 ");
+                            if (null != searchMap.get(key) && StringUtils.isNotBlank(searchMap.get(key).toString())) {
+                                whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                                    .append(searchMap.get(key).toString()).append("') > 0 ");
+                            } else {
+                                whereSql.append("AND (").append(key.toUpperCase()).append("= '' OR ")
+                                    .append(key.toUpperCase()).append(" IS NULL)");
+                            }
                         }
                         break;
                     case 3:
