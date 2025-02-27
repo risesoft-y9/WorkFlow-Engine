@@ -956,12 +956,18 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> haveDoneList(String itemId, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> haveDoneList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemHaveDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            Y9Page<ActRuDetailModel> itemPage;
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage =
+                    itemHaveDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            } else {
+                itemPage = itemHaveDoneApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                    searchMapStr, page, rows);
+            }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -1021,7 +1027,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取已办异常", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
@@ -1248,10 +1254,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 assert searchMap != null;
                 boolean sign = null != searchMap.get("sign");
                 boolean noSign = null != searchMap.get("noSign");
-                boolean haveAssigneeName = null != searchMap.get("assigneeName");
-                if (haveAssigneeName && !positionName.contains(String.valueOf(searchMap.get("assigneeName")))) {
-                    return Y9Page.success(page, 0, 0, List.of(), "获取列表成功");
-                }
                 if (sign || noSign) {
                     if (sign && noSign) {
                         itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),

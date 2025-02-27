@@ -84,7 +84,6 @@ public interface ItemHaveDoneApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @param tableName 表名称
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
@@ -94,6 +93,6 @@ public interface ItemHaveDoneApi {
     @PostMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
-        @RequestParam(value = "tableName") String tableName, @RequestBody String searchMapStr,
+        @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 }

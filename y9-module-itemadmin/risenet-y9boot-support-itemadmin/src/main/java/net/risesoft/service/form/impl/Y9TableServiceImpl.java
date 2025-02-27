@@ -197,6 +197,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         StringBuilder whereSql = new StringBuilder();
         List<String> tableAliasList = new ArrayList<>();
         for (String key : searchMap.keySet()) {
+            // 表单字段
             if (key.contains(".")) {
                 String[] aliasColumnNameType = key.split("\\.");
                 String alias = aliasColumnNameType[0];
@@ -236,6 +237,16 @@ public class Y9TableServiceImpl implements Y9TableService {
                                 .append(" <='").append(list.get(1)).append("'");
                         }
                         break;
+                }
+            } else {
+                // 已办件查询条件#已办类型
+                if ("ended".equals(key)) {
+                    whereSql.append(" AND ").append("T.").append(key.toUpperCase()).append("=")
+                        .append((boolean)searchMap.get(key));
+                } else if ("assigneeName".equals(key)) {
+                    // 查询条件#当前办理人
+                    whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                        .append(searchMap.get(key).toString()).append("') > 0 ");
                 }
             }
         }

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,9 +38,10 @@ public class HaveDone4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/list")
-    public Y9Page<Map<String, Object>> list(@RequestParam String itemId, @RequestParam Integer page,
+    @PostMapping(value = "/list")
+    public Y9Page<Map<String, Object>> list(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.haveDoneList(itemId, page, rows);
+        return this.workList4GfgService.haveDoneList(itemId, searchMapStr, page, rows);
     }
 }
