@@ -19,13 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemTodoApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
-import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
@@ -53,8 +51,6 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     private final ActRuDetailService actRuDetailService;
 
     private final Y9TableService y9TableService;
-
-    private final PositionApi positionApi;
 
     /**
      * 根据用户id和系统名称查询待办数量
@@ -248,19 +244,21 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, userId).getData();
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
-        boolean haveAssigneeName = null != searchMap.get("assigneeName");
-        if (haveAssigneeName && !position.getName().contains(String.valueOf(searchMap.get("assigneeName")))) {
-            return Y9Page.success(page, 0, 0, List.of(), "获取列表成功");
-        }
         List<String> sqlList = y9TableService.getSql(searchMap);
-        String innerSql = sqlList.get(0), whereSql = sqlList.get(1);
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE "
-            + whereSql + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY T.CREATETIME DESC";
-        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + innerSql
-            + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + whereSql;
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2);
+        StringBuilder assigneeNameSql = new StringBuilder();
+        if (null != searchMap.get("assigneeName")) {
+            assigneeNameSql.append("AND INSTR(T.ASSIGNEENAME").append(",'")
+                .append(searchMap.get("assigneeName").toString()).append("') > 0 ");
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
+            + assigneeNameSql + " ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
+            + assigneeNameSql;
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;

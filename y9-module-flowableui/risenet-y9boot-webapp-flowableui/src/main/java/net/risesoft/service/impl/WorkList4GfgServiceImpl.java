@@ -116,12 +116,17 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final HistoricTaskApi historictaskApi;
 
     @Override
-    public Y9Page<Map<String, Object>> allList(String itemId, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> allList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            Y9Page<ActRuDetailModel> itemPage;
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage = itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            } else {
+                itemPage = itemAllApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                    searchMapStr, page, rows);
+            }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -1242,8 +1247,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     @Override
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId(),
-                positionName = Y9LoginUserHolder.getPosition().getName();
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
