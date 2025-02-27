@@ -43,21 +43,6 @@ public class Todo4GfgRestController {
     private final ItemViewConfApi itemViewConfApi;
 
     /**
-     * 获取待办件多条件查询列表
-     *
-     * @param itemId 事项id
-     * @param searchMapStr 搜索列和值
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @PostMapping(value = "/searchTodoList")
-    public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.todoList(itemId, searchMapStr, page, rows);
-    }
-
-    /**
      * 获取待办件列表
      *
      * @param itemId 事项id
@@ -65,10 +50,11 @@ public class Todo4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/todoList")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId, @RequestParam Integer page,
+    @PostMapping(value = "/todoList")
+    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.todoList(itemId, "", page, rows);
+        return this.workList4GfgService.todoList(itemId, searchMapStr, page, rows);
     }
 
     /**
