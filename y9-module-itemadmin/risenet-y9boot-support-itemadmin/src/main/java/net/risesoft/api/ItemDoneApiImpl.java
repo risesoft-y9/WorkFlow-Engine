@@ -254,4 +254,41 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
     }
+
+    /**
+     * 根据用户id、系统名称、表名称、搜索内容查询当前人办结列表
+     *
+     * @param tenantId 租户id
+     * @param deptId 部门id
+     * @param systemName 系统名称
+     * @param searchMapStr 搜索内容
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是个人办结列表
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> searchByDeptIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String deptId, @RequestParam boolean isBureau, @RequestParam String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+        assert searchMap != null;
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
+            assigneeNameWhereSql = sqlList.get(3);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
+            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
+            + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
+            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+            + " GROUP BY T.PROCESSSERIALNUMBER) ALIAS";
+        Object[] args = {systemName, deptId};
+        ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
+            itemPage.getRows());
+    }
 }
