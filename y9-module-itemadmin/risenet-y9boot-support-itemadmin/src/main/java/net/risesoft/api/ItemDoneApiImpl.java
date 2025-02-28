@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemDoneApi;
 import net.risesoft.entity.ActRuDetail;
-import net.risesoft.entity.form.Y9Table;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.pojo.Y9Page;
@@ -172,41 +170,16 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
-        List<String> tableAliasList = new ArrayList<>();
-        StringBuilder innerSql = new StringBuilder();
-        StringBuilder whereSql = new StringBuilder();
-        for (String key : searchMap.keySet()) {
-            if (key.contains(".")) {
-                String[] aliasAndColumnName = key.split("\\.");
-                String alias = aliasAndColumnName[0];
-                if (null != searchMap.get(key) && StringUtils.isNotBlank(searchMap.get(key).toString())) {
-                    whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
-                        .append(searchMap.get(key).toString()).append("') > 0 ");
-                } else {
-                    whereSql.append("AND (").append(key.toUpperCase()).append("= '' OR ").append(key.toUpperCase())
-                        .append(" IS NULL)");
-                }
-                if (!tableAliasList.contains(alias)) {
-                    tableAliasList.add(alias);
-                    Y9Table y9Table = this.y9TableService.findByTableAlias(alias);
-                    if (null == y9Table) {
-                        return Y9Page.failure(page, rows, 0, null, "别名" + alias + "对应的表不存在", 0);
-                    }
-                    innerSql.append("INNER JOIN ").append(y9Table.getTableName().toUpperCase()).append(" ")
-                        .append(alias.toUpperCase()).append(" ON T.PROCESSSERIALNUMBER = ").append(alias.toUpperCase())
-                        .append(".GUID ");
-                }
-            }
-        }
-        String orderBySql = " ORDER BY T.STARTTIME DESC";
-        String sql =
-            "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql
-                + " WHERE T.SYSTEMNAME = ? AND T.ENDED = TRUE AND  T.DELETED = FALSE " + whereSql
-                + " GROUP BY T.PROCESSSERIALNUMBER ";
-        String countSql = "SELECT COUNT(*) FROM (" + sql + ") ALIAS";
-        sql += orderBySql;
-        Object[] args = new Object[1];
-        args[0] = systemName;
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
+            assigneeNameWhereSql = sqlList.get(3);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
+            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
+            + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ?" + whereSql
+            + assigneeNameWhereSql + " GROUP BY T.PROCESSSERIALNUMBER) ALIAS";
+        Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),

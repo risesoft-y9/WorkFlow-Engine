@@ -252,36 +252,21 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, Integer days, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, Integer days, String searchMapStr, Integer page,
+        Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Date currentDate = new Date();
-            String endDate = workDayService.getDate(currentDate, days);
-            if (StringUtils.isBlank(endDate)) {
-                return Y9Page.failure(0, 0, 0, new ArrayList<>(), "未设置日历", 500);
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String startDate;
-            switch (days) {
-                case 3:
-                    startDate = sdf.format(currentDate);
-                    break;
-                case 5:
-                    startDate = workDayService.getDate(currentDate, 4);
-                    break;
-                case 7:
-                    startDate = workDayService.getDate(currentDate, 6);
-                    break;
-                case 10:
-                    startDate = workDayService.getDate(currentDate, 8);
-                    break;
-                default:
-                    startDate = "2025-01-01";
-            }
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemDoingApi.findBySystemName4DuBan(tenantId, startDate, endDate, item.getSystemName(), page,
-                    rows);
+            Map<String, Object> searchMap = new HashMap<>();
+            if (StringUtils.isBlank(searchMapStr)) {
+                searchMap.put("fw." + TableColumnEnum.DBSX.getValue(), days);
+            } else {
+                searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+                assert searchMap != null;
+                searchMap.put("fw." + TableColumnEnum.DBSX.getValue(), days);
+            }
+            Y9Page<ActRuDetailModel> itemPage = itemDoingApi.searchBySystemName(tenantId, item.getSystemName(),
+                Y9JsonUtil.writeValueAsString(searchMap), page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -1143,19 +1128,21 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> recycleList4Dept(String itemId, boolean isBureau, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> recycleList4Dept(String itemId, boolean isBureau, String searchMapStr,
+        Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             Position position = Y9LoginUserHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
-            if (isBureau) {
-                itemPage = itemRecycleApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
+            String deptId = isBureau ? bureau.getId() : position.getParentId();
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage = itemRecycleApi.findByDeptIdAndSystemName(tenantId, deptId, isBureau,
                     item.getSystemName(), page, rows);
             } else {
-                itemPage = itemRecycleApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
-                    item.getSystemName(), page, rows);
+                itemPage = itemRecycleApi.searchByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(),
+                    searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -1178,11 +1165,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("taskName", "已办结");
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("completer",
-                        StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("taskName", taskList.get(0).getName());
+                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                    mapTemp.put("taskAssignee", listTemp.get(0));
                     /*
                      * 暂时取表单所有字段数据
                      */
@@ -1203,12 +1191,16 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> recycleList4All(String itemId, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> recycleList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemRecycleApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+            Y9Page<ActRuDetailModel> itemPage;
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage = itemRecycleApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+            } else {
+                itemPage = itemRecycleApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
+            }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
@@ -1583,29 +1575,17 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
 
     @Override
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
-        String queryMapStr,
         Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Map<String, Object> allMap = new HashMap<>();
-            if (StringUtils.isNotBlank(searchMapStr)) {
-                Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-                assert searchMap != null;
-                allMap.putAll(searchMap);
-            }
-            if (StringUtils.isNotBlank(queryMapStr)) {
-                Map<String, Object> queryMap = Y9JsonUtil.readHashMap(queryMapStr);
-                assert queryMap != null;
-                allMap.putAll(queryMap);
-            }
             Y9Page<ActRuDetailModel> itemPage;
-            if (allMap.isEmpty()) {
+            if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemTodoApi.findByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
                     item.getSystemName(), taskDefKey, page, rows);
             } else {
                 itemPage = itemTodoApi.searchByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
-                    item.getSystemName(), taskDefKey, Y9JsonUtil.writeValueAsString(allMap), page, rows);
+                    item.getSystemName(), taskDefKey, searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

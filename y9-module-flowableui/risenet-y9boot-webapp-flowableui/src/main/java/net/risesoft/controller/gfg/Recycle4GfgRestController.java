@@ -76,10 +76,11 @@ public class Recycle4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/recycleList4Dept")
+    @PostMapping(value = "/recycleList4Dept")
     public Y9Page<Map<String, Object>> recycleList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+        @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.recycleList4Dept(itemId, isBureau, page, rows);
+        return this.workList4GfgService.recycleList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
     /**
@@ -90,9 +91,10 @@ public class Recycle4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/recycleList4All")
-    public Y9Page<Map<String, Object>> recycleList4All(@RequestParam String itemId, @RequestParam Integer page,
+    @PostMapping(value = "/recycleList4All")
+    public Y9Page<Map<String, Object>> recycleList4All(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.recycleList4All(itemId, page, rows);
+        return this.workList4GfgService.recycleList4All(itemId, searchMapStr, page, rows);
     }
 }

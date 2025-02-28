@@ -19,7 +19,6 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.DoingService;
 import net.risesoft.service.WorkList4GfgService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -38,8 +37,6 @@ public class Doing4GfgRestController {
 
     private final WorkList4GfgService workList4GfgService;
 
-    private final DoingService doingService;
-
     private final ItemViewConfApi itemViewConfApi;
 
     /**
@@ -51,10 +48,11 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/doingList4DuBan")
+    @PostMapping(value = "/doingList4DuBan")
     public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId, @RequestParam Integer days,
+        @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.doingList4DuBan(itemId, days, page, rows);
+        return workList4GfgService.doingList4DuBan(itemId, days, searchMapStr, page, rows);
     }
 
     /**
@@ -69,7 +67,7 @@ public class Doing4GfgRestController {
     public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.doingList4Dept(itemId, isBureau, searchMapStr, page, rows);
+        return workList4GfgService.doingList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
     /**
@@ -80,25 +78,10 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/doingList4All")
+    @PostMapping(value = "/doingList4All")
     public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.doingList4All(itemId, searchMapStr, page, rows);
-    }
-
-    /**
-     * 获取已办件多条件查询列表
-     *
-     * @param itemId 事项id
-     * @param searchMapStr 搜索列和值
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @PostMapping(value = "/searchDoingList")
-    public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.doingService.pageSearchList(itemId, searchMapStr, page, rows);
+        return workList4GfgService.doingList4All(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -109,7 +92,7 @@ public class Doing4GfgRestController {
      */
     @GetMapping(value = "/doingViewConf")
     public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");

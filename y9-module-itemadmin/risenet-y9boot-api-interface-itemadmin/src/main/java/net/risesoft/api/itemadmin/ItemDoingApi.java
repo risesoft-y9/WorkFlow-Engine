@@ -63,24 +63,6 @@ public interface ItemDoingApi {
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
-     * 根据用户id和系统名称查询在办列表
-     *
-     * @param tenantId 租户id
-     * @param startDate 开始时间(例：2025-01-01)
-     * @param endDate 结束时间(例：2025-01-14)
-     * @param systemName 系统名称
-     * @param page page
-     * @param rows rows
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
-     * @since 9.6.6
-     */
-    @GetMapping("/findBySystemName4DuBan")
-    Y9Page<ActRuDetailModel> findBySystemName4DuBan(@RequestParam("tenantId") String tenantId,
-        @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
-        @RequestParam("systemName") String systemName, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
-
-    /**
      * 根据科室id和系统名称查询在办列表
      *
      * @param tenantId 租户id
