@@ -19,9 +19,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.DoingService;
 import net.risesoft.service.DoneService;
-import net.risesoft.service.QueryListService;
 import net.risesoft.service.WorkList4GfgService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -40,13 +38,9 @@ public class Done4GfgRestController {
 
     private final WorkList4GfgService workList4GfgService;
 
-    private final DoingService doingService;
-
     private final DoneService doneService;
 
     private final ItemViewConfApi itemViewConfApi;
-
-    private final QueryListService queryListService;
 
     /**
      * 获取办结件列表
@@ -71,10 +65,11 @@ public class Done4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/doneList4Dept")
+    @PostMapping(value = "/doneList4Dept")
     public Y9Page<Map<String, Object>> doneList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+        @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.doneList4Dept(itemId, isBureau, page, rows);
+        return this.workList4GfgService.doneList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
     /**

@@ -452,22 +452,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
-            if (isBureau) {
-                if (StringUtils.isBlank(searchMapStr)) {
-                    itemPage = itemDoingApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
-                        item.getSystemName(), page, rows);
-                } else {
-                    itemPage = itemDoingApi.searchByDeptIdAndSystemName(tenantId, bureau.getId(), true,
-                        item.getSystemName(), searchMapStr, page, rows);
-                }
+            String deptId = isBureau ? bureau.getId() : position.getParentId();
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage = itemDoingApi.findByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(),
+                    page, rows);
             } else {
-                if (StringUtils.isBlank(searchMapStr)) {
-                    itemPage = itemDoingApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
-                        item.getSystemName(), page, rows);
-                } else {
-                    itemPage = itemDoingApi.searchByDeptIdAndSystemName(tenantId, position.getParentId(), false,
-                        item.getSystemName(), searchMapStr, page, rows);
-                }
+                itemPage = itemDoingApi.searchByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(),
+                    searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -645,20 +636,22 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> doneList4Dept(String itemId, boolean isBureau, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> doneList4Dept(String itemId, boolean isBureau, String searchMapStr, Integer page,
+        Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             Position position = Y9LoginUserHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
-            if (isBureau) {
-                itemPage = itemDoneApi.findByDeptIdAndSystemName(tenantId, bureau.getId(), true,
-                    item.getSystemName(),
-                    page, rows);
-            } else {
-                itemPage = itemDoneApi.findByDeptIdAndSystemName(tenantId, position.getParentId(), false,
+            String deptId = isBureau ? bureau.getId() : position.getParentId();
+            if (StringUtils.isBlank(searchMapStr)) {
+                itemPage =
+                    itemDoneApi.findByDeptIdAndSystemName(tenantId, deptId, isBureau,
                     item.getSystemName(), page, rows);
+            } else {
+                itemPage = itemDoneApi.searchByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(),
+                    searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
