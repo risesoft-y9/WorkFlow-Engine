@@ -252,21 +252,13 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, Integer days, String searchMapStr, Integer page,
+    public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page,
         Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Map<String, Object> searchMap = new HashMap<>();
-            if (StringUtils.isBlank(searchMapStr)) {
-                searchMap.put("fw." + TableColumnEnum.DBSX.getValue(), days);
-            } else {
-                searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-                assert searchMap != null;
-                searchMap.put("fw." + TableColumnEnum.DBSX.getValue(), days);
-            }
             Y9Page<ActRuDetailModel> itemPage = itemDoingApi.searchBySystemName(tenantId, item.getSystemName(),
-                Y9JsonUtil.writeValueAsString(searchMap), page, rows);
+                searchMapStr, page, rows);
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
