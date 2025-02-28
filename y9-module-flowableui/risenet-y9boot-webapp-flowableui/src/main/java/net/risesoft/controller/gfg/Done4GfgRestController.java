@@ -53,7 +53,7 @@ public class Done4GfgRestController {
     @GetMapping(value = "/doneList")
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.doneList(itemId, page, rows);
+        return workList4GfgService.doneList(itemId, page, rows);
     }
 
     /**
@@ -69,7 +69,7 @@ public class Done4GfgRestController {
     public Y9Page<Map<String, Object>> doneList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.doneList4Dept(itemId, isBureau, searchMapStr, page, rows);
+        return workList4GfgService.doneList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
     /**
@@ -80,10 +80,10 @@ public class Done4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/doneList4All")
+    @PostMapping(value = "/doneList4All")
     public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.doneList4All(itemId, searchMapStr, page, rows);
+        return workList4GfgService.doneList4All(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -94,26 +94,9 @@ public class Done4GfgRestController {
      */
     @GetMapping(value = "/doneViewConf")
     public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
-    }
-
-    /**
-     * 获取办结件多条件查询列表
-     *
-     * @param itemId 事项id
-     * @param tableName 表名
-     * @param searchMapStr 搜索列和值
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @PostMapping(value = "/searchDoneList")
-    public Y9Page<Map<String, Object>> searchDoneList(@RequestParam String itemId,
-        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.doneService.pageSearchList(itemId, tableName, searchMapStr, page, rows);
     }
 }
