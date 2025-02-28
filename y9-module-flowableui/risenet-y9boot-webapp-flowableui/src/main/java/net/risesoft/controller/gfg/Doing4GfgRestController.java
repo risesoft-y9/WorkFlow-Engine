@@ -43,16 +43,15 @@ public class Doing4GfgRestController {
      * 获取在办件列表
      *
      * @param itemId 事项id
-     * @param days 过期天数
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @PostMapping(value = "/doingList4DuBan")
-    public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId, @RequestParam Integer days,
+    public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doingList4DuBan(itemId, days, searchMapStr, page, rows);
+        return workList4GfgService.doingList4DuBan(itemId, searchMapStr, page, rows);
     }
 
     /**

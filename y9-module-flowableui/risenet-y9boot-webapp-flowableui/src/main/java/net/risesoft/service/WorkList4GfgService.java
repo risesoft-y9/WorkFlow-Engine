@@ -40,12 +40,11 @@ public interface WorkList4GfgService {
      * 获取督办列表
      *
      * @param itemId 事项Id
-     * @param days 过期天数
      * @param page 页数
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doingList4DuBan(String itemId, Integer days, String searchMapStr, Integer page,
+    Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page,
         Integer rows);
 
     /**
