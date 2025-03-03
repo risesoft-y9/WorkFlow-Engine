@@ -1,10 +1,22 @@
 package net.risesoft.service;
 
+import java.util.List;
+
+import net.risesoft.entity.SecretLevelRecord;
+
 public interface SecretLevelRecordService {
 
     /**
+     * 根据流程实例号获取定密修改记录
+     *
+     * @param processSerialNumber 流程实例号
+     * @return {@link List}<{@link SecretLevelRecord}>
+     */
+    List<SecretLevelRecord> getRecord(String processSerialNumber);
+
+    /**
      * 保存定密修改记录
-     * 
+     *
      * @param processSerialNumber 流程实例号
      * @param secretLevel 密级
      * @param secretBasis 密级依据

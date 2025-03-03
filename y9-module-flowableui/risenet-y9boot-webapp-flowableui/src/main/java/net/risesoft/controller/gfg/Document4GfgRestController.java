@@ -50,6 +50,7 @@ import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.SecretLevelModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.platform.Department;
@@ -290,10 +291,9 @@ public class Document4GfgRestController {
     public Y9Result<DocumentDetailModel> editDoing(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId, false, ItemBoxTypeEnum.DOING)
-                .getData();
+            DocumentDetailModel model =
+                documentApi.editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                    processInstanceId, documentId, false, ItemBoxTypeEnum.DOING).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -311,10 +311,9 @@ public class Document4GfgRestController {
     public Y9Result<DocumentDetailModel> editDoing4Admin(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId, true, ItemBoxTypeEnum.MONITORDOING)
-                .getData();
+            DocumentDetailModel model =
+                documentApi.editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                    processInstanceId, documentId, true, ItemBoxTypeEnum.MONITORDOING).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -332,10 +331,9 @@ public class Document4GfgRestController {
     public Y9Result<DocumentDetailModel> editDone(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId, false, ItemBoxTypeEnum.DONE)
-                .getData();
+            DocumentDetailModel model =
+                documentApi.editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+                    processInstanceId, documentId, false, ItemBoxTypeEnum.DONE).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -668,6 +666,17 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 获取密级等级记录
+     *
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<List < SecretLevelModel>>
+     */
+    @GetMapping(value = "/getSecretLevelRecord")
+    public Y9Result<List<SecretLevelModel>> getSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber) {
+        return secretLevelRecordApi.getRecord(Y9LoginUserHolder.getTenantId(), processSerialNumber);
+    }
+
+    /**
      * 批量恢复待办
      *
      * @param processInstanceIds 流程实例ids ，逗号隔开
@@ -687,7 +696,7 @@ public class Document4GfgRestController {
     }
 
     /**
-     * 保存秘密等级记录
+     * 保存密级等级记录
      *
      * @param processSerialNumber 流程编号
      * @param secretLevel 秘密等级

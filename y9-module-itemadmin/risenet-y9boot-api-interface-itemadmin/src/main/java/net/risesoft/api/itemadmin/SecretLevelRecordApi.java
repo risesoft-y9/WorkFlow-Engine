@@ -1,8 +1,12 @@
 package net.risesoft.api.itemadmin;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.model.itemadmin.SecretLevelModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -12,6 +16,18 @@ import net.risesoft.pojo.Y9Result;
  * @date 2025/02/12
  */
 public interface SecretLevelRecordApi {
+
+    /**
+     * 获取密级记录
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<List<SecretLevelModel>>} 通用请求返回对象
+     * @since 9.6.8
+     */
+    @GetMapping("/getRecord")
+    Y9Result<List<SecretLevelModel>> getRecord(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存密级修改记录
