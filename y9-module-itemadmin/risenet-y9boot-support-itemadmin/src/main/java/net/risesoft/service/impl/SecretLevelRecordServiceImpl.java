@@ -33,6 +33,11 @@ public class SecretLevelRecordServiceImpl implements SecretLevelRecordService {
     private JdbcTemplate jdbcTemplate4Tenant;
 
     @Override
+    public List<SecretLevelRecord> getRecord(String processSerialNumber) {
+        return secretLevelRecordRepository.findByProcessSerialNumberOrderByCreateTimeDesc(processSerialNumber);
+    }
+
+    @Override
     @Transactional
     public void save(String processSerialNumber, String secretLevel, String secretBasis, String secretItem,
         String description, String tableName, String fieldName) {
