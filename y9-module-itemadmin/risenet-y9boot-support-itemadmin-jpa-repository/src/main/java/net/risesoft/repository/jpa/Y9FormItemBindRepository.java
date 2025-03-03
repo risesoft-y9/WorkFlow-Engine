@@ -24,7 +24,7 @@ public interface Y9FormItemBindRepository
     @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 order by t.tabIndex asc")
     List<Y9FormItemBind> findByItemIdAndProcDefId(String itemId, String procDefId);
 
-    @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.formId=?3 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex asc")
+    @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.formId=?3 and (t.taskDefKey is null or t.taskDefKey='') order by t.tabIndex asc")
     Y9FormItemBind findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(String itemId, String procDefId,
         String formId);
 
@@ -35,7 +35,7 @@ public interface Y9FormItemBindRepository
     Y9FormItemBind findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(String itemId, String procDefId, String taskDefKey,
         String formId);
 
-    @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex asc")
+    @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or t.taskDefKey='') order by t.tabIndex asc")
     List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKeyIsNull(String itemId, String procDefId);
 
     List<Y9FormItemBind> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId, String procDefId);
