@@ -22,7 +22,7 @@ public interface ItemButtonBindRepository
 
     List<ItemButtonBind> findByItemId(String itemId);
 
-    @Query("from ItemButtonBind t where t.itemId=?1 and t.buttonType=?2 and t.processDefinitionId=?3 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex ASC")
+    @Query("from ItemButtonBind t where t.itemId=?1 and t.buttonType=?2 and t.processDefinitionId=?3 and (t.taskDefKey is null or t.taskDefKey='') order by t.tabIndex ASC")
     List<ItemButtonBind> findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(
         String itemId, Integer buttonType, String processDefinitionId);
 
@@ -37,11 +37,11 @@ public interface ItemButtonBindRepository
     ItemButtonBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(String itemId,
         String processDefinitionId, String taskDefKey, String buttonId);
 
-    @Query("from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) and t.buttonId=?3 order by t.tabIndex ASC")
+    @Query("from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or t.taskDefKey='') and t.buttonId=?3 order by t.tabIndex ASC")
     ItemButtonBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullAndButtonIdOrderByTabIndexAsc(String itemId,
         String processDefinitionId, String buttonId);
 
-    @Query("from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex ASC")
+    @Query("from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or t.taskDefKey='') order by t.tabIndex ASC")
     List<ItemButtonBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(String itemId,
         String processDefinitionId);
 

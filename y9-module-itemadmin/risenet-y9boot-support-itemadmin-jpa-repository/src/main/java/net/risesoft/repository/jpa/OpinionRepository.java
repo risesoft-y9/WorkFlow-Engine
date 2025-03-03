@@ -98,7 +98,7 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
      * @param userId
      * @return
      */
-    @Query("select count(*) from Opinion t where t.processSerialNumber = ?1 and t.opinionFrameMark=?2 and t.userId=?3  and (t.taskId is null or length(trim(t.taskId))=0) order by t.createDate ASC")
+    @Query("select count(*) from Opinion t where t.processSerialNumber = ?1 and t.opinionFrameMark=?2 and t.userId=?3  and (t.taskId is null or t.taskDefKey='') order by t.createDate ASC")
     Integer getCount4Personal(String processSerialNumber, String opinionFrameMark, String userId);
 
     /**
