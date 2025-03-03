@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemTodoApi;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
@@ -252,12 +253,23 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             assigneeNameSql.append("AND INSTR(T.ASSIGNEENAME").append(",'")
                 .append(searchMap.get("assigneeName").toString()).append("') > 0 ");
         }
+        boolean sign = null != searchMap.get("sign");
+        boolean noSign = null != searchMap.get("noSign");
+        StringBuilder signSql = new StringBuilder();
+        if (sign || noSign) {
+            if (sign && noSign) {
+                signSql.append(" AND ").append("T.SIGNSTATUS>=0");
+            } else {
+                signSql.append(" AND ").append("T.SIGNSTATUS=").append(
+                    sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+            }
+        }
         String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + " ORDER BY T.CREATETIME DESC";
+            + assigneeNameSql + signSql + " ORDER BY T.CREATETIME DESC";
         String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql;
+            + assigneeNameSql + signSql;
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
@@ -293,16 +305,27 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             assigneeNameSql.append("AND INSTR(T.ASSIGNEENAME").append(",'")
                 .append(searchMap.get("assigneeName").toString()).append("') > 0 ");
         }
+        boolean sign = null != searchMap.get("sign");
+        boolean noSign = null != searchMap.get("noSign");
+        StringBuilder signSql = new StringBuilder();
+        if (sign || noSign) {
+            if (sign && noSign) {
+                signSql.append(" AND ").append("T.SIGNSTATUS>=0");
+            } else {
+                signSql.append(" AND ").append("T.SIGNSTATUS=").append(
+                    sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+            }
+        }
         StringBuilder taskDefKeySql = new StringBuilder();
         if (StringUtils.isNotBlank(taskDefKey)) {
             taskDefKeySql.append(" AND T.taskDefKey='").append(taskDefKey).append("'");
         }
         String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + taskDefKeySql + " ORDER BY T.CREATETIME DESC";
+            + assigneeNameSql + signSql + taskDefKeySql + " ORDER BY T.CREATETIME DESC";
         String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + taskDefKeySql;
+            + assigneeNameSql + signSql + taskDefKeySql;
         Object[] args = {systemName, userId};
         ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);

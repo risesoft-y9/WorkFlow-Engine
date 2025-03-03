@@ -1247,22 +1247,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 itemPage =
                     itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             } else {
-                Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-                assert searchMap != null;
-                boolean sign = null != searchMap.get("sign");
-                boolean noSign = null != searchMap.get("noSign");
-                if (sign || noSign) {
-                    if (sign && noSign) {
-                        itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                            searchMapStr, page, rows);
-                    } else {
-                        itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                            searchMapStr, page, rows);
-                    }
-                } else {
-                    itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
                         searchMapStr, page, rows);
-                }
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
