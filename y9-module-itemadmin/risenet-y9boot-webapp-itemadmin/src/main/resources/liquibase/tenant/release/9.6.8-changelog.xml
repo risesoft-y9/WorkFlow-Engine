@@ -659,4 +659,15 @@
             <column name="SUB" type="INT" defaultValueNumeric="0" remarks="是否子流程的节点任务"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-35" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ACT_RU_DETAIL" columnName="SIGNSTATUS"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_ACT_RU_DETAIL">
+            <column name="SIGNSTATUS" remarks="签收状态" type="INT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
