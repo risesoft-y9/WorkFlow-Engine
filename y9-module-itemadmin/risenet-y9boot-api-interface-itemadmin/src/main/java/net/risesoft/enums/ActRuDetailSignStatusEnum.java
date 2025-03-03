@@ -4,18 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 待办状态
+ * 任务的签收状态
  * 
  * @author qinman
  * @date 2024/12/12
  */
 @Getter
 @AllArgsConstructor
-public enum ActRuDetailStatusEnum {
-    /** 待办 */
-    TODO(0, "待办"),
-    /** 在办 */
-    DOING(1, "在办");
+public enum ActRuDetailSignStatusEnum {
+    /** 不需要签收 */
+    NONE(-1, "不需要签收"),
+    /** 待签收 */
+    TODO(0, "待签收"),
+    /** 已签收 */
+    DONE(1, "已签收");
 
     private final Integer value;
     private final String name;

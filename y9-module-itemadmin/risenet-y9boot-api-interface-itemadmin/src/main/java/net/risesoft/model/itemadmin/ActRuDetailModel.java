@@ -82,8 +82,15 @@ public class ActRuDetailModel implements Serializable {
      */
     private String systemName;
 
-    /** 1是在办、0是待办 */
+    /**
+     * @see net.risesoft.enums.ActRuDetailStatusEnum
+     */
     private Integer status;
+
+    /**
+     * @see net.risesoft.enums.ActRuDetailSignStatusEnum
+     */
+    private Integer signStatus;
 
     /**
      * 办理人Id

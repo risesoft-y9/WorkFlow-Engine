@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.util.SysVariables;
@@ -138,6 +139,7 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setStarted(true);
                     actRuDetailModel.setEnded(false);
                     actRuDetailModel.setDeleted(false);
+                    actRuDetailModel.setSignStatus(ActRuDetailSignStatusEnum.DONE.getValue());
                     actRuDetailModel.setStartTime(list.get(0).get("START_TIME_").toString());
                     if (assignee.equals(userId)) {
                         actRuDetailModel.setStatus(0);
@@ -253,6 +255,7 @@ public class Task4ActRuDetaillService {
                     actRuDetailModel.setEnded(false);
                     actRuDetailModel.setDeleted(false);
                     actRuDetailModel.setStartTime(list.get(0).get("START_TIME_").toString());
+                    actRuDetailModel.setSignStatus(ActRuDetailSignStatusEnum.TODO.getValue());
                     if (ardList.isEmpty()) {
                         names.append(orgUnit.getName());
                     } else {

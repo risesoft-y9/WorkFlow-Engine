@@ -89,10 +89,19 @@ public class ActRuDetail implements Serializable {
     @Column(name = "STARTTIME", length = 50)
     private String startTime;
 
-    /** 1是在办、0是待办 */
+    /**
+     * @see net.risesoft.enums.ActRuDetailStatusEnum
+     */
     @Comment("状态")
     @Column(name = "STATUS", length = 100)
     private Integer status;
+
+    /**
+     * @see net.risesoft.enums.ActRuDetailSignStatusEnum
+     */
+    @Comment("签收状态")
+    @Column(name = "SIGNSTATUS", length = 100)
+    private Integer signStatus;
 
     @Comment("办理人")
     @Column(name = "ASSIGNEE", length = 50)
