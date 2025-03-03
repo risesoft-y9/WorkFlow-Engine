@@ -55,7 +55,13 @@ public class Todo4GfgRestController {
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.todoList(itemId, searchMapStr, page, rows);
+        return workList4GfgService.todoList(itemId, searchMapStr, page, rows);
+    }
+
+    @PostMapping(value = "/todoList4CancelNumber")
+    public Y9Page<Map<String, Object>> todoList4CancelNumber(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.todoList4CancelNumber(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -70,7 +76,7 @@ public class Todo4GfgRestController {
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(@RequestParam String itemId,
         @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, searchMapStr, page, rows);
+        return workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, searchMapStr, page, rows);
     }
 
     /**
@@ -81,7 +87,7 @@ public class Todo4GfgRestController {
      */
     @GetMapping(value = "/todoViewConf")
     public Y9Result<List<ItemViewConfModel>> todoViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
@@ -95,6 +101,6 @@ public class Todo4GfgRestController {
      */
     @GetMapping(value = "/allTodoList")
     public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
-        return this.workList4GfgService.allTodoList(queryParamModel);
+        return workList4GfgService.allTodoList(queryParamModel);
     }
 }

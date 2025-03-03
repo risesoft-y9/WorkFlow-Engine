@@ -1293,6 +1293,56 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
+    @Override
+    public Y9Page<Map<String, Object>> todoList4CancelNumber(String itemId, String searchMapStr, Integer page,
+        Integer rows) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            Y9Page<ActRuDetailModel> itemPage = itemTodoApi.searchByUserIdAndSystemName4CancelNumber(tenantId,
+                positionId, item.getSystemName(), searchMapStr, page, rows);
+            List<ActRuDetailModel> list = itemPage.getRows();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
+            List<Map<String, Object>> items = new ArrayList<>();
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp;
+            ProcessParamModel processParam;
+            String processInstanceId;
+            Map<String, Object> formData;
+            for (ActRuDetailModel ardModel : taslList) {
+                mapTemp = new HashMap<>(16);
+                String taskId = ardModel.getTaskId();
+                processInstanceId = ardModel.getProcessInstanceId();
+                try {
+                    String processSerialNumber = ardModel.getProcessSerialNumber();
+                    processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    mapTemp.put("actRuDetailId", ardModel.getId());
+                    mapTemp.put("serialNumber", ++serialNumber);
+                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put("taskName", ardModel.getTaskDefName());
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("taskId", taskId);
+                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
+                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+                    mapTemp.putAll(formData);
+                    mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Todo(ardModel, formData));
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                } catch (Exception e) {
+                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                }
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取待办异常", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
 
     /**
      * 1、红绿灯 2、条码号 3、紧急程度 4、非联网登记 5、新 6、催办 7、多步退回 8、办文说明

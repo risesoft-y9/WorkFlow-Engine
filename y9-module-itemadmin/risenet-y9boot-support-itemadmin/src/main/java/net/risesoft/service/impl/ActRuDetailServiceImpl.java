@@ -26,6 +26,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -506,6 +507,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             oldActRuDetail.setTaskDefKey(actRuDetail.getTaskDefKey());
             oldActRuDetail.setTaskDefName(actRuDetail.getTaskDefName());
             oldActRuDetail.setExecutionId(actRuDetail.getExecutionId());
+            oldActRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
+                : actRuDetail.getSignStatus());
             oldActRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
                 .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
             actRuDetailRepository.save(oldActRuDetail);
@@ -544,6 +547,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         newActRuDetail.setBureauId(bureau.getId());
         newActRuDetail.setBureauName(bureau.getName());
+        newActRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
+            : actRuDetail.getSignStatus());
         actRuDetailRepository.save(newActRuDetail);
         return true;
     }

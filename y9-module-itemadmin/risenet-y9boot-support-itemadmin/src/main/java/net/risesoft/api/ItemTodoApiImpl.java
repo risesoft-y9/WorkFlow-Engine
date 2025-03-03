@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ItemTodoApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.enums.ActRuDetailSignStatusEnum;
+import net.risesoft.enums.CancelNumberStatusEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
@@ -270,6 +271,53 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
             + assigneeNameSql + signSql;
+        Object[] args = new Object[2];
+        args[0] = systemName;
+        args[1] = userId;
+        ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+    }
+
+    @Override
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4CancelNumber(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName,
+        @RequestBody(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "";
+        StringBuilder assigneeNameSql = new StringBuilder();
+        StringBuilder signSql = new StringBuilder();
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            if (null != searchMap.get("assigneeName")) {
+                assigneeNameSql.append("AND INSTR(T.ASSIGNEENAME").append(",'")
+                    .append(searchMap.get("assigneeName").toString()).append("') > 0 ");
+            }
+            boolean sign = null != searchMap.get("sign");
+            boolean noSign = null != searchMap.get("noSign");
+            if (sign || noSign) {
+                if (sign && noSign) {
+                    signSql.append(" AND ").append("T.SIGNSTATUS>=0");
+                } else {
+                    signSql.append(" AND ").append("T.SIGNSTATUS=").append(
+                        sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+                }
+            }
+        }
+        StringBuilder cancelNumberInnerSql = new StringBuilder();
+        StringBuilder cancelNumberWhereSql = new StringBuilder();
+        cancelNumberInnerSql.append(" INNER JOIN FF_CANCEL_NUMBER N ON T.PROCESSSERIALNUMBER = N.PROCESSSERIALNUMBER");
+        cancelNumberWhereSql.append(" AND N.STATUS=").append(CancelNumberStatusEnum.CANCEL.getValue());
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + cancelNumberInnerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
+            + assigneeNameSql + signSql + cancelNumberWhereSql + " ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql + cancelNumberInnerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
+            + assigneeNameSql + signSql + cancelNumberWhereSql;
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
