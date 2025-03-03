@@ -24,7 +24,7 @@ public interface Y9FormItemMobileBindRepository
     @Query("From Y9FormItemMobileBind t where t.itemId=?1 and t.processDefinitionId=?2")
     List<Y9FormItemMobileBind> findByItemIdAndProcDefId(String itemId, String procDefId);
 
-    @Query("From Y9FormItemMobileBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.formId=?3 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0)")
+    @Query("From Y9FormItemMobileBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.formId=?3 and (t.taskDefKey is null or t.taskDefKey='')")
     Y9FormItemMobileBind findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(String itemId, String procDefId,
         String formId);
 
@@ -36,7 +36,7 @@ public interface Y9FormItemMobileBindRepository
     Y9FormItemMobileBind findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(String itemId, String procDefId,
         String taskDefKey, String formId);
 
-    @Query("From Y9FormItemMobileBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0)")
+    @Query("From Y9FormItemMobileBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or t.taskDefKey='')")
     List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKeyIsNull(String itemId, String procDefId);
 
     List<Y9FormItemMobileBind> findByItemIdAndProcessDefinitionId(String itemId, String procDefId);

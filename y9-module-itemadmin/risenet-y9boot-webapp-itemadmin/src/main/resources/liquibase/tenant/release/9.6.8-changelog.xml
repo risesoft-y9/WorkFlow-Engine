@@ -670,4 +670,32 @@
             <column name="SIGNSTATUS" remarks="签收状态" type="INT"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700547152-36" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_CANCEL_NUMBER"/>
+            </not>
+        </preConditions>
+        <createTable remarks="发文子系统编号表" tableName="FF_CANCEL_NUMBER">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程序列号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTENT" remarks="编号内容" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS" type="INT" remarks="状态"/>
+            <column name="USERID" remarks="编号人员唯一标示" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="编号人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
