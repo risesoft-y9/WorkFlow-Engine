@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,9 +13,11 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SecretLevelRecordApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.entity.SecretLevelRecord;
 import net.risesoft.model.itemadmin.SecretLevelModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Tenant;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SecretLevelRecordService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -28,6 +31,8 @@ public class SecretLevelRecordApiImpl implements SecretLevelRecordApi {
     private final SecretLevelRecordService secretLevelRecordService;
 
     private final PersonApi personApi;
+
+    private final TenantApi tenantApi;
 
     /**
      * 获取密级修改记录
@@ -75,6 +80,8 @@ public class SecretLevelRecordApiImpl implements SecretLevelRecordApi {
         Y9LoginUserHolder.setPersonId(userId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(person.toUserInfo());
+        Tenant tenant = tenantApi.getById(tenantId).getData();
+        Y9LoginUserHolder.setTenantShortName(tenant.getShortName());
         secretLevelRecordService.save(processSerialNumber, secretLevel, secretBasis, secretItem, description, tableName,
             fieldName);
         return Y9Result.successMsg("保存成功");
