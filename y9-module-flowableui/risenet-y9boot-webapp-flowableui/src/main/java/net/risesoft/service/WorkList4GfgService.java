@@ -43,6 +43,17 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
+    Y9Page<Map<String, Object>> todoList4Other(String itemId, String searchMapStr, Integer page, Integer rows);
+
+    /**
+     * 获取待办列表
+     *
+     * @param itemId 事项Id
+     * @param searchMapStr 查找条件
+     * @param page 页数
+     * @param rows 行数
+     * @return Y9Page<Map < String, Object>>
+     */
     Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
         Integer page,
         Integer rows);
