@@ -104,6 +104,11 @@ public interface ItemTodoApi {
         @RequestBody(required = false) String searchMapStr, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
+    @PostMapping("/searchByUserIdAndSystemName4Other")
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4Other(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
     /**
      * 根据用户id和系统名称、搜索集合查询待办列表(以发送时间排序)
      *

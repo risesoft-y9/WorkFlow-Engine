@@ -326,6 +326,57 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
+    @Override
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4Other(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName,
+        @RequestBody(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "";
+        StringBuilder assigneeNameSql = new StringBuilder();
+        StringBuilder signSql = new StringBuilder();
+        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+        assert searchMap != null;
+        String commonSql = searchMap.get("commonSql").toString();
+        String numberSql = searchMap.get("numberSql").toString();
+        String cancelNumberSql = searchMap.get("cancelNumberSql").toString();
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            if (null != searchMap.get("assigneeName")) {
+                assigneeNameSql.append("AND INSTR(T.ASSIGNEENAME").append(",'")
+                    .append(searchMap.get("assigneeName").toString()).append("') > 0 ");
+            }
+            boolean sign = null != searchMap.get("sign");
+            boolean noSign = null != searchMap.get("noSign");
+            if (sign || noSign) {
+                if (sign && noSign) {
+                    signSql.append(" AND ").append("T.SIGNSTATUS>=0");
+                } else {
+                    signSql.append(" AND ").append("T.SIGNSTATUS=").append(
+                        sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+                }
+            }
+        }
+        if (StringUtils.isBlank(innerSql)) {
+            innerSql = "INNER JOIN Y9_FORM_FW FW ON T.PROCESSSERIALNUMBER = FW.GUID";
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
+            + assigneeNameSql + signSql + commonSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql
+            + ")  AND T.PROCESSSERIALNUMBER NOT IN (" + cancelNumberSql + ") ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
+            + assigneeNameSql + signSql + commonSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql
+            + ")  AND T.PROCESSSERIALNUMBER NOT IN (" + cancelNumberSql + ")";
+        Object[] args = new Object[2];
+        args[0] = systemName;
+        args[1] = userId;
+        ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+    }
+
     /**
      * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
      *
