@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,5 +81,17 @@ public interface ItemAllApi {
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    /**
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param processSerialNumbers 流程序列号数组
+     * @return {@code List<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @PostMapping("/searchByProcessSerialNumbers")
+    Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, String[] processSerialNumbers);
 
 }

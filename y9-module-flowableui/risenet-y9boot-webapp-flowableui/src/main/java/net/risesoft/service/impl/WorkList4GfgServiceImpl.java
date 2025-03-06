@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1291,6 +1292,12 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             LOGGER.error("获取待办异常", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+    }
+
+    @Override
+    public void exportSelect(OutputStream outStream, String[] processSerialNumbers, String[] columns) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        itemAllApi.searchByProcessSerialNumbers(tenantId, positionId, processSerialNumbers);
     }
 
     @Override
