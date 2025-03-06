@@ -30,6 +30,7 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SecretLevelRecordApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -52,6 +53,7 @@ import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SecretLevelModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
+import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
@@ -107,6 +109,8 @@ public class Document4GfgRestController {
     private final AsyncUtilService asyncUtilService;
 
     private final SignDeptDetailApi signDeptDetailApi;
+
+    private final SignDeptInfoApi signDeptInfoApi;
 
     private final ActRuDetailApi actRuDetailApi;
 
@@ -395,6 +399,29 @@ public class Document4GfgRestController {
             DocumentDetailModel model = documentApi
                 .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId, false).getData();
             return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 当前节点是[主办司局秘书转交]，表单中[委内会签]如果存在部门且还没有走过会签子流程则只能选择[送会签]路由
+     *
+     * @param processSerialNumber 流程序列号
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/isMust2SignDept")
+    public Y9Result<Boolean> isMust2SignDept(@RequestParam @NotBlank String processSerialNumber) {
+        try {
+            List<SignDeptDetailModel> sddList = signDeptDetailApi
+                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            if (!sddList.isEmpty()) {
+                return Y9Result.success(false);
+            }
+            List<SignDeptModel> sdiList =
+                signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "0", processSerialNumber).getData();
+            return Y9Result.success(!sdiList.isEmpty());
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
         }
