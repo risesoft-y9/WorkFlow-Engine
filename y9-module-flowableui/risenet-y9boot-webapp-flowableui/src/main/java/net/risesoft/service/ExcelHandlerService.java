@@ -1,6 +1,8 @@
 package net.risesoft.service;
 
 import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author : qinman
@@ -9,6 +11,6 @@ import java.io.OutputStream;
  **/
 public interface ExcelHandlerService {
 
-    void export(OutputStream outStream, String[] processSerialNumbers);
+    void export(OutputStream outStream, List<Map<String, Object>> mapList, String[] columns);
 
 }

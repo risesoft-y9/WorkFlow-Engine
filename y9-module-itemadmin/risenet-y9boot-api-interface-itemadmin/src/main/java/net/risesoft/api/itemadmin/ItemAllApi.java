@@ -92,6 +92,6 @@ public interface ItemAllApi {
      */
     @PostMapping("/searchByProcessSerialNumbers")
     Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, String[] processSerialNumbers);
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumbers") String[] processSerialNumbers);
 
 }
