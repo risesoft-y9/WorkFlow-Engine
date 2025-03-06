@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -230,13 +231,21 @@ public class ItemAllApiImpl implements ItemAllApi {
     }
 
     @Override
-    public Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(String tenantId, String userId,
-        String[] processSerialNumbers) {
+    public Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String[] processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        StringBuilder sb = new StringBuilder();
+        Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
+            if (StringUtils.isBlank(sb.toString())) {
+                sb.append("'").append(processSerialNumber).append("'");
+            } else {
+                sb.append(",'").append(processSerialNumber).append("'");
+            }
+        });
         String sql =
-            "SELECT T.* FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER (UNNEST(?) ORDER BY T.CREATETIME DESC";
-        List<ActRuDetailModel> content =
-            jdbcTemplate.query(sql, processSerialNumbers, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+            "SELECT T.* FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER IN (" + sb
+                + ") GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        List<ActRuDetailModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
         return Y9Result.success(content);
     }
 }

@@ -3,7 +3,9 @@ package net.risesoft.service.impl;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.service.ExcelHandlerService;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 import cn.idev.excel.EasyExcel;
 
@@ -23,26 +26,33 @@ import cn.idev.excel.EasyExcel;
 @Slf4j
 @Service
 public class ExcelHandlerServiceImpl implements ExcelHandlerService {
+
     @Override
-    public void export(OutputStream outStream, String[] processSerialNumbers) {
-        // 定义表头
-        List<List<String>> head = new ArrayList<>();
-        List<String> head0 = new ArrayList<>();
-        List<String> head1 = new ArrayList<>();
-        head0.add("姓名");
-        head1.add("年龄");
-        head.add(head0);
-        head.add(head1);
+    public void export(OutputStream outStream, List<Map<String, Object>> mapList, String[] columns) {
+        List<List<String>> headName = new ArrayList<>();
+        if (mapList.isEmpty()) {
+            headName.add(Collections.singletonList("无查询"));
+            EasyExcel.write(outStream).head(headName).sheet("Sheet1").doWrite(headName);
+            return;
+        }
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<List<String>> headKey = new ArrayList<>();
+        // 准备表头
+        Arrays.stream(columns).forEach(column -> {
+            String[] arr = column.split(":");
+            headName.add(Collections.singletonList(arr[0]));
+            headKey.add(Collections.singletonList(arr[1]));
+        });
         // 准备数据
         List<List<String>> data = new ArrayList<>();
-        Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
+        mapList.forEach(map -> {
             List<String> list = new ArrayList<>();
-            list.add("秦漫" + processSerialNumber);
-            list.add(processSerialNumber);
+            headKey.forEach(key -> {
+                list.add(null == map.get(key.get(0)) ? "" : map.get(key.get(0)).toString());
+            });
             data.add(list);
         });
         // 写入数据到 Excel 文件
-        EasyExcel.write(outStream).head(head).sheet("Sheet1").doWrite(data);
-        // EasyExcel.write(outStream).head(head).sheet("Sheet1").doWrite(data);
+        EasyExcel.write(outStream).head(headName).sheet("Sheet1").doWrite(data);
     }
 }
