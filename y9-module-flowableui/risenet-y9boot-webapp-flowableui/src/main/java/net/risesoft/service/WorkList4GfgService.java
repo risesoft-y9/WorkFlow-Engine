@@ -1,5 +1,6 @@
 package net.risesoft.service;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,14 @@ public interface WorkList4GfgService {
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows);
+
+    /**
+     * 获取待办列表
+     *
+     * @param processSerialNumbers 流程序列号数组
+     * @return Y9Page<Map < String, Object>>
+     */
+    void exportSelect(OutputStream outStream, String[] processSerialNumbers, String[] columns);
 
     /**
      * 获取待办列表

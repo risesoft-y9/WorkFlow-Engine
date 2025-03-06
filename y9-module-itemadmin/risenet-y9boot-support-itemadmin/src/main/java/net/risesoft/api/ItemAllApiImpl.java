@@ -2,20 +2,21 @@ package net.risesoft.api;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemAllApi;
 import net.risesoft.entity.ActRuDetail;
@@ -38,7 +39,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2024/12/19
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemAll", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemAllApiImpl implements ItemAllApi {
 
@@ -47,6 +47,16 @@ public class ItemAllApiImpl implements ItemAllApi {
     private final ActRuDetailService actRuDetailService;
 
     private final Y9TableService y9TableService;
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public ItemAllApiImpl(ItemPageService itemPageService, ActRuDetailService actRuDetailService,
+        Y9TableService y9TableService, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+        this.itemPageService = itemPageService;
+        this.actRuDetailService = actRuDetailService;
+        this.y9TableService = y9TableService;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     /**
      * 根据用户id和系统名称查询待办数量
@@ -220,4 +230,22 @@ public class ItemAllApiImpl implements ItemAllApi {
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String[] processSerialNumbers) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        StringBuilder sb = new StringBuilder();
+        Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
+            if (StringUtils.isBlank(sb.toString())) {
+                sb.append("'").append(processSerialNumber).append("'");
+            } else {
+                sb.append(",'").append(processSerialNumber).append("'");
+            }
+        });
+        String sql =
+            "SELECT T.* FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER IN (" + sb
+                + ") GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        List<ActRuDetailModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
+    }
 }
