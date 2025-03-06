@@ -292,13 +292,16 @@ public class FormNTKO4GfgController {
      */
     @PostMapping(value = "/uploadQingyang")
     public Y9Result<String> uploadQingyang(@RequestParam String fileType, @RequestParam String processSerialNumber,
-        @RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String id, @RequestParam String tenantId, @RequestParam String userId, @RequestParam MultipartFile file,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
+        if(multipartFile == null){
+            multipartFile = file;
+        }
         try {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, "清样文件" + fileType);
@@ -328,12 +331,18 @@ public class FormNTKO4GfgController {
     public Y9Result<DocumentWordModel> uploadWord(@RequestParam String fileType, @RequestParam Integer type,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam String wordType, @RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam(required = false) String signId, HttpServletRequest request) {
+        @RequestParam String userId, @RequestParam(required = false) String signId, @RequestParam(required = false) MultipartFile file, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-        MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
+        MultipartFile multipartFile = null;
+        if(file != null){
+            multipartFile = file;
+        }
+        if(multipartFile == null){
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+            multipartFile = multipartRequest.getFile("currentDoc");
+        }
         try {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
