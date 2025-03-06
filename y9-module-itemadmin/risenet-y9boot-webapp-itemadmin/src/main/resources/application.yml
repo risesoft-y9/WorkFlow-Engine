@@ -268,7 +268,7 @@ y9:
         log:
             enabled: true
             # kafka, api
-            logSaveTarget: kafka
+            reportMethod: kafka
         session:
             redis:
                 enabled: true
