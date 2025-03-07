@@ -406,29 +406,6 @@ public class Document4GfgRestController {
     }
 
     /**
-     * 当前节点是[主办司局秘书转交]，表单中[委内会签]如果存在部门且还没有走过会签子流程则只能选择[送会签]路由
-     *
-     * @param processSerialNumber 流程序列号
-     * @return Y9Result<Map < String, Object>>
-     */
-    @GetMapping(value = "/isMust2SignDept")
-    public Y9Result<Boolean> isMust2SignDept(@RequestParam @NotBlank String processSerialNumber) {
-        try {
-            List<SignDeptDetailModel> sddList = signDeptDetailApi
-                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-            if (!sddList.isEmpty()) {
-                return Y9Result.success(false);
-            }
-            List<SignDeptModel> sdiList =
-                signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "0", processSerialNumber).getData();
-            return Y9Result.success(!sdiList.isEmpty());
-        } catch (Exception e) {
-            LOGGER.error("获取编辑办件数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
-    }
-
-    /**
      * 办件发送
      *
      * @param itemId 事项id
@@ -701,6 +678,47 @@ public class Document4GfgRestController {
     @GetMapping(value = "/getSecretLevelRecord")
     public Y9Result<List<SecretLevelModel>> getSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber) {
         return secretLevelRecordApi.getRecord(Y9LoginUserHolder.getTenantId(), processSerialNumber);
+    }
+
+    /**
+     * 获取正文管理员角色
+     *
+     * @param roleId 正文管理员角色id
+     * @return Y9Result<Boolean>
+     */
+    @GetMapping(value = "/getWordManager")
+    public Y9Result<Boolean> getWordManager(@RequestParam String roleId) {
+        List<OrgUnit> list =
+            roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData();
+        for (OrgUnit orgUnit : list) {
+            if (orgUnit.getId().equals(Y9LoginUserHolder.getPositionId())) {
+                return Y9Result.success(true);
+            }
+        }
+        return Y9Result.success(false);
+    }
+
+    /**
+     * 当前节点是[主办司局秘书转交]，表单中[委内会签]如果存在部门且还没有走过会签子流程则只能选择[送会签]路由
+     *
+     * @param processSerialNumber 流程序列号
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/isMust2SignDept")
+    public Y9Result<Boolean> isMust2SignDept(@RequestParam @NotBlank String processSerialNumber) {
+        try {
+            List<SignDeptDetailModel> sddList = signDeptDetailApi
+                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            if (!sddList.isEmpty()) {
+                return Y9Result.success(false);
+            }
+            List<SignDeptModel> sdiList =
+                signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "0", processSerialNumber).getData();
+            return Y9Result.success(!sdiList.isEmpty());
+        } catch (Exception e) {
+            LOGGER.error("获取编辑办件数据失败", e);
+        }
+        return Y9Result.failure("获取失败");
     }
 
     /**
