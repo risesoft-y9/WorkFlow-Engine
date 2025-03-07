@@ -698,4 +698,17 @@
             <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-37" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_DEPT_DETAIL" columnName="TASKNAME"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_DEPT_DETAIL">
+            <column name="TASKNAME" remarks="主流程送会签时的任务名称" type="VARCHAR(50)"/>
+            <column name="SENDERID" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="SENDERNAME" remarks="发送会签人员ID" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
