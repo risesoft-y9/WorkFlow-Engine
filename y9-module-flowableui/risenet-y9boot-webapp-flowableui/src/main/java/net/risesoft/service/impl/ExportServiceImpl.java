@@ -97,14 +97,21 @@ public class ExportServiceImpl implements ExportService {
                 // 当前办理人和当前环节
                 switch (itemBox) {
                     case "todo":
+                    case "todo4Other":
                         mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
                         break;
                     case "recycle":
-                    case "monitorRecycle":
-                    case "monitorDoing":
+                    case "recycle4Dept":
+                    case "recycle4Bureau":
+                    case "recycle4Org":
+                    case "doing4Dept":
+                    case "doing4Bureau":
+                    case "doing4Org":
                         mapTemp.putAll(getTaskNameAndUserName4Doing(processParam));
                         break;
-                    case "monitorDone":
+                    case "done4Dept":
+                    case "done4Bureau":
+                    case "done4Org":
                         mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
                         break;
                     case "haveDone":
@@ -152,10 +159,24 @@ public class ExportServiceImpl implements ExportService {
                     item.getSystemName(), searchMapStr);
                 break;
             case "recycle":
-            case "monitorRecycle":
-            case "monitorDoing":
                 break;
-            case "monitorDone":
+            case "recycle4Dept":
+                break;
+            case "recycle4Bureau":
+                break;
+            case "recycle4Org":
+                break;
+            case "doing4Dept":
+                break;
+            case "doing4Bureau":
+                break;
+            case "doing4Org":
+                break;
+            case "done4Dept":
+                break;
+            case "done4Bureau":
+                break;
+            case "done4Org":
                 break;
             case "haveDone":
                 break;
@@ -184,14 +205,21 @@ public class ExportServiceImpl implements ExportService {
                 // 当前办理人和当前环节
                 switch (itemBox) {
                     case "todo":
+                    case "todo4Other":
                         mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
                         break;
                     case "recycle":
-                    case "monitorRecycle":
-                    case "monitorDoing":
+                    case "recycle4Dept":
+                    case "recycle4Bureau":
+                    case "recycle4Org":
+                    case "doing4Dept":
+                    case "doing4Bureau":
+                    case "doing4Org":
                         mapTemp.putAll(getTaskNameAndUserName4Doing(processParam));
                         break;
-                    case "monitorDone":
+                    case "done4Dept":
+                    case "done4Bureau":
+                    case "done4Org":
                         mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
                         break;
                     case "haveDone":
