@@ -147,25 +147,19 @@ public class ExportServiceImpl implements ExportService {
                 listY9Result = itemTodoApi.searchListByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
                     item.getSystemName(), taskDefKey, searchMapStr);
                 break;
-            case "todo4CancelNumber":
-
-                break;
             case "todo4Other":
-
+                listY9Result = itemTodoApi.searchListByUserIdAndSystemName4Other(tenantId, positionId,
+                    item.getSystemName(), searchMapStr);
                 break;
             case "recycle":
             case "monitorRecycle":
             case "monitorDoing":
-
                 break;
             case "monitorDone":
-
                 break;
             case "haveDone":
-
                 break;
             case "all":
-
                 break;
             default:
                 break;

@@ -21,7 +21,9 @@ public enum TableColumnEnum {
     /** 非联网登记 */
     FLWDJ("flwdj"),
     /** 发文文号 */
-    FWWH("fwwh");
+    FWWH("fwwh"),
+    /** 撤销发文文号 */
+    FWWH_DELETE("chexiao");
 
     private final String value;
 }
