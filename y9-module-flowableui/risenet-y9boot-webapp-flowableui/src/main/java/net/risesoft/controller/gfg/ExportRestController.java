@@ -60,4 +60,25 @@ public class ExportRestController {
             LOGGER.warn(e.getMessage(), e);
         }
     }
+
+    /**
+     * 导出列表
+     *
+     * @param columns 列属性
+     * @param response 响应
+     */
+    @RiseLog(operationName = "导出全部", operationType = OperationTypeEnum.ADD)
+    @PostMapping(value = "/all")
+    public void all(@RequestParam String itemId, @RequestParam String itemBox, @RequestParam String[] columns,
+        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
+        HttpServletResponse response) {
+        try (OutputStream outStream = response.getOutputStream()) {
+            String filename = "导出" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xlsx";
+            response.setContentType(MediaTypeUtils.getMediaTypeForFileName(servletContext, filename).toString());
+            response.setHeader("Content-Disposition", ContentDispositionUtil.standardizeAttachment(filename));
+            exportService.all(outStream, itemId, itemBox, columns, taskDefKey, searchMapStr);
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
 }

@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemAllApi;
+import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.ItemTodoApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
@@ -25,6 +27,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -51,6 +54,8 @@ public class ExportServiceImpl implements ExportService {
 
     private final ItemAllApi itemAllApi;
 
+    private final ItemTodoApi itemTodoApi;
+
     private final TaskApi taskApi;
 
     private final OrgUnitApi orgUnitApi;
@@ -63,6 +68,8 @@ public class ExportServiceImpl implements ExportService {
 
     private final OptionClassApi optionClassApi;
 
+    private final ItemApi itemApi;
+
     private static Map<String, Object> map = new HashMap<>();
 
     @Override
@@ -70,6 +77,99 @@ public class ExportServiceImpl implements ExportService {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Y9Result<List<ActRuDetailModel>> listY9Result =
             itemAllApi.searchByProcessSerialNumbers(tenantId, positionId, processSerialNumbers);
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        int serialNumber = 1;
+        Map<String, Object> mapTemp;
+        ProcessParamModel processParam;
+        String processInstanceId;
+        Map<String, Object> formData;
+        for (ActRuDetailModel ardModel : listY9Result.getData()) {
+            mapTemp = new HashMap<>(16);
+            processInstanceId = ardModel.getProcessInstanceId();
+            try {
+                String processSerialNumber = ardModel.getProcessSerialNumber();
+                mapTemp.put("serialNumber", serialNumber++);
+                processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                mapTemp.put("systemCNName", processParam.getSystemCnName());
+                mapTemp.put("bureauName", processParam.getHostDeptName());
+                formData = formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData();
+                mapTemp.putAll(handleFormData(formData));
+                // 当前办理人和当前环节
+                switch (itemBox) {
+                    case "todo":
+                        mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
+                        break;
+                    case "recycle":
+                    case "monitorRecycle":
+                    case "monitorDoing":
+                        mapTemp.putAll(getTaskNameAndUserName4Doing(processParam));
+                        break;
+                    case "monitorDone":
+                        mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
+                        break;
+                    case "haveDone":
+                        if (ardModel.isEnded()) {
+                            mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
+                        } else {
+                            mapTemp.putAll(getTaskNameAndUserName4Doing(processParam));
+                        }
+                        break;
+                    case "all":
+                        if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
+                            mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
+                        } else {
+                            if (!ardModel.isEnded()) {
+                                mapTemp.putAll(getTaskNameAndUserName4Doing(processParam));
+                            } else {
+                                mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                LOGGER.error("获取已办列表失败" + processInstanceId, e);
+            }
+            mapList.add(mapTemp);
+        }
+        excelHandlerService.export(outStream, mapList, columns);
+    }
+
+    @Override
+    public void all(OutputStream outStream, String itemId, String itemBox, String[] columns, String taskDefKey,
+        String searchMapStr) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+        Y9Result<List<ActRuDetailModel>> listY9Result = Y9Result.success(List.of());
+        switch (itemBox) {
+            case "todo":
+                listY9Result = itemTodoApi.searchListByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
+                    item.getSystemName(), taskDefKey, searchMapStr);
+                break;
+            case "todo4CancelNumber":
+
+                break;
+            case "todo4Other":
+
+                break;
+            case "recycle":
+            case "monitorRecycle":
+            case "monitorDoing":
+
+                break;
+            case "monitorDone":
+
+                break;
+            case "haveDone":
+
+                break;
+            case "all":
+
+                break;
+            default:
+                break;
+        }
         List<Map<String, Object>> mapList = new ArrayList<>();
         int serialNumber = 1;
         Map<String, Object> mapTemp;

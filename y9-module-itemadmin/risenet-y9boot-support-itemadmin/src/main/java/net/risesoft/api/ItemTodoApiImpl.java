@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemTodoApi;
@@ -43,7 +44,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @Slf4j
-@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemTodo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemTodoApiImpl implements ItemTodoApi {
 
@@ -52,6 +52,16 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     private final ActRuDetailService actRuDetailService;
 
     private final Y9TableService y9TableService;
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public ItemTodoApiImpl(ItemPageService itemPageService, ActRuDetailService actRuDetailService,
+        Y9TableService y9TableService, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+        this.itemPageService = itemPageService;
+        this.actRuDetailService = actRuDetailService;
+        this.y9TableService = y9TableService;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     /**
      * 根据用户id和系统名称查询待办数量
@@ -277,6 +287,49 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestParam(required = false) String taskDefKey,
+        @RequestBody(required = false) String searchMapStr) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "";
+        StringBuilder assigneeNameSql = new StringBuilder();
+        StringBuilder signSql = new StringBuilder();
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            if (null != searchMap.get("assigneeName")) {
+                assigneeNameSql.append("AND INSTR(T.ASSIGNEENAME").append(",'")
+                    .append(searchMap.get("assigneeName").toString()).append("') > 0 ");
+            }
+            boolean sign = null != searchMap.get("sign");
+            boolean noSign = null != searchMap.get("noSign");
+            if (sign || noSign) {
+                if (sign && noSign) {
+                    signSql.append(" AND ").append("T.SIGNSTATUS>=0");
+                } else {
+                    signSql.append(" AND ").append("T.SIGNSTATUS=").append(
+                        sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+                }
+            }
+        }
+        StringBuilder taskDefKeySql = new StringBuilder();
+        if (StringUtils.isNotBlank(taskDefKey)) {
+            taskDefKeySql.append(" AND T.taskDefKey='").append(taskDefKey).append("'");
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
+            + assigneeNameSql + signSql + taskDefKeySql + " ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName, userId};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
     }
 
     @Override

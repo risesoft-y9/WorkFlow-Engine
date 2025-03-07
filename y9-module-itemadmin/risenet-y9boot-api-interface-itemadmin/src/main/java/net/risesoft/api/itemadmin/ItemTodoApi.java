@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -97,6 +99,13 @@ public interface ItemTodoApi {
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    @PostMapping("/searchListByUserIdAndSystemNameAndTaskDefKey")
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemNameAndTaskDefKey(
+        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("systemName") @NotBlank String systemName,
+        @RequestParam(value = "taskDefKey", required = false) String taskDefKey,
+        @RequestBody(required = false) String searchMapStr);
 
     @PostMapping("/searchByUserIdAndSystemName4CancelNumber")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4CancelNumber(@RequestParam("tenantId") String tenantId,
