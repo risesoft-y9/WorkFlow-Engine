@@ -61,12 +61,6 @@ public class Todo4GfgRestController {
         return workList4GfgService.todoList(itemId, searchMapStr, page, rows);
     }
 
-    @PostMapping(value = "/todoList4CancelNumber")
-    public Y9Page<Map<String, Object>> todoList4CancelNumber(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.todoList4CancelNumber(itemId, searchMapStr, page, rows);
-    }
-
     @PostMapping(value = "/todoList4Other")
     public Y9Page<Map<String, Object>> todoList4Other(@RequestParam String itemId, @RequestParam String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
