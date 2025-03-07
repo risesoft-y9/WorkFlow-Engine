@@ -90,7 +90,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
             signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-        String taskId = signDeptDetailModels.get(0).getTaskId();
+        SignDeptDetailModel ssd = signDeptDetailModels.get(0);
         taskList.forEach(task -> {
             if (signDeptDetailModels.stream().noneMatch(sdd -> sdd.getExecutionId().equals(task.getExecutionId()))) {
                 OrgUnit bureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
@@ -98,7 +98,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
                 signDeptDetail.setProcessSerialNumber(processSerialNumber);
                 signDeptDetail.setProcessInstanceId(processInstanceId);
                 signDeptDetail.setExecutionId(task.getExecutionId());
-                signDeptDetail.setTaskId(taskId);
+                signDeptDetail.setTaskId(ssd.getTaskId());
+                signDeptDetail.setTaskName(ssd.getTaskName());
+                signDeptDetail.setSenderId(ssd.getSenderId());
+                signDeptDetail.setSenderName(ssd.getSenderName());
                 signDeptDetail.setDeptId(bureau.getId());
                 signDeptDetail.setDeptName(bureau.getName());
                 signDeptDetailApi.saveOrUpdate(tenantId, positionId, signDeptDetail);

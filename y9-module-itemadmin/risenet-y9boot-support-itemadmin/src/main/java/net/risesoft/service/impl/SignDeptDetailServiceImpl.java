@@ -111,6 +111,9 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
         newDetail.setProcessInstanceId(signDeptDetail.getProcessInstanceId());
         newDetail.setExecutionId(signDeptDetail.getExecutionId());
         newDetail.setTaskId(signDeptDetail.getTaskId());
+        newDetail.setTaskName(signDeptDetail.getTaskName());
+        newDetail.setSenderId(signDeptDetail.getSenderId());
+        newDetail.setSenderName(signDeptDetail.getSenderName());
         newDetail.setDeptId(signDeptDetail.getDeptId());
         newDetail.setDeptName(signDeptDetail.getDeptName());
         newDetail.setUserName(signDeptDetail.getUserName());

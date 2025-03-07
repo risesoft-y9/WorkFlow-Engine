@@ -55,6 +55,18 @@ public class SignDeptDetail implements Serializable {
     @Column(name = "TASKID", length = 50, nullable = false)
     private String taskId;
 
+    @Comment("主流程送会签时的任务名称")
+    @Column(name = "TASKNAME", length = 50, nullable = false)
+    private String taskName;
+
+    @Comment("发送会签人员ID")
+    @Column(name = "SENDERID", length = 50, nullable = false)
+    private String senderId;
+
+    @Comment("发送会签人员姓名")
+    @Column(name = "SENDERNAME", length = 50, nullable = false)
+    private String senderName;
+
     @Comment("会签单位唯一标示")
     @Column(name = "DEPTID", length = 50)
     private String deptId;
