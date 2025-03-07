@@ -58,7 +58,8 @@ public class AsyncUtilService {
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql = "select lsh from y9_form_fw where guid = '" + processSerialNumber + "'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            if (list.get(0).get("lsh") == null || !list.get(0).get("lsh").toString().contains("发稿[")) {
+            if (list.get(0).get("lsh") == null || list.get(0).get("lsh").toString().isEmpty()
+                || !list.get(0).get("lsh").toString().contains("发稿[")) {
                 String startNode = processDefinitionApi
                     .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
                 List<TargetModel> nodeList =
