@@ -238,7 +238,7 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, taskId, executionId, processInstanceId, flowElementModel,
+        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel,
             sponsorGuid, processParam, userList);
     }
 
@@ -297,7 +297,7 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, taskId, executionId, processInstanceId, flowElementModel,
+        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel,
             sponsorGuid, processParam, userList);
     }
 
@@ -305,14 +305,14 @@ public class AsyncHandleService {
      * 发送后异步处理
      *
      * @param tenantId
-     * @param taskId
+     * @param task
      * @param processInstanceId
      * @param flowElementModel
      * @param sponsorGuid
      * @param processParam
      */
     @Async
-    public void forwardingHandle(final String tenantId, final String orgUnitId, final String taskId,
+    public void forwardingHandle(final String tenantId, final String orgUnitId, final TaskModel task,
         final String executionId, final String processInstanceId, final FlowElementModel flowElementModel,
         final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
         try {
@@ -321,7 +321,7 @@ public class AsyncHandleService {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             Y9LoginUserHolder.setOrgUnit(orgUnit);
             // 更新自定义历程结束时间
-            List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(taskId);
+            List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(task.getId());
             for (ProcessTrack ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
                     ptModel.setEndTime(sdf.format(new Date()));
@@ -365,7 +365,10 @@ public class AsyncHandleService {
                     signDeptDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
                     signDeptDetail.setProcessInstanceId(processParam.getProcessInstanceId());
                     signDeptDetail.setExecutionId(taskNext.getExecutionId());
-                    signDeptDetail.setTaskId(taskId);
+                    signDeptDetail.setTaskId(task.getId());
+                    signDeptDetail.setTaskName(task.getName());
+                    signDeptDetail.setSenderId(orgUnit.getId());
+                    signDeptDetail.setSenderName(orgUnit.getName());
                     signDeptDetail.setDeptId(bureau.getId());
                     signDeptDetail.setDeptName(bureau.getName());
                     detailList.add(signDeptDetail);
