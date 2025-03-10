@@ -76,7 +76,10 @@ public class ExportRestController {
             String filename = "导出" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xlsx";
             response.setContentType(MediaTypeUtils.getMediaTypeForFileName(servletContext, filename).toString());
             response.setHeader("Content-Disposition", ContentDispositionUtil.standardizeAttachment(filename));
+            Long start = System.currentTimeMillis();
             exportService.all(outStream, itemId, itemBox, columns, taskDefKey, searchMapStr);
+            Long end = System.currentTimeMillis();
+            System.out.println("导出全部耗时(秒):" + (end - start) / 1000);
         } catch (Exception e) {
             LOGGER.warn(e.getMessage(), e);
         }
