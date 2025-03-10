@@ -3,7 +3,6 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 
 import lombok.Data;
-import lombok.NonNull;
 
 /**
  * 所有待办查询参数模型
@@ -45,12 +44,10 @@ public class QueryParamModel implements Serializable {
     /**
      * 当前页码
      */
-    @NonNull
     Integer page;
 
     /**
      * 每页行数
      */
-    @NonNull
     Integer rows;
 }
