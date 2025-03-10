@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.DocumentCopyApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemAllApi;
 import net.risesoft.api.itemadmin.ItemApi;
@@ -31,8 +32,10 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
@@ -82,6 +85,8 @@ public class ExportServiceImpl implements ExportService {
     private final OptionClassApi optionClassApi;
 
     private final ItemApi itemApi;
+
+    private final DocumentCopyApi documentCopyApi;
 
     private static Map<String, Object> map = new HashMap<>();
 
@@ -284,6 +289,33 @@ public class ExportServiceImpl implements ExportService {
             } catch (Exception e) {
                 LOGGER.error("获取已办列表失败" + processInstanceId, e);
             }
+            mapList.add(mapTemp);
+        }
+        excelHandlerService.export(outStream, mapList, columns);
+    }
+
+    @Override
+    public void dc(OutputStream outStream, String[] processSerialNumbers, String[] columns,
+        QueryParamModel queryParamModel) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
+            positionId = Y9LoginUserHolder.getPositionId();
+        Y9Result<List<DocumentCopyModel>> listY9Result;
+        if (null != processSerialNumbers && processSerialNumbers.length > 0) {
+            listY9Result =
+                documentCopyApi.findByProcessSerialNumbers(tenantId, personId, positionId, processSerialNumbers);
+        } else {
+            listY9Result = documentCopyApi.findListByUserId(tenantId, personId, positionId, queryParamModel);
+        }
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        Map<String, Object> mapTemp;
+        int serialNumber = 1;
+        for (DocumentCopyModel dc : listY9Result.getData()) {
+            mapTemp = new HashMap<>();
+            mapTemp.put("serialNumber", serialNumber++);
+            mapTemp.put("systemCnName", dc.getSystemCnName());
+            mapTemp.put("customNumber", dc.getCustomNumber());
+            mapTemp.put("title", dc.getTitle());
+            mapTemp.put("hostDeptName", dc.getHostDeptName());
             mapList.add(mapTemp);
         }
         excelHandlerService.export(outStream, mapList, columns);
