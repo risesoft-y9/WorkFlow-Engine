@@ -17,6 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemAllApi;
 import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.ItemDoingApi;
+import net.risesoft.api.itemadmin.ItemDoneApi;
+import net.risesoft.api.itemadmin.ItemHaveDoneApi;
+import net.risesoft.api.itemadmin.ItemRecycleApi;
 import net.risesoft.api.itemadmin.ItemTodoApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -31,6 +35,7 @@ import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
@@ -55,6 +60,14 @@ public class ExportServiceImpl implements ExportService {
     private final ItemAllApi itemAllApi;
 
     private final ItemTodoApi itemTodoApi;
+
+    private final ItemRecycleApi itemRecycleApi;
+
+    private final ItemDoingApi itemDoingApi;
+
+    private final ItemDoneApi itemDoneApi;
+
+    private final ItemHaveDoneApi itemHaveDoneApi;
 
     private final TaskApi taskApi;
 
@@ -147,6 +160,7 @@ public class ExportServiceImpl implements ExportService {
     public void all(OutputStream outStream, String itemId, String itemBox, String[] columns, String taskDefKey,
         String searchMapStr) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        Position position = Y9LoginUserHolder.getPosition();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         Y9Result<List<ActRuDetailModel>> listY9Result = Y9Result.success(List.of());
         switch (itemBox) {
@@ -159,28 +173,52 @@ public class ExportServiceImpl implements ExportService {
                     item.getSystemName(), searchMapStr);
                 break;
             case "recycle":
+                listY9Result = itemRecycleApi.searchListByUserIdAndSystemName(tenantId, positionId,
+                    item.getSystemName(), searchMapStr);
                 break;
             case "recycle4Dept":
+                listY9Result = itemRecycleApi.searchListByDeptIdAndSystemName(tenantId, position.getParentId(), false,
+                    item.getSystemName(), searchMapStr);
                 break;
             case "recycle4Bureau":
+                listY9Result = itemRecycleApi.searchListByDeptIdAndSystemName(tenantId,
+                    orgUnitApi.getBureau(tenantId, positionId).getData().getId(), true, item.getSystemName(),
+                    searchMapStr);
                 break;
             case "recycle4Org":
+                listY9Result = itemRecycleApi.searchListBySystemName(tenantId, item.getSystemName(), searchMapStr);
                 break;
             case "doing4Dept":
+                listY9Result = itemDoingApi.searchListByDeptIdAndSystemName(tenantId, position.getParentId(), false,
+                    item.getSystemName(), searchMapStr);
                 break;
             case "doing4Bureau":
+                listY9Result = itemDoingApi.searchListByDeptIdAndSystemName(tenantId,
+                    orgUnitApi.getBureau(tenantId, positionId).getData().getId(), true, item.getSystemName(),
+                    searchMapStr);
                 break;
             case "doing4Org":
+                listY9Result = itemDoingApi.searchListBySystemName(tenantId, item.getSystemName(), searchMapStr);
                 break;
             case "done4Dept":
+                listY9Result = itemDoneApi.searchListByDeptIdAndSystemName(tenantId, position.getParentId(), false,
+                    item.getSystemName(), searchMapStr);
                 break;
             case "done4Bureau":
+                listY9Result = itemDoneApi.searchListByDeptIdAndSystemName(tenantId,
+                    orgUnitApi.getBureau(tenantId, positionId).getData().getId(), true, item.getSystemName(),
+                    searchMapStr);
                 break;
             case "done4Org":
+                listY9Result = itemDoneApi.searchListBySystemName(tenantId, item.getSystemName(), searchMapStr);
                 break;
             case "haveDone":
+                listY9Result = itemHaveDoneApi.searchListByUserIdAndSystemName(tenantId, positionId,
+                    item.getSystemName(), searchMapStr);
                 break;
             case "all":
+                listY9Result = itemAllApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                    searchMapStr);
                 break;
             default:
                 break;

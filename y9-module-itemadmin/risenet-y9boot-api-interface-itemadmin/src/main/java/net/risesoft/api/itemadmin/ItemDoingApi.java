@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -96,6 +98,10 @@ public interface ItemDoingApi {
         @RequestParam("systemName") String systemName,
         @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
+    @PostMapping("/searchListBySystemName")
+    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("systemName") String systemName, @RequestBody String searchMapStr);
+
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询在办列表
      *
@@ -132,4 +138,9 @@ public interface ItemDoingApi {
         @RequestParam("deptId") String deptId, @RequestParam("isBureau") boolean isBureau,
         @RequestParam("systemName") String systemName, @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    @PostMapping("/searchListByDeptIdAndSystemName")
+    Y9Result<List<ActRuDetailModel>> searchListByDeptIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("deptId") String deptId, @RequestParam("isBureau") boolean isBureau,
+        @RequestParam("systemName") String systemName, @RequestBody String searchMapStr);
 }

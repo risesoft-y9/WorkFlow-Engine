@@ -231,6 +231,24 @@ public class ItemAllApiImpl implements ItemAllApi {
     }
 
     @Override
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+        assert searchMap != null;
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
+            assigneeNameWhereSql = sqlList.get(3);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
+            + " ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName, userId};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
+    }
+
+    @Override
     public Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String[] processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);

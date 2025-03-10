@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -98,6 +100,10 @@ public interface ItemRecycleApi {
         @RequestParam("systemName") String systemName,
         @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
+    @PostMapping("/searchListBySystemName")
+    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("systemName") String systemName, @RequestBody String searchMapStr);
+
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询办结列表
      *
@@ -116,6 +122,11 @@ public interface ItemRecycleApi {
         @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
+    @PostMapping("/searchListByUserIdAndSystemName")
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestBody String searchMapStr);
+
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询办结列表
      *
@@ -133,4 +144,9 @@ public interface ItemRecycleApi {
         @RequestParam("deptId") String deptId, @RequestParam("isBureau") boolean isBureau,
         @RequestParam("systemName") String systemName, @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    @PostMapping("/searchListByDeptIdAndSystemName")
+    Y9Result<List<ActRuDetailModel>> searchListByDeptIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("deptId") String deptId, @RequestParam("isBureau") boolean isBureau,
+        @RequestParam("systemName") String systemName, @RequestBody String searchMapStr);
 }
