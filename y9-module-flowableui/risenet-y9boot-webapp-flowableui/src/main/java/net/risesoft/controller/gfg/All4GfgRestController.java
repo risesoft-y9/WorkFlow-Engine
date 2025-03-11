@@ -43,6 +43,21 @@ public class All4GfgRestController {
     public Y9Page<Map<String, Object>> allList(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
-        return this.workList4GfgService.allList(itemId, searchMapStr, page, rows);
+        return this.workList4GfgService.allList(itemId, searchMapStr, false, page, rows);
+    }
+
+    /**
+     * 获取全委列表
+     *
+     * @param itemId 事项id
+     * @param searchMapStr 查询参数
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @PostMapping(value = "/allList4Org")
+    public Y9Page<Map<String, Object>> allList4Org(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        return this.workList4GfgService.allList(itemId, searchMapStr, true, page, rows);
     }
 }

@@ -119,16 +119,27 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private static Map<String, Object> map = new HashMap<>();
 
     @Override
-    public Y9Page<Map<String, Object>> allList(String itemId, String searchMapStr, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> allList(String itemId, String searchMapStr, boolean isOrg, Integer page,
+        Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                if (isOrg) {
+                    itemPage = itemAllApi.findBySystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                } else {
+                    itemPage =
+                        itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                }
             } else {
-                itemPage = itemAllApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
+                if (isOrg) {
+                    itemPage = itemAllApi.searchBySystemName(tenantId, positionId, item.getSystemName(), searchMapStr,
+                        page, rows);
+                } else {
+                    itemPage = itemAllApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
                     searchMapStr, page, rows);
+                }
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

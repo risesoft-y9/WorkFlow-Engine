@@ -105,6 +105,24 @@ public class ItemAllApiImpl implements ItemAllApi {
         return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
     }
 
+    @Override
+    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemName(systemName, rows, page, sort);
+        List<ActRuDetail> ardList = ardPage.getContent();
+        ActRuDetailModel actRuDetailModel;
+        List<ActRuDetailModel> modelList = new ArrayList<>();
+        for (ActRuDetail actRuDetail : ardList) {
+            actRuDetailModel = new ActRuDetailModel();
+            Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
+            modelList.add(actRuDetailModel);
+        }
+
+        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+    }
+
     /**
      * 根据用户id查询待办列表(以发送时间排序)
      *
@@ -231,7 +249,30 @@ public class ItemAllApiImpl implements ItemAllApi {
     }
 
     @Override
-    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
+    public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String systemName, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+        assert searchMap != null;
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
+            assigneeNameWhereSql = sqlList.get(3);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
+            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
+            + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ?" + whereSql + assigneeNameWhereSql
+            + " GROUP BY T.PROCESSSERIALNUMBER) ALIAS";
+        Object[] args = {systemName};
+        ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
+            itemPage.getRows());
+    }
+
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
@@ -239,6 +280,30 @@ public class ItemAllApiImpl implements ItemAllApi {
         List<String> sqlList = y9TableService.getSql(searchMap);
         String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
             assigneeNameWhereSql = sqlList.get(3);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
+            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
+    }
+
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName,
+        @RequestBody(required = false) String searchMapStr) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            assigneeNameInnerSql = sqlList.get(2);
+            assigneeNameWhereSql = sqlList.get(3);
+        }
         String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
             + " ORDER BY T.CREATETIME DESC";

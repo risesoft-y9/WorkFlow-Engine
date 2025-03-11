@@ -90,19 +90,19 @@ public class ExportRestController {
     /**
      * 导出传签件
      *
-     * @param columns 列属性
+     * @param exportRequest 导出的请求
      * @param response 响应
      */
     @RiseLog(operationName = "导出传签件", operationType = OperationTypeEnum.ADD)
     @PostMapping(value = "/dc")
-    public void dc(@RequestBody ExportRequest request, HttpServletResponse response) {
+    public void dc(@RequestBody ExportRequest exportRequest, HttpServletResponse response) {
         try (OutputStream outStream = response.getOutputStream()) {
             String filename = "导出" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xlsx";
             response.setContentType(MediaTypeUtils.getMediaTypeForFileName(servletContext, filename).toString());
             response.setHeader("Content-Disposition", ContentDispositionUtil.standardizeAttachment(filename));
             Long start = System.currentTimeMillis();
-            exportService.dc(outStream, request.getProcessSerialNumbers(), request.getColumns(),
-                request.getQueryParamModel());
+            exportService.dc(outStream, exportRequest.getProcessSerialNumbers(), exportRequest.getColumns(),
+                exportRequest.getQueryParamModel());
             Long end = System.currentTimeMillis();
             System.out.println("导出全部耗时(秒):" + (end - start) / 1000);
         } catch (Exception e) {
