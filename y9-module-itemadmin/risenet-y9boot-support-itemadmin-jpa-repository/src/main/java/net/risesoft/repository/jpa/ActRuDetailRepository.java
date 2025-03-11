@@ -69,8 +69,8 @@ public interface ActRuDetailRepository
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalse(String systemName, String assignee, Pageable pageable);
 
     @Query(nativeQuery = true,
-        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 GROUP BY PROCESSSERIALNUMBER",
-        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 GROUP BY PROCESSSERIALNUMBER) ALIAS")
+        value = "SELECT * FROM FF_ACT_RU_DETAIL T WHERE T.DELETED =FALSE AND T.SYSTEMNAME = ?1 GROUP BY PROCESSSERIALNUMBER",
+        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T WHERE T.DELETED =FALSE AND SYSTEMNAME = ?1 GROUP BY PROCESSSERIALNUMBER) ALIAS")
     Page<ActRuDetail> findBySystemNameNativeQuery(String systemName, Pageable pageable);
 
     /**

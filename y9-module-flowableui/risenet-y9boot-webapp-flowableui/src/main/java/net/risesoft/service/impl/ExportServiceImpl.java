@@ -140,6 +140,7 @@ public class ExportServiceImpl implements ExportService {
                         }
                         break;
                     case "all":
+                    case "all4Org":
                         if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
                             mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
                         } else {
@@ -225,6 +226,10 @@ public class ExportServiceImpl implements ExportService {
                 listY9Result = itemAllApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
                     searchMapStr);
                 break;
+            case "all4Org":
+                listY9Result =
+                    itemAllApi.searchListBySystemName(tenantId, positionId, item.getSystemName(), searchMapStr);
+                break;
             default:
                 break;
         }
@@ -273,6 +278,7 @@ public class ExportServiceImpl implements ExportService {
                         }
                         break;
                     case "all":
+                    case "all4Org":
                         if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
                             mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
                         } else {
