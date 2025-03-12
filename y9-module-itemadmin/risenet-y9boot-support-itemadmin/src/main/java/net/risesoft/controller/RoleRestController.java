@@ -16,6 +16,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
+import net.risesoft.consts.InitDataConsts;
 import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -57,6 +58,13 @@ public class RoleRestController {
         List<NodeTreeVO> listMap = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             System system = systemApi.getByName(Y9Context.getSystemName()).getData();
+            NodeTreeVO publicRoleMap = new NodeTreeVO();
+            publicRoleMap.setId(InitDataConsts.TOP_PUBLIC_ROLE_ID);
+            publicRoleMap.setName("公共角色");
+            publicRoleMap.setParentId(null);
+            publicRoleMap.setIsParent(true);
+            publicRoleMap.setOrgType("App");
+            listMap.add(publicRoleMap);
             List<App> appList = appApi.listBySystemId(system.getId()).getData();
             for (App app : appList) {
                 NodeTreeVO map = new NodeTreeVO();
