@@ -35,7 +35,7 @@ dependencies {
     api(libs.thumbnailator)
     api(libs.poi.tl)
     api(libs.poi.ooxml)
-    api(libs.poi.ooxml.schemas)
+    api(libs.fastexcel)
     api(libs.poi.scratchpad)
     api(libs.graph.java.client)
 

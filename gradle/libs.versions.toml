@@ -23,6 +23,7 @@ org-jodd-jodd-mail = "7.1.0"
 # for jodconverter
 antlr-antlr = "2.7.7"
 cn-hutool-hutool-http = "5.8.23"
+cn-idev-excel-fastexcel = "1.1.0"
 com-aspose-aspose-cad = "23.3"
 com-googlecode-juniversalchardet-juniversalchardet = "1.0.3"
 com-googlecode-concurrentlinkedhashmap-concurrentlinkedhashmap-lru = "1.4.2"
@@ -88,6 +89,7 @@ poi-scratchpad = { module = "org.apache.poi:poi-scratchpad", version.ref = "org-
 sevenzipjbinding = { module = "net.sf.sevenzipjbinding:sevenzipjbinding", version.ref = "net-sf-sevenzipjbinding" }
 sevenzipjbinding-all-platforms = { module = "net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms", version.ref = "net-sf-sevenzipjbinding" }
 redisson = { module = "org.redisson:redisson", version.ref = "org-redisson-redisson" }
+fastexcel = { module = "cn.idev.excel:fastexcel", version.ref = "cn-idev-excel-fastexcel" }
 
 ## 以下是：编码检测-JUniversalCharDet
 juniversalchardet = { module = "com.googlecode.juniversalchardet:juniversalchardet", version.ref = "com-googlecode-juniversalchardet-juniversalchardet" }
