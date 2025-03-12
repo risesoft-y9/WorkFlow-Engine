@@ -68,8 +68,7 @@ public class Todo4GfgRestController {
      */
     @PostMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4GfgService.todoList(itemId, searchMapStr, page, rows);
     }
 
