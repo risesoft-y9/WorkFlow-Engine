@@ -290,10 +290,8 @@ public class Document4GfgRestController {
     public Y9Result<DocumentDetailModel> editDoing(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId)
-                .getData();
+            DocumentDetailModel model = documentApi.editDoing(Y9LoginUserHolder.getTenantId(),
+                Y9LoginUserHolder.getPositionId(), processInstanceId, documentId).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
