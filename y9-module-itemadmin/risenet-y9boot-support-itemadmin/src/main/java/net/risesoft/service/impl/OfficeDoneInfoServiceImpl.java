@@ -269,7 +269,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of((page < 1) ? 0 : page - 1, rows, Direction.DESC, "startTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
                 pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
