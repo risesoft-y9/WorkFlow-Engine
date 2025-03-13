@@ -711,4 +711,27 @@
             <column name="SENDERNAME" remarks="发送会签人员ID" type="VARCHAR(50)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-38" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_LEADER_OPINION"/>
+            </not>
+        </preConditions>
+        <createTable remarks="领导批示表" tableName="FF_LEADER_OPINION">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="POSITIONNAME" remarks="批示领导岗位名称" type="VARCHAR(50)"/>
+            <column name="OPINIONCONTENT" remarks="批示内容" type="VARCHAR(100)"/>
+            <column name="OPINIONDATE" remarks="批示日期" type="VARCHAR(100)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(200)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="UPDATEDATE" remarks="修改时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
