@@ -64,7 +64,7 @@ spring:
             #- optional:nacos:test02.yml?group=group_03&refreshEnabled=false
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
+        driver-class-name: dm.jdbc.driver.DmDriver
         druid:
             filter:
                 stat:
@@ -74,7 +74,7 @@ spring:
                 wall:
                     config:
                         drop-table-allow: false
-                    enabled: true
+                    enabled: false
             stat-view-servlet:
                 enabled: false
                 url-pattern: /druid/*
@@ -92,10 +92,10 @@ spring:
                 #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
                 #username: Y9_PUBLIC
                 #password: '111111'
-                driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://127.0.0.1:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-                username: root
-                password: 111111
+                driver-class-name: dm.jdbc.driver.DmDriver
+                url: jdbc:dm://127.0.0.1:5236?compatibleMode=oracle
+                username: Y9_PUBLIC
+                password: 11B77D5a22!
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -110,10 +110,10 @@ spring:
                 useGlobalDataSourceStat: true
                 validationQuery: SELECT 1 FROM DUAL
             flowable:
-                driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-                username: root
-                password: 111111
+                driver-class-name: dm.jdbc.driver.DmDriver
+                url: jdbc:dm://127.0.0.1:5236?compatibleMode=oracle
+                username: Y9_FLOWABLE
+                password: 11B77D5a22!
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -139,9 +139,9 @@ spring:
                 cache:
                     use_query_cache: false
                     use_second_level_cache: false
-                dialect: org.hibernate.dialect.MySQL8Dialect
+                dialect: org.hibernate.dialect.DmDialect
                 hbm2ddl:
-                    auto: none
+                    auto: update
                 jdbc:
                     batch_size: 100
                 show_sql: false
@@ -223,7 +223,7 @@ y9:
             packagesToScanRepositoryPublic: net.risesoft.y9public.repository
             packagesToScanRepositoryTenant: net.risesoft.repository
         liquibase:
-            public-enabled: true
+            public-enabled: false
         multi-tenant:
             # kafka, db
             event-source: kafka

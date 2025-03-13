@@ -1,13 +1,327 @@
+management:
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+server:
+    port: 8080
+    servlet:
+        encoding:
+            charset: UTF-8
+            enabled: true
+            force: true
+        session:
+            tracking-modes: COOKIE
+        context-path: /itemAdmin
+        register-default-servlet: true
+    tomcat:
+        uri-encoding: UTF-8
 spring:
+    application:
+        name: itemAdmin
+    autoconfigure:
+        exclude:
+            - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+            - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
+            - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+            - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+            - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
     cloud:
         nacos:
+            server-addr: https://test.youshengyun.com:443
+            username: nacos
+            password: ${NACOS_PASSWORD:111111}
             config:
-                enabled: true
+                enabled: false
                 group: DEFAULT_GROUP
                 namespace: test
-                server-addr: nacos:8848
-                username: nacos
-                password: ${NACOS_PASSWORD:111111}
+            discovery:
+                enabled: false
+                group: DEFAULT_GROUP
+                namespace: test
     config:
         import:
             - optional:nacos:itemAdmin.yml
+            #- optional:nacos:test01.yml?group=group_02
+            #- optional:nacos:test02.yml?group=group_03&refreshEnabled=false
+    data:
+        jpa:
+            repositories:
+                bootstrap-mode: default
+                enabled: false
+        elasticsearch:
+            repositories:
+                enabled: true
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        druid:
+            #driver-class-name: com.kingbase8.Driver
+            filter:
+                stat:
+                    log-slow-sql: true
+                    mergeSql: true
+                    slow-sql-millis: 3000
+                wall:
+                    config:
+                        drop-table-allow: false
+                    enabled: false #使用人大金仓数据库要设为false
+            stat-view-servlet:
+                enabled: false
+                url-pattern: /druid/*
+                login-username: admin
+                login-password: admin
+                reset-enable: false
+                allow: 127.0.0.1
+            web-stat-filter:
+                enabled: false
+                url-pattern: /*
+                exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/static/*'
+            tenantDefault: spring.datasource.druid.flowable
+            y9-public:
+                #driver-class-name: oracle.jdbc.OracleDriver
+                #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+                #username: Y9_PUBLIC
+                #password: '111111'
+
+                #driverClassName: com.kingbase8.Driver
+                #url: jdbc:kingbase8://127.0.0.1:54321/risesoft?currentSchema=y9_public
+                #username: y9_public
+                #password: 111111
+
+                driver-class-name: dm.jdbc.driver.DmDriver
+                url: jdbc:dm://126.2.100.171:5236?compatibleMode=oracle
+                username: Y9_PUBLIC
+                password: 11B77D5a22!
+                initialSize: 1
+                maxActive: 20
+                maxPoolPreparedStatementPerConnectionSize: 100
+                maxWait: 60000
+                minEvictableIdleTimeMillis: 300000
+                minIdle: 1
+                poolPreparedStatements: true
+                testOnBorrow: false
+                testOnReturn: false
+                testWhileIdle: true
+                timeBetweenEvictionRunsMillis: 60000
+                useGlobalDataSourceStat: true
+                validationQuery: SELECT 1 FROM DUAL
+            flowable:
+                #driverClassName: com.kingbase8.Driver
+                #url: jdbc:kingbase8://127.0.0.1:54321/risesoft?currentSchema=y9_flowable
+                #username: y9_flowable
+                #password: 111111
+                driver-class-name: dm.jdbc.driver.DmDriver
+                url: jdbc:dm://126.2.100.171:5236?compatibleMode=oracle
+                username: Y9_FLOWABLE
+                password: 11B77D5a22!
+                initialSize: 1
+                maxActive: 20
+                maxPoolPreparedStatementPerConnectionSize: 100
+                maxWait: 60000
+                minEvictableIdleTimeMillis: 300000
+                minIdle: 1
+                poolPreparedStatements: true
+                testOnBorrow: false
+                testOnReturn: false
+                testWhileIdle: true
+                timeBetweenEvictionRunsMillis: 60000
+                useGlobalDataSourceStat: true
+                validationQuery: SELECT 1 FROM DUAL
+    elasticsearch:
+        uris: 126.2.100.171:9200
+        username: elastic
+        password: 'Y9i-83204585'
+    jmx:
+        default-domain: itemAdmin
+    jpa:
+        generate-ddl: true
+        hibernate:
+            naming:
+                implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        open-in-view: false
+        properties:
+            hibernate:
+                cache:
+                    use_query_cache: false
+                    use_second_level_cache: false
+                dialect: org.hibernate.dialect.DmDialect
+                hbm2ddl:
+                    # 正式环境务必设置为none
+                    auto: update
+                jdbc:
+                    batch_size: 100
+                show_sql: false
+    kafka:
+        bootstrap-servers: localhost:9092
+        consumer:
+            auto-commit-interval: 1000
+            enable-auto-commit: true
+            group-id: y9itemAdmin-server
+    main:
+        allow-bean-definition-overriding: true
+    mvc:
+        view:
+            prefix: /WEB-INF/jsp/
+            suffix: .jsp
+    redis:
+        database: 8
+        host: 126.2.100.171
+        lettuce:
+            pool:
+                max-active: 8
+                max-idle: 8
+                max-wait: -1
+                min-idle: 0
+            shutdown-timeout: 100ms
+        password: Y9i-83204585
+        port: 6379
+        ssl: false
+        timeout: 10000
+    servlet:
+        multipart:
+            max-file-size: 200MB
+            max-request-size: 1000MB
+y9:
+    systemName: itemAdmin
+    internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
+    app:
+        itemAdmin:
+            comment: 知悉。,同意。,已阅。,已核。,如拟。,呈XX同志阅示。,呈XX同志审签。,请XX研究办理。,请XX传阅。,请抓紧办理。,请速办。,不同意。,供参考。
+            freeFlowKey: ziyouliucheng
+            systemCnName: 事项管理
+            systemName: itemAdmin
+            smsSwitch: false
+            weiXinSwitch: true
+            weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
+    service:
+        processAdmin:
+            directUrl: http://126.2.100.170
+        msgRemind:
+            directUrl: http://126.2.100.170
+        datacenter:
+            directUrl: http://126.2.100.170
+        sms:
+            directUrl: http://126.2.100.170
+        todo:
+            directUrl: http://126.2.100.170
+        org:
+            directUrl: http://126.2.100.170
+    common:
+        cacheEnabled: true
+        kafkaEnabled: true
+        orgBaseUrl: http://126.2.100.170/platform
+        processAdminBaseUrl: http://126.2.100.170/processAdmin
+        itemAdminBaseUrl: http://126.2.100.170/itemAdmin
+        datacenterBaseUrl: http://126.2.100.170/datacenter
+        msgRemindBaseUrl: http://126.2.100.170/msgRemind
+        smsBaseUrl: http://126.2.100.170/sms
+        todoBaseUrl: http://126.2.100.170/todo
+        flowableBaseUrl: http://126.2.100.170/flowableUI/index
+        logBaseUrl: http://126.2.100.170/log
+        userOnlineBaseUrl: http://126.2.100.170/userOnline
+    feature:
+        file:
+            base64FileName: true
+            encryptionFileContent: true
+            #privateKey:
+            #publicKey:
+            rest:
+                fileManagerUrl: http://126.2.100.170/fileManager
+            ftp:
+                host: nexus-internal.youshengyun.com
+                port: 21
+                username: y9admin
+                password: '83204585'
+                blockWhenExhausted: true
+                bufferSize: 10240
+                connectTimeOut: 50000
+                controlEncoding: UTF-8
+                dataTimeout: 1200000
+                fileType: 2
+                maxIdle: 10
+                maxTotal: 50
+                minIdle: 2
+                maxWaitMillis: 5400000
+                testOnBorrow: true
+                testOnCreate: true
+                testOnReturn: true
+                testWhileIdle: true
+                useEPSVwithIPv4: false
+                passiveMode: true
+        elasticsearch:
+            packagesToScanEntityPublic: net.risesoft.nosql.elastic.entity
+            packagesToScanRepositoryPublic: net.risesoft.nosql.elastic.repository
+        jpa:
+            packagesToScanEntityPublic: net.risesoft.y9public.entity
+            packagesToScanEntityTenant: net.risesoft.entity
+            packagesToScanRepositoryPublic: net.risesoft.y9public.repository
+            packagesToScanRepositoryTenant: net.risesoft.repository
+        listener:
+            kafka:
+                enabled: false
+        liquibase:
+            tenant-enabled: false
+        multi-tenant:
+            # kafka, db
+            event-source: kafka
+        log:
+            enabled: true
+            # kafka, api
+            logSaveTarget: kafka
+        session:
+            redis:
+                enabled: true
+                maxInactiveIntervalInSeconds: 3600
+        security:
+            enabled: true
+            csrf:
+                accepted-referer:
+                    - youshengyun.com
+                    - localhost
+                    - 127.0.0.1
+                    - 192.168.3.120
+                    - 126.2.100.170
+            cors:
+                allowCredentials: true
+                allowed-headers: '*'
+                allowedOriginPatterns:
+                    - https://*.youshengyun.com
+                    - http://*.youshengyun.com
+                    - http://126.2.100.170
+                    - http://126.2.100.170
+                    - http://localhost:8080
+                    - http://localhost:8081
+                    - http://127.0.0.1:7055
+                    - http://127.0.0.1:7056
+                    - http://localhost:17056
+                    - http://127.0.0.1:17056
+                    - http://192.168.3.120:8081
+                    - http://126.2.100.170
+            xss:
+                ignoreParam:
+                    - itemJson
+                    - jsonData
+                    - formJson
+                    - formJsonData
+                    - fieldJson
+                    - tables
+                    - fields
+                    - formJsonData
+                    - searchMapStr
+                    - title
+                    - documentTitle
+                    - fileName
+        oauth2:
+            resource:
+                enabled: true
+                saveOnlineMessage: false
+                allowBasicAuthentication: true
+                allowFormEncodedBodyParameter: true
+                allowUriQueryParameter: true
+                protectedUrlPatterns: /vue/*
+                opaque:
+                    client-id: clientid
+                    client-secret: secret
+                    introspection-uri: http://126.2.100.170/sso/oauth2.0/introspect
+                    profile-uri: http://126.2.100.170/sso/oauth2.0/profile
