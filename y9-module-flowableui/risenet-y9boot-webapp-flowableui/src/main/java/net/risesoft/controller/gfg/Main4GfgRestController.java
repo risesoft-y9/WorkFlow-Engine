@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -457,6 +456,12 @@ public class Main4GfgRestController {
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
         return Y9Result.success(map, "获取成功");
+    }
+
+    @GetMapping(value = "/haveRole")
+    public Y9Result<Boolean> haveRole(String roleId) {
+        return Y9Result.success(positionRoleApi
+            .hasRole(Y9LoginUserHolder.getTenantId(), roleId, Y9LoginUserHolder.getPositionId()).getData());
     }
 
     /**

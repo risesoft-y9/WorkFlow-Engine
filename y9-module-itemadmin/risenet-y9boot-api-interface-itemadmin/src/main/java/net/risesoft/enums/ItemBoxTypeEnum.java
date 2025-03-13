@@ -20,8 +20,12 @@ public enum ItemBoxTypeEnum {
     TODO("todo", "待办"),
     /** 在办 */
     DOING("doing", "在办"),
+    /** 在办 */
+    HAVEDONE("haveDone", "已办"),
     /** 办结 */
     DONE("done", "办结"),
+    /** 办结 */
+    ALL("all", "所有件"),
     /** 回收站 */
     RECYCLE("recycle", "回收站"),
     /** 回收站 */

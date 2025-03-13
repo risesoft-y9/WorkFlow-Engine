@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemHaveDoneApi;
 import net.risesoft.entity.ActRuDetail;
@@ -37,7 +38,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @Validated
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemHaveDone", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
 
@@ -46,6 +46,16 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
     private final ActRuDetailService actRuDetailService;
 
     private final Y9TableService y9TableService;
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public ItemHaveDoneApiImpl(ItemPageService itemPageService, ActRuDetailService actRuDetailService,
+        Y9TableService y9TableService, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+        this.itemPageService = itemPageService;
+        this.actRuDetailService = actRuDetailService;
+        this.y9TableService = y9TableService;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     /**
      * 根据系统名称查询当前人的已办（包含在办和办结）数量
@@ -197,4 +207,26 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
             itemPage.getRows());
     }
 
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            assigneeNameInnerSql = sqlList.get(2);
+            assigneeNameWhereSql = sqlList.get(3);
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 1 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql
+            + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName, userId};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
+    }
 }

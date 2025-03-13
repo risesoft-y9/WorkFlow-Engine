@@ -9,13 +9,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.DocumentCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -46,7 +47,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  **/
 @Validated
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/documentCopy", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentCopyApiImpl implements DocumentCopyApi {
 
@@ -61,6 +61,20 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public DocumentCopyApiImpl(DocumentCopyService documentCopyService, ProcessParamService processParamService,
+        OpinionCopyService opinionCopyService, ItemPageService itemPageService, PersonApi personApi,
+        OrgUnitApi orgUnitApi, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+        this.documentCopyService = documentCopyService;
+        this.processParamService = processParamService;
+        this.opinionCopyService = opinionCopyService;
+        this.itemPageService = itemPageService;
+        this.personApi = personApi;
+        this.orgUnitApi = orgUnitApi;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Y9Page<DocumentCopyModel> findByUserId(String tenantId, String userId, String orgUnitId,
@@ -83,9 +97,9 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 if (null != fieldValue) {
                     if ("systemName".equals(f.getName())) {
                         systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
-                            : "AND P.SYSTEMNAME = '" + fieldValue + "' ";
+                            : " AND P.SYSTEMNAME = '" + fieldValue + "' ";
                     } else {
-                        paramSql.append("AND INSTR(P.").append(f.getName().toUpperCase()).append(",'")
+                        paramSql.append(" AND INSTR(P.").append(f.getName().toUpperCase()).append(",'")
                             .append(fieldValue).append("') > 0 ");
                     }
                 }
@@ -106,6 +120,69 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
             new BeanPropertyRowMapper<>(DocumentCopyModel.class), countSql, args, page, rows);
         return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
+    }
+
+    @Override
+    public Y9Result<List<DocumentCopyModel>> findByProcessSerialNumbers(String tenantId, String userId,
+        String orgUnitId, String[] processSerialNumbers) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        StringBuilder sb = new StringBuilder();
+        Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
+            if (StringUtils.isBlank(sb.toString())) {
+                sb.append("'").append(processSerialNumber).append("'");
+            } else {
+                sb.append(",'").append(processSerialNumber).append("'");
+            }
+        });
+        String sql =
+            "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER WHERE C.PROCESSSERIALNUMBER IN ( "
+                + sb + ") GROUP BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC";
+        List<DocumentCopyModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(DocumentCopyModel.class));
+        return Y9Result.success(content);
+    }
+
+    @Override
+    public Y9Result<List<DocumentCopyModel>> findListByUserId(String tenantId, String userId, String orgUnitId,
+        @RequestBody(required = false) QueryParamModel queryParamModel) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String systemNameSql = "";
+        StringBuilder paramSql = new StringBuilder();
+        if (null != queryParamModel) {
+            Object object = queryParamModel;
+            Class queryParamModelClazz = object.getClass();
+            Field[] fields = queryParamModelClazz.getDeclaredFields();
+            for (Field f : fields) {
+                f.setAccessible(true);
+                if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName())
+                    || "rows".equals(f.getName())) {
+                    continue;
+                }
+                Object fieldValue;
+                try {
+                    fieldValue = f.get(object);
+                    if (null != fieldValue) {
+                        if ("systemName".equals(f.getName())) {
+                            systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
+                                : " AND P.SYSTEMNAME = '" + fieldValue + "' ";
+                        } else {
+                            paramSql.append(" AND INSTR(P.").append(f.getName().toUpperCase()).append(",'")
+                                .append(fieldValue).append("') > 0 ");
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
+        String bySql = "GROUP BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC";
+        String allSql = "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C "
+            + processParamSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql
+            + systemNameSql + " AND C.USERID = ? " + bySql;
+        Object[] args = {orgUnitId};
+        List<DocumentCopyModel> content =
+            jdbcTemplate.query(allSql, args, new BeanPropertyRowMapper<>(DocumentCopyModel.class));
+        return Y9Result.success(content);
     }
 
     @Override

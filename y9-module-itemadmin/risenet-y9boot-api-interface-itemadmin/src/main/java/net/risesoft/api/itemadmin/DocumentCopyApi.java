@@ -24,6 +24,16 @@ public interface DocumentCopyApi {
         @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
         @RequestBody QueryParamModel queryParamModel);
 
+    @PostMapping("/findByProcessSerialNumbers")
+    Y9Result<List<DocumentCopyModel>> findByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam("processSerialNumbers") String[] processSerialNumbers);
+
+    @PostMapping("/findListByUserId")
+    Y9Result<List<DocumentCopyModel>> findListByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestBody(required = false) QueryParamModel queryParamModel);
+
     @GetMapping("/findByProcessSerialNumberAndSenderId")
     Y9Result<List<DocumentCopyModel>> findByProcessSerialNumberAndSenderId(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,

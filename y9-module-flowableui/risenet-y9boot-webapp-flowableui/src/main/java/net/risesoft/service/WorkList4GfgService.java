@@ -1,6 +1,5 @@
 package net.risesoft.service;
 
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -23,25 +22,6 @@ public interface WorkList4GfgService {
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows);
-
-    /**
-     * 获取待办列表
-     *
-     * @param processSerialNumbers 流程序列号数组
-     * @return Y9Page<Map < String, Object>>
-     */
-    void exportSelect(OutputStream outStream, String[] processSerialNumbers, String[] columns);
-
-    /**
-     * 获取待办列表
-     *
-     * @param itemId 事项Id
-     * @param searchMapStr 查找条件
-     * @param page 页数
-     * @param rows 行数
-     * @return Y9Page<Map < String, Object>>
-     */
-    Y9Page<Map<String, Object>> todoList4CancelNumber(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取待办列表
@@ -158,7 +138,7 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> allList(String itemId, String searchMapStr, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> allList(String itemId, String searchMapStr, boolean isOrg, Integer page, Integer rows);
 
     /**
      * 获取回收站列表

@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemRecycleApi;
 import net.risesoft.entity.ActRuDetail;
@@ -36,7 +37,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemRecycle", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemRecycleApiImpl implements ItemRecycleApi {
 
@@ -45,6 +45,16 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
     private final ActRuDetailService actRuDetailService;
 
     private final Y9TableService y9TableService;
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public ItemRecycleApiImpl(ItemPageService itemPageService, ActRuDetailService actRuDetailService,
+        Y9TableService y9TableService, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+        this.itemPageService = itemPageService;
+        this.actRuDetailService = actRuDetailService;
+        this.y9TableService = y9TableService;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     /**
      * 根据用户id和系统名称查询办结数量
@@ -184,6 +194,29 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
             itemPage.getRows());
     }
 
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam String tenantId,
+        @RequestParam String systemName, @RequestBody String searchMapStr) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            assigneeNameInnerSql = sqlList.get(2);
+            assigneeNameWhereSql = sqlList.get(3);
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
+            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
+    }
+
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询当前人办结列表
      *
@@ -219,6 +252,29 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            assigneeNameInnerSql = sqlList.get(2);
+            assigneeNameWhereSql = sqlList.get(3);
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
+            + " ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName, userId};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
+    }
+
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询当前人办结列表
      *
@@ -252,5 +308,29 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
         ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+    }
+
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchListByDeptIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String deptId, @RequestParam boolean isBureau, @RequestParam String systemName,
+        @RequestBody String searchMapStr) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            assigneeNameInnerSql = sqlList.get(2);
+            assigneeNameWhereSql = sqlList.get(3);
+        }
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T." + (isBureau ? "BUREAUID" : "DEPTID") + " = ? "
+            + whereSql + assigneeNameWhereSql + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName, deptId};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
     }
 }

@@ -64,6 +64,11 @@ public interface ItemAllApi {
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
+    @GetMapping("/findBySystemName")
+    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
     /**
      * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)#TODO
      *
@@ -81,6 +86,21 @@ public interface ItemAllApi {
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    @PostMapping("/searchBySystemName")
+    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    @PostMapping("/searchListBySystemName")
+    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestBody String searchMapStr);
+
+    @PostMapping("/searchListByUserIdAndSystemName")
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestBody(required = false) String searchMapStr);
 
     /**
      *

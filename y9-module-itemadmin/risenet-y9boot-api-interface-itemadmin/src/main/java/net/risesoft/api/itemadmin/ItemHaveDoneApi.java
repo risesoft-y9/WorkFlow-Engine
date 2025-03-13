@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,4 +97,9 @@ public interface ItemHaveDoneApi {
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
         @RequestBody String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    @PostMapping("/searchListByUserIdAndSystemName")
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestBody String searchMapStr);
 }

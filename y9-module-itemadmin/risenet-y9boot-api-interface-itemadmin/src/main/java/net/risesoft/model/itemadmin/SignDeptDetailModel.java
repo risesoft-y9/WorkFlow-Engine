@@ -41,9 +41,24 @@ public class SignDeptDetailModel implements Serializable {
     private String executionId;
 
     /**
-     * 任务Id
+     * 主流程送会签时的任务Id
      */
     private String taskId;
+
+    /**
+     * 主流程送会签时的任务名称
+     */
+    private String taskName;
+
+    /**
+     * 发送会签人员ID
+     */
+    private String senderId;
+
+    /**
+     * 发送会签人员姓名
+     */
+    private String senderName;
 
     /**
      * 会签单位唯一标示
