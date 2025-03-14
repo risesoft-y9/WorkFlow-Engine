@@ -31,6 +31,9 @@ public interface LeaderOpinionApi {
     @PostMapping("/deleteById")
     Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
+    @GetMapping("/findById")
+    Y9Result<LeaderOpinionModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+
     /**
      * 获取领导批示
      *

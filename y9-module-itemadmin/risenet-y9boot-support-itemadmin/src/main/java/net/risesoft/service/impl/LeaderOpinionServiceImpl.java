@@ -29,6 +29,11 @@ public class LeaderOpinionServiceImpl implements LeaderOpinionService {
     private final LeaderOpinionRepository leaderOpinionRepository;
 
     @Override
+    public LeaderOpinion findById(String id) {
+        return leaderOpinionRepository.findById(id).orElse(null);
+    }
+
+    @Override
     @Transactional
     public void deleteById(String id) {
         leaderOpinionRepository.deleteById(id);

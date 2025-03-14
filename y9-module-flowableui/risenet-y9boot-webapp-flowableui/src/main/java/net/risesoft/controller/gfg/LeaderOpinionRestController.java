@@ -1,9 +1,14 @@
 package net.risesoft.controller.gfg;
 
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
@@ -134,5 +139,35 @@ public class LeaderOpinionRestController {
             LOGGER.error("上传失败", e);
         }
         return Y9Result.failure("上传失败");
+    }
+
+    /**
+     * 附件下载
+     *
+     * @param id 附件id
+     */
+    @GetMapping(value = "/download")
+    public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            LeaderOpinionModel model = leaderOpinionApi.findById(tenantId, id).getData();
+            String fileName = model.getFileName();
+            if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+                // 火狐浏览器
+                fileName = new String(fileName.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
+            } else {
+                fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+            }
+            OutputStream out = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=\"" + fileName + "\"");
+            response.setHeader("Content-type", "text/html;charset=UTF-8");
+            response.setContentType("application/octet-stream");
+            y9FileStoreService.downloadFileToOutputStream(model.getFileStoreId(), out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            LOGGER.error("附件下载失败", e);
+        }
     }
 }
