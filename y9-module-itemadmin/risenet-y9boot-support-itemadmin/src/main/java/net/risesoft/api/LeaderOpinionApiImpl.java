@@ -50,6 +50,13 @@ public class LeaderOpinionApiImpl implements LeaderOpinionApi {
         return Y9Result.success();
     }
 
+    @Override
+    public Y9Result<LeaderOpinionModel> findById(@RequestParam String tenantId, @RequestParam String id) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        leaderOpinionService.deleteById(id);
+        return Y9Result.success();
+    }
+
     /**
      * 获取领导批示
      *

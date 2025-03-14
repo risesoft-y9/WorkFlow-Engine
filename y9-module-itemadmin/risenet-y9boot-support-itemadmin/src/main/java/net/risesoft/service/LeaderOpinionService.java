@@ -11,6 +11,8 @@ import net.risesoft.entity.LeaderOpinion;
  **/
 public interface LeaderOpinionService {
 
+    LeaderOpinion findById(String id);
+
     void deleteById(String id);
 
     List<LeaderOpinion> findByProcessSerialNumber(String processSerialNumber);
