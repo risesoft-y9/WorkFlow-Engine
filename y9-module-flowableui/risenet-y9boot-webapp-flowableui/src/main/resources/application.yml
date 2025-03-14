@@ -76,6 +76,13 @@ spring:
                 password: '111111'
                 maximumPoolSize: 20
                 minimumIdle: 1
+            flowable:
+                driverClassName: com.mysql.cj.jdbc.Driver
+                jdbcUrl: jdbc:mysql://localhost:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                username: root
+                password: '111111'
+                maximumPoolSize: 20
+                minimumIdle: 1
     jpa:
         #databasePlatform: org.hibernate.dialect.MySQL8Dialect
         properties:
