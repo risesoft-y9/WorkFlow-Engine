@@ -434,6 +434,19 @@ public class Y9FormRestController {
     }
 
     /**
+     * 更新表数据
+     *
+     * @param guid 表单id
+     * @param jsonData 表单数据
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/updateFormData")
+    public Y9Result<String> updateFormData(@RequestParam @NotBlank String guid,
+        @RequestParam @NotBlank String jsonData) {
+        return formDataApi.updateFormData(Y9LoginUserHolder.getTenantId(), guid, jsonData);
+    }
+
+    /**
      * 保存前置表单数据
      *
      * @param formId 表单id

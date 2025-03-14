@@ -174,4 +174,6 @@ public interface FormDataService {
      * @throws Exception
      */
     void saveFormData(String formdata, String formId) throws Exception;
+
+    Y9Result<String> updateFormData(String guid, String formData);
 }
