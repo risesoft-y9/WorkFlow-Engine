@@ -1,5 +1,6 @@
 package net.risesoft.repository.jpa;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -25,17 +26,17 @@ public interface ActRuDetailRepository
     int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee);
 
     int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndCreateTimeAndPlaceOnFileFalse(String systemName,
-        String assignee, String createTime);
+        String assignee, Date createTime);
 
     int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee);
 
     int countBySystemNameAndAssigneeAndStatusAndCreateTimeAndDeletedFalse(String systemName, String assignee,
-        int status, String createTime);
+        int status, Date createTime);
 
     int countBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status);
 
     int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndCreateTimeAndDeletedFalse(String systemName,
-        String assignee, int status, String createTime);
+        String assignee, int status, Date createTime);
 
     int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee,
         int status);
