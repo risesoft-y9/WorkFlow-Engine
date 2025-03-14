@@ -460,4 +460,49 @@ public class FormDataServiceImpl implements FormDataService {
             throw new Exception("FormDataService saveFormData error1");
         }
     }
+
+    @Override
+    @Transactional
+    public Y9Result<String> updateFormData(String guid, String formData) {
+        try {
+            Map<String, Object> dataMap = Y9JsonUtil.readHashMap(formData);
+            assert dataMap != null;
+            List<Y9Table> tableList = new ArrayList<>();
+            for (String key : dataMap.keySet()) {
+                if (key.contains(".")) {
+                    String[] aliasColumnNameType = key.split("\\.");
+                    String alias = aliasColumnNameType[0];
+                    Y9Table y9Table = y9TableService.findByTableAlias(alias);
+                    if (null == y9Table) {
+                        return Y9Result.failure("表简称对应的字段不存在：{}", alias);
+                    }
+                    if (!tableList.contains(y9Table)) {
+                        tableList.add(y9Table);
+                    }
+                } else {
+                    return Y9Result.failure("字段未包含表简称：{}", key);
+                }
+            }
+            tableList.forEach(table -> {
+                StringBuilder updateSql = new StringBuilder();
+                StringBuilder sql = new StringBuilder();
+                updateSql.append("UPDATE ").append(table.getTableName()).append(" ").append(table.getTableAlias())
+                    .append("  SET ");
+                for (String key : dataMap.keySet()) {
+                    if (key.contains(table.getTableAlias() + ".")) {
+                        if (sql.length() != 0) {
+                            sql.append(",");
+                        }
+                        sql.append(key).append("='").append(dataMap.get(key)).append("'");
+                    }
+                }
+                updateSql.append(sql).append(" WHERE guid='").append(guid).append("'");
+                jdbcTemplate.execute(updateSql.toString());
+            });
+            return Y9Result.success("操作成功");
+        } catch (Exception e) {
+            LOGGER.error("****************************formdata:" + formData);
+        }
+        return Y9Result.failure("发生异常");
+    }
 }
