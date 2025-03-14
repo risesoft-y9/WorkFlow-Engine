@@ -724,7 +724,7 @@
             </column>
             <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
             <column name="POSITIONNAME" remarks="批示领导岗位名称" type="VARCHAR(50)"/>
-            <column name="OPINIONCONTENT" remarks="批示内容" type="VARCHAR(100)"/>
+            <column name="OPINIONCONTENT" remarks="批示内容" type="VARCHAR(500)"/>
             <column name="OPINIONDATE" remarks="批示日期" type="VARCHAR(100)"/>
             <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
             <column name="FILENAME" remarks="文件名称" type="VARCHAR(200)"/>
