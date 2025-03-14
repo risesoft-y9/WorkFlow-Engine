@@ -188,6 +188,7 @@ y9:
             pushSwitch: false
             smsSwitch: false
             todoSwitch: false
+            interfaceSwitch: true
             weiXinSwitch: false
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
             imageCountUrl: http://localhost:8081/imageCount
