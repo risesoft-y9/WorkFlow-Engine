@@ -908,7 +908,8 @@ public class DocumentServiceImpl implements DocumentService {
                 ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
                     model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
                 signStatus = isAdmin ? SignStatusEnum.ADMIN.getValue()
-                    : actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
+                    : null == actRuDetail ? SignStatusEnum.SUB.getValue()
+                        : actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
             }
         }
         model.setSignStatus(signStatus);
