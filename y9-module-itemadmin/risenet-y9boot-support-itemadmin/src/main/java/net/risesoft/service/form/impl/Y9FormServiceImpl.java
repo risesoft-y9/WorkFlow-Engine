@@ -831,7 +831,9 @@ public class Y9FormServiceImpl implements Y9FormService {
             if (StringUtils.isBlank(guid)) {
                 guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
             }
-            System.out.println("***********************formId:" + formId + ",guid:" + guid);
+            if (StringUtils.isBlank(guid)) {
+                return Y9Result.failure("保存失败:表单未绑定guid字段");
+            }
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);

@@ -30,11 +30,13 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PersonResourceApi;
 import net.risesoft.api.platform.permission.PositionResourceApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -96,6 +98,8 @@ public class Main4GfgRestController {
     private final PersonResourceApi personResourceApi;
 
     private final AppApi appApi;
+
+    private final RoleApi roleApi;
 
     /**
      * 获取所有事项集合（包含监控管理员权限）
@@ -462,6 +466,12 @@ public class Main4GfgRestController {
     public Y9Result<Boolean> haveRole(String roleId) {
         return Y9Result.success(positionRoleApi
             .hasRole(Y9LoginUserHolder.getTenantId(), roleId, Y9LoginUserHolder.getPositionId()).getData());
+    }
+
+    @GetMapping(value = "/getPositionsByRoleId")
+    public Y9Result<List<OrgUnit>> getLeader(@RequestParam String roleId) {
+        return Y9Result
+            .success(roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData());
     }
 
     /**

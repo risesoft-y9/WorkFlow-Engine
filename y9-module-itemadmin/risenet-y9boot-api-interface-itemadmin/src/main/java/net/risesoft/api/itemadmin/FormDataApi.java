@@ -262,6 +262,10 @@ public interface FormDataApi {
     Y9Result<Object> saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
         @RequestBody String formJsonData) throws Exception;
 
+    @PostMapping(value = "/updateFormData")
+    Y9Result<String> updateFormData(@RequestParam("tenantId") String tenantId, @RequestParam("guid") String guid,
+        @RequestBody String formJsonData);
+
     /**
      * 保存前置表单数据
      *

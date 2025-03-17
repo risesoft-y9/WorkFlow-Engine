@@ -365,6 +365,13 @@ public class FormDataApiImpl implements FormDataApi {
         return Y9Result.success();
     }
 
+    @Override
+    public Y9Result<String> updateFormData(@RequestParam String tenantId, @RequestParam String guid,
+        @RequestBody String formJsonData) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.updateFormData(guid, formJsonData);
+    }
+
     /**
      * 保存前置表单数据
      *
