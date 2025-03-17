@@ -111,7 +111,7 @@ public class SignDeptDetailRestController {
         String bureauId = "";
         if (StringUtils.isBlank(signDeptDetailId)) {
             bureauId =
-                orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPositionId())
+                orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId())
                     .getData().getId();
         } else {
             bureauId =
@@ -187,6 +187,6 @@ public class SignDeptDetailRestController {
     Y9Result<Object> saveOrUpdate(@RequestParam @NotBlank String jsonData) {
         SignDeptDetailModel signDeptDetailModel = Y9JsonUtil.readValue(jsonData, SignDeptDetailModel.class);
         return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(),
-            Y9LoginUserHolder.getUserInfo().getPositionId(), signDeptDetailModel);
+            Y9LoginUserHolder.getPositionId(), signDeptDetailModel);
     }
 }
