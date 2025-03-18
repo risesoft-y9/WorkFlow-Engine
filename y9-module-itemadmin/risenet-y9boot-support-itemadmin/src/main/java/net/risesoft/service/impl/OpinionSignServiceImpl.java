@@ -219,7 +219,8 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                 || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
                 || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())
                 || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDOING.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())) {
+                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())
+                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.COPY.getValue())) {
                 model.setAddable(false);
                 for (OpinionSign opinionSign : list) {
                     OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
