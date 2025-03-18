@@ -64,7 +64,7 @@ spring:
                 wall:
                     config:
                         drop-table-allow: false
-                    enabled: false #使用人大金仓数据库要设为false
+                    enabled: true #使用人大金仓数据库要设为false
             stat-view-servlet:
                 enabled: false
                 url-pattern: /druid/*
@@ -88,10 +88,10 @@ spring:
                 #username: y9_public
                 #password: 111111
 
-                driver-class-name: dm.jdbc.driver.DmDriver
-                url: jdbc:dm://127.0.0.1:5236?compatibleMode=oracle
-                username: Y9_PUBLIC
-                password: 11B77D5a22!
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                username: root
+                password: 111111
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -110,10 +110,10 @@ spring:
                 #url: jdbc:kingbase8://127.0.0.1:54321/risesoft?currentSchema=y9_flowable
                 #username: y9_flowable
                 #password: 111111
-                driver-class-name: dm.jdbc.driver.DmDriver
-                url: jdbc:dm://127.0.0.1:5236?compatibleMode=oracle
-                username: Y9_FLOWABLE
-                password: 11B77D5a22!
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://localhost:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                username: root
+                password: 111111
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -145,10 +145,10 @@ spring:
                 cache:
                     use_query_cache: false
                     use_second_level_cache: false
-                dialect: org.hibernate.dialect.DmDialect
+                dialect: org.hibernate.dialect.MySQL8Dialect
                 hbm2ddl:
                     # 正式环境务必设置为none
-                    auto: update
+                    auto: none
                 jdbc:
                     batch_size: 100
                 show_sql: false
@@ -222,12 +222,12 @@ y9:
         userOnlineBaseUrl: http://localhost:7056/userOnline
     feature:
         file:
-            base64FileName: true
-            encryptionFileContent: true
+            base64FileName: false
+            encryptionFileContent: false
             #privateKey:
             #publicKey:
             rest:
-                fileManagerUrl: http://localhost:7055/fileManager
+                fileManagerUrl: http://localhost:8080/fileManager
             ftp:
                 host: nexus-internal.youshengyun.com
                 port: 21
@@ -261,7 +261,7 @@ y9:
             kafka:
                 enabled: false
         liquibase:
-            tenant-enabled: false
+            tenant-enabled: true
         multi-tenant:
             # kafka, db
             event-source: kafka

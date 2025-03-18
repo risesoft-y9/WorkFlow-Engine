@@ -61,7 +61,7 @@ spring:
                 wall:
                     config:
                         drop-table-allow: false
-                    enabled: false
+                    enabled: true
             stat-view-servlet:
                 enabled: false
                 url-pattern: /druid/*
@@ -78,10 +78,10 @@ spring:
                 #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
                 #username: Y9_PUBLIC
                 #password: '111111'
-                driver-class-name: dm.jdbc.driver.DmDriver
-                url: jdbc:dm://127.0.0.1:5236?compatibleMode=oracle
-                username: Y9_PUBLIC
-                password: '11B77D5a22!'
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
+                username: root
+                password: '111111'
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -107,9 +107,9 @@ spring:
                 cache:
                     use_query_cache: false
                     use_second_level_cache: false
-                dialect: org.hibernate.dialect.DmDialect
+                dialect: org.hibernate.dialect.MySQL8Dialect
                 hbm2ddl:
-                    auto: update
+                    auto: none
                 jdbc:
                     batch_size: 100
                 show_sql: false
@@ -127,7 +127,7 @@ spring:
             suffix: .jsp
     redis:
         database: 9
-        host: localhost
+        host: 192.168.3.31
         lettuce:
             pool:
                 max-active: 8
@@ -135,7 +135,7 @@ spring:
                 max-wait: -1
                 min-idle: 0
             shutdown-timeout: 100ms
-        password: y9i-83204585
+        password: Y9i-83204585
         port: 6379
         ssl: false
         timeout: 10000
@@ -183,12 +183,12 @@ y9:
             #etcdAddress: http://localhost:2379  #有多个时逗号分隔
             apiBasePackages: net.risesoft.controller.mobile #有多个时逗号分隔
         file:
-            base64FileName: true
-            encryptionFileContent: true
+            base64FileName: false
+            encryptionFileContent: false
             #privateKey:
             #publicKey:
             rest:
-                fileManagerUrl: http://localhost:7055/fileManager
+                fileManagerUrl: http://test-api.youshengyun.com/fileManager
             ftp:
                 host: nexus-internal.youshengyun.com
                 port: 21
@@ -210,9 +210,6 @@ y9:
                 testWhileIdle: true
                 useEPSVwithIPv4: false
                 passiveMode: true
-            local:
-                enabled: true
-                basePath: /data/y9config/y9filestore
         jpa:
             packagesToScanEntityPublic: net.risesoft.y9public.entity
             packagesToScanEntityTenant: net.risesoft.entity
