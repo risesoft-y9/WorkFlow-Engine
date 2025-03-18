@@ -466,6 +466,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
                     mapTemp.put("taskId", taskId);
                     /*
                      * 暂时取表单所有字段数据
@@ -532,6 +533,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
                     mapTemp.put("taskId", taskId);
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));

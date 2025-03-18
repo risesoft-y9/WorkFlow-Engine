@@ -469,7 +469,7 @@ public class Main4GfgRestController {
     }
 
     @GetMapping(value = "/getPositionsByRoleId")
-    public Y9Result<List<OrgUnit>> getLeader(@RequestParam String roleId) {
+    public Y9Result<List<OrgUnit>> getPositionsByRoleId(@RequestParam String roleId) {
         return Y9Result
             .success(roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData());
     }
