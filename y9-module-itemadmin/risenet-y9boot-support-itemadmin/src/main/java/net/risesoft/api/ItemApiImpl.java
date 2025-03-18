@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -35,6 +36,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/item", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -142,6 +144,8 @@ public class ItemApiImpl implements ItemApi {
         ItemModel itemModel = new ItemModel();
         if (item != null) {
             Y9BeanUtil.copyProperties(item, itemModel);
+        } else {
+            LOGGER.info("根据事项id未找到该事项:" + itemId);
         }
         return Y9Result.success(itemModel);
     }
