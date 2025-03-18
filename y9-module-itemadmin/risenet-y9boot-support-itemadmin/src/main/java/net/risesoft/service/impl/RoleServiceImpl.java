@@ -254,6 +254,128 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public List<ItemRoleOrgUnitModel> findByRoleId(String roleId, Integer principalType, String id) {
+        List<ItemRoleOrgUnitModel> allItemList = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> itemList = new ArrayList<>();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
+                if (StringUtils.isBlank(id)) {
+                    List<OrgUnit> deptList = new ArrayList<>();
+                    deptList.addAll(roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.DEPARTMENT).getData());
+                    deptList.addAll(roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.ORGANIZATION).getData());
+                    for (OrgUnit org : deptList) {
+                        if (OrgTypeEnum.ORGANIZATION.equals(org.getOrgType())) {
+                            List<OrgUnit> orgList = orgUnitApi
+                                .getSubTree(tenantId, org.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+                            for (OrgUnit orgUnit : orgList) {
+                                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                                model.setId(orgUnit.getId());
+                                model.setParentId(org.getId());
+                                model.setName(orgUnit.getName());
+                                model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                                model.setOrgType(orgUnit.getOrgType().getValue());
+                                model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                                    ? ItemPermissionEnum.DEPARTMENT.getValue()
+                                    : ItemPermissionEnum.POSITION.getValue());
+                                if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                                    model.setPerson("6:" + orgUnit.getId());
+                                }
+                                if (itemList.contains(model)) {
+                                    continue;// 去重
+                                }
+                                itemList.add(model);
+                            }
+                        } else if (OrgTypeEnum.DEPARTMENT.equals(org.getOrgType())) {
+                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                            model.setId(org.getId());
+                            model.setParentId(org.getParentId());
+                            model.setName(org.getName());
+                            model.setIsParent(true);
+                            model.setOrgType(org.getOrgType().getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                            if (itemList.contains(model)) {
+                                continue;// 去重
+                            }
+                            itemList.add(model);
+                        } else if (OrgTypeEnum.POSITION.equals(org.getOrgType())) {
+                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                            model.setId(org.getId());
+                            model.setParentId(org.getParentId());
+                            model.setName(org.getName());
+                            model.setIsParent(false);
+                            model.setOrgType(org.getOrgType().getValue());
+                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            model.setPerson("6:" + org.getId());
+                            if (itemList.contains(model)) {
+                                continue;// 去重
+                            }
+                            itemList.add(model);
+                        }
+                    }
+                    allItemList.addAll(itemList);
+                } else {
+                    // 取部门下的部门或人员
+                    List<OrgUnit> orgList =
+                        orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+                    for (OrgUnit orgunit : orgList) {
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                        String orgunitId = orgunit.getId();
+                        model.setId(orgunitId);
+                        model.setParentId(id);
+                        model.setName(orgunit.getName());
+                        model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                        model.setOrgType(orgunit.getOrgType().getValue());
+                        if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                        } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
+                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            model.setPerson("6:" + orgunit.getId());
+                        }
+                        if (itemList.contains(model)) {
+                            // 去重
+                            continue;
+                        }
+                        itemList.add(model);
+                    }
+                    allItemList.addAll(itemList);
+                }
+            } else if (ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType)) {
+                // 岗位
+                List<OrgUnit> orgList =
+                    new ArrayList<>(roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData());
+                for (OrgUnit orgUnit : orgList) {
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    Position position = positionApi.get(tenantId, orgUnit.getId()).getData();
+                    if (position != null && !position.getDisabled()) {
+                        model.setId(orgUnit.getId());
+                        model.setParentId(orgUnit.getParentId());
+                        model.setName(orgUnit.getName());
+                        model.setIsParent(false);
+                        model.setOrgType(orgUnit.getOrgType().getValue());
+                        model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                        model.setPerson("6:" + orgUnit.getId());
+                        model.setOrderedPath(position.getOrderedPath());
+                        if (itemList.contains(model)) {
+                            continue;// 去重
+                        }
+                        itemList.add(model);
+                    }
+                }
+                // 排序
+                itemList = itemList.stream().sorted().collect(Collectors.toList());
+                for (ItemRoleOrgUnitModel model : itemList) {
+                    allItemList.add(model);
+                    allItemList = getParent(allItemList, model);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allItemList;
+    }
+
+    @Override
     public List<ItemRoleOrgUnitModel> listCsUser(String id, Integer principalType, String processInstanceId) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
