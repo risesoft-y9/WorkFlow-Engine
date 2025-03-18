@@ -77,6 +77,18 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         return Y9Result.success(list);
     }
 
+    @Override
+    public Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String orgUnitId, @RequestParam String roleId, @RequestParam Integer principalType, String id) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        List<ItemRoleOrgUnitModel> list = roleService.findByRoleId(roleId, principalType, id);
+        return Y9Result.success(list);
+    }
+
     /**
      * 获取抄送选人组织机构数据
      *

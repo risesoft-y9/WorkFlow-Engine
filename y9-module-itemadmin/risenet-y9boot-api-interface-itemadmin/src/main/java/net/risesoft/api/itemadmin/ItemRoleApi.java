@@ -41,6 +41,12 @@ public interface ItemRoleApi {
         @RequestParam(value = "id", required = false) String id,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
+    @GetMapping("/findByRoleId")
+    Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam("roleId") String roleId, @RequestParam("principalType") Integer principalType,
+        @RequestParam(value = "id", required = false) String id);
+
     /**
      * 获取抄送选人
      *

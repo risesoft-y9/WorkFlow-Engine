@@ -68,4 +68,22 @@ public class Role4GfgRestController {
             Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id,
             processInstanceId);
     }
+
+    /**
+     * 获取发送选人组织机构数据
+     *
+     * @param roleId 角色id
+     * @param principalType 选人类型
+     * @param id 父节点id
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @GetMapping(value = "/findByRoleId")
+    public Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam @NotBlank String roleId,
+        @RequestParam Integer principalType, @RequestParam(required = false) String id) {
+        if (StringUtils.isBlank(id)) {
+            id = "";
+        }
+        return itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), roleId, principalType, id);
+    }
 }
