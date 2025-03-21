@@ -6,6 +6,7 @@ target/
 *.classpath
 *.project
 *.factorypath
+out/
 
 # IntelliJ IDEA
 .idea
