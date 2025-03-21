@@ -3,15 +3,18 @@ package net.risesoft.controller.gfg;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -120,6 +123,9 @@ public class Document4GfgRestController {
 
     private final SecretLevelRecordApi secretLevelRecordApi;
 
+    @Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
+
     /**
      * 获取新建办件初始化数据
      *
@@ -166,6 +172,36 @@ public class Document4GfgRestController {
             LOGGER.error("获取新建办件数据失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 取消上会
+     *
+     * @param processSerialNumbers 流程编号
+     * @param fields 字段
+     * @param tableName 表名
+     * @return Y9Result<Boolean>
+     */
+    @PostMapping(value = "/cancelShangHui")
+    public Y9Result<Object> cancelShangHui(@RequestParam String[] processSerialNumbers, @RequestParam String fields,
+        @RequestParam String tableName) {
+        String[] field = fields.split(",");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (String processSerialNumber : processSerialNumbers) {
+            String sql = "select  " + field[0] + " from " + tableName + " where guid = '" + processSerialNumber
+                + "' and " + field[0] + " = '1'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list.size() > 0) {// 已上会
+                sql = "update " + tableName + " set " + field[0] + "= '0'," + field[1] + "='"
+                    + Y9LoginUserHolder.getUserInfo().getName() + "'," + field[2] + "='"
+                    + Y9LoginUserHolder.getUserInfo().getPersonId() + "'," + field[3] + "='" + sdf.format(new Date())
+                    + "' where guid = '" + processSerialNumber + "'";
+                jdbcTemplate.execute(sql);
+                // 调用第三方接口
+
+            }
+        }
+        return Y9Result.success();
     }
 
     /**
@@ -681,6 +717,28 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 获取上会状态
+     *
+     * @param processSerialNumber 流程编号
+     * @param fields 字段
+     * @param tableName 表名
+     * @return Y9Result<Boolean>
+     */
+    @PostMapping(value = "/getShangHuiStatus")
+    public Y9Result<Boolean> getShangHuiStatus(@RequestParam String processSerialNumber, @RequestParam String fields,
+        @RequestParam String tableName) {
+        String[] field = fields.split(",");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String sql = "select  " + field[0] + " from " + tableName + " where guid = '" + processSerialNumber + "' and "
+            + field[0] + " = '1'";
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+        if (list.size() == 0) {// 未上会
+            return Y9Result.success(false);
+        }
+        return Y9Result.success(true);
+    }
+
+    /**
      * 获取正文管理员角色
      *
      * @param roleId 正文管理员角色id
@@ -765,6 +823,36 @@ public class Document4GfgRestController {
             LOGGER.error("保存失败", e);
         }
         return Y9Result.failure("保存失败");
+    }
+
+    /**
+     * 保存上会
+     *
+     * @param processSerialNumbers 流程编号
+     * @param fields 字段
+     * @param tableName 表名
+     * @return Y9Result<Boolean>
+     */
+    @PostMapping(value = "/saveShangHui")
+    public Y9Result<Object> saveShangHui(@RequestParam String[] processSerialNumbers, @RequestParam String fields,
+        @RequestParam String tableName) {
+        String[] field = fields.split(",");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (String processSerialNumber : processSerialNumbers) {
+            String sql = "select  " + field[0] + " from " + tableName + " where guid = '" + processSerialNumber
+                + "' and " + field[0] + " = '1'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list.size() == 0) {// 未上会
+                sql = "update " + tableName + " set " + field[0] + "= '1'," + field[1] + "='"
+                    + Y9LoginUserHolder.getUserInfo().getName() + "'," + field[2] + "='"
+                    + Y9LoginUserHolder.getUserInfo().getPersonId() + "'," + field[3] + "='" + sdf.format(new Date())
+                    + "' where guid = '" + processSerialNumber + "'";
+                jdbcTemplate.execute(sql);
+                // 调用第三方接口
+
+            }
+        }
+        return Y9Result.success();
     }
 
     /**
