@@ -739,6 +739,19 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 获取条码号数据
+     *
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Boolean>
+     */
+    @PostMapping(value = "/getTmhData")
+    public Y9Result<String> getTmhData(@RequestParam String processSerialNumber) {
+        // 调用第三方接口
+
+        return Y9Result.success("tmh123");
+    }
+
+    /**
      * 获取正文管理员角色
      *
      * @param roleId 正文管理员角色id
