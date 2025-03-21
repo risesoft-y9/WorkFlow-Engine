@@ -241,6 +241,7 @@ y9:
                     - https://*.youshengyun.com
                     - http://*.youshengyun.com
                     - http://localhost:7070
+                    - http://localhost:7071
                     - http://localhost:7055
                     - http://localhost:7056
                     - http://localhost:8080
@@ -272,7 +273,7 @@ y9:
                 allowUriQueryParameter: true
                 protectedUrlPatterns: /vue/*
                 opaque:
-                    client-id: clientid
-                    client-secret: secret
-                    introspection-uri: http://localhost:7055/sso/oauth2.0/introspect
-                    profile-uri: http://localhost:7055/sso/oauth2.0/profile
+                    client-id: clientid_oidc
+                    client-secret: secret_oidc
+                    introspection-uri: http://localhost:7055/sso/oidc/introspect
+                    profile-uri: http://localhost:7055/sso/oidc/profile
