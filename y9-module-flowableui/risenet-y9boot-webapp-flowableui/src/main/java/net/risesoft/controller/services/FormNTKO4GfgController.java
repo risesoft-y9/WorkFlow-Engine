@@ -13,35 +13,24 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.risesoft.api.itemadmin.*;
+import net.risesoft.model.itemadmin.*;
+import net.risesoft.util.gfg.OpinionUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.DocumentWordApi;
-import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.PrintLogApi;
-import net.risesoft.api.itemadmin.SignDeptDetailApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.TypeSettingInfoApi;
-import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.DocumentWordModel;
-import net.risesoft.model.itemadmin.PrintLogModel;
-import net.risesoft.model.itemadmin.SignDeptDetailModel;
-import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
@@ -79,6 +68,8 @@ public class FormNTKO4GfgController {
     private final SignDeptDetailApi signDeptDetailApi;
 
     private final FormDataApi formDataApi;
+
+    private final OpinionApi opinionApi;
 
     private final PrintLogApi printLogApi;
 
@@ -134,10 +125,34 @@ public class FormNTKO4GfgController {
      */
     @RequestMapping(value = "/getFormData")
     public Y9Result<Map<String, Object>> getFormData(@RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String processInstanceId,
-        @RequestParam String tenantId) {
+                                                     @RequestParam(required = false) String itemId,
+                                                     @RequestParam(required = false) String processInstanceId,
+                                                     @RequestParam String tenantId,
+                                                     @RequestParam String userId,
+                                                     @RequestParam(required = false) String taskId,
+                                                     @RequestParam(required = false) String itembox) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+        // 办文要报-厅领导意见
+        String bwybBgtfzryj = "tingLeaderComment";
+        List<OpinionListModel> data1 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybBgtfzryj, itemId, null, null, null).getData();
+        String tldContent = OpinionUtil.generateOpinions(data1);
+        LOGGER.info("==========tldContent==========:"+tldContent);
+        // 办文要报-核稿人意见
+        String bwybBgthgyj = "reviewerComment";
+        List<OpinionListModel> data2 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybBgthgyj, itemId, null, null, null).getData();
+        String hgrContent = OpinionUtil.generateOpinions(data2);
+        LOGGER.info("==========hgrContent==========:"+hgrContent);
+        // 办文要报-领导批示
+        String bwybLdps = "leaderComment";
+        List<OpinionListModel> data3 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybLdps, itemId, null, null, null).getData();
+        String ldContent = OpinionUtil.generateOpinions(data3);
+        LOGGER.info("==========ldContent==========:"+ldContent);
+
+        formData.put("tingLeaderComment",tldContent);
+        formData.put("reviewerComment",hgrContent);
+        formData.put("leaderComment",ldContent);
+
         return Y9Result.success(formData);
     }
 
