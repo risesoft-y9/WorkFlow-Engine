@@ -734,4 +734,18 @@
             <column name="UPDATEDATE" remarks="修改时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-39" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DYNAMICROLE" columnName="KINDS"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_DYNAMICROLE">
+            <column name="ROLEID" remarks="角色ID" type="VARCHAR(50)"/>
+            <column name="KINDS" type="INT" remarks="动态角色种类"/>
+            <column name="RANGES" type="INT" remarks="权限范围"/>
+            <column name="DEPTPROPCATEGORY" type="INT" remarks="部门属性种类"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
