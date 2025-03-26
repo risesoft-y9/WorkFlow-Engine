@@ -56,6 +56,10 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
                 olddr.setDescription(dynamicRole.getDescription());
                 olddr.setClassPath(dynamicRole.getClassPath());
                 olddr.setUseProcessInstanceId(dynamicRole.isUseProcessInstanceId());
+                olddr.setKinds(dynamicRole.getKinds());
+                olddr.setRanges(dynamicRole.getRanges());
+                olddr.setRoleId(dynamicRole.getRoleId());
+                olddr.setDeptPropCategory(dynamicRole.getDeptPropCategory());
                 dynamicRoleRepository.save(olddr);
                 return olddr;
             } else {
@@ -70,6 +74,10 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
         d.setDescription(dynamicRole.getDescription());
         d.setClassPath(dynamicRole.getClassPath());
         d.setUseProcessInstanceId(dynamicRole.isUseProcessInstanceId());
+        d.setKinds(dynamicRole.getKinds());
+        d.setRanges(dynamicRole.getRanges());
+        d.setRoleId(dynamicRole.getRoleId());
+        d.setDeptPropCategory(dynamicRole.getDeptPropCategory());
 
         Integer tabIndex = dynamicRoleRepository.getMaxTabIndex();
         if (tabIndex == null) {

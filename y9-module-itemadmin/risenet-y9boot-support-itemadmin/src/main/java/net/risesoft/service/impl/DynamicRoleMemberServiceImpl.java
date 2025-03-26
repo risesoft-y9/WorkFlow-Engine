@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.DynamicRole;
+import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.DynamicRoleMemberService;
@@ -61,18 +62,23 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
     @Override
     public List<OrgUnit> listByDynamicRoleIdAndProcessInstanceId(String dynamicRoleId, String processInstanceId) {
         DynamicRole dynamicRole = dynamicRoleService.getById(dynamicRoleId);
-        List<OrgUnit> orgUnitList;
-        String classFullPath = dynamicRole.getClassPath();
+        List<OrgUnit> orgUnitList = null;
         ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext)Y9Context.getAc();
         DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
-
+        String classFullPath = dynamicRole.getClassPath();
         beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
         AbstractDynamicRoleMember dynamicRoleMemberService =
             (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
-        if (dynamicRole.isUseProcessInstanceId()) {
-            orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId);
-        } else {
-            orgUnitList = dynamicRoleMemberService.getOrgUnitList();
+        if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+            if (dynamicRole.isUseProcessInstanceId()) {
+                orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId);
+            } else {
+                orgUnitList = dynamicRoleMemberService.getOrgUnitList();
+            }
+        } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.DEPT_PROP_CATEGORY.getValue())) {
+            orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId, dynamicRole);
+        } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.ROLE.getValue())) {
+            orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId, dynamicRole);
         }
         return orgUnitList;
     }

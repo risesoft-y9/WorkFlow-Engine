@@ -12,10 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.api.platform.dictionary.OptionValueApi;
+import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.consts.InitDataConsts;
 import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.DynamicRole;
+import net.risesoft.model.platform.OptionValue;
+import net.risesoft.model.platform.Role;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DynamicRoleService;
+import net.risesoft.util.PackageClassFinder;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -28,6 +35,10 @@ import net.risesoft.service.DynamicRoleService;
 public class DynamicRoleRestController {
 
     private final DynamicRoleService dynamicRoleService;
+
+    private final OptionValueApi optionValueApi;
+
+    private final RoleApi roleApi;
 
     /**
      * 获取动态角色列表
@@ -70,6 +81,31 @@ public class DynamicRoleRestController {
             listMap.add(map);
         }
         return Y9Result.success(listMap, "获取成功");
+    }
+
+    @GetMapping(value = "/deptPropCategory")
+    public Y9Result<List<OptionValue>> deptPropCategory() {
+        return optionValueApi.listByType(Y9LoginUserHolder.getTenantId(), "departmentPropCategory");
+    }
+
+    @GetMapping(value = "/publicRole")
+    public Y9Result<List<Role>> publicRole() {
+        return roleApi.listRoleByParentId(InitDataConsts.TOP_PUBLIC_ROLE_ID);
+    }
+
+    @GetMapping(value = "/getClasses")
+    public Y9Result<List<String>> getClasses(String packageName) {
+        try {
+            List<Class<?>> classes = PackageClassFinder.getClasses(packageName);
+            List<String> list = new ArrayList<>();
+            for (Class<?> clazz : classes) {
+                list.add(clazz.getName());
+            }
+            return Y9Result.success(list, "获取动态角色类路径成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("获取动态角色类路径失败");
     }
 
     /**

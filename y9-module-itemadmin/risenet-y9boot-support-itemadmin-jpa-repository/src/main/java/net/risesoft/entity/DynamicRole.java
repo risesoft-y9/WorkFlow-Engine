@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -46,8 +45,26 @@ public class DynamicRole implements Serializable {
     @Column(name = "NAME", length = 255)
     private String name;
 
+    /**
+     * @see DynamicRoleKindsEnum
+     */
+    @Comment("动态角色种类")
+    @Column(name = "KINDS", length = 2)
+    private Integer kinds;
+
+    @Comment("权限范围")
+    @Column(name = "RANGES", length = 2)
+    private Integer ranges;
+
+    @Comment("角色ID")
+    @Column(name = "ROLEID", length = 50)
+    private String roleId;
+
+    @Comment("部门属性种类")
+    @Column(name = "DEPTPROPCATEGORY", length = 2)
+    private Integer deptPropCategory;
+
     @Comment("描述")
-    @Lob
     @Column(name = "DESCRIPTION", length = 1000)
     private String description;
 
