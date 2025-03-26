@@ -2,6 +2,7 @@ package net.risesoft.service.dynamicrole;
 
 import java.util.List;
 
+import net.risesoft.entity.DynamicRole;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Group;
 import net.risesoft.model.platform.OrgUnit;
@@ -20,6 +21,10 @@ public abstract class AbstractDynamicRoleMember {
     }
 
     public List<OrgUnit> getOrgUnitList(String param) {
+        return null;
+    }
+
+    public List<OrgUnit> getOrgUnitList(String processInstanceId, DynamicRole dynamicRole) {
         return null;
     }
 
