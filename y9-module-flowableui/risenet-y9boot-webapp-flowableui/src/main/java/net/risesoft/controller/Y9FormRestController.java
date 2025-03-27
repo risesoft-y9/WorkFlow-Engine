@@ -35,6 +35,7 @@ import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.itemadmin.Y9FormOptionValueModel;
+import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.PersonExt;
@@ -290,6 +291,7 @@ public class Y9FormRestController {
     public Y9Result<Map<String, Object>> getInitData() {
         Map<String, Object> map = new HashMap<>(16);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
+        Position position = Y9LoginUserHolder.getPosition();
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String nowDate = sdf.format(date);
@@ -298,24 +300,24 @@ public class Y9FormRestController {
         String year = yearsdf.format(date);
         String second = sesdf.format(date);
         String itemNumber = "〔" + year + "〕" + second + "号";
-        OrgUnit parent =
-            orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+        Department dept = departmentApi.get(Y9LoginUserHolder.getTenantId(), position.getParentId()).getData();
         OrgUnit bureau =
             orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /* 办件表单数据初始化 **/
-        map.put("deptName", parent.getName());// 创建部门
-        map.put("userName", person.getName());// 创建人
-        Position position = Y9LoginUserHolder.getPosition();
-        map.put("positionName", position.getName());// 创建岗位
-        map.put("duty", position.getName().split("（")[0]);// 职务
-        map.put("createDate", nowDate);// 创建日期
-        map.put("mobile", person.getMobile());// 联系电话
-        map.put("tenantName", tenant.getName());// 租户名称
-        map.put("tenantId", tenant.getId());// 租户名称
-        map.put("number", itemNumber);// 编号
-        map.put("sign", "");// 签名
-        map.put("bureauName", bureau.getName());// 委办局
+        map.put("deptName", dept.getName());
+        map.put("deptGivenName", dept.getDeptGivenName());
+        map.put("aliasName", dept.getAliasName());
+        map.put("userName", person.getName());
+        map.put("positionName", position.getName());
+        map.put("duty", position.getName().split("（")[0]);
+        map.put("createDate", nowDate);
+        map.put("mobile", person.getMobile());
+        map.put("tenantName", tenant.getName());
+        map.put("tenantId", tenant.getId());
+        map.put("number", itemNumber);
+        map.put("sign", "");
+        map.put("bureauName", bureau.getName());
         PersonExt personExt = personApi
             .getPersonExtByPersonId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId())
             .getData();
@@ -323,7 +325,7 @@ public class Y9FormRestController {
             map.put("sign", personExt.getSign());// 签名
         }
         List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(Y9LoginUserHolder.getTenantId(),
-            parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
+            dept.getId(), DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
         map.put("deptLeader", "未配置");// 岗位所在部门领导
         if (!leaders.isEmpty()) {
             List<Person> personLeaders =
