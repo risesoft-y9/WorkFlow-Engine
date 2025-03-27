@@ -301,14 +301,16 @@ public class Y9FormRestController {
         String second = sesdf.format(date);
         String itemNumber = "〔" + year + "〕" + second + "号";
         Department dept = departmentApi.get(Y9LoginUserHolder.getTenantId(), position.getParentId()).getData();
-        OrgUnit bureau =
-            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+        Department bureau = (Department)orgUnitApi
+            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /* 办件表单数据初始化 **/
+        map.put("deptId", dept.getId());
         map.put("deptName", dept.getName());
         map.put("deptGivenName", dept.getDeptGivenName());
-        map.put("aliasName", dept.getAliasName());
+        map.put("deptAliasName", dept.getAliasName());
         map.put("userName", person.getName());
+        map.put("userId", person.getPersonId());
         map.put("positionName", position.getName());
         map.put("duty", position.getName().split("（")[0]);
         map.put("createDate", nowDate);
@@ -317,7 +319,10 @@ public class Y9FormRestController {
         map.put("tenantId", tenant.getId());
         map.put("number", itemNumber);
         map.put("sign", "");
+        map.put("bureauId", bureau.getId());
         map.put("bureauName", bureau.getName());
+        map.put("bureauGivenName", bureau.getDeptGivenName());
+        map.put("bureauAliasName", bureau.getAliasName());
         PersonExt personExt = personApi
             .getPersonExtByPersonId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId())
             .getData();
