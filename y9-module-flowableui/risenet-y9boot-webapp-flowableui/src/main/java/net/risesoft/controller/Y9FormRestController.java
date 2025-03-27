@@ -1,10 +1,12 @@
 package net.risesoft.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -24,6 +26,7 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
@@ -37,6 +40,7 @@ import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.itemadmin.Y9FormOptionValueModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.PersonExt;
 import net.risesoft.model.platform.Position;
@@ -72,6 +76,8 @@ public class Y9FormRestController {
     private final OptionClassApi optionClassApi;
 
     private final DepartmentApi departmentApi;
+
+    private final OrganizationApi organizationApi;
 
     private final ItemApi itemApi;
 
@@ -351,6 +357,29 @@ public class Y9FormRestController {
     @GetMapping(value = "/getOptionValueList")
     public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam @NotBlank String type) {
         String tenantId = Y9LoginUserHolder.getTenantId();
+        if ("fwsj".equals(type)) {
+            Position position = Y9LoginUserHolder.getPosition();
+            List<Organization> orgList = organizationApi.list(tenantId).getData().stream()
+                .filter(org -> position.getGuidPath().contains(org.getId())).collect(Collectors.toList());
+            List<Department> bureaus = organizationApi.listAllBureaus(tenantId, orgList.get(0).getId()).getData();
+            List<Y9FormOptionValueModel> list = new ArrayList<>();
+            Y9FormOptionValueModel none = new Y9FormOptionValueModel();
+            none.setCode("");
+            none.setName("请选择");
+            list.add(none);
+            bureaus.stream().filter(b -> "国司局".equals(b.getDeptGivenName())).forEach(b -> {
+                Y9FormOptionValueModel y9FormOptionValueModel = new Y9FormOptionValueModel();
+                y9FormOptionValueModel.setCode(b.getId());
+                y9FormOptionValueModel.setName(b.getDeptGivenName());
+                list.add(y9FormOptionValueModel);
+            });
+            Department bureau = (Department)orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
+            Y9FormOptionValueModel y9FormOptionValueModel = new Y9FormOptionValueModel();
+            y9FormOptionValueModel.setCode(bureau.getId());
+            y9FormOptionValueModel.setName(bureau.getDeptGivenName());
+            list.add(y9FormOptionValueModel);
+            return Y9Result.success(list);
+        }
         return optionClassApi.getOptionValueList(tenantId, type);
     }
 
