@@ -2,6 +2,7 @@ package net.risesoft.service.dynamicrole.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -10,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.RuntimeApi;
+import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.SignDeptInfo;
-import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.service.OfficeDoneInfoService;
@@ -41,32 +44,31 @@ public class SignDeptSecretary extends AbstractDynamicRoleMember {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
+    private final RoleApi roleApi;
+
     @Override
-    public List<OrgUnit> getOrgUnitList(String processInstanceId) {
+    public List<OrgUnit> getOrgUnitList(String processInstanceId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(processInstanceId)) {
-            String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-            OrgUnit position = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+            String roleId = dynamicRole.getRoleId();
+            List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+            // 排除本司局
+            List<OrgUnit> orgUnitListFilter = orgUnitList.stream()
+                .filter(orgUnit -> !orgUnit.getGuidPath().contains(bureau.getId())).collect(Collectors.toList());
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(officeDoneInfo.getProcessSerialNumber(), "0");
-            for (SignDeptInfo signDeptInfo : list) {
-                // 排除本司局
-                if (position.getDn().split(",o=")[0].contains(signDeptInfo.getDeptName())) {
-                    continue;
-                }
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, signDeptInfo.getDeptId()).getData();
-                if (orgUnit != null) {
-                    orgUnitList.add(orgUnit);
-                    List<OrgUnit> secretaryList = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getId(),
-                        DepartmentPropCategoryEnum.SECRETARY.getValue(), true).getData();
-                    for (OrgUnit secretary : secretaryList) {
-                        secretary.setParentId(orgUnit.getId());
-                        orgUnitList.add(secretary);
+            // 获取会签司局
+            List<OrgUnit> orgUnitListTemp = new ArrayList<>();
+            list.forEach(signDeptInfo -> {
+                orgUnitListFilter.forEach(orgUnit -> {
+                    if (orgUnit.getGuidPath().contains(signDeptInfo.getDeptId())) {
+                        orgUnitListTemp.add(orgUnit);
                     }
-                }
-            }
+                });
+            });
+            return orgUnitListTemp;
         }
-        return orgUnitList;
+        return List.of();
     }
 }
