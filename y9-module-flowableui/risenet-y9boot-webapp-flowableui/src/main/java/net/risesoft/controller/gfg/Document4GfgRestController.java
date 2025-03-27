@@ -742,11 +742,10 @@ public class Document4GfgRestController {
      * 获取条码号数据
      *
      * @param processSerialNumber 流程编号
-     * @param tableName 表名
-     * @return Y9Result<Boolean>
+     * @return Y9Result<String>
      */
     @PostMapping(value = "/getTmhData")
-    public Y9Result<String> getTmhData(@RequestParam String processSerialNumber, @RequestParam String tableName) {
+    public Y9Result<String> getTmhData(@RequestParam @NotBlank String processSerialNumber) {
         // 调用第三方接口
 
         return Y9Result.success("tmh123");
