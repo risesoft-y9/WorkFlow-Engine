@@ -1,6 +1,5 @@
 package net.risesoft.service.dynamicrole.impl.v1;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -38,15 +37,17 @@ public class DeptPropCategory extends AbstractDynamicRoleMember {
     public List<OrgUnit> getOrgUnitList(String processInstanceId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
+        OrgUnit currentOrgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
         if (dynamicRole.isUseProcessInstanceId()) {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
             userId = processInstance.getStartUserId();
         }
         boolean isInherit = !dynamicRole.getRanges().equals(DynamicRoleRangesEnum.DEPT.getValue());
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        List<OrgUnit> leaders = departmentApi
+        List<OrgUnit> orgUnitList = departmentApi
             .listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(), dynamicRole.getDeptPropCategory(), isInherit)
             .getData();
-        return new ArrayList<>(leaders);
+        orgUnitList.remove(currentOrgUnit);
+        return orgUnitList;
     }
 }
