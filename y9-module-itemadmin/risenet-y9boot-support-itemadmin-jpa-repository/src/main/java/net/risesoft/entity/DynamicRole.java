@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
@@ -60,9 +61,15 @@ public class DynamicRole implements Serializable {
     @Column(name = "ROLEID", length = 50)
     private String roleId;
 
+    @Transient
+    private String roleName;
+
     @Comment("部门属性种类")
     @Column(name = "DEPTPROPCATEGORY", length = 2)
     private Integer deptPropCategory;
+
+    @Transient
+    private String deptPropCategoryName;
 
     @Comment("描述")
     @Column(name = "DESCRIPTION", length = 1000)
