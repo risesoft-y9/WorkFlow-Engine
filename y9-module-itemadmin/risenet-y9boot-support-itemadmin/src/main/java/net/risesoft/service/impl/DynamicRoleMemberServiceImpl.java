@@ -75,9 +75,7 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
             } else {
                 orgUnitList = dynamicRoleMemberService.getOrgUnitList();
             }
-        } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.DEPT_PROP_CATEGORY.getValue())) {
-            orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId, dynamicRole);
-        } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.ROLE.getValue())) {
+        } else {
             orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId, dynamicRole);
         }
         return orgUnitList;

@@ -2,6 +2,7 @@ package net.risesoft.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.InitDataConsts;
 import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.DynamicRole;
+import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.model.platform.OptionValue;
 import net.risesoft.model.platform.Role;
 import net.risesoft.pojo.Y9Result;
@@ -48,6 +50,29 @@ public class DynamicRoleRestController {
     @GetMapping(value = "/dynamicRoleList")
     public Y9Result<List<DynamicRole>> dynamicRoleList() {
         List<DynamicRole> drList = dynamicRoleService.listAll();
+        List<OptionValue> dpcList =
+            optionValueApi.listByType(Y9LoginUserHolder.getTenantId(), "departmentPropCategory").getData();
+        List<Role> roleList = roleApi.listRoleByParentId(InitDataConsts.TOP_PUBLIC_ROLE_ID).getData();
+        drList.stream().filter(dynamicRole -> null != dynamicRole.getKinds()).forEach(dynamicRole -> {
+            if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.DEPT_PROP_CATEGORY.getValue())) {
+                List<OptionValue> dpcListFilter = dpcList.stream()
+                    .filter(dpc -> dpc.getCode().equals(String.valueOf(dynamicRole.getDeptPropCategory())))
+                    .collect(Collectors.toList());
+                if (dpcListFilter.isEmpty()) {
+                    dynamicRole.setDeptPropCategoryName("已删除");
+                } else {
+                    dynamicRole.setDeptPropCategoryName(dpcListFilter.get(0).getName());
+                }
+            } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.ROLE.getValue())) {
+                List<Role> roleListFilter = roleList.stream()
+                    .filter(role -> role.getId().equals(dynamicRole.getRoleId())).collect(Collectors.toList());
+                if (roleListFilter.isEmpty()) {
+                    dynamicRole.setRoleName("已删除");
+                } else {
+                    dynamicRole.setRoleName(roleListFilter.get(0).getName());
+                }
+            }
+        });
         return Y9Result.success(drList, "获取成功");
     }
 
