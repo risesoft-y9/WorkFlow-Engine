@@ -38,6 +38,7 @@ public class RoleFilter extends AbstractDynamicRoleMember {
     public List<OrgUnit> getOrgUnitList(String processInstanceId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
+        OrgUnit currentOrgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
         if (dynamicRole.isUseProcessInstanceId()) {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
             userId = processInstance.getStartUserId();
@@ -62,6 +63,7 @@ public class RoleFilter extends AbstractDynamicRoleMember {
             default:
                 break;
         }
+        orgUnitList.remove(currentOrgUnit);
         return orgUnitList;
     }
 }
