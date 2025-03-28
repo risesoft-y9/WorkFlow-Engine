@@ -98,6 +98,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                     if ("systemName".equals(f.getName())) {
                         systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
                             : " AND P.SYSTEMNAME = '" + fieldValue + "' ";
+                    } else if ("bureauIds".equals(f.getName())) {
+                        paramSql.append(" AND P.HOSTDEPTID = '").append(fieldValue).append("' ");
                     } else {
                         paramSql.append(" AND INSTR(P.").append(f.getName().toUpperCase()).append(",'")
                             .append(fieldValue).append("') > 0 ");
