@@ -75,6 +75,8 @@ public class FormNTKO4GfgController {
 
     private final TypeSettingInfoApi typeSettingInfoApi;
 
+    private final PaperAttachmentApi paperAttachmentApi;
+
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
@@ -149,9 +151,13 @@ public class FormNTKO4GfgController {
         String ldContent = OpinionUtil.generateOpinions(data3);
         LOGGER.info("==========ldContent==========:"+ldContent);
 
+        // 获取办文信息纸质附件清单
+        List<PaperAttachmentModel> paperAttList = paperAttachmentApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+
         formData.put("tingLeaderComment",tldContent);
         formData.put("reviewerComment",hgrContent);
         formData.put("leaderComment",ldContent);
+        formData.put("DT_zzfj",paperAttList);
 
         return Y9Result.success(formData);
     }
