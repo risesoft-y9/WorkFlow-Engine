@@ -107,14 +107,16 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 e.printStackTrace();
             }
         }
+        String groupBySql = "SELECT PROCESSSERIALNUMBER FROM FF_DOCUMENT_COPY WHERE STATUS < "
+            + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? GROUP BY PROCESSSERIALNUMBER";
         String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
-        String bySql = "GROUP BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC";
+        String bySql = "ORDER BY P.CREATETIME DESC";
         String allSql = "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C "
-            + processParamSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql
-            + systemNameSql + " AND C.USERID = ? " + bySql;
+            + processParamSql + " WHERE C.PROCESSSERIALNUMBER IN ( " + groupBySql + ")" + paramSql + systemNameSql
+            + bySql;
         String countSql =
-            "SELECT COUNT(C.ID) FROM FF_DOCUMENT_COPY C " + processParamSql + " WHERE C.USERID= ? AND C.STATUS < "
-                + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql + systemNameSql;
+            "SELECT COUNT(C.ID) FROM FF_DOCUMENT_COPY C " + processParamSql + " WHERE C.PROCESSSERIALNUMBER IN("
+                + groupBySql + ")" + paramSql + systemNameSql;
         Object[] args = new Object[1];
         args[0] = orgUnitId;
         ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
