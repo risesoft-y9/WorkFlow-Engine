@@ -57,7 +57,7 @@ public class RoleFilter extends AbstractDynamicRoleMember {
                 break;
             case 2:
                 // 和[当前人或者流程启动人]同委办局
-                orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().equals(bureau.getId()))
+                orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
                     .collect(Collectors.toList());
                 break;
             default:
