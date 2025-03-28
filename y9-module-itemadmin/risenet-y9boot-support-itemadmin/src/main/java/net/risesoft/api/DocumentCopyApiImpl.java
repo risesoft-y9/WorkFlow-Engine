@@ -107,16 +107,16 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 e.printStackTrace();
             }
         }
-        String groupBySql = "SELECT ID FROM FF_DOCUMENT_COPY WHERE STATUS < "
-            + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? GROUP BY PROCESSSERIALNUMBER";
-        String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
-        String bySql = "ORDER BY P.CREATETIME DESC";
-        String allSql = "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C "
-            + processParamSql + " WHERE C.ID IN ( " + groupBySql + ")" + paramSql + systemNameSql
-            + bySql;
+        String leftJoinSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
+        String bySql = "ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
+        String allSql =
+            "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
+                + leftJoinSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
+                + paramSql + systemNameSql + bySql;
         String countSql =
-            "SELECT COUNT(C.ID) FROM FF_DOCUMENT_COPY C " + processParamSql + " WHERE C.ID IN("
-                + groupBySql + ")" + paramSql + systemNameSql;
+            "SELECT COUNT(*) FROM ( SELECT ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM  FROM FF_DOCUMENT_COPY C "
+                + leftJoinSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
+                + paramSql + systemNameSql + ") ALIAS WHERE RS_NUM =1";
         Object[] args = new Object[1];
         args[0] = orgUnitId;
         ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
