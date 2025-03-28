@@ -16,7 +16,6 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.enums.ItemPermissionEnum;
@@ -93,7 +92,6 @@ public class RoleServiceImpl implements RoleService {
         try {
             List<ItemPermission> list = itemPermissionService
                 .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
-            boolean isSort = true;
             if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
                 if (StringUtils.isBlank(id)) {
                     List<OrgUnit> deptList = new ArrayList<>();
@@ -110,11 +108,6 @@ public class RoleServiceImpl implements RoleService {
                         if (o.getRoleType() == 4) {
                             List<OrgUnit> orgUnitList = dynamicRoleMemberService
                                 .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
-                            DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
-                            String classFullPath = dynamicRole.getClassPath();
-                            if (classFullPath.contains("SignDeptSecretary")) {// 会签部门，获取部门秘书后，不需要再获取上级部门和排序
-                                isSort = false;
-                            }
                             for (OrgUnit orgUnit : orgUnitList) {
                                 // if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                                 // || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
@@ -238,13 +231,11 @@ public class RoleServiceImpl implements RoleService {
                         itemList.add(model);
                     }
                 }
-                if (isSort) {
-                    // 排序
-                    itemList = itemList.stream().sorted().collect(Collectors.toList());
-                    for (ItemRoleOrgUnitModel model : itemList) {
-                        allItemList.add(model);
-                        allItemList = getParent(allItemList, model);
-                    }
+                // 排序
+                itemList = itemList.stream().sorted().collect(Collectors.toList());
+                for (ItemRoleOrgUnitModel model : itemList) {
+                    allItemList.add(model);
+                    allItemList = getParent(allItemList, model);
                 }
             }
         } catch (Exception e) {
