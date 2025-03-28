@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -47,7 +46,7 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
     @Override
     public List<OrgUnit> listByDynamicRoleId(String dynamicRoleId) {
         DynamicRole dynamicRole = dynamicRoleService.getById(dynamicRoleId);
-        List<OrgUnit> orgUnitList = new ArrayList<>();
+        List<OrgUnit> orgUnitList;
         String classFullPath = dynamicRole.getClassPath();
         ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext)Y9Context.getAc();
         DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);

@@ -223,10 +223,10 @@ public class Y9TableServiceImpl implements Y9TableService {
                                 .append("'");
                         } else {
                             if (null != searchMap.get(key) && StringUtils.isNotBlank(searchMap.get(key).toString())) {
-                                whereSql.append("AND INSTR(").append(key.toUpperCase()).append(",'")
+                                whereSql.append(" AND INSTR(").append(key.toUpperCase()).append(",'")
                                     .append(searchMap.get(key).toString()).append("') >= 0 ");
                             } else {
-                                whereSql.append("AND (").append(key.toUpperCase()).append("= '' OR ")
+                                whereSql.append(" AND (").append(key.toUpperCase()).append("= '' OR ")
                                     .append(key.toUpperCase()).append(" IS NULL)");
                             }
                         }
