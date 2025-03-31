@@ -18,11 +18,10 @@ import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 当前流程的启动人员所在部门领导
+ * 子流程的启动人
  *
  * @author qinman
- * @author zhangchongjie
- * @date 2022/12/22
+ * @date 2025/03/31
  */
 @Service
 @RequiredArgsConstructor
