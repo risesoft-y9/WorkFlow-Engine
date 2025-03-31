@@ -35,7 +35,6 @@ import net.risesoft.api.processadmin.ConditionParserApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
@@ -163,8 +162,6 @@ public class DocumentServiceImpl implements DocumentService {
     private final ProcessDefinitionApi processDefinitionApi;
 
     private final VariableApi variableApi;
-
-    private final HistoricVariableApi historicVariableApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -898,6 +895,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setFormList(list);
         model.setShowOtherFlag(showOtherFlag);
         List<SignDeptDetail> signList = signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
+        // 签注意见纸页签
         Integer signStatus = SignStatusEnum.NOTSTART.getValue();
         // 待办时，主办打开不显示【签注意见纸】，会签部门打开显示签注意见纸
         if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())) {
@@ -922,19 +920,14 @@ public class DocumentServiceImpl implements DocumentService {
             }
         }
         model.setSignStatus(signStatus);
-        if (model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())
-            || model.getItembox().equals(ItemBoxTypeEnum.DONE.getValue())
-            || model.getItembox().equals(ItemBoxTypeEnum.MONITORDOING.getValue())
-            || model.getItembox().equals(ItemBoxTypeEnum.MONITORDONE.getValue())) {
-            List<SignDeptDetailModel> modelList = new ArrayList<>();
-                signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue()))
-                    .forEach(sdd -> {
-                SignDeptDetailModel ssdModel = new SignDeptDetailModel();
-                Y9BeanUtil.copyProperties(sdd, ssdModel);
-                modelList.add(ssdModel);
-            });
-            model.setSignDeptDetailList(modelList);
-        }
+        // 会签意见汇总页签
+        List<SignDeptDetailModel> modelList = new ArrayList<>();
+        signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue())).forEach(sdd -> {
+            SignDeptDetailModel ssdModel = new SignDeptDetailModel();
+            Y9BeanUtil.copyProperties(sdd, ssdModel);
+            modelList.add(ssdModel);
+        });
+        model.setSignDeptDetailList(modelList);
         return model;
     }
 

@@ -3,10 +3,12 @@ package net.risesoft.controller.gfg;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -41,7 +43,6 @@ import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -94,8 +95,6 @@ public class Document4GfgRestController {
     private final ChaoSongApi chaoSongApi;
 
     private final TaskApi taskApi;
-
-    private final VariableApi variableApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
 
@@ -486,6 +485,92 @@ public class Document4GfgRestController {
             } else {
                 return Y9Result.failure(y9Result.getMsg());
             }
+        } catch (Exception e) {
+            LOGGER.error("发送失败", e);
+        }
+        return Y9Result.failure("发送失败，发生异常");
+    }
+
+    /**
+     * 办件发送
+     *
+     * @param taskIdAndProcessSerialNumbers 任务id和流程序列号集合
+     * @param userChoice 收件人
+     * @param routeToTaskId 发送路由，任务key
+     * @param sponsorHandle 是否主办办理
+     * @param sponsorGuid 主办人id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @PostMapping(value = "/forwarding4Batch")
+    public Y9Result<String> forwarding4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers,
+        @RequestParam @NotBlank String userChoice, @RequestParam @NotBlank String routeToTaskId,
+        @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String sponsorGuid,
+        @RequestParam(required = false) String dueDate, @RequestParam(required = false) String description) {
+        AtomicInteger success = new AtomicInteger();
+        AtomicInteger fail = new AtomicInteger();
+        Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+            String[] tpArr = tp.split(":");
+            try {
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), tpArr[1]).getData();
+                processParamModel.setDueDate(null);
+                if (StringUtils.isNotBlank(dueDate)) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    processParamModel.setDueDate(sdf.parse(dueDate));
+                }
+                processParamModel.setDescription(description);
+                processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
+
+                Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
+                    Y9LoginUserHolder.getPositionId(), tpArr[0], userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
+                if (y9Result.isSuccess()) {
+                    success.getAndIncrement();
+                } else {
+                    fail.getAndIncrement();
+                }
+            } catch (ParseException e) {
+                fail.getAndIncrement();
+            }
+        });
+        return Y9Result.successMsg("发送成功" + success.get() + "条，发送失败" + fail.get() + "条");
+    }
+
+    @PostMapping(value = "/check4Batch")
+    public Y9Result<String> check4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            StringBuilder msg = new StringBuilder();
+            List<String> list = new ArrayList<>();
+            List<TaskModel> signList = new ArrayList<>();
+            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+                String[] tpArr = tp.split(":");
+                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+                if (null == task) {
+                    ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+                    if (StringUtils.isBlank(msg)) {
+                        msg.append(ppModel.getTitle());
+                    } else {
+                        msg.append(",").append(ppModel.getTitle());
+                    }
+                } else {
+                    if (StringUtils.isBlank(task.getAssignee())) {
+                        signList.add(task);
+                    }
+                    if (!list.contains(task.getTaskDefinitionKey())) {
+                        list.add(task.getTaskDefinitionKey());
+                    }
+                }
+            });
+            if (!signList.isEmpty()) {
+                return Y9Result.failure("不能批量发送，存在未签收的待办");
+            }
+            if (StringUtils.isNotBlank(msg)) {
+                return Y9Result.failure("不能批量发送，以下待办已处理：" + msg);
+            }
+            if (list.size() > 1) {
+                return Y9Result.failure("不能批量发送，存在不同的任务节点");
+            }
+            return Y9Result.success();
         } catch (Exception e) {
             LOGGER.error("发送失败", e);
         }
