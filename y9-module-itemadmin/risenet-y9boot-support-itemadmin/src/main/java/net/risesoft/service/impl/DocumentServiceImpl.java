@@ -899,17 +899,26 @@ public class DocumentServiceImpl implements DocumentService {
         model.setShowOtherFlag(showOtherFlag);
         List<SignDeptDetail> signList = signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
         Integer signStatus = SignStatusEnum.NOTSTART.getValue();
-        if (StringUtils.isNotBlank(model.getDocumentId())
-            && model.getDocumentId().equals(model.getProcessSerialNumber())) {
-            // 打开的是主办
-            signStatus = SignStatusEnum.NONE.getValue();
+        // 待办时，主办打开不显示【签注意见纸】，会签部门打开显示签注意见纸
+        if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())) {
+            ActRuDetail actRuDetail = actRuDetailService
+                .findByProcessSerialNumberAndAssignee(model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
+            signStatus = actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.NONE.getValue();
         } else {
-            if (!signList.isEmpty()) {
-                ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
-                    model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
-                signStatus = isAdmin ? SignStatusEnum.ADMIN.getValue()
-                    : null == actRuDetail ? SignStatusEnum.SUB.getValue()
-                        : actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
+            // 非待办时，
+            // documentId不为空且为流程序列号时，打开的是主办，不显示签注意见纸
+            if (StringUtils.isNotBlank(model.getDocumentId())
+                && model.getDocumentId().equals(model.getProcessSerialNumber())) {
+                // 打开的是主办
+                signStatus = SignStatusEnum.NONE.getValue();
+            } else {
+                if (!signList.isEmpty()) {
+                    ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
+                        model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
+                    signStatus =
+                        isAdmin ? SignStatusEnum.ADMIN.getValue() : null == actRuDetail ? SignStatusEnum.SUB.getValue()
+                            : actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
+                }
             }
         }
         model.setSignStatus(signStatus);
