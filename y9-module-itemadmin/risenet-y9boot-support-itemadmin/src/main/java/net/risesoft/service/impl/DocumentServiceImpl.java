@@ -1348,76 +1348,54 @@ public class DocumentServiceImpl implements DocumentService {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonList = buttonUtil.showButton4Add(itemId);
-        List<ItemButtonModel> returnButtonList = new ArrayList<>();
         List<ItemButtonBind> bibList;
-        // 生成按钮数组
-        for (ItemButtonModel itemButtonModel : buttonList) {
-            /*
-             * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
-             */
-            if ("01".equals(itemButtonModel.getKey())) {
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
-                    processDefinitionId, taskDefKey);
-                for (ItemButtonBind bind : bibList) {
-                    String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                    List<String> roleIds = bind.getRoleIds();
-                    if (roleIds.isEmpty()) {
-                        returnButtonList
-                            .add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
-                    } else {
-                        for (String roleId : roleIds) {
-                            boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                            if (hasRole) {
-                                returnButtonList.add(new ItemButtonModel(buttonCustomId, buttonName,
-                                    ItemButtonTypeEnum.COMMON.getValue()));
-                                break;
-                            }
-                        }
-                    }
+        /*
+         * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
+         */
+        if (buttonList.contains(ItemButton.baoCun)) {
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                processDefinitionId, taskDefKey);
+            for (ItemButtonBind bind : bibList) {
+                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+                List<String> roleIds = bind.getRoleIds();
+                if (roleIds.isEmpty() || roleIds.stream()
+                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
+                    buttonList
+                        .add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
                 }
             }
-            /*
-             * 假如发送按钮显示的话，去获取发送下面的路由
-             */
-            if ("02".equals(itemButtonModel.getKey())) {
-                /*
-                 * 添加发送下面的路由
-                 */
-                List<TargetModel> routeToTasks =
-                    processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-                for (TargetModel m : routeToTasks) {
-                    // 退回、路由网关不显示在发送下面
-                    if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
-                        returnButtonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(),
-                            ItemButtonTypeEnum.SEND.getValue()));
-                    }
-                }
-                /*
-                 * 添加自定义按钮到发送
-                 */
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
-                    processDefinitionId, taskDefKey);
-                for (ItemButtonBind bind : bibList) {
-                    List<String> roleIds = bind.getRoleIds();
-                    String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                    if (roleIds.isEmpty()) {
-                        returnButtonList
-                            .add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
-                    } else {
-                        for (String roleId : roleIds) {
-                            boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                            if (hasRole) {
-                                returnButtonList.add(new ItemButtonModel(buttonCustomId, buttonName,
-                                    ItemButtonTypeEnum.SEND.getValue()));
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            returnButtonList.add(itemButtonModel);
         }
-        model.setButtonList(returnButtonList);
+        /*
+         * 假如发送按钮显示的话，去获取发送下面的路由
+         */
+        if (buttonList.contains(ItemButton.faSong)) {
+            /*
+             * 添加发送下面的路由
+             */
+            List<TargetModel> routeToTasks =
+                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+            for (TargetModel m : routeToTasks) {
+                // 退回、路由网关不显示在发送下面
+                if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
+                    buttonList.add(
+                        new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND.getValue()));
+                }
+            }
+            /*
+             * 添加自定义按钮到发送
+             */
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
+                processDefinitionId, taskDefKey);
+            for (ItemButtonBind bind : bibList) {
+                List<String> roleIds = bind.getRoleIds();
+                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+                if (roleIds.isEmpty() || roleIds.stream()
+                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
+                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
+                }
+            }
+        }
+        model.setButtonList(buttonList);
         return model;
     }
 
