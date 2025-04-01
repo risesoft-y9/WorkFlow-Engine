@@ -252,6 +252,7 @@ y9:
                     - title
                     - documentTitle
                     - fileName
+                    - code
         oauth2:
             resource:
                 enabled: true
