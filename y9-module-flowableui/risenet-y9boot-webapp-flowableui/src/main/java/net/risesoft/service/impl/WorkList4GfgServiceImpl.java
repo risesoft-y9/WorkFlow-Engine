@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.itemadmin.UrgeInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -46,6 +48,7 @@ import net.risesoft.enums.JjcdEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TableColumnEnum;
 import net.risesoft.enums.TaskRelatedEnum;
+import net.risesoft.enums.platform.TenantTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -115,6 +118,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final UrgeInfoApi urgeInfoApi;
 
     private final OptionClassApi optionClassApi;
+
+    private final TenantApi tenantApi;
 
     private static Map<String, Object> map = new HashMap<>();
 
@@ -1227,6 +1232,18 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     public void refreshMap() {
         optionClassApi.findAll(Y9LoginUserHolder.getTenantId()).getData().forEach(item -> {
             map.put(item.getType() + "." + item.getCode(), item.getName());
+        });
+    }
+
+    /**
+     * 整点执行的任务
+     */
+    @Scheduled(cron = "0 0 * * * ?")
+    public void refreshMapScheduled() {
+        tenantApi.listByTenantType(TenantTypeEnum.TENANT).getData().forEach(tenant -> {
+            optionClassApi.findAll(tenant.getId()).getData().forEach(item -> {
+                map.put(item.getType() + "." + item.getCode(), item.getName());
+            });
         });
     }
 
