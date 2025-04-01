@@ -24,6 +24,11 @@ public interface WorkList4GfgService {
     Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
+     * 刷新字典map,保证列表显示的字典数据和事项定义的一致
+     */
+    void refreshMap();
+
+    /**
      * 获取待办列表
      *
      * @param itemId 事项Id

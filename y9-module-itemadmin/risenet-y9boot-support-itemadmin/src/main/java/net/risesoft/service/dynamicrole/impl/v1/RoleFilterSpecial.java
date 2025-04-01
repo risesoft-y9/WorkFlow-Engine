@@ -18,15 +18,14 @@ import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
+ * 静态角色过滤器-特殊:静态角色不包含当前人，则找角色内本处室人，包含当前人，则找本委办局内的人
  *
- * 静态角色过滤器
- * 
  * @author qinman
  * @date 2025/04/01
  */
 @Service
 @RequiredArgsConstructor
-public class RoleFilter extends AbstractDynamicRoleMember {
+public class RoleFilterSpecial extends AbstractDynamicRoleMember {
 
     private final OrgUnitApi orgUnitApi;
 
@@ -47,21 +46,16 @@ public class RoleFilter extends AbstractDynamicRoleMember {
         OrgUnit bureau = orgUnitApi.getBureau(tenantId, userId).getData();
         String roleId = dynamicRole.getRoleId();
         List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
-        Integer ranges = dynamicRole.getRanges();
-        switch (ranges) {
-            case 1:
-                // 和[当前人或者流程启动人]同部门
-                orgUnitList =
-                    orgUnitList.stream().filter(orgUnit -> orgUnit.getParentId().equals(personOrPosition.getParentId()))
-                        .collect(Collectors.toList());
-                break;
-            case 2:
-                // 和[当前人或者流程启动人]同委办局
-                orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
+        boolean match = orgUnitList.stream().anyMatch(orgUnit -> orgUnit.getId().equals(currentOrgUnit.getId()));
+        if (match) {
+            // 和[当前人或者流程启动人]同委办局
+            orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
+                .collect(Collectors.toList());
+        } else {
+            // 和[当前人或者流程启动人]同部门
+            orgUnitList =
+                orgUnitList.stream().filter(orgUnit -> orgUnit.getParentId().equals(personOrPosition.getParentId()))
                     .collect(Collectors.toList());
-                break;
-            default:
-                break;
         }
         orgUnitList.remove(currentOrgUnit);
         return orgUnitList;
