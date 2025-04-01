@@ -354,7 +354,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     buttonType, processDefinitionId);
         }
         for (ItemButtonBind bind : bindList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+            if (buttonType.equals(ItemButtonTypeEnum.COMMON.getValue())) {
                 CommonButton cb = commonButtonService.getById(bind.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();
