@@ -50,7 +50,7 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
                 }
             }
             if (StringUtils.isNotBlank(assignee)) {
-                OrgUnit position = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                OrgUnit position = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                 if (null != position) {
                     orgUnitList.add(position);
                 }
