@@ -772,6 +772,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         // }
 
                         targetModel.setTaskDefKey(fe.getId());
+                        targetModel.setProcessDefinitionId(processDefinitionId);
                         String name = tr.getName();
                         if (StringUtils.isNotBlank(name) && !"skip".equals(name)) {
                             // 如果输出线上有名称且不为skip，则使用线上的名称作为路由名称
@@ -809,6 +810,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         FlowElement fe = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)
                             && !(fe instanceof ParallelGateway)) {
+                            targetModel.setProcessDefinitionId(processDefinitionId);
                             targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
                             targetModel.setConditionExpression(tr.getConditionExpression());
                             targetModel.setRealTaskDefName(tr.getTargetFlowElement().getName());

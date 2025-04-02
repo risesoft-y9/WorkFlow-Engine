@@ -62,6 +62,7 @@ import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
@@ -536,12 +537,13 @@ public class Document4GfgRestController {
     }
 
     @PostMapping(value = "/check4Batch")
-    public Y9Result<String> check4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
+    public Y9Result<List<TargetModel>> check4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             StringBuilder msg = new StringBuilder();
             List<String> list = new ArrayList<>();
             List<TaskModel> signList = new ArrayList<>();
+            List<TaskModel> taskList = new ArrayList<>();
             Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
                 String[] tpArr = tp.split(":");
                 TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
@@ -553,6 +555,7 @@ public class Document4GfgRestController {
                         msg.append(",").append(ppModel.getTitle());
                     }
                 } else {
+                    taskList.add(task);
                     if (StringUtils.isBlank(task.getAssignee())) {
                         signList.add(task);
                     }
@@ -568,9 +571,15 @@ public class Document4GfgRestController {
                 return Y9Result.failure("不能批量发送，以下待办已处理：" + msg);
             }
             if (list.size() > 1) {
-                return Y9Result.failure("不能批量发送，存在不同的任务节点");
+                return Y9Result.failure("不能批量发送，存在不同的办理环节");
             }
-            return Y9Result.success();
+            List<TargetModel> routeToTasks = processDefinitionApi
+                .getTargetNodes(tenantId, taskList.get(0).getProcessDefinitionId(),
+                    taskList.get(0).getTaskDefinitionKey())
+                .getData().stream()
+                .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
+                .collect(Collectors.toList());
+            return Y9Result.success(routeToTasks);
         } catch (Exception e) {
             LOGGER.error("发送失败", e);
         }
