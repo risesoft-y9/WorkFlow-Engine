@@ -493,7 +493,7 @@ public class Document4GfgRestController {
     }
 
     /**
-     * 办件发送
+     * 办件批量发送
      *
      * @param taskIdAndProcessSerialNumbers 任务id和流程序列号集合
      * @param userChoice 收件人
@@ -534,6 +534,57 @@ public class Document4GfgRestController {
             }
         });
         return Y9Result.successMsg("发送成功" + success.get() + "条，发送失败" + fail.get() + "条");
+    }
+
+    @PostMapping(value = "/sign4Batch")
+    public Y9Result<String> sign4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        try {
+            StringBuilder msg = new StringBuilder();
+            StringBuilder msg4sign = new StringBuilder();
+            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+                String[] tpArr = tp.split(":");
+                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+                ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+                if (null == task) {
+                    if (StringUtils.isBlank(msg)) {
+                        msg.append(ppModel.getTitle());
+                    } else {
+                        msg.append(",").append(ppModel.getTitle());
+                    }
+                } else {
+                    if (StringUtils.isNotBlank(task.getAssignee())) {
+                        if (StringUtils.isBlank(msg4sign)) {
+                            msg4sign.append(ppModel.getTitle());
+                        } else {
+                            msg4sign.append(",").append(ppModel.getTitle());
+                        }
+                    }
+                }
+            });
+            if (StringUtils.isNotBlank(msg4sign)) {
+                return Y9Result.failure("不能批量签收，以下待办已签收：" + msg4sign);
+            }
+            if (StringUtils.isNotBlank(msg)) {
+                return Y9Result.failure("不能批量签收，以下待办已处理：" + msg);
+            }
+            AtomicInteger success = new AtomicInteger();
+            AtomicInteger fail = new AtomicInteger();
+            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+                String[] tpArr = tp.split(":");
+                Y9Result<Object> y9Result = taskApi.claim(tenantId, positionId, tpArr[0]);
+                if (y9Result.isSuccess()) {
+                    success.getAndIncrement();
+                } else {
+                    fail.getAndIncrement();
+                }
+
+            });
+            return Y9Result.successMsg("签收成功" + success.get() + "条，签收失败" + fail.get() + "条");
+        } catch (Exception e) {
+            LOGGER.error("校验失败", e);
+        }
+        return Y9Result.failure("校验失败，发生异常");
     }
 
     @PostMapping(value = "/check4Batch")
@@ -581,9 +632,9 @@ public class Document4GfgRestController {
                 .collect(Collectors.toList());
             return Y9Result.success(routeToTasks);
         } catch (Exception e) {
-            LOGGER.error("发送失败", e);
+            LOGGER.error("校验失败", e);
         }
-        return Y9Result.failure("发送失败，发生异常");
+        return Y9Result.failure("校验失败，发生异常");
     }
 
     /**
