@@ -18,6 +18,11 @@ public class TargetModel implements Serializable {
     private static final long serialVersionUID = -259787849157514873L;
 
     /**
+     * 流程定义
+     */
+    private String processDefinitionId;
+
+    /**
      * 节点key
      */
     private String taskDefKey;
