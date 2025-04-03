@@ -72,5 +72,5 @@ public interface TypeSettingInfoApi {
      */
     @PostMapping(value = "/updateFile")
     Y9Result<Object> updateFile(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
-        @RequestParam("fileId") String fileId);
+        @RequestParam("fileId") String fileId, @RequestParam("fileType") String fileType);
 }
