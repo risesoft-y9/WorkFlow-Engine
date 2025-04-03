@@ -115,11 +115,15 @@ public class TypeSettingInfoApiImpl implements TypeSettingInfoApi {
      */
     @Override
     public Y9Result<Object> updateFile(@RequestParam String tenantId, @RequestParam String id,
-        @RequestParam String fileId) {
+        @RequestParam String fileId, @RequestParam String fileType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         TypeSettingInfo typeSettingInfo = typeSettingInfoRepository.findById(id).orElse(null);
         if (typeSettingInfo != null) {
-            typeSettingInfo.setQingyangFile(fileId);
+            if (".ofd".equals(fileType)) {
+                typeSettingInfo.setBanshiFile(fileId);
+            } else {
+                typeSettingInfo.setQingyangFile(fileId);
+            }
             typeSettingInfoRepository.save(typeSettingInfo);
         }
         return Y9Result.success();
