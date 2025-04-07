@@ -49,6 +49,14 @@ public class CustomView implements Serializable {
     @Column(name = "FIELDID", length = 50)
     private String fieldId;
 
+    @Comment("表单id")
+    @Column(name = "FORMID", length = 50)
+    private String formId;
+
+    @Comment("字段名称")
+    @Column(name = "FIELDNAME", length = 100)
+    private String fieldName;
+
     @Comment("序号")
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;

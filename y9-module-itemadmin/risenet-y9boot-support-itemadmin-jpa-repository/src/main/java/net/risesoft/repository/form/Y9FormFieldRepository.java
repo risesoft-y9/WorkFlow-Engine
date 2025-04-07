@@ -32,7 +32,7 @@ public interface Y9FormFieldRepository
 
     Page<Y9FormField> findByFormId(String formId, Pageable pageable);
 
-    Y9FormField findByFormIdAndFieldName(String formId, String fieldName);
+    List<Y9FormField> findByFormIdAndFieldName(String formId, String fieldName);
 
     List<Y9FormField> findByFormIdAndTableName(String formId, String tableName);
 
