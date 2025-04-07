@@ -748,4 +748,16 @@
             <column name="DEPTPROPCATEGORY" type="INT" remarks="部门属性种类"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-40" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_CUSTOM_VIEW" columnName="FORMID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_CUSTOM_VIEW">
+            <column name="FORMID" remarks="表单id" type="VARCHAR(50)"/>
+            <column name="FIELDNAME" type="VARCHAR(100)" remarks="字段名称"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
