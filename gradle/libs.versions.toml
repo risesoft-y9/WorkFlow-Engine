@@ -1,5 +1,5 @@
 [versions]
-y9-plugin = "9.7.0-08"
+y9-plugin = "9.7.0-09"
 y9-digitalbase = "9.7.0-SNAPSHOT"
 
 flowable-spring-boot = "7.1.0"
