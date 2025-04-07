@@ -139,17 +139,14 @@ public class FormNTKO4GfgController {
         String bwybBgtfzryj = "tingLeaderComment";
         List<OpinionListModel> data1 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybBgtfzryj, itemId, null, null, null).getData();
         String tldContent = OpinionUtil.generateOpinions(data1);
-        LOGGER.info("==========tldContent==========:"+tldContent);
         // 办文要报-核稿人意见
         String bwybBgthgyj = "reviewerComment";
         List<OpinionListModel> data2 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybBgthgyj, itemId, null, null, null).getData();
         String hgrContent = OpinionUtil.generateOpinions(data2);
-        LOGGER.info("==========hgrContent==========:"+hgrContent);
         // 办文要报-领导批示
         String bwybLdps = "leaderComment";
         List<OpinionListModel> data3 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybLdps, itemId, null, null, null).getData();
         String ldContent = OpinionUtil.generateOpinions(data3);
-        LOGGER.info("==========ldContent==========:"+ldContent);
 
         // 获取办文信息纸质附件清单
         List<PaperAttachmentModel> paperAttList = paperAttachmentApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
@@ -326,7 +323,8 @@ public class FormNTKO4GfgController {
         try {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, "清样文件" + fileType);
-            Boolean flag = typeSettingInfoApi.updateFile(tenantId, id, y9FileStore.getId()).isSuccess();
+            LOGGER.info("==========fileType==========:"+fileType+ "=============y9FileStoreId=============:"+y9FileStore.getId());
+            Boolean flag = typeSettingInfoApi.updateFile(tenantId, id, y9FileStore.getId(), fileType).isSuccess();
             if (flag) {
                 return Y9Result.success(y9FileStore.getId());
             }
