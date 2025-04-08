@@ -54,13 +54,11 @@ public class SignDeptSecretary extends AbstractDynamicRoleMember {
             List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(officeDoneInfo.getProcessSerialNumber(), "0");
             // 获取会签司局
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
-            list.forEach(signDeptInfo -> {
-                orgUnitListFilter.forEach(orgUnit -> {
-                    if (orgUnit.getGuidPath().contains(signDeptInfo.getDeptId())) {
-                        orgUnitListTemp.add(orgUnit);
-                    }
-                });
-            });
+            list.forEach(signDeptInfo -> orgUnitListFilter.forEach(orgUnit -> {
+                if (orgUnit.getGuidPath().contains(signDeptInfo.getDeptId())) {
+                    orgUnitListTemp.add(orgUnit);
+                }
+            }));
             return orgUnitListTemp;
         }
         return List.of();
