@@ -34,8 +34,6 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "流转信息表", appliesTo = "FF_ACT_RU_DETAIL")
 public class ActRuDetail implements Serializable {
 
-    public static final Integer DOING = 1;
-
     private static final long serialVersionUID = 1276030927802869240L;
 
     @Id

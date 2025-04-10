@@ -36,9 +36,9 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ActRuDetailRepository;
 import net.risesoft.service.ActRuDetailService;
-import net.risesoft.service.ItemPageService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -75,8 +75,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final ItemPageService itemPageService;
-
     @Override
     @Transactional
     public void copy(String oldProcessSerialNumber, String newProcessSerialNumber, String newProcessInstanceId) {
@@ -96,7 +94,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 ard.setStarted(true);
                 ard.setItemId(processParam.getItemId());
                 ard.setProcessDefinitionKey(item.getWorkflowGuid());
-                ard.setStatus(ActRuDetail.DOING);
+                ard.setStatus(ActRuDetailStatusEnum.DOING.getValue());
                 ard.setTaskId("");
                 listTemp.add(ard);
             }
@@ -115,7 +113,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Override
     public int countBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status) {
         int count;
-        if (0 == status) {
+        if (ActRuDetailStatusEnum.TODO.getValue() == status) {
             count = actRuDetailRepository.countBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
                 status);
         } else {
@@ -186,13 +184,22 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public ActRuDetail findByProcessInstanceIdAndAssignee(String processInstanceId, String assignee) {
-        return actRuDetailRepository.findByProcessInstanceIdAndAssignee(processInstanceId, assignee);
+    public ActRuDetail findByProcessInstanceIdAndAssigneeAndStatusEquals1(String processInstanceId, String assignee) {
+        return actRuDetailRepository.findByProcessInstanceIdAndAssigneeAndStatus(processInstanceId, assignee,
+            ActRuDetailStatusEnum.DOING.getValue());
     }
 
     @Override
-    public ActRuDetail findByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee) {
-        return actRuDetailRepository.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+    public ActRuDetail findByProcessSerialNumberAndAssigneeAndStatusEquals1(String processSerialNumber,
+        String assignee) {
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumberAndAssigneeAndStatus(
+            processSerialNumber, assignee, ActRuDetailStatusEnum.DOING.getValue());
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public ActRuDetail findByTaskIdAndAssignee(String taskId, String assignee) {
+        return actRuDetailRepository.findByTaskIdAndAssignee(taskId, assignee);
     }
 
     @Override
@@ -261,7 +268,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     public Page<ActRuDetail> pageByAssigneeAndStatus(String assignee, int status, int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ActRuDetail> pageList;
-        if (0 == status) {
+        if (ActRuDetailStatusEnum.TODO.getValue() == status) {
             pageList = actRuDetailRepository.findByAssigneeAndStatusAndDeletedFalse(assignee, status, pageable);
         } else {
             pageList =
@@ -275,7 +282,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ActRuDetail> pageList;
-        if (0 == status) {
+        if (ActRuDetailStatusEnum.TODO.getValue() == status) {
             pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
                 status, pageable);
         } else {
@@ -290,7 +297,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         int status, String taskDefKey, int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ActRuDetail> pageList;
-        if (0 == status) {
+        if (ActRuDetailStatusEnum.TODO.getValue() == status) {
             pageList = actRuDetailRepository.findBySystemNameAndTaskDefKeyAndAssigneeAndStatusAndDeletedFalse(
                 systemName, taskDefKey, assignee, status, pageable);
         } else {
@@ -490,7 +497,116 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         initSubNodeMap(actRuDetail.getProcessDefinitionId());
         String processSerialNumber = actRuDetail.getProcessSerialNumber();
         String assignee = actRuDetail.getAssignee();
-        ActRuDetail oldActRuDetail = this.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+        ActRuDetail doing = this.findByProcessSerialNumberAndAssigneeAndStatusEquals1(processSerialNumber, assignee);
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+        if (null != doing) {
+            doing.setLastTime(actRuDetail.getLastTime());
+            doing.setStatus(actRuDetail.getStatus());
+            doing.setTaskId(actRuDetail.getTaskId());
+            doing.setProcessInstanceId(actRuDetail.getProcessInstanceId());
+            doing.setExecutionId(actRuDetail.getExecutionId());
+            doing.setStarted(actRuDetail.isStarted());
+            doing.setDueDate(processParam.getDueDate());
+            doing.setProcessDefinitionId(actRuDetail.getProcessDefinitionId());
+            doing.setAssigneeName(actRuDetail.getAssigneeName());
+            doing.setTaskDefKey(actRuDetail.getTaskDefKey());
+            doing.setTaskDefName(actRuDetail.getTaskDefName());
+            doing.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
+                : actRuDetail.getSignStatus());
+            doing.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
+                .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
+            actRuDetailRepository.save(doing);
+            return true;
+        }
+
+        actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+        actRuDetail.setDeptName(dept.getName());
+        actRuDetail.setSystemName(processParam.getSystemName());
+        actRuDetail.setDueDate(processParam.getDueDate());
+        actRuDetail.setDeleted(false);
+        actRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
+            .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
+        OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+        actRuDetail.setBureauId(bureau.getId());
+        actRuDetail.setBureauName(bureau.getName());
+        actRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
+            : actRuDetail.getSignStatus());
+        actRuDetailRepository.save(actRuDetail);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public Y9Result<Object> claim(String taskId, String assignee) {
+        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
+        ardList.forEach(ard -> {
+            ard.setLastTime(new Date());
+            ard.setStatus(ard.getAssignee().equals(assignee) ? ActRuDetailStatusEnum.TODO.getValue()
+                : ActRuDetailStatusEnum.DOING.getValue());
+            ard.setSignStatus(ard.getAssignee().equals(assignee) ? ActRuDetailSignStatusEnum.DONE.getValue()
+                : ActRuDetailSignStatusEnum.NONE.getValue());
+            ard.setAssigneeName(
+                orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), ard.getAssignee()).getData().getName());
+        });
+        return Y9Result.success();
+    }
+
+    @Override
+    @Transactional
+    public Y9Result<Object> unClaim(String taskId, String assignee) {
+        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
+        StringBuffer names = new StringBuffer();
+        ardList.forEach(ard -> {
+            if (StringUtils.isBlank(names)) {
+                names.append(ard.getAssigneeName());
+            } else {
+                names.append("、").append(ard.getAssigneeName());
+            }
+        });
+        ardList.forEach(ard -> {
+            ard.setStatus(ActRuDetailStatusEnum.TODO.getValue());
+            ard.setSignStatus(ActRuDetailSignStatusEnum.TODO.getValue());
+            ard.setLastTime(new Date());
+            ard.setAssigneeName(names.toString());
+            actRuDetailRepository.save(ard);
+        });
+        return Y9Result.success();
+    }
+
+    @Override
+    @Transactional
+    public Y9Result<Object> refuseClaim(String taskId, String assignee) {
+        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
+        StringBuffer names = new StringBuffer();
+        ardList.forEach(ard -> {
+            if (!ard.getAssignee().equals(assignee)) {
+                if (StringUtils.isBlank(names)) {
+                    names.append(ard.getAssigneeName());
+                } else {
+                    names.append("、").append(ard.getAssigneeName());
+                }
+            }
+        });
+        ardList.forEach(ard -> {
+            ard.setStatus(ard.getAssignee().equals(assignee) ? ActRuDetailStatusEnum.DOING.getValue()
+                : ActRuDetailStatusEnum.TODO.getValue());
+            ard.setSignStatus(ard.getAssignee().equals(assignee) ? ActRuDetailSignStatusEnum.REFUSE.getValue()
+                : ActRuDetailSignStatusEnum.TODO.getValue());
+            ard.setLastTime(new Date());
+            ard.setAssigneeName(ard.getAssignee().equals(assignee) ? ard.getAssigneeName() : names.toString());
+            actRuDetailRepository.save(ard);
+        });
+        return Y9Result.success();
+    }
+
+    @Override
+    @Transactional
+    public boolean createTodo(ActRuDetail actRuDetail) {
+        initSubNodeMap(actRuDetail.getProcessDefinitionId());
+        String processSerialNumber = actRuDetail.getProcessSerialNumber();
+        String assignee = actRuDetail.getAssignee();
+        ActRuDetail oldActRuDetail = actRuDetailRepository.findByTaskIdAndAssignee(processSerialNumber, assignee);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         if (null != oldActRuDetail) {
             oldActRuDetail.setLastTime(actRuDetail.getLastTime());
@@ -499,14 +615,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 oldActRuDetail.setTaskId(actRuDetail.getTaskId());
             }
             oldActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
+            oldActRuDetail.setExecutionId(actRuDetail.getExecutionId());
             oldActRuDetail.setStarted(actRuDetail.isStarted());
-            oldActRuDetail.setDeleted(false);
             oldActRuDetail.setDueDate(processParam.getDueDate());
             oldActRuDetail.setProcessDefinitionId(actRuDetail.getProcessDefinitionId());
             oldActRuDetail.setAssigneeName(actRuDetail.getAssigneeName());
             oldActRuDetail.setTaskDefKey(actRuDetail.getTaskDefKey());
             oldActRuDetail.setTaskDefName(actRuDetail.getTaskDefName());
-            oldActRuDetail.setExecutionId(actRuDetail.getExecutionId());
             oldActRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
                 : actRuDetail.getSignStatus());
             oldActRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
@@ -515,42 +630,46 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             return true;
         }
 
+        actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
-        ActRuDetail newActRuDetail = new ActRuDetail();
-        newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newActRuDetail.setProcessSerialNumber(actRuDetail.getProcessSerialNumber());
-        newActRuDetail.setAssignee(assignee);
-        newActRuDetail.setAssigneeName(actRuDetail.getAssigneeName());
-        newActRuDetail.setDeptId(actRuDetail.getDeptId());
-        newActRuDetail.setDeptName(dept.getName());
-        newActRuDetail.setCreateTime(actRuDetail.getCreateTime());
-        newActRuDetail.setLastTime(actRuDetail.getLastTime());
-        newActRuDetail.setProcessDefinitionKey(actRuDetail.getProcessDefinitionKey());
-        newActRuDetail.setProcessDefinitionId(actRuDetail.getProcessDefinitionId());
-        newActRuDetail.setTaskDefKey(actRuDetail.getTaskDefKey());
-        newActRuDetail.setTaskDefName(actRuDetail.getTaskDefName());
-        newActRuDetail.setExecutionId(actRuDetail.getExecutionId());
-        newActRuDetail.setSystemName(actRuDetail.getSystemName());
-        newActRuDetail.setStatus(actRuDetail.getStatus());
-        newActRuDetail.setTaskId(actRuDetail.getTaskId());
-        newActRuDetail.setStarted(actRuDetail.isStarted());
-        newActRuDetail.setDeleted(false);
-        newActRuDetail.setEnded(actRuDetail.isEnded());
-        newActRuDetail.setItemId(actRuDetail.getItemId());
-        newActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
-        newActRuDetail.setStartTime(actRuDetail.getStartTime());
-        newActRuDetail.setItemId(processParam.getItemId());
-        newActRuDetail.setSystemName(processParam.getSystemName());
-        newActRuDetail.setDueDate(processParam.getDueDate());
-        newActRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
+        actRuDetail.setDeptName(dept.getName());
+        actRuDetail.setSystemName(processParam.getSystemName());
+        actRuDetail.setDueDate(processParam.getDueDate());
+        actRuDetail.setDeleted(false);
+        actRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
             .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
-        newActRuDetail.setBureauId(bureau.getId());
-        newActRuDetail.setBureauName(bureau.getName());
-        newActRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
+        actRuDetail.setBureauId(bureau.getId());
+        actRuDetail.setBureauName(bureau.getName());
+        actRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
             : actRuDetail.getSignStatus());
-        actRuDetailRepository.save(newActRuDetail);
+        actRuDetailRepository.save(actRuDetail);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public Y9Result<Object> todo2doing(String taskId, String assignee) {
+        ActRuDetail todo = actRuDetailRepository.findByTaskIdAndAssignee(taskId, assignee);
+        List<ActRuDetail> doingList = actRuDetailRepository.findByProcessSerialNumberAndAssigneeAndStatus(
+            todo.getProcessSerialNumber(), assignee, ActRuDetailStatusEnum.DOING.getValue());
+        if (doingList.isEmpty()) {
+            todo.setStatus(ActRuDetailStatusEnum.DOING.getValue());
+            todo.setLastTime(new Date());
+            actRuDetailRepository.save(todo);
+            return Y9Result.success();
+        }
+        ActRuDetail doing = doingList.get(0);
+        doing.setLastTime(new Date());
+        doing.setTaskId(todo.getTaskId());
+        doing.setTaskDefKey(todo.getTaskDefKey());
+        doing.setTaskDefName(todo.getTaskDefName());
+        doing.setExecutionId(todo.getExecutionId());
+        doing.setSub(SUB_NODE_MAP.get(todo.getProcessDefinitionId()).stream()
+            .anyMatch(taskDefKey -> taskDefKey.equals(todo.getTaskDefKey())));
+        actRuDetailRepository.save(doing);
+        actRuDetailRepository.delete(todo);
+        return Y9Result.success();
     }
 
     @Override

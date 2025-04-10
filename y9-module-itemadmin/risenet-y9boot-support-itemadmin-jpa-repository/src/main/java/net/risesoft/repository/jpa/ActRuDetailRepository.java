@@ -54,13 +54,20 @@ public interface ActRuDetailRepository
 
     List<ActRuDetail> findByProcessInstanceId(String processInstanceId);
 
-    ActRuDetail findByProcessInstanceIdAndAssignee(String processInstanceId, String assignee);
+    ActRuDetail findByProcessInstanceIdAndAssigneeAndStatus(String processInstanceId, String assignee, int status);
+
+    ActRuDetail findByTaskIdAndAssignee(String taskId, String assignee);
+
+    List<ActRuDetail> findByTaskId(String taskId);
 
     List<ActRuDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeAsc(String processInstanceId, int status);
 
     List<ActRuDetail> findByProcessSerialNumber(String processSerialNumber);
 
     ActRuDetail findByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee);
+
+    List<ActRuDetail> findByProcessSerialNumberAndAssigneeAndStatus(String processSerialNumber, String assignee,
+        int status);
 
     List<ActRuDetail> findByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended);
 
