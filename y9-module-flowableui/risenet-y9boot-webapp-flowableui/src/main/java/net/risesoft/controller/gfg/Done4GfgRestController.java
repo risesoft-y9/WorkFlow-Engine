@@ -73,7 +73,7 @@ public class Done4GfgRestController {
     }
 
     /**
-     * 获取科室办结件列表
+     * 获取所有办结件列表
      *
      * @param itemId 事项id
      * @param page 页码
