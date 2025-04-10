@@ -283,14 +283,18 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         List<String> sqlList = y9TableService.getSql(searchMap);
         String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
             assigneeNameWhereSql = sqlList.get(3);
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+        String sql =
+            "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
+                + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
             + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
-            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
-        String countSql = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+        String countSql =
+            "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
+                + innerSql
             + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
             + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
-            + " GROUP BY T.PROCESSSERIALNUMBER) ALIAS";
+                + ") A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName, deptId};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
