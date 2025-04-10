@@ -179,7 +179,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     List<UrgeInfoModel> urgeInfoList =
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<TaskRelatedModel> taskRelatedList;
-                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
+                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue()) && !isOrg) {
                         mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                         taskRelatedList = getTaskRelated4Todo(ardModel, formData);
                         mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
@@ -187,7 +187,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         List<SignDeptDetailModel> signDeptDetailList =
                             signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                         if (!ardModel.isEnded()) {
-                            mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DOING.getValue());
+                            mapTemp.put(SysVariables.ITEMBOX,
+                                isOrg ? ItemBoxTypeEnum.MONITORDOING.getValue() : ItemBoxTypeEnum.DOING.getValue());
                             taskRelatedList =
                                 getTaskRelated4Doing(processSerialNumber, "", formData, ardModel.isSub(), urgeInfoList);
                             List<TaskModel> taskList =
@@ -197,7 +198,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                                 getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList, signDeptDetailList,
                                     false));
                         } else {
-                            mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
+                            mapTemp.put(SysVariables.ITEMBOX,
+                                isOrg ? ItemBoxTypeEnum.MONITORDONE.getValue() : ItemBoxTypeEnum.DONE.getValue());
                             taskRelatedList =
                                 getTaskRelated4Done(ardModel, formData, ardModel.isSub(), urgeInfoList);
                             mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
