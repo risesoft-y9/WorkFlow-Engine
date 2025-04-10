@@ -89,8 +89,8 @@ public interface ActRuDetailRepository
      * @return
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 and ENDED =?2 and  DELETED = false  GROUP BY PROCESSSERIALNUMBER",
-        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1  and ENDED =?2 and  DELETED = false   GROUP BY PROCESSSERIALNUMBER) ALIAS")
+        value = "SELECT A.* FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 and T.ENDED =?2 AND  T.DELETED = FALSE) A WHERE A.RS_NUM = 1",
+        countQuery = "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1  AND T.ENDED =?2 AND T.DELETED = FALSE) A WHERE A.RS_NUM = 1) ALIAS")
     Page<ActRuDetail> findBySystemNameAndEndedNativeQuery(String systemName, boolean ended, Pageable pageable);
 
     /**
@@ -101,8 +101,8 @@ public interface ActRuDetailRepository
      * @return
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 and  DELETED = true  GROUP BY PROCESSSERIALNUMBER",
-        countQuery = "SELECT COUNT(*) FROM (SELECT COUNT(*) FROM FF_ACT_RU_DETAIL WHERE SYSTEMNAME = ?1 and DELETED = true  GROUP BY PROCESSSERIALNUMBER) ALIAS")
+        value = "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 and T.DELETED = TRUE) A WHERE A.RS_NUM = 1",
+        countQuery = "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 AND T.DELETED = TRUE) A WHERE A.RS_NUM = 1) ALIAS")
     Page<ActRuDetail> findBySystemNameAndDeletedTrueNativeQuery(String systemName, Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee,
