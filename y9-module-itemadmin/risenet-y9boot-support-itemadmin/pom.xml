@@ -130,17 +130,17 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.alexheretic</groupId>
             <artifactId>fluent</artifactId>
             <version>2.0</version>
-        </dependency>
+        </dependency>-->
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.jxl</groupId>
             <artifactId>jxl</artifactId>
             <version>2.6</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>
