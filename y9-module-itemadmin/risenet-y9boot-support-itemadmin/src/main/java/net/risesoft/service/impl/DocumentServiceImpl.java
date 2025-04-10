@@ -44,6 +44,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ItemButtonBind;
 import net.risesoft.entity.ItemPermission;
@@ -104,6 +105,7 @@ import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.DynamicRoleMemberService;
+import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.Process4SearchService;
@@ -206,6 +208,8 @@ public class DocumentServiceImpl implements DocumentService {
     private final ItemTaskConfRepository taskConfRepository;
 
     private final DynamicRoleMemberService dynamicRoleMemberService;
+
+    private final DynamicRoleService dynamicRoleService;
 
     private final ConditionParserApi conditionParserApi;
 
@@ -320,12 +324,12 @@ public class DocumentServiceImpl implements DocumentService {
 
         String multiInstance = processDefinitionApi.getNodeType(tenantId, processDefinitionId, taskDefKey).getData();
         Map<String, Object> tabMap =
-            itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
+            itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId, taskId);
 
         model.setExistDepartment((Boolean)tabMap.get("existDepartment"));
         model.setExistPosition((Boolean)tabMap.get("existPosition"));
         model.setSignTask(false);
-        if (SysVariables.COMMON.equals(multiInstance)) {// 单人节点，判断是否是抢占式签收任务
+        if (SysVariables.COMMON.equals(multiInstance)) {
             ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
                 processDefinitionId, taskDefKey);
             if (itemTaskConf != null && itemTaskConf.getSignTask()) {
@@ -899,11 +903,11 @@ public class DocumentServiceImpl implements DocumentService {
         Integer signStatus = SignStatusEnum.NOTSTART.getValue();
         // 待办时，主办打开不显示【签注意见纸】，会签部门打开显示签注意见纸
         if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())) {
-            ActRuDetail actRuDetail = actRuDetailService
-                .findByProcessSerialNumberAndAssignee(model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
-            signStatus = actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.NONE.getValue();
+            ActRuDetail todo =
+                actRuDetailService.findByTaskIdAndAssignee(model.getTaskId(), Y9LoginUserHolder.getOrgUnitId());
+            signStatus = todo.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.NONE.getValue();
         } else {
-            // 非待办时，
+            // 非待办时
             // documentId不为空且为流程序列号时，打开的是主办，不显示签注意见纸
             if (StringUtils.isNotBlank(model.getDocumentId())
                 && model.getDocumentId().equals(model.getProcessSerialNumber())) {
@@ -911,11 +915,11 @@ public class DocumentServiceImpl implements DocumentService {
                 signStatus = SignStatusEnum.NONE.getValue();
             } else {
                 if (!signList.isEmpty()) {
-                    ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(
+                    ActRuDetail doing = actRuDetailService.findByProcessSerialNumberAndAssigneeAndStatusEquals1(
                         model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
                     signStatus =
-                        isAdmin ? SignStatusEnum.ADMIN.getValue() : null == actRuDetail ? SignStatusEnum.SUB.getValue()
-                            : actRuDetail.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
+                        isAdmin ? SignStatusEnum.ADMIN.getValue() : null == doing ? SignStatusEnum.SUB.getValue()
+                            : doing.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
                 }
             }
         }
@@ -1020,7 +1024,9 @@ public class DocumentServiceImpl implements DocumentService {
                 orgUnitList.addAll(deptList);
                 orgUnitList.addAll(personList);
             } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
-                List<OrgUnit> ouList = dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(),
+                DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
+                List<OrgUnit> ouList =
+                    dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole,
                     processSerialNumber);
                 for (OrgUnit orgUnit : ouList) {
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {

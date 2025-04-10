@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -76,22 +77,31 @@ public interface ActRuDetailService {
     boolean endByProcessSerialNumber(String processSerialNumber);
 
     /**
-     * 根据流程实例Id和办理人查找
+     * 根据流程实例Id和办理人查找(一个件一个人只会有一个在办信息)
      *
      * @param processInstanceId
      * @param assignee
      * @return
      */
-    ActRuDetail findByProcessInstanceIdAndAssignee(String processInstanceId, String assignee);
+    ActRuDetail findByProcessInstanceIdAndAssigneeAndStatusEquals1(String processInstanceId, String assignee);
 
     /**
-     * 根据流程实例Id和办理人查找
+     * 根据流程序列号和办理人查找在办信息(一个件一个人只会有一个在办信息)
      *
      * @param processSerialNumber
      * @param assignee
      * @return
      */
-    ActRuDetail findByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee);
+    ActRuDetail findByProcessSerialNumberAndAssigneeAndStatusEquals1(String processSerialNumber, String assignee);
+
+    /**
+     * 根据任务Id和办理人查找
+     * 
+     * @param taskId
+     * @param assignee
+     * @return
+     */
+    ActRuDetail findByTaskIdAndAssignee(String taskId, String assignee);
 
     /**
      * 根据流程实例id获取列表
@@ -375,6 +385,46 @@ public interface ActRuDetailService {
      * @return
      */
     boolean saveOrUpdate(ActRuDetail actRuDetail);
+
+    /**
+     * 签收
+     *
+     * @param taskId 任务id
+     * @param assignee 办理人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.8
+     */
+    Y9Result<Object> claim(String taskId, String assignee);
+
+    /**
+     * 签收
+     *
+     * @param taskId 任务id
+     * @param assignee 办理人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.8
+     */
+    Y9Result<Object> unClaim(String taskId, String assignee);
+
+    /**
+     * 签收
+     *
+     * @param taskId 任务id
+     * @param assignee 办理人id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.8
+     */
+    Y9Result<Object> refuseClaim(String taskId, String assignee);
+
+    /**
+     * 保存或者更新
+     *
+     * @param actRuDetail
+     * @return
+     */
+    boolean createTodo(ActRuDetail actRuDetail);
+
+    Y9Result<Object> todo2doing(String taskId, String assignee);
 
     void setRead(String id);
 
