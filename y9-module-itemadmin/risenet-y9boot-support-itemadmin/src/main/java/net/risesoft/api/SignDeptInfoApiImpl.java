@@ -167,6 +167,27 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     }
 
     /**
+     * 添加会签信息
+     *
+     * @param tenantId 租户ID
+     * @param positionId 岗位id
+     * @param deptIds 部门ids
+     * @param deptType 单位类型（0：委内，1：委外）
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Object>
+     * @since 9.6.0
+     */
+    @Override
+    public Y9Result<Object> addSignDept(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        signDeptInfoService.addSignDept(processSerialNumber, deptType, deptIds);
+        return Y9Result.success();
+    }
+
+    /**
      * 保存会签签名
      *
      * @param tenantId 租户ID

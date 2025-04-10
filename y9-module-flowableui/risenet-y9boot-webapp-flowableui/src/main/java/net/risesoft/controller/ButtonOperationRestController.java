@@ -36,7 +36,6 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -602,13 +601,7 @@ public class ButtonOperationRestController {
                 }
             }
             taskApi.deleteCandidateUser(tenantId, taskId, activitiUser);
-            String processSerialNumber = (String)vars.get(SysVariables.PROCESSSERIALNUMBER);
-            ActRuDetailModel actRuDetailModel = actRuDetailApi
-                .findByProcessSerialNumberAndAssignee(tenantId, processSerialNumber, positionId).getData();
-            if (null != actRuDetailModel) {
-                actRuDetailModel.setStatus(1);
-                actRuDetailApi.saveOrUpdate(tenantId, actRuDetailModel);
-            }
+            actRuDetailApi.refuseClaim(tenantId, taskId, positionId);
             return Y9Result.successMsg("拒签成功");
         } catch (Exception e) {
             LOGGER.error("refuseClaim error", e);

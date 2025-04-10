@@ -86,6 +86,22 @@ public interface SignDeptInfoApi {
         @RequestParam("deptType") String deptType, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
+     * 添加会签信息
+     *
+     * @param tenantId 租户ID
+     * @param positionId 岗位id
+     * @param deptIds 部门ids
+     * @param deptType 单位类型（0：委内，1：委外）
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Object>
+     * @since 9.6.0
+     */
+    @PostMapping(value = "/addSignDept")
+    Y9Result<Object> addSignDept(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("deptIds") String deptIds,
+        @RequestParam("deptType") String deptType, @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
      * 保存会签签名
      *
      * @param tenantId 租户ID

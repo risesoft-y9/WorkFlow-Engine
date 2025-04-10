@@ -30,6 +30,8 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "会签信息表", appliesTo = "FF_SIGN_DEPT_INFO")
 public class SignDeptInfo implements Serializable {
 
+    private static final long serialVersionUID = 869230755677925186L;
+
     @Id
     @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)

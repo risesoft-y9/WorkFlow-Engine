@@ -42,7 +42,7 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
 
     @Override
     public List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber) {
-        return signDeptDetailRepository.findByProcessSerialNumberOrderByCreateTimeDesc(processSerialNumber);
+        return signDeptDetailRepository.findByProcessSerialNumberOrderByCreateTimeAsc(processSerialNumber);
     }
 
     @Override

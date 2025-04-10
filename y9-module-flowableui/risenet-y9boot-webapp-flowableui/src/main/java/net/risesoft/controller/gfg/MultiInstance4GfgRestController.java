@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -31,6 +33,7 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
+import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
@@ -65,6 +68,8 @@ public class MultiInstance4GfgRestController {
     private final SignDeptDetailApi signDeptDetailApi;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final SignDeptInfoApi signDeptInfoApi;
 
     /**
      * 并行加签
@@ -113,6 +118,36 @@ public class MultiInstance4GfgRestController {
             }
             processParamModel.setDescription(description);
             processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
+            /*
+             * 保存至表单中的委内会签
+             */
+            StringBuffer deptIds = new StringBuffer();
+            Arrays.stream(userChoice.split(";")).forEach(user -> {
+                OrgUnit bureau = orgUnitApi.getBureau(tenantId, user).getData();
+                if (!deptIds.toString().contains(bureau.getId())) {
+                    if (StringUtils.isBlank(deptIds)) {
+                        deptIds.append(bureau.getId());
+                    } else {
+                        deptIds.append(",").append(bureau.getId());
+                    }
+                }
+            });
+            List<SignDeptModel> sdList =
+                signDeptInfoApi.getSignDeptList(tenantId, "0", processParamModel.getProcessSerialNumber()).getData()
+                    .stream().filter(sdd -> deptIds.toString().contains(sdd.getDeptId())).collect(Collectors.toList());
+            if (!sdList.isEmpty()) {
+                StringBuffer names = new StringBuffer();
+                sdList.forEach(sd -> {
+                    if (StringUtils.isBlank(names)) {
+                        names.append(sd.getDeptName());
+                    } else {
+                        names.append(",").append(sd.getDeptName());
+                    }
+                });
+                return Y9Result.failure("加签失败:" + names + "已经存在");
+            }
+            signDeptInfoApi.addSignDept(tenantId, Y9LoginUserHolder.getPositionId(), deptIds.toString(), "0",
+                processParamModel.getProcessSerialNumber());
             multiInstanceService.addExecutionId(processParamModel, activityId, userChoice);
             return Y9Result.successMsg("加签成功");
         } catch (Exception e) {
