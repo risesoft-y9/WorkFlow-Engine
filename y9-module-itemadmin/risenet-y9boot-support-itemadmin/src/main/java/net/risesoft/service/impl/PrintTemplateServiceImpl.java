@@ -127,9 +127,9 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
                 filename = new String(printTemplate.getFileName().getBytes(StandardCharsets.UTF_8),
                     StandardCharsets.ISO_8859_1);
             } else if (request.getHeader(userAgent).toUpperCase().contains(msie)) {
-                filename = URLEncoder.encode(printTemplate.getFileName(), "UTF-8");
+                filename = URLEncoder.encode(printTemplate.getFileName(), StandardCharsets.UTF_8);
             } else {
-                filename = URLEncoder.encode(printTemplate.getFileName(), "UTF-8");
+                filename = URLEncoder.encode(printTemplate.getFileName(), StandardCharsets.UTF_8);
             }
             response.setContentType("application/octet-stream");
             response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");

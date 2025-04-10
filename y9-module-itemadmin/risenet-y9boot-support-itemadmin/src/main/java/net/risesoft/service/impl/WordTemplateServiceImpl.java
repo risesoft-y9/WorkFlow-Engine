@@ -87,9 +87,9 @@ public class WordTemplateServiceImpl implements WordTemplateService {
                 filename = new String(wordTemplate.getFileName().getBytes(StandardCharsets.UTF_8),
                     StandardCharsets.ISO_8859_1);
             } else if (userAgent.contains(msie)) {
-                filename = URLEncoder.encode(wordTemplate.getFileName(), "UTF-8");
+                filename = URLEncoder.encode(wordTemplate.getFileName(), StandardCharsets.UTF_8);
             } else {
-                filename = URLEncoder.encode(wordTemplate.getFileName(), "UTF-8");
+                filename = URLEncoder.encode(wordTemplate.getFileName(), StandardCharsets.UTF_8);
             }
             response.setContentType("application/octet-stream");
             response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");

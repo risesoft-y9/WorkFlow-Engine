@@ -37,7 +37,7 @@ public class EntrustDetailServiceImpl implements EntrustDetailService {
     @Override
     public boolean haveEntrustDetailByTaskId(String taskId) {
         EntrustDetail ed = this.findByTaskId(taskId);
-        return null == ed ? false : true;
+        return null != ed;
     }
 
     @Override
