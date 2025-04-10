@@ -127,7 +127,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
 
     @Override
     public Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey,
-        String processInstanceId) {
+        String processInstanceId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemPermission> objectPermList =
             listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
@@ -165,8 +165,14 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 }
             }
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
-                List<OrgUnit> orgUnitList =
-                    dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
+                List<OrgUnit> orgUnitList;
+                if (dynamicRole.getClassPath().contains("Starter4SubProcess")) {
+                    orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
+                } else {
+                    orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole,
+                        processInstanceId);
+                }
                 for (OrgUnit orgUnit : orgUnitList) {
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                         map.put("existPosition", true);

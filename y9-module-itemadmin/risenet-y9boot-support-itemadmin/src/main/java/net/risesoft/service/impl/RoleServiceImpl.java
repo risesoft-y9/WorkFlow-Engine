@@ -16,6 +16,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.enums.ItemPermissionEnum;
@@ -85,7 +86,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<ItemRoleOrgUnitModel> listAllPermUser(String itemId, String processDefinitionId, String taskDefKey,
-        Integer principalType, String id, String processInstanceId) {
+        Integer principalType, String id, String processInstanceId, String taskId) {
         List<ItemRoleOrgUnitModel> allItemList = new ArrayList<>();
         List<ItemRoleOrgUnitModel> itemList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -106,8 +107,9 @@ public class RoleServiceImpl implements RoleService {
                             deptList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                         }
                         if (o.getRoleType() == 4) {
+                            DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                             List<OrgUnit> orgUnitList = dynamicRoleMemberService
-                                .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                                .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                             for (OrgUnit orgUnit : orgUnitList) {
                                 // if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                                 // || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
@@ -204,8 +206,14 @@ public class RoleServiceImpl implements RoleService {
                         orgList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                     }
                     if (o.getRoleType() == 4) {
-                        List<OrgUnit> orgUnitList = dynamicRoleMemberService
-                            .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                        DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
+                        List<OrgUnit> orgUnitList;
+                        if (dynamicRole.getClassPath().contains("Starter4SubProcess")) {
+                            orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
+                        } else {
+                            orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole,
+                                processInstanceId);
+                        }
                         for (OrgUnit orgUnit : orgUnitList) {
                             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                                 orgList.add(orgUnit);
@@ -611,8 +619,9 @@ public class RoleServiceImpl implements RoleService {
                             deptList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                         }
                         if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
+                            DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                             List<OrgUnit> orgUnitList = dynamicRoleMemberService
-                                .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                                .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                             for (OrgUnit orgUnit : orgUnitList) {
                                 if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                                     || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
@@ -695,8 +704,9 @@ public class RoleServiceImpl implements RoleService {
                         orgList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                     }
                     if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
+                        DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                         List<OrgUnit> orgUnitList = dynamicRoleMemberService
-                            .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                            .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                         for (OrgUnit orgUnit : orgUnitList) {
                             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                                 orgList.add(orgUnit);
@@ -794,8 +804,9 @@ public class RoleServiceImpl implements RoleService {
                  * 4暂时只解析动态角色里面的岗位
                  */
                 if (o.getRoleType() == 4) {
+                    DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                     List<OrgUnit> orgUnitList = dynamicRoleMemberService
-                        .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                        .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                     for (OrgUnit orgUnit : orgUnitList) {
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                             orgListTemp.add(orgUnit);
@@ -837,8 +848,9 @@ public class RoleServiceImpl implements RoleService {
                         .addAll(roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData());
                 }
                 if (o.getRoleType() == 4) {
+                    DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                     List<OrgUnit> orgUnitList = dynamicRoleMemberService
-                        .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                        .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                     for (OrgUnit orgUnit : orgUnitList) {
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                             || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
@@ -914,8 +926,9 @@ public class RoleServiceImpl implements RoleService {
                     orgList.addAll(roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData());
                 }
                 if (o.getRoleType() == 4) {
+                    DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                     List<OrgUnit> orgUnitList = dynamicRoleMemberService
-                        .listByDynamicRoleIdAndProcessInstanceId(o.getRoleId(), processInstanceId);
+                        .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                     for (OrgUnit orgUnit : orgUnitList) {
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                             orgList.add(orgUnit);
