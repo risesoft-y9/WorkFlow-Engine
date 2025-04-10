@@ -17,11 +17,11 @@ import net.risesoft.enums.DialectEnum;
  * @date 2022/12/20
  */
 public class Y9SqlPaginationUtil {
-    private static Logger log = LoggerFactory.getLogger(Y9SqlPaginationUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(Y9SqlPaginationUtil.class);
 
-    private static String MICROSOFT = "microsoft";
-    private static String ORDERBY = "order by";
-    private static int VERSION = 12;
+    private static final String MICROSOFT = "microsoft";
+    private static final String ORDERBY = "order by";
+    private static final int VERSION = 12;
 
     private static String dbType;
     private static int dbVersion;

@@ -23,27 +23,27 @@ import net.risesoft.entity.Reminder;
 public interface ReminderRepository extends JpaRepository<Reminder, String>, JpaSpecificationExecutor<Reminder> {
 
     @Query("From Reminder r where r.taskId in ?1 and r.senderId=?2")
-    public List<Reminder> findAllByTaskIdsAndSenderId(Collection<String> taskIds, String senderId);
+    List<Reminder> findAllByTaskIdsAndSenderId(Collection<String> taskIds, String senderId);
 
     @Query("From Reminder r where r.taskId in ?1 ")
-    public List<Reminder> findAllByTastId(Collection<String> userIds);
+    List<Reminder> findAllByTastId(Collection<String> userIds);
 
     Page<Reminder> findByprocInstId(String processInstanceId, Pageable pageable);
 
     Page<Reminder> findBySenderIdAndTaskIdIn(String senderId, List<String> taskIds, Pageable pageable);
 
     @Query("From Reminder r where r.taskId =?1 ")
-    public Reminder findByTaskId(String taskId);
+    Reminder findByTaskId(String taskId);
 
     Page<Reminder> findByTaskId(String taskId, Pageable pageable);
 
-    public Reminder findByTaskIdAndSenderId(String taskId, String senderId);
+    Reminder findByTaskIdAndSenderId(String taskId, String senderId);
 
     @Query("From Reminder r where r.taskId = ?1 and r.reminderSendType=?2 order by r.createTime asc")
-    public List<Reminder> findByTastIdAndReminderSendType(String taskId, String reminderSendType);
+    List<Reminder> findByTastIdAndReminderSendType(String taskId, String reminderSendType);
 
     @Transactional(readOnly = false)
     @Modifying
     @Query("update Reminder r set r.readTime=?1 where r.taskId=?2 and r.reminderSendType=?3")
-    public int updateReadTime(Date readTime, String taskId, String type);
+    int updateReadTime(Date readTime, String taskId, String type);
 }
