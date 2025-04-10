@@ -214,9 +214,11 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             assigneeNameInnerSql = sqlList.get(2);
             assigneeNameWhereSql = sqlList.get(3);
         }
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+        String sql =
+            "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
+                + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
@@ -321,10 +323,12 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             assigneeNameInnerSql = sqlList.get(2);
             assigneeNameWhereSql = sqlList.get(3);
         }
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+        String sql =
+            "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
+                + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
             + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
-            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName, deptId};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));

@@ -284,9 +284,11 @@ public class ItemAllApiImpl implements ItemAllApi {
         List<String> sqlList = y9TableService.getSql(searchMap);
         String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
             assigneeNameWhereSql = sqlList.get(3);
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+        String sql =
+            "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM   FROM FF_ACT_RU_DETAIL T "
+                + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-            + " GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
@@ -330,8 +332,8 @@ public class ItemAllApiImpl implements ItemAllApi {
             }
         });
         String sql =
-            "SELECT T.* FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER IN (" + sb
-                + ") GROUP BY PROCESSSERIALNUMBER ORDER BY T.CREATETIME DESC";
+            "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER IN ("
+                + sb + ") ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         List<ActRuDetailModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
         return Y9Result.success(content);
     }
