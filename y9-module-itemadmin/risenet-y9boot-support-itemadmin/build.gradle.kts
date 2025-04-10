@@ -26,8 +26,8 @@ dependencies {
 
     api(y9libs.google.guava)
     api(libs.jodd.mail)
-    api(libs.fluent)
-    api(libs.jxl)
+    // api(libs.fluent)
+    // api(libs.jxl)
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")
 }

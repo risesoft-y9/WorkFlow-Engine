@@ -24,7 +24,7 @@ dependencies {
     api(libs.fastjson)
     api(y9libs.google.guava)
     api(y9libs.httpcomponents.httpclient)
-    api(libs.jxl)
+    // api(libs.jxl)
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")
 }
