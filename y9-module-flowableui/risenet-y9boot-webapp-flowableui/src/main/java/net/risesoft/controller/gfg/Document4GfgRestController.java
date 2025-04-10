@@ -661,10 +661,6 @@ public class Document4GfgRestController {
         List<Department> deptList =
             departmentApi.listByParentId(Y9LoginUserHolder.getTenantId(), organization.getId()).getData();
         deptList = deptList.stream().filter(Department::isBureau).collect(Collectors.toList());
-        deptList.forEach(department -> {
-            department.setName(StringUtils.isBlank(department.getDeptGivenName()) ? department.getName()
-                : department.getDeptGivenName());
-        });
         return Y9Result.success(deptList);
     }
 
