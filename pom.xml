@@ -59,6 +59,10 @@
         <gitee.developerConnection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.developerConnection>
 
         <revision>9.7.0-SNAPSHOT</revision>
+
+        <flowable.version>7.1.0</flowable.version>
+        <jxl.version>7.1.0</jxl.version>
+
     </properties>
 
     <modules>
@@ -67,6 +71,66 @@
         <module>y9-module-jodconverter</module>
         <module>y9-module-flowableui</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-process</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jxl</groupId>
+                <artifactId>jxl</artifactId>
+                <version>2.6</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.belerweb/pinyin4j -->
+            <dependency>
+                <groupId>com.belerweb</groupId>
+                <artifactId>pinyin4j</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.songxinqiang</groupId>
+                <artifactId>com.baidu.ueditor</artifactId>
+                <version>1.1.2-offical</version>
+            </dependency>
+            <dependency>
+                <groupId>net.coobird</groupId>
+                <artifactId>thumbnailator</artifactId>
+                <version>0.4.20</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>5.2.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.deepoove</groupId>
+                <artifactId>poi-tl</artifactId>
+                <version>1.12.1</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>5.2.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.wps.yun</groupId>
+                <artifactId>graph-java-client</artifactId>
+                <version>1.0.11</version>
+                <scope>compile</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
