@@ -139,8 +139,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
             }
         });
         String sql =
-            "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER WHERE C.PROCESSSERIALNUMBER IN ( "
-                + sb + ") GROUP BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC";
+            "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER WHERE C.PROCESSSERIALNUMBER IN ( "
+                + sb + ") ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
         List<DocumentCopyModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(DocumentCopyModel.class));
         return Y9Result.success(content);
     }
@@ -179,8 +179,9 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
             }
         }
         String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
-        String bySql = "GROUP BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC";
-        String allSql = "SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER FROM FF_DOCUMENT_COPY C "
+        String bySql = " ORDER BY P.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+        String allSql =
+            "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
             + processParamSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql
             + systemNameSql + " AND C.USERID = ? " + bySql;
         Object[] args = {orgUnitId};
