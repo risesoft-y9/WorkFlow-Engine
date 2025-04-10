@@ -4,6 +4,9 @@ import java.util.List;
 
 import net.risesoft.entity.SignDeptDetail;
 
+/**
+ * @author qinman
+ */
 public interface SignDeptDetailService {
 
     void deleteById(String id);

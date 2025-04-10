@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.entity.SignDeptInfo;
@@ -32,4 +33,7 @@ public interface SignDeptInfoRepository
 
     List<SignDeptInfo> findByProcessSerialNumberAndDeptTypeOrderByOrderIndexAsc(String processSerialNumber,
         String deptType);
+
+    @Query("select max(t.orderIndex) from SignDeptInfo t where t.processSerialNumber=?1 and t.deptType=?2")
+    Integer getMaxTabIndex(String processSerialNumber, String deptType);
 }
