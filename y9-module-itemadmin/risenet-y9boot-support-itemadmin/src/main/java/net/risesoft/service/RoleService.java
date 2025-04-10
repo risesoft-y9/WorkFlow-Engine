@@ -21,10 +21,11 @@ public interface RoleService {
      * @param principalType
      * @param id
      * @param processInstanceId
+     * @param taskId
      * @return
      */
     List<ItemRoleOrgUnitModel> listAllPermUser(String itemId, String processDefinitionId, String taskDefKey,
-        Integer principalType, String id, String processInstanceId);
+        Integer principalType, String id, String processInstanceId, String taskId);
 
     List<ItemRoleOrgUnitModel> findByRoleId(String roleId, Integer principalType, String id);
 

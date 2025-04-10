@@ -10,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.entity.ActRuDetail;
+import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
-import net.risesoft.service.ActRuDetailService;
+import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -29,22 +29,22 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final ActRuDetailService actRuDetailService;
-
     private final HistoricTaskApi historicTaskApi;
 
+    private final TaskApi taskApi;
+
     @Override
-    public List<OrgUnit> getOrgUnitList(String processInstanceId) {
+    public List<OrgUnit> getOrgUnitList(String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
-        if (StringUtils.isNotBlank(processInstanceId)) {
-            ActRuDetail actRuDetail = actRuDetailService.findByProcessInstanceIdAndAssignee(processInstanceId, userId);
+        if (StringUtils.isNotBlank(taskId)) {
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<HistoricTaskInstanceModel> hisTaskList = historicTaskApi
-                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "").getData();
+                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "").getData();
             String assignee = "";
             for (HistoricTaskInstanceModel hisTask : hisTaskList) {
-                if (hisTask.getExecutionId().equals(actRuDetail.getExecutionId())) {
+                if (hisTask.getExecutionId().equals(task.getExecutionId())) {
                     assignee = hisTask.getAssignee();
                     break;
                 }

@@ -30,6 +30,7 @@ public interface ItemRoleApi {
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param id 唯一标识
      * @param processInstanceId 流程实例Id
+     * @param taskId 任务id
      * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      * @since 9.6.6
      */
@@ -39,7 +40,8 @@ public interface ItemRoleApi {
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType,
         @RequestParam(value = "id", required = false) String id,
-        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
+        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+        @RequestParam(value = "taskId", required = false) String taskId);
 
     @GetMapping("/findByRoleId")
     Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam("tenantId") String tenantId,
