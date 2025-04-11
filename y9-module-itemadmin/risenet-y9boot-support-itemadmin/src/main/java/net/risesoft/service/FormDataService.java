@@ -176,4 +176,6 @@ public interface FormDataService {
     void saveFormData(String formdata, String formId) throws Exception;
 
     Y9Result<String> updateFormData(String guid, String formData);
+
+    Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias);
 }
