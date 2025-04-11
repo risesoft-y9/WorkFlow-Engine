@@ -69,10 +69,12 @@ public class RoleServiceImpl implements RoleService {
     public List<ItemRoleOrgUnitModel> getParent(List<ItemRoleOrgUnitModel> itemList, ItemRoleOrgUnitModel model) {
         OrgUnit parent = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), model.getParentId()).getData();
         if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+            Department department = (Department)parent;
             ItemRoleOrgUnitModel parentModel = new ItemRoleOrgUnitModel();
             parentModel.setId(parent.getId());
             parentModel.setParentId(parent.getParentId());
-            parentModel.setName(parent.getName());
+            parentModel.setName(
+                StringUtils.isNotBlank(department.getAliasName()) ? department.getAliasName() : department.getName());
             parentModel.setIsParent(true);
             parentModel.setOrgType(parent.getOrgType().getValue());
             parentModel.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
@@ -126,7 +128,12 @@ public class RoleServiceImpl implements RoleService {
                                 ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                                 model.setId(orgUnit.getId());
                                 model.setParentId(org.getId());
-                                model.setName(orgUnit.getName());
+                                if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+                                    model.setName(StringUtils.isNotBlank(((Department)orgUnit).getAliasName())
+                                        ? ((Department)orgUnit).getAliasName() : orgUnit.getName());
+                                } else {
+                                    model.setName(orgUnit.getName());
+                                }
                                 model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                                 model.setOrgType(orgUnit.getOrgType().getValue());
                                 model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
@@ -144,7 +151,8 @@ public class RoleServiceImpl implements RoleService {
                             ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                             model.setId(org.getId());
                             model.setParentId(org.getParentId());
-                            model.setName(org.getName());
+                            model.setName(StringUtils.isNotBlank(((Department)org).getAliasName())
+                                ? ((Department)org).getAliasName() : org.getName());
                             model.setIsParent(true);
                             model.setOrgType(org.getOrgType().getValue());
                             model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
@@ -182,6 +190,8 @@ public class RoleServiceImpl implements RoleService {
                         model.setOrgType(orgunit.getOrgType().getValue());
                         if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                             model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                            model.setName(StringUtils.isNotBlank(((Department)orgunit).getAliasName())
+                                ? ((Department)orgunit).getAliasName() : orgunit.getName());
                         } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
                             model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
                             model.setPerson("6:" + orgunit.getId());

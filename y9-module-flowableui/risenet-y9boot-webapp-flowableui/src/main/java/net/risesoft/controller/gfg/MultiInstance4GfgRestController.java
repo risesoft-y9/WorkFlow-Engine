@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -33,7 +32,6 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
-import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
@@ -132,20 +130,6 @@ public class MultiInstance4GfgRestController {
                     }
                 }
             });
-            List<SignDeptModel> sdList =
-                signDeptInfoApi.getSignDeptList(tenantId, "0", processParamModel.getProcessSerialNumber()).getData()
-                    .stream().filter(sdd -> deptIds.toString().contains(sdd.getDeptId())).collect(Collectors.toList());
-            if (!sdList.isEmpty()) {
-                StringBuffer names = new StringBuffer();
-                sdList.forEach(sd -> {
-                    if (StringUtils.isBlank(names)) {
-                        names.append(sd.getDeptName());
-                    } else {
-                        names.append(",").append(sd.getDeptName());
-                    }
-                });
-                return Y9Result.failure("加签失败:" + names + "已经存在");
-            }
             signDeptInfoApi.addSignDept(tenantId, Y9LoginUserHolder.getPositionId(), deptIds.toString(), "0",
                 processParamModel.getProcessSerialNumber());
             multiInstanceService.addExecutionId(processParamModel, activityId, userChoice);

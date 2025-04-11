@@ -1,7 +1,6 @@
 package net.risesoft.controller.gfg;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -19,7 +18,6 @@ import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
-import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -98,7 +96,7 @@ public class Role4GfgRestController {
     }
 
     /**
-     * 获取发送选人组织机构数据
+     * 加签-获取加签的人
      *
      * @param roleId 角色id
      * @param principalType 选人类型
@@ -114,13 +112,6 @@ public class Role4GfgRestController {
         }
         List<ItemRoleOrgUnitModel> list = itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(),
             Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), roleId, principalType, id).getData();
-        List<SignDeptModel> signDeptList =
-            signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "0", processSerialNumber).getData();
-        list = list.stream()
-            .filter(item -> signDeptList.stream()
-                .noneMatch(signDept -> signDept.getDeptId()
-                    .equals(orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), item.getId()).getData().getId())))
-            .collect(Collectors.toList());
         return Y9Result.success(list);
     }
 }
