@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,6 +39,7 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -62,6 +64,7 @@ import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
@@ -122,6 +125,8 @@ public class Document4GfgRestController {
     private final ButtonOperationApi buttonOperationApi;
 
     private final SecretLevelRecordApi secretLevelRecordApi;
+
+    private final PositionApi positionApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
@@ -809,6 +814,18 @@ public class Document4GfgRestController {
             LOGGER.error("获取协办人员办理情况失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取岗位信息
+     *
+     * @param positionId
+     * @return
+     */
+    @GetMapping(value = "/getPositionfo")
+    public Y9Result<Position> getPositionfo(@RequestParam @NotBlank String positionId) {
+        Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), positionId).getData();
+        return Y9Result.success(position);
     }
 
     /**
