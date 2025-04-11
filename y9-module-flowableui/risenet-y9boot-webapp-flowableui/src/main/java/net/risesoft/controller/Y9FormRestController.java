@@ -367,17 +367,18 @@ public class Y9FormRestController {
             none.setCode("");
             none.setName("请选择");
             list.add(none);
-            bureaus.stream().filter(b -> "国司局".equals(b.getDeptGivenName())).forEach(b -> {
-                Y9FormOptionValueModel y9FormOptionValueModel = new Y9FormOptionValueModel();
-                y9FormOptionValueModel.setCode(b.getId());
-                y9FormOptionValueModel.setName(b.getDeptGivenName());
-                list.add(y9FormOptionValueModel);
+            bureaus.stream().filter(b -> position.getGuidPath().contains(b.getGuidPath())).forEach(b -> {
+                Y9FormOptionValueModel model = new Y9FormOptionValueModel();
+                model.setCode(b.getId());
+                model.setName(b.getAliasName());
+                list.add(model);
             });
-            Department bureau = (Department)orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
-            Y9FormOptionValueModel y9FormOptionValueModel = new Y9FormOptionValueModel();
-            y9FormOptionValueModel.setCode(bureau.getId());
-            y9FormOptionValueModel.setName(bureau.getDeptGivenName());
-            list.add(y9FormOptionValueModel);
+            bureaus.stream().filter(b -> "国际司".equals(b.getAliasName())).forEach(b -> {
+                Y9FormOptionValueModel model = new Y9FormOptionValueModel();
+                model.setCode(b.getId());
+                model.setName(b.getAliasName());
+                list.add(model);
+            });
             return Y9Result.success(list);
         }
         return optionClassApi.getOptionValueList(tenantId, type);
