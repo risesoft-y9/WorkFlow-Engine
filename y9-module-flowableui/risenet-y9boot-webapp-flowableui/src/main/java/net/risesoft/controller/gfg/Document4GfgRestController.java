@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -822,8 +821,8 @@ public class Document4GfgRestController {
      * @param positionId
      * @return
      */
-    @GetMapping(value = "/getPositionfo")
-    public Y9Result<Position> getPositionfo(@RequestParam @NotBlank String positionId) {
+    @GetMapping(value = "/getPositionInfo")
+    public Y9Result<Position> getPositionInfo(@RequestParam @NotBlank String positionId) {
         Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), positionId).getData();
         return Y9Result.success(position);
     }
