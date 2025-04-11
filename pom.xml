@@ -61,6 +61,7 @@
         <revision>9.7.0-SNAPSHOT</revision>
 
         <flowable.version>7.1.0</flowable.version>
+        <graph-java-client.version>1.0.11</graph-java-client.version>
         <pinyin4j.version>2.5.1</pinyin4j.version>
         <poi-tl.version>1.12.1</poi-tl.version>
     </properties>
@@ -79,26 +80,25 @@
                 <artifactId>flowable-spring-boot-starter-process</artifactId>
                 <version>${flowable.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/com.belerweb/pinyin4j -->
             <dependency>
                 <groupId>com.belerweb</groupId>
                 <artifactId>pinyin4j</artifactId>
                 <version>${pinyin4j.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.deepoove</groupId>
                 <artifactId>poi-tl</artifactId>
                 <version>${poi-tl.version}</version>
-                <scope>compile</scope>
             </dependency>
 
             <dependency>
                 <groupId>cn.wps.yun</groupId>
                 <artifactId>graph-java-client</artifactId>
-                <version>1.0.11</version>
-                <scope>compile</scope>
+                <version>${graph-java-client.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 

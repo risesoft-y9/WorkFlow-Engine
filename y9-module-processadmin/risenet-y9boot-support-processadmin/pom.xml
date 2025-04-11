@@ -13,7 +13,6 @@
     <description>RiseSoft/WorkFlow Engine processadmin support</description>
 
     <properties>
-        <flowable.version>7.1.0</flowable.version>
     </properties>
 
     <scm>
@@ -23,6 +22,12 @@
     </scm>
 
     <dependencies>
+    
+     	<dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-process</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
@@ -33,16 +38,6 @@
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-kafka</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.flowable</groupId>
-            <artifactId>flowable-spring-boot-starter-process</artifactId>
-            <version>${flowable.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
         </dependency>
 
         <dependency>
@@ -97,6 +92,11 @@
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-properties</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
 
         <dependency>
