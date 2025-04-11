@@ -505,4 +505,15 @@ public class FormDataServiceImpl implements FormDataService {
         }
         return Y9Result.failure("发生异常");
     }
+
+    @Override
+    public Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias) {
+        Y9Table y9Table = y9TableService.findByTableAlias(tableAlias);
+        if (null == y9Table) {
+            return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
+        }
+        String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID ='" + guid + "'";
+        Map<String, Object> map = jdbcTemplate.queryForMap(selectSql);
+        return Y9Result.success(map);
+    }
 }
