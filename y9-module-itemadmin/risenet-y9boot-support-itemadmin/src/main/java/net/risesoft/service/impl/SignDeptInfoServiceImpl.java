@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.SignDeptInfo;
 import net.risesoft.entity.SignOutDept;
 import net.risesoft.id.IdType;
@@ -39,6 +40,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     private final SignOutDeptRepository signOutDeptRepository;
 
     private final DepartmentApi departmentApi;
+
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     @Transactional
@@ -81,7 +84,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     @Override
     @Transactional
-    public void saveSignDept(String processSerialNumber, String deptType, String deptIds) {
+    public void saveSignDept(String processSerialNumber, String deptType, String deptIds, String tzsDeptId) {
         String[] split = deptIds.split(",");
         List<String> split1 = Arrays.asList(split);
         signDeptInfoRepository.deleteByProcessSerialNumberAndDeptTypeAndDeptIdNotIn(processSerialNumber, deptType,
@@ -100,11 +103,21 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 signDeptInfo.setOrderIndex(i + 1);
                 signDeptInfo.setDeptId(deptId);
                 signDeptInfo.setRecordTime(new Date());
+                signDeptInfo.setDisplayDeptId(deptId);
                 if ("0".equals(deptType)) {
                     Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
                     signDeptInfo
                         .setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getAliasName())
                             ? department.getName() : department.getAliasName());
+                    signDeptInfo.setDisplayDeptName(signDeptInfo.getDeptName());
+                    if (StringUtils.isNotBlank(tzsDeptId) && deptId.equals(tzsDeptId)) {
+                        // 需要将显示名称改为原司局单位名称
+                        Department bureau = (Department)orgUnitApi
+                            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId()).getData();
+                        signDeptInfo.setDisplayDeptId(bureau.getId());
+                        signDeptInfo.setDisplayDeptName(
+                            StringUtils.isBlank(bureau.getAliasName()) ? bureau.getName() : bureau.getAliasName());
+                    }
                 } else {
                     SignOutDept signOutDept = signOutDeptRepository.findById(deptId).orElse(null);
                     signDeptInfo.setDeptName(signOutDept != null ? signOutDept.getDeptName() : "单位不存在");

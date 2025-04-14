@@ -51,6 +51,27 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     private final SignOutDeptRepository signOutDeptRepository;
 
     /**
+     * 添加会签信息
+     *
+     * @param tenantId 租户ID
+     * @param positionId 岗位id
+     * @param deptIds 部门ids
+     * @param deptType 单位类型（0：委内，1：委外）
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Object>
+     * @since 9.6.0
+     */
+    @Override
+    public Y9Result<Object> addSignDept(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        signDeptInfoService.addSignDept(processSerialNumber, deptType, deptIds);
+        return Y9Result.success();
+    }
+
+    /**
      * 根据主键删除会签信息
      *
      * @param tenantId 租户ID
@@ -153,37 +174,18 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @param deptIds 部门ids
      * @param deptType 单位类型（0：委内，1：委外）
      * @param processSerialNumber 流程编号
+     * @param tzsDeptId 部门id，不为空，表示需要将显示名称改为原司局单位名称
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @Override
     public Y9Result<Object> saveSignDept(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
+        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber,
+        String tzsDeptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        signDeptInfoService.saveSignDept(processSerialNumber, deptType, deptIds);
-        return Y9Result.success();
-    }
-
-    /**
-     * 添加会签信息
-     *
-     * @param tenantId 租户ID
-     * @param positionId 岗位id
-     * @param deptIds 部门ids
-     * @param deptType 单位类型（0：委内，1：委外）
-     * @param processSerialNumber 流程编号
-     * @return Y9Result<Object>
-     * @since 9.6.0
-     */
-    @Override
-    public Y9Result<Object> addSignDept(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
-        signDeptInfoService.addSignDept(processSerialNumber, deptType, deptIds);
+        signDeptInfoService.saveSignDept(processSerialNumber, deptType, deptIds, tzsDeptId);
         return Y9Result.success();
     }
 

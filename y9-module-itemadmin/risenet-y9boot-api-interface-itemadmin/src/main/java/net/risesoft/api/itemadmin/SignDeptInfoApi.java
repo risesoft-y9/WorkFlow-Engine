@@ -20,6 +20,22 @@ import net.risesoft.pojo.Y9Result;
 public interface SignDeptInfoApi {
 
     /**
+     * 添加会签信息
+     *
+     * @param tenantId 租户ID
+     * @param positionId 岗位id
+     * @param deptIds 部门ids
+     * @param deptType 单位类型（0：委内，1：委外）
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Object>
+     * @since 9.6.0
+     */
+    @PostMapping(value = "/addSignDept")
+    Y9Result<Object> addSignDept(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("deptIds") String deptIds,
+        @RequestParam("deptType") String deptType, @RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
      * 根据主键删除会签信息
      *
      * @param tenantId 租户ID
@@ -77,29 +93,15 @@ public interface SignDeptInfoApi {
      * @param deptIds 部门ids
      * @param deptType 单位类型（0：委内，1：委外）
      * @param processSerialNumber 流程编号
+     * @param tzsDeptId 部门id，不为空，表示需要将显示名称改为原司局单位名称
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @PostMapping(value = "/saveSignDept")
     Y9Result<Object> saveSignDept(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("deptIds") String deptIds,
-        @RequestParam("deptType") String deptType, @RequestParam("processSerialNumber") String processSerialNumber);
-
-    /**
-     * 添加会签信息
-     *
-     * @param tenantId 租户ID
-     * @param positionId 岗位id
-     * @param deptIds 部门ids
-     * @param deptType 单位类型（0：委内，1：委外）
-     * @param processSerialNumber 流程编号
-     * @return Y9Result<Object>
-     * @since 9.6.0
-     */
-    @PostMapping(value = "/addSignDept")
-    Y9Result<Object> addSignDept(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("deptIds") String deptIds,
-        @RequestParam("deptType") String deptType, @RequestParam("processSerialNumber") String processSerialNumber);
+        @RequestParam("deptType") String deptType, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam(value = "tzsDeptId", required = false) String tzsDeptId);
 
     /**
      * 保存会签签名
