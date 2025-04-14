@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.SignDeptInfo;
 import net.risesoft.entity.SignOutDept;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.repository.jpa.SignDeptInfoRepository;
 import net.risesoft.repository.jpa.SignOutDeptRepository;
+import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.SignDeptInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -40,6 +44,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     private final DepartmentApi departmentApi;
 
+    private final SignDeptDetailService signDeptDetailService;
+
     @Override
     @Transactional
     public void deleteById(String id) {
@@ -55,37 +61,62 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     @Override
     @Transactional
     public void saveSignDept(String processSerialNumber, String deptType, String deptIds) {
-        String[] split = deptIds.split(",");
-        List<String> split1 = Arrays.asList(split);
-        signDeptInfoRepository.deleteByProcessSerialNumberAndDeptTypeAndDeptIdNotIn(processSerialNumber, deptType,
-            split1);
-        for (int i = 0; i < split.length; i++) {
-            String deptId = split[i];
-            SignDeptInfo signDeptInfo = signDeptInfoRepository
-                .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
-            if (signDeptInfo != null) {
-                signDeptInfo.setOrderIndex(i + 1);
-            } else {
-                signDeptInfo = new SignDeptInfo();
-                signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
-                signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
-                signDeptInfo.setOrderIndex(i + 1);
-                signDeptInfo.setDeptId(deptId);
-                signDeptInfo.setRecordTime(new Date());
-                if ("0".equals(deptType)) {
-                    Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
-                    signDeptInfo
-                        .setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getDeptGivenName())
-                            ? department.getName() : department.getDeptGivenName());
-                } else {
-                    SignOutDept signOutDept = signOutDeptRepository.findById(deptId).orElse(null);
-                    signDeptInfo.setDeptName(signOutDept != null ? signOutDept.getDeptName() : "单位不存在");
+        String[] deptIdArr = deptIds.split(",");
+        List<String> deptIdList = Arrays.asList(deptIdArr);
+        if ("0".equals(deptType)) {
+            List<SignDeptDetail> doneList = signDeptDetailService
+                .findByProcessSerialNumberAndStatus(processSerialNumber, SignDeptDetailStatusEnum.DONE.getValue());
+            doneList.forEach(detail -> {
+                if (!deptIdList.contains(detail.getDeptId())) {
+                    deptIdList.add(detail.getDeptId());
                 }
-                signDeptInfo.setProcessSerialNumber(processSerialNumber);
-                signDeptInfo.setDeptType(deptType);
-            }
-            signDeptInfoRepository.save(signDeptInfo);
+            });
+        }
+        signDeptInfoRepository.deleteByProcessSerialNumberAndDeptTypeAndDeptIdNotIn(processSerialNumber, deptType,
+            deptIdList);
+        if ("0".equals(deptType)) {
+            List<Department> deptList = departmentApi.listByIds(Y9LoginUserHolder.getTenantId(), deptIdList).getData();
+            deptList.forEach(dept -> {
+                if (null == signDeptInfoRepository.findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber,
+                    deptType, dept.getId())) {
+                    SignDeptInfo signDeptInfo = new SignDeptInfo();
+                    signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
+                    signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+                    signDeptInfo.setOrderIndex(dept.getTabIndex());
+                    signDeptInfo.setDeptId(dept.getId());
+                    signDeptInfo.setRecordTime(new Date());
+                    Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), dept.getId()).getData();
+                    signDeptInfo
+                        .setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getAliasName())
+                            ? department.getName() : department.getAliasName());
+                    signDeptInfo.setProcessSerialNumber(processSerialNumber);
+                    signDeptInfo.setDeptType(deptType);
+                    signDeptInfoRepository.save(signDeptInfo);
+
+                }
+            });
+        } else {
+            Integer index = 1;
+            deptIdList.forEach(deptId -> {
+                SignDeptInfo signDeptInfo = signDeptInfoRepository
+                .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
+                if (signDeptInfo == null) {
+                    signDeptInfo = new SignDeptInfo();
+                    signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
+                    signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+                    signDeptInfo.setOrderIndex(index);
+                    signDeptInfo.setDeptId(deptId);
+                    signDeptInfo.setRecordTime(new Date());
+                    Optional<SignOutDept> signOutDept = signOutDeptRepository.findById(deptId);
+                    signDeptInfo.setDeptName(signOutDept.isPresent() ? signOutDept.get().getDeptName() : "单位不存在");
+                    signDeptInfo.setProcessSerialNumber(processSerialNumber);
+                    signDeptInfo.setDeptType(deptType);
+                }
+                signDeptInfo.setOrderIndex(index);
+                signDeptInfoRepository.save(signDeptInfo);
+            });
         }
     }
 
@@ -93,27 +124,26 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     @Transactional
     public void addSignDept(String processSerialNumber, String deptType, String deptIds) {
         String[] deptIdArr = deptIds.split(",");
-        Arrays.stream(deptIdArr).forEach(deptId -> {
-            SignDeptInfo signDeptInfo = new SignDeptInfo();
-            signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
-            signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
-            signDeptInfo.setDeptId(deptId);
-            signDeptInfo.setRecordTime(new Date());
-            if ("0".equals(deptType)) {
-                Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
-                signDeptInfo
-                    .setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getDeptGivenName())
-                        ? department.getName() : department.getDeptGivenName());
-            } else {
-                SignOutDept signOutDept = signOutDeptRepository.findById(deptId).orElse(null);
-                signDeptInfo.setDeptName(signOutDept != null ? signOutDept.getDeptName() : "单位不存在");
+        List<Department> deptList =
+            departmentApi.listByIds(Y9LoginUserHolder.getTenantId(), Arrays.asList(deptIdArr)).getData();
+        deptList.forEach(dept -> {
+            if (null == signDeptInfoRepository.findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber,
+                deptType, dept.getId())) {
+                SignDeptInfo signDeptInfo = new SignDeptInfo();
+                signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
+                signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+                signDeptInfo.setOrderIndex(dept.getTabIndex());
+                signDeptInfo.setDeptId(dept.getId());
+                signDeptInfo.setRecordTime(new Date());
+                Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), dept.getId()).getData();
+                signDeptInfo.setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getAliasName())
+                    ? department.getName() : department.getAliasName());
+                signDeptInfo.setProcessSerialNumber(processSerialNumber);
+                signDeptInfo.setDeptType(deptType);
+                signDeptInfoRepository.save(signDeptInfo);
+
             }
-            signDeptInfo.setProcessSerialNumber(processSerialNumber);
-            signDeptInfo.setDeptType(deptType);
-            Integer maxTabIndex = signDeptInfoRepository.getMaxTabIndex(processSerialNumber, deptType);
-            signDeptInfo.setOrderIndex(null == maxTabIndex ? 1 : maxTabIndex + 1);
-            signDeptInfoRepository.save(signDeptInfo);
         });
     }
 
