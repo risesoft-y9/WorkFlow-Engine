@@ -372,6 +372,13 @@ public class FormDataApiImpl implements FormDataApi {
         return formDataService.updateFormData(guid, formJsonData);
     }
 
+    @Override
+    public Y9Result<Map<String, Object>> getData4TableAlias(@RequestParam String tenantId, @RequestParam String guid,
+        @RequestParam String tableAlias) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.getData4TableAlias(guid, tableAlias);
+    }
+
     /**
      * 保存前置表单数据
      *

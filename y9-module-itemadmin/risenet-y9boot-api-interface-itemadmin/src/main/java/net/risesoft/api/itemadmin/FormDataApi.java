@@ -267,6 +267,18 @@ public interface FormDataApi {
         @RequestBody String formJsonData);
 
     /**
+     * 根据表别名以及流程序列号获取表数据
+     * 
+     * @param tenantId
+     * @param guid
+     * @param tableAlias
+     * @return
+     */
+    @GetMapping(value = "/getData4TableAlias")
+    Y9Result<Map<String, Object>> getData4TableAlias(@RequestParam("tenantId") String tenantId,
+        @RequestParam("guid") String guid, @RequestParam("tableAlias") String tableAlias);
+
+    /**
      * 保存前置表单数据
      *
      * @param tenantId 租户id
