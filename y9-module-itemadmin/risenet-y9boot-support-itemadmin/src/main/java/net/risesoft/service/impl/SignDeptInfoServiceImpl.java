@@ -53,9 +53,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
             signDeptInfo.setRecordTime(new Date());
             if ("0".equals(deptType)) {
                 Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
-                signDeptInfo
-                    .setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getDeptGivenName())
-                        ? department.getName() : department.getDeptGivenName());
+                signDeptInfo.setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getAliasName())
+                    ? department.getName() : department.getAliasName());
             } else {
                 SignOutDept signOutDept = signOutDeptRepository.findById(deptId).orElse(null);
                 signDeptInfo.setDeptName(signOutDept != null ? signOutDept.getDeptName() : "单位不存在");
