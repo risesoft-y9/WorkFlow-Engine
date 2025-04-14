@@ -54,6 +54,11 @@ public class ItemRoleOrgUnitModel implements Serializable, Comparable<ItemRoleOr
      */
     private String orderedPath;
 
+    /**
+     * 
+     */
+    private String guidPath;
+
     @Override
     public int compareTo(ItemRoleOrgUnitModel o) {
         return this.orderedPath.compareTo(o.getOrderedPath());

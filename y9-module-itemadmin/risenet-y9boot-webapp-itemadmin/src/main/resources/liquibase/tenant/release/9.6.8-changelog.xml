@@ -809,4 +809,16 @@
             <column name="plan" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-42" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_DEPT_INFO" columnName="DISPLAY_DEPTID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_DEPT_INFO">
+            <column name="DISPLAY_DEPTID" remarks="显示部门Id" type="VARCHAR(50)"/>
+            <column name="DISPLAY_DEPTNAME" type="VARCHAR(100)" remarks="显示部门名称"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
