@@ -67,21 +67,37 @@ public class TypeSettingInfo implements Serializable {
     @Column(name = "typeSettingTime", length = 50)
     private String typeSettingTime;
 
-    @Comment("校对意见")
+    @Comment("拟稿人校对意见类型")
+    @Column(name = "ifHaveYj", length = 100)
+    private String ifHaveYj;
+
+    @Comment("拟稿人校对意见")
     @Column(name = "checkOpinion", length = 500)
     private String checkOpinion;
+
+    @Comment("拟稿人校对时间")
+    @Column(name = "checkTime", length = 50)
+    private String checkTime;
+
+    @Comment("校对人")
+    @Column(name = "checkUserName", length = 50)
+    private String checkUserName;
+
+    @Comment("校对审核意见类型")
+    @Column(name = "hgrOpinion", length = 100)
+    private String hgrOpinion;
 
     @Comment("校对审核意见")
     @Column(name = "shenheOpinion", length = 500)
     private String shenheOpinion;
 
     @Comment("校对审核人")
-    @Column(name = "checkUserName", length = 50)
-    private String checkUserName;
+    @Column(name = "auditUserName", length = 50)
+    private String auditUserName;
 
-    @Comment("校对时间")
-    @Column(name = "checkTime", length = 50)
-    private String checkTime;
+    @Comment("校对审核时间")
+    @Column(name = "auditTime", length = 50)
+    private String auditTime;
 
     @Comment("排序")
     @Column(name = "tabIndex", length = 10)

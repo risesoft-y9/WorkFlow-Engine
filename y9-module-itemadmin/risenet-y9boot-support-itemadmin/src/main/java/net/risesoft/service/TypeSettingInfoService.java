@@ -17,4 +17,6 @@ public interface TypeSettingInfoService {
     List<TypeSettingInfo> findByProcessSerialNumber(String processSerialNumber);
 
     void saveTypeSetting(String processSerialNumber, String jsonData);
+
+    void updateTypeSetting(String processSerialNumber, String jsonData);
 }

@@ -75,13 +75,14 @@ public class SignDept4GfgController {
      * @param processSerialNumber 流程编号
      * @param deptType 部门类型
      * @param deptIds 部门id
+     * @param tzsDeptId 部门id，不为空，表示需要将显示名称改为原司局单位名称
      * @return Y9Result<Object>
      */
     @PostMapping(value = "/saveSignDept")
     public Y9Result<Object> saveSignDept(@RequestParam String processSerialNumber, @RequestParam String deptType,
-        @RequestParam String deptIds) {
+        @RequestParam String deptIds, @RequestParam(required = false) String tzsDeptId) {
         return signDeptInfoApi.saveSignDept(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), deptIds,
-            deptType, processSerialNumber);
+            deptType, processSerialNumber, tzsDeptId);
     }
 
     /**
