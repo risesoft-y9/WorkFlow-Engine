@@ -3,7 +3,9 @@ package net.risesoft.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.SignDeptInfo;
 import net.risesoft.entity.SignOutDept;
@@ -24,9 +27,12 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.repository.jpa.SignDeptInfoRepository;
 import net.risesoft.repository.jpa.SignOutDeptRepository;
+import net.risesoft.service.FormDataService;
+import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.SignDeptInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * @author qinman
@@ -49,6 +55,10 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     private final SignDeptDetailService signDeptDetailService;
 
+    private final FormDataService formDataService;
+
+    private final ProcessParamService processParamService;
+
     @Override
     @Transactional
     public void deleteById(String id) {
@@ -61,6 +71,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 boolean match = doneList.stream().anyMatch(detail -> detail.getDeptId().equals(sdi.getDeptId()));
                 if (!match) {
                     signDeptInfoRepository.deleteById(id);
+                    refresh(sdi.getProcessSerialNumber());
                 }
             } else {
                 signDeptInfoRepository.deleteById(id);
@@ -121,6 +132,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
                 }
             });
+            refresh(processSerialNumber);
         } else {
             Integer index = 1;
             deptIdList.forEach(deptId -> {
@@ -170,6 +182,24 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
             }
         });
+        refresh(processSerialNumber);
+    }
+
+    private void refresh(String processSerialNumber) {
+        // 委内抄送单位
+        String alias = "fw", columnName = "wncsdw";
+        String aliasColumnName = alias + "." + columnName;
+        Map<String, Object> map = new HashMap<>(1);
+        StringBuffer deptNames = new StringBuffer();
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+        String starter = null == processParam ? Y9LoginUserHolder.getOrgUnit().getId() : processParam.getStartor();
+        Department bureau = (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), starter).getData();
+        deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName())
+            .append("(3)");
+        List<SignDeptInfo> signDeptList = this.getSignDeptList(processSerialNumber, "0");
+        signDeptList.forEach(signDeptInfo -> deptNames.append(",").append(signDeptInfo.getDeptName()).append("(3)"));
+        map.put(aliasColumnName, deptNames);
+        formDataService.updateFormData(processSerialNumber, Y9JsonUtil.writeValueAsString(map));
     }
 
     @Override
