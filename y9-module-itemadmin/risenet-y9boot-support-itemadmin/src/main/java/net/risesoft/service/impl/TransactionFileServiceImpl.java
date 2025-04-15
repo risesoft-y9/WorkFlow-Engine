@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -253,7 +254,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             SimpleDateFormat sdfymd = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdfhms = new SimpleDateFormat("HH-mm-ss");
             if (StringUtils.isNotEmpty(describes)) {
-                describes = URLDecoder.decode(describes, "UTF-8");
+                describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
             }
             String originalFilename = multipartFile.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);

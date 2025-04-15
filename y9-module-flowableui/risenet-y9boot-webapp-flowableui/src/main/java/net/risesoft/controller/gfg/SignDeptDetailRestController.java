@@ -2,6 +2,7 @@ package net.risesoft.controller.gfg;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -108,7 +109,7 @@ public class SignDeptDetailRestController {
     @GetMapping(value = "/getSignDeptDetail")
     Y9Result<SignDeptDetailModel> getSignDeptDetail(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String signDeptDetailId) {
-        String bureauId = "";
+        String bureauId;
         if (StringUtils.isBlank(signDeptDetailId)) {
             bureauId =
                 orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId())
@@ -119,6 +120,31 @@ public class SignDeptDetailRestController {
         }
         return signDeptDetailApi.findByProcessSerialNumberAndDeptId4Latest(Y9LoginUserHolder.getTenantId(),
             processSerialNumber, bureauId);
+    }
+
+    /**
+     * 根据流程序列号获取会签信息
+     *
+     * @param processSerialNumber 流程序列号
+     * @param taskId 任务id
+     * @return Y9Result<SignDeptDetailModel>
+     * @since 9.6.8
+     */
+    @GetMapping(value = "/getSignDeptDetail4Todo")
+    Y9Result<SignDeptDetailModel> getSignDeptDetail4Todo(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String taskId) {
+        TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+        if (null == task) {
+            return Y9Result.failure("当前待办已被处理");
+        }
+        List<SignDeptDetailModel> sddList =
+            signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        List<SignDeptDetailModel> collect = sddList.stream()
+            .filter(sdd -> sdd.getExecutionId().equals(task.getExecutionId())).collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            return Y9Result.failure("未找到会签部门详情");
+        }
+        return Y9Result.success(collect.get(0));
     }
 
     /**

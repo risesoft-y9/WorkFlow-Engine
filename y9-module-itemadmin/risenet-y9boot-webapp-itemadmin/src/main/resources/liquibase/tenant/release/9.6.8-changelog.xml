@@ -748,4 +748,77 @@
             <column name="DEPTPROPCATEGORY" type="INT" remarks="部门属性种类"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-40" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_CUSTOM_VIEW" columnName="FORMID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_CUSTOM_VIEW">
+            <column name="FORMID" remarks="表单id" type="VARCHAR(50)"/>
+            <column name="FIELDNAME" type="VARCHAR(100)" remarks="字段名称"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700543333-41" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_FILE_ATTRIBUTE"/>
+            </not>
+        </preConditions>
+        <createTable remarks="文件属性信息表" tableName="FF_FILE_ATTRIBUTE">
+            <column name="pid" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="pcode" remarks="事项级别" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pname" remarks="事项名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pdesc" type="VARCHAR(100)"/>
+            <column name="dept_id" type="VARCHAR(100)"/>
+            <column name="dept_name" type="VARCHAR(100)"/>
+            <column name="dept_cs_id" type="VARCHAR(100)"/>
+            <column name="dept_cs_name" type="VARCHAR(100)"/>
+            <column name="dept_xb_id" type="VARCHAR(100)"/>
+            <column name="dept_xb_name" type="VARCHAR(100)"/>
+            <column name="shb" type="VARCHAR(100)"/>
+            <column name="spdx" type="VARCHAR(100)"/>
+            <column name="fwzn" type="VARCHAR(100)"/>
+            <column name="gzlc" type="VARCHAR(100)"/>
+            <column name="flfg" type="VARCHAR(100)"/>
+            <column name="xxgk" type="VARCHAR(100)"/>
+            <column name="gzsx_bwq" type="VARCHAR(100)"/>
+            <column name="gzsx_hgh" type="VARCHAR(100)"/>
+            <column name="ptype" type="VARCHAR(100)"/>
+            <column name="limitetime" type="VARCHAR(100)"/>
+            <column name="limitetime_sl" type="VARCHAR(100)"/>
+            <column name="limitetime_dtts" type="VARCHAR(100)"/>
+            <column name="limitetime_bl" type="VARCHAR(100)"/>
+            <column name="pstate" type="VARCHAR(100)"/>
+            <column name="porder" type="VARCHAR(100)"/>
+            <column name="pmemo" type="VARCHAR(100)"/>
+            <column name="updated" type="VARCHAR(100)"/>
+            <column name="phone" type="VARCHAR(100)"/>
+            <column name="winservice" type="VARCHAR(100)"/>
+            <column name="tssx" type="VARCHAR(100)"/>
+            <column name="limitetime_wwhq" type="VARCHAR(100)"/>
+            <column name="realtime_auto_sl" type="VARCHAR(100)"/>
+            <column name="plan" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700543333-42" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_DEPT_INFO" columnName="DISPLAY_DEPTID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_DEPT_INFO">
+            <column name="DISPLAY_DEPTID" remarks="显示部门Id" type="VARCHAR(50)"/>
+            <column name="DISPLAY_DEPTNAME" type="VARCHAR(100)" remarks="显示部门名称"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -2,7 +2,6 @@ package net.risesoft.service;
 
 import java.util.List;
 
-
 import net.risesoft.entity.SignDeptInfo;
 
 /**
@@ -12,11 +11,13 @@ import net.risesoft.entity.SignDeptInfo;
  */
 public interface SignDeptInfoService {
 
+    void addSignDept(String processSerialNumber, String deptType, String deptIds);
+
     void deleteById(String id);
 
     List<SignDeptInfo> getSignDeptList(String processSerialNumber, String deptType);
 
-    void saveSignDept(String processSerialNumber, String deptType, String deptIds);
+    void saveSignDept(String processSerialNumber, String deptType, String deptIds, String tzsDeptId);
 
     void saveSignDeptInfo(String id, String userName);
 }

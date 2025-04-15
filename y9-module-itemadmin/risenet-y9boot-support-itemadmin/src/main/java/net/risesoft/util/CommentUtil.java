@@ -11,7 +11,7 @@ import net.risesoft.y9.Y9Context;
  * @date 2022/12/20
  */
 public class CommentUtil {
-    private static Pattern pattern = Pattern.compile("\r\n|\r|\n|\n\r");
+    private static final Pattern pattern = Pattern.compile("\r\n|\r|\n|\n\r");
     private static String comment;
 
     public static String[] getComment() {

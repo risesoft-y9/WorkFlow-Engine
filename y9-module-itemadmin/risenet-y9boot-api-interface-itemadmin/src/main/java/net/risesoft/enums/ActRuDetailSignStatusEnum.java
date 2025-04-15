@@ -12,6 +12,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ActRuDetailSignStatusEnum {
+    /** 拒绝签收 */
+    REFUSE(-2, "拒绝签收"),
     /** 不需要签收 */
     NONE(-1, "不需要签收"),
     /** 待签收 */

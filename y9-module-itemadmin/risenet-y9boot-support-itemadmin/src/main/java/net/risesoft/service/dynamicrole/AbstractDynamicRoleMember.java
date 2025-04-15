@@ -24,7 +24,7 @@ public abstract class AbstractDynamicRoleMember {
         return null;
     }
 
-    public List<OrgUnit> getOrgUnitList(String processInstanceId, DynamicRole dynamicRole) {
+    public List<OrgUnit> getOrgUnitList(String param, DynamicRole dynamicRole) {
         return null;
     }
 
@@ -36,7 +36,7 @@ public abstract class AbstractDynamicRoleMember {
         return null;
     }
 
-    public Department getDepartment(String processInstanceId) {
+    public Department getDepartment(String param) {
         return null;
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractDynamicRoleMember {
         return null;
     }
 
-    public Position getPosition(String processInstanceId) {
+    public Position getPosition(String param) {
         return null;
     }
 

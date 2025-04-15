@@ -8,7 +8,6 @@ import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.service.Task4ActRuDetaillService;
 import net.risesoft.service.Task4ListenerService;
@@ -34,7 +33,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
             task4ListenerService.task4AssignmentListener(task, variables);
             /*
-             * 1、签收的时候保存已办详情 2、委托的时候更改assignee的时候
+             * 1、签收的时候保存待办详情 2、委托的时候更改assignee的时候
              */
             if (task.getCandidates().size() > 1) {
                 Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
@@ -42,12 +41,12 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
                     /*
                      * 签收的情况
                      */
-                    task4ActRuDetaillService.saveOrUpdate4DoSign(task);
+                    task4ActRuDetaillService.claim(task);
                 } else {
                     /*
                      * 撤销签收的情况
                      */
-                    task4ActRuDetaillService.saveOrUpdate4Sign(task, 0);
+                    task4ActRuDetaillService.unClaim(task);
                 }
             }
 
@@ -63,13 +62,13 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
                 throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_CREATE");
             }
             /*
-             * 保存已办件详情
+             * 保存待办详情
              */
             Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
             if (null != task.getAssignee()) {
-                task4ActRuDetaillService.saveOrUpdate(task, ActRuDetailStatusEnum.TODO.getValue());
+                task4ActRuDetaillService.createTodo(task);
             } else {
-                task4ActRuDetaillService.saveOrUpdate4Sign(task, ActRuDetailStatusEnum.TODO.getValue());
+                task4ActRuDetaillService.createTodo4Claim(task);
             }
 
             /*
@@ -105,14 +104,13 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
                 task.removeVariable(assigneeHti);
             }
             /*
-             * 任务删除的时候，改变已办详情状态为已办
+             * 任务删除的时候，待办-->在办
              */
+            Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
             if (null != task.getAssignee()) {
-                Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
-                task4ActRuDetaillService.saveOrUpdate(task, ActRuDetailStatusEnum.DOING.getValue());
+                task4ActRuDetaillService.todo2doing(task);
             } else {
-                Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
-                task4ActRuDetaillService.saveOrUpdate4Reposition(task);
+                task4ActRuDetaillService.todo2doing4Jump(task);
             }
         }
     }

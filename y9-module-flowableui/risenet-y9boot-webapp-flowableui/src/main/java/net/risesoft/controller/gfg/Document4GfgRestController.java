@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.service.fgw.HTKYService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +41,7 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -62,6 +66,7 @@ import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
@@ -123,8 +128,13 @@ public class Document4GfgRestController {
 
     private final SecretLevelRecordApi secretLevelRecordApi;
 
+    private final PositionApi positionApi;
+
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private HTKYService htkyService;
 
     /**
      * 获取新建办件初始化数据
@@ -202,6 +212,56 @@ public class Document4GfgRestController {
             }
         }
         return Y9Result.success();
+    }
+
+    @PostMapping(value = "/check4Batch")
+    public Y9Result<List<TargetModel>> check4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            StringBuilder msg = new StringBuilder();
+            List<String> list = new ArrayList<>();
+            List<TaskModel> signList = new ArrayList<>();
+            List<TaskModel> taskList = new ArrayList<>();
+            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+                String[] tpArr = tp.split(":");
+                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+                if (null == task) {
+                    ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+                    if (StringUtils.isBlank(msg)) {
+                        msg.append(ppModel.getTitle());
+                    } else {
+                        msg.append(",").append(ppModel.getTitle());
+                    }
+                } else {
+                    taskList.add(task);
+                    if (StringUtils.isBlank(task.getAssignee())) {
+                        signList.add(task);
+                    }
+                    if (!list.contains(task.getTaskDefinitionKey())) {
+                        list.add(task.getTaskDefinitionKey());
+                    }
+                }
+            });
+            if (!signList.isEmpty()) {
+                return Y9Result.failure("不能批量发送，存在未签收的待办");
+            }
+            if (StringUtils.isNotBlank(msg)) {
+                return Y9Result.failure("不能批量发送，以下待办已处理：" + msg);
+            }
+            if (list.size() > 1) {
+                return Y9Result.failure("不能批量发送，存在不同的办理环节");
+            }
+            List<TargetModel> routeToTasks = processDefinitionApi
+                .getTargetNodes(tenantId, taskList.get(0).getProcessDefinitionId(),
+                    taskList.get(0).getTaskDefinitionKey())
+                .getData().stream()
+                .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
+                .collect(Collectors.toList());
+            return Y9Result.success(routeToTasks);
+        } catch (Exception e) {
+            LOGGER.error("校验失败", e);
+        }
+        return Y9Result.failure("校验失败，发生异常");
     }
 
     /**
@@ -536,107 +596,6 @@ public class Document4GfgRestController {
         return Y9Result.successMsg("发送成功" + success.get() + "条，发送失败" + fail.get() + "条");
     }
 
-    @PostMapping(value = "/sign4Batch")
-    public Y9Result<String> sign4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        try {
-            StringBuilder msg = new StringBuilder();
-            StringBuilder msg4sign = new StringBuilder();
-            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
-                String[] tpArr = tp.split(":");
-                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
-                ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
-                if (null == task) {
-                    if (StringUtils.isBlank(msg)) {
-                        msg.append(ppModel.getTitle());
-                    } else {
-                        msg.append(",").append(ppModel.getTitle());
-                    }
-                } else {
-                    if (StringUtils.isNotBlank(task.getAssignee())) {
-                        if (StringUtils.isBlank(msg4sign)) {
-                            msg4sign.append(ppModel.getTitle());
-                        } else {
-                            msg4sign.append(",").append(ppModel.getTitle());
-                        }
-                    }
-                }
-            });
-            if (StringUtils.isNotBlank(msg4sign)) {
-                return Y9Result.failure("不能批量签收，以下待办已签收：" + msg4sign);
-            }
-            if (StringUtils.isNotBlank(msg)) {
-                return Y9Result.failure("不能批量签收，以下待办已处理：" + msg);
-            }
-            AtomicInteger success = new AtomicInteger();
-            AtomicInteger fail = new AtomicInteger();
-            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
-                String[] tpArr = tp.split(":");
-                Y9Result<Object> y9Result = taskApi.claim(tenantId, positionId, tpArr[0]);
-                if (y9Result.isSuccess()) {
-                    success.getAndIncrement();
-                } else {
-                    fail.getAndIncrement();
-                }
-
-            });
-            return Y9Result.successMsg("签收成功" + success.get() + "条，签收失败" + fail.get() + "条");
-        } catch (Exception e) {
-            LOGGER.error("校验失败", e);
-        }
-        return Y9Result.failure("校验失败，发生异常");
-    }
-
-    @PostMapping(value = "/check4Batch")
-    public Y9Result<List<TargetModel>> check4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            StringBuilder msg = new StringBuilder();
-            List<String> list = new ArrayList<>();
-            List<TaskModel> signList = new ArrayList<>();
-            List<TaskModel> taskList = new ArrayList<>();
-            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
-                String[] tpArr = tp.split(":");
-                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
-                if (null == task) {
-                    ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
-                    if (StringUtils.isBlank(msg)) {
-                        msg.append(ppModel.getTitle());
-                    } else {
-                        msg.append(",").append(ppModel.getTitle());
-                    }
-                } else {
-                    taskList.add(task);
-                    if (StringUtils.isBlank(task.getAssignee())) {
-                        signList.add(task);
-                    }
-                    if (!list.contains(task.getTaskDefinitionKey())) {
-                        list.add(task.getTaskDefinitionKey());
-                    }
-                }
-            });
-            if (!signList.isEmpty()) {
-                return Y9Result.failure("不能批量发送，存在未签收的待办");
-            }
-            if (StringUtils.isNotBlank(msg)) {
-                return Y9Result.failure("不能批量发送，以下待办已处理：" + msg);
-            }
-            if (list.size() > 1) {
-                return Y9Result.failure("不能批量发送，存在不同的办理环节");
-            }
-            List<TargetModel> routeToTasks = processDefinitionApi
-                .getTargetNodes(tenantId, taskList.get(0).getProcessDefinitionId(),
-                    taskList.get(0).getTaskDefinitionKey())
-                .getData().stream()
-                .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
-                .collect(Collectors.toList());
-            return Y9Result.success(routeToTasks);
-        } catch (Exception e) {
-            LOGGER.error("校验失败", e);
-        }
-        return Y9Result.failure("校验失败，发生异常");
-    }
-
     /**
      * 获取所有开始节点(事项管理-事项配置-路由配置进行授权)
      *
@@ -684,6 +643,18 @@ public class Document4GfgRestController {
             LOGGER.error("获取编辑办件数据失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取部门信息
+     * 
+     * @param deptId
+     * @return
+     */
+    @GetMapping(value = "/getDeptInfo")
+    public Y9Result<Department> getDeptInfo(@RequestParam @NotBlank String deptId) {
+        Department dept = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        return Y9Result.success(dept);
     }
 
     /**
@@ -851,6 +822,18 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 获取岗位信息
+     *
+     * @param positionId
+     * @return
+     */
+    @GetMapping(value = "/getPositionInfo")
+    public Y9Result<Position> getPositionInfo(@RequestParam @NotBlank String positionId) {
+        Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), positionId).getData();
+        return Y9Result.success(position);
+    }
+
+    /**
      * 获取密级等级记录
      *
      * @param processSerialNumber 流程编号
@@ -892,8 +875,8 @@ public class Document4GfgRestController {
     @PostMapping(value = "/getTmhData")
     public Y9Result<String> getTmhData(@RequestParam @NotBlank String processSerialNumber) {
         // 调用第三方接口
-
-        return Y9Result.success("tmh123");
+        String  tmh = htkyService.getTMH(processSerialNumber);
+        return Y9Result.success(tmh);
     }
 
     /**
@@ -1013,6 +996,57 @@ public class Document4GfgRestController {
         return Y9Result.success();
     }
 
+    @PostMapping(value = "/sign4Batch")
+    public Y9Result<String> sign4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        try {
+            StringBuilder msg = new StringBuilder();
+            StringBuilder msg4sign = new StringBuilder();
+            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+                String[] tpArr = tp.split(":");
+                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+                ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+                if (null == task) {
+                    if (StringUtils.isBlank(msg)) {
+                        msg.append(ppModel.getTitle());
+                    } else {
+                        msg.append(",").append(ppModel.getTitle());
+                    }
+                } else {
+                    if (StringUtils.isNotBlank(task.getAssignee())) {
+                        if (StringUtils.isBlank(msg4sign)) {
+                            msg4sign.append(ppModel.getTitle());
+                        } else {
+                            msg4sign.append(",").append(ppModel.getTitle());
+                        }
+                    }
+                }
+            });
+            if (StringUtils.isNotBlank(msg4sign)) {
+                return Y9Result.failure("不能批量签收，以下待办已签收：" + msg4sign);
+            }
+            if (StringUtils.isNotBlank(msg)) {
+                return Y9Result.failure("不能批量签收，以下待办已处理：" + msg);
+            }
+            AtomicInteger success = new AtomicInteger();
+            AtomicInteger fail = new AtomicInteger();
+            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+                String[] tpArr = tp.split(":");
+                Y9Result<Object> y9Result = taskApi.claim(tenantId, positionId, tpArr[0]);
+                if (y9Result.isSuccess()) {
+                    success.getAndIncrement();
+                } else {
+                    fail.getAndIncrement();
+                }
+
+            });
+            return Y9Result.successMsg("签收成功" + success.get() + "条，签收失败" + fail.get() + "条");
+        } catch (Exception e) {
+            LOGGER.error("校验失败", e);
+        }
+        return Y9Result.failure("校验失败，发生异常");
+    }
+
     /**
      * 获取签收任务配置（用于判断是否直接发送）
      *
@@ -1062,5 +1096,22 @@ public class Document4GfgRestController {
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
+    }
+
+    /**
+     * 插入推送双杨数据
+     * @param processSerialNumbers
+     * @param eventtype
+     * @return
+     */
+    @PostMapping(value = "/savePushData")
+    public Y9Result<Object> savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
+        for (String processSerialNumber : processSerialNumbers) {
+            ProcessParamModel process = processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),processSerialNumber).getData();
+            String sql = "insert into PUSHDATA (ID,EVENTTYPE,CREATEDATE,PROCESSSERIALNUMBER,PROCESSINSTANCEID,TSZT) values (?,?,?,?,?,?)";
+            Object[] args = {Y9IdGenerator.genId(),eventtype,new Date(),processSerialNumber,process.getProcessInstanceId(),"0"};
+            jdbcTemplate.update(sql, args);
+        }
+        return Y9Result.success();
     }
 }

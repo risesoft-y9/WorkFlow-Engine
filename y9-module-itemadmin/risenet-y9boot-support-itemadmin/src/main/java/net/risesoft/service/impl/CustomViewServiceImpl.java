@@ -53,10 +53,14 @@ public class CustomViewServiceImpl implements CustomViewService {
         for (CustomView customView : list) {
             CustomViewModel customViewModelTemp = new CustomViewModel();
             Y9BeanUtil.copyProperties(customView, customViewModelTemp);
-            Y9FormField y9FormField = y9FormFieldRepository.findById(customView.getFieldId()).orElse(null);
-            customViewModelTemp.setColumnName(y9FormField != null ? y9FormField.getFieldName() : "bucunzai");
-            customViewModelTemp.setDisPlayName(y9FormField != null ? y9FormField.getFieldCnName() : "该列不存在");
-            customViewModelTemp.setFormId(y9FormField != null ? y9FormField.getFormId() : "");
+            List<Y9FormField> y9FormFieldList =
+                y9FormFieldRepository.findByFormIdAndFieldName(customView.getFormId(), customView.getFieldName());
+            customViewModelTemp
+                .setColumnName(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getFieldName() : "bucunzai");
+            customViewModelTemp
+                .setDisPlayName(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getFieldCnName() : "该列不存在");
+            customViewModelTemp.setFormId(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getFormId() : "");
+            customViewModelTemp.setFieldId(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getId() : "bucunzai");
             listCustomViewModel.add(customViewModelTemp);
         }
         return Y9Result.success(listCustomViewModel);
@@ -79,9 +83,14 @@ public class CustomViewServiceImpl implements CustomViewService {
             info.setTabIndex(maxTabIndex);
             info.setUserId(Y9LoginUserHolder.getOrgUnitId());
             info.setUserName(Y9LoginUserHolder.getOrgUnit().getName());
-            customViewRepository.save(info);
-            ids.add(info.getId());
-            maxTabIndex++;
+            Y9FormField y9FormField = y9FormFieldRepository.findById(info.getFieldId()).orElse(null);
+            if (y9FormField != null) {
+                info.setFormId(y9FormField.getFormId());
+                info.setFieldName(y9FormField.getFieldName());
+                customViewRepository.save(info);
+                ids.add(info.getId());
+                maxTabIndex++;
+            }
         }
         customViewRepository.deleteByUserIdAndViewTypeAndIdNotIn(Y9LoginUserHolder.getOrgUnitId(), viewType, ids);
     }

@@ -54,10 +54,11 @@ public interface ItemPermissionService {
      * @param processDefinitionId
      * @param taskDefKey
      * @param processInstanceId
+     * @param taskId
      * @return
      */
     Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey,
-        String processInstanceId);
+        String processInstanceId, String taskId);
 
     /**
      * 根据事项Id，流程定义Id,和任务节点Key查找授权
