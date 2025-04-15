@@ -42,17 +42,29 @@ public class TypeSettingInfoModel implements Serializable {
     // 排版时间
     private String typeSettingTime;
 
+    // 拟稿人校对意见类型
+    private String ifHaveYj;
+
     // 校对意见
     private String checkOpinion;
+
+    // 校对审核意见类型
+    private String hgrOpinion;
 
     // 校对审核意见
     private String shenheOpinion;
 
-    // 校对审核人
+    // 校对人
     private String checkUserName;
 
-    // 校对时间
+    // 校对审核人
+    private String auditUserName;
+
+    // 拟稿人校对时间
     private String checkTime;
+
+    // 校对审核时间
+    private String auditTime;
 
     // 排序
     private Integer tabIndex;
