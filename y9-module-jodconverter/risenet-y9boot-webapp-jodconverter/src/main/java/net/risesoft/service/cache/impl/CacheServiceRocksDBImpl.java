@@ -27,13 +27,14 @@ import net.risesoft.utils.ConfigUtils;
 @Service
 public class CacheServiceRocksDBImpl implements CacheService {
 
+    private static final String DB_PATH = ConfigUtils.getHomePath() + File.separator + "cache";
+    private static final int QUEUE_SIZE = 500000;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheServiceRocksDBImpl.class);
+
     static {
         RocksDB.loadLibrary();
     }
 
-    private static final String DB_PATH = ConfigUtils.getHomePath() + File.separator + "cache";
-    private static final int QUEUE_SIZE = 500000;
-    private static final Logger LOGGER = LoggerFactory.getLogger(CacheServiceRocksDBImpl.class);
     private final BlockingQueue<String> blockingQueue = new ArrayBlockingQueue<>(QUEUE_SIZE);
 
     private RocksDB db;
@@ -218,6 +219,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             cleanPdfCache();
             cleanImgCache();
             cleanPdfImgCache();
+            cleanMediaConvertCache();
         } catch (IOException | RocksDBException e) {
             LOGGER.error("Clean Cache Exception" + e);
         }
@@ -279,5 +281,10 @@ public class CacheServiceRocksDBImpl implements CacheService {
     private void cleanPdfImgCache() throws IOException, RocksDBException {
         Map<String, Integer> initPDFIMGCache = new HashMap<>();
         db.put(FILE_PREVIEW_PDF_IMGS_KEY.getBytes(), toByteArray(initPDFIMGCache));
+    }
+
+    private void cleanMediaConvertCache() throws IOException, RocksDBException {
+        Map<String, String> initMediaConvertCache = new HashMap<>();
+        db.put(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes(), toByteArray(initMediaConvertCache));
     }
 }

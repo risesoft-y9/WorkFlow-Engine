@@ -1,8 +1,11 @@
 package net.risesoft.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -10,21 +13,20 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
-import cn.hutool.http.useragent.UserAgent;
-import cn.hutool.http.useragent.UserAgentUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import io.mola.galimatias.GalimatiasParseException;
 
+@Slf4j
 public class WebUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebUtils.class);
     private static final String BASE64_MSG = "base64";
 
     /**
@@ -35,6 +37,58 @@ public class WebUtils {
      */
     public static URL normalizedURL(String urlStr) throws GalimatiasParseException, MalformedURLException {
         return io.mola.galimatias.URL.parse(urlStr).toJavaURL();
+    }
+
+    /**
+     * 对文件名进行编码
+     *
+     */
+    public static String encodeFileName(String name) {
+        try {
+            name = URLEncoder.encode(name, "UTF-8").replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+        return name;
+    }
+
+    /**
+     * 去除fullfilename参数
+     *
+     * @param urlStr
+     * @return
+     */
+    public static String clearFullfilenameParam(String urlStr) {
+        // 去除特定参数字段
+        Pattern pattern = Pattern.compile("(&fullfilename=[^&]*)");
+        Matcher matcher = pattern.matcher(urlStr);
+        return matcher.replaceAll("");
+    }
+
+    /**
+     * 对URL进行编码
+     */
+    public static String urlEncoderencode(String urlStr) {
+
+        String fullFileName = getUrlParameterReg(urlStr, "fullfilename"); // 获取流文件名
+        if (org.springframework.util.StringUtils.hasText(fullFileName)) {
+            // 移除fullfilename参数
+            urlStr = clearFullfilenameParam(urlStr);
+        } else {
+            fullFileName = getFileNameFromURL(urlStr); // 获取文件名
+        }
+        if (KkFileUtils.isIllegalFileName(fullFileName)) { // 判断文件名是否带有穿越漏洞
+            return null;
+        }
+        if (!UrlEncoderUtils.hasUrlEncoded(fullFileName)) { // 判断文件名是否转义
+            try {
+                urlStr = URLEncoder.encode(urlStr, "UTF-8").replaceAll("\\+", "%20").replaceAll("%3A", ":")
+                    .replaceAll("%2F", "/").replaceAll("%3F", "?").replaceAll("%26", "&").replaceAll("%3D", "=");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return urlStr;
     }
 
     /**
@@ -89,7 +143,7 @@ public class WebUtils {
     /**
      * 从url中剥离出文件名
      *
-     * @param url 格式如：http://www.com.cn/20231113164107_月度绩效表模板(新).xls?UCloudPublicKey=ucloudtangshd@weifenf.com14355492830001993909323&Expires=&Signature=I
+     * @param url 格式如：http://www.com.cn/20171113164107_月度绩效表模板(新).xls?UCloudPublicKey=ucloudtangshd@weifenf.com14355492830001993909323&Expires=&Signature=I
      *            D1NOFtAJSPT16E6imv6JWuq0k=
      * @return 文件名
      */
@@ -99,7 +153,7 @@ public class WebUtils {
                 URL urlObj = new URL(url);
                 url = urlObj.getPath().substring(1);
             } catch (MalformedURLException e) {
-                LOGGER.error("获取文件名失败！地址:" + url, e);
+                e.printStackTrace();
             }
         }
         // 因为url的参数中可能会存在/的情况，所以直接url.lastIndexOf("/")会有问题
@@ -152,20 +206,19 @@ public class WebUtils {
      * @return 文件名编码后的url
      */
     public static String encodeUrlFileName(String url) {
-        // String encodedFileName;
-        // String noQueryUrl = url.substring(0, url.contains("?") ? url.indexOf("?") : url.length());
-        // int fileNameStartIndex = noQueryUrl.lastIndexOf('/') + 1;
-        // int fileNameEndIndex = noQueryUrl.lastIndexOf('.');
-        // if (fileNameEndIndex < fileNameStartIndex) {
-        // return url;
-        // }
-        // try {
-        // encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
-        // } catch (UnsupportedEncodingException e) {
-        // return null;
-        // }
-        // return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
-        return url;
+        String encodedFileName;
+        String noQueryUrl = url.substring(0, url.contains("?") ? url.indexOf("?") : url.length());
+        int fileNameStartIndex = noQueryUrl.lastIndexOf('/') + 1;
+        int fileNameEndIndex = noQueryUrl.lastIndexOf('.');
+        if (fileNameEndIndex < fileNameStartIndex) {
+            return url;
+        }
+        try {
+            encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+        return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
     }
 
     /**
@@ -179,17 +232,33 @@ public class WebUtils {
         String urls = request.getParameter("urls");
         String currentUrl = request.getParameter("currentUrl");
         String urlPath = request.getParameter("urlPath");
+
         if (StringUtils.isNotBlank(url)) {
-            return url;
+            if (UrlEncoderUtils.isBase64EncodedUrl(url)) {
+                return decodeUrl(url);
+            } else {
+                return url;
+            }
         }
         if (StringUtils.isNotBlank(currentUrl)) {
-            return currentUrl;
+            if (UrlEncoderUtils.isBase64EncodedUrl(currentUrl)) {
+                return decodeUrl(currentUrl);
+            } else {
+                return currentUrl;
+            }
         }
         if (StringUtils.isNotBlank(urlPath)) {
-            return urlPath;
+            if (UrlEncoderUtils.isBase64EncodedUrl(urlPath)) {
+                return decodeUrl(urlPath);
+            } else {
+                return urlPath;
+            }
+
         }
         if (StringUtils.isNotBlank(urls)) {
-            urls = urls;
+            if (UrlEncoderUtils.isBase64EncodedUrl(urls)) {
+                urls = decodeUrl(urls);
+            }
             String[] images = urls.split("\\|");
             return images[0];
         }
@@ -206,25 +275,17 @@ public class WebUtils {
         return matcher.find();
     }
 
-    public static boolean kuayu(String host, String wjl) { // 查询域名是否相同
-        if (wjl.contains(host)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
      * 将 Base64 字符串解码，再解码URL参数, 默认使用 UTF-8
      *
      * @param source 原始 Base64 字符串
      * @return decoded string
-     *         <p>
+     *
      *         aHR0cHM6Ly9maWxlLmtla2luZy5jbi9kZW1vL%2BS4reaWhy5wcHR4 ->
      *         https://file.keking.cn/demo/%E4%B8%AD%E6%96%87.pptx -> https://file.keking.cn/demo/中文.pptx
      */
     public static String decodeUrl(String source) {
-        String url = source;
+        String url = decodeBase64String(source, StandardCharsets.UTF_8);
         if (!StringUtils.isNotBlank(url)) {
             return null;
         }
@@ -273,30 +334,63 @@ public class WebUtils {
     }
 
     /**
-     * @description 根据用户浏览器版本，选择pdfjs版本
+     * 获取 session 中的 String 属性
      *
-     * @param: request
-     * @return: String
+     * @param request 请求
+     * @return 属性值
      */
-    public static String getPdfjsVersion(HttpServletRequest request) {
-        String userAgentStr = request.getHeader("User-Agent");
-        String pdfjs = "oldpdfjs";
-        try {
-            UserAgent userAgent = UserAgentUtil.parse(userAgentStr);
-            String browser = userAgent.getBrowser().getName();
-            String versionStr = userAgent.getVersion().substring(0, userAgent.getVersion().indexOf("."));
-            int version = Integer.parseInt(versionStr);
-            if ((browser.contains("MSEdge") || browser.contains("Chrome")) && version > 80) {
-                pdfjs = "pdfjs";
-            }
-            if (browser.contains("Firefox") && version > 74) {
-                pdfjs = "pdfjs";
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            pdfjs = "oldpdfjs";
+    public static String getSessionAttr(HttpServletRequest request, String key) {
+        HttpSession session = request.getSession();
+        if (session == null) {
+            return null;
         }
+        Object value = session.getAttribute(key);
+        if (value == null) {
+            return null;
+        }
+        return value.toString();
+    }
 
-        return pdfjs;
+    /**
+     * 获取 session 中的 long 属性
+     *
+     * @param request 请求
+     * @param key 属性名
+     * @return 属性值
+     */
+    public static long getLongSessionAttr(HttpServletRequest request, String key) {
+        String value = getSessionAttr(request, key);
+        if (value == null) {
+            return 0;
+        }
+        return Long.parseLong(value);
+    }
+
+    /**
+     * session 中设置属性
+     *
+     * @param request 请求
+     * @param key 属性名
+     */
+    public static void setSessionAttr(HttpServletRequest request, String key, Object value) {
+        HttpSession session = request.getSession();
+        if (session == null) {
+            return;
+        }
+        session.setAttribute(key, value);
+    }
+
+    /**
+     * 移除 session 中的属性
+     *
+     * @param request 请求
+     * @param key 属性名
+     */
+    public static void removeSessionAttr(HttpServletRequest request, String key) {
+        HttpSession session = request.getSession();
+        if (session == null) {
+            return;
+        }
+        session.removeAttribute(key);
     }
 }

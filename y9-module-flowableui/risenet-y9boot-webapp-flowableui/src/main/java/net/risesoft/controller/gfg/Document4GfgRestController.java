@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.service.fgw.HTKYService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
@@ -129,6 +132,9 @@ public class Document4GfgRestController {
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private HTKYService htkyService;
 
     /**
      * 获取新建办件初始化数据
@@ -869,8 +875,8 @@ public class Document4GfgRestController {
     @PostMapping(value = "/getTmhData")
     public Y9Result<String> getTmhData(@RequestParam @NotBlank String processSerialNumber) {
         // 调用第三方接口
-
-        return Y9Result.success("tmh123");
+        String  tmh = htkyService.getTMH(processSerialNumber);
+        return Y9Result.success(tmh);
     }
 
     /**
@@ -1090,5 +1096,22 @@ public class Document4GfgRestController {
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
+    }
+
+    /**
+     * 插入推送双杨数据
+     * @param processSerialNumbers
+     * @param eventtype
+     * @return
+     */
+    @PostMapping(value = "/savePushData")
+    public Y9Result<Object> savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
+        for (String processSerialNumber : processSerialNumbers) {
+            ProcessParamModel process = processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),processSerialNumber).getData();
+            String sql = "insert into PUSHDATA (ID,EVENTTYPE,CREATEDATE,PROCESSSERIALNUMBER,PROCESSINSTANCEID,TSZT) values (?,?,?,?,?,?)";
+            Object[] args = {Y9IdGenerator.genId(),eventtype,new Date(),processSerialNumber,process.getProcessInstanceId(),"0"};
+            jdbcTemplate.update(sql, args);
+        }
+        return Y9Result.success();
     }
 }

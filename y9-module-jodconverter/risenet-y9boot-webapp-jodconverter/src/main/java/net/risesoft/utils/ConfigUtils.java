@@ -18,18 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class ConfigUtils {
+    private static final String MAIN_DIRECTORY_NAME = "jodconverter";
+
+    static {
+        ApplicationContext context = new AnnotationConfigApplicationContext(ConfigUtils.class);
+    }
 
     private static ResourceLoader resourceLoader;
 
     @Autowired
     public ConfigUtils(ResourceLoader resourceLoader) {
         ConfigUtils.resourceLoader = resourceLoader;
-    }
-
-    private static final String MAIN_DIRECTORY_NAME = "jodconverter";
-
-    static {
-        ApplicationContext context = new AnnotationConfigApplicationContext(ConfigUtils.class);
     }
 
     public static String getHomePath() {
@@ -86,11 +85,15 @@ public class ConfigUtils {
         }
     }
 
-    public static String getCustomizedConfigPath() throws IOException {
+    public static String getCustomizedConfigPath() {
         Resource resource = resourceLoader.getResource("classpath:");
-        String absolutePath = resource.getFile().getAbsoluteFile().getAbsolutePath();
+        String absolutePath = null;
+        try {
+            absolutePath = resource.getFile().getAbsoluteFile().getAbsolutePath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        String homePath = getHomePath();
         String separator = java.io.File.separator;
         LOGGER.info("配置文件路径:::{}{}{}", absolutePath, separator, "application.yml");
         System.out.println("配置文件路径" + ":::" + absolutePath + separator + "application.yml");

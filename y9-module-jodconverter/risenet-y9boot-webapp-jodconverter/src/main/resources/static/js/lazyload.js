@@ -7,6 +7,7 @@ function isInSight(el) {
 }
 
 
+
 function checkImgs() {
     var index = 0;
     var imgs = document.querySelectorAll('.my-photo');
@@ -23,7 +24,6 @@ function loadImg(el) {
     el.src = source;
 
 }
-
 // var mustRun = 500
 // function throttle(fn, mustRun) {
 //     var timer = null;

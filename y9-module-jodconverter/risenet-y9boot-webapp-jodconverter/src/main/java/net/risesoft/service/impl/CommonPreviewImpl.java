@@ -9,6 +9,9 @@ import net.risesoft.service.FileHandlerService;
 import net.risesoft.service.FilePreview;
 import net.risesoft.utils.DownloadUtils;
 
+/**
+ * Content :图片文件处理
+ */
 @Component("commonPreview")
 public class CommonPreviewImpl implements FilePreview {
 

@@ -10,10 +10,13 @@ import org.mozilla.universalchardet.UniversalDetector;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @description: 自动获取文件的编码
+ */
 @Slf4j
 public class EncodingDetects {
-    private static UniversalDetector detector = new UniversalDetector(null);
     private static final int DEFAULT_LENGTH = 4096;
+    private static final int LIMIT = 50;
 
     public static String getJavaEncode(String filePath) {
         return getJavaEncode(new File(filePath));
@@ -31,7 +34,10 @@ public class EncodingDetects {
     }
 
     public static String getJavaEncode(byte[] content) {
-        detector.reset();
+        if (content != null && content.length <= LIMIT) {
+            return SimpleEncodingDetects.getJavaEncode(content);
+        }
+        UniversalDetector detector = new UniversalDetector(null);
         detector.handleData(content, 0, content.length);
         detector.dataEnd();
         String charsetName = detector.getDetectedCharset();

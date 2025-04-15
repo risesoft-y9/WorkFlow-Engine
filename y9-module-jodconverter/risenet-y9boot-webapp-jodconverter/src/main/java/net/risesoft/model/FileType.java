@@ -6,19 +6,20 @@ import java.util.Map;
 import net.risesoft.config.ConfigConstants;
 
 /**
- *
  * Content :文件类型，文本，office，压缩包等等
  */
 public enum FileType {
 
     PICTURE("pictureFilePreviewImpl"), COMPRESS("compressFilePreviewImpl"), OFFICE("officeFilePreviewImpl"),
     SIMTEXT("simTextFilePreviewImpl"), PDF("pdfFilePreviewImpl"), CODE("codeFilePreviewImpl"),
-    OTHER("otherFilePreviewImpl"), MEDIA("mediaFilePreviewImpl"), MARKDOWN("markdownFilePreviewImpl"),
-    XML("xmlFilePreviewImpl"), FLV("flvFilePreviewImpl"), CAD("cadFilePreviewImpl"), TIFF("tiffFilePreviewImpl"),
-    OFD("ofdFilePreviewImpl"), EML("emlFilePreviewImpl"), ONLINE3D("online3DFilePreviewImpl"),
-    XMIND("xmindFilePreviewImpl"), SVG("svgFilePreviewImpl"), EPUB("epubFilePreviewImpl"), BPMN("bpmnFilePreviewImpl"),
-    DCM("dcmFilePreviewImpl"), DRAWIO("drawioFilePreviewImpl");
+    OTHER("otherFilePreviewImpl"), MEDIA("mediaFilePreviewImpl"), MEDIACONVERT("mediaFilePreviewImpl"),
+    MARKDOWN("markdownFilePreviewImpl"), XML("xmlFilePreviewImpl"), CAD("cadFilePreviewImpl"),
+    TIFF("tiffFilePreviewImpl"), OFD("ofdFilePreviewImpl"), EML("emlFilePreviewImpl"),
+    ONLINE3D("online3DFilePreviewImpl"), XMIND("xmindFilePreviewImpl"), SVG("svgFilePreviewImpl"),
+    EPUB("epubFilePreviewImpl"), BPMN("bpmnFilePreviewImpl"), DCM("dcmFilePreviewImpl"),
+    DRAWIO("drawioFilePreviewImpl");
 
+    public static final String[] MEDIA_CONVERT_TYPES = ConfigConstants.getConvertMedias();
     private static final String[] OFFICE_TYPES =
         {"docx", "wps", "doc", "docm", "xls", "xlsx", "csv", "xlsm", "ppt", "pptx", "vsd", "rtf", "odt", "wmf", "emf",
             "dps", "et", "ods", "ots", "tsv", "odp", "otp", "sxi", "ott", "vsdx", "fodt", "fods", "xltx", "tga", "psd",
@@ -42,7 +43,6 @@ public enum FileType {
     private static final String[] CODES = {"java", "c", "php", "go", "python", "py", "js", "html", "ftl", "css", "lua",
         "sh", "rb", "yaml", "yml", "json", "h", "cpp", "cs", "aspx", "jsp", "sql"};
     private static final String[] MEDIA_TYPES = ConfigConstants.getMedia();
-    public static final String[] MEDIA_TYPES_CONVERT = ConfigConstants.getConvertMedias();
     private static final Map<String, FileType> FILE_TYPE_MAPPER = new HashMap<>();
 
     static {
@@ -61,8 +61,8 @@ public enum FileType {
         for (String media : MEDIA_TYPES) {
             FILE_TYPE_MAPPER.put(media, FileType.MEDIA);
         }
-        for (String media : MEDIA_TYPES_CONVERT) {
-            FILE_TYPE_MAPPER.put(media, FileType.MEDIA);
+        for (String MEDIACONVERT : MEDIA_CONVERT_TYPES) {
+            FILE_TYPE_MAPPER.put(MEDIACONVERT, FileType.MEDIACONVERT);
         }
         for (String tif : TIFF_TYPES) {
             FILE_TYPE_MAPPER.put(tif, FileType.TIFF);
@@ -102,8 +102,13 @@ public enum FileType {
         }
         FILE_TYPE_MAPPER.put("md", FileType.MARKDOWN);
         FILE_TYPE_MAPPER.put("pdf", FileType.PDF);
-        FILE_TYPE_MAPPER.put("flv", FileType.FLV);
         FILE_TYPE_MAPPER.put("bpmn", FileType.BPMN);
+    }
+
+    private final String instanceName;
+
+    FileType(String instanceName) {
+        this.instanceName = instanceName;
     }
 
     private static FileType to(String fileType) {
@@ -126,12 +131,6 @@ public enum FileType {
         String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
         String lowerCaseFileType = fileType.toLowerCase();
         return FileType.to(lowerCaseFileType);
-    }
-
-    private final String instanceName;
-
-    FileType(String instanceName) {
-        this.instanceName = instanceName;
     }
 
     public String getInstanceName() {

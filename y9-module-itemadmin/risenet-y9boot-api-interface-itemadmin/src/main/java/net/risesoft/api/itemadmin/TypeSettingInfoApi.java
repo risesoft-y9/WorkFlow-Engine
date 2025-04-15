@@ -63,6 +63,18 @@ public interface TypeSettingInfoApi {
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("jsonData") String jsonData);
 
     /**
+     * 修改排版信息
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @param jsonData 排版信息
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/updateTypeSetting")
+    Y9Result<Object> updateTypeSetting(@RequestParam("tenantId") String tenantId,
+                                     @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("jsonData") String jsonData);
+
+    /**
      * 更新排版信息
      *
      * @param tenantId 租户id

@@ -1,4 +1,4 @@
-window.xmlTreeViewer = (function () {
+window.xmlTreeViewer = (function() {
 
     var documentNode = null;
     var nodeParentPairs = [];
@@ -342,26 +342,26 @@ window.xmlTreeViewer = (function () {
         e.preventDefault();
     }
 
-    var parseXML = function (data) {
+    var parseXML = function( data ) {
         var xml, tmp;
-        if (!data || typeof data !== "string") {
+        if ( !data || typeof data !== "string" ) {
             return null;
         }
         try {
-            if (window.DOMParser) { // Standard
+            if ( window.DOMParser ) { // Standard
                 tmp = new window.DOMParser();
-                xml = tmp.parseFromString(data, "text/xml");
+                xml = tmp.parseFromString( data, "text/xml" );
             } else { // IE
-                xml = new window.ActiveXObject("Microsoft.XMLDOM");
+                xml = new window.ActiveXObject( "Microsoft.XMLDOM" );
                 xml.async = "false";
-                xml.loadXML(data);
+                xml.loadXML( data );
             }
-        } catch (e) {
+        } catch ( e ) {
             xml = undefined;
         }
         var errMsg;
-        if (!xml || !xml.documentElement || xml.getElementsByTagName("parsererror").length) {
-            errMsg = xml.getElementsByTagName("parsererror")[0].textContent;
+        if ( !xml || !xml.documentElement || xml.getElementsByTagName( "parsererror" ).length ) {
+            errMsg = xml.getElementsByTagName( "parsererror" )[0].textContent;
         }
         return {xml: xml, errMsg: errMsg};
     };

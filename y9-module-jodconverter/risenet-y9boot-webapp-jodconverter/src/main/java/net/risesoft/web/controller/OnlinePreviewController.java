@@ -1,35 +1,37 @@
 package net.risesoft.web.controller;
 
-import java.awt.image.RenderedImage;
+import static net.risesoft.service.FilePreview.PICTURE_FILE_PREVIEW_PAGE;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.service.FileHandlerService;
 import net.risesoft.service.FilePreview;
@@ -37,18 +39,19 @@ import net.risesoft.service.FilePreviewFactory;
 import net.risesoft.service.cache.CacheService;
 import net.risesoft.service.impl.OtherFilePreviewImpl;
 import net.risesoft.utils.KkFileUtils;
-import net.risesoft.utils.RandomValidateCodeUtil;
+import net.risesoft.utils.UrlEncoderUtils;
 import net.risesoft.utils.WebUtils;
 
 import fr.opensagres.xdocreport.core.io.IOUtils;
-import io.mola.galimatias.GalimatiasParseException;
 
 @Controller
 @Slf4j
 public class OnlinePreviewController {
 
     public static final String BASE64_DECODE_ERROR_MSG = "Base64解码失败，请检查你的 %s 是否采用 Base64 + urlEncode 双重编码了！";
-
+    private static final RestTemplate restTemplate = new RestTemplate();
+    private static final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+    private static final ObjectMapper mapper = new ObjectMapper();
     private final FilePreviewFactory previewFactory;
     private final CacheService cacheService;
     private final FileHandlerService fileHandlerService;
@@ -64,25 +67,38 @@ public class OnlinePreviewController {
 
     @GetMapping("/onlinePreview")
     public String onlinePreview(String url, Model model, HttpServletRequest req) {
+        String fileUrl;
+        try {
 
-        FileAttribute fileAttribute = fileHandlerService.getFileAttribute(url, req);
+            if (UrlEncoderUtils.isBase64EncodedUrl(url)) {
+                fileUrl = WebUtils.decodeUrl(url);
+            } else {
+                fileUrl = url;
+            }
+        } catch (Exception ex) {
+            String errorMsg = String.format(BASE64_DECODE_ERROR_MSG, "url");
+            return otherFilePreview.notSupportedFile(model, errorMsg);
+        }
+        FileAttribute fileAttribute = fileHandlerService.getFileAttribute(fileUrl, req); // 这里不在进行URL 处理了
         model.addAttribute("file", fileAttribute);
         FilePreview filePreview = previewFactory.get(fileAttribute);
-        LOGGER.info("预览文件url：{}，previewType：{}", url, fileAttribute.getType());
-        String page = filePreview.filePreviewHandle(url, model, fileAttribute);
-        if (page.equals(FilePreview.PDF_FILE_PREVIEW_PAGE)) {
-            String pdfjs = WebUtils.getPdfjsVersion(req);
-            LOGGER.info("预览类型是pdf，预览插件为:{}", "pdfjs".equals(pdfjs) ? "新版本" : "旧版本");
-            model.addAttribute("pdfjs", pdfjs);
+        LOGGER.info("预览文件url：{}，previewType：{}", fileUrl, fileAttribute.getType());
+        fileUrl = WebUtils.urlEncoderencode(fileUrl);
+        if (ObjectUtils.isEmpty(fileUrl)) {
+            return otherFilePreview.notSupportedFile(model, "非法路径,不允许访问");
         }
-        return page;
+        return filePreview.filePreviewHandle(fileUrl, model, fileAttribute); // 统一在这里处理 url
     }
 
     @GetMapping("/picturesPreview")
     public String picturesPreview(String urls, Model model, HttpServletRequest req) {
-        String fileUrls = urls;
+        String fileUrls;
         try {
-            // fileUrls = WebUtils.decodeUrl(urls);
+            if (UrlEncoderUtils.isBase64EncodedUrl(urls)) {
+                fileUrls = WebUtils.decodeUrl(urls);
+            } else {
+                fileUrls = urls;
+            }
             // 防止XSS攻击
             fileUrls = KkFileUtils.htmlEscape(fileUrls);
         } catch (Exception ex) {
@@ -96,12 +112,13 @@ public class OnlinePreviewController {
         model.addAttribute("imgUrls", imgUrls);
         String currentUrl = req.getParameter("currentUrl");
         if (StringUtils.hasText(currentUrl)) {
-            currentUrl = KkFileUtils.htmlEscape(currentUrl); // 防止XSS攻击
-            model.addAttribute("currentUrl", currentUrl);
+            String decodedCurrentUrl = new String(Base64.decodeBase64(currentUrl));
+            decodedCurrentUrl = KkFileUtils.htmlEscape(decodedCurrentUrl); // 防止XSS攻击
+            model.addAttribute("currentUrl", decodedCurrentUrl);
         } else {
             model.addAttribute("currentUrl", imgUrls.get(0));
         }
-        return FilePreview.PICTURE_FILE_PREVIEW_PAGE;
+        return PICTURE_FILE_PREVIEW_PAGE;
     }
 
     /**
@@ -111,160 +128,61 @@ public class OnlinePreviewController {
      * @param response response
      */
     @GetMapping("/getCorsFile")
-    public void getCorsFile(String urlPath, HttpServletResponse response) throws IOException {
-
-        HttpURLConnection urlcon = null;
-        InputStream inputStream = null;
-        String urlStr;
+    public void getCorsFile(String urlPath, HttpServletResponse response, FileAttribute fileAttribute)
+        throws IOException {
+        URL url;
+        try {
+            if (UrlEncoderUtils.isBase64EncodedUrl(urlPath)) {
+                urlPath = WebUtils.decodeUrl(urlPath);
+            }
+            url = WebUtils.normalizedURL(urlPath);
+        } catch (Exception ex) {
+            LOGGER.error(String.format(BASE64_DECODE_ERROR_MSG, urlPath), ex);
+            return;
+        }
         assert urlPath != null;
         if (!urlPath.toLowerCase().startsWith("http") && !urlPath.toLowerCase().startsWith("https")
             && !urlPath.toLowerCase().startsWith("ftp")) {
             LOGGER.info("读取跨域文件异常，可能存在非法访问，urlPath：{}", urlPath);
             return;
         }
-        LOGGER.info("下载跨域pdf文件url：{}", urlPath);
+        InputStream inputStream = null;
+        LOGGER.info("读取跨域pdf文件url：{}", urlPath);
         if (!urlPath.toLowerCase().startsWith("ftp:")) {
+            factory.setConnectionRequestTimeout(2000);
+            factory.setConnectTimeout(10000);
+            factory.setReadTimeout(72000);
+            HttpClient httpClient =
+                HttpClientBuilder.create().setRedirectStrategy(new DefaultRedirectStrategy()).build();
+            factory.setHttpClient(httpClient);
+            restTemplate.setRequestFactory(factory);
+            RequestCallback requestCallback = request -> {
+                request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL));
+                String proxyAuthorization = fileAttribute.getKkProxyAuthorization();
+                if (StringUtils.hasText(proxyAuthorization)) {
+                    Map<String, String> proxyAuthorizationMap = mapper.readValue(proxyAuthorization, Map.class);
+                    proxyAuthorizationMap.forEach((key, value) -> request.getHeaders().set(key, value));
+                }
+            };
             try {
-                URL url = WebUtils.normalizedURL(urlPath);
-                urlcon = (HttpURLConnection)url.openConnection();
-                urlcon.setConnectTimeout(30000);
-                urlcon.setReadTimeout(30000);
-                urlcon.setInstanceFollowRedirects(false);
-                int responseCode = urlcon.getResponseCode();
-                if (responseCode == 403 || responseCode == 500) { // 403 500
-                    LOGGER.error("读取跨域文件异常，url：{}，错误：{}", urlPath, responseCode);
-                    return;
-                }
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
-                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) { // 301 302
-                    url = new URL(urlcon.getHeaderField("Location"));
-                    urlcon = (HttpURLConnection)url.openConnection();
-                }
-                if (responseCode == 404) { // 404
-                    try {
-                        urlStr = URLDecoder.decode(urlPath, StandardCharsets.UTF_8);
-                        urlStr = URLDecoder.decode(urlStr, StandardCharsets.UTF_8);
-                        url = WebUtils.normalizedURL(urlStr);
-                        urlcon = (HttpURLConnection)url.openConnection();
-                        urlcon.setConnectTimeout(30000);
-                        urlcon.setReadTimeout(30000);
-                        urlcon.setInstanceFollowRedirects(false);
-                        responseCode = urlcon.getResponseCode();
-                        if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
-                            || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) { // 301 302
-                            url = new URL(urlcon.getHeaderField("Location"));
-                        }
-                        if (responseCode == 404 || responseCode == 403 || responseCode == 500) {
-                            LOGGER.error("读取跨域文件异常，url：{}，错误：{}", urlPath, responseCode);
-                            return;
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        LOGGER.error(e.getMessage());
-                    } finally {
-                        assert urlcon != null;
-                        urlcon.disconnect();
-                    }
-                }
+                restTemplate.execute(url.toURI(), HttpMethod.GET, requestCallback, fileResponse -> {
+                    IOUtils.copy(fileResponse.getBody(), response.getOutputStream());
+                    return null;
+                });
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } else {
+            try {
                 if (urlPath.contains(".svg")) {
                     response.setContentType("image/svg+xml");
                 }
                 inputStream = (url).openStream();
                 IOUtils.copy(inputStream, response.getOutputStream());
-
-            } catch (IOException | GalimatiasParseException e) {
-                LOGGER.error("读取跨域文件异常，url：{}", urlPath);
-            } finally {
-                assert urlcon != null;
-                urlcon.disconnect();
-                IOUtils.closeQuietly(inputStream);
-            }
-        } else {
-            try {
-                URL url = WebUtils.normalizedURL(urlPath);
-                if (urlPath.contains(".svg")) {
-                    response.setContentType("image/svg+xml");
-                }
-                inputStream = (url).openStream();
-                IOUtils.copy(inputStream, response.getOutputStream());
-            } catch (IOException | GalimatiasParseException e) {
+            } catch (IOException e) {
                 LOGGER.error("读取跨域文件异常，url：{}", urlPath);
             } finally {
                 IOUtils.closeQuietly(inputStream);
-            }
-        }
-    }
-
-    /**
-     * 验证码方法
-     */
-    @RequestMapping("/captcha")
-    public void captcha(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (!ConfigConstants.getDeleteCaptcha()) {
-            return;
-        }
-        response.setContentType("image/gif");
-        response.setHeader("Pragma", "No-cache");
-        response.setHeader("Cache-Control", "no-cache");
-        response.setDateHeader("Expires", 0);
-        Date date = new Date(); // 当前时间
-        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // 设置时间格式
-        String sessionCode;
-        try {
-            sessionCode = request.getSession().getAttribute("code").toString(); // 获取已经保存的验证码
-        } catch (Exception e) {
-            sessionCode = null;
-        }
-        Object time = request.getSession().getAttribute("time"); // 获取已经保存的时间
-        if (ObjectUtils.isEmpty(time)) { // 判断时间是否为空
-            request.getSession().setAttribute("time", formater.format(date)); // 为空重新添加缓存时间
-            time = request.getSession().getAttribute("time");
-        }
-        Date joinTime = formater.parse(String.valueOf(time));
-        String dateStart = formater.format(joinTime);
-        Date d1 = formater.parse(dateStart);
-        // 时间差：
-        long diff = date.getTime() - d1.getTime();
-        long diffSeconds = diff / 1000 % 60;
-        String ip = request.getRemoteAddr();
-        ServletOutputStream sos = null;
-        if (ObjectUtils.isEmpty(sessionCode) || diffSeconds > 50) { // 判断验证码是否为空 为空重新生成 判断是否在有效时间内 默认50秒
-            Map<String, Object> codeMap = RandomValidateCodeUtil.generateCodeAndPic(ip, sessionCode, 0);
-            // 验证码存入session
-            request.getSession().setAttribute("code", codeMap.get("code").toString());
-            // 时间存入session
-            request.getSession().setAttribute("time", formater.format(date));
-            // 禁止图像缓存。
-            response.setHeader("Pragma", "no-cache");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setDateHeader("Expires", -1);
-            response.setContentType("image/jpeg");
-            // 将图像输出到Servlet输出流中。
-            try {
-                sos = response.getOutputStream();
-                ImageIO.write((RenderedImage)codeMap.get("codePic"), "jpeg", sos);
-            } catch (IOException e) {
-                LOGGER.error("图像写入失败！", e);
-            } finally {
-                assert sos != null;
-                sos.close();
-            }
-        } else {
-            // System.out.println("请输入你的姓名:");
-            Map<String, Object> codeMap = RandomValidateCodeUtil.generateCodeAndPic(ip, sessionCode, 1);
-            // 禁止图像缓存。
-            response.setHeader("Pragma", "no-cache");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setDateHeader("Expires", -1);
-            response.setContentType("image/jpeg");
-            // 将图像输出到Servlet输出流中。
-            try {
-                sos = response.getOutputStream();
-                ImageIO.write((RenderedImage)codeMap.get("codePic"), "jpeg", sos);
-            } catch (IOException e) {
-                LOGGER.error("图像写入失败！", e);
-            } finally {
-                assert sos != null;
-                sos.close();
             }
         }
     }

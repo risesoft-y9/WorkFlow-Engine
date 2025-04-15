@@ -148,6 +148,18 @@ public class TypeSetting4GfgController {
     }
 
     /**
+     * 修改排版信息
+     *
+     * @param processSerialNumber 流程编号
+     * @param jsonData 数据信息
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/updateTypeSetting")
+    public Y9Result<Object> updateTypeSetting(@RequestParam String processSerialNumber, @RequestParam String jsonData) {
+        return typeSettingInfoApi.updateTypeSetting(Y9LoginUserHolder.getTenantId(), processSerialNumber, jsonData);
+    }
+
+    /**
      * 上传清样文件
      *
      * @param file 文件

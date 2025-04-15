@@ -1,19 +1,23 @@
 package net.risesoft.service;
 
-import java.io.File;
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
-
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.model.FileAttribute;
 import net.risesoft.model.FileType;
 import net.risesoft.utils.RarUtils;
 import net.risesoft.web.filter.BaseUrlFilter;
@@ -25,83 +29,88 @@ import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 
-@Slf4j
 @Component
 public class CompressFileReader {
+    private static final String fileDir = ConfigConstants.getFileDir();
     private final FileHandlerService fileHandlerService;
 
     public CompressFileReader(FileHandlerService fileHandlerService) {
         this.fileHandlerService = fileHandlerService;
     }
 
-    public String unRar(String paths, String passWord, String fileName) throws Exception {
+    public String unRar(String filePath, String filePassword, String fileName, FileAttribute fileAttribute)
+        throws Exception {
         List<String> imgUrls = new ArrayList<>();
         String baseUrl = BaseUrlFilter.getBaseUrl();
-        String archiveFileName = fileHandlerService.getFileNameFromPath(paths);
-        RandomAccessFile randomAccessFile = null;
-        IInArchive inArchive = null;
-        try {
-            randomAccessFile = new RandomAccessFile(paths, "r");
-            SevenZip.initSevenZipFromPlatformJAR();
-            inArchive = SevenZip.openInArchive(null, new RandomAccessFileInStream(randomAccessFile));
-            String folderName = paths.substring(paths.lastIndexOf(File.separator) + 1);
-            String extractPath = paths.substring(0, paths.lastIndexOf(folderName));
+        String packagePath = "_";
+        String folderName = filePath.replace(fileDir, ""); // 修复压缩包 多重目录获取路径错误
+        if (fileAttribute.isCompressFile()) {
+            folderName = "_decompression" + folderName;
+        }
+        Path folderPath = Paths.get(fileDir, folderName + packagePath);
+        Files.createDirectories(folderPath);
+
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
+            IInArchive inArchive = SevenZip.openInArchive(null, new RandomAccessFileInStream(randomAccessFile))) {
+
             ISimpleInArchive simpleInArchive = inArchive.getSimpleInterface();
-            final String[] str = {null};
             for (final ISimpleInArchiveItem item : simpleInArchive.getArchiveItems()) {
                 if (!item.isFolder()) {
-                    ExtractOperationResult result;
-                    result = item.extractSlow(data -> {
-                        try {
-                            str[0] = RarUtils.getUtf8String(item.getPath());
-                            if (RarUtils.isMessyCode(str[0])) {
-                                str[0] = new String(item.getPath().getBytes(StandardCharsets.ISO_8859_1), "gbk");
-                            }
-                            str[0] = str[0].replace("\\", File.separator); // Linux 下路径错误
-                            String str1 = str[0].substring(0, str[0].lastIndexOf(File.separator) + 1);
-                            File file = new File(extractPath, folderName + "_" + File.separator + str1);
-                            if (!file.exists()) {
-                                file.mkdirs();
-                            }
-                            OutputStream out =
-                                new FileOutputStream(extractPath + folderName + "_" + File.separator + str[0], true);
-                            IOUtils.write(data, out);
-                            out.close();
-                        } catch (Exception e) {
-                            LOGGER.error("解压失败！", e);
+                    final Path filePathInsideArchive = getFilePathInsideArchive(item, folderPath);
+                    ExtractOperationResult result = item.extractSlow(data -> {
+                        try (OutputStream out =
+                            new BufferedOutputStream(new FileOutputStream(filePathInsideArchive.toFile(), true))) {
+                            out.write(data);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
                         return data.length;
-                    }, passWord);
-                    if (result == ExtractOperationResult.OK) {
-                        FileType type = FileType.typeFromUrl(str[0]);
-                        if (type.equals(FileType.PICTURE)) {
-                            imgUrls.add(baseUrl + folderName + "_/" + str[0].replace("\\", "/"));
+                    }, filePassword);
+                    if (result != ExtractOperationResult.OK) {
+                        ExtractOperationResult result1 = ExtractOperationResult.valueOf("WRONG_PASSWORD");
+                        if (result1.equals(result)) {
+                            throw new Exception("Password");
+                        } else {
+                            throw new Exception("Failed to extract RAR file.");
                         }
-                        fileHandlerService.putImgCache(fileName, imgUrls);
-                    } else {
-                        return null;
+                    }
+
+                    FileType type = FileType.typeFromUrl(filePathInsideArchive.toString());
+                    if (type.equals(FileType.PICTURE)) { // 图片缓存到集合，为了特殊符号需要进行编码
+                        imgUrls
+                            .add(baseUrl + URLEncoder.encode(
+                                fileName + packagePath + "/"
+                                    + folderPath.relativize(filePathInsideArchive).toString().replace("\\", "/"),
+                                "UTF-8"));
                     }
                 }
             }
-            return archiveFileName + "_";
+            fileHandlerService.putImgCache(fileName + packagePath, imgUrls);
         } catch (Exception e) {
-            throw new Exception(e);
-        } finally {
-            if (inArchive != null) {
-                try {
-                    inArchive.close();
-                } catch (SevenZipException e) {
-                    LOGGER.error("Error closing archive: ", e);
-                }
-            }
-            if (randomAccessFile != null) {
-                try {
-                    randomAccessFile.close();
-                } catch (IOException e) {
-                    LOGGER.error("Error closing file: ", e);
-                }
-            }
+            throw new Exception("Error processing RAR file: " + e.getMessage(), e);
         }
+        return folderName + packagePath;
+    }
+
+    private Path getFilePathInsideArchive(ISimpleInArchiveItem item, Path folderPath)
+        throws SevenZipException, UnsupportedEncodingException {
+        String insideFileName = RarUtils.getUtf8String(item.getPath());
+        if (RarUtils.isMessyCode(insideFileName)) {
+            insideFileName = new String(item.getPath().getBytes(StandardCharsets.ISO_8859_1), "gbk");
+        }
+
+        // 正规化路径并验证是否安全
+        Path normalizedPath = folderPath.resolve(insideFileName).normalize();
+        if (!normalizedPath.startsWith(folderPath)) {
+            throw new SecurityException("Unsafe path detected: " + insideFileName);
+        }
+
+        try {
+            Files.createDirectories(normalizedPath.getParent());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory: " + normalizedPath.getParent(), e);
+        }
+        return normalizedPath;
     }
 
 }

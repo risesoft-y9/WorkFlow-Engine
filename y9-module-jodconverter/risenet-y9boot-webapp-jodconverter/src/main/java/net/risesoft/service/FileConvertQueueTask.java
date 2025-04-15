@@ -4,6 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ExtendedModelMap;
 
@@ -16,8 +18,8 @@ import net.risesoft.service.cache.CacheService;
 /**
  * Content :消费队列中的转换文件
  */
-@Service
 @Slf4j
+@Service
 public class FileConvertQueueTask {
 
     private final FilePreviewFactory previewFactory;
@@ -39,6 +41,7 @@ public class FileConvertQueueTask {
 
     static class ConvertTask implements Runnable {
 
+        private final Logger logger = LoggerFactory.getLogger(ConvertTask.class);
         private final FilePreviewFactory previewFactory;
         private final CacheService cacheService;
         private final FileHandlerService fileHandlerService;
@@ -59,12 +62,12 @@ public class FileConvertQueueTask {
                     if (url != null) {
                         FileAttribute fileAttribute = fileHandlerService.getFileAttribute(url, null);
                         FileType fileType = fileAttribute.getType();
-                        LOGGER.info("正在处理预览转换任务，url：{}，预览类型：{}", url, fileType);
+                        logger.info("正在处理预览转换任务，url：{}，预览类型：{}", url, fileType);
                         if (isNeedConvert(fileType)) {
                             FilePreview filePreview = previewFactory.get(fileAttribute);
                             filePreview.filePreviewHandle(url, new ExtendedModelMap(), fileAttribute);
                         } else {
-                            LOGGER.info("预览类型无需处理，url：{}，预览类型：{}", url, fileType);
+                            logger.info("预览类型无需处理，url：{}，预览类型：{}", url, fileType);
                         }
                     }
                 } catch (Exception e) {
@@ -74,7 +77,7 @@ public class FileConvertQueueTask {
                         Thread.currentThread().interrupt();
                         ex.printStackTrace();
                     }
-                    LOGGER.info("处理预览转换任务异常，url：{}", url, e);
+                    logger.info("处理预览转换任务异常，url：{}", url, e);
                 }
             }
         }

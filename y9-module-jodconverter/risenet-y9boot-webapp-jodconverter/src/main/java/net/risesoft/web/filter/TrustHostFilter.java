@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 
@@ -18,7 +19,7 @@ import net.risesoft.utils.WebUtils;
 
 public class TrustHostFilter implements Filter {
 
-    private String notTrustHost;
+    private String notTrustHostHtmlView;
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -26,7 +27,7 @@ public class TrustHostFilter implements Filter {
         try {
             classPathResource.getInputStream();
             byte[] bytes = FileCopyUtils.copyToByteArray(classPathResource.getInputStream());
-            this.notTrustHost = new String(bytes, StandardCharsets.UTF_8);
+            this.notTrustHostHtmlView = new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,14 +38,24 @@ public class TrustHostFilter implements Filter {
         throws IOException, ServletException {
         String url = WebUtils.getSourceUrl(request);
         String host = WebUtils.getHost(url);
-        if (host != null && !ConfigConstants.getTrustHostSet().isEmpty()
-            && !ConfigConstants.getTrustHostSet().contains(host)) {
-            String html = this.notTrustHost.replace("${current_host}", host);
+        assert host != null;
+        if (isNotTrustHost(host)) {
+            String html = this.notTrustHostHtmlView.replace("${current_host}", host);
             response.getWriter().write(html);
             response.getWriter().close();
         } else {
             chain.doFilter(request, response);
         }
+    }
+
+    public boolean isNotTrustHost(String host) {
+        if (CollectionUtils.isNotEmpty(ConfigConstants.getNotTrustHostSet())) {
+            return ConfigConstants.getNotTrustHostSet().contains(host);
+        }
+        if (CollectionUtils.isNotEmpty(ConfigConstants.getTrustHostSet())) {
+            return !ConfigConstants.getTrustHostSet().contains(host);
+        }
+        return false;
     }
 
     @Override

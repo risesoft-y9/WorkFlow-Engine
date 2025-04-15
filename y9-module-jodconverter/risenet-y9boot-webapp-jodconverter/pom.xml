@@ -13,11 +13,39 @@
     <version>${revision}</version>
     <artifactId>risenet-y9boot-webapp-jodconverter</artifactId>
     <packaging>war</packaging>
-    
+
     <properties>
         <logging.path>${basedir}/target/classes/logs</logging.path>
         <appName>file-preview-new</appName>
         <maven.deploy.skip>true</maven.deploy.skip>
+
+        <jodconverter.version>4.4.8</jodconverter.version>
+        <poi.version>5.2.2</poi.version>
+        <xdocreport.version>1.0.6</xdocreport.version>
+        <xstream.version>1.4.20</xstream.version>
+        <junrar.version>7.5.5</junrar.version>
+        <redisson.version>3.2.0</redisson.version>
+        <sevenzipjbinding.version>16.02-2.01</sevenzipjbinding.version>
+        <jchardet.version>1.0</jchardet.version>
+        <antlr.version>2.7.7</antlr.version>
+        <concurrentlinkedhashmap.version>1.4.2</concurrentlinkedhashmap.version>
+        <rocksdb.version>5.17.2</rocksdb.version>
+        <pdfbox.version>3.0.2</pdfbox.version>
+        <jai-imageio.version>1.4.0</jai-imageio.version>
+        <jbig2-imageio.version>3.0.4</jbig2-imageio.version>
+        <galimatias.version>0.2.1</galimatias.version>
+        <bytedeco.version>1.5.2</bytedeco.version>
+        <opencv.version>4.1.2-1.5.2</opencv.version>
+        <openblas.version>0.3.6-1.5.1</openblas.version>
+        <ffmpeg.version>4.2.1-1.5.2</ffmpeg.version>
+        <itextpdf.version>5.5.13.3</itextpdf.version>
+        <httpclient.version>3.1</httpclient.version>
+        <aspose-cad.version>23.9</aspose-cad.version>
+        <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
+        <juniversalchardet.version>1.0.3</juniversalchardet.version>
+
+        <commons-cli.version>1.5.0</commons-cli.version>
+        <commons-net.version>3.9.0</commons-net.version>
     </properties>
 
     <repositories>
@@ -45,17 +73,10 @@
     </repositories>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-http -->
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-http</artifactId>
-            <version>5.8.23</version>
-        </dependency>
-
         <dependency>
             <groupId>org.jodconverter</groupId>
             <artifactId>jodconverter-local</artifactId>
-            <version>4.4.6</version>
+            <version>${jodconverter.version}</version>
         </dependency>
 
         <!-- web start -->
@@ -69,31 +90,28 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
+        <!-- web end -->
 
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!-- poi start -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>5.2.2</version>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
-            <version>5.2.2</version>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.2.2</version>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>fr.opensagres.xdocreport</groupId>
             <artifactId>org.apache.poi.xwpf.converter.core</artifactId>
-            <version>1.0.6</version>
+            <version>${xdocreport.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>poi</artifactId>
@@ -104,23 +122,29 @@
         <dependency>
             <groupId>fr.opensagres.xdocreport</groupId>
             <artifactId>org.apache.poi.xwpf.converter.xhtml</artifactId>
-            <version>1.0.6</version>
+            <version>${xdocreport.version}</version>
         </dependency>
         <dependency>
             <groupId>fr.opensagres.xdocreport</groupId>
             <artifactId>fr.opensagres.xdocreport.document</artifactId>
-            <version>1.0.6</version>
+            <version>${xdocreport.version}</version>
+        </dependency>
+        <!-- poi start -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
 
+        <!-- 对 rar5 的支持 和其他众多压缩支持 可参考 package net.sf.sevenzipjbinding.ArchiveFormat; -->
         <dependency>
             <groupId>net.sf.sevenzipjbinding</groupId>
             <artifactId>sevenzipjbinding</artifactId>
-            <version>16.02-2.01</version>
+            <version>${sevenzipjbinding.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.sevenzipjbinding</groupId>
             <artifactId>sevenzipjbinding-all-platforms</artifactId>
-            <version>16.02-2.01</version>
+            <version>${sevenzipjbinding.version}</version>
         </dependency>
 
         <dependency>
@@ -130,166 +154,169 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
-            <version>3.2.0</version>
+            <version>${redisson.version}</version>
         </dependency>
 
         <!-- 编码检测-JUniversalCharDet-->
         <dependency>
             <groupId>com.googlecode.juniversalchardet</groupId>
             <artifactId>juniversalchardet</artifactId>
-            <version>1.0.3</version>
+            <version>${juniversalchardet.version}</version>
         </dependency>
 
         <!-- 解压(rar)-->
         <dependency>
             <groupId>com.github.junrar</groupId>
             <artifactId>junrar</artifactId>
-            <version>7.5.4</version>
+            <version>${junrar.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.jchardet</groupId>
             <artifactId>jchardet</artifactId>
-            <version>1.0</version>
+            <version>${jchardet.version}</version>
         </dependency>
         <dependency>
             <groupId>antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>2.7.7</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
-            <version>1.2</version>
+            <version>${commons-cli.version}</version>
         </dependency>
 
         <!-- FTP -->
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
+            <version>${commons-net.version}</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.20</version>
+            <version>${xstream.version}</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.concurrentlinkedhashmap</groupId>
             <artifactId>concurrentlinkedhashmap-lru</artifactId>
-            <version>1.4.2</version>
+            <version>${concurrentlinkedhashmap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.rocksdb</groupId>
             <artifactId>rocksdbjni</artifactId>
-            <version>5.17.2</version>
+            <version>${rocksdb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>2.0.27</version>
+            <version>${pdfbox.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox-tools</artifactId>
-            <version>2.0.27</version>
+            <version>${pdfbox.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.jai-imageio</groupId>
             <artifactId>jai-imageio-jpeg2000</artifactId>
-            <version>1.4.0</version>
+            <version>${jai-imageio.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.jai-imageio</groupId>
             <artifactId>jai-imageio-core</artifactId>
-            <version>1.4.0</version>
+            <version>${jai-imageio.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>jbig2-imageio</artifactId>
-            <version>3.0.4</version>
+            <version>${jbig2-imageio.version}</version>
         </dependency>
         <dependency>
             <groupId>com.aspose</groupId>
             <artifactId>aspose-cad</artifactId>
-            <version>23.3</version>
+            <version>${aspose-cad.version}</version>
         </dependency>
         <!-- 密钥算法 -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.70</version>
+            <version>${bcprov-jdk15on.version}</version>
         </dependency>
         <!-- url 规范化 -->
         <dependency>
             <groupId>io.mola.galimatias</groupId>
             <artifactId>galimatias</artifactId>
-            <version>0.2.1</version>
+            <version>${galimatias.version}</version>
         </dependency>
 
         <!-- 以下是bytedeco 基于opencv ffmpeg封装的javacv，用于视频处理 -->
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv</artifactId>
-            <version>1.5.2</version>
+            <version>${bytedeco.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacpp</artifactId>
-            <version>1.5.2</version>
+            <version>${bytedeco.version}</version>
         </dependency>
 
         <!-- 此版本中主要兼容linux和windows系统，如需兼容其他系统平台，请引入对应依赖即可 -->
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>opencv</artifactId>
-            <version>4.1.2-1.5.2</version>
+            <version>${opencv.version}</version>
             <classifier>linux-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>opencv</artifactId>
-            <version>4.1.2-1.5.2</version>
+            <version>${opencv.version}</version>
             <classifier>windows-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>openblas</artifactId>
-            <version>0.3.6-1.5.1</version>
+            <version>${openblas.version}</version>
             <classifier>linux-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>openblas</artifactId>
-            <version>0.3.6-1.5.1</version>
+            <version>${openblas.version}</version>
             <classifier>windows-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>ffmpeg</artifactId>
-            <version>4.2.1-1.5.2</version>
+            <version>${ffmpeg.version}</version>
             <classifier>linux-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>ffmpeg</artifactId>
-            <version>4.2.1-1.5.2</version>
+            <version>${ffmpeg.version}</version>
             <classifier>windows-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
-            <version>5.5.13.3</version>
+            <version>${itextpdf.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>javax.media</groupId>
+            <artifactId>jai_core</artifactId>
+            <version>1.1.3</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/main/webapp/lib/jai_core-1.1.3.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>javax.media</groupId>
             <artifactId>jai_codec</artifactId>
             <version>1.1.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai-core</artifactId>
-            <version>1.1.3</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/main/webapp/lib/jai_codec-1.1.3.jar</systemPath>
         </dependency>
 
         <!-- test dependency - start -->
@@ -298,10 +325,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
+            <version>${httpclient.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -310,15 +338,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-        </dependency>
         <!-- test dependency - end -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
             <scope>provided</scope>
         </dependency>
 
