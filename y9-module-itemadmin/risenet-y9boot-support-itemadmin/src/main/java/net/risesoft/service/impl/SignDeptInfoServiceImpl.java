@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.SignDeptInfo;
 import net.risesoft.entity.SignOutDept;
@@ -44,12 +45,27 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     private final DepartmentApi departmentApi;
 
+    private final OrgUnitApi orgUnitApi;
+
     private final SignDeptDetailService signDeptDetailService;
 
     @Override
     @Transactional
     public void deleteById(String id) {
-        signDeptInfoRepository.deleteById(id);
+        Optional<SignDeptInfo> sdiOptional = signDeptInfoRepository.findById(id);
+        if (sdiOptional.isPresent()) {
+            SignDeptInfo sdi = sdiOptional.get();
+            if ("0".equals(sdi.getDeptType())) {
+                List<SignDeptDetail> doneList = signDeptDetailService.findByProcessSerialNumberAndStatus(
+                    sdi.getProcessSerialNumber(), SignDeptDetailStatusEnum.DONE.getValue());
+                boolean match = doneList.stream().anyMatch(detail -> detail.getDeptId().equals(sdi.getDeptId()));
+                if (!match) {
+                    signDeptInfoRepository.deleteById(id);
+                }
+            } else {
+                signDeptInfoRepository.deleteById(id);
+            }
+        }
     }
 
     @Override
@@ -60,7 +76,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     @Override
     @Transactional
-    public void saveSignDept(String processSerialNumber, String deptType, String deptIds) {
+    public void saveSignDept(String processSerialNumber, String deptType, String deptIds, String tzsDeptId) {
         String[] deptIdArr = deptIds.split(",");
         List<String> deptIdList = Arrays.asList(deptIdArr);
         if ("0".equals(deptType)) {
@@ -92,6 +108,15 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                             ? department.getName() : department.getAliasName());
                     signDeptInfo.setProcessSerialNumber(processSerialNumber);
                     signDeptInfo.setDeptType(deptType);
+                    signDeptInfo.setDisplayDeptName(signDeptInfo.getDeptName());
+                    if (StringUtils.isNotBlank(tzsDeptId) && dept.getId().equals(tzsDeptId)) {
+                        // 需要将显示名称改为原司局单位名称
+                        Department bureau = (Department)orgUnitApi
+                            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId()).getData();
+                        signDeptInfo.setDisplayDeptId(bureau.getId());
+                        signDeptInfo.setDisplayDeptName(
+                            StringUtils.isBlank(bureau.getAliasName()) ? bureau.getName() : bureau.getAliasName());
+                    }
                     signDeptInfoRepository.save(signDeptInfo);
 
                 }
