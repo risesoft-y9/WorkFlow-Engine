@@ -27,7 +27,7 @@ import net.risesoft.utils.LocalOfficeUtils;
 
 /**
  * 创建文件转换器
- *
+ * 
  * @since 2022-12-15
  */
 @Component
@@ -43,11 +43,17 @@ public class OfficePluginManager {
     @Value("${office.plugin.task.timeout:5m}")
     private String timeOut;
 
+    @Value("${office.plugin.task.taskexecutiontimeout:5m}")
+    private String taskExecutionTimeout;
+
+    @Value("${office.plugin.task.maxtasksperprocess:5}")
+    private int maxTasksPerProcess;
+
     /**
      * 启动Office组件进程
      */
     @PostConstruct
-    public void startOfficeManager() throws OfficeException, IOException {
+    public void startOfficeManager() throws OfficeException {
         File officeHome = LocalOfficeUtils.getDefaultOfficeHome();
         if (officeHome == null) {
             throw new RuntimeException("找不到office组件，请确认'office.home'配置是否有误");
@@ -60,8 +66,10 @@ public class OfficePluginManager {
             String[] portsString = serverPorts.split(",");
             int[] ports = Arrays.stream(portsString).mapToInt(Integer::parseInt).toArray();
             long timeout = DurationStyle.detectAndParse(timeOut).toMillis();
+            long taskexecutiontimeout = DurationStyle.detectAndParse(taskExecutionTimeout).toMillis();
             officeManager =
-                LocalOfficeManager.builder().officeHome(officeHome).portNumbers(ports).processTimeout(timeout).build();
+                LocalOfficeManager.builder().officeHome(officeHome).portNumbers(ports).processTimeout(timeout)
+                    .maxTasksPerProcess(maxTasksPerProcess).taskExecutionTimeout(taskexecutiontimeout).build();
             officeManager.start();
             InstalledOfficeManagerHolder.setInstance(officeManager);
         } catch (Exception e) {

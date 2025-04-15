@@ -1,9 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.io.IOException;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.poi.EncryptedDocumentException;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -18,13 +15,17 @@ import net.risesoft.service.FilePreview;
 import net.risesoft.utils.DownloadUtils;
 import net.risesoft.utils.KkFileUtils;
 
+/**
+ * Content :处理压缩包文件
+ */
 @Service
 public class CompressFilePreviewImpl implements FilePreview {
 
+    private static final String Rar_PASSWORD_MSG = "password";
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(CompressFileReader.class);
     private final FileHandlerService fileHandlerService;
     private final CompressFileReader compressFileReader;
     private final OtherFilePreviewImpl otherFilePreview;
-    private static final String Rar_PASSWORD_MSG = "password";
 
     public CompressFilePreviewImpl(FileHandlerService fileHandlerService, CompressFileReader compressFileReader,
         OtherFilePreviewImpl otherFilePreview) {
@@ -48,21 +49,18 @@ public class CompressFilePreviewImpl implements FilePreview {
             }
             String filePath = response.getContent();
             try {
-                fileTree = compressFileReader.unRar(filePath, filePassword, fileName);
+                fileTree = compressFileReader.unRar(filePath, filePassword, fileName, fileAttribute);
             } catch (Exception e) {
-                Throwable[] throwableArray = ExceptionUtils.getThrowables(e);
-                for (Throwable throwable : throwableArray) {
-                    if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
-                        if (e.getMessage().toLowerCase().contains(Rar_PASSWORD_MSG)) {
-                            model.addAttribute("needFilePassword", true);
-                            return EXEL_FILE_PREVIEW_PAGE;
-                        }
-                    }
+                if (e.getMessage().toLowerCase().contains(Rar_PASSWORD_MSG)) {
+                    model.addAttribute("needFilePassword", true);
+                    return EXEL_FILE_PREVIEW_PAGE;
+                } else {
+                    logger.error("Error processing RAR file: " + e.getMessage(), e);
                 }
             }
             if (!ObjectUtils.isEmpty(fileTree)) {
                 // 是否保留压缩包源文件
-                if (ConfigConstants.getDeleteSourceFile()) {
+                if (!fileAttribute.isCompressFile() && ConfigConstants.getDeleteSourceFile()) {
                     KkFileUtils.deleteFileByPath(filePath);
                 }
                 if (ConfigConstants.isCacheEnabled()) {
@@ -70,7 +68,7 @@ public class CompressFilePreviewImpl implements FilePreview {
                     fileHandlerService.addConvertedFile(fileName, fileTree);
                 }
             } else {
-                return otherFilePreview.notSupportedFile(model, fileAttribute, "压缩文件密码错误! 压缩文件损坏!  压缩文件类型不受支持!");
+                return otherFilePreview.notSupportedFile(model, fileAttribute, "该压缩包文件无法处理!");
             }
         } else {
             fileTree = fileHandlerService.getConvertedFile(fileName);

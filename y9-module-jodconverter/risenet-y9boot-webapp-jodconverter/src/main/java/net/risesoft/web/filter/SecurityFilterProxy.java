@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Configuration
 public class SecurityFilterProxy extends OncePerRequestFilter {
 
-    private String NOT_ALLOW_METHODS = "TRACE";
+    private final String NOT_ALLOW_METHODS = "TRACE";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

@@ -10,13 +10,59 @@ import org.springframework.stereotype.Component;
 
 import net.risesoft.utils.ConfigUtils;
 
-@Component
+@Component(value = ConfigConstants.BEAN_NAME)
 public class ConfigConstants {
 
     static {
         // pdfbox兼容低版本jdk
         System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
     }
+
+    public static final String BEAN_NAME = "configConstants";
+    public static final String DEFAULT_CACHE_ENABLED = "true";
+    public static final String DEFAULT_TXT_TYPE =
+        "txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd,xbrl";
+    public static final String DEFAULT_MEDIA_TYPE = "mp3,wav,mp4,flv";
+    public static final String DEFAULT_OFFICE_PREVIEW_TYPE = "image";
+    public static final String DEFAULT_OFFICE_PREVIEW_SWITCH_DISABLED = "false";
+    public static final String DEFAULT_FTP_USERNAME = null;
+    public static final String DEFAULT_FTP_PASSWORD = null;
+    public static final String DEFAULT_FTP_CONTROL_ENCODING = "UTF-8";
+    public static final String DEFAULT_VALUE = "default";
+    public static final String DEFAULT_PDF_PRESENTATION_MODE_DISABLE = "true";
+    public static final String DEFAULT_PDF_OPEN_FILE_DISABLE = "true";
+    public static final String DEFAULT_PDF_PRINT_DISABLE = "true";
+    public static final String DEFAULT_PDF_DOWNLOAD_DISABLE = "true";
+    public static final String DEFAULT_PDF_BOOKMARK_DISABLE = "true";
+    public static final String DEFAULT_PDF_DISABLE_EDITING = "true";
+    public static final String DEFAULT_FILE_UPLOAD_DISABLE = "false";
+    public static final String DEFAULT_TIF_PREVIEW_TYPE = "tif";
+    public static final String DEFAULT_CAD_PREVIEW_TYPE = "pdf";
+    public static final String DEFAULT_BEIAN = "无";
+    public static final String DEFAULT_SIZE = "500MB";
+    public static final String DEFAULT_PROHIBIT = "exe,dll";
+    public static final String DEFAULT_PASSWORD = "123456";
+    public static final String DEFAULT_PDF2_JPG_DPI = "105";
+    public static final String DEFAULT_OFFICE_TYPE_WEB = "web";
+    public static final String DEFAULT_DELETE_SOURCE_FILE = "true";
+    public static final String DEFAULT_DELETE_CAPTCHA = "false";
+    public static final String DEFAULT_CAD_TIMEOUT = "90";
+    public static final String DEFAULT_CAD_THREAD = "5";
+    public static final String DEFAULT_OFFICE_PAQERANQE = "false";
+    public static final String DEFAULT_OFFICE_WATERMARK = "false";
+    public static final String DEFAULT_OFFICE_QUALITY = "80";
+    public static final String DEFAULT_OFFICE_MAXIMAQERESOLUTION = "150";
+    public static final String DEFAULT_OFFICE_EXPORTBOOKMARKS = "true";
+    public static final String DEFAULT_OFFICE_EXPORTNOTES = "true";
+    public static final String DEFAULT_OFFICE_EOCUMENTOPENPASSWORDS = "true";
+    public static final String DEFAULT_HOME_PAGENUMBER = "1";
+    public static final String DEFAULT_HOME_PAGINATION = "true";
+    public static final String DEFAULT_HOME_PAGSIZE = "15";
+    public static final String DEFAULT_HOME_SEARCH = "true";
+    public static final String DEFAULT_PDF_TIMEOUT = "90";
+    public static final String DEFAULT_PDF_TIMEOUT80 = "180";
+    public static final String DEFAULT_PDF_TIMEOUT200 = "300";
+    public static final String DEFAULT_PDF_THREAD = "5";
 
     private static Boolean cacheEnabled;
     private static String[] simTexts = {};
@@ -32,7 +78,9 @@ public class ConfigConstants {
     private static String fileDir = ConfigUtils.getHomePath() + File.separator + "file" + File.separator;
     private static String localPreviewDir;
     private static CopyOnWriteArraySet<String> trustHostSet;
+    private static CopyOnWriteArraySet<String> notTrustHostSet;
     private static String pdfPresentationModeDisable;
+    private static String pdfDisableEditing;
     private static String pdfOpenFileDisable;
     private static String pdfPrintDisable;
     private static String pdfDownloadDisable;
@@ -57,55 +105,17 @@ public class ConfigConstants {
     private static Boolean officeDocumentOpenPasswords;
     private static String cadTimeout;
     private static int cadThread;
-
-    public static final String DEFAULT_CACHE_ENABLED = "true";
-    public static final String DEFAULT_TXT_TYPE =
-        "txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd,xbrl";
-    public static final String DEFAULT_MEDIA_TYPE = "mp3,wav,mp4,flv";
-    public static final String DEFAULT_OFFICE_PREVIEW_TYPE = "image";
-    public static final String DEFAULT_OFFICE_PREVIEW_SWITCH_DISABLED = "false";
-    public static final String DEFAULT_FTP_USERNAME = null;
-    public static final String DEFAULT_FTP_PASSWORD = null;
-    public static final String DEFAULT_FTP_CONTROL_ENCODING = "UTF-8";
-    public static final String DEFAULT_BASE_URL = "default";
-    public static final String DEFAULT_FILE_DIR_VALUE = "default";
-    public static final String DEFAULT_LOCAL_PREVIEW_DIR_VALUE = "default";
-    public static final String DEFAULT_TRUST_HOST = "default";
-    public static final String DEFAULT_PDF_PRESENTATION_MODE_DISABLE = "true";
-    public static final String DEFAULT_PDF_OPEN_FILE_DISABLE = "true";
-    public static final String DEFAULT_PDF_PRINT_DISABLE = "false";
-    public static final String DEFAULT_PDF_DOWNLOAD_DISABLE = "true";
-    public static final String DEFAULT_PDF_BOOKMARK_DISABLE = "true";
-    public static final String DEFAULT_FILE_UPLOAD_DISABLE = "false";
-    public static final String DEFAULT_TIF_PREVIEW_TYPE = "tif";
-    public static final String DEFAULT_CAD_PREVIEW_TYPE = "pdf";
-    public static final String DEFAULT_BEIAN = "无";
-    public static final String DEFAULT_SIZE = "500MB";
-    public static final String DEFAULT_PROHIBIT = "exe,dll";
-    public static final String DEFAULT_PASSWORD = "123456";
-    public static final String DEFAULT_PDF2_JPG_DPI = "105";
-    public static final String DEFAULT_OFFICE_TYPE_WEB = "web";
-    public static final String DEFAULT_DELETE_SOURCE_FILE = "true";
-    public static final String DEFAULT_DELETE_CAPTCHA = "false";
-
-    public static final String DEFAULT_CAD_TIMEOUT = "90";
-    public static final String DEFAULT_CAD_THREAD = "5";
-
-    public static final String DEFAULT_OFFICE_PAQERANQE = "false";
-    public static final String DEFAULT_OFFICE_WATERMARK = "false";
-    public static final String DEFAULT_OFFICE_QUALITY = "80";
-    public static final String DEFAULT_OFFICE_MAXIMAQERESOLUTION = "150";
-    public static final String DEFAULT_OFFICE_EXPORTBOOKMARKS = "true";
-    public static final String DEFAULT_OFFICE_EXPORTNOTES = "true";
-    public static final String DEFAULT_OFFICE_EOCUMENTOPENPASSWORDS = "true";
+    private static String homePageNumber;
+    private static String homePagination;
+    private static String homePageSize;
+    private static String homeSearch;
+    private static int pdfTimeout;
+    private static int pdfTimeout80;
+    private static int pdfTimeout200;
+    private static int pdfThread;
 
     public static Boolean isCacheEnabled() {
         return cacheEnabled;
-    }
-
-    @Value("${cache.enabled:true}")
-    public void setCacheEnabled(String cacheEnabled) {
-        setCacheEnabledValueValue(Boolean.parseBoolean(cacheEnabled));
     }
 
     public static void setCacheEnabledValueValue(Boolean cacheEnabled) {
@@ -242,7 +252,7 @@ public class ConfigConstants {
     }
 
     public static void setFileDirValue(String fileDir) {
-        if (!DEFAULT_FILE_DIR_VALUE.equalsIgnoreCase(fileDir)) {
+        if (!DEFAULT_VALUE.equalsIgnoreCase(fileDir)) {
             if (!fileDir.endsWith(File.separator)) {
                 fileDir = fileDir + File.separator;
             }
@@ -260,7 +270,7 @@ public class ConfigConstants {
     }
 
     public static void setLocalPreviewDirValue(String localPreviewDir) {
-        if (!DEFAULT_LOCAL_PREVIEW_DIR_VALUE.equals(localPreviewDir)) {
+        if (!DEFAULT_VALUE.equals(localPreviewDir)) {
             if (!localPreviewDir.endsWith(File.separator)) {
                 localPreviewDir = localPreviewDir + File.separator;
             }
@@ -268,21 +278,21 @@ public class ConfigConstants {
         ConfigConstants.localPreviewDir = localPreviewDir;
     }
 
-    @Value("${trust.host:default}")
-    public void setTrustHost(String trustHost) {
-        setTrustHostValue(trustHost);
+    public static void setTrustHostValue(String trustHost) {
+        setTrustHostSet(getHostValue(trustHost));
     }
 
-    public static void setTrustHostValue(String trustHost) {
-        CopyOnWriteArraySet<String> trustHostSet;
-        if (DEFAULT_TRUST_HOST.equalsIgnoreCase(trustHost)) {
-            trustHostSet = new CopyOnWriteArraySet<>();
+    public static void setNotTrustHostValue(String notTrustHost) {
+        setNotTrustHostSet(getHostValue(notTrustHost));
+    }
+
+    private static CopyOnWriteArraySet<String> getHostValue(String trustHost) {
+        if (DEFAULT_VALUE.equalsIgnoreCase(trustHost)) {
+            return new CopyOnWriteArraySet<>();
         } else {
             String[] trustHostArray = trustHost.toLowerCase().split(",");
-            trustHostSet = new CopyOnWriteArraySet<>(Arrays.asList(trustHostArray));
-            setTrustHostSet(trustHostSet);
+            return new CopyOnWriteArraySet<>(Arrays.asList(trustHostArray));
         }
-        setTrustHostSet(trustHostSet);
     }
 
     public static Set<String> getTrustHostSet() {
@@ -293,11 +303,19 @@ public class ConfigConstants {
         ConfigConstants.trustHostSet = trustHostSet;
     }
 
+    public static Set<String> getNotTrustHostSet() {
+        return notTrustHostSet;
+    }
+
+    public static void setNotTrustHostSet(CopyOnWriteArraySet<String> notTrustHostSet) {
+        ConfigConstants.notTrustHostSet = notTrustHostSet;
+    }
+
     public static String getPdfPresentationModeDisable() {
         return pdfPresentationModeDisable;
     }
 
-    @Value("${pdf.presentationMode.disable:false}")
+    @Value("${pdf.presentationMode.disable:true}")
     public void setPdfPresentationModeDisable(String pdfPresentationModeDisable) {
         setPdfPresentationModeDisableValue(pdfPresentationModeDisable);
     }
@@ -310,7 +328,7 @@ public class ConfigConstants {
         return pdfOpenFileDisable;
     }
 
-    @Value("${pdf.openFile.disable:false}")
+    @Value("${pdf.openFile.disable:true}")
     public void setPdfOpenFileDisable(String pdfOpenFileDisable) {
         setPdfOpenFileDisableValue(pdfOpenFileDisable);
     }
@@ -323,7 +341,7 @@ public class ConfigConstants {
         return pdfPrintDisable;
     }
 
-    @Value("${pdf.print.disable:false}")
+    @Value("${pdf.print.disable:true}")
     public void setPdfPrintDisable(String pdfPrintDisable) {
         setPdfPrintDisableValue(pdfPrintDisable);
     }
@@ -336,7 +354,7 @@ public class ConfigConstants {
         return pdfDownloadDisable;
     }
 
-    @Value("${pdf.download.disable:false}")
+    @Value("${pdf.download.disable:true}")
     public void setPdfDownloadDisable(String pdfDownloadDisable) {
         setPdfDownloadDisableValue(pdfDownloadDisable);
     }
@@ -349,13 +367,21 @@ public class ConfigConstants {
         return pdfBookmarkDisable;
     }
 
-    @Value("${pdf.bookmark.disable:false}")
+    @Value("${pdf.bookmark.disable:true}")
     public void setPdfBookmarkDisable(String pdfBookmarkDisable) {
         setPdfBookmarkDisableValue(pdfBookmarkDisable);
     }
 
     public static void setPdfBookmarkDisableValue(String pdfBookmarkDisable) {
         ConfigConstants.pdfBookmarkDisable = pdfBookmarkDisable;
+    }
+
+    public static String getPdfDisableEditing() {
+        return pdfDisableEditing;
+    }
+
+    public static void setPdfDisableEditingValue(String pdfDisableEditing) {
+        ConfigConstants.pdfDisableEditing = pdfDisableEditing;
     }
 
     public static String getOfficePreviewSwitchDisabled() {
@@ -397,19 +423,6 @@ public class ConfigConstants {
         ConfigConstants.tifPreviewType = tifPreviewType;
     }
 
-    public static String getBeian() {
-        return beian;
-    }
-
-    @Value("${beian:default}")
-    public void setBeian(String beian) {
-        setBeianValue(beian);
-    }
-
-    public static void setBeianValue(String beian) {
-        ConfigConstants.beian = beian;
-    }
-
     public static String[] getProhibit() {
         return prohibit;
     }
@@ -426,11 +439,6 @@ public class ConfigConstants {
 
     public static String maxSize() {
         return size;
-    }
-
-    @Value("${spring.servlet.multipart.max-file-size:500MB}")
-    public void setSize(String size) {
-        setSizeValue(size);
     }
 
     public static void setSizeValue(String size) {
@@ -452,11 +460,6 @@ public class ConfigConstants {
 
     public static int getPdf2JpgDpi() {
         return pdf2JpgDpi;
-    }
-
-    @Value("${pdf2jpg.dpi:105}")
-    public void pdf2JpgDpi(int pdf2JpgDpi) {
-        setPdf2JpgDpiValue(pdf2JpgDpi);
     }
 
     public static void setPdf2JpgDpiValue(int pdf2JpgDpi) {
@@ -546,6 +549,61 @@ public class ConfigConstants {
     }
 
     /**
+     * 以下为pdf转换模块设置
+     */
+    public static int getPdfTimeout() {
+        return pdfTimeout;
+    }
+
+    @Value("${pdf.timeout:90}")
+    public void setPdfTimeout(int pdfTimeout) {
+        setPdfTimeoutValue(pdfTimeout);
+    }
+
+    public static void setPdfTimeoutValue(int pdfTimeout) {
+        ConfigConstants.pdfTimeout = pdfTimeout;
+    }
+
+    public static int getPdfTimeout80() {
+        return pdfTimeout80;
+    }
+
+    @Value("${pdf.timeout80:180}")
+    public void setPdfTimeout80(int pdfTimeout80) {
+        setPdfTimeout80Value(pdfTimeout80);
+    }
+
+    public static void setPdfTimeout80Value(int pdfTimeout80) {
+        ConfigConstants.pdfTimeout80 = pdfTimeout80;
+    }
+
+    public static int getPdfTimeout200() {
+        return pdfTimeout200;
+    }
+
+    @Value("${pdf.timeout200:300}")
+    public void setPdfTimeout200(int pdfTimeout200) {
+        setPdfTimeout200Value(pdfTimeout200);
+    }
+
+    public static void setPdfTimeout200Value(int pdfTimeout200) {
+        ConfigConstants.pdfTimeout200 = pdfTimeout200;
+    }
+
+    public static int getPdfThread() {
+        return pdfThread;
+    }
+
+    @Value("${pdf.thread:5}")
+    public void setPdfThread(int pdfThread) {
+        setPdfThreadValue(pdfThread);
+    }
+
+    public static void setPdfThreadValue(int pdfThread) {
+        ConfigConstants.pdfThread = pdfThread;
+    }
+
+    /**
      * 以下为OFFICE转换模块设置
      */
 
@@ -618,11 +676,6 @@ public class ConfigConstants {
         return officeExportNotes;
     }
 
-    @Value("${office.exportnotes:true}")
-    public void setExportNotes(Boolean officeExportNotes) {
-        setOfficeExportNotesValue(officeExportNotes);
-    }
-
     public static void setOfficeExportNotesValue(Boolean officeExportNotes) {
         ConfigConstants.officeExportNotes = officeExportNotes;
     }
@@ -631,13 +684,117 @@ public class ConfigConstants {
         return officeDocumentOpenPasswords;
     }
 
+    public static void setOfficeDocumentOpenPasswordsValue(Boolean officeDocumentOpenPasswords) {
+        ConfigConstants.officeDocumentOpenPasswords = officeDocumentOpenPasswords;
+    }
+
+    /**
+     * 以下为首页显示
+     */
+
+    public static String getBeian() {
+        return beian;
+    }
+
+    @Value("${beian:default}")
+    public void setBeian(String beian) {
+        setBeianValue(beian);
+    }
+
+    public static void setBeianValue(String beian) {
+        ConfigConstants.beian = beian;
+    }
+
+    public static String getHomePageNumber() {
+        return homePageNumber;
+    }
+
+    @Value("${home.pagenumber:1}")
+    public void setHomePageNumber(String homePageNumber) {
+        setHomePageNumberValue(homePageNumber);
+    }
+
+    public static void setHomePageNumberValue(String homePageNumber) {
+        ConfigConstants.homePageNumber = homePageNumber;
+    }
+
+    public static String getHomePagination() {
+        return homePagination;
+    }
+
+    @Value("${home.pagination:true}")
+    public void setHomePagination(String homePagination) {
+        setHomePaginationValue(homePagination);
+    }
+
+    public static void setHomePaginationValue(String homePagination) {
+        ConfigConstants.homePagination = homePagination;
+    }
+
+    public static String getHomePageSize() {
+        return homePageSize;
+    }
+
+    @Value("${home.pagesize:15}")
+    public void setHomePageSize(String homePageSize) {
+        setHomePageSizeValue(homePageSize);
+    }
+
+    public static void setHomePageSizeValue(String homePageSize) {
+        ConfigConstants.homePageSize = homePageSize;
+    }
+
+    public static String getHomeSearch() {
+        return homeSearch;
+    }
+
+    @Value("${home.search:1}")
+    public void setHomeSearch(String homeSearch) {
+        setHomeSearchValue(homeSearch);
+    }
+
+    public static void setHomeSearchValue(String homeSearch) {
+        ConfigConstants.homeSearch = homeSearch;
+    }
+
+    @Value("${cache.enabled:true}")
+    public void setCacheEnabled(String cacheEnabled) {
+        setCacheEnabledValueValue(Boolean.parseBoolean(cacheEnabled));
+    }
+
+    @Value("${trust.host:default}")
+    public void setTrustHost(String trustHost) {
+        setTrustHostSet(getHostValue(trustHost));
+    }
+
+    @Value("${not.trust.host:default}")
+    public void setNotTrustHost(String notTrustHost) {
+        setNotTrustHostSet(getHostValue(notTrustHost));
+    }
+
+    @Value("${pdf.disable.editing:true}")
+    public void setpdfDisableEditing(String pdfDisableEditing) {
+        setPdfDisableEditingValue(pdfDisableEditing);
+    }
+
+    @Value("${spring.servlet.multipart.max-file-size:500MB}")
+    public void setSize(String size) {
+        setSizeValue(size);
+    }
+
+    @Value("${pdf2jpg.dpi:105}")
+    public void pdf2JpgDpi(int pdf2JpgDpi) {
+        setPdf2JpgDpiValue(pdf2JpgDpi);
+    }
+
+    @Value("${office.exportnotes:true}")
+    public void setExportNotes(Boolean officeExportNotes) {
+        setOfficeExportNotesValue(officeExportNotes);
+    }
+
     @Value("${office.documentopenpasswords:true}")
     public void setDocumentOpenPasswords(Boolean officeDocumentOpenPasswords) {
         setOfficeDocumentOpenPasswordsValue(officeDocumentOpenPasswords);
-    }
-
-    public static void setOfficeDocumentOpenPasswordsValue(Boolean officeDocumentOpenPasswords) {
-        ConfigConstants.officeDocumentOpenPasswords = officeDocumentOpenPasswords;
     }
 
 }

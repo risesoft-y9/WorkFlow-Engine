@@ -5,16 +5,24 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <#include "*/commonHeader.ftl">
+      <script src="js/base64.min.js" type="text/javascript"></script>
+      	<#if currentUrl?contains("http://") || currentUrl?contains("https://") || currentUrl?contains("file://")>
+    <#assign finalUrl="${currentUrl}">
+  <#elseif currentUrl?contains("ftp://") >
+   <#assign finalUrl="${currentUrl}">
+<#else>
+    <#assign finalUrl="${baseUrl}${currentUrl}">
+</#if>
     <style>
         html, body, #diagram {
             height: 100%
         }
     </style>
-    <title>FileView Bpmn</title>
+    <title>kkFileView Bpmn</title>
 </head>
 <body>
 
-<h2>FileView Bpmn : ${fileName}</h2>
+<h2>kkFileView Bpmn : ${fileName}</h2>
 
 <div id="diagram"></div>
 
@@ -33,13 +41,16 @@
     const viewer = new BpmnJS({
         container: '#diagram'
     });
-
+      var url = '${finalUrl}';
+    var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
+    if (!url.startsWith(baseUrl)) {
+        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
+    }
     async function showDiagram(diagramXML) {
         await viewer.importXML(diagramXML);
     }
-
     // load + show diagram
-    $.get('${currentUrl}', showDiagram, 'text');
+    $.get(url, showDiagram, 'text');
 </script>
 </body>
 </html>

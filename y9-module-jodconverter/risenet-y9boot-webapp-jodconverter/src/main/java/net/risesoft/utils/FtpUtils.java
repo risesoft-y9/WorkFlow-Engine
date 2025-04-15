@@ -10,14 +10,13 @@ import java.nio.file.Paths;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.config.ConfigConstants;
 
+@Slf4j
 public class FtpUtils {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FtpUtils.class);
 
     public static FTPClient connect(String host, int port, String username, String password, String controlEncoding)
         throws IOException {

@@ -11,22 +11,25 @@ import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ClassPathResource;
 
 public class LocalOfficeUtils {
-    // LibreOfficePortable 路径
+
     public static final String OFFICE_HOME_KEY = "office.home";
     public static final String DEFAULT_OFFICE_HOME_VALUE = "default";
-
     private static final String EXECUTABLE_DEFAULT = "program/soffice.bin";
     private static final String EXECUTABLE_MAC = "program/soffice";
     private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
     private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
 
     public static File getDefaultOfficeHome() {
-        Properties properties;
-        YamlPropertiesFactoryBean factoryBean = new YamlPropertiesFactoryBean();
+        Properties properties = new Properties();
+        try {
+            YamlPropertiesFactoryBean factoryBean = new YamlPropertiesFactoryBean();
 
-        // 加载yml配置文件
-        factoryBean.setResources(new ClassPathResource("application.yml"));
-        properties = factoryBean.getObject();
+            // 加载yml配置文件
+            factoryBean.setResources(new ClassPathResource("application.yml"));
+            properties = factoryBean.getObject();
+            ConfigUtils.restorePropertiesFromEnvFormat(properties);
+        } catch (Exception ignored) {
+        }
         String officeHome = properties.getProperty(OFFICE_HOME_KEY);
         if (officeHome != null && !DEFAULT_OFFICE_HOME_VALUE.equals(officeHome)) {
             return new File(officeHome);
@@ -59,12 +62,13 @@ public class LocalOfficeUtils {
             return homeDir;
         } else {
             // Linux or other *nix variants
-            return findOfficeHome(EXECUTABLE_DEFAULT, "/opt/libreoffice6", "/opt/libreoffice7", "/opt/libreoffice6.0",
-                "/opt/libreoffice6.1", "/opt/libreoffice6.2", "/opt/libreoffice6.3", "/opt/libreoffice6.4",
-                "/opt/libreoffice7.0", "/opt/libreoffice7.1", "/opt/libreoffice7.2", "/opt/libreoffice7.3",
-                "/opt/libreoffice7.4", "/opt/libreoffice7.5", "/opt/libreoffice7.6", "/usr/lib64/libreoffice",
-                "/usr/lib/libreoffice", "/usr/local/lib64/libreoffice", "/usr/local/lib/libreoffice",
-                "/opt/libreoffice", "/usr/lib64/openoffice", "/usr/lib64/openoffice.org3", "/usr/lib64/openoffice.org",
+            return findOfficeHome(EXECUTABLE_DEFAULT, "/opt/libreoffice6.0", "/opt/libreoffice6.1",
+                "/opt/libreoffice6.2", "/opt/libreoffice6.3", "/opt/libreoffice6.4", "/opt/libreoffice7.0",
+                "/opt/libreoffice7.1", "/opt/libreoffice7.2", "/opt/libreoffice7.3", "/opt/libreoffice7.4",
+                "/opt/libreoffice7.5", "/opt/libreoffice7.6", "/opt/libreoffice24.2", "/opt/libreoffice24.8",
+                "/opt/libreoffice25.2", "/usr/lib64/libreoffice", "/usr/lib/libreoffice",
+                "/usr/local/lib64/libreoffice", "/usr/local/lib/libreoffice", "/opt/libreoffice",
+                "/usr/lib64/openoffice", "/usr/lib64/openoffice.org3", "/usr/lib64/openoffice.org",
                 "/usr/lib/openoffice", "/usr/lib/openoffice.org3", "/usr/lib/openoffice.org", "/opt/openoffice4",
                 "/opt/openoffice.org3");
         }

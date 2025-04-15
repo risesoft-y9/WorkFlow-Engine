@@ -15,12 +15,11 @@ import net.risesoft.utils.KkFileUtils;
 public class SchedulerCleanConfig {
 
     private final CacheService cacheService;
+    private final String fileDir = ConfigConstants.getFileDir();
 
     public SchedulerCleanConfig(CacheService cacheService) {
         this.cacheService = cacheService;
     }
-
-    private final String fileDir = ConfigConstants.getFileDir();
 
     // 默认每晚3点执行一次
     @Scheduled(cron = "${cache.clean.cron:0 0 3 * * ?}")

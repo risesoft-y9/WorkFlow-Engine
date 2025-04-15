@@ -20,11 +20,6 @@ import net.risesoft.model.FileAttribute;
 @Slf4j
 public class OfficeToPdfService {
 
-    public void openOfficeToPDF(String inputFilePath, String outputFilePath, FileAttribute fileAttribute)
-        throws OfficeException {
-        office2pdf(inputFilePath, outputFilePath, fileAttribute);
-    }
-
     public static void converterFile(File inputFile, String outputFilePath_end, FileAttribute fileAttribute)
         throws OfficeException {
         File outputFile = new File(outputFilePath_end);
@@ -67,6 +62,19 @@ public class OfficeToPdfService {
         builder.build().convert(inputFile).to(outputFile).execute();
     }
 
+    public static String getOutputFilePath(String inputFilePath) {
+        return inputFilePath.replaceAll("." + getPostfix(inputFilePath), ".pdf");
+    }
+
+    public static String getPostfix(String inputFilePath) {
+        return inputFilePath.substring(inputFilePath.lastIndexOf(".") + 1);
+    }
+
+    public void openOfficeToPDF(String inputFilePath, String outputFilePath, FileAttribute fileAttribute)
+        throws OfficeException {
+        office2pdf(inputFilePath, outputFilePath, fileAttribute);
+    }
+
     public void office2pdf(String inputFilePath, String outputFilePath, FileAttribute fileAttribute)
         throws OfficeException {
         if (null != inputFilePath) {
@@ -86,14 +94,6 @@ public class OfficeToPdfService {
                 }
             }
         }
-    }
-
-    public static String getOutputFilePath(String inputFilePath) {
-        return inputFilePath.replaceAll("." + getPostfix(inputFilePath), ".pdf");
-    }
-
-    public static String getPostfix(String inputFilePath) {
-        return inputFilePath.substring(inputFilePath.lastIndexOf(".") + 1);
     }
 
 }
