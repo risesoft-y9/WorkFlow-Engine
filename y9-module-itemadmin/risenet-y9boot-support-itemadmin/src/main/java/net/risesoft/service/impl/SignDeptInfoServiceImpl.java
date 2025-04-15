@@ -51,6 +51,33 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
     @Override
     @Transactional
+    public void addSignDept(String processSerialNumber, String deptType, String deptIds) {
+        String[] deptIdArr = deptIds.split(",");
+        List<Department> deptList =
+            departmentApi.listByIds(Y9LoginUserHolder.getTenantId(), Arrays.asList(deptIdArr)).getData();
+        deptList.forEach(dept -> {
+            if (null == signDeptInfoRepository.findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber,
+                deptType, dept.getId())) {
+                SignDeptInfo signDeptInfo = new SignDeptInfo();
+                signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
+                signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+                signDeptInfo.setOrderIndex(dept.getTabIndex());
+                signDeptInfo.setDeptId(dept.getId());
+                signDeptInfo.setRecordTime(new Date());
+                Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), dept.getId()).getData();
+                signDeptInfo.setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getAliasName())
+                    ? department.getName() : department.getAliasName());
+                signDeptInfo.setProcessSerialNumber(processSerialNumber);
+                signDeptInfo.setDeptType(deptType);
+                signDeptInfoRepository.save(signDeptInfo);
+
+            }
+        });
+    }
+
+    @Override
+    @Transactional
     public void deleteById(String id) {
         Optional<SignDeptInfo> sdiOptional = signDeptInfoRepository.findById(id);
         if (sdiOptional.isPresent()) {
@@ -108,6 +135,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                             ? department.getName() : department.getAliasName());
                     signDeptInfo.setProcessSerialNumber(processSerialNumber);
                     signDeptInfo.setDeptType(deptType);
+                    signDeptInfo.setDisplayDeptId(dept.getId());
                     signDeptInfo.setDisplayDeptName(signDeptInfo.getDeptName());
                     if (StringUtils.isNotBlank(tzsDeptId) && dept.getId().equals(tzsDeptId)) {
                         // 需要将显示名称改为原司局单位名称
@@ -125,7 +153,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
             Integer index = 1;
             deptIdList.forEach(deptId -> {
                 SignDeptInfo signDeptInfo = signDeptInfoRepository
-                .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
+                    .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
                 if (signDeptInfo == null) {
                     signDeptInfo = new SignDeptInfo();
                     signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -143,33 +171,6 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 signDeptInfoRepository.save(signDeptInfo);
             });
         }
-    }
-
-    @Override
-    @Transactional
-    public void addSignDept(String processSerialNumber, String deptType, String deptIds) {
-        String[] deptIdArr = deptIds.split(",");
-        List<Department> deptList =
-            departmentApi.listByIds(Y9LoginUserHolder.getTenantId(), Arrays.asList(deptIdArr)).getData();
-        deptList.forEach(dept -> {
-            if (null == signDeptInfoRepository.findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber,
-                deptType, dept.getId())) {
-                SignDeptInfo signDeptInfo = new SignDeptInfo();
-                signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
-                signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
-                signDeptInfo.setOrderIndex(dept.getTabIndex());
-                signDeptInfo.setDeptId(dept.getId());
-                signDeptInfo.setRecordTime(new Date());
-                Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), dept.getId()).getData();
-                signDeptInfo.setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getAliasName())
-                    ? department.getName() : department.getAliasName());
-                signDeptInfo.setProcessSerialNumber(processSerialNumber);
-                signDeptInfo.setDeptType(deptType);
-                signDeptInfoRepository.save(signDeptInfo);
-
-            }
-        });
     }
 
     @Override
