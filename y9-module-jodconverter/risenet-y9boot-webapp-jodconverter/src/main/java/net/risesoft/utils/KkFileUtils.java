@@ -6,21 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.config.ConfigConstants;
 
+@Slf4j
 public class KkFileUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KkFileUtils.class);
-
-    public static final String DEFAULT_FILE_ENCODING = "UTF-8";
-
     private static final List<String> illegalFileStrList = new ArrayList<>();
+    public static final String DEFAULT_FILE_ENCODING = "UTF-8";
 
     static {
         illegalFileStrList.add("../");
@@ -194,6 +192,17 @@ public class KkFileUtils {
             }
         }
         return !ObjectUtils.isEmpty(fileType);
+    }
+
+    /**
+     * 判断文件是否存在
+     *
+     * @param filePath 文件路径
+     * @return 是否存在 true:存在，false:不存在
+     */
+    public static boolean isExist(String filePath) {
+        File file = new File(filePath);
+        return file.exists();
     }
 
 }

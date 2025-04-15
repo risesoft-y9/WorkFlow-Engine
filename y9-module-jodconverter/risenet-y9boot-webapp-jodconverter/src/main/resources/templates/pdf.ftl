@@ -6,7 +6,6 @@
     <title>PDF预览</title>
     <#include "*/commonHeader.ftl">
     <script src="js/base64.min.js" type="text/javascript"></script>
-    <script src="js/customMethods.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -17,9 +16,7 @@
 </#if>
 <iframe src="" width="100%" frameborder="0"></iframe>
 <#if "false" == switchDisabled>
-    <img src="images/jpg.svg" width="48" height="48"
-         style="position: fixed; cursor: pointer; top: 40%; right: 48px; z-index: 999;" alt="使用图片预览"
-         title="使用图片预览" onclick="goForImage()"/>
+    <img src="images/jpg.svg" width="48" height="48" style="position: fixed; cursor: pointer; top: 40%; right: 48px; z-index: 999;" alt="使用图片预览" title="使用图片预览" onclick="goForImage()"/>
 </#if>
 </body>
 
@@ -27,9 +24,9 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(url);
+        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
     }
-    document.getElementsByTagName('iframe')[0].src = "${baseUrl}" + "${pdfjs}" + "/web/viewer.html?file=" + encodeURIComponent(url) + "&disablepresentationmode=${pdfPresentationModeDisable}&disableopenfile=${pdfOpenFileDisable}&disableprint=${pdfPrintDisable}&disabledownload=${pdfDownloadDisable}&disablebookmark=${pdfBookmarkDisable}";
+    document.getElementsByTagName('iframe')[0].src = "${baseUrl}pdfjs/web/viewer.html?file=" + encodeURIComponent(url) + "&disablepresentationmode=${pdfPresentationModeDisable}&disableopenfile=${pdfOpenFileDisable}&disableprint=${pdfPrintDisable}&disabledownload=${pdfDownloadDisable}&disablebookmark=${pdfBookmarkDisable}&disableediting=${pdfDisableEditing}";
     document.getElementsByTagName('iframe')[0].height = document.documentElement.clientHeight - 10;
     /**
      * 页面变化调整高度
@@ -40,7 +37,14 @@
     }
 
     function goForImage() {
-        var url = window.location.href + "&tifPreviewType=jpg"
+        var url = window.location.href
+        
+        if (url.indexOf("tifPreviewType=pdf") != -1) {
+            url = url.replace("tifPreviewType=pdf", "tifPreviewType=jpg");
+        } else {
+            url = url + "&tifPreviewType=jpg";
+        }
+
         if (url.indexOf("officePreviewType=pdf") != -1) {
             url = url.replace("officePreviewType=pdf", "officePreviewType=image");
         } else {

@@ -4,17 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 public class WatermarkConfigConstants {
 
-    private static String WATERMARK_TXT;
-    private static String WATERMARK_X_SPACE;
-    private static String WATERMARK_Y_SPACE;
-    private static String WATERMARK_FONT;
-    private static String WATERMARK_FONTSIZE;
-    private static String WATERMARK_COLOR;
-    private static String WATERMARK_ALPHA;
-    private static String WATERMARK_WIDTH;
-    private static String WATERMARK_HEIGHT;
-    private static String WATERMARK_ANGLE;
-
     public static String DEFAULT_WATERMARK_TXT = "";
     public static String DEFAULT_WATERMARK_X_SPACE = "10";
     public static String DEFAULT_WATERMARK_Y_SPACE = "10";
@@ -26,12 +15,19 @@ public class WatermarkConfigConstants {
     public static String DEFAULT_WATERMARK_HEIGHT = "80";
     public static String DEFAULT_WATERMARK_ANGLE = "10";
 
+    private static String WATERMARK_TXT;
+    private static String WATERMARK_X_SPACE;
+    private static String WATERMARK_Y_SPACE;
+    private static String WATERMARK_FONT;
+    private static String WATERMARK_FONTSIZE;
+    private static String WATERMARK_COLOR;
+    private static String WATERMARK_ALPHA;
+    private static String WATERMARK_WIDTH;
+    private static String WATERMARK_HEIGHT;
+    private static String WATERMARK_ANGLE;
+
     public static String getWatermarkTxt() {
         return WATERMARK_TXT;
-    }
-
-    public static void setWatermarkTxtValue(String watermarkTxt) {
-        WATERMARK_TXT = watermarkTxt;
     }
 
     @Value("${watermark.txt:}")
@@ -39,12 +35,12 @@ public class WatermarkConfigConstants {
         setWatermarkTxtValue(watermarkTxt);
     }
 
-    public static String getWatermarkXSpace() {
-        return WATERMARK_X_SPACE;
+    public static void setWatermarkTxtValue(String watermarkTxt) {
+        WATERMARK_TXT = watermarkTxt;
     }
 
-    public static void setWatermarkXSpaceValue(String watermarkXSpace) {
-        WATERMARK_X_SPACE = watermarkXSpace;
+    public static String getWatermarkXSpace() {
+        return WATERMARK_X_SPACE;
     }
 
     @Value("${watermark.x.space:10}")
@@ -52,12 +48,12 @@ public class WatermarkConfigConstants {
         setWatermarkXSpaceValue(watermarkXSpace);
     }
 
-    public static String getWatermarkYSpace() {
-        return WATERMARK_Y_SPACE;
+    public static void setWatermarkXSpaceValue(String watermarkXSpace) {
+        WATERMARK_X_SPACE = watermarkXSpace;
     }
 
-    public static void setWatermarkYSpaceValue(String watermarkYSpace) {
-        WATERMARK_Y_SPACE = watermarkYSpace;
+    public static String getWatermarkYSpace() {
+        return WATERMARK_Y_SPACE;
     }
 
     @Value("${watermark.y.space:10}")
@@ -65,12 +61,12 @@ public class WatermarkConfigConstants {
         setWatermarkYSpaceValue(watermarkYSpace);
     }
 
-    public static String getWatermarkFont() {
-        return WATERMARK_FONT;
+    public static void setWatermarkYSpaceValue(String watermarkYSpace) {
+        WATERMARK_Y_SPACE = watermarkYSpace;
     }
 
-    public static void setWatermarkFontValue(String watermarkFont) {
-        WATERMARK_FONT = watermarkFont;
+    public static String getWatermarkFont() {
+        return WATERMARK_FONT;
     }
 
     @Value("${watermark.font:微软雅黑}")
@@ -78,12 +74,12 @@ public class WatermarkConfigConstants {
         setWatermarkFontValue(watermarkFont);
     }
 
-    public static String getWatermarkFontsize() {
-        return WATERMARK_FONTSIZE;
+    public static void setWatermarkFontValue(String watermarkFont) {
+        WATERMARK_FONT = watermarkFont;
     }
 
-    public static void setWatermarkFontsizeValue(String watermarkFontsize) {
-        WATERMARK_FONTSIZE = watermarkFontsize;
+    public static String getWatermarkFontsize() {
+        return WATERMARK_FONTSIZE;
     }
 
     @Value("${watermark.fontsize:18px}")
@@ -91,12 +87,12 @@ public class WatermarkConfigConstants {
         setWatermarkFontsizeValue(watermarkFontsize);
     }
 
-    public static String getWatermarkColor() {
-        return WATERMARK_COLOR;
+    public static void setWatermarkFontsizeValue(String watermarkFontsize) {
+        WATERMARK_FONTSIZE = watermarkFontsize;
     }
 
-    public static void setWatermarkColorValue(String watermarkColor) {
-        WATERMARK_COLOR = watermarkColor;
+    public static String getWatermarkColor() {
+        return WATERMARK_COLOR;
     }
 
     @Value("${watermark.color:black}")
@@ -104,12 +100,12 @@ public class WatermarkConfigConstants {
         setWatermarkColorValue(watermarkColor);
     }
 
-    public static String getWatermarkAlpha() {
-        return WATERMARK_ALPHA;
+    public static void setWatermarkColorValue(String watermarkColor) {
+        WATERMARK_COLOR = watermarkColor;
     }
 
-    public static void setWatermarkAlphaValue(String watermarkAlpha) {
-        WATERMARK_ALPHA = watermarkAlpha;
+    public static String getWatermarkAlpha() {
+        return WATERMARK_ALPHA;
     }
 
     @Value("${watermark.alpha:0.2}")
@@ -117,12 +113,12 @@ public class WatermarkConfigConstants {
         setWatermarkAlphaValue(watermarkAlpha);
     }
 
-    public static String getWatermarkWidth() {
-        return WATERMARK_WIDTH;
+    public static void setWatermarkAlphaValue(String watermarkAlpha) {
+        WATERMARK_ALPHA = watermarkAlpha;
     }
 
-    public static void setWatermarkWidthValue(String watermarkWidth) {
-        WATERMARK_WIDTH = watermarkWidth;
+    public static String getWatermarkWidth() {
+        return WATERMARK_WIDTH;
     }
 
     @Value("${watermark.width:240}")
@@ -130,12 +126,12 @@ public class WatermarkConfigConstants {
         WATERMARK_WIDTH = watermarkWidth;
     }
 
-    public static String getWatermarkHeight() {
-        return WATERMARK_HEIGHT;
+    public static void setWatermarkWidthValue(String watermarkWidth) {
+        WATERMARK_WIDTH = watermarkWidth;
     }
 
-    public static void setWatermarkHeightValue(String watermarkHeight) {
-        WATERMARK_HEIGHT = watermarkHeight;
+    public static String getWatermarkHeight() {
+        return WATERMARK_HEIGHT;
     }
 
     @Value("${watermark.height:80}")
@@ -143,16 +139,20 @@ public class WatermarkConfigConstants {
         WATERMARK_HEIGHT = watermarkHeight;
     }
 
+    public static void setWatermarkHeightValue(String watermarkHeight) {
+        WATERMARK_HEIGHT = watermarkHeight;
+    }
+
     public static String getWatermarkAngle() {
         return WATERMARK_ANGLE;
     }
 
-    public static void setWatermarkAngleValue(String watermarkAngle) {
+    @Value("${watermark.angle:10}")
+    public void setWatermarkAngle(String watermarkAngle) {
         WATERMARK_ANGLE = watermarkAngle;
     }
 
-    @Value("${watermark.angle:10}")
-    public void setWatermarkAngle(String watermarkAngle) {
+    public static void setWatermarkAngleValue(String watermarkAngle) {
         WATERMARK_ANGLE = watermarkAngle;
     }
 

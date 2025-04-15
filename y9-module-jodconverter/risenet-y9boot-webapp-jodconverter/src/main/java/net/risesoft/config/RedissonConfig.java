@@ -32,7 +32,7 @@ public class RedissonConfig {
     private int subscriptionConnectionMinimumIdleSize = 1;
     private int subscriptionConnectionPoolSize = 50;
     private int connectionPoolSize = 64;
-    private int database;
+    private int database = 0;
     private boolean dnsMonitoring = false;
     private int dnsMonitoringInterval = 5000;
 
@@ -53,8 +53,7 @@ public class RedissonConfig {
             .setReconnectionTimeout(reconnectionTimeout).setTimeout(timeout).setConnectTimeout(connectTimeout)
             .setIdleConnectionTimeout(idleConnectionTimeout).setPingTimeout(pingTimeout)
             .setPassword(StringUtils.trimToNull(password));
-        Codec codec = (Codec)ClassUtils.forName(getCodec(), ClassUtils.getDefaultClassLoader()).getDeclaredConstructor()
-            .newInstance();
+        Codec codec = (Codec)ClassUtils.forName(getCodec(), ClassUtils.getDefaultClassLoader()).newInstance();
         config.setCodec(codec);
         config.setThreads(thread);
         config.setEventLoopGroup(new NioEventLoopGroup());

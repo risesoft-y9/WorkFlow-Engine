@@ -35,13 +35,11 @@ public class SimTextFilePreviewImpl implements FilePreview {
         this.otherFilePreview = otherFilePreview;
     }
 
-    private static final String FILE_DIR = ConfigConstants.getFileDir();
-
     @Override
     public String filePreviewHandle(String url, Model model, FileAttribute fileAttribute) {
         String fileName = fileAttribute.getName();
         boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
-        String filePath = FILE_DIR + fileName;
+        String filePath = fileAttribute.getOriginFilePath();
         if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(fileName)
             || !ConfigConstants.isCacheEnabled()) {
             ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);

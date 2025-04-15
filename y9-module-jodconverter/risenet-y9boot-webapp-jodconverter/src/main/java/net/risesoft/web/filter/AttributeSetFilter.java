@@ -31,7 +31,7 @@ public class AttributeSetFilter implements Filter {
 
     /**
      * 设置办公文具预览逻辑需要的属性
-     *
+     * 
      * @param request request
      */
     private void setFileAttribute(ServletRequest request) {
@@ -41,17 +41,21 @@ public class AttributeSetFilter implements Filter {
         request.setAttribute("pdfPrintDisable", ConfigConstants.getPdfPrintDisable());
         request.setAttribute("pdfDownloadDisable", ConfigConstants.getPdfDownloadDisable());
         request.setAttribute("pdfBookmarkDisable", ConfigConstants.getPdfBookmarkDisable());
-        request.setAttribute("fileKey", httpRequest.getParameter("fileKey"));
+        request.setAttribute("pdfDisableEditing", ConfigConstants.getPdfDisableEditing());
         request.setAttribute("switchDisabled", ConfigConstants.getOfficePreviewSwitchDisabled());
         request.setAttribute("fileUploadDisable", ConfigConstants.getFileUploadDisable());
         request.setAttribute("beian", ConfigConstants.getBeian());
         request.setAttribute("size", ConfigConstants.maxSize());
         request.setAttribute("deleteCaptcha", ConfigConstants.getDeleteCaptcha());
+        request.setAttribute("homePageNumber", ConfigConstants.getHomePageNumber());
+        request.setAttribute("homePagination", ConfigConstants.getHomePagination());
+        request.setAttribute("homePageSize", ConfigConstants.getHomePageSize());
+        request.setAttribute("homeSearch", ConfigConstants.getHomeSearch());
     }
 
     /**
      * 设置水印属性
-     *
+     * 
      * @param request request
      */
 

@@ -18,12 +18,10 @@ import net.risesoft.utils.KkFileUtils;
 public class PictureFilePreviewImpl extends CommonPreviewImpl {
 
     private final FileHandlerService fileHandlerService;
-    private final OtherFilePreviewImpl otherFilePreview;
 
     public PictureFilePreviewImpl(FileHandlerService fileHandlerService, OtherFilePreviewImpl otherFilePreview) {
         super(fileHandlerService, otherFilePreview);
         this.fileHandlerService = fileHandlerService;
-        this.otherFilePreview = otherFilePreview;
     }
 
     @Override
@@ -31,8 +29,8 @@ public class PictureFilePreviewImpl extends CommonPreviewImpl {
         url = KkFileUtils.htmlEscape(url);
         List<String> imgUrls = new ArrayList<>();
         imgUrls.add(url);
-        String fileKey = fileAttribute.getFileKey();
-        List<String> zipImgUrls = fileHandlerService.getImgCache(fileKey);
+        String compressFileKey = fileAttribute.getCompressFileKey();
+        List<String> zipImgUrls = fileHandlerService.getImgCache(compressFileKey);
         if (!CollectionUtils.isEmpty(zipImgUrls)) {
             imgUrls.addAll(zipImgUrls);
         }

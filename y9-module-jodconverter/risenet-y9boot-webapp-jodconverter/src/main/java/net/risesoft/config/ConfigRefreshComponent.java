@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.utils.ConfigUtils;
+
 /**
  * @description 每隔1s读取并更新一次配置文件
  */
@@ -40,13 +42,16 @@ public class ConfigRefreshComponent {
                 String ftpUsername;
                 String ftpPassword;
                 String ftpControlEncoding;
+                String configFilePath = ConfigUtils.getCustomizedConfigPath();
                 String baseUrl;
                 String trustHost;
+                String notTrustHost;
                 String pdfPresentationModeDisable;
                 String pdfOpenFileDisable;
                 String pdfPrintDisable;
                 String pdfDownloadDisable;
                 String pdfBookmarkDisable;
+                String pdfDisableEditing;
                 boolean fileUploadDisable;
                 String tifPreviewType;
                 String prohibit;
@@ -68,12 +73,21 @@ public class ConfigRefreshComponent {
                 boolean officeDocumentOpenPasswords;
                 String cadTimeout;
                 int cadThread;
+                String homePageNumber;
+                String homePagination;
+                String homePageSize;
+                String homeSearch;
+                int pdfTimeout;
+                int pdfTimeout80;
+                int pdfTimeout200;
+                int pdfThread;
                 while (true) {
                     YamlPropertiesFactoryBean factoryBean = new YamlPropertiesFactoryBean();
 
                     // 加载yml配置文件
                     factoryBean.setResources(new ClassPathResource("application.yml"));
                     properties = factoryBean.getObject();
+                    ConfigUtils.restorePropertiesFromEnvFormat(properties);
                     cacheEnabled = Boolean
                         .parseBoolean(properties.getProperty("cache.enabled", ConfigConstants.DEFAULT_CACHE_ENABLED));
                     text = properties.getProperty("simText", ConfigConstants.DEFAULT_TXT_TYPE);
@@ -88,8 +102,9 @@ public class ConfigRefreshComponent {
                         properties.getProperty("ftp.control.encoding", ConfigConstants.DEFAULT_FTP_CONTROL_ENCODING);
                     textArray = text.split(",");
                     mediaArray = media.split(",");
-                    baseUrl = properties.getProperty("base.url", ConfigConstants.DEFAULT_BASE_URL);
-                    trustHost = properties.getProperty("trust.host", ConfigConstants.DEFAULT_TRUST_HOST);
+                    baseUrl = properties.getProperty("base.url", ConfigConstants.DEFAULT_VALUE);
+                    trustHost = properties.getProperty("trust.host", ConfigConstants.DEFAULT_VALUE);
+                    notTrustHost = properties.getProperty("not.trust.host", ConfigConstants.DEFAULT_VALUE);
                     pdfPresentationModeDisable = properties.getProperty("pdf.presentationMode.disable",
                         ConfigConstants.DEFAULT_PDF_PRESENTATION_MODE_DISABLE);
                     pdfOpenFileDisable =
@@ -100,6 +115,8 @@ public class ConfigRefreshComponent {
                         properties.getProperty("pdf.download.disable", ConfigConstants.DEFAULT_PDF_DOWNLOAD_DISABLE);
                     pdfBookmarkDisable =
                         properties.getProperty("pdf.bookmark.disable", ConfigConstants.DEFAULT_PDF_BOOKMARK_DISABLE);
+                    pdfDisableEditing =
+                        properties.getProperty("pdf.disable.editing", ConfigConstants.DEFAULT_PDF_DISABLE_EDITING);
                     fileUploadDisable = Boolean.parseBoolean(
                         properties.getProperty("file.upload.disable", ConfigConstants.DEFAULT_FILE_UPLOAD_DISABLE));
                     tifPreviewType =
@@ -133,8 +150,20 @@ public class ConfigRefreshComponent {
                         Boolean.parseBoolean(properties.getProperty("office.documentopenpasswords",
                             ConfigConstants.DEFAULT_OFFICE_EOCUMENTOPENPASSWORDS));
                     cadTimeout = properties.getProperty("cad.timeout", ConfigConstants.DEFAULT_CAD_TIMEOUT);
+                    homePageNumber = properties.getProperty("home.pagenumber", ConfigConstants.DEFAULT_HOME_PAGENUMBER);
+                    homePagination = properties.getProperty("home.pagination", ConfigConstants.DEFAULT_HOME_PAGINATION);
+                    homePageSize = properties.getProperty("home.pagesize", ConfigConstants.DEFAULT_HOME_PAGSIZE);
+                    homeSearch = properties.getProperty("home.search", ConfigConstants.DEFAULT_HOME_SEARCH);
                     cadThread =
                         Integer.parseInt(properties.getProperty("cad.thread", ConfigConstants.DEFAULT_CAD_THREAD));
+                    pdfTimeout =
+                        Integer.parseInt(properties.getProperty("pdf.timeout", ConfigConstants.DEFAULT_PDF_TIMEOUT));
+                    pdfTimeout80 = Integer
+                        .parseInt(properties.getProperty("pdf.timeout80", ConfigConstants.DEFAULT_PDF_TIMEOUT80));
+                    pdfTimeout200 = Integer
+                        .parseInt(properties.getProperty("pdf.timeout200", ConfigConstants.DEFAULT_PDF_TIMEOUT200));
+                    pdfThread =
+                        Integer.parseInt(properties.getProperty("pdf.thread", ConfigConstants.DEFAULT_PDF_THREAD));
                     prohibitArray = prohibit.split(",");
 
                     ConfigConstants.setCacheEnabledValueValue(cacheEnabled);
@@ -146,12 +175,14 @@ public class ConfigRefreshComponent {
                     ConfigConstants.setFtpControlEncodingValue(ftpControlEncoding);
                     ConfigConstants.setBaseUrlValue(baseUrl);
                     ConfigConstants.setTrustHostValue(trustHost);
+                    ConfigConstants.setNotTrustHostValue(notTrustHost);
                     ConfigConstants.setOfficePreviewSwitchDisabledValue(officePreviewSwitchDisabled);
                     ConfigConstants.setPdfPresentationModeDisableValue(pdfPresentationModeDisable);
                     ConfigConstants.setPdfOpenFileDisableValue(pdfOpenFileDisable);
                     ConfigConstants.setPdfPrintDisableValue(pdfPrintDisable);
                     ConfigConstants.setPdfDownloadDisableValue(pdfDownloadDisable);
                     ConfigConstants.setPdfBookmarkDisableValue(pdfBookmarkDisable);
+                    ConfigConstants.setPdfDisableEditingValue(pdfDisableEditing);
                     ConfigConstants.setFileUploadDisableValue(fileUploadDisable);
                     ConfigConstants.setTifPreviewTypeValue(tifPreviewType);
                     ConfigConstants.setCadPreviewTypeValue(cadPreviewType);
@@ -172,8 +203,15 @@ public class ConfigRefreshComponent {
                     ConfigConstants.setDeleteCaptchaValue(deleteCaptcha);
                     ConfigConstants.setCadTimeoutValue(cadTimeout);
                     ConfigConstants.setCadThreadValue(cadThread);
+                    ConfigConstants.setHomePageNumberValue(homePageNumber);
+                    ConfigConstants.setHomePaginationValue(homePagination);
+                    ConfigConstants.setHomePageSizeValue(homePageSize);
+                    ConfigConstants.setHomeSearchValue(homeSearch);
+                    ConfigConstants.setPdfTimeoutValue(pdfTimeout);
+                    ConfigConstants.setPdfTimeout80Value(pdfTimeout80);
+                    ConfigConstants.setPdfTimeout200Value(pdfTimeout200);
+                    ConfigConstants.setPdfThreadValue(pdfThread);
                     setWatermarkConfig(properties);
-
                     TimeUnit.SECONDS.sleep(1);
                 }
             } catch (InterruptedException e) {

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0">
     <title>drawio文件预览</title>
     <#include "*/commonHeader.ftl">
-    <script src="js/customMethods.js" type="text/javascript"></script>
+      <script src="js/base64.min.js" type="text/javascript"></script>
 </head>
 <body>
 <iframe src="" width="100%" frameborder="0"></iframe>
@@ -15,13 +15,13 @@
 <#else>
     <#assign finalUrl="${baseUrl}${currentUrl}">
 </#if>
-<script>
-    var url = '${finalUrl}';
+  <script>
+          var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(url);
+        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
     }
-    document.getElementsByTagName('iframe')[0].src = "${baseUrl}drawio/index.html?src=about#U" + url + "";
+      document.getElementsByTagName('iframe')[0].src = "${baseUrl}drawio/index.html?lightbox=1&gapi=0&db=0&od=0&tr=0&gh=0&gl=0&edit=_blank&lang=zh#U"+ encodeURIComponent(url)+"";
     document.getElementsByTagName('iframe')[0].height = document.documentElement.clientHeight - 10;
     /**
      * 页面变化调整高度
@@ -32,11 +32,11 @@
     }
 
 
-    /*初始化水印*/
+             /*初始化水印*/
     window.onload = function () {
         initWaterMark();
     }
-</script>
+        </script>
 </body>
 
 </html>

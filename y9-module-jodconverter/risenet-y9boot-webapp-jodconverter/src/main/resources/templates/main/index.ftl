@@ -3,91 +3,81 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0"/>
-    <title>FileView首页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>文件预览-演示首页</title>
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="css/viewer.min.css"/>
     <link rel="stylesheet" href="css/loading.css"/>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="bootstrap-table/bootstrap-table.min.css"/>
     <link rel="stylesheet" href="css/theme.css"/>
-    <script type="text/javascript" src="js/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="js/jquery.form.min.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="bootstrap-table/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="js/base64.min.js"></script>
     <style>
+        <#-- 删除文件密码弹窗居中 -->
         .alert {
             width: 50%;
         }
+
+        <#-- 删除文件验证码弹窗居中 -->
+        .modal {
+            width: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+        }
     </style>
-    <#--  删除吗CSS样式 -->
-    <#if deleteCaptcha >
-        <style>
-            .code {
-                position: fixed;
-                width: 300px;
-                height: 200px;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: #F0FFF0;
-                text-align: center;
-                padding: 20px;
-                z-index: 100002;
-            }
-
-            .close {
-                margin-top: 20px;
-            }
-
-            .code-input {
-                border: 1px solid #ccc;
-                border-radius: 3px;
-                width: 110px;
-                height: 40px;
-            }
-
-            .code-input:focus {
-                border-color: #66afe9;
-                outline: 0;
-                -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
-                box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6)
-            }
-
-        </style>
-    </#if>
 </head>
 
 <body>
+
+<#-- 删除文件验证码弹窗  -->
+<#if deleteCaptcha >
+    <div id="deleteCaptchaModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">删除文件</h4>
+                </div>
+                <br>
+                <input type="text" id="deleteCaptchaFileName" style="display: none">
+                <div class="modal-body input-group">
+                <span style="display: table-cell; vertical-align: middle;">
+                    <img id="deleteCaptchaImg" alt="deleteCaptchaImg" src="">
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+                    <input type="text" id="deleteCaptchaText" class="form-control" placeholder="请输入验证码">
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button type="button" id="deleteCaptchaConfirmBtn" class="btn btn-danger">确认删除</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</#if>
 
 <!-- Fixed navbar -->
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" target='_blank'>FileView</a>
+            <a class="navbar-brand" href="#" target='_blank'>文件预览</a>
         </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="./index">首页</a></li>
+        </ul>
     </div>
 </nav>
 
 <div class="container theme-showcase" role="main">
     <#--  接入说明  -->
-    <div class="page-header">
-        <h1>支持的文件类型</h1>
-    </div>
     <div>
         <ol>
-            <li>支持 doc, docx, xls, xlsx, xlsm, ppt, pptx, csv, tsv, dotm, xlt, xltm, dot, dotx, xlam, xla, pages 等
-                Office 办公文档
-            </li>
+            <li>支持 doc, docx, xls, xlsx, xlsm, ppt, pptx, csv, tsv, dotm, xlt, xltm, dot, dotx, xlam, xla, pages 等 Office 办公文档</li>
             <li>支持 wps, dps, et, ett, wpt 等国产 WPS Office 办公文档</li>
             <li>支持 odt, ods, ots, odp, otp, six, ott, fodt, fods 等OpenOffice、LibreOffice 办公文档</li>
             <li>支持 vsd, vsdx 等 Visio 流程图文件</li>
@@ -98,9 +88,7 @@
             <li>支持 bpmn 工作流文件</li>
             <li>支持 eml 邮件文件</li>
             <li>支持 epub 图书文档</li>
-            <li>支持 obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, ifc, brep, step, iges, fcstd, bim 等
-                3D 模型文件
-            </li>
+            <li>支持 obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, ifc, brep, step, iges, fcstd, bim 等 3D 模型文件</li>
             <li>支持 dwg, dxf, dwf, iges , igs, dwt, dng, ifc, dwfx, stl, cf2, plt 等 CAD 模型文件</li>
             <li>支持 txt, xml(渲染), md(渲染), java, php, py, js, css 等所有纯文本</li>
             <li>支持 zip, rar, jar, tar, gzip, 7z 等压缩包</li>
@@ -142,10 +130,7 @@
             </form>
         </div>
     </div>
-    <#--  删除吗弹窗  -->
-    <#if deleteCaptcha >
-        <div id="codeContent"></div>
-    </#if>
+
     <#--  预览测试  -->
     <div class="panel panel-success">
         <div class="panel-heading">
@@ -153,21 +138,17 @@
         </div>
         <div class="panel-body">
             <#if fileUploadDisable == false>
-                <div style="padding: 10px">
-                    <form enctype="multipart/form-data" id="fileUpload">
-                        <input type="file" id="size" name="file"/>
-                        <input type="button" id="btnSubmit" value=" 上 传 "/>
-                    </form>
-                </div>
+                <form enctype="multipart/form-data" id="fileUpload">
+                    <input type="file" id="file" name="file" style="float: left; margin: 0 auto; font-size:22px;" placeholder="请选择文件"/>
+                    <input type="button" id="fileUploadBtn" class="btn btn-success" value=" 上 传 "/>
+                </form>
             </#if>
-            <div>
-                <table id="table" data-pagination="true"></table>
-            </div>
+            <table id="table" data-pagination="true"></table>
         </div>
     </div>
 </div>
 
-<div class="loading_container">
+<div class="loading_container" style="position: fixed;">
     <div class="spinner">
         <div class="spinner-container container1">
             <div class="circle1"></div>
@@ -198,103 +179,48 @@
 </#if>
 <script>
     <#if deleteCaptcha >
+    $("#deleteCaptchaImg").click(function () {
+        $("#deleteCaptchaImg").attr("src", "${baseUrl}deleteFile/captcha?timestamp=" + new Date().getTime());
+    });
+    $("#deleteCaptchaConfirmBtn").click(function () {
+        var fileName = $("#deleteCaptchaFileName").val();
+        var deleteCaptchaText = $("#deleteCaptchaText").val();
+        $.get('${baseUrl}deleteFile?fileName=' + fileName + '&password=' + deleteCaptchaText, function (data) {
+            if ("删除文件失败，密码错误！" === data.msg) {
+                alert(data.msg);
+            } else {
+                $('#table').bootstrapTable("refresh", {});
+                $("#deleteCaptchaText").val("");
+                $("#deleteCaptchaModal").modal("hide");
+            }
+        });
+    });
 
     function deleteFile(fileName) {
-        var codename = `<div class="code"><h4>请输入下面删除码!</h4><div><img id="verImg" width="130px" height="48px" src="/captcha"></div><form><input type="type" oninput="if(value.length>5)value=value.slice(0,5);" class="code-input"  id="_code" placeholder="请输入验证码"><button id="deleteFile1" type="button" class="btn btn-success">提交</button></form><button id="close" type="button"class="btn btn-danger">关闭</button></div>`;
-        $('#codeContent').html(codename);
-        var code = document.querySelector('.code');
-        var closeBtn = document.getElementById("close");
-        closeBtn.addEventListener('click', hidePopup);
-
-        function hidePopup() {
-            code.style.display = 'none';
-        }
-
-        var closedelete = document.getElementById("deleteFile1");
-        closedelete.addEventListener('click', deleteFile1);
-
-        function deleteFile1() {
-            var password = $("#_code").val();
-//console.log(password);
-            $.ajax({
-                url: '${baseUrl}deleteFile?fileName=' + fileName + '&base64EncodedPassword=' + password,
-                success: function (data) {
-                    // console.log(data);
-                    // 删除完成，刷新table
-                    if ("删除文件失败，密码错误！" === data.msg) {
-                        alert(data.msg);
-                    } else {
-                        $('#table').bootstrapTable('refresh', {});
-                        code.style.display = 'none';
-                    }
-                },
-                error: function (data) {
-                    return false;
-                }
-            })
-        }
-
-        var windowUrl = window.URL || window.webkitURL; //处理浏览器兼容性
-        document.getElementById('verImg').onclick = function (e) {
-            //1、创建ajax对象
-            var xhr = null;
-            try {
-                xhr = new XMLHttpRequest();
-            } catch (error) {
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            //2、调用open
-            xhr.open("get", "/captcha", true);
-            xhr.responseType = "blob";
-            //3、调用send
-            xhr.send();
-            //4、等待数据响应
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    //判断本次下载的状态码都是多少
-                    if (xhr.status == 200) {
-                        var blob = this.response;
-                        $("#verImg").attr("src", windowUrl.createObjectURL(blob));
-                        //$('#verImg').attr('src', xhr.responseText);
-
-                        //  alert(windowUrl.createObjectURL(blob));
-                    } else {
-                        alert("Error:" + xhr.status);
-                    }
-                }
-            }
-        }
-
+        $("#deleteCaptchaImg").click();
+        $("#deleteCaptchaFileName").val(fileName);
+        $("#deleteCaptchaText").val("");
+        $("#deleteCaptchaModal").modal("show");
     }
 
     <#else>
 
-    function deleteFile(fileName, password) {
+    function deleteFile(fileName) {
         if (window.confirm('你确定要删除文件吗？')) {
-            <#if deleteCaptcha >
-            password = prompt("请输入获取的验证码:");
-            <#else>
             password = prompt("请输入默认密码:123456");
-            </#if>
             $.ajax({
-                url: '${baseUrl}deleteFile?fileName=' + fileName + '&base64EncodedPassword=' + password,
+                url: '${baseUrl}deleteFile?fileName=' + fileName + '&password=' + password,
                 success: function (data) {
-                    // console.log(data);
-                    // 删除完成，刷新table
                     if ("删除文件失败，密码错误！" === data.msg) {
                         alert(data.msg);
                     } else {
-                        $('#table').bootstrapTable('refresh', {});
+                        $("#table").bootstrapTable("refresh", {});
                     }
-                },
-                error: function (data) {
-                    return false;
                 }
-            })
+            });
         } else {
             return false;
         }
-
     }
 
     </#if>
@@ -330,18 +256,25 @@
     $(function () {
         $('#table').bootstrapTable({
             url: 'listFiles',
+            pageNumber: ${homePageNumber},//初始化加载第一页
+            pageSize: ${homePageSize}, //初始化单页记录数
+            pagination: ${homePagination}, //是否分页
+            pageList: [5, 10, 20, 30, 50, 100, 200, 500],
+            search: ${homeSearch}, //显示查询框
             columns: [{
                 field: 'fileName',
                 title: '文件名'
             }, {
                 field: 'action',
-                title: '操作'
+                title: '操作',
+                align: 'center',
+                width: 160
             }]
         }).on('pre-body.bs.table', function (e, data) {
             // 每个data添加一列用来操作
             $(data).each(function (index, item) {
-                item.action = "<a class='btn btn-success' target='_blank' href='${baseUrl}onlinePreview?url=" + '${baseUrl}' + encodeURIComponent(item.fileName) + "'>预览</a>" +
-                    "<a class='btn btn-danger' style='margin-left:10px;' href='javascript:void(0);' onclick='deleteFile(\"" + '${baseUrl}' + item.fileName + "\")'>删除</a>";
+                item.action = "<a class='btn btn-success' target='_blank' href='${baseUrl}onlinePreview?url=" + encodeURIComponent(Base64.encode('${baseUrl}' + item.fileName)) + "'>预览</a>" +
+                    "<a class='btn btn-danger' style='margin-left:10px;' href='javascript:void(0);' onclick='deleteFile(\"" + encodeURIComponent(Base64.encode('${baseUrl}' + item.fileName)) + "\")'>删除</a>";
             });
             return data;
         }).on('post-body.bs.table', function (e, data) {
@@ -358,15 +291,13 @@
                 return false;
             }
 
-            window.open('${baseUrl}onlinePreview?url=' + encodeURIComponent(_url));
+            var b64Encoded = Base64.encode(_url);
+
+            window.open('${baseUrl}onlinePreview?url=' + encodeURIComponent(b64Encoded));
         });
 
-        $('#fileSelectBtn').on('click', function () {
-            $('#fileSelect').click();
-        });
-
-        $("#btnSubmit").click(function () {
-            var filepath = $("#size").val();
+        $("#fileUploadBtn").click(function () {
+            var filepath = $("#file").val();
             if (!checkFileSize(filepath)) {
                 return false;
             }
@@ -409,12 +340,12 @@
                 img.src = filepath;
                 filesize = img.fileSize;
             } else {
-                filesize = $("#size")[0].files[0].size; //byte
+                filesize = $("#file")[0].files[0].size; //byte
             }
             if (filesize > 0 && filesize > maxsize) {
                 alert(errMsg);
                 return false;
-            } else if (filesize == -1) {
+            } else if (filesize === -1) {
                 alert(tipMsg);
                 return false;
             }

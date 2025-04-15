@@ -6,7 +6,6 @@ import net.risesoft.model.FileAttribute;
 
 public interface FilePreview {
 
-    String FLV_FILE_PREVIEW_PAGE = "flv";
     String PDF_FILE_PREVIEW_PAGE = "pdf";
     String PPT_FILE_PREVIEW_PAGE = "ppt";
     String COMPRESS_FILE_PREVIEW_PAGE = "compress";
@@ -30,6 +29,7 @@ public interface FilePreview {
     String DRAWUI_FILE_PREVIEW_PAGE = "drawio";
     String NOT_SUPPORTED_FILE_PAGE = "fileNotSupported";
     String XLSX_FILE_PREVIEW_PAGE = "officeweb";
+    String CSV_FILE_PREVIEW_PAGE = "csv";
 
     String filePreviewHandle(String url, Model model, FileAttribute fileAttribute);
 }

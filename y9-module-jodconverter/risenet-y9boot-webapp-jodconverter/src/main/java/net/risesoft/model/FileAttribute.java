@@ -3,7 +3,6 @@ package net.risesoft.model;
 import net.risesoft.config.ConfigConstants;
 
 /**
- *
  * Content :
  */
 public class FileAttribute {
@@ -12,13 +11,24 @@ public class FileAttribute {
     private String suffix;
     private String name;
     private String url;
-    private String fileKey;
+    private boolean isCompressFile = false;
+    private String compressFileKey;
     private String filePassword;
-    private String userToken;
+    private boolean usePasswordCache;
     private String officePreviewType = ConfigConstants.getOfficePreviewType();
     private String tifPreviewType;
     private Boolean skipDownLoad = false;
     private Boolean forceUpdatedCache = false;
+    private String cacheName;
+    private String outFilePath;
+    private String originFilePath;
+    private String cacheListName;
+    private boolean isHtmlView = false;
+
+    /**
+     * 代理请求到文件服务器的认证请求头，格式如下： {“username”:"test","password":"test"} 请求文件服务器时，会将 json 直接塞到请求头里
+     */
+    private String kkProxyAuthorization;
 
     public FileAttribute() {}
 
@@ -37,12 +47,12 @@ public class FileAttribute {
         this.officePreviewType = officePreviewType;
     }
 
-    public String getFileKey() {
-        return fileKey;
+    public boolean isCompressFile() {
+        return isCompressFile;
     }
 
-    public void setFileKey(String fileKey) {
-        this.fileKey = fileKey;
+    public void setCompressFile(boolean compressFile) {
+        isCompressFile = compressFile;
     }
 
     public String getFilePassword() {
@@ -53,12 +63,12 @@ public class FileAttribute {
         this.filePassword = filePassword;
     }
 
-    public String getUserToken() {
-        return userToken;
+    public boolean getUsePasswordCache() {
+        return usePasswordCache;
     }
 
-    public void setUserToken(String userToken) {
-        this.userToken = userToken;
+    public void setUsePasswordCache(boolean usePasswordCache) {
+        this.usePasswordCache = usePasswordCache;
     }
 
     public String getOfficePreviewType() {
@@ -85,12 +95,60 @@ public class FileAttribute {
         this.suffix = suffix;
     }
 
+    public String getCompressFileKey() {
+        return compressFileKey;
+    }
+
+    public void setCompressFileKey(String compressFileKey) {
+        this.compressFileKey = compressFileKey;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCacheName() {
+        return cacheName;
+    }
+
+    public void setCacheName(String cacheName) {
+        this.cacheName = cacheName;
+    }
+
+    public String getCacheListName() {
+        return cacheListName;
+    }
+
+    public void setCacheListName(String cacheListName) {
+        this.cacheListName = cacheListName;
+    }
+
+    public String getOutFilePath() {
+        return outFilePath;
+    }
+
+    public void setOutFilePath(String outFilePath) {
+        this.outFilePath = outFilePath;
+    }
+
+    public String getOriginFilePath() {
+        return originFilePath;
+    }
+
+    public void setOriginFilePath(String originFilePath) {
+        this.originFilePath = originFilePath;
+    }
+
+    public boolean isHtmlView() {
+        return isHtmlView;
+    }
+
+    public void setHtmlView(boolean isHtmlView) {
+        this.isHtmlView = isHtmlView;
     }
 
     public String getUrl() {
@@ -125,4 +183,11 @@ public class FileAttribute {
         this.forceUpdatedCache = forceUpdatedCache;
     }
 
+    public String getKkProxyAuthorization() {
+        return kkProxyAuthorization;
+    }
+
+    public void setKkProxyAuthorization(String kkProxyAuthorization) {
+        this.kkProxyAuthorization = kkProxyAuthorization;
+    }
 }
