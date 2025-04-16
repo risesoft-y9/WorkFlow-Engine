@@ -36,7 +36,7 @@ public class HTKYServiceImpl implements HTKYService {
         String tmh = "";
         try {
             String url = Y9Context.getProperty("y9.common.getTMHUrl");
-            String sql = "select title,jjcd,miji,zzjfs,gkfs,jzjgnw,department,nigaoren2,dh1,tzjhxdlwj from y9_form_fw where guid = '" + processSerialNumber + "'";
+            String sql = "select title,jjcd,miji,zzjfs,gkfs,jzjgnw,zbwbjmc,nigaoren2,dh1,tzjhxdlwj from y9_form_fw where guid = '" + processSerialNumber + "'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list != null && list.size() > 0) {
                 for (Map<String, Object> map : list) {
@@ -91,7 +91,7 @@ public class HTKYServiceImpl implements HTKYService {
                         }
                     }
                     //主办单位 xx司（必填）
-                    String zbdw = map.get("department") == null ? "" : map.get("department").toString();
+                    String zbdw = map.get("zbwbjmc") == null ? "" : map.get("zbwbjmc").toString();
                     //登记人
                     String djr = Y9LoginUserHolder.getUserInfo().getName();
                     //拟稿人

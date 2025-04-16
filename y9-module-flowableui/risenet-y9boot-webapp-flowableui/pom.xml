@@ -55,7 +55,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-file-service-ftp</artifactId>
+            <artifactId>risenet-y9boot-support-file-service-local</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -160,11 +160,11 @@
              <artifactId>thumbnailator</artifactId>
              <version>0.4.20</version>
          </dependency>-->
-        <!--<dependency>
+        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
             <version>5.2.3</version>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>com.deepoove</groupId>
@@ -173,11 +173,11 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--<dependency>
+        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>cn.wps.yun</groupId>
