@@ -821,4 +821,15 @@
             <column name="DISPLAY_DEPTNAME" type="VARCHAR(100)" remarks="显示部门名称"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-43" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_DEPT_DETAIL" columnName="TABINDEX"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_DEPT_DETAIL">
+            <column name="TABINDEX" type="INT" remarks="部门排序"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
