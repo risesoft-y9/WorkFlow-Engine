@@ -782,6 +782,7 @@ public class DocumentServiceImpl implements DocumentService {
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
             LOGGER.error("公文发送失败！");
+            e.printStackTrace();
             try {
                 final Writer result = new StringWriter();
                 final PrintWriter print = new PrintWriter(result);
@@ -1979,6 +1980,7 @@ public class DocumentServiceImpl implements DocumentService {
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
             LOGGER.error("公文发送失败！");
+            e.printStackTrace();
             try {
                 final Writer result = new StringWriter();
                 final PrintWriter print = new PrintWriter(result);
