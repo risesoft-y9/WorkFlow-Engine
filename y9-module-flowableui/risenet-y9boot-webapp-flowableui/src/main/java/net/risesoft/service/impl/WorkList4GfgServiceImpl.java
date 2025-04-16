@@ -350,7 +350,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         List<Map<String, Object>> childrenList = new ArrayList<>();
         AtomicInteger count = new AtomicInteger(0);
         signDeptDetailList.forEach(sdd -> {
-            List<String> taskNameAndAssigneeNames = getTaskNameAndUserName4SignDept(taskList, sdd.getExecutionId());
+            List<String> taskNameAndAssigneeNames = getTaskNameAndUserName4SignDept(taskList, sdd);
             Map<String, Object> childrenMap = new HashMap<>(parentMap);
             childrenMap.put("id", sdd.getId());
             childrenMap.put("isSub", true);
@@ -816,16 +816,16 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
      * 返回会签流程的当前办理人和当前办理环节
      *
      * @param taskList 当前流程正在运行的所有任务
-     * @param executionId 会签流程的执行id
+     * @param signDeptDetail 会签详情
      * @return List<String>
      */
-    private List<String> getTaskNameAndUserName4SignDept(List<TaskModel> taskList, String executionId) {
+    private List<String> getTaskNameAndUserName4SignDept(List<TaskModel> taskList, SignDeptDetailModel signDeptDetail) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String taskName = "", assigneeNames = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         for (TaskModel task : taskList) {
-            if (!task.getExecutionId().equals(executionId)) {
+            if (!task.getExecutionId().equals(signDeptDetail.getExecutionId())) {
                 continue;
             }
             taskName = task.getName();
@@ -872,7 +872,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         if (taskList.size() > 5) {
             assigneeNames += "等，共" + taskList.size() + "人";
         }
-        list.add(StringUtils.isBlank(taskName) ? "会签结束" : taskName);
+        list.add(StringUtils.isNotBlank(taskName) ? taskName
+            : signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DELETED_DONE.getValue()) ? "会签结束(减签)"
+                : "会签结束");
         list.add(StringUtils.isBlank(assigneeNames) ? "无" : assigneeNames);
         return list;
     }
@@ -978,7 +980,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             List<Map<String, Object>> childrenList = new ArrayList<>();
             signDeptDetailList.forEach(sdd -> {
                 List<String> taskNameAndAssigneeNames =
-                    getTaskNameAndUserName4SignDept(finalTaskList, sdd.getExecutionId());
+                    getTaskNameAndUserName4SignDept(finalTaskList, sdd);
                 Map<String, Object> childrenMap = new HashMap<>(mapTemp);
                 childrenMap.put("id", sdd.getId());
                 childrenMap.put("serialNumber", count.incrementAndGet());
