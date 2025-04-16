@@ -400,11 +400,10 @@ public interface ActRuDetailService {
      * 签收
      *
      * @param taskId 任务id
-     * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.8
      */
-    Y9Result<Object> unClaim(String taskId, String assignee);
+    Y9Result<Object> unClaim(String taskId);
 
     /**
      * 签收

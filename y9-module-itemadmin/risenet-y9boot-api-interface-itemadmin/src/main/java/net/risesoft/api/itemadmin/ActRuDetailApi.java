@@ -209,13 +209,11 @@ public interface ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.8
      */
     @PostMapping(value = "/unClaim", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> unClaim(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("assignee") String assignee);
+    Y9Result<Object> unClaim(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
 
     /**
      * 撤销签收

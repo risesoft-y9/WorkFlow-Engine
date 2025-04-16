@@ -66,7 +66,8 @@ public class Task4ActRuDetaillService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
-                actRuDetailApi.saveOrUpdate(tenantId, getModel(tenantId, processSerialNumber, taskEntity));
+                actRuDetailApi.saveOrUpdate(tenantId,
+                    getModel(tenantId, processSerialNumber, taskEntity, taskEntity.getAssignee()));
             }
         } catch (Exception e) {
             LOGGER.warn(
@@ -75,8 +76,8 @@ public class Task4ActRuDetaillService {
         }
     }
 
-    private ActRuDetailModel getModel(String tenantId, String processSerialNumber, DelegateTask taskEntity) {
-        String assignee = taskEntity.getAssignee();
+    private ActRuDetailModel getModel(String tenantId, String processSerialNumber, DelegateTask taskEntity,
+        String assignee) {
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
         ActRuDetailModel model = new ActRuDetailModel();
         model.setCreateTime(taskEntity.getCreateTime());
@@ -164,7 +165,7 @@ public class Task4ActRuDetaillService {
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
-                actRuDetailApi.unClaim(tenantId, taskEntity.getId(), taskEntity.getAssignee());
+                actRuDetailApi.unClaim(tenantId, taskEntity.getId());
             }
         } catch (Exception e) {
             LOGGER.warn("##########################unClaim抢占式节点-保存流程流转信息失败-taskId:{}##########################",
@@ -194,15 +195,16 @@ public class Task4ActRuDetaillService {
                     }
                 });
                 taskEntity.getCandidates().forEach(link -> {
-                    ActRuDetailModel model = getModel(tenantId, processSerialNumber, taskEntity);
+                    ActRuDetailModel model = getModel(tenantId, processSerialNumber, taskEntity, link.getUserId());
                     model.setSignStatus(ActRuDetailSignStatusEnum.TODO.getValue());
                     model.setAssigneeName(names.toString());
                     actRuDetailApi.saveOrUpdate(tenantId, model);
                 });
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################createTodo4Sign抢占式节点-保存待办失败-taskId:{}##########################",
+            LOGGER.error("##########################createTodo4Claim抢占式节点-保存待办失败-taskId:{}##########################",
                 taskEntity.getId());
+            e.printStackTrace();
         }
     }
 }
