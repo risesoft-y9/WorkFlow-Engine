@@ -306,15 +306,13 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.8
      */
     @Override
-    public Y9Result<Object> unClaim(@RequestParam String tenantId, @RequestParam String taskId,
-        @RequestParam String assignee) {
+    public Y9Result<Object> unClaim(@RequestParam String tenantId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.unClaim(taskId, assignee);
+        return actRuDetailService.unClaim(taskId);
     }
 
     /**

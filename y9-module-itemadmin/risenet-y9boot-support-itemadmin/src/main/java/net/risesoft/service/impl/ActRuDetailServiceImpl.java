@@ -554,7 +554,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     @Transactional
-    public Y9Result<Object> unClaim(String taskId, String assignee) {
+    public Y9Result<Object> unClaim(String taskId) {
         List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
         StringBuffer names = new StringBuffer();
         ardList.forEach(ard -> {
