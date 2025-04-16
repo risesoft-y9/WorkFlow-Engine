@@ -290,6 +290,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setProcessDefinitionId(processDefinitionId);
         model.setTaskDefKey(startTaskDefKey);
         model.setActivitiUser(userId);
+        model.setStartor(userId);
         model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
         model.setProcessSerialNumber(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         model.setProcessInstanceId("");

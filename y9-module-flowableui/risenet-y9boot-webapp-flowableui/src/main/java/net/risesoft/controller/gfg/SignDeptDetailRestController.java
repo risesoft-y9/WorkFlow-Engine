@@ -19,13 +19,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
+import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
@@ -47,6 +50,8 @@ public class SignDeptDetailRestController {
 
     private final SignDeptDetailApi signDeptDetailApi;
 
+    private final SignDeptInfoApi signDeptInfoApi;
+
     private final OrgUnitApi orgUnitApi;
 
     private final ActRuDetailApi actRuDetailApi;
@@ -54,6 +59,8 @@ public class SignDeptDetailRestController {
     private final TaskApi taskApi;
 
     private final TaskRelatedApi taskRelatedApi;
+
+    private final FormDataApi formDataApi;
 
     /**
      * 根据主键删除会签信息
@@ -77,7 +84,7 @@ public class SignDeptDetailRestController {
          */
         actRuDetailApi.deleteByExecutionId(tenantId, signDeptDetail.getExecutionId());
         /*
-         * 2、删除会签信息
+         * 2、删除会签详情信息
          */
         signDeptDetailApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
         /*
@@ -95,6 +102,19 @@ public class SignDeptDetailRestController {
                         taskRelatedApi.saveOrUpdate(tenantId, trm);
                     });
             });
+        String processSerialNumber = signDeptDetail.getProcessSerialNumber();
+        /*
+         * 4、如果该部门不存在正常办结的会签详情，则删除委内会签部门
+         */
+        boolean match = signDeptDetailModels.stream()
+            .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue()))
+            .anyMatch(ssd -> ssd.getDeptId().equals(signDeptDetail.getDeptId()));
+        if (!match) {
+            List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList(tenantId, "0", processSerialNumber).getData();
+            sdmList.stream().filter(sdm -> sdm.getDeptId().equals(signDeptDetail.getDeptId())).forEach(sdm -> {
+                signDeptInfoApi.deleteById(tenantId, Y9LoginUserHolder.getPositionId(), sdm.getId());
+            });
+        }
         return Y9Result.success();
     }
 
@@ -199,6 +219,16 @@ public class SignDeptDetailRestController {
                         taskRelatedApi.saveOrUpdate(tenantId, trm);
                     });
             });
+        String processSerialNumber = ssd.getProcessSerialNumber();
+        /*
+         * 4、如果该部门不存在委内会签部门，则新增委内会签部门
+         */
+        List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList(tenantId, "0", processSerialNumber).getData();
+        boolean match = sdmList.stream().anyMatch(sdm -> sdm.getDeptId().equals(ssd.getDeptId()));
+        if (!match) {
+            signDeptInfoApi.addSignDept(tenantId, Y9LoginUserHolder.getPosition().getId(), ssd.getDeptId(), "0",
+                processSerialNumber);
+        }
         return Y9Result.success();
     }
 

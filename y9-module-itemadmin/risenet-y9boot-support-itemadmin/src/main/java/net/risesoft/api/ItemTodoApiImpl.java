@@ -168,26 +168,28 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             ardPage = this.actRuDetailService.pageByAssigneeAndStatus(userId, 0, rows, page, sort);
         } else {
             String systemNameSql = "",
-                processParamSql = "LEFT JOIN FF_PROCESS_PARAM F ON T.PROCESSSERIALNUMBER = F.PROCESSSERIALNUMBER ";
+                processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON T.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
             StringBuilder sql1 = new StringBuilder();
             Object object = queryParamModel;
             Class queryParamModelClazz = object.getClass();
             Field[] fields = queryParamModelClazz.getDeclaredFields();
-            for (Field f : fields) {
-                f.setAccessible(true);
-                if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName())
-                    || "rows".equals(f.getName())) {
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if ("serialVersionUID".equals(field.getName()) || "page".equals(field.getName())
+                    || "rows".equals(field.getName())) {
                     continue;
                 }
                 Object fieldValue;
                 try {
-                    fieldValue = f.get(object);
+                    fieldValue = field.get(object);
                     if (null != fieldValue) {
-                        if ("systemName".equals(f.getName())) {
+                        if ("systemName".equals(field.getName())) {
                             systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
                                 : "AND T.SYSTEMNAME = '" + fieldValue + "' ";
+                        } else if ("bureauIds".equals(field.getName())) {
+                            sql1.append(" AND P.HOSTDEPTID = '").append(fieldValue).append("' ");
                         } else {
-                            sql1.append("AND INSTR(F.").append(f.getName().toUpperCase()).append(",'")
+                            sql1.append("AND INSTR(P.").append(field.getName().toUpperCase()).append(",'")
                                 .append(fieldValue).append("') > 0 ");
                         }
                     }
@@ -223,11 +225,11 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             return true;
         }
         try {
-            for (Field f : object.getClass().getDeclaredFields()) {
-                f.setAccessible(true);
-                if (!"serialVersionUID".equals(f.getName()) && !"page".equals(f.getName())
-                    && !"rows".equals(f.getName()) && f.get(object) != null
-                    && StringUtils.isNotBlank(f.get(object).toString())) {
+            for (Field field : object.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                if (!"serialVersionUID".equals(field.getName()) && !"page".equals(field.getName())
+                    && !"rows".equals(field.getName()) && field.get(object) != null
+                    && StringUtils.isNotBlank(field.get(object).toString())) {
                     return false;
                 }
             }

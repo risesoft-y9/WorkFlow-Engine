@@ -80,8 +80,11 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String id) {
+    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
         signDeptInfoService.deleteById(id);
         return Y9Result.success();
     }

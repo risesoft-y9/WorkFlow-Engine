@@ -42,7 +42,7 @@ public class SignDept4GfgController {
      */
     @PostMapping(value = "/deleteById")
     public Y9Result<Object> deleteById(@RequestParam String id) {
-        return signDeptInfoApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
+        return signDeptInfoApi.deleteById(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id);
     }
 
     /**

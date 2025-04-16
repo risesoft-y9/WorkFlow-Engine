@@ -371,6 +371,7 @@ public class AsyncHandleService {
                     signDeptDetail.setSenderName(orgUnit.getName());
                     signDeptDetail.setDeptId(bureau.getId());
                     signDeptDetail.setDeptName(bureau.getName());
+                    signDeptDetail.setTabIndex(bureau.getTabIndex());
                     detailList.add(signDeptDetail);
                 }
             }

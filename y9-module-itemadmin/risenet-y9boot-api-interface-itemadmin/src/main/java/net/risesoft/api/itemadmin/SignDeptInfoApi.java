@@ -44,7 +44,8 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @PostMapping(value = "/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("id") String id);
 
     /**
      * 根据流程编号获取会签信息
