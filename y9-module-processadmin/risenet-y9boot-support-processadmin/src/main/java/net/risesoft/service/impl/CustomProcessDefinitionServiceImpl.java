@@ -120,52 +120,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public String getNodeType(String processDefinitionId, String taskDefKey) {
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        List<FlowElement> list = (List<FlowElement>)process.getFlowElements();
-        List<FlowElement> newlist = new ArrayList<>();
-        for (FlowElement activity : list) {
-            newlist.add(activity);
-            // 子流程，将子流程的节点放入newlist中
-            if (activity instanceof SubProcess) {
-                SubProcess subProcess = (SubProcess)activity;
-                List<FlowElement> list1 = (List<FlowElement>)subProcess.getFlowElements();
-                for (FlowElement fe : list1) {
-                    if (fe instanceof UserTask) {
-                        newlist.add(fe);
-                    }
-                }
-            }
-        }
-        for (FlowElement activity : newlist) {
-            if (taskDefKey.equals(activity.getId())) {
-                if (activity instanceof UserTask) {
-                    UserTask userTask = (UserTask)activity;
-                    Object obj = userTask.getBehavior();
-                    if (obj instanceof SequentialMultiInstanceBehavior) {
-                        return SysVariables.SEQUENTIAL;
-                    } else if (obj instanceof ParallelMultiInstanceBehavior) {
-                        return SysVariables.PARALLEL;
-                    } else {
-                        return SysVariables.COMMON;
-                    }
-                } else if (activity instanceof SubProcess) {
-                    SubProcess subProcess = (SubProcess)activity;
-                    if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                        return SysVariables.PARALLEL;
-                    } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                        return SysVariables.SEQUENTIAL;
-                    }
-                } else if (activity instanceof CallActivity) {
-                    return SysVariables.CALLACTIVITY;
-                }
-            }
-        }
-        return SysVariables.COMMON;
-    }
-
-    @Override
     public FlowElementModel getNode(String processDefinitionId, String taskDefKey) {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -218,6 +172,52 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public String getNodeType(String processDefinitionId, String taskDefKey) {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+        List<FlowElement> list = (List<FlowElement>)process.getFlowElements();
+        List<FlowElement> newlist = new ArrayList<>();
+        for (FlowElement activity : list) {
+            newlist.add(activity);
+            // 子流程，将子流程的节点放入newlist中
+            if (activity instanceof SubProcess) {
+                SubProcess subProcess = (SubProcess)activity;
+                List<FlowElement> list1 = (List<FlowElement>)subProcess.getFlowElements();
+                for (FlowElement fe : list1) {
+                    if (fe instanceof UserTask) {
+                        newlist.add(fe);
+                    }
+                }
+            }
+        }
+        for (FlowElement activity : newlist) {
+            if (taskDefKey.equals(activity.getId())) {
+                if (activity instanceof UserTask) {
+                    UserTask userTask = (UserTask)activity;
+                    Object obj = userTask.getBehavior();
+                    if (obj instanceof SequentialMultiInstanceBehavior) {
+                        return SysVariables.SEQUENTIAL;
+                    } else if (obj instanceof ParallelMultiInstanceBehavior) {
+                        return SysVariables.PARALLEL;
+                    } else {
+                        return SysVariables.COMMON;
+                    }
+                } else if (activity instanceof SubProcess) {
+                    SubProcess subProcess = (SubProcess)activity;
+                    if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                        return SysVariables.PARALLEL;
+                    } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                        return SysVariables.SEQUENTIAL;
+                    }
+                } else if (activity instanceof CallActivity) {
+                    return SysVariables.CALLACTIVITY;
+                }
+            }
+        }
+        return SysVariables.COMMON;
+    }
+
+    @Override
     public Integer getOutPutNodeCount(String taskId) {
         List<SequenceFlow> outTransitions = getPvmTransitions(taskId);
         List<SequenceFlow> list = new ArrayList<>();
@@ -244,21 +244,25 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
         List<SequenceFlow> list = new ArrayList<>();
         List<SequenceFlow> flowList = new ArrayList<>();
+        List<FlowElement> res_list = new ArrayList<>();
+        if (!flowElements.isEmpty()) {
+            res_list.addAll(flowElements);
+        }
         Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
         String activitiId = execution.getActivityId();
-        for (int i = 0; i < flowElements.size(); i++) {
-            FlowElement flowElement = flowElements.get(i);
+        for (int i = 0; i < res_list.size(); i++) {
+            FlowElement flowElement = res_list.get(i);
             if (flowElement instanceof SubProcess) {
                 Collection<FlowElement> flowElements2 = ((SubProcess)flowElement).getFlowElements();
                 for (FlowElement subFlowElement : flowElements2) {
-                    if (!flowElements.contains(subFlowElement)) {
-                        flowElements.add(subFlowElement);
+                    if (!res_list.contains(subFlowElement)) {
+                        res_list.add(subFlowElement);
                     }
                 }
             }
         }
-        for (int i = 0; i < flowElements.size(); i++) {
-            FlowElement flowElement = flowElements.get(i);
+        for (int i = 0; i < res_list.size(); i++) {
+            FlowElement flowElement = res_list.get(i);
             String id = flowElement.getId();
             if (activitiId.equals(id)) {
                 if (flowElement instanceof StartEvent) {
@@ -318,6 +322,24 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             }
         }
         return "";
+    }
+
+    @Override
+    public Y9Result<List<TargetModel>> getSubProcessChildNode(String processDefinitionId) {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+        List<TargetModel> targetNodeList = new ArrayList<>();
+        process.getFlowElements().stream().filter(flowElement -> flowElement instanceof SubProcess)
+            .forEach(flowElement -> {
+                ((SubProcess)flowElement).getFlowElements().stream().filter(fe -> fe instanceof UserTask)
+                    .forEach(fe -> {
+                        TargetModel targetModel = new TargetModel();
+                        targetModel.setTaskDefKey(fe.getId());
+                        targetModel.setTaskDefName(fe.getName());
+                        targetNodeList.add(targetModel);
+                    });
+            });
+        return Y9Result.success(targetNodeList);
     }
 
     @Override
@@ -432,24 +454,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             }
         }
         return false;
-    }
-
-    @Override
-    public Y9Result<List<TargetModel>> getSubProcessChildNode(String processDefinitionId) {
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        List<TargetModel> targetNodeList = new ArrayList<>();
-        process.getFlowElements().stream().filter(flowElement -> flowElement instanceof SubProcess)
-            .forEach(flowElement -> {
-                ((SubProcess)flowElement).getFlowElements().stream().filter(fe -> fe instanceof UserTask)
-                    .forEach(fe -> {
-                        TargetModel targetModel = new TargetModel();
-                        targetModel.setTaskDefKey(fe.getId());
-                        targetModel.setTaskDefName(fe.getName());
-                        targetNodeList.add(targetModel);
-                    });
-            });
-        return Y9Result.success(targetNodeList);
     }
 
     @Override
