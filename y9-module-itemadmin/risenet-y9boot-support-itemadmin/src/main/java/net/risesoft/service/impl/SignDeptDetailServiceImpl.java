@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +43,8 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
 
     @Override
     public List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber) {
-        return signDeptDetailRepository.findByProcessSerialNumberOrderByCreateTimeDesc(processSerialNumber);
+        Sort sort = Sort.by(Sort.Order.asc("tabIndex"), Sort.Order.desc("createTime"));
+        return signDeptDetailRepository.findByProcessSerialNumber(processSerialNumber, sort);
     }
 
     @Override
@@ -62,8 +64,8 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
     }
 
     @Override
-    public List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processInstanceId, int status) {
-        return signDeptDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(processInstanceId,
+    public List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processSerialNumber, int status) {
+        return signDeptDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(processSerialNumber,
             status);
     }
 
@@ -97,45 +99,30 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
             assert oldDetail != null;
             oldDetail.setUserName(signDeptDetail.getUserName());
             oldDetail.setMobile(signDeptDetail.getMobile());
-            // oldDetail.setFileStoreId(signDeptDetail.getFileStoreId());不用更新
             oldDetail.setDeptManager(signDeptDetail.getDeptManager());
-            if (null != signDeptDetail.getStatus()) {
-                oldDetail.setStatus(signDeptDetail.getStatus());
+            oldDetail.setStatus(null == signDeptDetail.getStatus() ? SignDeptDetailStatusEnum.DOING.getValue()
+                : signDeptDetail.getStatus());
+            // 当前为正常办结，则将之前已办结的置为非最新，当前的置为最新
+            if (oldDetail.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue())) {
+                List<SignDeptDetail> list =
+                    signDeptDetailRepository.findByProcessSerialNumberAndDeptIdAndStatusOrderByCreateTimeDesc(
+                        signDeptDetail.getProcessSerialNumber(), signDeptDetail.getDeptId(),
+                        SignDeptDetailStatusEnum.DONE.getValue());
+                list.forEach(detail -> {
+                    detail.setNewed(false);
+                    signDeptDetailRepository.save(detail);
+                });
+                oldDetail.setNewed(true);
             }
             signDeptDetailRepository.save(oldDetail);
             return;
         }
-        SignDeptDetail newDetail = new SignDeptDetail();
-        newDetail.setId(Y9IdGenerator.genId());
-        newDetail.setProcessSerialNumber(signDeptDetail.getProcessSerialNumber());
-        newDetail.setProcessInstanceId(signDeptDetail.getProcessInstanceId());
-        newDetail.setExecutionId(signDeptDetail.getExecutionId());
-        newDetail.setTaskId(signDeptDetail.getTaskId());
-        newDetail.setTaskName(signDeptDetail.getTaskName());
-        newDetail.setSenderId(signDeptDetail.getSenderId());
-        newDetail.setSenderName(signDeptDetail.getSenderName());
-        newDetail.setDeptId(signDeptDetail.getDeptId());
-        newDetail.setDeptName(signDeptDetail.getDeptName());
-        newDetail.setUserName(signDeptDetail.getUserName());
-        newDetail.setMobile(signDeptDetail.getMobile());
-        newDetail.setFileStoreId(signDeptDetail.getFileStoreId());
-        newDetail.setDeptManager(signDeptDetail.getDeptManager());
-        newDetail.setStatus(signDeptDetail.getStatus());
-        newDetail.setCreateTime(new Date());
-        newDetail.setNewed(false);
-        newDetail.setStatus(null == signDeptDetail.getStatus() ? SignDeptDetailStatusEnum.DOING.getValue()
+        signDeptDetail.setId(Y9IdGenerator.genId());
+        signDeptDetail.setCreateTime(new Date());
+        signDeptDetail.setNewed(false);
+        signDeptDetail.setStatus(null == signDeptDetail.getStatus() ? SignDeptDetailStatusEnum.DOING.getValue()
             : signDeptDetail.getStatus());
-        List<SignDeptDetail> list = signDeptDetailRepository
-            .findByProcessSerialNumberAndDeptIdAndStatusOrderByCreateTimeDesc(signDeptDetail.getProcessSerialNumber(),
-                signDeptDetail.getDeptId(), SignDeptDetailStatusEnum.DONE.getValue());
-        if (!list.isEmpty()) {
-            list.forEach(detail -> {
-                detail.setNewed(false);
-                signDeptDetailRepository.save(detail);
-            });
-            newDetail.setNewed(true);
-        }
-        signDeptDetailRepository.save(newDetail);
+        signDeptDetailRepository.save(signDeptDetail);
     }
 
     @Override

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
@@ -39,7 +38,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 加减签
@@ -70,8 +68,6 @@ public class MultiInstance4GfgRestController {
 
     private final SignDeptInfoApi signDeptInfoApi;
 
-    private final FormDataApi formDataApi;
-
     /**
      * 并行加签
      * 
@@ -80,14 +76,12 @@ public class MultiInstance4GfgRestController {
      * @param userChoice 选择人员
      * @param dueDate 到期时间
      * @param description 办文说明
-     * @param aliasColumnName 表简称和数据库字段列名 fw.wncsdw
      * @return
      */
     @PostMapping(value = "/addExecutionId")
     public Y9Result<List<SignDeptDetailModel>> addExecutionId(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String activityId, @RequestParam @NotBlank String userChoice,
-        @RequestParam(required = false) String dueDate, @RequestParam(required = false) String description,
-        @RequestParam @NotBlank String aliasColumnName) {
+        @RequestParam(required = false) String dueDate, @RequestParam(required = false) String description) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             // 办理期限和说明
@@ -106,18 +100,11 @@ public class MultiInstance4GfgRestController {
             processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
             // 加签
             multiInstanceService.addExecutionId(processParamModel, activityId, userChoice);
-            /*
-             * 保存至表单中的委内会签
-             */
+            // 委内会签
             StringBuffer deptIds = new StringBuffer();
-            StringBuffer deptNames = new StringBuffer();
             Arrays.stream(userChoice.split(";")).forEach(user -> {
                 Department bureau = (Department)orgUnitApi.getBureau(tenantId, user).getData();
                 if (!deptIds.toString().contains(bureau.getId())) {
-                    deptNames.append(",")
-                        .append(
-                            StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName())
-                        .append("(3)");
                     if (StringUtils.isBlank(deptIds)) {
                         deptIds.append(bureau.getId());
                     } else {
@@ -125,21 +112,6 @@ public class MultiInstance4GfgRestController {
                     }
                 }
             });
-            // 委内抄送单位
-            String[] aliasColumnNameArr = aliasColumnName.split("\\.");
-            String alias = aliasColumnNameArr[0];
-            Y9Result<Map<String, Object>> data4TableAlias =
-                formDataApi.getData4TableAlias(tenantId, processParamModel.getProcessSerialNumber(), alias);
-            if (!data4TableAlias.isSuccess() || null == data4TableAlias.getData()) {
-                return Y9Result.failure("加签失败：获取表单数据失败!");
-            }
-            Object object = data4TableAlias.getData().get(aliasColumnNameArr[1]);
-            String oldValue = null == object ? "" : object.toString();
-            Map<String, Object> map = new HashMap<>(1);
-            map.put(aliasColumnName, oldValue + deptNames);
-            formDataApi.updateFormData(tenantId, processParamModel.getProcessSerialNumber(),
-                Y9JsonUtil.writeValueAsString(map));
-            // 委内会签
             signDeptInfoApi.addSignDept(tenantId, Y9LoginUserHolder.getPositionId(), deptIds.toString(), "0",
                 processParamModel.getProcessSerialNumber());
             return Y9Result.successMsg("加签成功");

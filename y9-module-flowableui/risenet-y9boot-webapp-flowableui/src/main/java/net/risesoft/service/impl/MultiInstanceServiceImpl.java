@@ -104,6 +104,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
                 signDeptDetail.setSenderName(ssd.getSenderName());
                 signDeptDetail.setDeptId(bureau.getId());
                 signDeptDetail.setDeptName(bureau.getName());
+                signDeptDetail.setTabIndex(bureau.getTabIndex());
                 signDeptDetailApi.saveOrUpdate(tenantId, positionId, signDeptDetail);
             }
         });

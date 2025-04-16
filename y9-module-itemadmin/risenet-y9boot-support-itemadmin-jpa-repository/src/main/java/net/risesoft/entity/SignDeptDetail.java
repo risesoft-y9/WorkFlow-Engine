@@ -105,4 +105,8 @@ public class SignDeptDetail implements Serializable {
     @Comment("生成时间")
     @Column(name = "CREATETIME", length = 50)
     private Date createTime;
+
+    @Comment("部门排序")
+    @Column(name = "TABINDEX", length = 10)
+    private Integer tabIndex;
 }

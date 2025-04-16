@@ -107,4 +107,9 @@ public class SignDeptDetailModel implements Serializable {
     private Date createTime;
 
     private List<OpinionSignModel> opinionList;
+
+    /**
+     * 部门排序
+     */
+    private Integer tabIndex;
 }

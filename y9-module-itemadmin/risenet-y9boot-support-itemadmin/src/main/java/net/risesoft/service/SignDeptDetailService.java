@@ -21,7 +21,7 @@ public interface SignDeptDetailService {
 
     SignDeptDetail findByProcessSerialNumberAndDeptId4Latest(String processSerialNumber, String deptId);
 
-    List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processInstanceId, int status);
+    List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processSerialNumber, int status);
 
     List<SignDeptDetail> findByTaskId(String processInstanceId, String taskId);
 

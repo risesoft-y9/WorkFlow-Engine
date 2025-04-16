@@ -2,6 +2,7 @@ package net.risesoft.repository.jpa;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -15,7 +16,7 @@ public interface SignDeptDetailRepository
     List<SignDeptDetail> findByProcessSerialNumberAndDeptIdOrderByCreateTimeDesc(String processSerialNumber,
         String deptId);
 
-    List<SignDeptDetail> findByProcessSerialNumberOrderByCreateTimeDesc(String processSerialNumber);
+    List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber, Sort sort);
 
     List<SignDeptDetail> findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(String processSerialNumber,
         int status);
