@@ -69,7 +69,7 @@ public class ItemOrganWordBindController {
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         List<ItemOrganWordBind> bindList;
         for (TargetModel targetModel : list) {
             StringBuilder bindNames = new StringBuilder();

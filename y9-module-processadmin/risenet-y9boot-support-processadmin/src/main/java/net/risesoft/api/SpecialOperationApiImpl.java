@@ -146,7 +146,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     }
 
     /**
-     * 特殊办结
+     * 特殊办结(仅适用主流程，不适用SubProcess)
      *
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id

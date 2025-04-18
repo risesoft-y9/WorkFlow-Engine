@@ -61,34 +61,18 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
-     * 获取某一任务所在节点的目标是结束节点的目标节点Key
-     *
-     * @param tenantId 租户Id
-     * @param taskId 任务id
-     * @return {@code Y9Result<String>} 通用请求返回对象 - data 目标节点Key
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<String> getEndNodeKeyByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        return Y9Result.success(customProcessDefinitionService.getEndNodeKeyByTaskId(taskId));
-    }
-
-    /**
      * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @param isContainStartNode 是否包含开始节点
      * @return {@code List<FlowElementModel>>} 通用请求返回对象 - data 节点集合
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<FlowElementModel>> getFlowElement(@RequestParam String tenantId,
-        @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
+    public Y9Result<List<FlowElementModel>> listUserTask(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.listFlowElementByProcessDefinitionId(processDefinitionId,
-            isContainStartNode);
+        return customProcessDefinitionService.listUserTask(processDefinitionId);
     }
 
     /**
@@ -104,7 +88,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     public Y9Result<String> getNodeType(@RequestParam String tenantId, @RequestParam String processDefinitionId,
         @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return Y9Result.success(customProcessDefinitionService.getNodeType(processDefinitionId, taskDefKey));
+        return Y9Result
+            .success(customProcessDefinitionService.getNode(processDefinitionId, taskDefKey).getMultiInstance());
     }
 
     /**
@@ -128,15 +113,14 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @param isContainStartNode 是否包含开始节点
      * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<TargetModel>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
-        @RequestParam Boolean isContainStartNode) {
+    public Y9Result<List<TargetModel>> getNodes(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.listNodesByProcessDefinitionId(processDefinitionId, isContainStartNode);
+        return customProcessDefinitionService.listNodesByProcessDefinitionId(processDefinitionId);
     }
 
     /**
@@ -235,38 +219,6 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
-     * 根据流程定义Id和流程节点Key获取目标任务节点集合,去除名称相等的节点，并且加上结束节点
-     *
-     * @param tenantId 租户Id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey 任务key
-     * @return {@code Y9Result<List<TargetModel>> } 通用请求返回对象 - data 任务节点集合
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<TargetModel>> getTargetNodes1(@RequestParam String tenantId,
-        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.listTargetNodesContainEndNodeAndNotEq(processDefinitionId, taskDefKey);
-    }
-
-    /**
-     * 根据流程定义Id和流程节点Key获取目标任务节点集合
-     *
-     * @param tenantId 租户Id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey 任务key
-     * @return {@code  Y9Result<List<GatewayModel>>} 通用请求返回对象 - data 任务节点集合
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(@RequestParam String tenantId,
-        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.listTargetNodes4ParallelGateway(processDefinitionId, taskDefKey);
-    }
-
-    /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合（可设置是否包含结束节点）
      *
      * @param tenantId 租户Id
@@ -306,15 +258,13 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @param nodeType 节点类型
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Boolean> isContainNodeType(@RequestParam String tenantId, @RequestParam String taskId,
-        @RequestParam String nodeType) {
+    public Y9Result<Boolean> isContainEndEvent(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return Y9Result.success(customProcessDefinitionService.isContainNodeType(taskId, nodeType));
+        return Y9Result.success(customProcessDefinitionService.isContainEndEvent(taskId));
     }
 
     /**

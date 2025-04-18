@@ -99,7 +99,8 @@ public class OperationServiceImpl implements OperationService {
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
         String multiInstance =
-            this.customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
+            this.customProcessDefinitionService.getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey)
+                .getMultiInstance();
         // 更新自定义历程结束时间
         List<ProcessTrackModel> ptModelList =
             this.processTrackApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
@@ -244,9 +245,9 @@ public class OperationServiceImpl implements OperationService {
         String processInstanceId = "";
         try {
             String userName = Y9LoginUserHolder.getOrgUnit().getName();
-            String endKey = this.customProcessDefinitionService.getTaskDefKey4EndEvent(taskId);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Task task = this.customTaskService.findById(taskId);
+            String endKey = this.customProcessDefinitionService.getTaskDefKey4EndEvent(task.getProcessDefinitionId());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             processInstanceId = task.getProcessInstanceId();
             HistoricProcessInstance historicProcessInstance =
                 this.historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId)

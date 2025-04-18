@@ -2,6 +2,8 @@ package net.risesoft.service;
 
 import java.util.List;
 
+import org.flowable.bpmn.model.FlowElement;
+
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
@@ -13,6 +15,13 @@ import net.risesoft.pojo.Y9Result;
  * @date 2022/12/30
  */
 public interface CustomProcessDefinitionService {
+    /**
+     * 获取流程模型中的节点元素okk
+     *
+     * @param processDefinitionId 流程定义ID
+     * @return List<FlowElement>
+     */
+    List<FlowElement> getFlowElements(String processDefinitionId);
 
     /**
      * 查找当前任务节点的输出的结束节点
@@ -21,23 +30,6 @@ public interface CustomProcessDefinitionService {
      * @return
      */
     Y9Result<TargetModel> getEndNode(String taskId);
-
-    /**
-     * 获取某一任务所在节点的目标是结束节点的目标节点Key,如果有多个结束节点则获取第一个
-     *
-     * @param taskId
-     * @return
-     */
-    String getEndNodeKeyByTaskId(String taskId);
-
-    /**
-     * 获取具体流程的某个节点类型
-     *
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    String getNodeType(String processDefinitionId, String taskDefKey);
 
     /**
      * 获取具体流程的某个节点
@@ -84,10 +76,10 @@ public interface CustomProcessDefinitionService {
     /**
      * 根据任务Id获取流程的结束节点信息
      *
-     * @param taskId
+     * @param processDefinitionId
      * @return
      */
-    String getTaskDefKey4EndEvent(String taskId);
+    String getTaskDefKey4EndEvent(String processDefinitionId);
 
     /**
      * 判断流程定义的节点是否是callActivity节点
@@ -102,10 +94,9 @@ public interface CustomProcessDefinitionService {
      * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
      *
      * @param taskId
-     * @param nodeType
      * @return
      */
-    Boolean isContainNodeType(String taskId, String nodeType);
+    Boolean isContainEndEvent(String taskId);
 
     /**
      * 判断流程定义的节点是否是SubProcess节点
@@ -142,23 +133,20 @@ public interface CustomProcessDefinitionService {
     Y9Result<List<TargetModel>> listContainEndEvent4UserTask(String processDefinitionId);
 
     /**
-     * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
+     * 根据流程定义Id获取节点信息
      *
      * @param processDefinitionId
-     * @param isContainStartNode
      * @return Y9Result<List < FlowElementModel>>
      */
-    Y9Result<List<FlowElementModel>> listFlowElementByProcessDefinitionId(String processDefinitionId,
-        Boolean isContainStartNode);
+    Y9Result<List<FlowElementModel>> listUserTask(String processDefinitionId);
 
     /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
      *
      * @param processDefinitionId
-     * @param isContainStartNode
      * @return Y9Result<List < TargetModel>>
      */
-    Y9Result<List<TargetModel>> listNodesByProcessDefinitionId(String processDefinitionId, Boolean isContainStartNode);
+    Y9Result<List<TargetModel>> listNodesByProcessDefinitionId(String processDefinitionId);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -179,15 +167,6 @@ public interface CustomProcessDefinitionService {
     Y9Result<List<TargetModel>> listTargetNodes(String processDefinitionId, String taskDefKey);
 
     /**
-     * 根据流程定义Id和流程节点Key获取目标任务节点集合
-     *
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    Y9Result<List<GatewayModel>> listTargetNodes4ParallelGateway(String processDefinitionId, String taskDefKey);
-
-    /**
      * Description: 根据流程定义Id和流程节点Key获取目标任务节点集合
      *
      * @param processDefinitionId
@@ -197,13 +176,4 @@ public interface CustomProcessDefinitionService {
      */
     Y9Result<List<TargetModel>> listTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
         Boolean isContainEndNode);
-
-    /**
-     * 根据流程定义Id和流程节点Key获取目标任务节点集合,去除名称相等的节点，并且加上结束节点
-     *
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    Y9Result<List<TargetModel>> listTargetNodesContainEndNodeAndNotEq(String processDefinitionId, String taskDefKey);
 }

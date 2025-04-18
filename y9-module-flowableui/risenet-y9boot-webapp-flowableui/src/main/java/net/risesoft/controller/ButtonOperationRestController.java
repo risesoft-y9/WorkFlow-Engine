@@ -272,7 +272,7 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 获取有办结权限的用户任务集合
+     * 获取有办结权限的用户任务集合(仅获取主流程的办结权限)
      *
      * @param processDefinitionId 流程定义id
      * @return Y9Result<List < TargetModel>>

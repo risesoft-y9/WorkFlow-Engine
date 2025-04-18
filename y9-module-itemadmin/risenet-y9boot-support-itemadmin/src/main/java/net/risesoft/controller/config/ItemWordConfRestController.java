@@ -87,7 +87,7 @@ public class ItemWordConfRestController {
         @RequestParam String itemId) {
         List<TargetModel> list;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
+        list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         for (TargetModel targetModel : list) {
             StringBuilder names = new StringBuilder();
             List<ItemWordConf> bindList = itemWordConfService.listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,

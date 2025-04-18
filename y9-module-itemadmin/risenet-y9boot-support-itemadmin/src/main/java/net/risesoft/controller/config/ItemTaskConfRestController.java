@@ -61,7 +61,7 @@ public class ItemTaskConfRestController {
         @RequestParam String processDefinitionId) {
         List<Map<String, Object>> resList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         Map<String, Object> map;
         for (TargetModel targetModel : list) {
             map = new HashMap<>(16);

@@ -76,7 +76,7 @@ public class TaskTimeConfServiceImpl implements TaskTimeConfService {
         if (latestpd.getVersion() > 1) {
             List<TaskTimeConf> confList =
                 taskTimeConfRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
-            List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
+            List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
             for (TargetModel targetModel : nodes) {
                 String currentTaskDefKey = targetModel.getTaskDefKey();
                 TaskTimeConf currentConf =

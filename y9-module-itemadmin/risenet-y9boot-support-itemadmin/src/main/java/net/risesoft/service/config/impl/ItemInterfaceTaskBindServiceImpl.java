@@ -53,7 +53,7 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
                 previousPdId = previousPd.getId();
             }
         }
-        List<FlowElementModel> nodes = processDefinitionApi.getFlowElement(tenantId, latestPdId, false).getData();
+        List<FlowElementModel> nodes = processDefinitionApi.listUserTask(tenantId, latestPdId).getData();
         for (FlowElementModel feModel : nodes) {
             String currentTaskDefKey = feModel.getElementKey();
             // 当前上一个版本配置

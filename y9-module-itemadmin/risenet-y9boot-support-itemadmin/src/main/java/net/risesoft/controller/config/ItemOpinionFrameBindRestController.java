@@ -158,7 +158,7 @@ public class ItemOpinionFrameBindRestController {
             String taskDefName = "整个流程";
             if (StringUtils.isNotEmpty(bind.getTaskDefKey())) {
                 List<TargetModel> list =
-                    processDefinitionApi.getNodes(tenantId, bind.getProcessDefinitionId(), false).getData();
+                    processDefinitionApi.getNodes(tenantId, bind.getProcessDefinitionId()).getData();
                 for (TargetModel targetModel : list) {
                     if (targetModel.getTaskDefKey().equals(bind.getTaskDefKey())) {
                         taskDefName = targetModel.getTaskDefName();
@@ -184,7 +184,7 @@ public class ItemOpinionFrameBindRestController {
         @RequestParam String itemId) {
         List<TargetModel> list;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
+        list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         for (TargetModel targetModel : list) {
             StringBuilder opinionFrameNames = new StringBuilder();
             List<ItemOpinionFrameBind> bindList =

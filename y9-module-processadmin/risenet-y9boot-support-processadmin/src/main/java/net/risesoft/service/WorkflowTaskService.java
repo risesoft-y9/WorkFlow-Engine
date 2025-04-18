@@ -37,7 +37,7 @@ public class WorkflowTaskService {
 
     private final TaskService taskService;
 
-    private final WorkflowProcessDefinitionService workflowProcessDefinitionService;
+    private final CustomProcessDefinitionService customProcessDefinitionService;
 
     /**
      * 获取当前运行的taskDefKey
@@ -102,9 +102,9 @@ public class WorkflowTaskService {
         try {
             Task currentTask = getTaskByTaskId(taskId);
             if (currentTask != null) {
-                String multinstance = workflowProcessDefinitionService
-                    .getMultiinstanceType(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey());
-
+                String multinstance = customProcessDefinitionService
+                    .getNode(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey())
+                    .getMultiInstance();
                 if (multinstance.equals(SysVariables.PARALLEL)) {
                     List<HistoricTaskInstance> hisTaskList = historyService.createHistoricTaskInstanceQuery()
                         .processInstanceId(currentTask.getProcessInstanceId())
@@ -142,11 +142,12 @@ public class WorkflowTaskService {
                 List<HistoricTaskInstance> list =
                     historyService.createHistoricTaskInstanceQuery().processInstanceId(task.getProcessInstanceId())
                         .includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().desc().list();
-                if (list.size() > 0) {
+                if (!list.isEmpty()) {
                     for (int i = 0; i < list.size(); i++) {
                         HistoricTaskInstance historicTaskInstance = list.get(i);
-                        String multiInstance = workflowProcessDefinitionService.getMultiinstanceType(
-                            historicTaskInstance.getProcessDefinitionId(), historicTaskInstance.getTaskDefinitionKey());
+                        String multiInstance =
+                            customProcessDefinitionService.getNode(historicTaskInstance.getProcessDefinitionId(),
+                                historicTaskInstance.getTaskDefinitionKey()).getMultiInstance();
                         if (multiInstance.equals(SysVariables.PARALLEL)) {
                             if (StringUtils.isNotBlank(taskDefKey)) {
                                 if (!taskId.equals(historicTaskInstance.getId())) {
@@ -200,9 +201,9 @@ public class WorkflowTaskService {
                         if (StringUtils.isNotBlank(taskDefKey)) {
                             if (!taskDefKey.equals(historicTaskInstance.getTaskDefinitionKey())) {
                                 // 得到当前任务的前一个任务节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-                                String multiInstance = workflowProcessDefinitionService.getMultiinstanceType(
+                                String multiInstance = customProcessDefinitionService.getNode(
                                     historicTaskInstance.getProcessDefinitionId(),
-                                    historicTaskInstance.getTaskDefinitionKey());
+                                    historicTaskInstance.getTaskDefinitionKey()).getMultiInstance();
                                 // 前一个任务节点如果是并行，则要获取主办人的guid，如果主办人的guid不为空，则返回historicTaskInstance，如果不是并行，则直接返回historicTaskInstance
                                 if (multiInstance.equals(SysVariables.PARALLEL)) {
                                     Map<String, Object> localMap = historicTaskInstance.getTaskLocalVariables();

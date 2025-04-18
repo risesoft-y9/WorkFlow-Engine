@@ -60,7 +60,7 @@ public class TaskTimeConfRestController {
         @RequestParam String processDefinitionId) {
         List<TaskTimeConf> resList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         for (TargetModel targetModel : list) {
             if (StringUtils.isNotBlank(targetModel.getTaskDefKey())) {
                 TaskTimeConf conf = taskTimeConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,

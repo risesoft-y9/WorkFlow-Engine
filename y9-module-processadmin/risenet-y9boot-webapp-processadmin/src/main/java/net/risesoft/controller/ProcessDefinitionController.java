@@ -92,7 +92,7 @@ public class ProcessDefinitionController {
     public Y9Result<List<Map<String, Object>>> getTaskByProcDef(@RequestParam String processDefinitionId) {
         List<Map<String, Object>> list = new ArrayList<>();
         List<FlowElement> activitieList =
-            workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId);
+            workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId, List.of());
         for (FlowElement activity : activitieList) {
             Map<String, Object> tempMap = new HashMap<>(16);
             tempMap.put("taskDefKey", activity.getId());

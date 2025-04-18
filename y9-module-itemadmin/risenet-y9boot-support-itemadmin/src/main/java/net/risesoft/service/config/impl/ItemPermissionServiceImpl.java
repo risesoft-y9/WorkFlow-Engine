@@ -81,7 +81,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         List<ItemPermission> previousipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
         /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的角色，没有就保存
          */

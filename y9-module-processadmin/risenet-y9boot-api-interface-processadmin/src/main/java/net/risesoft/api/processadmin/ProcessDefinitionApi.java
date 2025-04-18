@@ -43,30 +43,16 @@ public interface ProcessDefinitionApi {
     Y9Result<TargetModel> getEndNode(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
 
     /**
-     * 获取某一任务所在节点的目标是结束节点的目标节点Key
-     *
-     * @param tenantId 租户Id
-     * @param taskId 任务id
-     * @return {@code Y9Result<String>} 通用请求返回对象 - data 目标节点Key
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getEndNodeKeyByTaskId")
-    Y9Result<String> getEndNodeKeyByTaskId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId);
-
-    /**
      * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @param isContainStartNode 是否包含开始节点
      * @return {@code List<FlowElementModel>>} 通用请求返回对象 - data 节点集合
      * @since 9.6.6
      */
-    @GetMapping(value = "/getFlowElement")
-    Y9Result<List<FlowElementModel>> getFlowElement(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("isContainStartNode") Boolean isContainStartNode);
+    @GetMapping(value = "/listUserTask")
+    Y9Result<List<FlowElementModel>> listUserTask(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 获取具体流程的某个节点类型
@@ -95,18 +81,16 @@ public interface ProcessDefinitionApi {
                                  @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
-     * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
+     * 根据流程定义Id获取节点信息
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
-     * @param isContainStartNode 是否包含开始节点
      * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
      * @since 9.6.6
      */
     @GetMapping(value = "/getNodes")
     Y9Result<List<TargetModel>> getNodes(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("isContainStartNode") Boolean isContainStartNode);
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据taskId获取某个节点除去end节点和默认路由节点的所有的输出线路的个数
@@ -184,32 +168,6 @@ public interface ProcessDefinitionApi {
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
-     * 根据流程定义Id和流程节点Key获取目标任务节点集合,去除名称相等的节点，并且加上结束节点
-     *
-     * @param tenantId 租户Id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey 任务key
-     * @return {@code Y9Result<List<TargetModel>> } 通用请求返回对象 - data 任务节点集合
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getTargetNodes1")
-    Y9Result<List<TargetModel>> getTargetNodes1(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
-
-    /**
-     * 根据流程定义Id和流程节点Key获取目标任务节点集合
-     *
-     * @param tenantId 租户Id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey 任务key
-     * @return {@code  Y9Result<List<GatewayModel>>} 通用请求返回对象 - data 任务节点集合
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getTargetNodes4ParallelGateway")
-    Y9Result<List<GatewayModel>> getTargetNodes4ParallelGateway(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
-
-    /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
      *
      * @param tenantId 租户Id
@@ -242,13 +200,12 @@ public interface ProcessDefinitionApi {
      *
      * @param tenantId 租户Id
      * @param taskId 任务id
-     * @param nodeType 节点类型
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 判断结果
      * @since 9.6.6
      */
-    @GetMapping(value = "/isContainNodeType")
-    Y9Result<Boolean> isContainNodeType(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId, @RequestParam("nodeType") String nodeType);
+    @GetMapping(value = "/isContainEndEvent")
+    Y9Result<Boolean> isContainEndEvent(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      * 判断流程定义的节点是否是SubProcess节点

@@ -211,7 +211,7 @@ public class ButtonUtil {
                  */
                 boolean isAssignee = StringUtils.isNotBlank(assignee);
                 Boolean isContainEndEvent =
-                    processDefinitionApi.isContainNodeType(tenantId, taskId, SysVariables.ENDEVENT).getData();
+                    processDefinitionApi.isContainEndEvent(tenantId, taskId).getData();
                 // 获取某个节点除去end节点的所有的输出线路的个数
                 int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
                 String processDefinitionId = task.getProcessDefinitionId();

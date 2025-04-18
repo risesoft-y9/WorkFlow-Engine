@@ -119,7 +119,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             }
         }
         List<Y9FormItemBind> previouseibList = y9FormItemBindRepository.findByItemIdAndProcDefId(itemId, previouspdId);
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
         /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
          */
@@ -257,14 +257,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         String taskDefKey) {
         List<Y9FormItemBind> eformTaskBinds = new ArrayList<>();
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             // 查找本任务的form,在任务上设置的表单有优先权。
-            List<TargetModel> list;
-            // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
-            // if (StringUtils.isBlank(taskDefKey)) {
-            // list = processDefinitionApi.getNodes(tenantId, procDefId, false).getData();
-            // taskDefKey = list.get(list.size() - 1).getTaskDefKey();
-            // }
             eformTaskBinds =
                 y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
             if (eformTaskBinds.isEmpty()) {
@@ -288,7 +281,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             List<TargetModel> list;
             // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
             if (StringUtils.isBlank(taskDefKey)) {
-                list = processDefinitionApi.getNodes(tenantId, procDefId, false).getData();
+                list = processDefinitionApi.getNodes(tenantId, procDefId).getData();
                 taskDefKey = list.get(list.size() - 1).getTaskDefKey();
             }
             eformTaskBinds =

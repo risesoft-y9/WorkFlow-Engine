@@ -89,7 +89,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                 previouspdId = previouspd.getId();
             }
         }
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             List<ItemOpinionFrameBind> bindList =
