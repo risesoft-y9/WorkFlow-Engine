@@ -1,19 +1,12 @@
 package net.risesoft.service;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.EndEvent;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.Gateway;
@@ -21,25 +14,17 @@ import org.flowable.bpmn.model.SequenceFlow;
 import org.flowable.bpmn.model.StartEvent;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.RepositoryService;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.impl.RepositoryServiceImpl;
 import org.flowable.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
 import org.flowable.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.util.SysVariables;
-import net.risesoft.util.WorkflowUtils;
 
 /**
  * @author qinman
@@ -54,105 +39,7 @@ public class WorkflowProcessDefinitionService {
 
     private final RepositoryService repositoryService;
 
-    private final WorkflowHistoryProcessInstanceService workflowHistoryProcessInstanceService;
-
-    /**
-     * 部署单个流程定义
-     *
-     * @param processKey 流程定义Key
-     * @throws IOException 找不到zip文件时
-     */
-    private void deploySingleProcess(String processKey) throws IOException {
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        String classpathResourceUrl = "classpath:/deployments/" + processKey + ".bar";
-        LOGGER.debug("read workflow from: {}", classpathResourceUrl);
-        Resource resource = resourceLoader.getResource(classpathResourceUrl);
-        InputStream inputStream = resource.getInputStream();
-        LOGGER.debug("finded workflow module: {}, deploy it!", classpathResourceUrl);
-        ZipInputStream zis = new ZipInputStream(inputStream);
-        Deployment deployment = repositoryService.createDeployment().addZipInputStream(zis).deploy();
-        List<ProcessDefinition> list =
-            repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
-        for (ProcessDefinition processDefinition : list) {
-            WorkflowUtils.exportDiagramToFile(repositoryService, processDefinition);
-        }
-    }
-
-    /**
-     * 根据processDefinitionId(例如:luohufawen:10:2494)获取流程定义
-     *
-     * @param processDefinitionId 流程定义Id(例如:luohufawen:10:2494)
-     * @return ProcessDefinitionEntity
-     */
-    public ProcessDefinitionEntity findProcessDefinition(String processDefinitionId) {
-        ProcessDefinitionEntity processDefinition = null;
-        if (StringUtils.isNotBlank(processDefinitionId)) {
-            try {
-                // 取得流程定义
-                processDefinition = (ProcessDefinitionEntity)((RepositoryServiceImpl)repositoryService)
-                    .getDeployedProcessDefinition(processDefinitionId);
-                if (processDefinition == null) {
-                    throw new Exception("流程定义未找到!");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return processDefinition;
-    }
-
-    /**
-     * 根据流程实例ID查询流程定义对象{@link ProcessDefinition}
-     *
-     * @param processInstanceId 流程实例ID
-     * @return 流程定义对象{@link ProcessDefinition}
-     */
-    public ProcessDefinitionEntity findProcessDefinitionByPid(String processInstanceId) {
-        ProcessDefinitionEntity processDefinition = null;
-        HistoricProcessInstance historicProcessInstance =
-            workflowHistoryProcessInstanceService.findOne(processInstanceId);
-        if (historicProcessInstance != null) {
-            String processDefinitionId = historicProcessInstance.getProcessDefinitionId();
-            if (StringUtils.isNotBlank(processDefinitionId)) {
-                processDefinition = findProcessDefinition(processDefinitionId);
-            }
-        }
-        return processDefinition;
-    }
-
-    /**
-     * 获取ActivityImpl的list
-     *
-     * @param bpmnModel
-     * @return
-     */
-    public List<FlowElement> getActivityImpls(BpmnModel bpmnModel) {
-        List<FlowElement> list = new ArrayList<>();
-        try {
-            org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-            list = (List<FlowElement>)process.getFlowElements();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    /**
-     * 获取ActivityImpl的list
-     *
-     * @param processDefinitionId 流程定义Id
-     * @return
-     */
-    public List<FlowElement> getActivityImpls(String processDefinitionId) {
-        List<FlowElement> list = new ArrayList<>();
-        try {
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-            list = getActivityImpls(bpmnModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
+    private final CustomProcessDefinitionService customProcessDefinitionService;
 
     /**
      *
@@ -198,9 +85,7 @@ public class WorkflowProcessDefinitionService {
         List<String> propertiesNameList) {
         Map<String, String> result = new HashMap<>(16);
         try {
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-            org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-            List<FlowElement> list = (List<FlowElement>)process.getFlowElements();
+            List<FlowElement> list = customProcessDefinitionService.getFlowElements(processDefinitionId);
             return getActivityProperties(list, activityId, propertiesNameList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -237,28 +122,11 @@ public class WorkflowProcessDefinitionService {
      */
     public List<Map<String, Object>> getBpmList(String processDefinitionId, Boolean isFilter) {
         List<Map<String, Object>> list = new ArrayList<>();
-        List<FlowElement> activitieList = new ArrayList<>();
+        List<FlowElement> feList = customProcessDefinitionService.getFlowElements(processDefinitionId);
         if (isFilter != null && isFilter) {
-            List<FlowElement> list1 = new ArrayList<>();
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-            org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-            list1 = (List<FlowElement>)process.getFlowElements();
-            if (list1.size() > 0) {
-                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-                activitieList.addAll(list1);
-            }
-            Iterator<FlowElement> sListIterator = activitieList.iterator();
-            while (sListIterator.hasNext()) {
-                FlowElement e = sListIterator.next();
-                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
-                    || e instanceof SequenceFlow) {
-                    sListIterator.remove();
-                }
-            }
-        } else {
-            activitieList = getFilteredActivityImpls(processDefinitionId);
+            feList.removeIf(fe -> fe instanceof Gateway || fe instanceof StartEvent || fe instanceof EndEvent);
         }
-        for (FlowElement activity : activitieList) {
+        for (FlowElement activity : feList) {
             Map<String, Object> tempMap = new LinkedHashMap<>();
             tempMap.put("taskDefKey", activity.getId());
             tempMap.put("taskDefName", activity.getName());
@@ -279,72 +147,19 @@ public class WorkflowProcessDefinitionService {
      */
     public List<Map<String, Object>> getBpmListContainStart(String processDefinitionId) {
         List<Map<String, Object>> list = new ArrayList<>();
-        List<FlowElement> activitieList = new ArrayList<>();
-        List<FlowElement> list1 = new ArrayList<>();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        list1 = (List<FlowElement>)process.getFlowElements();
-        if (list1.size() > 0) {
-            // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-            activitieList.addAll(list1);
-        }
-        Iterator<FlowElement> sListIterator = activitieList.iterator();
-        while (sListIterator.hasNext()) {
-            FlowElement e = sListIterator.next();
-            if (e instanceof Gateway || e instanceof EndEvent || e instanceof SequenceFlow) {
-                sListIterator.remove();
-            }
-        }
-        for (FlowElement activity : activitieList) {
+        List<FlowElement> feList = customProcessDefinitionService.getFlowElements(processDefinitionId);
+        feList.removeIf(activity -> activity instanceof Gateway || activity instanceof EndEvent
+            || activity instanceof SequenceFlow);
+        feList.forEach(activity -> {
             Map<String, Object> tempMap = new LinkedHashMap<>();
             tempMap.put("taskDefKey", activity.getId());
             tempMap.put("taskDefName", activity.getName());
             list.add(tempMap);
-        }
+        });
         Map<String, Object> tempMap = new LinkedHashMap<>();
         tempMap.put("taskDefKey", "");
         tempMap.put("taskDefName", "流程");
         list.add(0, tempMap);
-        return list;
-    }
-
-    /**
-     * 获取过滤过的ActivityImpl的list，过滤掉GateWay类型节点
-     *
-     * @param bpmnModel
-     * @return
-     */
-    public List<FlowElement> getFilteredActivityImpls(BpmnModel bpmnModel) {
-        List<FlowElement> list = getActivityImpls(bpmnModel);
-        List<FlowElement> resultList = new ArrayList<>();
-        if (!list.isEmpty()) {
-            // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-            resultList.addAll(list);
-        }
-        Iterator<FlowElement> sListIterator = resultList.iterator();
-        while (sListIterator.hasNext()) {
-            FlowElement e = sListIterator.next();
-            if (e instanceof Gateway) {
-                sListIterator.remove();
-            }
-        }
-        return resultList;
-    }
-
-    /**
-     * 获取过滤过的ActivityImpl的list，过滤掉GateWay类型节点
-     *
-     * @param processDefinitionId
-     * @return
-     */
-    public List<FlowElement> getFilteredActivityImpls(String processDefinitionId) {
-        List<FlowElement> list = new ArrayList<>();
-        try {
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-            list = getFilteredActivityImpls(bpmnModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return list;
     }
 
@@ -355,97 +170,14 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public List<FlowElement> getFilteredActivityImpls(String processDefinitionId, List<String> filterList) {
-        List<FlowElement> resultList = new ArrayList<>();
         List<FlowElement> list = new ArrayList<>();
         try {
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-            org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-            list = (List<FlowElement>)process.getFlowElements();
-            if (!list.isEmpty()) {
-                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-                resultList.addAll(list);
-            }
-            Iterator<FlowElement> sListIterator = resultList.iterator();
-            while (sListIterator.hasNext()) {
-                FlowElement e = sListIterator.next();
-                if (e instanceof Gateway || filterList.contains(e.getName())) {
-                    sListIterator.remove();
-                }
-            }
+            list = customProcessDefinitionService.getFlowElements(processDefinitionId);
+            list.removeIf(activity -> activity instanceof Gateway || filterList.contains(activity.getName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return resultList;
-    }
-
-    /**
-     * 查询最新的流程定义
-     *
-     * @param processDefinitionKey 流程定义Key，例如luohubanwen
-     * @return
-     */
-    public ProcessDefinition getLatestProcessDefinition(String processDefinitionKey) {
-        if (StringUtils.isNotBlank(processDefinitionKey)) {
-            return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
-                .latestVersion().singleResult();
-        }
-        return null;
-    }
-
-    /**
-     * 查询最新的流程定义对应的Id
-     *
-     * @param processDefinitionKey 流程定义Key，例如luohubanwen
-     * @return
-     */
-    public String getLatestProcessDefinitionId(String processDefinitionKey) {
-        String latestProcessDefinitionId = "";
-        if (StringUtils.isNotBlank(processDefinitionKey)) {
-            ProcessDefinition pd = getLatestProcessDefinition(processDefinitionKey);
-            if (pd != null) {
-                latestProcessDefinitionId = pd.getId();
-            }
-        }
-        return latestProcessDefinitionId;
-    }
-
-    /**
-     * 判断当前节点是并行还是串行,得到当前节点的multiInstance
-     *
-     * @param processDefinitionId 流程定义ID
-     * @param activityId 任务节点Id（例如 outerflow）
-     * @throws Exception
-     * @return PARALLEL表示并行，SEQUENTIAL表示串行
-     */
-    public String getMultiinstanceType(String processDefinitionId, String activityId) throws Exception {
-        String multiInstance = getActivityProperty(processDefinitionId, activityId, SysVariables.MULTIINSTANCE);
-        if (StringUtils.isNotBlank(multiInstance)) {
-            if (multiInstance.equals(SysVariables.PARALLEL)) {
-                return SysVariables.PARALLEL;
-            }
-            if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
-                return SysVariables.SEQUENTIAL;
-            }
-        }
-        return "";
-    }
-
-    /**
-     * 根据processDefinitionId获取节点类型nodeType对应的节点名称
-     *
-     * @param processDefinitionId 流程定义Id
-     * @param nodeType 节点类型，例如userTask、startEvent、endEvent等
-     * @return
-     */
-    public List<String> getNodeName(String processDefinitionId, String nodeType) {
-        List<String> result = new ArrayList<>();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        Collection<FlowElement> flowElements = process.getFlowElements();
-        for (FlowElement flowElement : flowElements) {
-            flowElement.getId();
-        }
-        return result;
+        return list;
     }
 
     /**
@@ -495,48 +227,6 @@ public class WorkflowProcessDefinitionService {
     }
 
     /**
-     * 根据流程定义processDefinitionKey获取当前流程的启动节点Id
-     *
-     * @param processDefinitionKey
-     * @return
-     */
-    public String getStartActivityImplByProcessDefinitionKey(String processDefinitionKey) {
-        String processDefinitionId = getLatestProcessDefinitionId(processDefinitionKey);
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        Collection<FlowElement> flowElements = process.getFlowElements();
-        for (FlowElement flowElement : flowElements) {
-            if (flowElement instanceof StartEvent) {
-                return flowElement.getId();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取开始节点的taskDefinitionKey
-     *
-     * @param processDefinitionId 流程定义Id，例如luohubanwen:1:8
-     * @return
-     */
-    public String getStartTaskDefinitionKey(String processDefinitionId) {
-        String result = "";
-        List<FlowElement> resultList = new ArrayList<>();
-        List<FlowElement> list = getActivityImpls(processDefinitionId);
-        if (!list.isEmpty()) {
-            // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
-            resultList.addAll(list);
-        }
-        for (FlowElement e : resultList) {
-            if (e instanceof StartEvent) {
-                result = e.getId();
-                break;
-            }
-        }
-        return result;
-    }
-
-    /**
      * Description: 获取流程定义Id
      *
      * @return
@@ -550,19 +240,5 @@ public class WorkflowProcessDefinitionService {
             procDefMap.put(pd.getId(), pd.getName());
         }
         return procDefMap;
-    }
-
-    /**
-     * 重新部署流程定义
-     *
-     * @param processKeys 流程定义KEY
-     * @throws Exception
-     */
-    public void redeploy(String... processKeys) throws Exception {
-        if (ArrayUtils.isNotEmpty(processKeys)) {
-            for (String processKey : processKeys) {
-                deploySingleProcess(processKey);
-            }
-        }
     }
 }

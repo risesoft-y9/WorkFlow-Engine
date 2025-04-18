@@ -84,7 +84,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             String nodeType =
-                customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getMultiInstance();
             HistoricProcessInstance historicProcessInstance =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
@@ -121,7 +122,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 .parameter("PROC_INST_ID_", processInstanceId).list();
             if (!list1.isEmpty()) {
                 // 成功备份数据才办结
-                String endNodeKey = customProcessDefinitionService.getEndNodeKeyByTaskId(taskId);
+                String endNodeKey = customProcessDefinitionService.getEndNode(taskId).getData().getTaskDefKey();
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.ROUTETOTASKID, endNodeKey);
                 this.completeWithVariables(taskId, vars);
@@ -164,7 +165,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             processInstanceId = task.getProcessInstanceId();
             String nodeType =
-                customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getMultiInstance();
             if (nodeType.equals(SysVariables.PARALLEL)) {
                 List<Task> taskList = this.listByProcessInstanceId(task.getProcessInstanceId());
                 for (Task tTemp : taskList) {
@@ -176,7 +178,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 }
             }
             Map<String, Object> variables = new HashMap<>();
-            String endNodeKey = customProcessDefinitionService.getEndNodeKeyByTaskId(taskId);
+            String endNodeKey = customProcessDefinitionService.getEndNode(taskId).getData().getTaskDefKey();
             variables.put(SysVariables.ROUTETOTASKID, endNodeKey);
             if (userList.size() == 1) {
                 variables.put(SysVariables.USER, userList.stream().findFirst().get());
@@ -272,8 +274,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         List<HistoricTaskInstance> list = new ArrayList<>();
         try {
             Task currentTask = taskService.createTaskQuery().taskId(taskId).singleResult();
-            String multinstance = customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(),
-                currentTask.getTaskDefinitionKey());
+            String multinstance = customProcessDefinitionService
+                .getNode(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey()).getMultiInstance();
             if (multinstance.equals(SysVariables.PARALLEL)) {
                 List<HistoricTaskInstance> hisTaskList = historyService.createHistoricTaskInstanceQuery()
                     .processInstanceId(currentTask.getProcessInstanceId()).taskCreatedOn(currentTask.getCreateTime())

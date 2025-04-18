@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.WorkflowProcessDefinitionService;
+import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.util.SysVariables;
 
 /**
@@ -34,7 +34,7 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
 
     private final HistoryService historyService;
 
-    private final WorkflowProcessDefinitionService workflowProcessDefinitionService;
+    private final CustomProcessDefinitionService customProcessDefinitionService;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
@@ -73,7 +73,7 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
             currentExecutionId = currentHti.getExecutionId();
             processDefineId = currentHti.getProcessDefinitionId();
             currentMultiInstance =
-                workflowProcessDefinitionService.getMultiinstanceType(processDefineId, currentTaskDefKey);
+                customProcessDefinitionService.getNode(processDefineId, currentTaskDefKey).getMultiInstance();
             long currentTime = currentHti.getCreateTime().getTime(), tempTime;
             if (currentMultiInstance.equals(SysVariables.PARALLEL)) {
                 for (HistoricTaskInstance htiTemp : list) {
@@ -170,7 +170,7 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
             currentExecutionId = current.getExecutionId();
             processDefineId = current.getProcessDefinitionId();
             currentMultiInstance =
-                workflowProcessDefinitionService.getMultiinstanceType(processDefineId, currentTaskDefKey);
+                customProcessDefinitionService.getNode(processDefineId, currentTaskDefKey).getMultiInstance();
             /*
              * 查找当前任务的前一个节点的任务
              */
@@ -205,7 +205,8 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
             assert historicTaskInstance != null;
             String taskDefKey = historicTaskInstance.getTaskDefinitionKey();
             String executionId = historicTaskInstance.getExecutionId();
-            String multiInstance = workflowProcessDefinitionService.getMultiinstanceType(processDefineId, taskDefKey);
+            String multiInstance =
+                customProcessDefinitionService.getNode(processDefineId, taskDefKey).getMultiInstance();
             long time = historicTaskInstance.getCreateTime().getTime();
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 for (HistoricTaskInstance htiTemp : list) {

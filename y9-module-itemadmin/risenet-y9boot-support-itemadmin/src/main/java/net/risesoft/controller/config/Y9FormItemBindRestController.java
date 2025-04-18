@@ -190,7 +190,7 @@ public class Y9FormItemBindRestController {
         List<Y9FormItemBindVO> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> targetModelList =
-            processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
+            processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         Y9FormItemBindVO map;
         List<Y9FormItemBind> pcBindList;
         List<Y9FormItemMobileBind> mobileBindList;

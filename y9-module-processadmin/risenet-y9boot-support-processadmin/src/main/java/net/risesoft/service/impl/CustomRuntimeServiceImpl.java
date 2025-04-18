@@ -255,7 +255,8 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 executionSet.add(execution.getId());
             }
             String nodeType =
-                customProcessDefinitionService.getNodeType(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey());
+                customProcessDefinitionService.getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
+                    .getMultiInstance();
 
             /*
              * 复制年度历史数据到正在运行历史表

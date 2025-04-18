@@ -1303,7 +1303,7 @@ public class DocumentServiceImpl implements DocumentService {
             String taskDefNameJson;
             if (k == 15 && isButtonShow[15]) {
                 List<TargetModel> taskNodes =
-                    processDefinitionApi.getNodes(tenantId, processDefinitionId, false).getData();
+                    processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
                 for (TargetModel node : taskNodes) {
                     Map<String, Object> map3 = new HashMap<>(16);
                     // 流程不显示在重定向按钮下面

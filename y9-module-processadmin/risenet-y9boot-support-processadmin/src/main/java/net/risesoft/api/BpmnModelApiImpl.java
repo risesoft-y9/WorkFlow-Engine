@@ -58,6 +58,7 @@ import net.risesoft.service.CustomHistoricActivityService;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomHistoricVariableService;
+import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
@@ -98,6 +99,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     private final ProcessParamApi processParamApi;
 
     private final ProcessTrackApi processTrackApi;
+
+    private final CustomProcessDefinitionService customProcessDefinitionService;
 
     /**
      * 删除流程图模型
@@ -209,8 +212,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         List<LinkNodeModel> linkDataArray = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
         Map<String, GraphicInfo> infoMap = bpmnModel.getLocationMap();
-        org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
+        List<FlowElement> flowElements = customProcessDefinitionService.getFlowElements(pi.getProcessDefinitionId());
         for (FlowElement flowElement : flowElements) {
             if (flowElement instanceof StartEvent) {
                 StartEvent startEvent = (StartEvent)flowElement;

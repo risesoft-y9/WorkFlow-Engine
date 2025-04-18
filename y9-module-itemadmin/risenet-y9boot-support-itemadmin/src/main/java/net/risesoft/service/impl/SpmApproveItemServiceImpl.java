@@ -140,7 +140,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
                 String latestpdId = latestpd.getId();
                 @SuppressWarnings("unused")
-                List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId, false).getData();
+                List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
                 // 复制表单绑定信息
                 y9FormItemBindService.copyBindInfo(id, newItemId, latestpdId);
 
