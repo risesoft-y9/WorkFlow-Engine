@@ -5,8 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import net.risesoft.utils.ConfigUtils;
  */
 @Component
 @Slf4j
+@DependsOn("y9Context")
 public class ConfigRefreshComponent {
 
     @PostConstruct
@@ -42,7 +42,6 @@ public class ConfigRefreshComponent {
                 String ftpUsername;
                 String ftpPassword;
                 String ftpControlEncoding;
-                String configFilePath = ConfigUtils.getCustomizedConfigPath();
                 String baseUrl;
                 String trustHost;
                 String notTrustHost;
@@ -82,12 +81,9 @@ public class ConfigRefreshComponent {
                 int pdfTimeout200;
                 int pdfThread;
                 while (true) {
-                    YamlPropertiesFactoryBean factoryBean = new YamlPropertiesFactoryBean();
-
-                    // 加载yml配置文件
-                    factoryBean.setResources(new ClassPathResource("application.yml"));
-                    properties = factoryBean.getObject();
+                    properties = ConfigUtils.getInitProperties();
                     ConfigUtils.restorePropertiesFromEnvFormat(properties);
+
                     cacheEnabled = Boolean
                         .parseBoolean(properties.getProperty("cache.enabled", ConfigConstants.DEFAULT_CACHE_ENABLED));
                     text = properties.getProperty("simText", ConfigConstants.DEFAULT_TXT_TYPE);
@@ -212,7 +208,7 @@ public class ConfigRefreshComponent {
                     ConfigConstants.setPdfTimeout200Value(pdfTimeout200);
                     ConfigConstants.setPdfThreadValue(pdfThread);
                     setWatermarkConfig(properties);
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(1000);
                 }
             } catch (InterruptedException e) {
                 LOGGER.error("读取配置文件异常", e);

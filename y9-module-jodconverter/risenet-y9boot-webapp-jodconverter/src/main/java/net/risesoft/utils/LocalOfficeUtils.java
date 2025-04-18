@@ -7,8 +7,6 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import org.jodconverter.core.util.OSUtils;
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
-import org.springframework.core.io.ClassPathResource;
 
 public class LocalOfficeUtils {
 
@@ -22,11 +20,7 @@ public class LocalOfficeUtils {
     public static File getDefaultOfficeHome() {
         Properties properties = new Properties();
         try {
-            YamlPropertiesFactoryBean factoryBean = new YamlPropertiesFactoryBean();
-
-            // 加载yml配置文件
-            factoryBean.setResources(new ClassPathResource("application.yml"));
-            properties = factoryBean.getObject();
+            properties = ConfigUtils.getInitProperties();
             ConfigUtils.restorePropertiesFromEnvFormat(properties);
         } catch (Exception ignored) {
         }

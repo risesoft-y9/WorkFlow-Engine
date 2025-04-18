@@ -122,7 +122,7 @@ office:
         web: web
     preview:
         #office类型文档(word ppt)样式，默认为图片(image)，可配置为pdf（预览时也有按钮切换）
-        type: image
+        type: pdf
         switch:
             #是否关闭office预览切换开关，默认为false，可配置为true关闭
             disabled: false
