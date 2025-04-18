@@ -108,11 +108,13 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
                     signDeptDetailRepository.findByProcessSerialNumberAndDeptIdAndStatusOrderByCreateTimeDesc(
                         signDeptDetail.getProcessSerialNumber(), signDeptDetail.getDeptId(),
                         SignDeptDetailStatusEnum.DONE.getValue());
-                list.forEach(detail -> {
-                    detail.setNewed(false);
-                    signDeptDetailRepository.save(detail);
-                });
-                oldDetail.setNewed(true);
+                if (!list.isEmpty()) {
+                    oldDetail.setNewed(true);
+                    list.forEach(detail -> {
+                        detail.setNewed(false);
+                        signDeptDetailRepository.save(detail);
+                    });
+                }
             }
             signDeptDetailRepository.save(oldDetail);
             return;
