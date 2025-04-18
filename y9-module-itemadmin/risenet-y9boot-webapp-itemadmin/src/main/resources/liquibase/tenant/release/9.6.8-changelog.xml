@@ -832,4 +832,19 @@
             <column name="TABINDEX" type="INT" remarks="部门排序"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-44" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_TYPESETTING_INFO" columnName="ifHaveYj"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_TYPESETTING_INFO">
+            <column name="ifHaveYj" remarks="拟稿人校对意见类型" type="VARCHAR(100)"/>
+            <column name="hgrOpinion" type="VARCHAR(100)" remarks="校对审核意见类型"/>
+            <column name="auditUserName" type="VARCHAR(50)" remarks="校对审核人"/>
+            <column name="auditTime" type="VARCHAR(50)" remarks="校对审核时间"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
