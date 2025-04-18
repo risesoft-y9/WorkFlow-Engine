@@ -250,8 +250,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         }
         Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
         String activitiId = execution.getActivityId();
-        for (int i = 0; i < res_list.size(); i++) {
-            FlowElement flowElement = res_list.get(i);
+        for (FlowElement flowElement : flowElements) {
             if (flowElement instanceof SubProcess) {
                 Collection<FlowElement> flowElements2 = ((SubProcess)flowElement).getFlowElements();
                 for (FlowElement subFlowElement : flowElements2) {
@@ -730,8 +729,22 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
         boolean isGateway = false;
-        for (int i = 0; i < flowElements.size(); i++) {
-            FlowElement flowElement = flowElements.get(i);
+        List<FlowElement> activitieList = new ArrayList<>();
+        if (!flowElements.isEmpty()) {
+            activitieList.addAll(flowElements);
+        }
+        for (FlowElement flowElement : flowElements) {
+            if (flowElement instanceof SubProcess) {
+                Collection<FlowElement> flowElements2 = ((SubProcess)flowElement).getFlowElements();
+                for (FlowElement subFlowElement : flowElements2) {
+                    if (!activitieList.contains(subFlowElement)) {
+                        activitieList.add(subFlowElement);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < activitieList.size(); i++) {
+            FlowElement flowElement = activitieList.get(i);
             // 如果是任务节点
             if (taskDefKey.equals(flowElement.getId())) {
                 List<SequenceFlow> list = new ArrayList<>();

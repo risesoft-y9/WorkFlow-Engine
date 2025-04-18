@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.service.fgw.HTKYService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,6 +39,7 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
@@ -50,6 +49,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -66,12 +66,14 @@ import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ButtonOperationService;
+import net.risesoft.service.fgw.HTKYService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -129,6 +131,8 @@ public class Document4GfgRestController {
     private final SecretLevelRecordApi secretLevelRecordApi;
 
     private final PositionApi positionApi;
+
+    private final PersonApi personApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
@@ -875,8 +879,20 @@ public class Document4GfgRestController {
     @PostMapping(value = "/getTmhData")
     public Y9Result<String> getTmhData(@RequestParam @NotBlank String processSerialNumber) {
         // 调用第三方接口
-        String  tmh = htkyService.getTMH(processSerialNumber);
+        String tmh = htkyService.getTMH(processSerialNumber);
         return Y9Result.success(tmh);
+    }
+
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return Y9Result<Person>
+     */
+    @GetMapping(value = "/getUserInfo")
+    public Y9Result<Person> getUserInfo() {
+        Person person =
+            personApi.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+        return Y9Result.success(person);
     }
 
     /**
@@ -937,6 +953,27 @@ public class Document4GfgRestController {
             LOGGER.error("恢复待办失败", e);
         }
         return Y9Result.failure("恢复失败");
+    }
+
+    /**
+     * 插入推送双杨数据
+     *
+     * @param processSerialNumbers
+     * @param eventtype
+     * @return
+     */
+    @PostMapping(value = "/savePushData")
+    public Y9Result<Object> savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
+        for (String processSerialNumber : processSerialNumbers) {
+            ProcessParamModel process = processParamApi
+                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            String sql =
+                "insert into PUSHDATA (ID,EVENTTYPE,CREATEDATE,PROCESSSERIALNUMBER,PROCESSINSTANCEID,TSZT) values (?,?,?,?,?,?)";
+            Object[] args = {Y9IdGenerator.genId(), eventtype, new Date(), processSerialNumber,
+                process.getProcessInstanceId(), "0"};
+            jdbcTemplate.update(sql, args);
+        }
+        return Y9Result.success();
     }
 
     /**
@@ -1096,22 +1133,5 @@ public class Document4GfgRestController {
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
-    }
-
-    /**
-     * 插入推送双杨数据
-     * @param processSerialNumbers
-     * @param eventtype
-     * @return
-     */
-    @PostMapping(value = "/savePushData")
-    public Y9Result<Object> savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
-        for (String processSerialNumber : processSerialNumbers) {
-            ProcessParamModel process = processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),processSerialNumber).getData();
-            String sql = "insert into PUSHDATA (ID,EVENTTYPE,CREATEDATE,PROCESSSERIALNUMBER,PROCESSINSTANCEID,TSZT) values (?,?,?,?,?,?)";
-            Object[] args = {Y9IdGenerator.genId(),eventtype,new Date(),processSerialNumber,process.getProcessInstanceId(),"0"};
-            jdbcTemplate.update(sql, args);
-        }
-        return Y9Result.success();
     }
 }
