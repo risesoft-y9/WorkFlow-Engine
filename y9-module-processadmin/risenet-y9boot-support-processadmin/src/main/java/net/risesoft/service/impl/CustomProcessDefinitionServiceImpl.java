@@ -287,7 +287,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         return getSequenceFlow(taskId).stream().anyMatch(tr -> tr.getTargetFlowElement() instanceof EndEvent);
     }
 
-    // ok
     @Override
     public Boolean isSubProcess(String processDefinitionId, String taskDefKey) {
         return this.getFlowElements(processDefinitionId).stream()
