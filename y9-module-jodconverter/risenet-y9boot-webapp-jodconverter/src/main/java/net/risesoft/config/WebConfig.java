@@ -3,6 +3,7 @@ package net.risesoft.config;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +18,17 @@ import net.risesoft.web.filter.ChinesePathFilter;
 import net.risesoft.web.filter.TrustDirFilter;
 import net.risesoft.web.filter.TrustHostFilter;
 import net.risesoft.web.filter.UrlCheckFilter;
+import net.risesoft.y9.Y9Context;
 
 @Configuration
 @Slf4j
 public class WebConfig implements WebMvcConfigurer {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Y9Context y9Context() {
+        return new Y9Context();
+    }
 
     /**
      * 访问外部文件配置
@@ -105,4 +113,5 @@ public class WebConfig implements WebMvcConfigurer {
         registrationBean.setUrlPatterns(filterUri);
         return registrationBean;
     }
+
 }

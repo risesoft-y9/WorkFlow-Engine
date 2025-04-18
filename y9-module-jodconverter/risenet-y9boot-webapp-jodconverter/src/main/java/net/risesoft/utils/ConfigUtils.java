@@ -6,30 +6,21 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.y9.Y9Context;
+
 @Slf4j
 @Component
+@DependsOn("y9Context")
 public class ConfigUtils {
     private static final String MAIN_DIRECTORY_NAME = "jodconverter";
-
-    static {
-        ApplicationContext context = new AnnotationConfigApplicationContext(ConfigUtils.class);
-    }
-
-    private static ResourceLoader resourceLoader;
-
-    @Autowired
-    public ConfigUtils(ResourceLoader resourceLoader) {
-        ConfigUtils.resourceLoader = resourceLoader;
-    }
 
     public static String getHomePath() {
         String userDir = System.getenv("KKFILEVIEW_BIN_FOLDER");
@@ -86,7 +77,9 @@ public class ConfigUtils {
     }
 
     public static String getCustomizedConfigPath() {
-        Resource resource = resourceLoader.getResource("classpath:");
+        LOGGER.info("Y9Context.getAc()->{}", Y9Context.getAc());
+        Resource resource = Y9Context.getAc().getResource("classpath:");
+
         String absolutePath = null;
         try {
             absolutePath = resource.getFile().getAbsoluteFile().getAbsolutePath();
@@ -96,8 +89,6 @@ public class ConfigUtils {
 
         String separator = java.io.File.separator;
         LOGGER.info("配置文件路径:::{}{}{}", absolutePath, separator, "application.yml");
-        System.out.println("配置文件路径" + ":::" + absolutePath + separator + "application.yml");
-
         return absolutePath + separator + "application.yml";
     }
 
@@ -123,5 +114,33 @@ public class ConfigUtils {
                 properties.setProperty(key, value);
             }
         }
+    }
+
+    public static String[] getActiveProfiles() {
+        return Y9Context.getEnvironment().getActiveProfiles();
+    }
+
+    public static Properties getInitProperties() {
+        Properties properties = new Properties();
+        String[] activeProfiles = Y9Context.getEnvironment().getActiveProfiles();
+
+        YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
+
+        // 加载yml配置文件
+        yamlPropertiesFactoryBean.setResources(new ClassPathResource("application.yml"));
+        // 2:将加载的配置文件交给 YamlPropertiesFactoryBean
+
+        if (activeProfiles != null && activeProfiles.length > 0) {
+            ClassPathResource[] resources = new ClassPathResource[activeProfiles.length];
+            for (int i = 0; i < activeProfiles.length; i++) {
+                resources[i] = new ClassPathResource("application-" + activeProfiles[i] + ".yml");
+            }
+            yamlPropertiesFactoryBean.setResources(resources);
+        }
+
+        properties = yamlPropertiesFactoryBean.getObject();
+
+        LOGGER.info("base.url->{},office.home-> {}", properties.get("base.url"), properties.get("office.home"));
+        return properties;
     }
 }
