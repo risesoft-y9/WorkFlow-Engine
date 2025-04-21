@@ -24,7 +24,7 @@ public interface DynamicRoleMemberService {
     /**
      * Description:
      *
-     * @param dynamicRoleId
+     * @param dynamicRole
      * @param processInstanceId
      * @return
      */
