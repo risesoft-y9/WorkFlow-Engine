@@ -93,6 +93,18 @@ public interface ProcessDefinitionApi {
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
+     * 根据流程定义Id获取节点信息
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getNodesOnlyMain")
+    Y9Result<List<TargetModel>> getNodesOnlyMain(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
+
+    /**
      * 根据taskId获取某个节点除去end节点和默认路由节点的所有的输出线路的个数
      *
      * @param tenantId 租户Id

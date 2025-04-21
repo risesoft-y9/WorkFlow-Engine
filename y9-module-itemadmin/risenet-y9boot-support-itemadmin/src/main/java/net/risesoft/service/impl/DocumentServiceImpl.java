@@ -1419,7 +1419,12 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDetailModel menuControl4Doing(String itemId, String taskId, DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
-        List<ItemButtonModel> buttonList = buttonUtil.showButton4Doing(itemId, taskId);
+        List<ItemButtonModel> buttonList = new ArrayList<>();
+        if (model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())) {
+            buttonList = buttonUtil.showButton4Doing(itemId, taskId);
+        } else if (model.getItembox().equals(ItemBoxTypeEnum.MONITORDOING.getValue())) {
+            buttonList.add(ItemButton.chongDingWei);
+        }
         model.setButtonList(buttonList);
         return model;
     }

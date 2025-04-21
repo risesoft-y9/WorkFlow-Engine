@@ -363,6 +363,15 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public Y9Result<List<TargetModel>> listNodesByProcessDefinitionIdOnlyMain(String processDefinitionId) {
+        List<TargetModel> list = new ArrayList<>();
+        List<FlowElement> feList = this.getFlowElements(processDefinitionId);
+        feList.stream().filter(flowElement -> flowElement instanceof UserTask)
+            .forEach(flowElement -> list.add(createTargetModel(flowElement, false)));
+        return Y9Result.success(list);
+    }
+
+    @Override
     public Y9Result<List<GatewayModel>> listParallelGateway(String processDefinitionId, String taskDefKey) {
         List<GatewayModel> targetNodes = new ArrayList<>();
         List<FlowElement> feList = this.getFlowElements(processDefinitionId);

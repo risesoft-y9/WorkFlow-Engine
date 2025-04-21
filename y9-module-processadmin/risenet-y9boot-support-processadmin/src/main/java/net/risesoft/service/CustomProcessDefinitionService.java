@@ -133,7 +133,7 @@ public interface CustomProcessDefinitionService {
     Y9Result<List<TargetModel>> listContainEndEvent4UserTask(String processDefinitionId);
 
     /**
-     * 根据流程定义Id获取节点信息
+     * 根据流程定义Id获取节点信息(包含SubProcess及其里面的用户任务)
      *
      * @param processDefinitionId
      * @return Y9Result<List < FlowElementModel>>
@@ -141,12 +141,20 @@ public interface CustomProcessDefinitionService {
     Y9Result<List<FlowElementModel>> listUserTask(String processDefinitionId);
 
     /**
-     * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
+     * 根据流程定义Id获取节点信息
      *
      * @param processDefinitionId
      * @return Y9Result<List < TargetModel>>
      */
     Y9Result<List<TargetModel>> listNodesByProcessDefinitionId(String processDefinitionId);
+
+    /**
+     * 根据流程定义Id获取节点信息(仅获取主流程的用户任务节点且不包含SubProcess)
+     *
+     * @param processDefinitionId
+     * @return Y9Result<List < TargetModel>>
+     */
+    Y9Result<List<TargetModel>> listNodesByProcessDefinitionIdOnlyMain(String processDefinitionId);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
