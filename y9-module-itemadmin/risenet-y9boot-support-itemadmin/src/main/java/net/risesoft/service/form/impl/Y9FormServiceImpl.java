@@ -19,6 +19,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
@@ -45,6 +47,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormServiceImpl implements Y9FormService {
@@ -827,12 +830,13 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formdata, List.class);
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
             String formId = (String)keyValue.get("form_Id");
+            if (!keyValue.containsKey("guid") && !keyValue.containsKey("GUID")) {
+                LOGGER.error("保存失败:表单未绑定guid字段");
+                return Y9Result.failure("保存失败:表单未绑定guid字段");
+            }
             String guid = keyValue.get("guid") != null ? (String)keyValue.get("guid") : "";
             if (StringUtils.isBlank(guid)) {
                 guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
-            }
-            if (StringUtils.isBlank(guid)) {
-                return Y9Result.failure("保存失败:表单未绑定guid字段");
             }
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {

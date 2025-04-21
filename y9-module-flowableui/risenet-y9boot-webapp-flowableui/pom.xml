@@ -200,6 +200,12 @@
             <groupId>org.dom4j</groupId>
             <artifactId>dom4j</artifactId>
         </dependency>
+        <!--条码号图片生成-->
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>jbarcode</artifactId>
+            <version>0.2.8</version>
+        </dependency>
     </dependencies>
 
     <build>
