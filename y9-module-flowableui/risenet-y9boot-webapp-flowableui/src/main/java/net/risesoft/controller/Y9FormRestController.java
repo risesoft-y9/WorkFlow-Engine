@@ -32,6 +32,7 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
@@ -134,6 +135,16 @@ public class Y9FormRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
         return formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
+    }
+
+    /**
+     * 获取数据字典值
+     *
+     * @return Y9Result<List<Y9FormOptionValueModel>>
+     */
+    @GetMapping(value = "/getAllOptionValueList")
+    public Y9Result<List<Y9FormOptionValueModel>> getAllOptionValueList() {
+        return optionClassApi.findAll(Y9LoginUserHolder.getTenantId());
     }
 
     /**
@@ -306,15 +317,17 @@ public class Y9FormRestController {
         String year = yearsdf.format(date);
         String second = sesdf.format(date);
         String itemNumber = "〔" + year + "〕" + second + "号";
-        Department dept = departmentApi.get(Y9LoginUserHolder.getTenantId(), position.getParentId()).getData();
-        Department bureau = (Department)orgUnitApi
-            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+        OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), position.getParentId()).getData();
+        OrgUnit bureau =
+            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /* 办件表单数据初始化 **/
         map.put("deptId", dept.getId());
         map.put("deptName", dept.getName());
-        map.put("deptGivenName", dept.getDeptGivenName());
-        map.put("deptAliasName", dept.getAliasName());
+        map.put("deptGivenName",
+            dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ((Department)dept).getDeptGivenName() : dept.getName());
+        map.put("deptAliasName",
+            dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ((Department)dept).getAliasName() : dept.getName());
         map.put("userName", person.getName());
         map.put("userId", person.getPersonId());
         map.put("positionName", position.getName());
@@ -327,16 +340,18 @@ public class Y9FormRestController {
         map.put("sign", "");
         map.put("bureauId", bureau.getId());
         map.put("bureauName", bureau.getName());
-        map.put("bureauGivenName", bureau.getDeptGivenName());
-        map.put("bureauAliasName", bureau.getAliasName());
+        map.put("bureauGivenName", bureau.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+            ? ((Department)bureau).getDeptGivenName() : bureau.getName());
+        map.put("bureauAliasName", bureau.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+            ? ((Department)bureau).getAliasName() : bureau.getName());
         PersonExt personExt = personApi
             .getPersonExtByPersonId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId())
             .getData();
         if (personExt != null && personExt.getSign() != null) {
             map.put("sign", personExt.getSign());// 签名
         }
-        List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(Y9LoginUserHolder.getTenantId(),
-            dept.getId(), DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
+        List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(Y9LoginUserHolder.getTenantId(), dept.getId(),
+            DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
         map.put("deptLeader", "未配置");// 岗位所在部门领导
         if (!leaders.isEmpty()) {
             List<Person> personLeaders =
@@ -382,16 +397,6 @@ public class Y9FormRestController {
             return Y9Result.success(list);
         }
         return optionClassApi.getOptionValueList(tenantId, type);
-    }
-
-    /**
-     * 获取数据字典值
-     *
-     * @return Y9Result<List<Y9FormOptionValueModel>>
-     */
-    @GetMapping(value = "/getAllOptionValueList")
-    public Y9Result<List<Y9FormOptionValueModel>> getAllOptionValueList() {
-        return optionClassApi.findAll(Y9LoginUserHolder.getTenantId());
     }
 
     /**
@@ -471,19 +476,6 @@ public class Y9FormRestController {
     }
 
     /**
-     * 更新表数据
-     *
-     * @param guid 表单id
-     * @param jsonData 表单数据
-     * @return Y9Result<String>
-     */
-    @PostMapping(value = "/updateFormData")
-    public Y9Result<String> updateFormData(@RequestParam @NotBlank String guid,
-        @RequestParam @NotBlank String jsonData) {
-        return formDataApi.updateFormData(Y9LoginUserHolder.getTenantId(), guid, jsonData);
-    }
-
-    /**
      * 保存前置表单数据
      *
      * @param formId 表单id
@@ -502,6 +494,19 @@ public class Y9FormRestController {
             LOGGER.error("保存前置表单数据失败", e);
         }
         return Y9Result.failure("保存失败");
+    }
+
+    /**
+     * 更新表数据
+     *
+     * @param guid 表单id
+     * @param jsonData 表单数据
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/updateFormData")
+    public Y9Result<String> updateFormData(@RequestParam @NotBlank String guid,
+        @RequestParam @NotBlank String jsonData) {
+        return formDataApi.updateFormData(Y9LoginUserHolder.getTenantId(), guid, jsonData);
     }
 
 }
