@@ -167,7 +167,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
                 DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                 List<OrgUnit> orgUnitList;
-                if (dynamicRole.getClassPath().contains("Starter4SubProcess")) {
+                if (dynamicRole.getClassPath().contains("4SubProcess")) {
                     orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
                 } else {
                     orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole,
