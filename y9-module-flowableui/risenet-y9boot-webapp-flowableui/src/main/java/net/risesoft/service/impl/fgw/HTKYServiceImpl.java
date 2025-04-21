@@ -11,12 +11,19 @@ import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.jbarcode.JBarcode;
+import org.jbarcode.encode.BarcodeEncoder;
+import org.jbarcode.encode.Code128Encoder;
+import org.jbarcode.paint.BaseLineTextPainter;
+import org.jbarcode.paint.WidthCodedPainter;
+import org.jbarcode.util.ImageUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
 import javax.annotation.Resource;
+import java.awt.image.BufferedImage;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,9 +35,15 @@ import java.util.Map;
 @Service(value = "hTKYService")
 @Transactional(readOnly = true)
 public class HTKYServiceImpl implements HTKYService {
+
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     * 获取条码号
+     * @param processSerialNumber
+     * @return
+     */
     @Override
     public String getTMH(String processSerialNumber) {
         String tmh = "";
@@ -135,7 +148,7 @@ public class HTKYServiceImpl implements HTKYService {
                     comefileinfo.addElement("qbh").setText(qbh);
                     comefileinfo.addElement("istzjh").setText(istzjh);
                     String xml = document.asXML();
-                    LOGGER.info("发文获取条码,发送的XML："+xml);
+                    LOGGER.info("发文获取条码,发送的XML："+xml+",url:"+url);
                     String result = RemoteCallUtil.postXml(url,xml,String.class).toString();
                     LOGGER.info("发文获取条码,航天开元返回result：" + result);
                     Document xmlResult = (new SAXReader()).read(new InputSource(new StringReader(result)));
@@ -164,5 +177,27 @@ public class HTKYServiceImpl implements HTKYService {
             e.printStackTrace();
         }
         return tmh;
+    }
+
+    /**
+     * 生成条码号图片
+     * @param tmh
+     * @return
+     */
+    @Override
+    public byte[] getTmhPicture(String tmh) {
+        JBarcode jbcode = new JBarcode((BarcodeEncoder) Code128Encoder.getInstance(), WidthCodedPainter.getInstance(), BaseLineTextPainter.getInstance());
+        jbcode.setShowCheckDigit(false);
+        jbcode.setShowText(false);
+        jbcode.setBarHeight(12.0D);
+        BufferedImage image = null;
+        byte[] bytes = null;
+        try {
+            image = jbcode.createBarcode(tmh);
+            bytes = ImageUtil.encode(image, "jpeg");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 }
