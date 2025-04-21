@@ -109,7 +109,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
-     * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
+     * 根据流程定义Id获取节点信息
      *
      * @param tenantId 租户Id
      * @param processDefinitionId 流程定义id
@@ -121,6 +121,21 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
         @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.listNodesByProcessDefinitionId(processDefinitionId);
+    }
+
+    /**
+     * 根据流程定义Id获取节点信息
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @return {@code List<TargetModel>} 通用请求返回对象 - data 节点信息集合
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<TargetModel>> getNodesOnlyMain(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        return customProcessDefinitionService.listNodesByProcessDefinitionIdOnlyMain(processDefinitionId);
     }
 
     /**

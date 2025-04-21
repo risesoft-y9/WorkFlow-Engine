@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.entity.DynamicRole;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -34,7 +35,7 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
     private final TaskApi taskApi;
 
     @Override
-    public List<OrgUnit> getOrgUnitList(String taskId) {
+    public List<OrgUnit> getOrgUnitList(String taskId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(taskId)) {

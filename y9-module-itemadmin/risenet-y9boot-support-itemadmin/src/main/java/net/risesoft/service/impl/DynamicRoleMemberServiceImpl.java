@@ -33,7 +33,7 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
         beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
         AbstractDynamicRoleMember dynamicRoleMemberService =
             (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
-        return dynamicRoleMemberService.getOrgUnitList(taskId);
+        return dynamicRoleMemberService.getOrgUnitList(taskId, dynamicRole);
     }
 
     @Override

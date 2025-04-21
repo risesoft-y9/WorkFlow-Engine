@@ -268,6 +268,31 @@ public class Document4GfgRestController {
         return Y9Result.failure("校验失败，发生异常");
     }
 
+    @PostMapping(value = "/check4Reposition")
+    public Y9Result<List<TargetModel>> check4Reposition(@RequestParam String processSerialNumber) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            ProcessParamModel ppModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String processInstanceId = ppModel.getProcessInstanceId();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            if (taskList.isEmpty()) {
+                return Y9Result.failure("不能重定向，该件已办结。");
+            }
+            List<TargetModel> mainTargetModelList =
+                processDefinitionApi.getNodesOnlyMain(tenantId, taskList.get(0).getProcessDefinitionId()).getData();
+            boolean isMainProcess = mainTargetModelList.stream()
+                .anyMatch(t -> t.getTaskDefKey().equals(taskList.get(0).getTaskDefinitionKey()));
+            if (!isMainProcess) {
+                return Y9Result.failure("不能重定向，当前环节是会签环节。");
+            }
+            return Y9Result.success(mainTargetModelList);
+        } catch (Exception e) {
+            LOGGER.error("校验失败", e);
+        }
+        return Y9Result.failure("校验失败，发生异常");
+    }
+
     /**
      * 流程办结
      *
