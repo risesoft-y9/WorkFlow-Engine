@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Form;
@@ -45,6 +48,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormServiceImpl implements Y9FormService {
@@ -832,6 +836,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
             }
             if (StringUtils.isBlank(guid)) {
+                LOGGER.error("保存失败:表单未绑定guid字段");
                 return Y9Result.failure("保存失败:表单未绑定guid字段");
             }
             List<String> list = y9FormRepository.findBindTableName(formId);
