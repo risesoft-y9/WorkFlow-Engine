@@ -830,7 +830,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formdata, List.class);
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
             String formId = (String)keyValue.get("form_Id");
-            if (!keyValue.containsKey("guid")) {
+            if (!keyValue.containsKey("guid") && !keyValue.containsKey("GUID")) {
                 LOGGER.error("保存失败:表单未绑定guid字段");
                 return Y9Result.failure("保存失败:表单未绑定guid字段");
             }
