@@ -36,7 +36,6 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList(String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getOrgUnitId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(taskId)) {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();

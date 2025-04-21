@@ -44,7 +44,6 @@ public class RoleFilter extends AbstractDynamicRoleMember {
             userId = processInstance.getStartUserId();
         }
         OrgUnit personOrPosition = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        OrgUnit bureau = orgUnitApi.getBureau(tenantId, userId).getData();
         String roleId = dynamicRole.getRoleId();
         List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
         Integer ranges = dynamicRole.getRanges();
@@ -57,6 +56,7 @@ public class RoleFilter extends AbstractDynamicRoleMember {
                 break;
             case 2:
                 // 和[当前人或者流程启动人]同委办局
+                OrgUnit bureau = orgUnitApi.getBureau(tenantId, userId).getData();
                 orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
                     .collect(Collectors.toList());
                 break;
