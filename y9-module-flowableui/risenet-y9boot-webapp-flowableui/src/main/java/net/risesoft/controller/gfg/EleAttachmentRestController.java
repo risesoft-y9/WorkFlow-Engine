@@ -12,16 +12,21 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 
+import net.risesoft.service.fgw.HTKYService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,6 +65,11 @@ public class EleAttachmentRestController {
 
     private final EleAttachmentApi eleAttachmentApi;
 
+    @Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private HTKYService htkyService;
     /**
      * 删除附件
      *
@@ -241,4 +251,41 @@ public class EleAttachmentRestController {
         return Y9Result.failure("上传失败");
     }
 
+    /**
+     * 条码号图片生成并下载（受加密存储影响会有地方被马赛克影响）
+     * @param processSerialNumber
+     * @param response
+     * @return
+     */
+    @GetMapping("/getTmhPicture")
+    public void getTmhPicture(@RequestParam String processSerialNumber,HttpServletRequest request, HttpServletResponse response)  {
+        String tmh ="";
+        String filename = "";
+        try{
+            String sql = "select * from y9_form_fw where guid = '"+ processSerialNumber +"'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list != null && list.size() > 0) {
+                tmh= list.get(0).get("tmh") == null ? "" :list.get(0).get("tmh").toString();
+                byte[] bytes  = htkyService.getTmhPicture(tmh);
+                LOGGER.info("需要生成图片的条码号：" + tmh);
+                filename = tmh + ".jpg";
+                if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+                    filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
+                } else {
+                    filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                }
+                OutputStream out = response.getOutputStream();
+                response.reset();
+                response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
+                response.setHeader("Content-type", "text/html;charset=UTF-8");
+                response.setContentType("application/octet-stream");
+                out.write(bytes);
+                out.flush();
+                out.close();
+            }
+        }catch (Exception e) {
+            LOGGER.info("生成或下载条码有问题的tmh:"+tmh);
+            e.printStackTrace();
+        }
+    }
 }
