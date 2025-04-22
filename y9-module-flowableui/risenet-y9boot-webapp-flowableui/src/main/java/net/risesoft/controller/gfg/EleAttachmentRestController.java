@@ -268,22 +268,24 @@ public class EleAttachmentRestController {
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list != null && list.size() > 0) {
                 tmh= list.get(0).get("tmh") == null ? "" :list.get(0).get("tmh").toString();
-                byte[] bytes  = htkyService.getTmhPicture(tmh);
-                LOGGER.info("需要生成图片的条码号：" + tmh);
-                filename = tmh + ".jpg";
-                if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
-                    filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
-                } else {
-                    filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                if (StringUtils.isNotBlank(tmh)) {
+                    byte[] bytes  = htkyService.getTmhPicture(tmh);
+                    LOGGER.info("需要生成图片的条码号：" + tmh);
+                    filename = tmh + ".jpg";
+                    if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+                        filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
+                    } else {
+                        filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                    }
+                    OutputStream out = response.getOutputStream();
+                    response.reset();
+                    response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
+                    response.setHeader("Content-type", "text/html;charset=UTF-8");
+                    response.setContentType("application/octet-stream");
+                    out.write(bytes);
+                    out.flush();
+                    out.close();
                 }
-                OutputStream out = response.getOutputStream();
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-                out.write(bytes);
-                out.flush();
-                out.close();
             }
         }catch (Exception e) {
             LOGGER.info("生成或下载条码有问题的tmh:"+tmh);
