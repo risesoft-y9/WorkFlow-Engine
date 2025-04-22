@@ -206,6 +206,12 @@
             <artifactId>jbarcode</artifactId>
             <version>0.2.8</version>
         </dependency>
+        <!--清样生成二维码-->
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>pdf417</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
