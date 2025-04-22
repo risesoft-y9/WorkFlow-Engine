@@ -269,7 +269,8 @@ public class Document4GfgRestController {
     }
 
     @PostMapping(value = "/check4Reposition")
-    public Y9Result<List<TargetModel>> check4Reposition(@RequestParam String processSerialNumber) {
+    public Y9Result<List<TargetModel>> check4Reposition(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String documentId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ProcessParamModel ppModel =
@@ -279,14 +280,24 @@ public class Document4GfgRestController {
             if (taskList.isEmpty()) {
                 return Y9Result.failure("不能重定向，该件已办结。");
             }
-            List<TargetModel> mainTargetModelList =
-                processDefinitionApi.getNodesOnlyMain(tenantId, taskList.get(0).getProcessDefinitionId()).getData();
-            boolean isMainProcess = mainTargetModelList.stream()
-                .anyMatch(t -> t.getTaskDefKey().equals(taskList.get(0).getTaskDefinitionKey()));
-            if (!isMainProcess) {
-                return Y9Result.failure("不能重定向，当前环节是会签环节。");
+            if (documentId.equals(processSerialNumber)) {
+                List<TargetModel> mainTargetModelList =
+                    processDefinitionApi.getNodesOnlyMain(tenantId, taskList.get(0).getProcessDefinitionId()).getData();
+                boolean isMainProcess = mainTargetModelList.stream()
+                    .anyMatch(t -> t.getTaskDefKey().equals(taskList.get(0).getTaskDefinitionKey()));
+                if (!isMainProcess) {
+                    return Y9Result.failure("不能重定向，已流转至会签环节。");
+                }
+                return Y9Result.success(mainTargetModelList);
+            } else {
+                SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(tenantId, documentId).getData();
+                if (!signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())) {
+                    return Y9Result.failure("不能重定向，" + signDeptDetail.getDeptName() + "的会签件已被处理。");
+                }
+                List<TargetModel> subTargetModelList = processDefinitionApi
+                    .getSubProcessChildNode(tenantId, taskList.get(0).getProcessDefinitionId()).getData();
+                return Y9Result.success(subTargetModelList);
             }
-            return Y9Result.success(mainTargetModelList);
         } catch (Exception e) {
             LOGGER.error("校验失败", e);
         }
