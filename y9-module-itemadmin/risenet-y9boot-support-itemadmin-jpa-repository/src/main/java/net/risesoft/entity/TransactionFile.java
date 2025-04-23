@@ -1,19 +1,13 @@
 package net.risesoft.entity;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.Transient;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author qinman
@@ -125,27 +119,27 @@ public class TransactionFile implements Serializable {
     @Transient
     private Integer serialNumber;
 
-    @Column(name = "FIELDONE", length = 100)
+    @Column(name = "FIELDONE", length = 300)
     @Comment("备用字段一")
     private String fieldOne;
 
-    @Column(name = "FIELDTWO", length = 100)
+    @Column(name = "FIELDTWO", length = 300)
     @Comment("备用字段二")
     private String fieldTwo;
 
-    @Column(name = "FIELDTHREE", length = 100)
+    @Column(name = "FIELDTHREE", length = 300)
     @Comment("备用字段三")
     private String fieldThree;
 
-    @Column(name = "FIELDFOUR", length = 100)
+    @Column(name = "FIELDFOUR", length = 300)
     @Comment("备用字段四")
     private String fieldFour;
 
-    @Column(name = "FIELDFIVE", length = 100)
+    @Column(name = "FIELDFIVE", length = 300)
     @Comment("备用字段五")
     private String fieldFive;
 
-    @Column(name = "FIELDSIX", length = 100)
+    @Column(name = "FIELDSIX", length = 300)
     @Comment("备用字段六")
     private String fieldSix;
 
