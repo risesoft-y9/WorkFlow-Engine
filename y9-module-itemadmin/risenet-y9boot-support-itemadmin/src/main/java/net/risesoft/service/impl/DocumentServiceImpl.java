@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +88,6 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
-import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
@@ -512,29 +512,15 @@ public class DocumentServiceImpl implements DocumentService {
         itemId = processParam.getItemId();
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         if (!taskList.isEmpty()) {
-            boolean hasTaskId = false;
-            for (TaskModel task : taskList) {// 获取同一个委办局下的任务,子流程收回等
-                OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
-                OrgUnit taskBureau;
-                if (StringUtils.isBlank(task.getAssignee())) {
-                    List<IdentityLinkModel> ilList =
-                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                    taskBureau = orgUnitApi.getBureau(tenantId, ilList.get(0).getUserId()).getData();
-                } else {
-                    taskBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+            if (processSerialNumber.equals(documentId)) {
+                taskId = taskList.get(0).getId();
+            } else {
+                SignDeptDetail signDeptDetail = signDeptDetailService.findById(documentId);
+                Optional<TaskModel> taskModel = taskList.stream()
+                    .filter(task -> task.getExecutionId().equals(signDeptDetail.getExecutionId())).findFirst();
+                if (taskModel.isPresent()) {
+                    taskId = taskModel.get().getId();
                 }
-                if (currentBureau.getId().equals(taskBureau.getId())) {
-                    taskDefinitionKey = task.getTaskDefinitionKey();
-                    taskId = task.getId();
-                    hasTaskId = true;
-                    break;
-                }
-            }
-            // 找不到同一个委办局下的任务， 获取第一个任务
-            if (!hasTaskId) {
-                TaskModel taskTemp = taskList.get(0);
-                taskDefinitionKey = taskTemp.getTaskDefinitionKey();
-                taskId = taskTemp.getId();
             }
         } else {
             // callActivity
@@ -1423,7 +1409,16 @@ public class DocumentServiceImpl implements DocumentService {
         if (model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())) {
             buttonList = buttonUtil.showButton4Doing(itemId, taskId);
         } else if (model.getItembox().equals(ItemBoxTypeEnum.MONITORDOING.getValue())) {
-            buttonList.add(ItemButton.chongDingWei);
+            String documentId = model.getDocumentId();
+            if (documentId.equals(model.getProcessSerialNumber())) {
+                buttonList.add(ItemButton.chongDingWei);
+            } else {
+                SignDeptDetail signDeptDetail = signDeptDetailService.findById(documentId);
+                if (signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())) {
+                    buttonList.add(ItemButton.chongDingWei);
+                }
+
+            }
         }
         model.setButtonList(buttonList);
         return model;
