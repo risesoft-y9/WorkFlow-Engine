@@ -855,12 +855,12 @@
             </not>
         </preConditions>
         <addColumn tableName="FF_ATTACHMENT">
-            <column name="FIELDONE" type="VARCHAR(100)" remarks="备用字段一"/>
-            <column name="FIELDTWO" type="VARCHAR(100)" remarks="备用字段二"/>
-            <column name="FIELDTHREE" type="VARCHAR(100)" remarks="备用字段三"/>
-            <column name="FIELDFOUR" type="VARCHAR(100)" remarks="备用字段四"/>
-            <column name="FIELDFIVE" type="VARCHAR(100)" remarks="备用字段五"/>
-            <column name="FIELDSIX" type="VARCHAR(100)" remarks="备用字段六"/>
+            <column name="FIELDONE" type="VARCHAR(300)" remarks="备用字段一"/>
+            <column name="FIELDTWO" type="VARCHAR(300)" remarks="备用字段二"/>
+            <column name="FIELDTHREE" type="VARCHAR(300)" remarks="备用字段三"/>
+            <column name="FIELDFOUR" type="VARCHAR(300)" remarks="备用字段四"/>
+            <column name="FIELDFIVE" type="VARCHAR(300)" remarks="备用字段五"/>
+            <column name="FIELDSIX" type="VARCHAR(300)" remarks="备用字段六"/>
         </addColumn>
     </changeSet>
 
