@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotBlank;
 
 import net.risesoft.service.fgw.HTKYService;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -252,7 +254,7 @@ public class EleAttachmentRestController {
     }
 
     /**
-     * 条码号图片生成并下载（受加密存储影响会有地方被马赛克影响）
+     * 条码号图片生成并下载（每次调用生成新的条码号图片）
      * @param processSerialNumber
      * @param response
      * @return
@@ -266,25 +268,67 @@ public class EleAttachmentRestController {
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list != null && list.size() > 0) {
                 tmh= list.get(0).get("tmh") == null ? "" :list.get(0).get("tmh").toString();
-                byte[] bytes  = htkyService.getTmhPicture(tmh);
-                LOGGER.info("需要生成图片的条码号：" + tmh);
-                filename = tmh + ".jpg";
-                if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
-                    filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
-                } else {
-                    filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                if (StringUtils.isNotBlank(tmh)) {
+                    byte[] bytes  = htkyService.getTmhPicture(tmh);
+                    LOGGER.info("需要生成图片的条码号：" + tmh);
+                    filename = tmh + ".jpg";
+                    if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+                        filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
+                    } else {
+                        filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                    }
+                    OutputStream out = response.getOutputStream();
+                    response.reset();
+                    response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
+                    response.setHeader("Content-type", "text/html;charset=UTF-8");
+                    response.setContentType("application/octet-stream");
+                    out.write(bytes);
+                    out.flush();
+                    out.close();
                 }
-                OutputStream out = response.getOutputStream();
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-                out.write(bytes);
-                out.flush();
-                out.close();
             }
         }catch (Exception e) {
             LOGGER.info("生成或下载条码有问题的tmh:"+tmh);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 清样生成二维码(每次调用生成新的二维码)
+     * @param processSerialNumber
+     * @param request
+     * @param response
+     */
+    @GetMapping("/getQYTmhPicture")
+    public void getQYTmhPicture(@RequestParam String processSerialNumber,HttpServletRequest request, HttpServletResponse response)  {
+        String tmh ="";
+        try{
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            String sql = "select * from y9_form_fw where guid = '"+ processSerialNumber +"'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list != null && list.size() > 0) {
+                byte[] bytes = htkyService.getQYTmhPicture(list.get(0));
+                tmh=list.get(0).get("tmh") == null ? "" :list.get(0).get("tmh").toString();
+                if (StringUtils.isNotBlank(tmh)) {
+                    LOGGER.info("清样生成二维码的条码号"+tmh);
+                    String filename = tmh + ".jpg";
+                    if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+                        filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
+                    } else {
+                        filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                    }
+                    OutputStream out = response.getOutputStream();
+                    response.reset();
+                    response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
+                    response.setHeader("Content-type", "text/html;charset=UTF-8");
+                    response.setContentType("application/octet-stream");
+                    out.write(bytes);
+                    out.flush();
+                    out.close();
+                }
+            }
+        }catch (Exception e) {
+            LOGGER.info("清样生成二维码错误的条码号"+tmh);
             e.printStackTrace();
         }
     }
