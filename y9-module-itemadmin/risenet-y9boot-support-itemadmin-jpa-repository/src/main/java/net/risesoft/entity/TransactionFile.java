@@ -125,4 +125,28 @@ public class TransactionFile implements Serializable {
     @Transient
     private Integer serialNumber;
 
+    @Column(name = "FIELDONE", length = 100)
+    @Comment("备用字段一")
+    private String fieldOne;
+
+    @Column(name = "FIELDTWO", length = 100)
+    @Comment("备用字段二")
+    private String fieldTwo;
+
+    @Column(name = "FIELDTHREE", length = 100)
+    @Comment("备用字段三")
+    private String fieldThree;
+
+    @Column(name = "FIELDFOUR", length = 100)
+    @Comment("备用字段四")
+    private String fieldFour;
+
+    @Column(name = "FIELDFIVE", length = 100)
+    @Comment("备用字段五")
+    private String fieldFive;
+
+    @Column(name = "FIELDSIX", length = 100)
+    @Comment("备用字段六")
+    private String fieldSix;
+
 }

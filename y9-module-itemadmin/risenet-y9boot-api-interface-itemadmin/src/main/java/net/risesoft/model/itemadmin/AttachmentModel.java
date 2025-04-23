@@ -1,8 +1,8 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 附件模型类
@@ -52,7 +52,6 @@ public class AttachmentModel implements Serializable {
     private String fileSize;
 
     /**
-     *
      * 文件字节数
      */
     private String fileType;
@@ -121,4 +120,34 @@ public class AttachmentModel implements Serializable {
      * 预览地址
      */
     private String jodconverterURL;
+
+    /**
+     * 备用字段一
+     */
+    private String fieldOne;
+
+    /**
+     * 备用字段二
+     */
+    private String fieldTwo;
+
+    /**
+     * 备用字段三
+     */
+    private String fieldThree;
+
+    /**
+     * 备用字段四
+     */
+    private String fieldFour;
+
+    /**
+     * 备用字段五
+     */
+    private String fieldFive;
+
+    /**
+     * 备用字段六
+     */
+    private String fieldSix;
 }

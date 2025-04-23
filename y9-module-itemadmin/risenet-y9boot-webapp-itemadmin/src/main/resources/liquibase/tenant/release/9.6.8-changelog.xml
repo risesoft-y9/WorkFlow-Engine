@@ -847,4 +847,75 @@
         </addColumn>
     </changeSet>
 
+
+    <changeSet id="1704700543333-44" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ATTACHMENT" columnName="FIELDONE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_ATTACHMENT">
+            <column name="FIELDONE" type="VARCHAR(100)" remarks="备用字段一"/>
+            <column name="FIELDTWO" type="VARCHAR(100)" remarks="备用字段二"/>
+            <column name="FIELDTHREE" type="VARCHAR(100)" remarks="备用字段三"/>
+            <column name="FIELDFOUR" type="VARCHAR(100)" remarks="备用字段四"/>
+            <column name="FIELDFIVE" type="VARCHAR(100)" remarks="备用字段五"/>
+            <column name="FIELDSIX" type="VARCHAR(100)" remarks="备用字段六"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700543333-45" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ATTACHMENT_TYPE"/>
+            </not>
+        </preConditions>
+        <createTable remarks="附件类型信息表" tableName="FF_ATTACHMENT_TYPE">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(255)"/>
+            <column name="DELETED" remarks="是否删除" type="INT"/>
+            <column name="MARK" remarks="附件类型标识" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(255)"/>
+            <column name="NAME" remarks="附件类型名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700543333-46" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ATTACHMENT_CONF"/>
+            </not>
+        </preConditions>
+        <createTable remarks="附件配置表" tableName="FF_ATTACHMENT_CONF">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ATTACHMENTTYPE" remarks="附件类型" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COLUMNNAME" remarks="字段名称" type="VARCHAR(50)"/>
+            <column name="DISPLAYNAME" remarks="显示名称" type="VARCHAR(50)"/>
+            <column name="DISPLAYWIDTH" remarks="显示宽度" type="VARCHAR(50)"/>
+            <column name="DISPLAYALIGN" remarks="排列方式" type="VARCHAR(10)"/>
+            <column name="CONFIGTYPE" remarks="配置类型" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INPUTBOXTYPE" remarks="输入框类型" type="VARCHAR(20)"/>
+            <column name="ISREQUIRED" remarks="是否必填" type="INT" defaultValueNumeric="0"/>
+            <column name="SPANWIDTH" remarks="输入框宽度" type="VARCHAR(50)"/>
+            <column name="LABELNAME" remarks="标签名称" type="VARCHAR(20)"/>
+            <column name="OPTIONCLASS" remarks="绑定数据字典" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

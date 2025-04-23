@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.entity.AttachmentConf;
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.AttachmentConfModel;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.repository.jpa.AttachmentConfRepository;
 import net.risesoft.repository.jpa.TransactionFileRepository;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
@@ -48,6 +52,8 @@ public class AttachmentApiImpl implements AttachmentApi {
     private final TransactionFileService transactionFileService;
 
     private final TransactionFileRepository transactionFileRepository;
+
+    private final AttachmentConfRepository attachmentConfRepository;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -382,5 +388,28 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9BeanUtil.copyProperties(attachmentModel, file);
         transactionFileService.uploadRestModel(file);
         return Y9Result.success();
+    }
+
+    /**
+     * 获取附件配置信息
+     * 
+     * @param tenantId
+     * @param attachmentType
+     * @return
+     */
+    @Override
+    public Y9Result<List<AttachmentConfModel>> findByAttachmentType(@RequestParam String tenantId,
+        @RequestParam String attachmentType) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<AttachmentConfModel> attachmentConfModelList = new ArrayList<>();
+        List<AttachmentConf> attachmentConfList =
+            attachmentConfRepository.findByAttachmentTypeOrderByTabIndexAsc(attachmentType);
+        AttachmentConfModel attachmentConfModel;
+        for (AttachmentConf attachmentConf : attachmentConfList) {
+            attachmentConfModel = new AttachmentConfModel();
+            Y9BeanUtil.copyProperties(attachmentConf, attachmentConfModel);
+            attachmentConfModelList.add(attachmentConfModel);
+        }
+        return Y9Result.success(attachmentConfModelList);
     }
 }
