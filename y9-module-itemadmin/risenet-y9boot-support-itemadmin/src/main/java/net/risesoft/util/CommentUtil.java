@@ -1,7 +1,14 @@
 package net.risesoft.util;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.hibernate.annotations.Comment;
 
 import net.risesoft.y9.Y9Context;
 
@@ -51,5 +58,34 @@ public class CommentUtil {
             }
         }
         return retBuf.toString();
+    }
+
+    public static List<Map<String, Object>> getEntityFieldList(Class<?> entityClass) {
+        List<Map<String, Object>> list_map = new ArrayList<>();
+
+        Field[] fields = entityClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            Map<String, Object> map = new HashMap<>(16);
+            // 打印字段名称
+            System.out.println("字段名称: " + field.getName());
+            // 获取字段上的 @Comment 注解
+            Comment comment = field.getAnnotation(Comment.class);
+            // 获取字段类型
+            String fieldType = field.getType().getSimpleName();
+            if (comment != null) {
+                // 打印注解值
+                System.out.println("注解值: " + comment.value());
+                map.put("fieldName", field.getName());
+                map.put("fieldType", fieldType);
+                map.put("comment", comment.value());
+                list_map.add(map);
+            } else {
+                System.out.println("没有注解");
+            }
+            // 获取字段值
+            field.setAccessible(true); // 允许访问 private 字段
+        }
+        return list_map;
     }
 }
