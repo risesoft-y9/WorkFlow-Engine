@@ -847,8 +847,7 @@
         </addColumn>
     </changeSet>
 
-
-    <changeSet id="1704700543333-44" author="yihong" runOnChange="true">
+    <changeSet id="1704700543333-45" author="yihong" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <columnExists tableName="FF_ATTACHMENT" columnName="FIELDONE"/>
@@ -864,7 +863,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="1704700543333-45" author="yihong" runOnChange="true">
+    <changeSet id="1704700543333-46" author="yihong" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="FF_ATTACHMENT_TYPE"/>
@@ -889,7 +888,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1704700543333-46" author="yihong" runOnChange="true">
+    <changeSet id="1704700543333-47" author="yihong" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="FF_ATTACHMENT_CONF"/>
@@ -917,5 +916,19 @@
             <column name="TABINDEX" remarks="序号" type="INT"/>
             <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="1704700543333-48" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ACT_RU_DETAIL" columnName="SENDUSERID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_ACT_RU_DETAIL">
+            <column name="SENDUSERID" type="VARCHAR(50)" remarks="发送人ID"/>
+            <column name="SENDUSERNAME" type="VARCHAR(50)" remarks="发送人姓名"/>
+            <column name="SENDDEPTID" type="VARCHAR(50)" remarks="发送人部门ID"/>
+            <column name="SENDDEPTNAME" type="VARCHAR(50)" remarks="发送人部门名称"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>
