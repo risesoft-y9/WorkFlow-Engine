@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
+import net.risesoft.service.fgw.PushDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -139,6 +140,9 @@ public class Document4GfgRestController {
 
     @Autowired
     private HTKYService htkyService;
+
+    @Autowired
+    private PushDataService pushDataService;
 
     /**
      * 获取新建办件初始化数据
@@ -1001,13 +1005,8 @@ public class Document4GfgRestController {
     @PostMapping(value = "/savePushData")
     public Y9Result<Object> savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
         for (String processSerialNumber : processSerialNumbers) {
-            ProcessParamModel process = processParamApi
-                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-            String sql =
-                "insert into PUSHDATA (ID,EVENTTYPE,CREATEDATE,PROCESSSERIALNUMBER,PROCESSINSTANCEID,TSZT) values (?,?,?,?,?,?)";
-            Object[] args = {Y9IdGenerator.genId(), eventtype, new Date(), processSerialNumber,
-                process.getProcessInstanceId(), "0"};
-            jdbcTemplate.update(sql, args);
+            ProcessParamModel process = processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            pushDataService.addPushData(processSerialNumber,process.getProcessInstanceId(),eventtype);
         }
         return Y9Result.success();
     }
