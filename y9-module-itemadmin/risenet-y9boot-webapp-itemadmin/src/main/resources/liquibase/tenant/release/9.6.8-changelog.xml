@@ -931,4 +931,26 @@
             <column name="SENDDEPTNAME" type="VARCHAR(50)" remarks="发送人部门名称"/>
         </addColumn>
     </changeSet>
+    <changeSet id="1704700543333-47" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_MERGE_FILE"/>
+            </not>
+        </preConditions>
+        <createTable remarks="合并文件信息表" tableName="FF_MERGE_FILE">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(50)"/>
+            <column name="SOURCEFILEID" remarks="源文件id,版式文件的源文件id" type="VARCHAR(50)"/>
+            <column name="FILETYPE" remarks="文件类型,1为合并文件,2为合并版式文件" type="VARCHAR(10)"/>
+            <column name="LISTTYPE" remarks="列表类型,1为附件合并,2为文件合并" type="VARCHAR(10)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="PERSONNAME" remarks="合并人" type="VARCHAR(50)"/>
+            <column name="PERSONID" remarks="合并人员Id" type="VARCHAR(50)"/>
+            <column name="CREATEDATE" remarks="合并时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
