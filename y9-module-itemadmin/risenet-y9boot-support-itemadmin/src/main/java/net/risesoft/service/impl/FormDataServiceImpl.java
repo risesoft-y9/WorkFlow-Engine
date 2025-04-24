@@ -159,6 +159,18 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    public Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias) {
+        Y9Table y9Table = y9TableService.findByTableAlias(tableAlias);
+        if (null == y9Table) {
+            LOGGER.error("表简称[" + tableAlias + "]对应的字段不存在");
+            return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
+        }
+        String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID ='" + guid + "'";
+        Map<String, Object> map = jdbcTemplate.queryForMap(selectSql);
+        return Y9Result.success(map);
+    }
+
+    @Override
     public FieldPermModel getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         // 写权限
@@ -504,16 +516,5 @@ public class FormDataServiceImpl implements FormDataService {
             LOGGER.error("****************************formdata:" + formData);
         }
         return Y9Result.failure("发生异常");
-    }
-
-    @Override
-    public Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias) {
-        Y9Table y9Table = y9TableService.findByTableAlias(tableAlias);
-        if (null == y9Table) {
-            return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
-        }
-        String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID ='" + guid + "'";
-        Map<String, Object> map = jdbcTemplate.queryForMap(selectSql);
-        return Y9Result.success(map);
     }
 }
