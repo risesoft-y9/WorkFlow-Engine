@@ -13,32 +13,52 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.risesoft.api.itemadmin.*;
-import net.risesoft.model.itemadmin.*;
-import net.risesoft.util.gfg.OpinionUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.DocumentWordApi;
+import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.MergeFileApi;
+import net.risesoft.api.itemadmin.OpinionApi;
+import net.risesoft.api.itemadmin.PaperAttachmentApi;
+import net.risesoft.api.itemadmin.PrintLogApi;
+import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.TypeSettingInfoApi;
+import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.DocumentWordModel;
+import net.risesoft.model.itemadmin.MergeFileModel;
+import net.risesoft.model.itemadmin.OpinionListModel;
+import net.risesoft.model.itemadmin.PaperAttachmentModel;
+import net.risesoft.model.itemadmin.PrintLogModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
+import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.ToolUtil;
+import net.risesoft.util.gfg.OpinionUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
+
+import cn.hutool.core.date.DateUtil;
 
 /**
  * 正文相关接口
@@ -76,6 +96,8 @@ public class FormNTKO4GfgController {
     private final TypeSettingInfoApi typeSettingInfoApi;
 
     private final PaperAttachmentApi paperAttachmentApi;
+
+    private final MergeFileApi mergeFileApi;
 
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
@@ -127,34 +149,35 @@ public class FormNTKO4GfgController {
      */
     @RequestMapping(value = "/getFormData")
     public Y9Result<Map<String, Object>> getFormData(@RequestParam(required = false) String processSerialNumber,
-                                                     @RequestParam(required = false) String itemId,
-                                                     @RequestParam(required = false) String processInstanceId,
-                                                     @RequestParam String tenantId,
-                                                     @RequestParam String userId,
-                                                     @RequestParam(required = false) String taskId,
-                                                     @RequestParam(required = false) String itembox) {
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String processInstanceId,
+        @RequestParam String tenantId, @RequestParam String userId, @RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String itembox) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
         // 办文要报-厅领导意见
         String bwybBgtfzryj = "tingLeaderComment";
-        List<OpinionListModel> data1 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybBgtfzryj, itemId, null, null, null).getData();
+        List<OpinionListModel> data1 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId,
+            itembox, bwybBgtfzryj, itemId, null, null, null).getData();
         String tldContent = OpinionUtil.generateOpinions(data1);
         // 办文要报-核稿人意见
         String bwybBgthgyj = "reviewerComment";
-        List<OpinionListModel> data2 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybBgthgyj, itemId, null, null, null).getData();
+        List<OpinionListModel> data2 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId,
+            itembox, bwybBgthgyj, itemId, null, null, null).getData();
         String hgrContent = OpinionUtil.generateOpinions(data2);
         // 办文要报-领导批示
         String bwybLdps = "leaderComment";
-        List<OpinionListModel> data3 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybLdps, itemId, null, null, null).getData();
+        List<OpinionListModel> data3 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId,
+            itembox, bwybLdps, itemId, null, null, null).getData();
         String ldContent = OpinionUtil.generateOpinions(data3);
 
         // 获取办文信息纸质附件清单
-        List<PaperAttachmentModel> paperAttList = paperAttachmentApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        List<PaperAttachmentModel> paperAttList =
+            paperAttachmentApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
 
-        formData.put("tingLeaderComment",tldContent);
-        formData.put("reviewerComment",hgrContent);
-        formData.put("leaderComment",ldContent);
-        formData.put("DT_zzfj",paperAttList);
+        formData.put("tingLeaderComment", tldContent);
+        formData.put("reviewerComment", hgrContent);
+        formData.put("leaderComment", ldContent);
+        formData.put("DT_zzfj", paperAttList);
 
         return Y9Result.success(formData);
     }
@@ -195,6 +218,89 @@ public class FormNTKO4GfgController {
                 LOGGER.error("关闭流失败", e);
             }
         }
+    }
+
+    /**
+     * 保存合并文件
+     *
+     * @param wordType 文档类型,1为合并文件,2为合并版式文件
+     * @param fileType 文件类型,.doc,.docx,.wps,.ofd等
+     * @param listType 列表类型,1为附件合并,2为文件合并
+     * @param processSerialNumber 流程编号，listType为2时为空
+     * @param sourceFileId 版式文件源id，wordType为2,版式文件时不为空，传源合并文件id
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param file 文件
+     * @param request 请求
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/saveMergeFile")
+    public Y9Result<Object> saveMergeFile(@RequestParam String wordType, @RequestParam String fileType,
+        @RequestParam String listType, @RequestParam(required = false) String sourceFileId,
+        @RequestParam(required = false) String processSerialNumber, @RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam MultipartFile file, HttpServletRequest request) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
+        if (multipartFile == null) {
+            multipartFile = file;
+        }
+        try {
+            String newprocessSerialNumber = processSerialNumber;
+            if (StringUtils.isBlank(processSerialNumber)) {
+                newprocessSerialNumber = userId;
+            }
+            String fileName = "合并文件" + fileType;
+            String id = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+
+            // *****************文件名处理
+            if (StringUtils.isNotBlank(sourceFileId)) {// 合并文件转ofd文件
+                List<MergeFileModel> mlist = mergeFileApi.getOfdFile(tenantId, sourceFileId).getData();
+                if (mlist.size() > 0) {// 判断源合并文件是否已经转过ofd文件，如已经转过，则更新ofd文件
+                    id = mlist.get(0).getId();
+                    fileName = mlist.get(0).getFileName();// 文件名使用原文件名
+                } else {// 使用源合并文件名拼接文件类型
+                    MergeFileModel mergeFileModel = mergeFileApi.getMergeFile(tenantId, sourceFileId).getData();
+                    fileName = mergeFileModel.getFileName().split(".")[0] + fileType;
+                }
+            } else {// 合并文件
+                List<MergeFileModel> mergeFileList = mergeFileApi
+                    .getMergeFileList(tenantId, person.getId(), processSerialNumber, listType, wordType).getData();
+                if (mergeFileList.size() > 0) {
+                    String oldfileName = mergeFileList.get(mergeFileList.size() - 1).getFileName();
+                    if (oldfileName.contains("(")) {// 获取最后的文件名 +1
+                        oldfileName.replace("(", "&").replace(")", "&");
+                        String index = oldfileName.split("&")[1];
+                        fileName = "合并文件(" + (Integer.parseInt(index) + 1) + ")" + fileType;
+                    } else {
+                        fileName = "合并文件(1)" + fileType;
+                    }
+                }
+            }
+            // *****************文件名处理
+
+            String fullPath =
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "mergeFile", newprocessSerialNumber);
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, fileName);
+            LOGGER.info("=======fileType=======:" + fileType + "=========y9FileStoreId========:" + y9FileStore.getId());
+            MergeFileModel mergeFileModel = new MergeFileModel();
+            mergeFileModel.setId(id);
+            mergeFileModel.setFileName(fileName);
+            mergeFileModel.setListType(listType);
+            mergeFileModel.setFileStoreId(y9FileStore.getId());
+            mergeFileModel.setProcessSerialNumber(StringUtils.isBlank(processSerialNumber) ? "" : processSerialNumber);
+            mergeFileModel.setPersonName(person.getName());
+            mergeFileModel.setPersonId(person.getId());
+            mergeFileModel.setFileType(wordType);// 存wordType
+            mergeFileModel.setCreateTime(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            mergeFileModel.setSourceFileId(sourceFileId);
+            return mergeFileApi.saveMergeFile(tenantId, mergeFileModel);
+        } catch (Exception e) {
+            LOGGER.error("保存合并文件失败", e);
+        }
+        return Y9Result.failure("保存合并文件失败");
     }
 
     /**
@@ -310,20 +416,21 @@ public class FormNTKO4GfgController {
      */
     @PostMapping(value = "/uploadQingyang")
     public Y9Result<String> uploadQingyang(@RequestParam String fileType, @RequestParam String processSerialNumber,
-        @RequestParam String id, @RequestParam String tenantId, @RequestParam String userId, @RequestParam MultipartFile file,
-        HttpServletRequest request) {
+        @RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam MultipartFile file, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
-        if(multipartFile == null){
+        if (multipartFile == null) {
             multipartFile = file;
         }
         try {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, "清样文件" + fileType);
-            LOGGER.info("==========fileType==========:"+fileType+ "=============y9FileStoreId=============:"+y9FileStore.getId());
+            LOGGER.info("==========fileType==========:" + fileType + "=============y9FileStoreId=============:"
+                + y9FileStore.getId());
             Boolean flag = typeSettingInfoApi.updateFile(tenantId, id, y9FileStore.getId(), fileType).isSuccess();
             if (flag) {
                 return Y9Result.success(y9FileStore.getId());
@@ -350,15 +457,16 @@ public class FormNTKO4GfgController {
     public Y9Result<DocumentWordModel> uploadWord(@RequestParam String fileType, @RequestParam Integer type,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam String wordType, @RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam(required = false) String signId, @RequestParam(required = false) MultipartFile file, HttpServletRequest request) {
+        @RequestParam String userId, @RequestParam(required = false) String signId,
+        @RequestParam(required = false) MultipartFile file, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartFile multipartFile = null;
-        if(file != null){
+        if (file != null) {
             multipartFile = file;
         }
-        if(multipartFile == null){
+        if (multipartFile == null) {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             multipartFile = multipartRequest.getFile("currentDoc");
         }
