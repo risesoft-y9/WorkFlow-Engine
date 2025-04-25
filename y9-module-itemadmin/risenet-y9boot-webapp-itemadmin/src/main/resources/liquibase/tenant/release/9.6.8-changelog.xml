@@ -918,7 +918,59 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="1704700543333-47" author="yihong" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ATTACHMENT_CONF"/>
+            </not>
+        </preConditions>
+        <createTable remarks="附件配置表" tableName="FF_ATTACHMENT_CONF">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ATTACHMENTTYPE" remarks="附件类型" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COLUMNNAME" remarks="字段名称" type="VARCHAR(50)"/>
+            <column name="DISPLAYNAME" remarks="显示名称" type="VARCHAR(50)"/>
+            <column name="DISPLAYWIDTH" remarks="显示宽度" type="VARCHAR(50)"/>
+            <column name="DISPLAYALIGN" remarks="排列方式" type="VARCHAR(10)"/>
+            <column name="CONFIGTYPE" remarks="配置类型" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INPUTBOXTYPE" remarks="输入框类型" type="VARCHAR(20)"/>
+            <column name="ISREQUIRED" remarks="是否必填" type="INT" defaultValueNumeric="0"/>
+            <column name="SPANWIDTH" remarks="输入框宽度" type="VARCHAR(50)"/>
+            <column name="LABELNAME" remarks="标签名称" type="VARCHAR(20)"/>
+            <column name="OPTIONCLASS" remarks="绑定数据字典" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
     <changeSet id="1704700543333-48" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_MERGE_FILE"/>
+            </not>
+        </preConditions>
+        <createTable remarks="合并文件信息表" tableName="FF_MERGE_FILE">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(50)"/>
+            <column name="SOURCEFILEID" remarks="源文件id,版式文件的源文件id" type="VARCHAR(50)"/>
+            <column name="FILETYPE" remarks="文件类型,1为合并文件,2为合并版式文件" type="VARCHAR(10)"/>
+            <column name="LISTTYPE" remarks="列表类型,1为附件合并,2为文件合并" type="VARCHAR(10)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="PERSONNAME" remarks="合并人" type="VARCHAR(50)"/>
+            <column name="PERSONID" remarks="合并人员Id" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="合并时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700543333-49" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <columnExists tableName="FF_ACT_RU_DETAIL" columnName="SENDUSERID"/>
@@ -932,7 +984,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="1704700543333-49" author="qinMan" runOnChange="true">
+    <changeSet id="1704700543333-50" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="FF_TODO3RD"/>
@@ -1002,26 +1054,4 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700543333-47" author="qinMan" runOnChange="true">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="FF_MERGE_FILE"/>
-            </not>
-        </preConditions>
-        <createTable remarks="合并文件信息表" tableName="FF_MERGE_FILE">
-            <column name="ID" remarks="主键" type="VARCHAR(38)">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
-            <column name="FILENAME" remarks="文件名称" type="VARCHAR(50)"/>
-            <column name="SOURCEFILEID" remarks="源文件id,版式文件的源文件id" type="VARCHAR(50)"/>
-            <column name="FILETYPE" remarks="文件类型,1为合并文件,2为合并版式文件" type="VARCHAR(10)"/>
-            <column name="LISTTYPE" remarks="列表类型,1为附件合并,2为文件合并" type="VARCHAR(10)"/>
-            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
-            <column name="PERSONNAME" remarks="合并人" type="VARCHAR(50)"/>
-            <column name="PERSONID" remarks="合并人员Id" type="VARCHAR(50)"/>
-            <column name="CREATETIME" remarks="合并时间" type="VARCHAR(50)"/>
-        </createTable>
-    </changeSet>
-
 </databaseChangeLog>
