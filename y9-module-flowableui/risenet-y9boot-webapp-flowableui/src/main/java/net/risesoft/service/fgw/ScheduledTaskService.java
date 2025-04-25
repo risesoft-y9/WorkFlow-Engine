@@ -54,39 +54,23 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 public class ScheduledTaskService {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private final JdbcTemplate jdbcTemplate;
-
     private final FormDataApi formDataApi;
-
     private final DocumentApi documentApi;
-
     private final PositionApi positionApi;
-
     private final ProcessParamApi processParamApi;
-
     private final ErrorLogApi errorLogApi;
-
     private final VariableApi variableApi;
-
     private final TaskApi taskApi;
-
     private final TaskRelatedApi taskRelatedApi;
-
     private final PushDataService pushDataService;
-
     private final ButtonOperationService buttonOperationService;
-
     private final String taskKey = "msecbhfw";// 任务【秘书二处编号发文】key
-
     private final String completedTaskKey = "bgtfwrbj";// 任务【办公厅发文人办结】key
-
     private final String actionName = "送拟稿人眷清(自动发送)";// 动作事件名称
-
     private final String routeToTaskId = "ngrtq";// 任务【拟稿人誊清】key
-
     private final String tableAlias = "fwd";// 发文单表别名
-
+    @Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
     @Value("${y9.common.tenantId}")
     private String tenantId;
 
