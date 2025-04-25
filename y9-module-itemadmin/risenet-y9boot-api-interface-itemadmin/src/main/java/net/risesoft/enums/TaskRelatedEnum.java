@@ -35,7 +35,9 @@ public enum TaskRelatedEnum {
     FWWH_DELETE("10", "撤销发文文号"),
     /** -------------------如果任务的相关信息不在待办列表显示，请设置值大于20-------------------------------------------- **/
     /** 操作名称 */
-    ACTIONNAME("20", "操作名称");
+    ACTIONNAME("20", "操作名称"),
+    /** 办结类型 */
+    COMPLETEDTYPE("21", "办结类型");
 
     private final String value;
     private final String name;
