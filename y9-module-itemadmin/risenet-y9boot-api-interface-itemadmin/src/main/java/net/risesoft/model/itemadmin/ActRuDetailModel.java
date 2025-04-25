@@ -118,6 +118,26 @@ public class ActRuDetailModel implements Serializable {
     private String bureauName;
 
     /**
+     * 发送人ID
+     */
+    private String sendUserId;
+
+    /**
+     * 发送人姓名
+     */
+    private String sendUserName;
+
+    /**
+     * 发送人部门ID
+     */
+    private String sendDeptId;
+
+    /**
+     * 发送人部门名称
+     */
+    private String sendDeptName;
+
+    /**
      * 办理人姓名
      */
     private String assigneeName;

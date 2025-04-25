@@ -125,6 +125,22 @@ public class ActRuDetail implements Serializable {
     @Column(name = "BUREAUNAME", length = 50)
     private String bureauName;
 
+    @Comment("发送人ID")
+    @Column(name = "SENDUSERID", length = 50)
+    private String sendUserId;
+
+    @Comment("发送人姓名")
+    @Column(name = "SENDUSERNAME", length = 50)
+    private String sendUserName;
+
+    @Comment("发送人部门ID")
+    @Column(name = "SENDDEPTID", length = 50)
+    private String sendDeptId;
+
+    @Comment("发送人部门名称")
+    @Column(name = "SENDDEPTNAME", length = 50)
+    private String sendDeptName;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("生成时间")

@@ -41,6 +41,9 @@ import net.risesoft.repository.jpa.ActRuDetailRepository;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.event.Y9TodoCreatedEvent;
+import net.risesoft.service.event.Y9TodoDeletedEvent;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -123,17 +126,23 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         return count;
     }
 
+    /**
+     * 放入回收站时，为待办状态的需要调用第三方接口删除待办
+     *
+     * @param processSerialNumber
+     * @return
+     */
     @Override
     @Transactional
     public boolean deletedByProcessSerialNumber(String processSerialNumber) {
         try {
-            List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
             List<ActRuDetail> listTemp = new ArrayList<>();
-            for (ActRuDetail actRuDetail : list) {
+            actRuDetailRepository.findByProcessSerialNumber(processSerialNumber).forEach(actRuDetail -> {
                 actRuDetail.setDeleted(true);
                 listTemp.add(actRuDetail);
-            }
+            });
             actRuDetailRepository.saveAll(listTemp);
+            listTemp.forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
             return true;
         } catch (Exception e) {
             LOGGER.error("Delete act_ru_detail error", e);
@@ -141,6 +150,12 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         return false;
     }
 
+    /**
+     * 正常办结时，会先监听到任务的删除事件，任务的删除事件会调用第三方待办删除接口，所以这里不再需要调用第三方待办接口
+     *
+     * @param processInstanceId
+     * @return
+     */
     @Override
     @Transactional
     public boolean endByProcessInstanceId(String processInstanceId) {
@@ -166,20 +181,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             .collect(Collectors.toList());
         list.forEach(actRuDetail -> actRuDetail.setDeleted(true));
         actRuDetailRepository.saveAll(list);
-        return true;
-    }
-
-    @Override
-    @Transactional
-    public boolean endByProcessSerialNumber(String processSerialNumber) {
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
-        List<ActRuDetail> listTemp = new ArrayList<>();
-        for (ActRuDetail actRuDetail : list) {
-            actRuDetail.setStatus(1);
-            actRuDetail.setEnded(true);
-            listTemp.add(actRuDetail);
-        }
-        actRuDetailRepository.saveAll(listTemp);
+        list.forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
         return true;
     }
 
@@ -362,32 +364,49 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         return false;
     }
 
+    /**
+     * 真办结后恢复待办，会产生新的任务，不需要在这里调用第三方待办接口
+     *
+     * @param processInstanceId 流程实例id
+     * @return
+     */
     @Override
     @Transactional
     public boolean recoveryByProcessInstanceId(String processInstanceId) {
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
         List<ActRuDetail> listTemp = new ArrayList<>();
-        for (ActRuDetail actRuDetail : list) {
+        actRuDetailRepository.findByProcessInstanceId(processInstanceId).forEach(actRuDetail -> {
             actRuDetail.setEnded(false);
             listTemp.add(actRuDetail);
-        }
+        });
         actRuDetailRepository.saveAll(listTemp);
         return true;
     }
 
+    /**
+     * 删除后恢复待办，之前为待办状态的需要调用第三方待办接口
+     *
+     * @param processSerialNumber 流程序列号
+     * @return
+     */
     @Override
     @Transactional
     public boolean recoveryByProcessSerialNumber(String processSerialNumber) {
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
         List<ActRuDetail> listTemp = new ArrayList<>();
-        for (ActRuDetail actRuDetail : list) {
+        actRuDetailRepository.findByProcessSerialNumber(processSerialNumber).forEach(actRuDetail -> {
             actRuDetail.setDeleted(false);
             listTemp.add(actRuDetail);
-        }
+        });
         actRuDetailRepository.saveAll(listTemp);
+        listTemp.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue()))
+            .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail)));
         return true;
     }
 
+    /**
+     * 减签恢复会签时，之前为待办状态的需要调用第三方待办接口
+     *
+     * @param executionId 执行id
+     */
     @Override
     @Transactional
     public void recoveryByExecutionId(String executionId) {
@@ -400,58 +419,41 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             .collect(Collectors.toList());
         list.forEach(actRuDetail -> actRuDetail.setDeleted(false));
         actRuDetailRepository.saveAll(list);
+        list.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue()))
+            .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail)));
     }
 
-    @Override
-    @Transactional
-    public boolean recoveryTodoByProcessSerialNumber(String processSerialNumber, String todoPersonId) {
-        try {
-            List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
-            List<ActRuDetail> listTemp = new ArrayList<>();
-            for (ActRuDetail actRuDetail : list) {
-                actRuDetail.setEnded(false);
-                if (StringUtils.isEmpty(todoPersonId)) {
-                    actRuDetail.setStatus(0);
-                } else {
-                    if (todoPersonId.equals(actRuDetail.getAssignee())) {
-                        actRuDetail.setStatus(0);
-                        actRuDetail.setLastTime(new Date());
-                    }
-                }
-                listTemp.add(actRuDetail);
-            }
-            actRuDetailRepository.saveAll(listTemp);
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("Recovery todo act_ru_detail error", e);
-        }
-        return false;
-    }
-
+    /**
+     * 彻底删除流程实例时，为待办状态的需要调用第三方接口删除待办
+     *
+     * @param processInstanceId
+     * @return
+     */
     @Override
     @Transactional
     public boolean removeByProcessInstanceId(String processInstanceId) {
         List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
         actRuDetailRepository.deleteAll(list);
+        list.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue()))
+            .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
         return true;
     }
 
+    /**
+     * 彻底删除流程实例时，为非删除状态且待办状态的需要调用第三方接口删除待办
+     *
+     * @param processSerialNumber
+     * @return
+     */
     @Override
     @Transactional
     public boolean removeByProcessSerialNumber(String processSerialNumber) {
         List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
         actRuDetailRepository.deleteAll(list);
-        return true;
-    }
-
-    @Override
-    @Transactional
-    public boolean removeByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee) {
-        ActRuDetail actRuDetail =
-            actRuDetailRepository.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
-        if (null != actRuDetail) {
-            actRuDetailRepository.delete(actRuDetail);
-        }
+        list.stream()
+            .filter(actRuDetail -> !actRuDetail.isDeleted()
+                && actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue()))
+            .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
         return true;
     }
 
@@ -499,7 +501,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         String assignee = actRuDetail.getAssignee();
         ActRuDetail doing = this.findByProcessSerialNumberAndAssigneeAndStatusEquals1(processSerialNumber, assignee);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+        OrgUnit sendDept =
+            orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getSendDeptId()).getData();
         if (null != doing) {
+            doing.setSendUserId(actRuDetail.getSendUserId());
+            doing.setSendUserName(actRuDetail.getSendUserName());
+            doing.setSendDeptId(actRuDetail.getSendDeptId());
+            doing.setSendDeptName(actRuDetail.getSendDeptName());
             doing.setLastTime(actRuDetail.getLastTime());
             doing.setStatus(actRuDetail.getStatus());
             doing.setTaskId(actRuDetail.getTaskId());
@@ -516,12 +524,15 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             doing.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
                 .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
             actRuDetailRepository.save(doing);
+            if (actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue())) {
+                Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail));
+            }
             return true;
         }
-
-        actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+        actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         actRuDetail.setDeptName(dept.getName());
+        actRuDetail.setSendDeptName(sendDept.getName());
         actRuDetail.setSystemName(processParam.getSystemName());
         actRuDetail.setDueDate(processParam.getDueDate());
         actRuDetail.setDeleted(false);
@@ -533,6 +544,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         actRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
             : actRuDetail.getSignStatus());
         actRuDetailRepository.save(actRuDetail);
+        Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail));
         return true;
     }
 
@@ -548,6 +560,11 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 : ActRuDetailSignStatusEnum.NONE.getValue());
             ard.setAssigneeName(
                 orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), ard.getAssignee()).getData().getName());
+            actRuDetailRepository.save(ard);
+
+            if (!ard.getAssignee().equals(assignee)) {
+                Y9Context.publishEvent(new Y9TodoDeletedEvent<>(ard));
+            }
         });
         return Y9Result.success();
     }
@@ -556,6 +573,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Transactional
     public Y9Result<Object> unClaim(String taskId) {
         List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
+        TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
         StringBuffer names = new StringBuffer();
         ardList.forEach(ard -> {
             if (StringUtils.isBlank(names)) {
@@ -570,6 +588,10 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             ard.setLastTime(new Date());
             ard.setAssigneeName(names.toString());
             actRuDetailRepository.save(ard);
+
+            if (!task.getAssignee().equals(ard.getAssignee())) {
+                Y9Context.publishEvent(new Y9TodoCreatedEvent<>(ard));
+            }
         });
         return Y9Result.success();
     }
@@ -602,53 +624,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     @Transactional
-    public boolean createTodo(ActRuDetail actRuDetail) {
-        initSubNodeMap(actRuDetail.getProcessDefinitionId());
-        String processSerialNumber = actRuDetail.getProcessSerialNumber();
-        String assignee = actRuDetail.getAssignee();
-        ActRuDetail oldActRuDetail = actRuDetailRepository.findByTaskIdAndAssignee(processSerialNumber, assignee);
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-        if (null != oldActRuDetail) {
-            oldActRuDetail.setLastTime(actRuDetail.getLastTime());
-            oldActRuDetail.setStatus(actRuDetail.getStatus());
-            if (StringUtils.isNotBlank(actRuDetail.getTaskId())) {
-                oldActRuDetail.setTaskId(actRuDetail.getTaskId());
-            }
-            oldActRuDetail.setProcessInstanceId(actRuDetail.getProcessInstanceId());
-            oldActRuDetail.setExecutionId(actRuDetail.getExecutionId());
-            oldActRuDetail.setStarted(actRuDetail.isStarted());
-            oldActRuDetail.setDueDate(processParam.getDueDate());
-            oldActRuDetail.setProcessDefinitionId(actRuDetail.getProcessDefinitionId());
-            oldActRuDetail.setAssigneeName(actRuDetail.getAssigneeName());
-            oldActRuDetail.setTaskDefKey(actRuDetail.getTaskDefKey());
-            oldActRuDetail.setTaskDefName(actRuDetail.getTaskDefName());
-            oldActRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
-                : actRuDetail.getSignStatus());
-            oldActRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
-                .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
-            actRuDetailRepository.save(oldActRuDetail);
-            return true;
-        }
-
-        actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
-        actRuDetail.setDeptName(dept.getName());
-        actRuDetail.setSystemName(processParam.getSystemName());
-        actRuDetail.setDueDate(processParam.getDueDate());
-        actRuDetail.setDeleted(false);
-        actRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
-            .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
-        OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
-        actRuDetail.setBureauId(bureau.getId());
-        actRuDetail.setBureauName(bureau.getName());
-        actRuDetail.setSignStatus(null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE.getValue()
-            : actRuDetail.getSignStatus());
-        actRuDetailRepository.save(actRuDetail);
-        return true;
-    }
-
-    @Override
-    @Transactional
     public Y9Result<Object> todo2doing(String taskId, String assignee) {
         ActRuDetail todo = actRuDetailRepository.findByTaskIdAndAssignee(taskId, assignee);
         List<ActRuDetail> doingList = actRuDetailRepository.findByProcessSerialNumberAndAssigneeAndStatus(
@@ -657,18 +632,19 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             todo.setStatus(ActRuDetailStatusEnum.DOING.getValue());
             todo.setLastTime(new Date());
             actRuDetailRepository.save(todo);
-            return Y9Result.success();
+        } else {
+            ActRuDetail doing = doingList.get(0);
+            doing.setLastTime(new Date());
+            doing.setTaskId(todo.getTaskId());
+            doing.setTaskDefKey(todo.getTaskDefKey());
+            doing.setTaskDefName(todo.getTaskDefName());
+            doing.setExecutionId(todo.getExecutionId());
+            doing.setSub(SUB_NODE_MAP.get(todo.getProcessDefinitionId()).stream()
+                .anyMatch(taskDefKey -> taskDefKey.equals(todo.getTaskDefKey())));
+            actRuDetailRepository.save(doing);
+            actRuDetailRepository.delete(todo);
         }
-        ActRuDetail doing = doingList.get(0);
-        doing.setLastTime(new Date());
-        doing.setTaskId(todo.getTaskId());
-        doing.setTaskDefKey(todo.getTaskDefKey());
-        doing.setTaskDefName(todo.getTaskDefName());
-        doing.setExecutionId(todo.getExecutionId());
-        doing.setSub(SUB_NODE_MAP.get(todo.getProcessDefinitionId()).stream()
-            .anyMatch(taskDefKey -> taskDefKey.equals(todo.getTaskDefKey())));
-        actRuDetailRepository.save(doing);
-        actRuDetailRepository.delete(todo);
+        Y9Context.publishEvent(new Y9TodoDeletedEvent<>(todo));
         return Y9Result.success();
     }
 
