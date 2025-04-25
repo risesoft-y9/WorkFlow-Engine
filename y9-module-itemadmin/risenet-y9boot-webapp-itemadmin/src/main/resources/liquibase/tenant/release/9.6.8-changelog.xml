@@ -949,7 +949,7 @@
             <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
             <column name="PERSONNAME" remarks="合并人" type="VARCHAR(50)"/>
             <column name="PERSONID" remarks="合并人员Id" type="VARCHAR(50)"/>
-            <column name="CREATEDATE" remarks="合并时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="合并时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
 
