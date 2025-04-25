@@ -166,8 +166,8 @@ public class FormDataServiceImpl implements FormDataService {
             return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
         }
         String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID ='" + guid + "'";
-        Map<String, Object> map = jdbcTemplate.queryForMap(selectSql);
-        return Y9Result.success(map);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql);
+        return Y9Result.success(list.size() > 0 ? list.get(0) : null);
     }
 
     @Override
