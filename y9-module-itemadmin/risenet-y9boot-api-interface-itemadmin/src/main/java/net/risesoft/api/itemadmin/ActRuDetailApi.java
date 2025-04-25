@@ -45,18 +45,6 @@ public interface ActRuDetailApi {
         @RequestParam("executionId") String executionId);
 
     /**
-     * 根据流程编号标记流程为办结
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @PostMapping("/endByProcessSerialNumber")
-    Y9Result<Object> endByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
-
-    /**
      * 根据流程实例和状态查找正在办理的人员信息
      *
      * @param tenantId 租户id
@@ -167,19 +155,6 @@ public interface ActRuDetailApi {
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
-     * 删除某个参与人的办件详情
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param assignee 办理人id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @PostMapping("/removeByProcessSerialNumberAndAssignee")
-    Y9Result<Object> removeByProcessSerialNumberAndAssignee(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("assignee") String assignee);
-
-    /**
      * 保存或者更新
      *
      * @param tenantId 租户id
@@ -227,18 +202,6 @@ public interface ActRuDetailApi {
     @PostMapping(value = "/refuseClaim", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> refuseClaim(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestParam("assignee") String assignee);
-
-    /**
-     * 保存待办
-     *
-     * @param tenantId 租户id
-     * @param actRuDetailModel 详情对象
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @PostMapping(value = "/createTodo", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createTodo(@RequestParam("tenantId") String tenantId,
-        @RequestBody ActRuDetailModel actRuDetailModel);
 
     /**
      * 待办改为在办

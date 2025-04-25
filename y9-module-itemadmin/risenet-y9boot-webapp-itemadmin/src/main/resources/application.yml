@@ -220,6 +220,7 @@ y9:
         flowableBaseUrl: https://dev.youshengyun.com/flowableUI/index
         logBaseUrl: http://localhost:7056/log
         userOnlineBaseUrl: http://localhost:7056/userOnline
+        todo3rdUrl: http://localhost:7057/itemAdmin
     feature:
         file:
             base64FileName: false

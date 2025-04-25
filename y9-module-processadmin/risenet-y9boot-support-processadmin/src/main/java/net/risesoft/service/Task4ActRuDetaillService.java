@@ -99,6 +99,12 @@ public class Task4ActRuDetaillService {
         model.setDeleted(false);
         model.setStartTime(getStartTime(taskEntity.getProcessInstanceId()));
         model.setSignStatus(ActRuDetailSignStatusEnum.NONE.getValue());
+
+        String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASKSENDERID);
+        OrgUnit sendUser = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskSenderId).getData();
+        model.setSendUserId(taskSenderId);
+        model.setSendUserName(sendUser.getName());
+        model.setSendDeptId(sendUser.getParentId());
         return model;
     }
 

@@ -8,23 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.collect.Lists;
-import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.processadmin.HistoricProcessApi;
-import net.risesoft.model.processadmin.TargetModel;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
@@ -34,9 +29,13 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
+import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
+import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -246,7 +245,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (String processSerialNumber : processSerialNumbers) {
             actRuDetailApi.recoveryByProcessSerialNumber(tenantId, processSerialNumber);
-            //TODO 删除第三方统一待办
         }
         return Y9Result.successMsg("成功恢复" + processSerialNumbers.length + "条待办");
     }
@@ -260,7 +258,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             // 删除流程实例
             historicProcessApi.deleteProcessInstance(tenantId, processParamModel.getProcessInstanceId());
-            // TODO 删除业务数据
         }
         return Y9Result.successMsg("成功删除" + processSerialNumbers.length + "条待办");
     }

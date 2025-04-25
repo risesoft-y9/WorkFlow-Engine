@@ -69,14 +69,6 @@ public interface ActRuDetailService {
     boolean deleteByExecutionId(String executionId);
 
     /**
-     * 标记流程为办结
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    boolean endByProcessSerialNumber(String processSerialNumber);
-
-    /**
      * 根据流程实例Id和办理人查找(一个件一个人只会有一个在办信息)
      *
      * @param processInstanceId
@@ -333,16 +325,6 @@ public interface ActRuDetailService {
     void recoveryByExecutionId(String executionId);
 
     /**
-     *
-     * Description: 恢复流程的办理详情
-     *
-     * @param processSerialNumber
-     * @param todoPersonId
-     * @return
-     */
-    boolean recoveryTodoByProcessSerialNumber(String processSerialNumber, String todoPersonId);
-
-    /**
      * 删除流程的办理详情
      *
      * @param processInstanceId
@@ -357,16 +339,6 @@ public interface ActRuDetailService {
      * @return
      */
     boolean removeByProcessSerialNumber(String processSerialNumber);
-
-    /**
-     *
-     * Description: 删除某个参与人的办理详情
-     *
-     * @param processSerialNumber
-     * @param assignee
-     * @return
-     */
-    boolean removeByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee);
 
     /**
      *
@@ -414,14 +386,6 @@ public interface ActRuDetailService {
      * @since 9.6.8
      */
     Y9Result<Object> refuseClaim(String taskId, String assignee);
-
-    /**
-     * 保存或者更新
-     *
-     * @param actRuDetail
-     * @return
-     */
-    boolean createTodo(ActRuDetail actRuDetail);
 
     Y9Result<Object> todo2doing(String taskId, String assignee);
 

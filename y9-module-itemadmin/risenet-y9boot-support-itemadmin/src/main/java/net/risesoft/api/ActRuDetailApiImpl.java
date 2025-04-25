@@ -36,7 +36,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     private final ActRuDetailService actRuDetailService;
 
     /**
-     * 根据流程实例id标记流程为办结状态
+     * 流程办结监听-->根据流程实例id标记流程为办结状态
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
@@ -63,22 +63,6 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     public Y9Result<Object> deleteByExecutionId(@RequestParam String tenantId, @RequestParam String executionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         actRuDetailService.deleteByExecutionId(executionId);
-        return Y9Result.success();
-    }
-
-    /**
-     * 根据流程编号标记流程为办结状态
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> endByProcessSerialNumber(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        actRuDetailService.endByProcessSerialNumber(processSerialNumber);
         return Y9Result.success();
     }
 
@@ -251,23 +235,6 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 删除指定办理人的办件详情
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param assignee 办理人id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> removeByProcessSerialNumberAndAssignee(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam String assignee) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        actRuDetailService.removeByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
-        return Y9Result.success();
-    }
-
-    /**
      * 保存或者更新流转信息
      *
      * @param tenantId 租户id
@@ -329,23 +296,6 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.refuseClaim(taskId, assignee);
-    }
-
-    /**
-     * 保存或者更新流转信息
-     *
-     * @param tenantId 租户id
-     * @param actRuDetailModel 详情对象
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> createTodo(@RequestParam String tenantId, @RequestBody ActRuDetailModel actRuDetailModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        ActRuDetail actRuDetail = new ActRuDetail();
-        Y9BeanUtil.copyProperties(actRuDetailModel, actRuDetail);
-        actRuDetailService.saveOrUpdate(actRuDetail);
-        return Y9Result.success();
     }
 
     @Override
