@@ -9,13 +9,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +55,7 @@ import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.fgw.HTKYService;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.util.gfg.OpinionUtil;
 import net.risesoft.y9.Y9Context;
@@ -98,6 +103,12 @@ public class FormNTKO4GfgController {
     private final PaperAttachmentApi paperAttachmentApi;
 
     private final MergeFileApi mergeFileApi;
+
+    @Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private HTKYService htkyService;
 
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
@@ -180,6 +191,94 @@ public class FormNTKO4GfgController {
         formData.put("DT_zzfj", paperAttList);
 
         return Y9Result.success(formData);
+    }
+
+    /**
+     * 清样生成二维码(每次调用生成新的二维码)
+     *
+     * @param processSerialNumber
+     * @param tenantId
+     * @param request
+     * @param response
+     */
+    @RequestMapping("/getQYTmhPicture")
+    public void getQYTmhPicture(@RequestParam String processSerialNumber, @RequestParam String tenantId,
+        HttpServletRequest request, HttpServletResponse response) {
+        String tmh = "";
+        try {
+            Y9LoginUserHolder.setTenantId(tenantId);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            String sql = "select * from y9_form_fw where guid = '" + processSerialNumber + "'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list != null && list.size() > 0) {
+                byte[] bytes = htkyService.getQYTmhPicture(list.get(0));
+                tmh = list.get(0).get("tmh") == null ? "" : list.get(0).get("tmh").toString();
+                if (StringUtils.isNotBlank(tmh)) {
+                    LOGGER.info("清样生成二维码的条码号" + tmh);
+                    String filename = tmh + ".jpg";
+                    if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+                        filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
+                    } else {
+                        filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                    }
+                    OutputStream out = response.getOutputStream();
+                    response.reset();
+                    response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
+                    response.setHeader("Content-type", "text/html;charset=UTF-8");
+                    response.setContentType("application/octet-stream");
+                    out.write(bytes);
+                    out.flush();
+                    out.close();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.info("清样生成二维码错误的条码号" + tmh);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取条形码图片
+     *
+     * @param processSerialNumber 流程编号id
+     * @param tenantId 租户id
+     * @param request
+     * @param response
+     */
+    @RequestMapping("/getTmhPicture")
+    public void getTmhPicture(@RequestParam String processSerialNumber, @RequestParam String tenantId,
+        HttpServletRequest request, HttpServletResponse response) {
+        String tmh = "";
+        String filename = "";
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            String sql = "select * from y9_form_fw where guid = '" + processSerialNumber + "'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list != null && list.size() > 0) {
+                tmh = list.get(0).get("tmh") == null ? "" : list.get(0).get("tmh").toString();
+                if (StringUtils.isNotBlank(tmh)) {
+                    byte[] bytes = htkyService.getTmhPicture(tmh);
+                    LOGGER.info("需要生成图片的条码号：" + tmh);
+                    filename = tmh + ".jpg";
+                    if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+                        filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
+                    } else {
+                        filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                    }
+                    OutputStream out = response.getOutputStream();
+                    response.reset();
+                    response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
+                    response.setHeader("Content-type", "text/html;charset=UTF-8");
+                    response.setContentType("application/octet-stream");
+                    out.write(bytes);
+                    out.flush();
+                    out.close();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.info("生成或下载条码有问题的tmh:" + tmh);
+            e.printStackTrace();
+        }
     }
 
     /**

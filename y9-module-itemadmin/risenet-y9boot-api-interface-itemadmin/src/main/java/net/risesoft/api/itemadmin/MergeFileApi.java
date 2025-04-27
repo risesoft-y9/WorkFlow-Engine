@@ -29,7 +29,7 @@ public interface MergeFileApi {
      * @since 9.6.0
      */
     @PostMapping(value = "/delMergeFile", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> delMergeFile(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
+    Y9Result<Object> delMergeFile(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String[] ids);
 
     /**
      * 根据id获取合并文件
@@ -40,7 +40,8 @@ public interface MergeFileApi {
      * @since 9.6.0
      */
     @GetMapping(value = "/findByIds", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<List<MergeFileModel>> findByIds(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
+    Y9Result<List<MergeFileModel>> findByIds(@RequestParam("tenantId") String tenantId,
+        @RequestParam("ids") String[] ids);
 
     /**
      * 根据id获取合并文件
