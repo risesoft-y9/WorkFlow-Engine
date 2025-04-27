@@ -47,7 +47,7 @@ public class MergeFileApiImpl implements MergeFileApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> delMergeFile(@RequestParam String tenantId, @RequestBody String[] ids) {
+    public Y9Result<Object> delMergeFile(@RequestParam String tenantId, @RequestParam String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return mergeFileService.delMergeFile(ids);
     }
@@ -61,7 +61,7 @@ public class MergeFileApiImpl implements MergeFileApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<List<MergeFileModel>> findByIds(@RequestParam String tenantId, @RequestBody String[] ids) {
+    public Y9Result<List<MergeFileModel>> findByIds(@RequestParam String tenantId, @RequestParam String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<MergeFile> list = mergeFileRepository.findByIdIn(ids);
         List<MergeFileModel> res_list = new ArrayList<>();
