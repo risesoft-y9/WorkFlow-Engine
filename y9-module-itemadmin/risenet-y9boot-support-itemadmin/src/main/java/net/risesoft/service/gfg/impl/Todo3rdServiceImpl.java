@@ -215,6 +215,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
             .receiveDeptName(actRuDetail.getDeptName()).receiveTime(sdf.format(actRuDetail.getCreateTime()))
             .sendUserId(sendUserId).sendUserName(sendUserName).sendDeptId(actRuDetail.getDeptId())
             .sendDeptName(actRuDetail.getSendDeptName()).optType(optType).urgent(urgent).urgentText(urgentText)
+            .processSerialNumber(actRuDetail.getProcessSerialNumber())
             .success(Boolean.TRUE).build();
     }
 
