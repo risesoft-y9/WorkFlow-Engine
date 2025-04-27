@@ -119,6 +119,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                             ? department.getName() : department.getAliasName());
                     signDeptInfo.setProcessSerialNumber(processSerialNumber);
                     signDeptInfo.setDeptType(deptType);
+                    signDeptInfo.setDisplayDeptId(dept.getId());
                     signDeptInfo.setDisplayDeptName(signDeptInfo.getDeptName());
                     if (StringUtils.isNotBlank(tzsDeptId) && dept.getId().equals(tzsDeptId)) {
                         // 需要将显示名称改为原司局单位名称
@@ -137,7 +138,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
             Integer index = 1;
             deptIdList.forEach(deptId -> {
                 SignDeptInfo signDeptInfo = signDeptInfoRepository
-                .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
+                    .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
                 if (signDeptInfo == null) {
                     signDeptInfo = new SignDeptInfo();
                     signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
