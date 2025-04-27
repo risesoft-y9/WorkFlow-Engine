@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.entity.DocumentCopy;
 import net.risesoft.service.event.Y9TodoCreatedEvent;
 import net.risesoft.service.event.Y9TodoDeletedEvent;
 import net.risesoft.service.gfg.Todo3rdService;
@@ -39,6 +40,24 @@ public class ActRuDetailListener {
         todo3rdService.deleteTodo3rd(actRuDetail);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(actRuDetail.getAssigneeName() + "--删除待办");
+        }
+    }
+
+    @TransactionalEventListener
+    public void onTodoCreated4DocumentCopy(Y9TodoCreatedEvent<? extends DocumentCopy> event) {
+        DocumentCopy documentCopy = event.getEntity();
+        todo3rdService.addTodo3rd(documentCopy);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(documentCopy.getUserName() + "--新增会签待办");
+        }
+    }
+
+    @TransactionalEventListener
+    public void onTodoDeleted4DocumentCopy(Y9TodoDeletedEvent<? extends DocumentCopy> event) {
+        DocumentCopy documentCopy = event.getEntity();
+        todo3rdService.deleteTodo3rd(documentCopy);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(documentCopy.getUserName() + "--删除会签待办");
         }
     }
 }

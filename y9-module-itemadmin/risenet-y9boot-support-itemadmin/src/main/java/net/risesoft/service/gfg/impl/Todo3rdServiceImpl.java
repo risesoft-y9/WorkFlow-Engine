@@ -19,16 +19,22 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.TaskRelated;
 import net.risesoft.entity.Todo3rd;
 import net.risesoft.enums.TaskRelatedEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.Todo3rdRepository;
+import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.FormDataService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
@@ -61,7 +67,11 @@ public class Todo3rdServiceImpl implements Todo3rdService {
 
     private final FormDataService formDataService;
 
+    private final DocumentCopyService documentCopyService;
+
     private final PositionApi positionApi;
+
+    private final OrgUnitApi orgUnitApi;
 
     @Value("${y9.common.todo3rdUrl:http://192.168.50.128:8080/todoService/serviceapi}")
     private String todo3rdUrl;
@@ -93,6 +103,77 @@ public class Todo3rdServiceImpl implements Todo3rdService {
             todo3rd.setSuccess(Boolean.FALSE);
             LOGGER.error("调用第三方接口失败：接口地址：{},响应信息：{}", todo3rdUrl + ADDURL,
                 null == todoResponse ? "接口不通" : todoResponse.getMessage());
+        }
+        todo3rd.setMessage(null == todoResponse ? "接口不通" : todoResponse.getMessage());
+        todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
+        todo3rdRepository.save(todo3rd);
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void addTodo3rd(DocumentCopy documentCopy) {
+        ProcessParam processParam =
+            processParamService.findByProcessSerialNumber(documentCopy.getProcessSerialNumber());
+        List<Person> personList =
+            positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), documentCopy.getUserId()).getData();
+        List<Todo3rd> todo3rdList = todo3rdRepository.findByProcessSerialNumberAndReceiveUserIdAndTodoType(
+            documentCopy.getProcessSerialNumber(), personList.get(0).getId(), 2);
+        Todo3rd todo3rd;
+        boolean add = false, update = false;
+        if (todo3rdList.isEmpty()) {
+            add = true;
+            todo3rd = getTodo3rd(documentCopy, processParam, 1);
+        } else {
+            todo3rd = todo3rdList.get(0);
+            Integer optType = todo3rd.getOptType();
+            switch (optType) {
+                case 1:
+                    if (todo3rd.isSuccess()) {
+                        LOGGER.info("{}已存在传签待办：标题：{}", documentCopy.getUserName(), processParam.getTitle());
+                    } else {
+                        add = true;
+                    }
+                    break;
+                case 2:
+                    if (todo3rd.isSuccess()) {
+                        LOGGER.info("{}已存在传签待办：标题：{}", documentCopy.getUserName(), processParam.getTitle());
+                    } else {
+                        // 更新失败，重新更新
+                        update = true;
+                        todo3rd.setTitle(processParam.getTitle());
+                        todo3rd = setUrgent(todo3rd, documentCopy.getProcessSerialNumber());
+                    }
+                    break;
+                case 3:
+                    if (!todo3rd.isSuccess()) {
+                        // 删除失败，这个时候又要新增，重新更新待办
+                        update = true;
+                        todo3rd.setOptType(2);
+                    }
+                    break;
+            }
+        }
+        String timestamp = getFormattedTimestamp(), token = Y9IdGenerator.genId(),
+            vcode = MD5Util.md5Encode(timestamp + APP + token + KEY);
+        todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
+        List<NameValuePair> params = getParams(timestamp, token, vcode);
+        TodoResponse todoResponse = null;
+        String url = "";
+        if (add) {
+            url = todo3rdUrl + ADDURL;
+            SpmApproveItem item = itemService.findById(processParam.getItemId());
+            todo3rd.setUrl(item.getTodoTaskUrlPrefix());
+            todoResponse = RemoteCallUtil.post(url, params, Y9JsonUtil.writeValueAsString(todo3rd), TodoResponse.class);
+        }
+        if (update) {
+            url = todo3rdUrl + UPDATEURL;
+            todoResponse = RemoteCallUtil.put(url, params, Y9JsonUtil.writeValueAsString(todo3rd), TodoResponse.class);
+        }
+        if (null != todoResponse && "success".equals(todoResponse.getType())) {
+            todo3rd.setSuccess(Boolean.TRUE);
+        } else {
+            todo3rd.setSuccess(Boolean.FALSE);
+            LOGGER.error("调用第三方接口失败：接口地址：{},响应信息：{}", url, null == todoResponse ? "接口不通" : todoResponse.getMessage());
         }
         todo3rd.setMessage(null == todoResponse ? "接口不通" : todoResponse.getMessage());
         todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
@@ -159,6 +240,38 @@ public class Todo3rdServiceImpl implements Todo3rdService {
             todo3rd.setMessage(null == todoResponse ? "接口不通" : todoResponse.getMessage());
             todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
             todo3rdRepository.save(todo3rd);
+        }
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void deleteTodo3rd(DocumentCopy documentCopy) {
+        ProcessParam processParam =
+            processParamService.findByProcessSerialNumber(documentCopy.getProcessSerialNumber());
+        List<Person> personList =
+            positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), documentCopy.getUserId()).getData();
+        List<Todo3rd> todo3rdList = todo3rdRepository.findByProcessSerialNumberAndReceiveUserIdAndTodoType(
+            documentCopy.getProcessSerialNumber(), personList.get(0).getId(), 2);
+        if (!todo3rdList.isEmpty()) {
+            Todo3rd todo3rd = todo3rdList.get(0);
+            String timestamp = getFormattedTimestamp(), token = Y9IdGenerator.genId(),
+                vcode = MD5Util.md5Encode(timestamp + APP + token + KEY);
+            List<NameValuePair> params = getParams(timestamp, token, vcode);
+            TodoResponse todoResponse =
+                RemoteCallUtil.delete(todo3rdUrl + DELETEURL + "/" + todo3rd.getId(), params, TodoResponse.class);
+            if (null != todoResponse && "success".equals(todoResponse.getType())) {
+                todo3rdRepository.deleteById(todo3rd.getId());
+            } else {
+                LOGGER.error("调用第三方接口失败：接口地址：{},响应信息：{}", todo3rdUrl + DELETEURL,
+                    null == todoResponse ? "接口不通" : todoResponse.getMessage());
+                todo3rd.setOptType(3);
+                todo3rd.setSuccess(Boolean.FALSE);
+                todo3rd.setMessage(null == todoResponse ? "接口不通" : todoResponse.getMessage());
+                todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
+                todo3rdRepository.save(todo3rd);
+            }
+        } else {
+            LOGGER.error("{}的传签待办不存在：标题：{}", documentCopy.getUserName(), processParam.getTitle());
         }
     }
 
@@ -234,8 +347,69 @@ public class Todo3rdServiceImpl implements Todo3rdService {
             .receiveDeptName(actRuDetail.getDeptName()).receiveTime(sdf.format(actRuDetail.getCreateTime()))
             .sendUserId(sendUserId).sendUserName(sendUserName).sendDeptId(actRuDetail.getDeptId())
             .sendDeptName(actRuDetail.getSendDeptName()).optType(optType).urgent(urgent).urgentText(urgentText)
-            .processSerialNumber(actRuDetail.getProcessSerialNumber())
+            .processSerialNumber(actRuDetail.getProcessSerialNumber()).todoType(1)
             .success(Boolean.TRUE).build();
+    }
+
+    private Todo3rd getTodo3rd(DocumentCopy documentCopy, ProcessParam processParam, Integer optType) {
+        List<Person> receivePersonList =
+            positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), documentCopy.getUserId()).getData();
+        String receiveUserId = "", receiveUserName = "", receiveDeptId = "", receiveDeptName = "";
+        if (!receivePersonList.isEmpty()) {
+            receiveUserId = receivePersonList.get(0).getId();
+            receiveUserName = receivePersonList.get(0).getName();
+            OrgUnit receiveDept = orgUnitApi
+                .getOrgUnit(Y9LoginUserHolder.getTenantId(), receivePersonList.get(0).getParentId()).getData();
+            receiveDeptId = receiveDept.getId();
+            receiveDeptName = receiveDept.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                && StringUtils.isNotBlank(((Department)receiveDept).getAliasName())
+                    ? ((Department)receiveDept).getAliasName() : receiveDept.getName();
+        }
+        List<Person> sendPersonList =
+            positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), documentCopy.getSenderId()).getData();
+        String sendUserId = "", sendUserName = "", sendDeptId = "", sendDeptName = "";
+        if (!sendPersonList.isEmpty()) {
+            sendUserId = receivePersonList.get(0).getId();
+            sendUserName = receivePersonList.get(0).getName();
+            OrgUnit sendDept = orgUnitApi
+                .getOrgUnit(Y9LoginUserHolder.getTenantId(), receivePersonList.get(0).getParentId()).getData();
+            sendDeptId = sendDept.getId();
+            sendDeptName = sendDept.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                && StringUtils.isNotBlank(((Department)sendDept).getAliasName()) ? ((Department)sendDept).getAliasName()
+                    : sendDept.getName();
+        }
+        // 紧急程度
+        Map<String, Object> map =
+            formDataService.getData4TableAlias(documentCopy.getProcessSerialNumber(), "fw").getData();
+        AtomicReference<Integer> urgentAtomicReference = new AtomicReference<>(0);
+        map.forEach((k, v) -> {
+            if ("jjcd".equalsIgnoreCase(k)) {
+                if (null != v && !"".equalsIgnoreCase(v.toString())) {
+                    urgentAtomicReference.set(Integer.parseInt(v.toString()));
+                }
+            }
+        });
+        int urgent = 0;
+        String urgentText = "普通";
+        switch (urgentAtomicReference.get()) {
+            case 0:
+                urgentText = "普通";
+                break;
+            case 1:
+                urgent = 3;
+                urgentText = "特急";
+                break;
+            case 2:
+                urgent = 2;
+                urgentText = "加急";
+        }
+        return Todo3rd.builder().id(Y9IdGenerator.genId()).appCode(processParam.getSystemName())
+            .appName(processParam.getSystemCnName()).title(processParam.getTitle()).content("")
+            .receiveUserId(receiveUserId).receiveUserName(receiveUserName).receiveDeptId(receiveDeptId)
+            .receiveDeptName(receiveDeptName).receiveTime(documentCopy.getCreateTime()).sendUserId(sendUserId)
+            .sendUserName(sendUserName).sendDeptId(sendDeptId).sendDeptName(sendDeptName).optType(optType)
+            .urgent(urgent).urgentText(urgentText).processSerialNumber(documentCopy.getProcessSerialNumber())
+            .todoType(2).success(Boolean.TRUE).build();
     }
 
     private String getFormattedTimestamp() {

@@ -15,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.repository.jpa.DocumentCopyRepository;
 import net.risesoft.service.DocumentCopyService;
+import net.risesoft.service.event.Y9TodoCreatedEvent;
+import net.risesoft.service.event.Y9TodoDeletedEvent;
+import net.risesoft.y9.Y9Context;
 
 /**
  * @author : qinman
@@ -62,12 +65,27 @@ public class DocumentCopyServiceImpl implements DocumentCopyService {
     @Transactional
     public void save(List<DocumentCopy> documentCopyList) {
         documentCopyRepository.saveAll(documentCopyList);
+        documentCopyList.forEach(this::publishEvent);
     }
 
     @Override
     @Transactional
     public void save(DocumentCopy documentCopy) {
         documentCopyRepository.save(documentCopy);
+        publishEvent(documentCopy);
+    }
+
+    private void publishEvent(DocumentCopy documentCopy) {
+        switch (documentCopy.getStatus()) {
+            case 1:
+                Y9Context.publishEvent(new Y9TodoCreatedEvent<>(documentCopy));
+                break;
+            case 2:
+            case 8:
+            case 9:
+                Y9Context.publishEvent(new Y9TodoDeletedEvent<>(documentCopy));
+                break;
+        }
     }
 
     @Override
