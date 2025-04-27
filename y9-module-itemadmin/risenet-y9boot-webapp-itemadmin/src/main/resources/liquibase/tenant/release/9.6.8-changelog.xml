@@ -1024,4 +1024,15 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-51" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_TODO3RD" columnName="TODOTYPE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_TODO3RD">
+            <column name="TODOTYPE" remarks="待办类型" type="INT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
