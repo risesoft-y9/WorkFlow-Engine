@@ -85,19 +85,16 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         flowElementModel.setElementKey(flowElement.getId());
         flowElementModel.setElementName(flowElement.getName() + (isSub ? "[子]" : ""));
         Object obj = null;
-        if (flowElement instanceof UserTask) {
+        if (flowElement instanceof UserTask userTask) {
             flowElementModel.setType(SysVariables.USERTASK);
-            UserTask userTask = (UserTask)flowElement;
             obj = userTask.getBehavior();
-        } else if (flowElement instanceof SubProcess) {
+        } else if (flowElement instanceof SubProcess subProcess) {
             flowElementModel.setElementName(flowElement.getName() + "【子】");
             flowElementModel.setType(SysVariables.SUBPROCESS);
-            SubProcess subProcess = (SubProcess)flowElement;
             obj = subProcess.getBehavior();
-        } else if (flowElement instanceof CallActivity) {
+        } else if (flowElement instanceof CallActivity callActivity) {
             flowElementModel.setElementName(flowElement.getName() + "【子】");
             flowElementModel.setType(SysVariables.CALLACTIVITY);
-            CallActivity callActivity = (CallActivity)flowElement;
             obj = callActivity.getBehavior();
         }
         if (obj instanceof SequentialMultiInstanceBehavior) {
@@ -208,9 +205,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             // 如果输出线上没有名称，则使用目标节点名称作为路由名称
             targetModel.setTaskDefName(fe.getName());
         }
-        if (fe instanceof UserTask) {
+        if (fe instanceof UserTask userTask) {
             targetModel.setType(SysVariables.USERTASK);
-            UserTask userTask = (UserTask)fe;
             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                 targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
             } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
@@ -218,9 +214,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             } else {
                 targetModel.setMultiInstance(SysVariables.COMMON);
             }
-        } else if (fe instanceof SubProcess) {
+        } else if (fe instanceof SubProcess subProcess) {
             targetModel.setType(SysVariables.SUBPROCESS);
-            SubProcess subProcess = (SubProcess)fe;
             if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
                 targetModel.setMultiInstance(SysVariables.PARALLEL);
             } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
@@ -241,9 +236,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         TargetModel targetModel = new TargetModel();
         targetModel.setTaskDefKey(flowElement.getId());
         targetModel.setTaskDefName(flowElement.getName() + (isSub ? "[子]" : ""));
-        if (flowElement instanceof UserTask) {
+        if (flowElement instanceof UserTask userTask) {
             targetModel.setType(SysVariables.USERTASK);
-            UserTask userTask = ((UserTask)flowElement);
             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                 targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
             } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
@@ -251,10 +245,9 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             } else {
                 targetModel.setMultiInstance(SysVariables.COMMON);
             }
-        } else if (flowElement instanceof SubProcess) {
+        } else if (flowElement instanceof SubProcess subProcess) {
             targetModel.setTaskDefName(flowElement.getName() + "【子】");
             targetModel.setType(SysVariables.SUBPROCESS);
-            SubProcess subProcess = ((SubProcess)flowElement);
             if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                 targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
             } else if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
@@ -287,7 +280,6 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         return getSequenceFlow(taskId).stream().anyMatch(tr -> tr.getTargetFlowElement() instanceof EndEvent);
     }
 
-    // ok
     @Override
     public Boolean isSubProcess(String processDefinitionId, String taskDefKey) {
         return this.getFlowElements(processDefinitionId).stream()
@@ -309,8 +301,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             UserTask userTask = (UserTask)flowElement;
             for (SequenceFlow tr : userTask.getOutgoingFlows()) {
                 FlowElement element = tr.getTargetFlowElement();
-                if (element instanceof ExclusiveGateway) {
-                    ExclusiveGateway exclusiveGateway = (ExclusiveGateway)element;
+                if (element instanceof ExclusiveGateway exclusiveGateway) {
                     for (SequenceFlow sf : exclusiveGateway.getOutgoingFlows()) {
                         if (sf.getTargetFlowElement() instanceof EndEvent) {
                             userTaskList.add(createTargetModel(flowElement, false));
@@ -381,8 +372,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         gatewayModel.setTaskDefName(flowElement.getName());
                         targetNodes.add(gatewayModel);
                     }
-                } else if (flowElement instanceof ExclusiveGateway) {
-                    ExclusiveGateway exclusiveGateway = (ExclusiveGateway)flowElement;
+                } else if (flowElement instanceof ExclusiveGateway exclusiveGateway) {
                     exclusiveGateway.getOutgoingFlows().stream()
                         .filter(outgoingFlow -> outgoingFlow.getTargetFlowElement() instanceof ParallelGateway)
                         .forEach(outgoingFlow -> {
@@ -422,11 +412,9 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             // 传入节点的输出路线
             List<SequenceFlow> outList = new ArrayList<>();
             FlowElement flowElement = first.get();
-            if (flowElement instanceof StartEvent) {
-                StartEvent task = (StartEvent)flowElement;
+            if (flowElement instanceof StartEvent task) {
                 outList = task.getOutgoingFlows();
-            } else if (flowElement instanceof UserTask) {
-                UserTask task = (UserTask)flowElement;
+            } else if (flowElement instanceof UserTask task) {
                 outList = task.getOutgoingFlows();
             }
             outList.forEach(sequenceFlow -> {
