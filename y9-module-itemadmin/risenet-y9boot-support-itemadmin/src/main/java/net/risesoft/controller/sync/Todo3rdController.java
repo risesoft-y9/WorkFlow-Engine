@@ -2,6 +2,7 @@ package net.risesoft.controller.sync;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -61,7 +62,7 @@ public class Todo3rdController {
         return TodoResponse.builder().code(200).type("success").message("保存成功").token(token).build();
     }
 
-    @PutMapping(value = "/delete/{vendorId}")
+    @DeleteMapping(value = "/delete/{vendorId}")
     public TodoResponse delete(@PathVariable String vendorId, @RequestParam @NotBlank String timestamp,
         @RequestParam @NotBlank String token, @RequestParam @NotBlank String app, @RequestParam @NotBlank String key,
         @RequestParam @NotBlank String vcode) {
