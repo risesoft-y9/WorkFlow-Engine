@@ -1,11 +1,18 @@
 package net.risesoft.entity;
 
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import lombok.Data;
 
 @Entity
 @Data
@@ -39,7 +46,7 @@ public class PushData implements Serializable {
     @Column(name = "TSJG", length = 100)
     private String tsjg;
 
-    @Column(name = "XMDM",length = 50)
+    @Column(name = "XMDM", length = 50)
     private String xmdm;
 
 }

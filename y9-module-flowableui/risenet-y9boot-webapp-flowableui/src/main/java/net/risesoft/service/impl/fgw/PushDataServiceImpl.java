@@ -1,15 +1,17 @@
 package net.risesoft.service.impl.fgw;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.service.fgw.PushDataService;
+import java.util.Date;
+
+import jakarta.annotation.Resource;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.sql.SQLException;
-import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.service.fgw.PushDataService;
 
 @Service(value = "pushDataService")
 @Slf4j
@@ -21,8 +23,9 @@ public class PushDataServiceImpl implements PushDataService {
 
     @Override
     public void addPushData(String processSerialNumber, String processInstanceId, String eventtype) {
-        String sql = "insert into PUSHDATA (ID,EVENTTYPE,CREATEDATE,PROCESSSERIALNUMBER,PROCESSINSTANCEID,TSZT) values (?,?,?,?,?,?)";
-        Object[] args = {Y9IdGenerator.genId(),eventtype,new Date(),processSerialNumber,processInstanceId,"0"};
+        String sql =
+            "insert into PUSHDATA (ID,EVENTTYPE,CREATEDATE,PROCESSSERIALNUMBER,PROCESSINSTANCEID,TSZT) values (?,?,?,?,?,?)";
+        Object[] args = {Y9IdGenerator.genId(), eventtype, new Date(), processSerialNumber, processInstanceId, "0"};
         jdbcTemplate.update(sql, args);
     }
 }

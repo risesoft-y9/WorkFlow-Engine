@@ -17,11 +17,11 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 
-import net.risesoft.service.fgw.HTKYService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -44,6 +44,7 @@ import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.model.itemadmin.EleAttachmentModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.fgw.HTKYService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -71,6 +72,7 @@ public class EleAttachmentRestController {
 
     @Autowired
     private HTKYService htkyService;
+
     /**
      * 删除附件
      *
@@ -254,21 +256,23 @@ public class EleAttachmentRestController {
 
     /**
      * 条码号图片生成并下载（每次调用生成新的条码号图片）
+     * 
      * @param processSerialNumber
      * @param response
      * @return
      */
     @GetMapping("/getTmhPicture")
-    public void getTmhPicture(@RequestParam String processSerialNumber,HttpServletRequest request, HttpServletResponse response)  {
-        String tmh ="";
+    public void getTmhPicture(@RequestParam String processSerialNumber, HttpServletRequest request,
+        HttpServletResponse response) {
+        String tmh = "";
         String filename = "";
-        try{
-            String sql = "select * from y9_form_fw where guid = '"+ processSerialNumber +"'";
+        try {
+            String sql = "select * from y9_form_fw where guid = '" + processSerialNumber + "'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list != null && list.size() > 0) {
-                tmh= list.get(0).get("tmh") == null ? "" :list.get(0).get("tmh").toString();
+                tmh = list.get(0).get("tmh") == null ? "" : list.get(0).get("tmh").toString();
                 if (StringUtils.isNotBlank(tmh)) {
-                    byte[] bytes  = htkyService.getTmhPicture(tmh);
+                    byte[] bytes = htkyService.getTmhPicture(tmh);
                     LOGGER.info("需要生成图片的条码号：" + tmh);
                     filename = tmh + ".jpg";
                     if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -286,30 +290,32 @@ public class EleAttachmentRestController {
                     out.close();
                 }
             }
-        }catch (Exception e) {
-            LOGGER.info("生成或下载条码有问题的tmh:"+tmh);
+        } catch (Exception e) {
+            LOGGER.info("生成或下载条码有问题的tmh:" + tmh);
             e.printStackTrace();
         }
     }
 
     /**
      * 清样生成二维码(每次调用生成新的二维码)
+     * 
      * @param processSerialNumber
      * @param request
      * @param response
      */
     @GetMapping("/getQYTmhPicture")
-    public void getQYTmhPicture(@RequestParam String processSerialNumber,HttpServletRequest request, HttpServletResponse response)  {
-        String tmh ="";
-        try{
+    public void getQYTmhPicture(@RequestParam String processSerialNumber, HttpServletRequest request,
+        HttpServletResponse response) {
+        String tmh = "";
+        try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            String sql = "select * from y9_form_fw where guid = '"+ processSerialNumber +"'";
+            String sql = "select * from y9_form_fw where guid = '" + processSerialNumber + "'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list != null && list.size() > 0) {
                 byte[] bytes = htkyService.getQYTmhPicture(list.get(0));
-                tmh=list.get(0).get("tmh") == null ? "" :list.get(0).get("tmh").toString();
+                tmh = list.get(0).get("tmh") == null ? "" : list.get(0).get("tmh").toString();
                 if (StringUtils.isNotBlank(tmh)) {
-                    LOGGER.info("清样生成二维码的条码号"+tmh);
+                    LOGGER.info("清样生成二维码的条码号" + tmh);
                     String filename = tmh + ".jpg";
                     if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                         filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
@@ -326,8 +332,8 @@ public class EleAttachmentRestController {
                     out.close();
                 }
             }
-        }catch (Exception e) {
-            LOGGER.info("清样生成二维码错误的条码号"+tmh);
+        } catch (Exception e) {
+            LOGGER.info("清样生成二维码错误的条码号" + tmh);
             e.printStackTrace();
         }
     }

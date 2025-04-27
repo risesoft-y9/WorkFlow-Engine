@@ -2,11 +2,11 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_ATTACHMENT_TYPE")
-@org.hibernate.annotations.Table(comment = "附件类型信息表", appliesTo = "FF_ATTACHMENT_TYPE")
+@Comment("附件类型信息表")
 public class AttachmentType implements Serializable {
 
     private static final long serialVersionUID = -3668629910203969082L;
