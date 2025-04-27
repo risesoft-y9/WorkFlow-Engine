@@ -1,22 +1,21 @@
 package net.risesoft.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
@@ -44,11 +43,7 @@ public class WebUtils {
      *
      */
     public static String encodeFileName(String name) {
-        try {
-            name = URLEncoder.encode(name, "UTF-8").replaceAll("\\+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        name = URLEncoder.encode(name, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         return name;
     }
 
@@ -81,12 +76,8 @@ public class WebUtils {
             return null;
         }
         if (!UrlEncoderUtils.hasUrlEncoded(fullFileName)) { // 判断文件名是否转义
-            try {
-                urlStr = URLEncoder.encode(urlStr, "UTF-8").replaceAll("\\+", "%20").replaceAll("%3A", ":")
-                    .replaceAll("%2F", "/").replaceAll("%3F", "?").replaceAll("%26", "&").replaceAll("%3D", "=");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            urlStr = URLEncoder.encode(urlStr, StandardCharsets.UTF_8).replaceAll("\\+", "%20").replaceAll("%3A", ":")
+                .replaceAll("%2F", "/").replaceAll("%3F", "?").replaceAll("%26", "&").replaceAll("%3D", "=");
         }
         return urlStr;
     }
@@ -213,11 +204,8 @@ public class WebUtils {
         if (fileNameEndIndex < fileNameStartIndex) {
             return url;
         }
-        try {
-            encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        encodedFileName =
+            URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), StandardCharsets.UTF_8);
         return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
     }
 
@@ -307,7 +295,7 @@ public class WebUtils {
          * https://github.com/kekingcn/kkFileView/pull/340
          */
         try {
-            return new String(Base64Utils.decodeFromString(source.replaceAll(" ", "+").replaceAll("\n", "")), charsets);
+            return new String(Base64.getDecoder().decode(source.replaceAll(" ", "+").replaceAll("\n", "")), charsets);
         } catch (Exception e) {
             if (e.getMessage().toLowerCase().contains(BASE64_MSG)) {
                 LOGGER.error("url解码异常，接入方法错误未使用BASE64");
