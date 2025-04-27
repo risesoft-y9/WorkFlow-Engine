@@ -149,6 +149,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
                 null == todoResponse ? "接口不通" : todoResponse.getMessage());
             Todo3rd todo3rd = todo3rdOptional.orElseGet(() -> getTodo3rd(actRuDetail, processParam, 3));
             todo3rd.setSuccess(Boolean.FALSE);
+            todo3rd.setOptType(3);
             todo3rd.setMessage(null == todoResponse ? "接口不通" : todoResponse.getMessage());
             todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
             todo3rdRepository.save(todo3rd);
