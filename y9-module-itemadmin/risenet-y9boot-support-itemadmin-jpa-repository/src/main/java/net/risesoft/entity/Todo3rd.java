@@ -152,6 +152,14 @@ public class Todo3rd implements Serializable {
     private String processSerialNumber;
 
     @JsonIgnore
+    @Comment("待办类型")
+    @Column(name = "TODOTYPE", length = 10, nullable = false)
+    private Integer todoType;
+
+    /**
+     * 1新增操作、2修改操作、3删除操作
+     */
+    @JsonIgnore
     @Comment("操作类型")
     @Column(name = "OPTTYPE", length = 10, nullable = false)
     private Integer optType;

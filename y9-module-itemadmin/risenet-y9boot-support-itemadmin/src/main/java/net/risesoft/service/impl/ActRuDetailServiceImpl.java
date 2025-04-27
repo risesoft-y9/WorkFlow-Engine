@@ -535,7 +535,9 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         }
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         String deptName =
-            dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ((Department)dept).getAliasName() : dept.getName();
+            dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                && StringUtils.isNotBlank(((Department)dept).getAliasName()) ? ((Department)dept).getAliasName()
+                    : dept.getName();
         actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         actRuDetail.setDeptName(deptName);
         actRuDetail.setSendDeptName(sendDept.getName());

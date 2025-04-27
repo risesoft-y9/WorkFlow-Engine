@@ -45,7 +45,7 @@ public class ChaoSong4GfgRestController {
     private final OpinionCopyApi opinionCopyApi;
 
     /**
-     * 删除意见
+     * 删除会签意见
      *
      * @param id 意见id
      * @return Y9Result<String>
@@ -62,7 +62,7 @@ public class ChaoSong4GfgRestController {
     }
 
     /**
-     * 批量删除传签件
+     * 批量删除自己的传签件
      *
      * @param processSerialNumbers 传签件流程序列号
      * @return Y9Result<String>
