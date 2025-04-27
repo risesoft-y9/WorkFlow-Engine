@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.transaction.Transactional;
 
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -191,9 +192,16 @@ public class Todo3rdServiceImpl implements Todo3rdService {
             sendUserId = receivePersonList.get(0).getId();
             sendUserName = receivePersonList.get(0).getName();
         }
-        List<TaskRelated> taskRelatedList = taskRelatedService.findByTaskId(actRuDetail.getTaskId());
-        Optional<TaskRelated> taskRelatedOptional = taskRelatedList.stream()
-            .filter(tr -> tr.getInfoType().equals(TaskRelatedEnum.BANWENSHUOMING.getValue())).findFirst();
+        // 办文说明
+        String content;
+        if (optType.equals(1)) {
+            content = StringUtils.isNotBlank(processParam.getDescription()) ? processParam.getDescription() : "";
+        } else {
+            List<TaskRelated> taskRelatedList = taskRelatedService.findByTaskId(actRuDetail.getTaskId());
+            Optional<TaskRelated> taskRelatedOptional = taskRelatedList.stream()
+                .filter(tr -> tr.getInfoType().equals(TaskRelatedEnum.BANWENSHUOMING.getValue())).findFirst();
+            content = taskRelatedOptional.isPresent() ? taskRelatedOptional.get().getMsgContent() : "";
+        }
         // 紧急程度
         Map<String, Object> map =
             formDataService.getData4TableAlias(actRuDetail.getProcessSerialNumber(), "fw").getData();
@@ -221,7 +229,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         }
         return Todo3rd.builder().id(actRuDetail.getId()).appCode(processParam.getSystemName())
             .appName(processParam.getSystemCnName()).title(processParam.getTitle())
-            .content(taskRelatedOptional.isPresent() ? taskRelatedOptional.get().getMsgContent() : "")
+            .content(content)
             .receiveUserId(receiveUserId).receiveUserName(receiveUserName).receiveDeptId(actRuDetail.getDeptId())
             .receiveDeptName(actRuDetail.getDeptName()).receiveTime(sdf.format(actRuDetail.getCreateTime()))
             .sendUserId(sendUserId).sendUserName(sendUserName).sendDeptId(actRuDetail.getDeptId())
