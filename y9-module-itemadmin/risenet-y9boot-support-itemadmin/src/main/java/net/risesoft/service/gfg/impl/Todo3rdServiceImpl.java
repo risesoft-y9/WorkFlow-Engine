@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.httpclient.NameValuePair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -74,6 +76,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
     private final String DELETEURL = "/todo/delete";
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void addTodo3rd(ActRuDetail actRuDetail) {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(actRuDetail.getProcessSerialNumber());
         SpmApproveItem item = itemService.findById(processParam.getItemId());
@@ -96,6 +99,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
     }
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void updateTodo3rd(ActRuDetail actRuDetail) {
         String timestamp = getFormattedTimestamp(), token = Y9IdGenerator.genId(),
             vcode = MD5Util.md5Encode(timestamp + APP + token + KEY);
@@ -125,6 +129,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
     }
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void deleteTodo3rd(ActRuDetail actRuDetail) {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(actRuDetail.getProcessSerialNumber());
         String timestamp = getFormattedTimestamp(), token = Y9IdGenerator.genId(),
@@ -140,7 +145,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
                 LOGGER.error("本系统该待办不存在{}:{}", actRuDetail.getAssigneeName(), actRuDetail.getId());
             }
         } else {
-            LOGGER.error("调用第三方接口失败：接口地址：{},响应信息：{}", todo3rdUrl + ADDURL,
+            LOGGER.error("调用第三方接口失败：接口地址：{},响应信息：{}", todo3rdUrl + DELETEURL,
                 null == todoResponse ? "接口不通" : todoResponse.getMessage());
             Todo3rd todo3rd = todo3rdOptional.orElseGet(() -> getTodo3rd(actRuDetail, processParam, 3));
             todo3rd.setSuccess(Boolean.FALSE);
