@@ -147,9 +147,14 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         } else {
             LOGGER.error("调用第三方接口失败：接口地址：{},响应信息：{}", todo3rdUrl + DELETEURL,
                 null == todoResponse ? "接口不通" : todoResponse.getMessage());
-            Todo3rd todo3rd = todo3rdOptional.orElseGet(() -> getTodo3rd(actRuDetail, processParam, 3));
+            Todo3rd todo3rd;
+            if (todo3rdOptional.isPresent()) {
+                todo3rd = todo3rdOptional.get();
+                todo3rd.setOptType(3);
+            } else {
+                todo3rd = getTodo3rd(actRuDetail, processParam, 3);
+            }
             todo3rd.setSuccess(Boolean.FALSE);
-            todo3rd.setOptType(3);
             todo3rd.setMessage(null == todoResponse ? "接口不通" : todoResponse.getMessage());
             todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
             todo3rdRepository.save(todo3rd);
