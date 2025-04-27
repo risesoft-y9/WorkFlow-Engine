@@ -28,8 +28,10 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
@@ -503,11 +505,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         OrgUnit sendDept =
             orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getSendDeptId()).getData();
+        String sendDeptName = sendDept.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+            ? ((Department)sendDept).getAliasName() : sendDept.getName();
         if (null != doing) {
             doing.setSendUserId(actRuDetail.getSendUserId());
             doing.setSendUserName(actRuDetail.getSendUserName());
             doing.setSendDeptId(actRuDetail.getSendDeptId());
-            doing.setSendDeptName(actRuDetail.getSendDeptName());
+            doing.setSendDeptName(sendDeptName);
             doing.setLastTime(actRuDetail.getLastTime());
             doing.setStatus(actRuDetail.getStatus());
             doing.setTaskId(actRuDetail.getTaskId());
@@ -530,8 +534,10 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             return true;
         }
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+        String deptName =
+            dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ((Department)dept).getAliasName() : dept.getName();
         actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        actRuDetail.setDeptName(dept.getName());
+        actRuDetail.setDeptName(deptName);
         actRuDetail.setSendDeptName(sendDept.getName());
         actRuDetail.setSystemName(processParam.getSystemName());
         actRuDetail.setDueDate(processParam.getDueDate());
