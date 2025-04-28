@@ -14,7 +14,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +37,7 @@ import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.itemadmin.PaperAttachmentApi;
 import net.risesoft.api.itemadmin.PrintLogApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.TmhPictureApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.TypeSettingInfoApi;
 import net.risesoft.api.itemadmin.WordTemplateApi;
@@ -52,6 +52,7 @@ import net.risesoft.model.itemadmin.PaperAttachmentModel;
 import net.risesoft.model.itemadmin.PrintLogModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
+import net.risesoft.model.itemadmin.TmhPictureModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
@@ -103,10 +104,9 @@ public class FormNTKO4GfgController {
     private final PaperAttachmentApi paperAttachmentApi;
 
     private final MergeFileApi mergeFileApi;
-
+    private final TmhPictureApi tmhPictureApi;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
-
     @Autowired
     private HTKYService htkyService;
 
@@ -208,12 +208,22 @@ public class FormNTKO4GfgController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String sql = "select * from y9_form_fw where guid = '" + processSerialNumber + "'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list != null && list.size() > 0) {
                 byte[] bytes = htkyService.getQYTmhPicture(list.get(0));
                 tmh = list.get(0).get("tmh") == null ? "" : list.get(0).get("tmh").toString();
                 if (StringUtils.isNotBlank(tmh)) {
+                    TmhPictureModel tmhPictureModel = new TmhPictureModel();
+                    tmhPictureModel.setProcessSerialNumber(processSerialNumber);
+                    tmhPictureModel.setTmh(tmh);
+                    tmhPictureModel.setTmhType("QY");
+                    tmhPictureModel.setPicture(bytes);
+                    tmhPictureModel.setUpdateTime(sdf1.format(new Date()));
+                    tmhPictureModel.setFileStoreId("");
+                    tmhPictureModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    tmhPictureApi.saveOrUpdate(tenantId, tmhPictureModel);
                     LOGGER.info("清样生成二维码的条码号" + tmh);
                     String filename = tmh + ".jpg";
                     if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -252,12 +262,22 @@ public class FormNTKO4GfgController {
         String filename = "";
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String sql = "select * from y9_form_fw where guid = '" + processSerialNumber + "'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list != null && list.size() > 0) {
                 tmh = list.get(0).get("tmh") == null ? "" : list.get(0).get("tmh").toString();
                 if (StringUtils.isNotBlank(tmh)) {
                     byte[] bytes = htkyService.getTmhPicture(tmh);
+                    TmhPictureModel tmhPictureModel = new TmhPictureModel();
+                    tmhPictureModel.setProcessSerialNumber(processSerialNumber);
+                    tmhPictureModel.setTmh(tmh);
+                    tmhPictureModel.setTmhType("TMH");
+                    tmhPictureModel.setPicture(bytes);
+                    tmhPictureModel.setUpdateTime(sdf.format(new Date()));
+                    tmhPictureModel.setFileStoreId("");
+                    tmhPictureModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    tmhPictureApi.saveOrUpdate(tenantId, tmhPictureModel);
                     LOGGER.info("需要生成图片的条码号：" + tmh);
                     filename = tmh + ".jpg";
                     if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
