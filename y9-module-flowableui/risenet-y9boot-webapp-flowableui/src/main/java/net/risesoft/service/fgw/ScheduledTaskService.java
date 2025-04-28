@@ -9,9 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -52,6 +54,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @EnableScheduling
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "y9.common.tenantId")
 public class ScheduledTaskService {
 
     private final FormDataApi formDataApi;
@@ -73,6 +76,11 @@ public class ScheduledTaskService {
     private JdbcTemplate jdbcTemplate;
     @Value("${y9.common.tenantId}")
     private String tenantId;
+
+    @PostConstruct
+    public void init() {
+        LOGGER.info("ScheduledTaskService initialized with tenantId: {}", tenantId);
+    }
 
     /**
      * 定时办结，每5分钟执行
