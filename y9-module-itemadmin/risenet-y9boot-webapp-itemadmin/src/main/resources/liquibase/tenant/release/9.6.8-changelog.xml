@@ -1035,4 +1035,24 @@
             <column name="TODOTYPE" remarks="待办类型" type="INT"/>
         </addColumn>
     </changeSet>
+    <changeSet id="1704700543333-52" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_TMH_PICTURE"/>
+            </not>
+        </preConditions>
+        <createTable remarks="条码号信息表" tableName="FF_TMH_PICTURE">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TMH" remarks="条码号" type="VARCHAR(50)"/>
+            <column name="TMHTYPE" remarks="条码号类型 TMH：条形码图片 QY：清样二维码" type="VARCHAR(10)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="PICTURE" remarks="图片内容" type="LONGBLOB"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
