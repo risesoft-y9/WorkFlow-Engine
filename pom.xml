@@ -56,7 +56,9 @@
     <properties>
         <gitee.url>https://gitee.com/risesoft-y9/y9-flowable</gitee.url>
         <gitee.connection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.connection>
-        <gitee.developerConnection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.developerConnection>
+        <gitee.developerConnection>
+            scm:git:https://gitee.com/risesoft-y9/y9-flowable.git
+        </gitee.developerConnection>
 
         <revision>9.7.0-SNAPSHOT</revision>
 
@@ -78,6 +80,21 @@
             <dependency>
                 <groupId>org.flowable</groupId>
                 <artifactId>flowable-spring-boot-starter-process</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-idm-spring</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-idm-spring-configurator</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-groovy-script-static-engine</artifactId>
                 <version>${flowable.version}</version>
             </dependency>
 
