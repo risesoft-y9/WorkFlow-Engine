@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 
+import cn.hutool.core.date.DateUtil;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,6 +71,7 @@ public class MergeFileRestController {
         mergeFileModel.setProcessSerialNumber(processSerialNumber);
         mergeFileModel.setPersonName(eleAttachmentModel.getPersonName());
         mergeFileModel.setPersonId(eleAttachmentModel.getPersonId());
+        mergeFileModel.setCreateTime(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         return mergeFileModel;
     }
 
