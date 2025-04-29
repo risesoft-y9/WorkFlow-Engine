@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
-import net.risesoft.service.fgw.PushDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -50,7 +49,6 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -75,6 +73,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.fgw.HTKYService;
+import net.risesoft.service.fgw.PushDataService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -379,6 +378,32 @@ public class Document4GfgRestController {
             LOGGER.error("流程办结失败", e);
         }
         return Y9Result.failure("办结失败");
+    }
+
+    /**
+     * 批量办结
+     *
+     * @param taskIdAndProcessSerialNumbers 任务id和流程序列号集合
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/completeTodo")
+    public Y9Result<String> completeTodo(@RequestParam String[] taskIdAndProcessSerialNumbers) {
+        for (String tandp : taskIdAndProcessSerialNumbers) {
+            try {
+                String[] tpArr = tandp.split(":");
+                String taskId = tpArr[0];
+                String guid = tpArr[1];
+                TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+                if (null == task) {
+                    continue;
+                }
+                buttonOperationService.complete(taskId, "办结", "已办结", "");
+                jdbcTemplate.execute("update y9_form_fw set bbhBanjie = '[\"1\"]' where guid = '" + guid + "'");
+            } catch (Exception e) {
+                LOGGER.error("流程办结失败", e);
+            }
+        }
+        return Y9Result.successMsg("办结成功");
     }
 
     /**
@@ -1005,8 +1030,9 @@ public class Document4GfgRestController {
     @PostMapping(value = "/savePushData")
     public Y9Result<Object> savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
         for (String processSerialNumber : processSerialNumbers) {
-            ProcessParamModel process = processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-            pushDataService.addPushData(processSerialNumber,process.getProcessInstanceId(),eventtype);
+            ProcessParamModel process = processParamApi
+                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            pushDataService.addPushData(processSerialNumber, process.getProcessInstanceId(), eventtype);
         }
         return Y9Result.success();
     }
