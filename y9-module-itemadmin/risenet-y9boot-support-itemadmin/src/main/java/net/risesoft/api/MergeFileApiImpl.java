@@ -153,6 +153,6 @@ public class MergeFileApiImpl implements MergeFileApi {
         MergeFile mergeFile = new MergeFile();
         Y9BeanUtil.copyProperties(mergeFileModel, mergeFile);
         mergeFileService.saveMergeFile(mergeFile);
-        return Y9Result.success();
+        return Y9Result.success(mergeFile);
     }
 }
