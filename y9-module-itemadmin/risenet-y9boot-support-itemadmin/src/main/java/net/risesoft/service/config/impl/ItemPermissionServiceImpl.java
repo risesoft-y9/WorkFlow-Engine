@@ -181,6 +181,9 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                         || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
                         map.put("existDepartment", true);
                     }
+                    if ((boolean)map.get("existPosition") && (boolean)map.get("existDepartment")) {
+                        break;
+                    }
                 }
             }
         }
