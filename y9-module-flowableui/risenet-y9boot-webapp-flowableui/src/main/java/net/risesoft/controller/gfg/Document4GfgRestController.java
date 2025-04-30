@@ -1025,16 +1025,14 @@ public class Document4GfgRestController {
      *
      * @param processSerialNumbers
      * @param eventtype
-     * @return
      */
     @PostMapping(value = "/savePushData")
-    public Y9Result<Object> savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
+    public void savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
         for (String processSerialNumber : processSerialNumbers) {
             ProcessParamModel process = processParamApi
                 .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
             pushDataService.addPushData(processSerialNumber, process.getProcessInstanceId(), eventtype);
         }
-        return Y9Result.success();
     }
 
     /**
