@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -76,6 +77,8 @@ public class ScheduledTaskService {
     private JdbcTemplate jdbcTemplate;
     @Value("${y9.common.tenantId}")
     private String tenantId;
+    @Autowired
+    private ShuangYangService shuangYangService;
 
     @PostConstruct
     public void init() {
@@ -265,4 +268,9 @@ public class ScheduledTaskService {
         LOGGER.info("*******" + time + "  定时发送成功数量:" + num);
     }
 
+    @Scheduled(fixedDelay = 300000L)
+    public void syncIdentityRole() {
+        LOGGER.info("******* 定时推送双杨数据 *******");
+        shuangYangService.toShuangYang();
+    }
 }
