@@ -374,9 +374,15 @@ public class RoleServiceImpl implements RoleService {
                 }
                 // 排序
                 itemList = itemList.stream().sorted().collect(Collectors.toList());
+                // 获取父级节点,有当前parentId的节点，不再调用getParent
+                List<String> parentIdList = new ArrayList<>();
                 for (ItemRoleOrgUnitModel model : itemList) {
                     allItemList.add(model);
+                    if (parentIdList.contains(model.getParentId())) {
+                        continue;
+                    }
                     allItemList = getParent(allItemList, model);
+                    parentIdList.add(model.getParentId());
                 }
             }
         } catch (Exception e) {
