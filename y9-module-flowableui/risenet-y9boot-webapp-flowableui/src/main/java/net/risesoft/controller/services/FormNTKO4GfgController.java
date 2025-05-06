@@ -361,10 +361,13 @@ public class FormNTKO4GfgController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-        MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
-        if (multipartFile == null) {
+        MultipartFile multipartFile = null;
+        if (file != null) {
             multipartFile = file;
+        }
+        if (multipartFile == null) {
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+            multipartFile = multipartRequest.getFile("currentDoc");
         }
         try {
             String newprocessSerialNumber = processSerialNumber;
