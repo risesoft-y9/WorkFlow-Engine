@@ -307,23 +307,10 @@ public class ProcessInstanceVueController {
                 map.put("suspended", processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
-                    String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
-                    if (userIdAndDeptId.length == 1) {
-                        orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
-                        parent = orgUnitApi.getParent(tenantId, orgUnit.getId()).getData();
-                        map.put("startUserName", orgUnit.getName() + "(" + parent.getName() + ")");
-                    } else {
-                        orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
-                        if (null != orgUnit) {
-                            parent = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
-                                .getData();
-                            if (null == parent) {
-                                map.put("startUserName", orgUnit.getName());
-                            } else {
-                                map.put("startUserName", orgUnit.getName() + "(" + parent.getName() + ")");
-                            }
-                        }
-                    }
+                    orgUnit =
+                        orgUnitApi.getOrgUnitPersonOrPosition(tenantId, processInstance.getStartUserId()).getData();
+                    parent = orgUnitApi.getParent(tenantId, orgUnit.getId()).getData();
+                    map.put("startUserName", orgUnit.getName() + "(" + parent.getName() + ")");
                 }
             } catch (Exception e) {
                 LOGGER.error("获取流程实例列表失败processInstanceId:{}, e:{}", processInstanceId, e);

@@ -55,6 +55,22 @@ public class TypeSettingInfo implements Serializable {
     @Column(name = "banshiFile", length = 50)
     private String banshiFile;
 
+    @Comment("合并源文件名称")
+    @Column(name = "sourceFileName", length = 50)
+    private String sourceFileName;
+
+    @Comment("合并源文件仓库id")
+    @Column(name = "sourceFileStoreId", length = 50)
+    private String sourceFileStoreId;
+
+    @Comment("合并板式文件名称")
+    @Column(name = "hbBanShiFileName", length = 50)
+    private String hbBanShiFileName;
+
+    @Comment("合并板式文件仓库id")
+    @Column(name = "hbBanShiFileStoreId", length = 50)
+    private String hbBanShiFileStoreId;
+
     @Comment("排版意见")
     @Column(name = "typeSettingOpinion", length = 500)
     private String typeSettingOpinion;

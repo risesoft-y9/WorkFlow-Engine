@@ -1055,4 +1055,18 @@
             <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-53" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_TYPESETTING_INFO" columnName="sourceFileName"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_TYPESETTING_INFO">
+            <column name="sourceFileName" remarks="合并源文件名称" type="VARCHAR(50)"/>
+            <column name="sourceFileStoreId" remarks="合并源文件仓库id" type="VARCHAR(50)"/>
+            <column name="hbBanShiFileName" remarks="合并板式文件名称" type="VARCHAR(50)"/>
+            <column name="hbBanShiFileStoreId" remarks="合并板式文件仓库id" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

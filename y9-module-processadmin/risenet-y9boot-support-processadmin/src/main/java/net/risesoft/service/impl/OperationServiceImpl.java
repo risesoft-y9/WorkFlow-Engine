@@ -230,11 +230,11 @@ public class OperationServiceImpl implements OperationService {
             this.customHistoricTaskService.listByProcessInstanceId(processInstanceId, "");
         String startActivityId = hisTaskList.get(0).getTaskDefinitionKey();
         /*
-         * 获取流程的启东人
+         * 获取流程的启动人
          */
         ProcessInstance processInstance = this.customRuntimeService.getProcessInstance(processInstanceId);
         List<String> users = new ArrayList<>();
-        users.add(processInstance.getStartUserId().split(":")[0]);
+        users.add(processInstance.getStartUserId());
         this.managementService
             .executeCommand(new JumpCommand(taskId, startActivityId, users, "该任务已由" + userName + "返回至起草节点"));
     }
