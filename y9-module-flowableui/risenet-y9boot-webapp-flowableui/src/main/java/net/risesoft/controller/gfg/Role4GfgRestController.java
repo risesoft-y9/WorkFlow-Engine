@@ -1,6 +1,7 @@
 package net.risesoft.controller.gfg;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -15,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemRoleApi;
-import net.risesoft.api.itemadmin.SignDeptInfoApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -35,9 +37,7 @@ public class Role4GfgRestController {
 
     private final ItemRoleApi itemRoleApi;
 
-    private final SignDeptInfoApi signDeptInfoApi;
-
-    private final OrgUnitApi orgUnitApi;
+    private final SignDeptDetailApi signDeptDetailApi;
 
     /**
      * 获取司内会签选人组织机构数据
@@ -96,7 +96,7 @@ public class Role4GfgRestController {
     }
 
     /**
-     * 加签-获取加签的人
+     * 加签-获取加签的人-排除正在会签和减签的部门的秘书
      *
      * @param roleId 角色id
      * @param principalType 选人类型
@@ -110,8 +110,19 @@ public class Role4GfgRestController {
         if (StringUtils.isBlank(id)) {
             id = "";
         }
+        // 正在会签和减签的部门
+        List<SignDeptDetailModel> sddList =
+            signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData()
+                .stream()
+                .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())
+                    || ssd.getStatus().equals(SignDeptDetailStatusEnum.DELETED.getValue()))
+                .collect(Collectors.toList());
         List<ItemRoleOrgUnitModel> list = itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(),
-            Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), roleId, principalType, id).getData();
+            Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), roleId, principalType, id).getData()
+            .stream()
+            .filter(itemRoleOrgUnitModel -> sddList.stream()
+                .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
+            .collect(Collectors.toList());
         return Y9Result.success(list);
     }
 }
