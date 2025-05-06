@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
@@ -85,7 +86,6 @@ public class ButtonOperationRestController {
     private final CustomProcessInfoApi customProcessInfoApi;
     private final ButtonOperationService buttonOperationService;
     private final ActRuDetailApi actRuDetailApi;
-
     /**
      * 任务签收
      *
@@ -790,6 +790,78 @@ public class ButtonOperationRestController {
             LOGGER.error("rollbackToStartor error", e);
         }
         return Y9Result.failure("返回起草人失败");
+    }
+
+    /**
+     * 批量退回拟稿人
+     *
+     * @param actionName 操作名称
+     * @param taskIdAndProcessSerialNumbers
+     *
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/batchRollBack")
+    public Y9Result<List<TargetModel>> batchRollBack(@RequestParam @NotBlank String actionName,
+        @RequestParam String[] taskIdAndProcessSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            StringBuilder msg = new StringBuilder();
+            List<TaskModel> signList = new ArrayList<>();
+            List<TaskModel> taskList = new ArrayList<>();
+            List<TaskModel> subTaskList = new ArrayList<>();
+            Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
+                String[] tpArr = tp.split(":");
+                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+                if (null == task) {
+                    ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+                    if (StringUtils.isBlank(msg)) {
+                        msg.append(ppModel.getTitle());
+                    } else {
+                        msg.append(",").append(ppModel.getTitle());
+                    }
+                } else {
+                    taskList.add(task);
+                    if (StringUtils.isBlank(task.getAssignee())) {
+                        signList.add(task);
+                    }
+                    if (subTaskList.isEmpty()) {
+                        List<TargetModel> data = processDefinitionApi
+                            .getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
+                        if (data.stream().anyMatch(m -> m.getTaskDefKey().equals(task.getTaskDefinitionKey()))) {
+                            subTaskList.add(task);
+                        }
+                    }
+                }
+            });
+            if (!signList.isEmpty()) {
+                return Y9Result.failure("不能退回，存在未签收的待办");
+            }
+            if (StringUtils.isNotBlank(msg)) {
+                return Y9Result.failure("不能退回，以下待办已处理：" + msg);
+            }
+            if (!subTaskList.isEmpty()) {
+                return Y9Result.failure("不能退回，存在正在会签的件");
+            }
+            AtomicReference<Integer> successCount = new AtomicReference<>(0);
+            AtomicReference<Integer> failCount = new AtomicReference<>(0);
+            taskList.forEach(task -> {
+                Map<String, Object> vars = new HashMap<>();
+                vars.put("val", actionName);
+                variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId(),
+                    SysVariables.ACTIONNAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
+                Y9Result<Object> result = buttonOperationApi.rollbackToStartor(tenantId,
+                    Y9LoginUserHolder.getPosition().getId(), task.getId(), "无");
+                if (result.isSuccess()) {
+                    successCount.getAndSet(successCount.get() + 1);
+                } else {
+                    failCount.getAndSet(failCount.get() + 1);
+                }
+            });
+            return Y9Result.successMsg("退回成功" + successCount.get() + "条，退回失败" + failCount.get() + "条");
+        } catch (Exception e) {
+            LOGGER.error("校验失败", e);
+        }
+        return Y9Result.failure("校验失败，发生异常");
     }
 
     /**
