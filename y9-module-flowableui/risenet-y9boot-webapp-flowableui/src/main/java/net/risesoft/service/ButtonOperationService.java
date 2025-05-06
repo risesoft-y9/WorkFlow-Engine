@@ -2,8 +2,6 @@ package net.risesoft.service;
 
 import net.risesoft.pojo.Y9Result;
 
-import java.util.Map;
-
 /**
  * 按钮操作实现
  *
@@ -46,8 +44,9 @@ public interface ButtonOperationService {
 
     Y9Result<String> deleteTodos(String[] taskIdAndProcessSerialNumbers);
 
-    Y9Result<String> recoverTodos(String[] processSerialNumbers);
+    Y9Result<String> deleteByProcessSerialNumbers(String[] processSerialNumbers);
 
+    Y9Result<String> recovers(String[] processSerialNumbers);
 
-    Y9Result<String> removeTodos(String[] processSerialNumbers);
+    Y9Result<String> removes(String[] processSerialNumbers);
 }

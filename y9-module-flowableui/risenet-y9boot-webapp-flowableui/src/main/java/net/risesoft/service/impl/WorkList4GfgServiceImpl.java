@@ -1143,7 +1143,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             Map<String, Object> formData;
             for (ActRuDetailModel ardModel : taslList) {
                 mapTemp = new HashMap<>(16);
-                String taskId = ardModel.getTaskId();
                 processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
@@ -1154,15 +1153,19 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("itemId", processParam.getItemId());
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
-                    List<TaskModel> taskList =
+                    mapTemp.put("taskId", "");
+                    mapTemp.put("taskAssignee", "无");
+                    mapTemp.put("taskName", "已办结");
+                    if (!ardModel.isEnded()) {
+                        List<TaskModel> taskList =
                         taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("taskName", taskList.get(0).getName());
-                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    mapTemp.put("taskAssignee", listTemp.get(0));
+                        mapTemp.put("taskName", taskList.get(0).getName());
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                        mapTemp.put("taskAssignee", listTemp.get(0));
+                    }
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
-                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.DONE.getValue());
+                    mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.MONITORRECYCLE.getValue());
                     mapTemp.put(SysVariables.TASKRELATEDLIST, getTaskRelated4Recycle(ardModel, formData, true));
                 } catch (Exception e) {
                     LOGGER.error("获取回收站列表失败" + processInstanceId, e);
