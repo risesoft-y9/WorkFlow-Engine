@@ -33,6 +33,18 @@ public class TypeSettingInfoModel implements Serializable {
     // 板式文件
     private String banshiFile;
 
+    // 合并源文件名称
+    private String sourceFileName;
+
+    // 合并源文件仓库id
+    private String sourceFileStoreId;
+
+    // 合并板式文件名称
+    private String hbBanShiFileName;
+
+    // 合并板式文件仓库id
+    private String hbBanShiFileStoreId;
+
     // 排版意见
     private String typeSettingOpinion;
 
