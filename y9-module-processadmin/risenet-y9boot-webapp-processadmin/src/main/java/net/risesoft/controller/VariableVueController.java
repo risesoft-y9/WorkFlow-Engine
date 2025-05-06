@@ -114,23 +114,8 @@ public class VariableVueController {
             process.setStartTime(DateFormatUtils.format(processInstance.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
             process.setStartUserName("无");
             if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
-                String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
-                if (userIdAndDeptId.length == 1) {
-                    orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
-                    parent = orgUnitApi.getParent(tenantId, orgUnit.getId()).getData();
-                    process.setStartUserName(orgUnit.getName() + "(" + orgUnit.getName() + ")");
-                } else {
-                    orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdAndDeptId[0]).getData();
-                    if (null != orgUnit) {
-                        parent =
-                            orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
-                        if (null == parent) {
-                            process.setStartUserName(orgUnit.getName());
-                        } else {
-                            process.setStartUserName(orgUnit.getName() + "(" + parent.getName() + ")");
-                        }
-                    }
-                }
+                orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, processInstance.getStartUserId()).getData();
+                process.setStartUserName(orgUnit.getName() + "(" + orgUnit.getName() + ")");
             }
             items.add(process);
         }
