@@ -1003,13 +1003,13 @@ public class ButtonOperation4GfgRestController {
         return buttonOperationService.deleteTodos(taskIdAndProcessSerialNumbers);
     }
 
-    @PostMapping(value = "/recoverTodos")
-    public Y9Result<String> recoverTodos(@RequestParam String[] processSerialNumbers) {
-        return buttonOperationService.recoverTodos(processSerialNumbers);
+    @PostMapping(value = "/recovers")
+    public Y9Result<String> recovers(@RequestParam String[] processSerialNumbers) {
+        return buttonOperationService.recovers(processSerialNumbers);
     }
 
-    @PostMapping(value = "/removeTodos")
-    public Y9Result<String> removeTodos(@RequestParam String[] processSerialNumbers) {
-        return buttonOperationService.removeTodos(processSerialNumbers);
+    @PostMapping(value = "/removes")
+    public Y9Result<String> removes(@RequestParam String[] processSerialNumbers) {
+        return buttonOperationService.removes(processSerialNumbers);
     }
 }

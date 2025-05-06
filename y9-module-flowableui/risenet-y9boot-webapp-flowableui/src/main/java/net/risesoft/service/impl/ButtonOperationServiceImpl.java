@@ -231,7 +231,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 } else {
                     error.getAndIncrement();
                 }
-                //TODO 删除第三方统一待办
             } catch (Exception e) {
                 error.getAndIncrement();
                 e.printStackTrace();
@@ -241,7 +240,29 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
-    public Y9Result<String> recoverTodos(String[] processSerialNumbers) {
+    public Y9Result<String> deleteByProcessSerialNumbers(String[] processSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        int total = processSerialNumbers.length;
+        AtomicInteger success = new AtomicInteger();
+        AtomicInteger error = new AtomicInteger();
+        List<TargetModel> nodeList = new ArrayList<>();
+        for (String processSerialNumber : processSerialNumbers) {
+            try {
+                if (actRuDetailApi.deleteByProcessSerialNumber(tenantId, processSerialNumber).isSuccess()) {
+                    success.getAndIncrement();
+                } else {
+                    error.getAndIncrement();
+                }
+            } catch (Exception e) {
+                error.getAndIncrement();
+                e.printStackTrace();
+            }
+        }
+        return Y9Result.successMsg("成功删除" + success.get() + "条，失败" + error.get() + "条，共" + total + "条");
+    }
+
+    @Override
+    public Y9Result<String> recovers(String[] processSerialNumbers) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (String processSerialNumber : processSerialNumbers) {
             actRuDetailApi.recoveryByProcessSerialNumber(tenantId, processSerialNumber);
@@ -250,7 +271,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
-    public Y9Result<String> removeTodos(String[] processSerialNumbers) {
+    public Y9Result<String> removes(String[] processSerialNumbers) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParamModel processParamModel;
         for (String processSerialNumber : processSerialNumbers) {
