@@ -293,7 +293,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> rollbackToStartor(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(specialOperationApi.rollbackToStartor(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return specialOperationApi.rollbackToStartor(tenantId, orgUnitId, taskId, reason);
     }
 
     /**

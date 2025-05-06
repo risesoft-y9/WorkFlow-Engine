@@ -47,8 +47,9 @@ public class ItemPermission implements Serializable {
     @Comment("角色Id")
     @Column(name = "ROLEID")
     private String roleId;
+
     /**
-     * 1=角色，2=部门，6=岗位，4=动态角色
+     * @see net.risesoft.enums.ItemPermissionEnum
      */
     @Comment("角色类型")
     @Column(name = "ROLETYPE")
