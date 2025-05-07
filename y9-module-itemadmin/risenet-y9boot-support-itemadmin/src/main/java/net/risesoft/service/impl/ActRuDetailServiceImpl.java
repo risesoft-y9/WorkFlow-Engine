@@ -529,7 +529,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
             actRuDetailRepository.save(doing);
             if (actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue())) {
-                Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail));
+                Y9Context.publishEvent(new Y9TodoCreatedEvent<>(doing));
             }
             return true;
         }

@@ -218,8 +218,8 @@ public class OpinionSignServiceImpl implements OpinionSignService {
             } else if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
                 || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
                 || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDOING.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())
+                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DOING.getValue())
+                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DONE.getValue())
                 || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.COPY.getValue())) {
                 model.setAddable(false);
                 for (OpinionSign opinionSign : list) {
@@ -234,8 +234,8 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                     Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
                     opinionSignListModel.setOpinionSignModel(opinionSignModel);
                     opinionSignListModel.setEditable(false);
-                    if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDOING.getValue())
-                        || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())) {
+                    if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DOING.getValue())
+                        || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DONE.getValue())) {
                         opinionSignListModel.setEditable(true);
                     }
                     resList.add(opinionSignListModel);

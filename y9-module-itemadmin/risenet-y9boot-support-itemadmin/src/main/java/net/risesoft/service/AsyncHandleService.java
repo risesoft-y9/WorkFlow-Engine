@@ -191,7 +191,7 @@ public class AsyncHandleService {
 
     public void forwarding4Gfg(String processInstanceId, ProcessParam processParam, String sponsorHandle,
         String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables,
-        List<String> userList) throws Exception {
+        List<String> userList) {
         OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();

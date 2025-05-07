@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -259,6 +260,25 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         }
         model.setTime(this.longTime(hai.getStartTime(), endTime));
         return model;
+    }
+
+    private List<HistoryProcessModel> getHistoryProcessModel(HistoryProcessModel model) {
+        AtomicInteger tabIndex = new AtomicInteger(model.getTabIndex() + 1);
+        List<HistoryProcessModel> list = new ArrayList<>();
+        List<ProcessTrack> processTrackList = processTrackRepository.findByTaskId(model.getTaskId());
+        processTrackList.forEach(pt -> {
+            HistoryProcessModel endModel = new HistoryProcessModel();
+            Y9BeanUtil.copyProperties(model, endModel);
+            endModel.setChildren(new ArrayList<>());
+            endModel.setTabIndex(tabIndex.getAndIncrement());
+            endModel.setId(pt.getId());
+            endModel.setName(pt.getTaskDefName());
+            endModel.setActionName(pt.getTaskDefName());
+            endModel.setEndTime(pt.getEndTime());
+            endModel.setTime("");
+            list.add(endModel);
+        });
+        return list;
     }
 
     @Override
@@ -721,7 +741,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         List<HistoricTaskInstanceModel> results =
             this.historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, "").getData();
         String year = "";
-        if (results == null || results.isEmpty()) {
+        if (results.isEmpty()) {
             OfficeDoneInfo officeDoneInfoModel = this.officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfoModel != null && officeDoneInfoModel.getProcessInstanceId() != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
@@ -755,7 +775,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
          * 主流程历程
          */
         for (HistoricTaskInstanceModel htiMain : mainResults) {
-            items.add(this.getHistoryProcessModel(htiMain, tabIndex++, year));
+            HistoryProcessModel historyProcessModel = this.getHistoryProcessModel(htiMain, tabIndex++, year);
+            items.add(historyProcessModel);
+            items.addAll(this.getHistoryProcessModel(historyProcessModel));
             /*
              * 查看当前任务是否送了子流程
              */
@@ -778,7 +800,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 items.add(oneModel);
             }
         }
-        // Collections.sort(items);
+        Collections.sort(items);
         return items;
     }
 

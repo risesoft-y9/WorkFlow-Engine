@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -64,6 +65,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     private final ActRuDetailApi actRuDetailApi;
 
     private final HistoricProcessApi historicProcessApi;
+
+    private final ButtonOperationApi buttonOperationApi;
 
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
@@ -147,11 +150,23 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
+    public void multipleResumeTodo(String processInstanceIds, String desc) throws Exception {
+        if (StringUtils.isBlank(processInstanceIds)) {
+            return;
+        }
+        String[] array = processInstanceIds.split(";");
+        for (String processInstanceId : array) {
+            if (StringUtils.isNotBlank(processInstanceId)) {
+                resumeTodo(processInstanceId, desc);
+            }
+        }
+    }
+
+    @Override
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userName = Y9LoginUserHolder.getPosition().getName();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String newDate = sdf.format(new Date());
         try {
             /*
               1、恢复待办
@@ -171,6 +186,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi
                     .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
+
             /*
               2、添加流程的历程
              */
@@ -179,8 +195,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
             ptm.setReceiverName(userName);
             ptm.setSenderName(userName);
-            ptm.setStartTime(newDate);
-            ptm.setEndTime(newDate);
+            ptm.setStartTime(sdf.format(new Date()));
+            ptm.setEndTime(sdf.format(new Date()));
             ptm.setTaskDefName("恢复待办");
             ptm.setTaskId(hisTaskModelTemp.getId());
 
@@ -194,11 +210,44 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
             ptm.setReceiverName(userName);
             ptm.setSenderName(userName);
-            ptm.setStartTime(newDate);
+            ptm.setStartTime(sdf.format(new Date()));
             ptm.setEndTime("");
             ptm.setTaskDefName(hisTaskModelTemp.getName());
             ptm.setTaskId(hisTaskModelTemp.getId());
             processTrackApi.saveOrUpdate(tenantId, ptm);
+        } catch (Exception e) {
+            LOGGER.error("runtimeApi resumeToDo error", e);
+            throw new Exception("runtimeApi resumeToDo error");
+        }
+    }
+
+    @Override
+    public void resumeTodo(String processInstanceId, String desc) throws Exception {
+        String positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            // 1、恢复待办
+            String year;
+            OfficeDoneInfoModel officeDoneInfoModel =
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            if (officeDoneInfoModel != null) {
+                year = officeDoneInfoModel.getStartTime().substring(0, 4);
+            } else {
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
+            }
+            HistoricTaskInstanceModel hisTaskModel = historictaskApi
+                .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
+            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
+            // 2、添加动作名称
+            Map<String, Object> vars = new HashMap<>();
+            vars.put("val", "重新激活");
+            variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
+                SysVariables.ACTIONNAME + ":" + positionId, vars);
+            // 3、重定位
+            buttonOperationApi.reposition(tenantId, positionId, hisTaskModel.getId(),
+                hisTaskModel.getTaskDefinitionKey(), List.of(hisTaskModel.getAssignee()), "重新激活", "");
         } catch (Exception e) {
             LOGGER.error("runtimeApi resumeToDo error", e);
             throw new Exception("runtimeApi resumeToDo error");

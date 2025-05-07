@@ -19,6 +19,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.entity.ItemTaskConf;
+import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
@@ -29,10 +30,10 @@ import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.ProcInstanceRelationshipService;
+import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.y9.Y9Context;
@@ -58,7 +59,8 @@ public class ButtonUtil {
     private final ItemTaskConfService itemTaskConfService;
     private final DocumentCopyService documentCopyService;
 
-    private final ActRuDetailService actRuDetailService;
+    private final ProcessParamService processParamService;
+
     private List<TargetModel> nodeList = new ArrayList<>();
 
     public ButtonUtil() {
@@ -74,7 +76,7 @@ public class ButtonUtil {
         this.itemTaskConfService = Y9Context.getBean(ItemTaskConfService.class);
         this.orgUnitApi = Y9Context.getBean(OrgUnitApi.class);
         this.documentCopyService = Y9Context.getBean(DocumentCopyService.class);
-        this.actRuDetailService = Y9Context.getBean(ActRuDetailService.class);
+        this.processParamService = Y9Context.getBean(ProcessParamService.class);
     }
 
     public Map<String, Object> showButton(String itemId, String taskId, String itembox) {
@@ -568,7 +570,7 @@ public class ButtonUtil {
             }
             isButtonShow[2] = true;
             isButtonShow[17] = true;
-        } else if (ItemBoxTypeEnum.MONITORDOING.getValue().equals(itembox)) {
+        } else if (ItemBoxTypeEnum.MONITOR_DOING.getValue().equals(itembox)) {
             isButtonShow[15] = true;
             isButtonShow[14] = true;
             isButtonShow[2] = true;
@@ -973,10 +975,26 @@ public class ButtonUtil {
             .collect(Collectors.toList());
     }
 
-    public List<ItemButtonModel> showButton4Done(String itemId) {
+    public List<ItemButtonModel> showButton4Done(DocumentDetailModel model) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        /*buttonModelList.add(ItemButton.huiFuDaiBan);
-        buttonModelList.add(ItemButton.chaoSong);
+        ItemBoxTypeEnum itemBox = ItemBoxTypeEnum.fromString(model.getItembox());
+        switch (itemBox) {
+            case DONE:
+                ProcessParam processParam =
+                    processParamService.findByProcessSerialNumber(model.getProcessSerialNumber());
+                String year = processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
+                HistoricTaskInstanceModel hisTaskModelTemp =
+                    historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
+                        model.getProcessInstanceId(), year).getData().get(0);
+                if (hisTaskModelTemp.getAssignee().equals(Y9LoginUserHolder.getOrgUnit().getId())) {
+                    buttonModelList.add(ItemButton.huiFuDaiBan);
+                }
+                break;
+            case MONITOR_DONE:
+                buttonModelList.add(ItemButton.huiFuDaiBan);
+                break;
+        }
+        /*buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
         buttonModelList.add(ItemButton.fanHui);*/
         return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))

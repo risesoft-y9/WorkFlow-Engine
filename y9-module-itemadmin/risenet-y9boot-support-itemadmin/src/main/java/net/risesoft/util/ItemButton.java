@@ -36,7 +36,7 @@ public class ItemButton {
         new ItemButtonModel("16", "重定位", ItemButtonTypeEnum.COMMON.getValue(), 18);
     public static ItemButtonModel chaoSong = new ItemButtonModel("18", "抄送", ItemButtonTypeEnum.COMMON.getValue(), 19);
     public static ItemButtonModel huiFuDaiBan =
-        new ItemButtonModel("20", "恢复待办", ItemButtonTypeEnum.COMMON.getValue(), 20);
+        new ItemButtonModel("20", "重新激活", ItemButtonTypeEnum.COMMON.getValue(), 20);
     public static ItemButtonModel daYin = new ItemButtonModel("17", "打印", ItemButtonTypeEnum.COMMON.getValue(), 21);
     public static ItemButtonModel huiFu =
         new ItemButtonModel("huiFu", "从回收站恢复", ItemButtonTypeEnum.COMMON.getValue(), 22);

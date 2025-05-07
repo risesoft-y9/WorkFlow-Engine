@@ -169,6 +169,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
                         model.setPerson("6:" + orgUnit.getId());
                         model.setOrderedPath(position.getOrderedPath());
+                        model.setGuidPath(position.getGuidPath());
                         if (itemList.contains(model)) {
                             continue;// 去重
                         }
@@ -200,6 +201,7 @@ public class RoleServiceImpl implements RoleService {
             parentModel.setIsParent(true);
             parentModel.setOrgType(parent.getOrgType().getValue());
             parentModel.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+            parentModel.setGuidPath(department.getGuidPath());
             if (!itemList.contains(parentModel)) {
                 itemList.add(parentModel);
             }
