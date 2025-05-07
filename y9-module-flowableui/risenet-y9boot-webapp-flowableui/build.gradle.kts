@@ -29,15 +29,17 @@ dependencies {
     api(y9libs.google.guava)
     api(y9libs.commons.codec)
     api(y9libs.commons.io)
-    // api(libs.jxl)
     api(libs.pinyin4j)
-    //api(libs.com.baidu.ueditor)
-    // api(libs.thumbnailator)
+
+    api(libs.poi.scratchpad)
     api(libs.poi.tl)
-    // api(libs.poi.ooxml)
+    api(libs.poi.ooxml)
     api(libs.fastexcel)
-    // api(libs.poi.scratchpad)
+    api(y9libs.dom4j)
     api(libs.graph.java.client)
+    // 条码号图片生成
+    api(libs.jbarcode)
+    api(libs.pdf417)
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")

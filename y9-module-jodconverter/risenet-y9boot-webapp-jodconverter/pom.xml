@@ -36,7 +36,7 @@
         <galimatias.version>0.2.1</galimatias.version>
         <bytedeco.version>1.5.2</bytedeco.version>
         <opencv.version>4.1.2-1.5.2</opencv.version>
-        <openblas.version>0.3.6-1.5.1</openblas.version>
+        <openblas.version>0.3.28-1.5.11</openblas.version>
         <ffmpeg.version>4.2.1-1.5.2</ffmpeg.version>
         <itextpdf.version>5.5.13.3</itextpdf.version>
         <httpclient.version>3.1</httpclient.version>
@@ -309,15 +309,11 @@
             <groupId>javax.media</groupId>
             <artifactId>jai_core</artifactId>
             <version>1.1.3</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/src/main/webapp/lib/jai_core-1.1.3.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>javax.media</groupId>
             <artifactId>jai_codec</artifactId>
             <version>1.1.3</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/src/main/webapp/lib/jai_codec-1.1.3.jar</systemPath>
         </dependency>
 
         <!-- test dependency - start -->
@@ -357,7 +353,7 @@
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
