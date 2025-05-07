@@ -16,11 +16,9 @@ import org.flowable.identitylink.service.HistoricIdentityLinkService;
 import org.flowable.identitylink.service.IdentityLinkService;
 import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntity;
 import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.task.service.HistoricTaskService;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
-
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -56,9 +54,7 @@ public class RecoveryTodoCommand implements Command<Void> {
         IdentityLinkService identityLinkService = CommandContextUtil.getIdentityLinkService();
         HistoricProcessInstanceEntityManager historicProcessInstanceEntityManager =
             CommandContextUtil.getHistoricProcessInstanceEntityManager();
-
-        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
-        String userId = orgUnit.getId();
+        HistoricTaskService historicTaskService = CommandContextUtil.getHistoricTaskService();
 
         String processInstanceId = hisTask.getProcessInstanceId(), taskId = hisTask.getId();
         String assignee = hisTask.getAssignee();
@@ -73,8 +69,8 @@ public class RecoveryTodoCommand implements Command<Void> {
         taskEntity.setProcessDefinitionId(hisTask.getProcessDefinitionId());
         taskEntity.setName(hisTask.getName());
         taskEntity.setTaskDefinitionKey(hisTask.getTaskDefinitionKey());
-        // 谁恢复待办，件就回到谁手上
-        taskEntity.setAssignee(userId);
+        // 谁办结的，件就回到谁手上
+        taskEntity.setAssignee(assignee);
         taskEntity.setPriority(hisTask.getPriority());
         taskEntity.setCreateTime(new Date());
         taskEntity.setSuspensionState(1);
@@ -83,14 +79,12 @@ public class RecoveryTodoCommand implements Command<Void> {
         taskEntity.setVariableCount(0);
         taskEntity.setIdentityLinkCount(hisTask.getIdentityLinks().size());
         taskEntity.setSubTaskCount(0);
-        // 当不是办结人恢复待办时，用来存放任务的初始受让人，历程显示Owner和Assignee同时有值时，显示Owner
-        if (!assignee.equals(userId) || StringUtils.isNotBlank(hisTask.getOwner())) {
-            if (StringUtils.isNotBlank(hisTask.getOwner())) {
-                // 当历史任务已存在Owner时，使用历史的Owner
-                taskEntity.setOwner(hisTask.getOwner());
-            } else {
-                taskEntity.setOwner(assignee);
-            }
+        // 历程显示Owner和Assignee同时有值时，显示Owner
+        if (StringUtils.isNotBlank(hisTask.getOwner())) {
+            // 当历史任务已存在Owner时，使用历史的Owner
+            taskEntity.setOwner(hisTask.getOwner());
+        } else {
+            taskEntity.setOwner(assignee);
         }
         taskService.insertTask(taskEntity, true);
 
@@ -105,7 +99,6 @@ public class RecoveryTodoCommand implements Command<Void> {
             org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
         processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
             TaskListener.EVENTNAME_CREATE);
-
         /*
          * 2-设置历史任务办结时间为null
          */
@@ -120,7 +113,6 @@ public class RecoveryTodoCommand implements Command<Void> {
             historicProcessInstanceEntity.setEndActivityId(null);
             historicProcessInstanceEntity.setDeleteReason(null);
             historicProcessInstanceEntityManager.update(historicProcessInstanceEntity);
-
             // 更新系统名称
             taskEntity.setCategory(historicProcessInstanceEntity.getBusinessKey());
             taskService.updateTask(taskEntity, false);
@@ -131,13 +123,14 @@ public class RecoveryTodoCommand implements Command<Void> {
         List<HistoricIdentityLinkEntity> hilEntityList4P =
             historicIdentityLinkService.findHistoricIdentityLinksByProcessInstanceId(processInstanceId);
         for (HistoricIdentityLinkEntity hilEntity : hilEntityList4P) {
-            identityLinkService.createProcessInstanceIdentityLink(processInstanceId, userId, null, hilEntity.getType());
+            identityLinkService.createProcessInstanceIdentityLink(processInstanceId, assignee, null,
+                hilEntity.getType());
         }
 
         List<HistoricIdentityLinkEntity> hilEntityList4T =
             historicIdentityLinkService.findHistoricIdentityLinksByTaskId(taskId);
         for (HistoricIdentityLinkEntity hilEntity : hilEntityList4T) {
-            identityLinkService.createTaskIdentityLink(taskId, userId, null, hilEntity.getType());
+            identityLinkService.createTaskIdentityLink(taskId, assignee, null, hilEntity.getType());
         }
         return null;
     }
