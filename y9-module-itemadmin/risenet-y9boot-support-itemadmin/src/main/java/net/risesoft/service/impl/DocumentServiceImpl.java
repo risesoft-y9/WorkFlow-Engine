@@ -363,7 +363,7 @@ public class DocumentServiceImpl implements DocumentService {
         String itemboxStr = itembox;
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        if (ItemBoxTypeEnum.MONITORDOING.getValue().equals(itembox)) {
+        if (ItemBoxTypeEnum.MONITOR_DOING.getValue().equals(itembox)) {
             itembox = ItemBoxTypeEnum.DOING.getValue();
         }
         model.setMeeting(false);
@@ -551,11 +551,11 @@ public class DocumentServiceImpl implements DocumentService {
         ItemBoxTypeEnum itemBox) {
         DocumentDetailModel model = new DocumentDetailModel();
         String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activitiUser = "", itemId = "";
-        String startor;
+            activityUser = "", itemId = "";
+        String starter;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        startor = processParam.getStartor();
+        starter = processParam.getStartor();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         if (officeDoneInfo == null) {
             String year = processParam.getCreateTime().substring(0, 4);
@@ -571,14 +571,14 @@ public class DocumentServiceImpl implements DocumentService {
         itemId = processParam.getItemId();
         model.setDocumentId(documentId);
         model.setTitle(processParam.getTitle());
-        model.setStartor(startor);
+        model.setStartor(starter);
         model.setItembox(itemBox.getValue());
         model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
         model.setProcessSerialNumber(processSerialNumber);
         model.setProcessDefinitionKey(processDefinitionKey);
         model.setProcessDefinitionId(processDefinitionId);
         model.setProcessInstanceId(processInstanceId);
-        model.setActivitiUser(activitiUser);
+        model.setActivitiUser(activityUser);
         model.setItemId(itemId);
 
         model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
@@ -1408,7 +1408,7 @@ public class DocumentServiceImpl implements DocumentService {
         List<ItemButtonModel> buttonList = new ArrayList<>();
         if (model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())) {
             buttonList = buttonUtil.showButton4Doing(itemId, taskId);
-        } else if (model.getItembox().equals(ItemBoxTypeEnum.MONITORDOING.getValue())) {
+        } else if (model.getItembox().equals(ItemBoxTypeEnum.MONITOR_DOING.getValue())) {
             String documentId = model.getDocumentId();
             if (documentId.equals(model.getProcessSerialNumber())) {
                 buttonList.add(ItemButton.chongDingWei);
@@ -1428,7 +1428,7 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey,
         DocumentDetailModel model) {
         ButtonUtil buttonUtil = new ButtonUtil();
-        List<ItemButtonModel> buttonList = buttonUtil.showButton4Done(itemId);
+        List<ItemButtonModel> buttonList = buttonUtil.showButton4Done(model);
         model.setButtonList(buttonList);
         return model;
     }

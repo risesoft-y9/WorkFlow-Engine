@@ -110,6 +110,8 @@ public class Role4GfgRestController {
         if (StringUtils.isBlank(id)) {
             id = "";
         }
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
+            positionId = Y9LoginUserHolder.getPositionId();
         // 正在会签和减签的部门
         List<SignDeptDetailModel> sddList =
             signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData()
@@ -117,8 +119,8 @@ public class Role4GfgRestController {
                 .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())
                     || ssd.getStatus().equals(SignDeptDetailStatusEnum.DELETED.getValue()))
                 .collect(Collectors.toList());
-        List<ItemRoleOrgUnitModel> list = itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(),
-            Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), roleId, principalType, id).getData()
+        List<ItemRoleOrgUnitModel> list = itemRoleApi
+            .findByRoleId(tenantId, personId, positionId, roleId, principalType, id).getData()
             .stream()
             .filter(itemRoleOrgUnitModel -> sddList.stream()
                 .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))

@@ -156,7 +156,7 @@ public class FlowableModelConvertUtil {
 
     public static List<HistoricTaskInstanceModel>
         historicTaskInstanceList2ModelList(List<HistoricTaskInstance> htiList) {
-        List<HistoricTaskInstanceModel> htiModelList = new ArrayList<HistoricTaskInstanceModel>();
+        List<HistoricTaskInstanceModel> htiModelList = new ArrayList<>();
         for (HistoricTaskInstance hti : htiList) {
             htiModelList.add(historicTaskInstance2Model(hti));
         }

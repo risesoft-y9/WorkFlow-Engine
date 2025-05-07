@@ -96,13 +96,8 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
             } else if (startTime1.getTime() == startTime2.getTime()) {
                 Date date1 = !StringUtils.hasText(this.getEndTime()) ? now : sdf.parse(this.getEndTime());
                 Date date2 = !StringUtils.hasText(o.getEndTime()) ? now : sdf.parse(o.getEndTime());
-                if (date1.getTime() > date2.getTime()) {// 开始时间相等的才排序
-                    return 1;
-                }
-                if (date1.getTime() == date2.getTime()) {
-                    return 0;
-                }
-                return -1;
+                // 开始时间相等的才排序
+                return Long.compare(date1.getTime(), date2.getTime());
             } else {
                 return -1;
             }

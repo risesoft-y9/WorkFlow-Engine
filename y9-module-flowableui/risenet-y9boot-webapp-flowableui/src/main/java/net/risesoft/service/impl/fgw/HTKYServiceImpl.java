@@ -45,8 +45,99 @@ public class HTKYServiceImpl implements HTKYService {
     private JdbcTemplate jdbcTemplate;
 
     /**
+     * 清样生成条码号图片
+     *
+     * @param map
+     * @return
+     */
+    @Override
+    public byte[] getQYTmhPicture(Map<String, Object> map) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        BarCodeImgCreator bar = new BarCodeImgCreator();
+        byte[] bytes = null;
+        try {
+            BarCodeEntity entity = new BarCodeEntity();
+            entity.setVerStr("GB0626-2005");
+            String tmh = map.get("tmh") == null ? "" : map.get("tmh").toString();
+            entity.setBarcode(tmh);
+            entity.setSendDept("办公厅");
+            entity.setFileName("");
+            if (StringUtils.isNotBlank((String)map.get("wh"))) {
+                entity.setFileNum((String)map.get("wh"));
+            } else {
+                entity.setFileNum("无");
+            }
+
+            String zsdept = (String)map.get("zsdw");
+            if (StringUtils.isNotBlank(zsdept)) {
+                if (zsdept.length() > 20) {
+                    entity.setMainSendDept("见报头");
+                } else {
+                    entity.setMainSendDept(zsdept);
+                }
+            } else {
+                entity.setMainSendDept("");
+            }
+
+            String fwtitle = (String)map.get("title");
+            if (StringUtils.isNotBlank(fwtitle)) {
+                if (fwtitle.length() > 160) {
+                    entity.setTitle(fwtitle.substring(160));
+                } else {
+                    entity.setTitle(fwtitle);
+                }
+            } else {
+                entity.setTitle("");
+            }
+            String mijiz = (String)map.get("miji");
+            String miji = "无";
+            if (StringUtils.isNotBlank((String)map.get("miji"))) {
+                if ("0".equals(mijiz)) {
+                    miji = "无";
+                } else if ("1".equals(mijiz)) {
+                    miji = "内部";
+                } else if ("2".equals(mijiz)) {
+                    miji = "秘密";
+                } else if ("3".equals(mijiz)) {
+                    miji = "机密";
+                }
+            }
+            entity.setSecret(miji);
+            String jjcdz = (String)map.get("jjcdz");
+            String jjcd = "无";
+            if (StringUtils.isNotBlank(jjcdz)) {
+                if ("0".equals(mijiz)) {
+                    jjcd = "无";
+                } else if ("1".equals(jjcdz)) {
+                    jjcd = "特急";
+                } else if ("2".equals(jjcdz)) {
+                    jjcd = "加急";
+                }
+            }
+            entity.setHurry(jjcd);
+
+            if (map.get("cwdate") != null) {
+                entity.setFileCreateDate(sdf.format((Date)map.get("cwdate")));
+            } else {
+                entity.setFileCreateDate("");
+            }
+
+            entity.setSendDegree("");
+            entity.setBarCreateDept("国家发展和改革委员会秘书二处");
+            entity.setBarCreateDate(sdf.format(new Date()));
+            entity.setContact("");
+            entity.setTel("");
+            entity.setOther("");
+            bytes = bar.createByte(entity, BarCodeImgCreator.ImgType.JPEG);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bytes;
+    }
+
+    /**
      * 获取条码号
-     * 
+     *
      * @param processSerialNumber
      * @return
      */
@@ -190,7 +281,7 @@ public class HTKYServiceImpl implements HTKYService {
 
     /**
      * 生成条码号图片
-     * 
+     *
      * @param tmh
      * @return
      */
@@ -206,97 +297,6 @@ public class HTKYServiceImpl implements HTKYService {
         try {
             image = jbcode.createBarcode(tmh);
             bytes = ImageUtil.encode(image, "jpeg");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bytes;
-    }
-
-    /**
-     * 清样生成条码号图片
-     * 
-     * @param map
-     * @return
-     */
-    @Override
-    public byte[] getQYTmhPicture(Map<String, Object> map) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        BarCodeImgCreator bar = new BarCodeImgCreator();
-        byte[] bytes = null;
-        try {
-            BarCodeEntity entity = new BarCodeEntity();
-            entity.setVerStr("GB0626-2005");
-            String tmh = map.get("tmh") == null ? "" : map.get("tmh").toString();
-            entity.setBarcode(tmh);
-            entity.setSendDept("办公厅");
-            entity.setFileName("");
-            if (StringUtils.isNotBlank((String)map.get("wh"))) {
-                entity.setFileNum((String)map.get("wh"));
-            } else {
-                entity.setFileNum("无");
-            }
-
-            String zsdept = (String)map.get("zsdw");
-            if (StringUtils.isNotBlank(zsdept)) {
-                if (zsdept.length() > 20) {
-                    entity.setMainSendDept("见报头");
-                } else {
-                    entity.setMainSendDept(zsdept);
-                }
-            } else {
-                entity.setMainSendDept("");
-            }
-
-            String fwtitle = (String)map.get("title");
-            if (StringUtils.isNotBlank(fwtitle)) {
-                if (fwtitle.length() > 160) {
-                    entity.setTitle(fwtitle.substring(160));
-                } else {
-                    entity.setTitle(fwtitle);
-                }
-            } else {
-                entity.setTitle("");
-            }
-            String mijiz = (String)map.get("miji");
-            String miji = "无";
-            if (StringUtils.isNotBlank((String)map.get("miji"))) {
-                if ("0".equals(mijiz)) {
-                    miji = "无";
-                } else if ("1".equals(mijiz)) {
-                    miji = "内部";
-                } else if ("2".equals(mijiz)) {
-                    miji = "秘密";
-                } else if ("3".equals(mijiz)) {
-                    miji = "机密";
-                }
-            }
-            entity.setSecret(miji);
-            String jjcdz = (String)map.get("jjcdz");
-            String jjcd = "无";
-            if (StringUtils.isNotBlank(jjcdz)) {
-                if ("0".equals(mijiz)) {
-                    jjcd = "无";
-                } else if ("1".equals(jjcdz)) {
-                    jjcd = "特急";
-                } else if ("2".equals(jjcdz)) {
-                    jjcd = "加急";
-                }
-            }
-            entity.setHurry(jjcd);
-
-            if (map.get("cwdate") != null) {
-                entity.setFileCreateDate(sdf.format((Date)map.get("cwdate")));
-            } else {
-                entity.setFileCreateDate("");
-            }
-
-            entity.setSendDegree("");
-            entity.setBarCreateDept("国家发展和改革委员会秘书二处");
-            entity.setBarCreateDate(sdf.format(new Date()));
-            entity.setContact("");
-            entity.setTel("");
-            entity.setOther("");
-            bytes = bar.createByte(entity, BarCodeImgCreator.ImgType.JPEG);
         } catch (Exception e) {
             e.printStackTrace();
         }

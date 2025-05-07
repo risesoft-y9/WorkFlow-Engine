@@ -547,8 +547,8 @@ public class OpinionServiceImpl implements OpinionService {
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.COPY.getValue())
-                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDOING.getValue())
-                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.MONITORDONE.getValue())) {
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DOING.getValue())
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DONE.getValue())) {
                 model.setAddable(false);
                 for (Opinion opinion : list) {
                     OpinionListModel model0 = new OpinionListModel();

@@ -482,7 +482,7 @@ public class Document4GfgRestController {
         try {
             DocumentDetailModel model =
                 documentApi.editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, documentId, true, ItemBoxTypeEnum.MONITORDOING).getData();
+                    processInstanceId, documentId, true, ItemBoxTypeEnum.MONITOR_DOING).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -518,11 +518,11 @@ public class Document4GfgRestController {
      */
     @GetMapping(value = "/editDone4Admin")
     public Y9Result<DocumentDetailModel> editDone4Admin(@RequestParam @NotBlank String processInstanceId,
-        @RequestParam @NotBlank String documentId) {
+        @RequestParam @NotBlank String documentId, @RequestParam @NotBlank String itemBox) {
         try {
             DocumentDetailModel model =
                 documentApi.editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, documentId, true, ItemBoxTypeEnum.MONITORDONE).getData();
+                    processInstanceId, documentId, true, ItemBoxTypeEnum.fromString(itemBox)).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -1012,7 +1012,7 @@ public class Document4GfgRestController {
     public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceIds,
         @RequestParam(required = false) String desc) {
         try {
-            buttonOperationService.multipleResumeToDo(processInstanceIds, desc);
+            buttonOperationService.multipleResumeTodo(processInstanceIds, desc);
             return Y9Result.successMsg("恢复成功");
         } catch (Exception e) {
             LOGGER.error("恢复待办失败", e);
