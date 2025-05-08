@@ -59,12 +59,12 @@ public class ProcessParamApiImpl implements ProcessParamApi {
                                                                @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        ProcessParamModel pp = null;
         if (null != processParam) {
-            pp = new ProcessParamModel();
+            ProcessParamModel pp = new ProcessParamModel();
             Y9BeanUtil.copyProperties(processParam, pp);
+            return Y9Result.success(pp);
         }
-        return Y9Result.success(pp);
+        return Y9Result.failure("流程参数不存在");
     }
 
     /**

@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.DocumentApi;
+import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SecretLevelRecordApi;
@@ -122,7 +122,7 @@ public class Document4GfgRestController {
 
     private final SignDeptInfoApi signDeptInfoApi;
 
-    private final ActRuDetailApi actRuDetailApi;
+    private final FormDataApi formDataApi;
 
     private final RoleApi roleApi;
 
@@ -1005,13 +1005,35 @@ public class Document4GfgRestController {
      * 批量恢复待办
      *
      * @param processInstanceIds 流程实例ids ，逗号隔开
-     * @param desc 原因
      * @return Y9Result<String>
      */
     @PostMapping(value = "/multipleResumeToDo")
-    public Y9Result<String> multipleResumeToDo(@RequestParam String[] processInstanceIds,
-        @RequestParam(required = false) String desc) {
-        return buttonOperationService.multipleResumeTodo(processInstanceIds, desc);
+    public Y9Result<String> multipleResumeToDo(@RequestParam String[] processInstanceIds) {
+        return buttonOperationService.multipleResumeTodo(processInstanceIds, "重新激活");
+    }
+
+    /**
+     * 批量恢复待办并设置表单值
+     *
+     * @param processInstanceIds 流程实例ids ，逗号隔开
+     * @param formJsonData 表单数据
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/reprint")
+    public Y9Result<String> reprint(@RequestParam String[] processInstanceIds,
+        @RequestParam @NotBlank String formJsonData) {
+        Y9Result<String> y9Result = buttonOperationService.multipleResumeTodo(processInstanceIds, "重印");
+        if (y9Result.isSuccess()) {
+            Arrays.stream(processInstanceIds).forEach(processInstanceId -> {
+                Y9Result<ProcessParamModel> processParamModel =
+                    processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                if (processParamModel.isSuccess()) {
+                    formDataApi.updateFormData(Y9LoginUserHolder.getTenantId(),
+                        processParamModel.getData().getProcessSerialNumber(), formJsonData);
+                }
+            });
+        }
+        return y9Result;
     }
 
     /**
