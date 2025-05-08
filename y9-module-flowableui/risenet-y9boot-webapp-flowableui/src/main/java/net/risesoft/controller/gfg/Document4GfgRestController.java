@@ -28,33 +28,26 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.DocumentApi;
-import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.SecretLevelRecordApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
-import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
-import net.risesoft.enums.TaskRelatedEnum;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -68,8 +61,6 @@ import net.risesoft.model.itemadmin.SecretLevelModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
-import net.risesoft.model.itemadmin.StartProcessResultModel;
-import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
@@ -80,7 +71,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ButtonOperationService;
-import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.fgw.HTKYService;
 import net.risesoft.service.fgw.PushDataService;
 import net.risesoft.util.SysVariables;
@@ -142,14 +132,6 @@ public class Document4GfgRestController {
     private final PositionApi positionApi;
 
     private final PersonApi personApi;
-
-    private final ProcessParamService processParamService;
-
-    private final HistoricTaskApi historicTaskApi;
-
-    private final TaskRelatedApi taskRelatedApi;
-
-    private final ActRuDetailApi actRuDetailApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
@@ -733,7 +715,7 @@ public class Document4GfgRestController {
 
     /**
      * 获取部门信息
-     *
+     * 
      * @param deptId
      * @return
      */
@@ -848,12 +830,13 @@ public class Document4GfgRestController {
         ProcessParamModel processParam =
             processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
         String startor = processParam.getStartor();
-        List<Position> list = positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
+        List<OrgUnit> list =
+            roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData();
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), startor).getData();
-        for (Position position : list) {
-            OrgUnit newbureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), position.getId()).getData();
+        for (OrgUnit orgUnit : list) {
+            OrgUnit newbureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
             // 判断当前人是司局领导，且跟起草人司局相同
-            if (position.getId().equals(Y9LoginUserHolder.getPositionId()) && bureau != null && newbureau != null
+            if (orgUnit.getId().equals(Y9LoginUserHolder.getPositionId()) && bureau != null && newbureau != null
                 && newbureau.getId().equals(bureau.getId())) {
                 return Y9Result.success(true);
             }
@@ -984,9 +967,10 @@ public class Document4GfgRestController {
      */
     @GetMapping(value = "/getWordManager")
     public Y9Result<Boolean> getWordManager(@RequestParam String roleId) {
-        List<Position> list = positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
-        for (Position position : list) {
-            if (position.getId().equals(Y9LoginUserHolder.getPositionId())) {
+        List<OrgUnit> list =
+            roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData();
+        for (OrgUnit orgUnit : list) {
+            if (orgUnit.getId().equals(Y9LoginUserHolder.getPositionId())) {
                 return Y9Result.success(true);
             }
         }
@@ -1049,99 +1033,6 @@ public class Document4GfgRestController {
             });
         }
         return y9Result;
-    }
-
-    /**
-     * 复制并起草失败
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    @PostMapping(value = "/copy2Todo")
-    public Y9Result<Map<String, Object>> copy2Todo(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String startTaskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId();
-        List<TaskRelatedModel> processRelatedList =
-            taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-        if (processRelatedList.stream()
-            .anyMatch(taskRelatedModel -> TaskRelatedEnum.FU.getValue().equals(taskRelatedModel.getInfoType()))) {
-            return Y9Result.failure("操作失败：复制件不能被复制!");
-        }
-        if (processRelatedList.stream()
-            .anyMatch(taskRelatedModel -> TaskRelatedEnum.YUAN.getValue().equals(taskRelatedModel.getInfoType()))) {
-            return Y9Result.failure("操作失败：该文件已被复制!");
-        }
-        // 1复制表单数据
-        String targetProcessSerialNumber = Y9IdGenerator.genId();
-        Y9Result<Object> copy = formDataApi.copy(tenantId, processSerialNumber, targetProcessSerialNumber);
-        if (!copy.isSuccess()) {
-            return Y9Result.failure("操作失败：表单数据不存在!");
-        }
-        Y9Result<ProcessParamModel> processParamY9Result =
-            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
-        if (!processParamY9Result.isSuccess()) {
-            return Y9Result.failure("操作失败：流程参数不存在!");
-        }
-        ProcessParamModel oldProcessParam = processParamY9Result.getData();
-        // 2修改表单流水号
-        Y9Result<String> numberY9Result =
-            asyncUtilService.getNumber(tenantId, personId, oldProcessParam.getItemId(), targetProcessSerialNumber);
-        if (!numberY9Result.isSuccess()) {
-            return Y9Result.failure("操作失败：修改表单流水号失败!");
-        }
-        // 3复制流程参数并启动流程
-        Y9Result<StartProcessResultModel> startY9Result = processParamService.saveOrUpdate(oldProcessParam.getItemId(),
-            targetProcessSerialNumber, "", oldProcessParam.getTitle(), oldProcessParam.getCustomNumber(),
-            oldProcessParam.getCustomLevel(), false, startTaskDefKey);
-        if (!startY9Result.isSuccess()) {
-            return Y9Result.failure("操作失败：保存流程参数启动流程失败!");
-        }
-        StartProcessResultModel startProcess = startY9Result.getData();
-        Position position = Y9LoginUserHolder.getPosition();
-        // 4 设置原文件的相关信息
-        TaskRelatedModel sourceTaskRelated = new TaskRelatedModel();
-        sourceTaskRelated.setInfoType(TaskRelatedEnum.YUAN.getValue());
-        sourceTaskRelated.setProcessInstanceId(oldProcessParam.getProcessInstanceId());
-        sourceTaskRelated.setProcessSerialNumber(processSerialNumber);
-        sourceTaskRelated.setExecutionId(oldProcessParam.getProcessInstanceId());
-        sourceTaskRelated.setTaskId("copy2Todo");
-        sourceTaskRelated.setSub(false);
-        sourceTaskRelated.setMsgContent(numberY9Result.getData());
-        sourceTaskRelated.setSenderId(position.getId());
-        sourceTaskRelated.setSenderName(position.getName());
-        Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(tenantId, sourceTaskRelated);
-        // 5 设置复制件的相关信息
-        Map<String, Object> fwFormDataMap =
-            formDataApi.getData4TableAlias(tenantId, processSerialNumber, "fw").getData();
-        String sourceLsh = (String)fwFormDataMap.getOrDefault("lsh", "流水号不存在");
-        TaskRelatedModel targetTaskRelated = new TaskRelatedModel();
-        targetTaskRelated.setInfoType(TaskRelatedEnum.FU.getValue());
-        targetTaskRelated.setProcessInstanceId(startProcess.getProcessInstanceId());
-        targetTaskRelated.setProcessSerialNumber(targetProcessSerialNumber);
-        targetTaskRelated.setExecutionId(startProcess.getProcessInstanceId());
-        targetTaskRelated.setTaskId("copy2Todo");
-        targetTaskRelated.setSub(false);
-        targetTaskRelated.setMsgContent(sourceLsh);
-        targetTaskRelated.setSenderId(position.getId());
-        targetTaskRelated.setSenderName(position.getName());
-        Y9Result<Object> fuResult = taskRelatedApi.saveOrUpdate(tenantId, targetTaskRelated);
-
-        List<ActRuDetailModel> actRuDetailList = actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId,
-            targetProcessSerialNumber, ActRuDetailStatusEnum.TODO.getValue()).getData();
-        ActRuDetailModel actRuDetail = actRuDetailList.stream()
-            .filter(actRuDetailModel -> actRuDetailModel.getTaskId().equals(startProcess.getTaskId())).findFirst()
-            .orElse(null);
-        Map<String, Object> map = new HashMap<>();
-        assert actRuDetail != null;
-        map.put("taskId", actRuDetail.getTaskId());
-        map.put("taskName", actRuDetail.getTaskDefName());
-        map.put("actRuDetailId", actRuDetail.getId());
-        map.put("lsh", numberY9Result.getData());
-        map.put("userName", actRuDetail.getAssigneeName());
-        if (yuanResult.isSuccess() && fuResult.isSuccess()) {
-            return Y9Result.success(map);
-        }
-        return Y9Result.success(map, "复制并起草成功，但是建立关联关系失败！");
     }
 
     /**
