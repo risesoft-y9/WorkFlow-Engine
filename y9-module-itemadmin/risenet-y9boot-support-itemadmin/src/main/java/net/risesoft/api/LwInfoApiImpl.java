@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.LwInfoApi;
-import net.risesoft.entity.GwLwInfo;
-import net.risesoft.model.itemadmin.LwInfoModel;
+import net.risesoft.entity.GwLwLinkBw;
+import net.risesoft.model.itemadmin.LwLinkBwModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.GwLwInfoRepository;
+import net.risesoft.repository.jpa.GwLwLinkBwRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -33,7 +34,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/lwInfo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LwInfoApiImpl implements LwInfoApi {
 
-    private final GwLwInfoRepository gwLwInfoRepository;
+    private final GwLwLinkBwRepository gwLwLinkBwRepository;
 
     /**
      * 删除来文信息
@@ -46,7 +47,7 @@ public class LwInfoApiImpl implements LwInfoApi {
     @Override
     public Y9Result<Object> delLwInfo(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        gwLwInfoRepository.deleteByProcessSerialNumber(processSerialNumber);
+        gwLwLinkBwRepository.deleteByProcessSerialNumber(processSerialNumber);
         return Y9Result.success();
     }
 
@@ -59,13 +60,13 @@ public class LwInfoApiImpl implements LwInfoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<LwInfoModel>> findByProcessSerialNumber(@RequestParam String tenantId,
+    public Y9Result<List<LwLinkBwModel>> findByProcessSerialNumber(@RequestParam String tenantId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<GwLwInfo> list = gwLwInfoRepository.findByProcessSerialNumber(processSerialNumber);
-        List<LwInfoModel> modelList = new ArrayList<>();
-        for (GwLwInfo gwLwInfo : list) {
-            LwInfoModel model = new LwInfoModel();
+        List<GwLwLinkBw> list = gwLwLinkBwRepository.findByProcessSerialNumber(processSerialNumber);
+        List<LwLinkBwModel> modelList = new ArrayList<>();
+        for (GwLwLinkBw gwLwInfo : list) {
+            LwLinkBwModel model = new LwLinkBwModel();
             Y9BeanUtil.copyProperties(gwLwInfo, model);
             modelList.add(model);
         }
@@ -81,15 +82,15 @@ public class LwInfoApiImpl implements LwInfoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveLwInfo(@RequestParam String tenantId, @RequestBody LwInfoModel lwInfoModel) {
+    public Y9Result<Object> saveLwInfo(@RequestParam String tenantId, @RequestBody LwLinkBwModel lwInfoModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        GwLwInfo gwLwInfo = new GwLwInfo();
+        GwLwLinkBw gwLwInfo = new GwLwLinkBw();
         Y9BeanUtil.copyProperties(lwInfoModel, gwLwInfo);
-        List<GwLwInfo> list = gwLwInfoRepository.findByProcessSerialNumber(gwLwInfo.getProcessSerialNumber());
+        List<GwLwLinkBw> list = gwLwLinkBwRepository.findByProcessSerialNumber(gwLwInfo.getProcessSerialNumber());
         if (list.size() > 0) {
             gwLwInfo.setId(list.get(0).getId());
         }
-        gwLwInfoRepository.save(gwLwInfo);
+        gwLwLinkBwRepository.save(gwLwInfo);
         return Y9Result.success();
     }
 

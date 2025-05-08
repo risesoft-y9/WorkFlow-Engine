@@ -2,13 +2,14 @@ package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import net.risesoft.model.itemadmin.LwInfoModel;
+import net.risesoft.model.itemadmin.LwLinkBwModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -37,11 +38,11 @@ public interface LwInfoApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<List<LwInfoModel>>} 通用请求返回对象 - data是附件列表
+     * @return {@code Y9Result<List<LwLinkBwModel>>} 通用请求返回对象 - data是附件列表
      * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
-    Y9Result<List<LwInfoModel>> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<LwLinkBwModel>> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
@@ -53,5 +54,5 @@ public interface LwInfoApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/saveLwInfo", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> saveLwInfo(@RequestParam("tenantId") String tenantId, @RequestBody LwInfoModel lwInfoModel);
+    Y9Result<Object> saveLwInfo(@RequestParam("tenantId") String tenantId, @RequestBody LwLinkBwModel lwInfoModel);
 }

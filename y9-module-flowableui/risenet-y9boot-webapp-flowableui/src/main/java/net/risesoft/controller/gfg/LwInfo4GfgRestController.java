@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.LwInfoApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.LwInfoModel;
+import net.risesoft.model.itemadmin.LwLinkBwModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -75,57 +75,18 @@ public class LwInfo4GfgRestController {
         // }
         // return Y9Result.failure("关联失败");
 
-        LwInfoModel lwInfoModel = new LwInfoModel();
+        LwLinkBwModel lwInfoModel = new LwLinkBwModel();
         lwInfoModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         lwInfoModel.setProcessSerialNumber(processSerialNumber);
         lwInfoModel.setWnbh(bianhao);
-        lwInfoModel.setLwDate("关联来文");
         lwInfoModel.setLwInfoUid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         lwInfoModel.setLwTitle("关联来文测试标题");
         lwInfoModel.setLwDept("关联来文单位");
-        lwInfoModel.setLwfs("关联来文");
-        lwInfoModel.setLwcode("关联来文");
-        lwInfoModel.setLwwh("关联来文");
         lwInfoModel.setLwsx("2天");
-        lwInfoModel.setWjtype("关联");
-        lwInfoModel.setMiji("关联");
-        lwInfoModel.setHuanji("关联");
-        lwInfoModel.setBanfou("关联");
-        lwInfoModel.setZbDept("关联");
-        lwInfoModel.setFileProperty("关联");
-        lwInfoModel.setShb("关联");
-        lwInfoModel.setLimiTime("关联");
         lwInfoModel.setRecordTime("关联");
-        lwInfoModel.setIsDebug("关联");
-        lwInfoModel.setHandleStatus("关联");
-        lwInfoModel.setBureauministerMind("关联");
-        lwInfoModel.setOfficeministerMind("关联");
-        lwInfoModel.setBureauSecertaryMind("关联");
-        lwInfoModel.setUndertakePersonMind("关联");
-        lwInfoModel.setTopproperty("关联");
-        lwInfoModel.setSecondproperty("关联");
-        lwInfoModel.setThirdproperty("关联");
-        lwInfoModel.setAcceptorNot("关联");
-        lwInfoModel.setHallIndex("关联");
-        lwInfoModel.setHallReg("关联");
-        lwInfoModel.setQqsxBtn("关联");
-        lwInfoModel.setCreateTime("22222222");
-        lwInfoModel.setNeeddo("关联");
-        lwInfoModel.setDecdit("关联");
-        lwInfoModel.setOveraccepttime("关联");
-        lwInfoModel.setTouchUser("关联");
-        lwInfoModel.setTouchTel("关联");
-        lwInfoModel.setAcceptType("关联");
-        lwInfoModel.setSendDept("关联");
-        lwInfoModel.setAppDept("关联");
-        lwInfoModel.setNopermitszyj("关联");
-        lwInfoModel.setNopermitczyj("关联");
-        lwInfoModel.setHandleType("关联");
-        lwInfoModel.setFinishtype("关联");
-        lwInfoModel.setXmmc("关联");
-        lwInfoModel.setXmdm("关联");
-        lwInfoModel.setSfxs("关联");
-        lwInfoModel.setIsFlwdj("关联");
+        lwInfoModel.setInputPerson("关联");
+        lwInfoModel.setLwInfoUid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        lwInfoModel.setWnbhUid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         return lwInfoApi.saveLwInfo(Y9LoginUserHolder.getTenantId(), lwInfoModel);
     }
 
@@ -136,7 +97,7 @@ public class LwInfo4GfgRestController {
      * @return Y9Result<List<LwInfoModel>>
      */
     @GetMapping(value = "/list")
-    public Y9Result<List<LwInfoModel>> list(@RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<List<LwLinkBwModel>> list(@RequestParam @NotBlank String processSerialNumber) {
         return lwInfoApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
     }
 
