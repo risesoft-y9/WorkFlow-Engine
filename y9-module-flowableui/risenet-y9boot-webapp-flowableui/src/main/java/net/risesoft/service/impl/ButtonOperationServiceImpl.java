@@ -250,17 +250,17 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             // 2、添加动作名称
             Map<String, Object> vars = new HashMap<>();
-            vars.put("val", "重新激活");
+            vars.put("val", desc);
             variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
                 SysVariables.ACTIONNAME + ":" + positionId, vars);
             // 3、重定位，谁激活就重定位给谁
             buttonOperationApi.reposition(tenantId, positionId, hisTaskModel.getId(),
-                hisTaskModel.getTaskDefinitionKey(), List.of(positionId), "重新激活", "");
-            return Y9Result.successMsg("重新激活成功");
+                hisTaskModel.getTaskDefinitionKey(), List.of(positionId), desc, "");
+            return Y9Result.successMsg(desc + "成功");
         } catch (Exception e) {
-            LOGGER.error("重新激活异常", e);
+            LOGGER.error(desc + "异常", e);
         }
-        return Y9Result.failure("重新激活失败");
+        return Y9Result.failure(desc + "失败");
     }
 
     @Override

@@ -513,7 +513,7 @@ public class FormDataServiceImpl implements FormDataService {
             });
             return Y9Result.success("操作成功");
         } catch (Exception e) {
-            LOGGER.error("****************************formdata:" + formData);
+            LOGGER.error("****************************[updateFormData]更新表单数据异常，表单数据：{}", formData);
         }
         return Y9Result.failure("发生异常");
     }
