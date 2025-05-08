@@ -1069,4 +1069,29 @@
             <column name="hbBanShiFileStoreId" remarks="合并板式文件仓库id" type="VARCHAR(50)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-54" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_GW_LWLINKBW"/>
+            </not>
+        </preConditions>
+        <createTable remarks="来文与办文的关联关系表" tableName="FF_GW_LWLINKBW">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WNBH" remarks="委内编号" type="VARCHAR(100)"/>
+            <column name="WNBHUID" remarks="委内编号(来文表主键)" type="VARCHAR(100)"/>
+            <column name="INPUTPERSON" remarks="录入人" type="VARCHAR(100)"/>
+            <column name="RECORDTIME" remarks="录入时间" type="VARCHAR(50)"/>
+            <column name="LWINFOUID" remarks="lwinfo的唯一键" type="VARCHAR(100)"/>
+            <column name="ISINSTANCEASSOCIATE" remarks="判断是否是来文转的办文，0办文关联的来文 1来文转办文" type="VARCHAR(20)"/>
+            <column name="LWTITLE" remarks="来文标题" type="VARCHAR(500)"/>
+            <column name="LWDEPT" remarks="来文单位" type="VARCHAR(100)"/>
+            <column name="LWSX" remarks="来文时限" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
