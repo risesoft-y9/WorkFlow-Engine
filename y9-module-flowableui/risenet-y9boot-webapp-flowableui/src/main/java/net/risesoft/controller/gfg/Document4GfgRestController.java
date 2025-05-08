@@ -1009,15 +1009,9 @@ public class Document4GfgRestController {
      * @return Y9Result<String>
      */
     @PostMapping(value = "/multipleResumeToDo")
-    public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceIds,
+    public Y9Result<String> multipleResumeToDo(@RequestParam String[] processInstanceIds,
         @RequestParam(required = false) String desc) {
-        try {
-            buttonOperationService.multipleResumeTodo(processInstanceIds, desc);
-            return Y9Result.successMsg("恢复成功");
-        } catch (Exception e) {
-            LOGGER.error("恢复待办失败", e);
-        }
-        return Y9Result.failure("恢复失败");
+        return buttonOperationService.multipleResumeTodo(processInstanceIds, desc);
     }
 
     /**

@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -150,16 +151,23 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
-    public void multipleResumeTodo(String processInstanceIds, String desc) throws Exception {
-        if (StringUtils.isBlank(processInstanceIds)) {
-            return;
+    public Y9Result<String> multipleResumeTodo(String[] processInstanceIds, String desc) {
+        boolean haveDoing = Arrays.stream(processInstanceIds).anyMatch(processInstanceId -> runtimeApi
+            .getProcessInstance(Y9LoginUserHolder.getTenantId(), processInstanceId).isSuccess());
+        if (haveDoing) {
+            return Y9Result.failure("存在正在运行的流程，请刷新列表！");
         }
-        String[] array = processInstanceIds.split(";");
-        for (String processInstanceId : array) {
-            if (StringUtils.isNotBlank(processInstanceId)) {
-                resumeTodo(processInstanceId, desc);
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failCount = new AtomicInteger();
+        Arrays.stream(processInstanceIds).forEach(processInstanceId -> {
+            if (resumeTodo(processInstanceId, desc).isSuccess()) {
+                successCount.getAndIncrement();
+            } else {
+                failCount.getAndIncrement();
             }
-        }
+        });
+        return Y9Result.successMsg(
+            "共" + processInstanceIds.length + "条记录，成功" + successCount.get() + "条，失败" + failCount.get() + "条。");
     }
 
     @Override
@@ -222,7 +230,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
-    public void resumeTodo(String processInstanceId, String desc) throws Exception {
+    public Y9Result<String> resumeTodo(String processInstanceId, String desc) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -245,13 +253,14 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             vars.put("val", "重新激活");
             variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
                 SysVariables.ACTIONNAME + ":" + positionId, vars);
-            // 3、重定位
+            // 3、重定位，谁激活就重定位给谁
             buttonOperationApi.reposition(tenantId, positionId, hisTaskModel.getId(),
-                hisTaskModel.getTaskDefinitionKey(), List.of(hisTaskModel.getAssignee()), "重新激活", "");
+                hisTaskModel.getTaskDefinitionKey(), List.of(positionId), "重新激活", "");
+            return Y9Result.successMsg("重新激活成功");
         } catch (Exception e) {
-            LOGGER.error("runtimeApi resumeToDo error", e);
-            throw new Exception("runtimeApi resumeToDo error");
+            LOGGER.error("重新激活异常", e);
         }
+        return Y9Result.failure("重新激活失败");
     }
 
     @Override
