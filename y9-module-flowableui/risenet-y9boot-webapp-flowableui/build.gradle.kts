@@ -11,7 +11,9 @@ dependencies {
     providedRuntime(platform(libs.y9.digitalbase.dependencies))
 
     api("net.risesoft:risenet-y9boot-properties")
-    api("net.risesoft:risenet-y9boot-starter-security")
+    api("net.risesoft:risenet-y9boot-starter-security") {
+        exclude(group = "xml-apis", module = "xml-apis")
+    }
     api("net.risesoft:risenet-y9boot-starter-apisix")
     api("net.risesoft:risenet-y9boot-starter-log")
     api("net.risesoft:risenet-y9boot-starter-jpa-public")
@@ -32,7 +34,9 @@ dependencies {
     api(libs.pinyin4j)
 
     api(libs.poi.scratchpad)
-    api(libs.poi.tl)
+    api(libs.poi.tl) {
+        exclude(group = "xml-apis", module = "xml-apis")
+    }
     api(libs.poi.ooxml)
     api(libs.fastexcel)
     api(y9libs.dom4j)
