@@ -40,7 +40,7 @@ public interface ButtonOperationService {
      * @param processInstanceIds 流程实例ids
      * @param desc 描述
      */
-    void multipleResumeTodo(String processInstanceIds, String desc) throws Exception;
+    Y9Result<String> multipleResumeTodo(String[] processInstanceIds, String desc);
 
     /**
      * 恢复待办
@@ -56,7 +56,7 @@ public interface ButtonOperationService {
      * @param processInstanceId 流程实例id
      * @param desc 描述
      */
-    void resumeTodo(String processInstanceId, String desc) throws Exception;
+    Y9Result<String> resumeTodo(String processInstanceId, String desc);
 
     Y9Result<String> deleteTodos(String[] taskIdAndProcessSerialNumbers);
 
