@@ -152,4 +152,9 @@ public class SignDeptOutServiceImpl implements SignDeptOutService {
         }
     }
 
+    @Override
+    @Transactional
+    public SignOutDept findByDeptNameMax(String deptNameMax) {
+        return signOutDeptRepository.findByDeptNameMax(deptNameMax);
+    }
 }

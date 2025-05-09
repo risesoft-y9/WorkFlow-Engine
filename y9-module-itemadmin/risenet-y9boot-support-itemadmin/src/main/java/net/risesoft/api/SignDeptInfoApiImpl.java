@@ -1,7 +1,9 @@
 package net.risesoft.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -110,6 +112,25 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
             modelList.add(model);
         }
         return Y9Result.success(modelList);
+    }
+
+    @Override
+    public Y9Result<Map<String,String>> findByDeptNameMax(@RequestParam String tenantId, @RequestParam String deptNameMax) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, String> map = new HashMap<String, String>();
+
+        SignOutDept signOutDept = signDeptOutService.findByDeptNameMax(deptNameMax);
+        if (signOutDept != null) {
+            String fullDeptName = signOutDept.getFullDeptName();
+            String ldcw = signOutDept.getLdcw();
+            String deptName = signOutDept.getDeptName();
+            String deptSuffix = signOutDept.getDeptSuffix();
+            map.put("fullDeptName",fullDeptName);
+            map.put("ldcw",ldcw);
+            map.put("deptName",deptName);
+            map.put("deptSuffix",deptSuffix);
+        }
+        return Y9Result.success(map);
     }
 
     /**
