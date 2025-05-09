@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.risesoft.entity.DocumentWord;
 import net.risesoft.model.itemadmin.DocumentWordModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -11,6 +12,9 @@ import net.risesoft.model.itemadmin.DocumentWordModel;
  * @date 2022/12/20
  */
 public interface DocumentWordService {
+
+    Y9Result<Object> copyByProcessSerialNumberAndWordType(String sourceProcessSerialNumber,
+        String targetProcessSerialNumber, String wordType);
 
     /**
      * 根据流程编号和正文类型查询正文信息
