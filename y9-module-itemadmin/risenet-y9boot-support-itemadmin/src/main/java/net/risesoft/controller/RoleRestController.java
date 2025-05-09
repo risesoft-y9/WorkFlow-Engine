@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
@@ -23,6 +24,7 @@ import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.enums.platform.RoleTypeEnum;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.platform.System;
 import net.risesoft.pojo.Y9Result;
@@ -40,6 +42,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class RoleRestController {
 
     private final RoleApi roleApi;
+
+    private final PositionRoleApi positionRoleApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -110,19 +114,20 @@ public class RoleRestController {
     public Y9Result<List<NodeTreeVO>> findRoleMember(@RequestParam String roleId) {
         List<NodeTreeVO> listMap = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> list = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
-        for (OrgUnit orgUnit : list) {
+        List<Position> list = positionRoleApi.listPositionsByRoleId(tenantId, roleId).getData();
+        for (Position position : list) {
             NodeTreeVO map = new NodeTreeVO();
-            map.setId(orgUnit.getId());
-            map.setName(orgUnit.getName());
+            map.setId(position.getId());
+            map.setName(position.getName());
             map.setParentId(roleId);
-            map.setGuidPath(orgUnit.getGuidPath());
-            map.setOrgType(orgUnit.getOrgType().getValue());
+            map.setGuidPath(position.getGuidPath());
+            map.setOrgType(position.getOrgType().getValue());
             map.setIsParent(false);
-            if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
-                || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
-                map.setIsParent(true);
-            }
+            map.setDn(position.getDn());
+            // if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
+            // || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
+            // map.setIsParent(true);
+            // }
             listMap.add(map);
         }
         return Y9Result.success(listMap, "获取成功");
@@ -134,19 +139,21 @@ public class RoleRestController {
         List<NodeTreeVO> listMap = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(roleId) && StringUtils.isBlank(id)) {
-            List<OrgUnit> list = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.PERSON).getData();
-            for (OrgUnit orgUnit : list) {
+            // List<OrgUnit> list = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.PERSON).getData();
+            List<Position> list = positionRoleApi.listPositionsByRoleId(tenantId, roleId).getData();
+            for (Position position : list) {
                 NodeTreeVO map = new NodeTreeVO();
-                map.setId(orgUnit.getId());
-                map.setName(orgUnit.getName());
+                map.setId(position.getId());
+                map.setName(position.getName());
                 map.setParentId(roleId);
-                map.setGuidPath(orgUnit.getGuidPath());
-                map.setOrgType(orgUnit.getOrgType().getValue());
+                map.setGuidPath(position.getGuidPath());
+                map.setOrgType(position.getOrgType().getValue());
                 map.setIsParent(false);
-                if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
-                    || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
-                    map.setIsParent(true);
-                }
+                map.setDn(position.getDn());
+                // if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
+                // || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
+                // map.setIsParent(true);
+                // }
                 listMap.add(map);
             }
         } else {
@@ -159,6 +166,7 @@ public class RoleRestController {
                 map.setGuidPath(orgUnit.getGuidPath());
                 map.setOrgType(orgUnit.getOrgType().getValue());
                 map.setIsParent(false);
+                map.setDn(orgUnit.getDn());
                 if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
                     || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
                     map.setIsParent(true);

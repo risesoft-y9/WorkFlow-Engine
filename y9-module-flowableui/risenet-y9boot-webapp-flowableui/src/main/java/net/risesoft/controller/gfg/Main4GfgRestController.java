@@ -36,7 +36,6 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.platform.AuthorityEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -411,6 +410,17 @@ public class Main4GfgRestController {
     }
 
     /**
+     * 获取角色下的岗位集合
+     *
+     * @return Y9Result<List<Position>>
+     */
+    @GetMapping(value = "/getPositionsByRoleId")
+    public Y9Result<List<Position>> getPositionsByRoleId(@RequestParam String roleId) {
+        List<Position> list = positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
+        return Y9Result.success(list);
+    }
+
+    /**
      * 获取阅件左侧菜单数量
      *
      * @return Y9Result<Map < String, Object>>
@@ -460,18 +470,6 @@ public class Main4GfgRestController {
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
         return Y9Result.success(map, "获取成功");
-    }
-
-    @GetMapping(value = "/haveRole")
-    public Y9Result<Boolean> haveRole(String roleId) {
-        return Y9Result.success(positionRoleApi
-            .hasRole(Y9LoginUserHolder.getTenantId(), roleId, Y9LoginUserHolder.getPositionId()).getData());
-    }
-
-    @GetMapping(value = "/getPositionsByRoleId")
-    public Y9Result<List<OrgUnit>> getPositionsByRoleId(@RequestParam String roleId) {
-        return Y9Result
-            .success(roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData());
     }
 
     /**
@@ -582,5 +580,11 @@ public class Main4GfgRestController {
         map.put("processInstanceId", processInstanceId);
         map.put("processSerialNumber", processSerialNumber);
         return Y9Result.success(map, "获取成功");
+    }
+
+    @GetMapping(value = "/haveRole")
+    public Y9Result<Boolean> haveRole(String roleId) {
+        return Y9Result.success(positionRoleApi
+            .hasRole(Y9LoginUserHolder.getTenantId(), roleId, Y9LoginUserHolder.getPositionId()).getData());
     }
 }

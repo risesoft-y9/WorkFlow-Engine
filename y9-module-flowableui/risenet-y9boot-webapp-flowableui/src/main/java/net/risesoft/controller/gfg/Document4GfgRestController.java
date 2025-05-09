@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -48,7 +49,6 @@ import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -831,13 +831,12 @@ public class Document4GfgRestController {
         ProcessParamModel processParam =
             processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
         String startor = processParam.getStartor();
-        List<OrgUnit> list =
-            roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData();
+        List<Position> list = positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), startor).getData();
-        for (OrgUnit orgUnit : list) {
-            OrgUnit newbureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+        for (Position position : list) {
+            OrgUnit newbureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), position.getId()).getData();
             // 判断当前人是司局领导，且跟起草人司局相同
-            if (orgUnit.getId().equals(Y9LoginUserHolder.getPositionId()) && bureau != null && newbureau != null
+            if (position.getId().equals(Y9LoginUserHolder.getPositionId()) && bureau != null && newbureau != null
                 && newbureau.getId().equals(bureau.getId())) {
                 return Y9Result.success(true);
             }
@@ -968,10 +967,9 @@ public class Document4GfgRestController {
      */
     @GetMapping(value = "/getWordManager")
     public Y9Result<Boolean> getWordManager(@RequestParam String roleId) {
-        List<OrgUnit> list =
-            roleApi.listOrgUnitsById(Y9LoginUserHolder.getTenantId(), roleId, OrgTypeEnum.POSITION).getData();
-        for (OrgUnit orgUnit : list) {
-            if (orgUnit.getId().equals(Y9LoginUserHolder.getPositionId())) {
+        List<Position> list = positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
+        for (Position position : list) {
+            if (position.getId().equals(Y9LoginUserHolder.getPositionId())) {
                 return Y9Result.success(true);
             }
         }
