@@ -354,8 +354,8 @@ public class EleAttachmentRestController {
                         String newmodelName = newmodelNames[0];
                         index = newmodelName.substring(newmodelName.lastIndexOf("(") + 1, newmodelName.length() - 1);
                     }
-                    String newName = StringUtils.split(originalFilename, ".")[0] + "(" + Integer.parseInt(index) + ")"
-                        + "." + StringUtils.split(originalFilename, ".")[1];
+                    String newName = StringUtils.split(originalFilename, ".")[0] + "(" + (Integer.parseInt(index) + 1)
+                        + ")" + "." + StringUtils.split(originalFilename, ".")[1];
                     eleAttachmentModel.setName(newName);
                 }
             } catch (Exception e) {
