@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 
-import cn.hutool.core.date.DateUtil;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +41,8 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.service.Y9FileStoreService;
+
+import cn.hutool.core.date.DateUtil;
 
 /**
  * 合并文件接口
@@ -89,7 +90,7 @@ public class MergeFileRestController {
 
     /**
      * 文件下载
-     * 
+     *
      * @param id 附件id
      */
     @GetMapping(value = "/download")
@@ -246,5 +247,18 @@ public class MergeFileRestController {
         } catch (Exception e) {
             LOGGER.error("下载失败", e);
         }
+    }
+
+    /**
+     * 修改文件名称
+     *
+     * @param id 文件id
+     * @param fileName 文件名称
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/updateFileName")
+    public Y9Result<Object> updateFileName(@RequestParam String id, @RequestParam String fileName) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return mergeFileApi.updateFileName(tenantId, id, fileName);
     }
 }
