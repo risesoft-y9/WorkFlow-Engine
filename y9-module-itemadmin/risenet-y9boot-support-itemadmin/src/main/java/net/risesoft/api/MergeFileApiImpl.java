@@ -155,4 +155,25 @@ public class MergeFileApiImpl implements MergeFileApi {
         mergeFileService.saveMergeFile(mergeFile);
         return Y9Result.success(mergeFile);
     }
+
+    /**
+     * 更新文件名称
+     *
+     * @param tenantId 租户ID
+     * @param id 文件ID
+     * @param fileName 文件名称
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.0
+     */
+    @Override
+    public Y9Result<Object> updateFileName(@RequestParam String tenantId, @RequestParam String id,
+        @RequestParam String fileName) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        MergeFile mergeFile = mergeFileRepository.findById(id).orElse(null);
+        if (mergeFile != null) {
+            mergeFile.setFileName(fileName);
+            mergeFileService.saveMergeFile(mergeFile);
+        }
+        return Y9Result.success();
+    }
 }
