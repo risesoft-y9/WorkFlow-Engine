@@ -22,6 +22,7 @@ import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -80,7 +81,7 @@ public class AsyncUtilService {
         }
     }
 
-    public void getNumber(final String tenantId, final String userId, final String itemId,
+    public Y9Result<String> getNumber(final String tenantId, final String userId, final String itemId,
         final String processSerialNumber) {
         String custom = "fawen";
         String characterValue = "发稿";
@@ -109,10 +110,15 @@ public class AsyncUtilService {
             } else {
                 numberStr = String.valueOf(number);
             }
+            String hao = characterValue + "[" + year + "]" + numberStr;
             String sql = "update y9_form_fw set lsh = '"+characterValue+"[" + year + "]" + numberStr + "' where guid = '"
                 + processSerialNumber + "'";
             jdbcTemplate.execute(sql);
+            return Y9Result.success(hao);
+        } else {
+            return Y9Result.failure("发生异常");
         }
+        return Y9Result.failure("发生异常");
     }
 
     /**

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9PreFormItemBind;
@@ -37,6 +39,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.service.FormDataService;
+import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.config.Y9PreFormItemBindService;
@@ -79,11 +82,14 @@ public class FormDataServiceImpl implements FormDataService {
 
     private final Y9TableService y9TableService;
 
+    private final ProcessParamService processParamService;
+
     public FormDataServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         SpmApproveItemService spmApproveItemService, Y9FormItemBindService y9FormItemBindService,
         Y9PreFormItemBindService y9PreFormItemBindService, Y9FormFieldService y9FormFieldService,
         Y9FormService y9FormService, Y9FormRepository y9FormRepository, RepositoryApi repositoryApi,
-        Y9FieldPermRepository y9FieldPermRepository, PositionRoleApi positionRoleApi, Y9TableService y9TableService) {
+        Y9FieldPermRepository y9FieldPermRepository, PositionRoleApi positionRoleApi, Y9TableService y9TableService,
+        ProcessParamService processParamService) {
         this.jdbcTemplate = jdbcTemplate;
         this.spmApproveItemService = spmApproveItemService;
         this.y9FormItemBindService = y9FormItemBindService;
@@ -95,16 +101,64 @@ public class FormDataServiceImpl implements FormDataService {
         this.y9FieldPermRepository = y9FieldPermRepository;
         this.positionRoleApi = positionRoleApi;
         this.y9TableService = y9TableService;
+        this.processParamService = processParamService;
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
+    public Y9Result<Object> copy(String sourceProcessSerialNumber, String targetProcessSerialNumber) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(sourceProcessSerialNumber);
+            String itemId = processParam.getItemId();
+            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            ProcessDefinitionModel processDefinition =
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
+            // 流程上绑定的表单
+            List<Y9FormItemBind> formList =
+                y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            List<String> allTableNameList = new ArrayList<>();
+            formList.forEach(bind -> {
+                // 表单中涉及的表，多个表单有可能会绑定同一张表
+                y9FormRepository.findBindTableName(bind.getFormId()).forEach(tableName -> {
+                    if (!allTableNameList.contains(tableName)) {
+                        allTableNameList.add(tableName);
+                    }
+                });
+            });
+            // 复制数据
+            allTableNameList.forEach(tableName -> {
+                Y9Table y9Table = y9TableService.findByTableName(tableName);
+                if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN.getValue())) {
+                    try {
+                        Map<String, Object> map = jdbcTemplate.queryForMap(
+                            "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", sourceProcessSerialNumber);
+                        StringBuilder columnSql = new StringBuilder();
+                        map.entrySet().stream().filter(entry -> !"guid".equalsIgnoreCase(entry.getKey()))
+                            .forEach(entry -> columnSql.append(",").append(entry.getKey()));
+                        String sql = "INSERT INTO " + tableName + " (guid" + columnSql + ") " + "SELECT ?" + columnSql
+                            + " FROM " + tableName + " WHERE guid = ?";
+                        jdbcTemplate.update(sql, targetProcessSerialNumber, sourceProcessSerialNumber);
+                    } catch (EmptyResultDataAccessException ex) {
+                        LOGGER.error("表{}没有guid:{}的数据", tableName, sourceProcessSerialNumber);
+                    }
+                }
+            });
+            return Y9Result.successMsg("复制成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("复制失败");
+    }
+
+    @Override
+    @Transactional
     public Y9Result<Object> delChildTableRow(String formId, String tableId, String guid) {
         return y9FormService.delChildTableRow(formId, tableId, guid);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<Object> delPreFormData(String formId, String guid) {
         return y9FormService.delPreFormData(formId, guid);
     }
@@ -167,7 +221,7 @@ public class FormDataServiceImpl implements FormDataService {
         }
         String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID ='" + guid + "'";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql);
-        return Y9Result.success(list.size() > 0 ? list.get(0) : null);
+        return Y9Result.success(!list.isEmpty() ? list.get(0) : null);
     }
 
     @Override

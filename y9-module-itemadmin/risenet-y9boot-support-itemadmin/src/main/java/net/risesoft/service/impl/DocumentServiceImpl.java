@@ -2167,6 +2167,8 @@ public class DocumentServiceImpl implements DocumentService {
         StartProcessResultModel model = null;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
+            theTaskKey =
+                StringUtils.isBlank(theTaskKey) ? itemStartNodeRoleService.getStartTaskDefKey(itemId) : theTaskKey;
             Map<String, Object> vars = new HashMap<>(16);
             SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);

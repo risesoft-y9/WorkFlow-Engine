@@ -48,6 +48,20 @@ public class FormDataApiImpl implements FormDataApi {
     private final Y9FormItemBindService y9FormItemBindService;
 
     /**
+     * 复制表单数据
+     * 
+     * @param tenantId 租户id
+     * @param sourceProcessSerialNumber 源流程序列号
+     * @param targetProcessSerialNumber 目标流程序列号
+     * @return
+     */
+    @Override
+    public Y9Result<Object> copy(String tenantId, String sourceProcessSerialNumber, String targetProcessSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.copy(sourceProcessSerialNumber, targetProcessSerialNumber);
+    }
+
+    /**
      * 删除子表数据
      *
      * @param tenantId 租户id

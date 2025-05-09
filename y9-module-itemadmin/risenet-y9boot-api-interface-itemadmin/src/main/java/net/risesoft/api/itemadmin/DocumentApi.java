@@ -408,7 +408,7 @@ public interface DocumentApi {
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("theTaskKey") String theTaskKey) throws Exception;
+        @RequestParam(name = "theTaskKey", required = false) String theTaskKey) throws Exception;
 
     /**
      * 启动流程，多人

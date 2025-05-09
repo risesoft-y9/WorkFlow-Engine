@@ -1335,8 +1335,10 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private List<TaskRelatedModel> getTaskRelated4Todo(ActRuDetailModel ardModel, Map<String, Object> formData) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<TaskRelatedModel> taskRelatedList =
-                taskRelatedApi.findByTaskId(tenantId, ardModel.getTaskId()).getData();
+            List<TaskRelatedModel> processRelatedList =
+                taskRelatedApi.findByProcessSerialNumber(tenantId, ardModel.getProcessSerialNumber()).getData();
+            List<TaskRelatedModel> taskRelatedList = processRelatedList.stream()
+                .filter(prl -> prl.getTaskId().equals(ardModel.getTaskId())).collect(Collectors.toList());
             // 7、多步退回 8、办文说明
             taskRelatedList = taskRelatedList.stream()
                 .filter(
@@ -1353,6 +1355,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             // 6、催办
             taskRelatedList.addAll(getTaskRelated4Urge(ardModel.getProcessSerialNumber(), ardModel.isSub(),
                 ardModel.getExecutionId()));
+            // 复、原
+            taskRelatedList.addAll(getTaskRelated4FuYuan(ardModel.getProcessSerialNumber(), processRelatedList));
             return taskRelatedList;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1402,21 +1406,22 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             List<TaskRelatedModel> returnList = new ArrayList<>();
             List<TaskRelatedModel> taskRelatedList =
                 taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            List<TaskRelatedModel> banwenshumingList;
             // 办文说明
             if (isChildren) {
-                taskRelatedList = taskRelatedList.stream()
+                banwenshumingList = taskRelatedList.stream()
                     .filter(t -> Integer.parseInt(t.getInfoType()) == Integer
                         .parseInt(TaskRelatedEnum.BANWENSHUOMING.getValue())
                         && t.getExecutionId().equals(executionId))
                     .collect(Collectors.toList());
             } else {
-                taskRelatedList = taskRelatedList.stream()
+                banwenshumingList = taskRelatedList.stream()
                     .filter(t -> Integer.parseInt(t.getInfoType()) == Integer
                         .parseInt(TaskRelatedEnum.BANWENSHUOMING.getValue()) && !t.isSub())
                     .collect(Collectors.toList());
             }
-            if (!taskRelatedList.isEmpty()) {
-                returnList.add(taskRelatedList.get(0));
+            if (!banwenshumingList.isEmpty()) {
+                returnList.add(banwenshumingList.get(0));
             }
             // 红绿灯
             returnList.addAll(getTaskRelated4Dbsx(formData));
@@ -1424,6 +1429,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             returnList.addAll(getTaskRelated4Public(formData));
             // 催办
             returnList.addAll(getTaskRelated4Urge(urgeInfoList, isChildren, executionId));
+            // 复原
+            returnList.addAll(getTaskRelated4FuYuan(processSerialNumber, taskRelatedList));
             return returnList;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1445,6 +1452,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
         taskRelatedList.addAll(getTaskRelated4Public(formData));
         taskRelatedList.addAll(getTaskRelated4Urge(urgeInfoList, isChildren, ardModel.getExecutionId()));
+        // 复原
+        taskRelatedList.addAll(getTaskRelated4FuYuan(ardModel.getProcessSerialNumber(), List.of()));
         return taskRelatedList;
     }
 
@@ -1581,6 +1590,32 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 taskRelatedList.add(
                     new TaskRelatedModel(TaskRelatedEnum.URGE.getValue(), Y9JsonUtil.writeValueAsString(urgeInfoList)));
             }
+            return taskRelatedList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return List.of();
+    }
+
+    /**
+     * 复和原的状态
+     *
+     * @param processSerialNumber
+     * @param processRelatedList 流程所有关联信息
+     * @return
+     */
+    private List<TaskRelatedModel> getTaskRelated4FuYuan(String processSerialNumber,
+        List<TaskRelatedModel> processRelatedList) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
+        try {
+            if (processRelatedList.isEmpty()) {
+                processRelatedList = taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            }
+            taskRelatedList = processRelatedList.stream()
+                .filter(taskRelatedModel -> TaskRelatedEnum.FU.getValue().equals(taskRelatedModel.getInfoType())
+                    || TaskRelatedEnum.YUAN.getValue().equals(taskRelatedModel.getInfoType()))
+                .collect(Collectors.toList());
             return taskRelatedList;
         } catch (Exception e) {
             e.printStackTrace();
