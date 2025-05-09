@@ -177,12 +177,12 @@ public class TypeSetting4GfgController {
                 "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             String storeId = y9FileStore.getId();
-            // 生成清样文件,发文稿纸正文替换书签
-            byte[] os = this.generateQingyangFile(processSerialNumber, storeId, fileName);
-            if (os != null) {
-                y9FileStore = y9FileStoreService.uploadFile(os, fullPath, fileName);
-                storeId = y9FileStore.getId();
-            }
+            // 生成清样文件,发文稿纸正文替换书签 --- 须与原系统生成方式保持一致，故注释
+//            byte[] os = this.generateQingyangFile(processSerialNumber, storeId, fileName);
+//            if (os != null) {
+//                y9FileStore = y9FileStoreService.uploadFile(os, fullPath, fileName);
+//                storeId = y9FileStore.getId();
+//            }
             return Y9Result.success(storeId);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);

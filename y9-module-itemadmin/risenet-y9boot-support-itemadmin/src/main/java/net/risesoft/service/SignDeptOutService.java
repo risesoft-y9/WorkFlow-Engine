@@ -90,4 +90,11 @@ public interface SignDeptOutService {
      * @return Y9Result<String>
      */
     void saveTypeOrder(String[] idAndTabIndexs);
+
+    /**
+     * 获取单位表信息
+     * @param deptNameMax
+     * @return
+     */
+    SignOutDept findByDeptNameMax(String deptNameMax);
 }

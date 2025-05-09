@@ -1,6 +1,7 @@
 package net.risesoft.api.itemadmin;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -116,4 +117,16 @@ public interface SignDeptInfoApi {
     @PostMapping(value = "/saveSignDeptInfo")
     Y9Result<Object> saveSignDeptInfo(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
         @RequestParam(value = "userName", required = false) String userName);
+
+    /**
+     * 获取联合发文单位总称
+     *
+     * @param tenantId 租户ID
+     * @param deptNameMax 部门名称
+     * @return Y9Result<List<Department>>
+     * @since 9.6.0
+     */
+    @GetMapping(value = "/findByDeptNameMax")
+    Y9Result<Map<String,String>> findByDeptNameMax(@RequestParam("tenantId") String tenantId,
+                                            @RequestParam("deptNameMax") String deptNameMax);
 }
