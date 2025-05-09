@@ -92,7 +92,13 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(actRuDetail.getProcessSerialNumber());
         SpmApproveItem item = itemService.findById(processParam.getItemId());
         Todo3rd todo3rd = getTodo3rd(actRuDetail, processParam, 1);
-        todo3rd.setUrl(item.getTodoTaskUrlPrefix());
+        Map<String, Object> fwFormDataMap =
+            formDataService.getData4TableAlias(actRuDetail.getProcessSerialNumber(), "fw").getData();
+        String lsh = (String)fwFormDataMap.getOrDefault("lsh", "暂无流水号");
+        String url = item.getTodoTaskUrlPrefix() + "?itembox=todo&taskId=" + actRuDetail.getTaskId() + "&taskName="
+            + actRuDetail.getTaskDefName() + "&lsh=" + lsh + "&userName=" + actRuDetail.getAssigneeName()
+            + "&actRuDetailId=" + actRuDetail.getId();
+        todo3rd.setUrl(url);
         String timestamp = getFormattedTimestamp(), token = Y9IdGenerator.genId(),
             vcode = MD5Util.md5Encode(timestamp + APP + token + KEY);
         todo3rd.setParams(Y9JsonUtil.writeValueAsString(getTodoParam(timestamp, token, vcode)));
@@ -162,7 +168,11 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         if (add) {
             url = todo3rdUrl + ADDURL;
             SpmApproveItem item = itemService.findById(processParam.getItemId());
-            todo3rd.setUrl(item.getTodoTaskUrlPrefix());
+            Map<String, Object> fwFormDataMap =
+                formDataService.getData4TableAlias(documentCopy.getProcessSerialNumber(), "fw").getData();
+            String lsh = (String)fwFormDataMap.getOrDefault("lsh", "暂无流水号");
+            todo3rd.setUrl(item.getTodoTaskUrlPrefix() + "?itembox=copy&lsh=" + lsh + "&processSerialNumber="
+                + documentCopy.getProcessSerialNumber());
             todoResponse = RemoteCallUtil.post(url, params, Y9JsonUtil.writeValueAsString(todo3rd), TodoResponse.class);
         }
         if (update) {
