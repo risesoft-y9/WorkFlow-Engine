@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,6 +32,7 @@ import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.DocumentApi;
+import net.risesoft.api.itemadmin.DocumentWordApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -54,7 +54,6 @@ import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
@@ -152,6 +151,8 @@ public class Document4GfgRestController {
     private final TaskRelatedApi taskRelatedApi;
 
     private final ActRuDetailApi actRuDetailApi;
+
+    private final DocumentWordApi documentWordApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
@@ -1090,6 +1091,14 @@ public class Document4GfgRestController {
             asyncUtilService.getNumber(tenantId, personId, oldProcessParam.getItemId(), targetProcessSerialNumber);
         if (!numberY9Result.isSuccess()) {
             return Y9Result.failure("操作失败：修改表单流水号失败!");
+        }
+        // 3复制正文数据 正文类别,1:办文要报，2：发文稿纸
+        Y9Result<Object> word1 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
+            targetProcessSerialNumber, "1");
+        Y9Result<Object> word2 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
+            targetProcessSerialNumber, "2");
+        if (!word1.isSuccess() || !word2.isSuccess()) {
+            return Y9Result.failure("操作失败：复制正文失败!");
         }
         // 3复制流程参数并启动流程
         Y9Result<StartProcessResultModel> startY9Result = processParamService.saveOrUpdate(oldProcessParam.getItemId(),

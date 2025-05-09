@@ -20,6 +20,12 @@ import net.risesoft.pojo.Y9Result;
  */
 public interface DocumentWordApi {
 
+    @GetMapping("/copyByProcessSerialNumberAndWordType")
+    Y9Result<Object> copyByProcessSerialNumberAndWordType(@RequestParam("tenantId") String tenantId,
+        @RequestParam("sourceProcessSerialNumber") String sourceProcessSerialNumber,
+        @RequestParam("targetProcessSerialNumber") String targetProcessSerialNumber,
+        @RequestParam("wordType") String wordType);
+
     /**
      * 根据流程编号和正文类别查询正文信息
      *
