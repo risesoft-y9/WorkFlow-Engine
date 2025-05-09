@@ -1,6 +1,8 @@
 package net.risesoft.service.dynamicrole.impl.v1;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 import org.springframework.stereotype.Service;
 
@@ -11,7 +13,9 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.enums.DynamicRoleRangesEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -34,7 +38,7 @@ public class DeptPropCategory extends AbstractDynamicRoleMember {
     private final RuntimeApi runtimeApi;
 
     @Override
-    public List<OrgUnit> getOrgUnitList(String processInstanceId, DynamicRole dynamicRole) {
+    public List<Position> getPositionList(String processInstanceId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit currentOrgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
@@ -48,6 +52,13 @@ public class DeptPropCategory extends AbstractDynamicRoleMember {
             .listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(), dynamicRole.getDeptPropCategory(), isInherit)
             .getData();
         orgUnitList.remove(currentOrgUnit);
-        return orgUnitList;
+        List<Position> positionList = new ArrayList<>();
+        for (OrgUnit orgUnit0 : orgUnitList) {
+            if (orgUnit0.getOrgType() == OrgTypeEnum.POSITION) {
+                Position position = (Position)orgUnit0;
+                positionList.add(position);
+            }
+        }
+        return positionList;
     }
 }

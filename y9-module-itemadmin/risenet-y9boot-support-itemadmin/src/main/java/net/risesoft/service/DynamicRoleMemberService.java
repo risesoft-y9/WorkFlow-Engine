@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 
 /**
  * @author qinman
@@ -16,17 +17,19 @@ public interface DynamicRoleMemberService {
      * Description:
      *
      * @param dynamicRole
-     * @param taskId
+     * @param processInstanceId
      * @return
      */
-    List<OrgUnit> listByDynamicRoleIdAndTaskId(DynamicRole dynamicRole, String taskId);
+    List<OrgUnit> listByDynamicRoleIdAndProcessInstanceId(DynamicRole dynamicRole, String processInstanceId);
 
     /**
      * Description:
      *
      * @param dynamicRole
-     * @param processInstanceId
+     * @param taskId
      * @return
      */
-    List<OrgUnit> listByDynamicRoleIdAndProcessInstanceId(DynamicRole dynamicRole, String processInstanceId);
+    List<Position> listByDynamicRoleIdAndTaskId(DynamicRole dynamicRole, String taskId);
+
+    List<Position> listPositionByDynamicRoleIdAndProcessInstanceId(DynamicRole dynamicRole, String processInstanceId);
 }

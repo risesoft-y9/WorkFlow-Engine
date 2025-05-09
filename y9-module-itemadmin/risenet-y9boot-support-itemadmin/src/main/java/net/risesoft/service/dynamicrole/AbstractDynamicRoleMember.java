@@ -16,6 +16,30 @@ import net.risesoft.model.platform.Position;
  * @date 2022/12/20
  */
 public abstract class AbstractDynamicRoleMember {
+    public Department getDepartment() {
+        return null;
+    }
+
+    public Department getDepartment(String param) {
+        return null;
+    }
+
+    public List<OrgUnit> getDepartmentList() {
+        return null;
+    }
+
+    public List<Department> getDeptList() {
+        return null;
+    }
+
+    public List<Group> getGroupList() {
+        return null;
+    }
+
+    public Organization getOrg() {
+        return null;
+    }
+
     public List<OrgUnit> getOrgUnitList() {
         return null;
     }
@@ -32,15 +56,7 @@ public abstract class AbstractDynamicRoleMember {
         return null;
     }
 
-    public Department getDepartment() {
-        return null;
-    }
-
-    public Department getDepartment(String param) {
-        return null;
-    }
-
-    public Organization getOrg() {
+    public List<Person> getPersonList() {
         return null;
     }
 
@@ -52,19 +68,7 @@ public abstract class AbstractDynamicRoleMember {
         return null;
     }
 
-    public List<Person> getPersonList() {
-        return null;
-    }
-
-    public List<OrgUnit> getDepartmentList() {
-        return null;
-    }
-
-    public List<Department> getDeptList() {
-        return null;
-    }
-
-    public List<Group> getGroupList() {
+    public List<Position> getPositionList(String param, DynamicRole dynamicRole) {
         return null;
     }
 

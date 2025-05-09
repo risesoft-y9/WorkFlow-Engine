@@ -82,6 +82,27 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     @Transactional
+    public Y9Result<Object> claim(String taskId, String assignee) {
+        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
+        ardList.forEach(ard -> {
+            ard.setLastTime(new Date());
+            ard.setStatus(ard.getAssignee().equals(assignee) ? ActRuDetailStatusEnum.TODO.getValue()
+                : ActRuDetailStatusEnum.DOING.getValue());
+            ard.setSignStatus(ard.getAssignee().equals(assignee) ? ActRuDetailSignStatusEnum.DONE.getValue()
+                : ActRuDetailSignStatusEnum.NONE.getValue());
+            ard.setAssigneeName(
+                orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), ard.getAssignee()).getData().getName());
+            actRuDetailRepository.save(ard);
+
+            if (!ard.getAssignee().equals(assignee)) {
+                Y9Context.publishEvent(new Y9TodoDeletedEvent<>(ard));
+            }
+        });
+        return Y9Result.success();
+    }
+
+    @Override
+    @Transactional
     public void copy(String oldProcessSerialNumber, String newProcessSerialNumber, String newProcessInstanceId) {
         try {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(newProcessSerialNumber);
@@ -128,6 +149,22 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         return count;
     }
 
+    @Override
+    @Transactional
+    public boolean deleteByExecutionId(String executionId) {
+        ExecutionModel executionModel =
+            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
+        list = list.stream()
+            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
+                .getData().getExecutionId().equals(executionId))
+            .collect(Collectors.toList());
+        list.forEach(actRuDetail -> actRuDetail.setDeleted(true));
+        actRuDetailRepository.saveAll(list);
+        list.forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
+        return true;
+    }
+
     /**
      * 放入回收站时，为待办状态的需要调用第三方接口删除待办
      *
@@ -172,22 +209,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional
-    public boolean deleteByExecutionId(String executionId) {
-        ExecutionModel executionModel =
-            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
-        list = list.stream()
-            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
-                .getData().getExecutionId().equals(executionId))
-            .collect(Collectors.toList());
-        list.forEach(actRuDetail -> actRuDetail.setDeleted(true));
-        actRuDetailRepository.saveAll(list);
-        list.forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
-        return true;
-    }
-
-    @Override
     public ActRuDetail findByProcessInstanceIdAndAssigneeAndStatusEquals1(String processInstanceId, String assignee) {
         return actRuDetailRepository.findByProcessInstanceIdAndAssigneeAndStatus(processInstanceId, assignee,
             ActRuDetailStatusEnum.DOING.getValue());
@@ -204,6 +225,15 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Override
     public ActRuDetail findByTaskIdAndAssignee(String taskId, String assignee) {
         return actRuDetailRepository.findByTaskIdAndAssignee(taskId, assignee);
+    }
+
+    private void initSubNodeMap(String processDefinitionId) {
+        if (null == SUB_NODE_MAP.get(processDefinitionId)) {
+            List<String> subTaskDefKeys =
+                processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
+                    .getData().stream().map(TargetModel::getTaskDefKey).collect(Collectors.toList());
+            SUB_NODE_MAP.put(processDefinitionId, subTaskDefKeys);
+        }
     }
 
     @Override
@@ -233,42 +263,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndEnded(String systemName, String assignee, boolean ended,
-        int rows, int page, Sort sort) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedFalse(systemName, assignee, ended, pageable);
-    }
-
-    @Override
-    public Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int page, int rows, Sort sort) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameAndEndedNativeQuery(systemName, ended, pageable);
-    }
-
-    @Override
-    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows,
-        int page, Sort sort) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedTrue(systemName, assignee, pageable);
-    }
-
-    @Override
-    public Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int page, int rows, Sort sort) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameAndDeletedTrueNativeQuery(systemName, pageable);
-    }
-
-    @Override
-    public Page<ActRuDetail> pageBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId, boolean isBureau,
-        int rows, int page, Sort sort) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        if (isBureau) {
-            return actRuDetailRepository.findBySystemNameAndBureauIdAndDeletedTrue(systemName, deptId, pageable);
-        }
-        return actRuDetailRepository.findBySystemNameAndDeptIdAndDeletedTrue(systemName, deptId, pageable);
-    }
-
-    @Override
     public Page<ActRuDetail> pageByAssigneeAndStatus(String assignee, int status, int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ActRuDetail> pageList;
@@ -279,6 +273,33 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 actRuDetailRepository.findByAssigneeAndStatusAndEndedFalseAndDeletedFalse(assignee, status, pageable);
         }
         return pageList;
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemName(String systemName, int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameNativeQuery(systemName, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssignee(String systemName, String assignee, int rows, int page,
+        Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedFalse(systemName, assignee, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows,
+        int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedTrue(systemName, assignee, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndEnded(String systemName, String assignee, boolean ended,
+        int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedFalse(systemName, assignee, ended, pageable);
     }
 
     @Override
@@ -312,6 +333,30 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
+    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusEquals1(String systemName, String assignee, int rows,
+        int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
+            ActRuDetailStatusEnum.DOING.getValue(), pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndDeletedTrue(String systemName, int page, int rows, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        return actRuDetailRepository.findBySystemNameAndDeletedTrueNativeQuery(systemName, pageable);
+    }
+
+    @Override
+    public Page<ActRuDetail> pageBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId, boolean isBureau,
+        int rows, int page, Sort sort) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        if (isBureau) {
+            return actRuDetailRepository.findBySystemNameAndBureauIdAndDeletedTrue(systemName, deptId, pageable);
+        }
+        return actRuDetailRepository.findBySystemNameAndDeptIdAndDeletedTrue(systemName, deptId, pageable);
+    }
+
+    @Override
     public Page<ActRuDetail> pageBySystemNameAndDeptIdAndEnded(String systemName, String deptId, boolean isBureau,
         boolean ended, int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -327,24 +372,9 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    public Page<ActRuDetail> pageBySystemNameAndAssignee(String systemName, String assignee, int rows, int page,
-        Sort sort) {
+    public Page<ActRuDetail> pageBySystemNameAndEnded(String systemName, boolean ended, int page, int rows, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameAndAssigneeAndDeletedFalse(systemName, assignee, pageable);
-    }
-
-    @Override
-    public Page<ActRuDetail> pageBySystemName(String systemName, int rows, int page, Sort sort) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameNativeQuery(systemName, pageable);
-    }
-
-    @Override
-    public Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusEquals1(String systemName, String assignee, int rows,
-        int page, Sort sort) {
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
-            ActRuDetailStatusEnum.DOING.getValue(), pageable);
+        return actRuDetailRepository.findBySystemNameAndEndedNativeQuery(systemName, ended, pageable);
     }
 
     @Override
@@ -364,6 +394,27 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             LOGGER.error("Place on file act_ru_detail error", e);
         }
         return false;
+    }
+
+    /**
+     * 减签恢复会签时，之前为待办状态的需要调用第三方待办接口
+     *
+     * @param executionId 执行id
+     */
+    @Override
+    @Transactional
+    public void recoveryByExecutionId(String executionId) {
+        ExecutionModel executionModel =
+            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
+        list = list.stream()
+            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
+                .getData().getExecutionId().equals(executionId))
+            .collect(Collectors.toList());
+        list.forEach(actRuDetail -> actRuDetail.setDeleted(false));
+        actRuDetailRepository.saveAll(list);
+        list.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue()))
+            .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail)));
     }
 
     /**
@@ -404,25 +455,30 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         return true;
     }
 
-    /**
-     * 减签恢复会签时，之前为待办状态的需要调用第三方待办接口
-     *
-     * @param executionId 执行id
-     */
     @Override
     @Transactional
-    public void recoveryByExecutionId(String executionId) {
-        ExecutionModel executionModel =
-            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
-        list = list.stream()
-            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
-                .getData().getExecutionId().equals(executionId))
-            .collect(Collectors.toList());
-        list.forEach(actRuDetail -> actRuDetail.setDeleted(false));
-        actRuDetailRepository.saveAll(list);
-        list.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO.getValue()))
-            .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail)));
+    public Y9Result<Object> refuseClaim(String taskId, String assignee) {
+        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
+        StringBuffer names = new StringBuffer();
+        ardList.forEach(ard -> {
+            if (!ard.getAssignee().equals(assignee)) {
+                if (StringUtils.isBlank(names)) {
+                    names.append(ard.getAssigneeName());
+                } else {
+                    names.append("、").append(ard.getAssigneeName());
+                }
+            }
+        });
+        ardList.forEach(ard -> {
+            ard.setStatus(ard.getAssignee().equals(assignee) ? ActRuDetailStatusEnum.DOING.getValue()
+                : ActRuDetailStatusEnum.TODO.getValue());
+            ard.setSignStatus(ard.getAssignee().equals(assignee) ? ActRuDetailSignStatusEnum.REFUSE.getValue()
+                : ActRuDetailSignStatusEnum.TODO.getValue());
+            ard.setLastTime(new Date());
+            ard.setAssigneeName(ard.getAssignee().equals(assignee) ? ard.getAssigneeName() : names.toString());
+            actRuDetailRepository.save(ard);
+        });
+        return Y9Result.success();
     }
 
     /**
@@ -486,15 +542,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         return false;
     }
 
-    private void initSubNodeMap(String processDefinitionId) {
-        if (null == SUB_NODE_MAP.get(processDefinitionId)) {
-            List<String> subTaskDefKeys =
-                processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
-                    .getData().stream().map(TargetModel::getTaskDefKey).collect(Collectors.toList());
-            SUB_NODE_MAP.put(processDefinitionId, subTaskDefKeys);
-        }
-    }
-
     @Override
     @Transactional
     public boolean saveOrUpdate(ActRuDetail actRuDetail) {
@@ -534,10 +581,9 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             return true;
         }
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
-        String deptName =
-            dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                && StringUtils.isNotBlank(((Department)dept).getAliasName()) ? ((Department)dept).getAliasName()
-                    : dept.getName();
+        String deptName = dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+            && StringUtils.isNotBlank(((Department)dept).getAliasName()) ? ((Department)dept).getAliasName()
+                : dept.getName();
         actRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         actRuDetail.setDeptName(deptName);
         actRuDetail.setSendDeptName(sendDept.getName());
@@ -554,106 +600,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         actRuDetailRepository.save(actRuDetail);
         Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail));
         return true;
-    }
-
-    @Override
-    @Transactional
-    public Y9Result<Object> claim(String taskId, String assignee) {
-        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
-        ardList.forEach(ard -> {
-            ard.setLastTime(new Date());
-            ard.setStatus(ard.getAssignee().equals(assignee) ? ActRuDetailStatusEnum.TODO.getValue()
-                : ActRuDetailStatusEnum.DOING.getValue());
-            ard.setSignStatus(ard.getAssignee().equals(assignee) ? ActRuDetailSignStatusEnum.DONE.getValue()
-                : ActRuDetailSignStatusEnum.NONE.getValue());
-            ard.setAssigneeName(
-                orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), ard.getAssignee()).getData().getName());
-            actRuDetailRepository.save(ard);
-
-            if (!ard.getAssignee().equals(assignee)) {
-                Y9Context.publishEvent(new Y9TodoDeletedEvent<>(ard));
-            }
-        });
-        return Y9Result.success();
-    }
-
-    @Override
-    @Transactional
-    public Y9Result<Object> unClaim(String taskId) {
-        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
-        TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
-        StringBuffer names = new StringBuffer();
-        ardList.forEach(ard -> {
-            if (StringUtils.isBlank(names)) {
-                names.append(ard.getAssigneeName());
-            } else {
-                names.append("、").append(ard.getAssigneeName());
-            }
-        });
-        ardList.forEach(ard -> {
-            ard.setStatus(ActRuDetailStatusEnum.TODO.getValue());
-            ard.setSignStatus(ActRuDetailSignStatusEnum.TODO.getValue());
-            ard.setLastTime(new Date());
-            ard.setAssigneeName(names.toString());
-            actRuDetailRepository.save(ard);
-
-            if (!task.getAssignee().equals(ard.getAssignee())) {
-                Y9Context.publishEvent(new Y9TodoCreatedEvent<>(ard));
-            }
-        });
-        return Y9Result.success();
-    }
-
-    @Override
-    @Transactional
-    public Y9Result<Object> refuseClaim(String taskId, String assignee) {
-        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
-        StringBuffer names = new StringBuffer();
-        ardList.forEach(ard -> {
-            if (!ard.getAssignee().equals(assignee)) {
-                if (StringUtils.isBlank(names)) {
-                    names.append(ard.getAssigneeName());
-                } else {
-                    names.append("、").append(ard.getAssigneeName());
-                }
-            }
-        });
-        ardList.forEach(ard -> {
-            ard.setStatus(ard.getAssignee().equals(assignee) ? ActRuDetailStatusEnum.DOING.getValue()
-                : ActRuDetailStatusEnum.TODO.getValue());
-            ard.setSignStatus(ard.getAssignee().equals(assignee) ? ActRuDetailSignStatusEnum.REFUSE.getValue()
-                : ActRuDetailSignStatusEnum.TODO.getValue());
-            ard.setLastTime(new Date());
-            ard.setAssigneeName(ard.getAssignee().equals(assignee) ? ard.getAssigneeName() : names.toString());
-            actRuDetailRepository.save(ard);
-        });
-        return Y9Result.success();
-    }
-
-    @Override
-    @Transactional
-    public Y9Result<Object> todo2doing(String taskId, String assignee) {
-        ActRuDetail todo = actRuDetailRepository.findByTaskIdAndAssignee(taskId, assignee);
-        List<ActRuDetail> doingList = actRuDetailRepository.findByProcessSerialNumberAndAssigneeAndStatus(
-            todo.getProcessSerialNumber(), assignee, ActRuDetailStatusEnum.DOING.getValue());
-        if (doingList.isEmpty()) {
-            todo.setStatus(ActRuDetailStatusEnum.DOING.getValue());
-            todo.setLastTime(new Date());
-            actRuDetailRepository.save(todo);
-        } else {
-            ActRuDetail doing = doingList.get(0);
-            doing.setLastTime(new Date());
-            doing.setTaskId(todo.getTaskId());
-            doing.setTaskDefKey(todo.getTaskDefKey());
-            doing.setTaskDefName(todo.getTaskDefName());
-            doing.setExecutionId(todo.getExecutionId());
-            doing.setSub(SUB_NODE_MAP.get(todo.getProcessDefinitionId()).stream()
-                .anyMatch(taskDefKey -> taskDefKey.equals(todo.getTaskDefKey())));
-            actRuDetailRepository.save(doing);
-            actRuDetailRepository.delete(todo);
-        }
-        Y9Context.publishEvent(new Y9TodoDeletedEvent<>(todo));
-        return Y9Result.success();
     }
 
     @Override
@@ -760,6 +706,59 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
         }
         return true;
+    }
+
+    @Override
+    @Transactional
+    public Y9Result<Object> todo2doing(String taskId, String assignee) {
+        ActRuDetail todo = actRuDetailRepository.findByTaskIdAndAssignee(taskId, assignee);
+        List<ActRuDetail> doingList = actRuDetailRepository.findByProcessSerialNumberAndAssigneeAndStatus(
+            todo.getProcessSerialNumber(), assignee, ActRuDetailStatusEnum.DOING.getValue());
+        if (doingList.isEmpty()) {
+            todo.setStatus(ActRuDetailStatusEnum.DOING.getValue());
+            todo.setLastTime(new Date());
+            actRuDetailRepository.save(todo);
+        } else {
+            ActRuDetail doing = doingList.get(0);
+            doing.setLastTime(new Date());
+            doing.setTaskId(todo.getTaskId());
+            doing.setTaskDefKey(todo.getTaskDefKey());
+            doing.setTaskDefName(todo.getTaskDefName());
+            doing.setExecutionId(todo.getExecutionId());
+            doing.setSub(SUB_NODE_MAP.get(todo.getProcessDefinitionId()).stream()
+                .anyMatch(taskDefKey -> taskDefKey.equals(todo.getTaskDefKey())));
+            actRuDetailRepository.save(doing);
+            actRuDetailRepository.delete(todo);
+        }
+        Y9Context.publishEvent(new Y9TodoDeletedEvent<>(todo));
+        return Y9Result.success();
+    }
+
+    @Override
+    @Transactional
+    public Y9Result<Object> unClaim(String taskId) {
+        List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
+        TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+        StringBuffer names = new StringBuffer();
+        ardList.forEach(ard -> {
+            if (StringUtils.isBlank(names)) {
+                names.append(ard.getAssigneeName());
+            } else {
+                names.append("、").append(ard.getAssigneeName());
+            }
+        });
+        ardList.forEach(ard -> {
+            ard.setStatus(ActRuDetailStatusEnum.TODO.getValue());
+            ard.setSignStatus(ActRuDetailSignStatusEnum.TODO.getValue());
+            ard.setLastTime(new Date());
+            ard.setAssigneeName(names.toString());
+            actRuDetailRepository.save(ard);
+
+            if (!task.getAssignee().equals(ard.getAssignee())) {
+                Y9Context.publishEvent(new Y9TodoCreatedEvent<>(ard));
+            }
+        });
+        return Y9Result.success();
     }
 
 }

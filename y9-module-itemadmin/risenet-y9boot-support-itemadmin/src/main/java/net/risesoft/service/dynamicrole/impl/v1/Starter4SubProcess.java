@@ -3,16 +3,18 @@ package net.risesoft.service.dynamicrole.impl.v1;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -34,10 +36,12 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
 
     private final TaskApi taskApi;
 
+    private final PositionRoleApi positionRoleApi;
+
     @Override
-    public List<OrgUnit> getOrgUnitList(String taskId, DynamicRole dynamicRole) {
+    public List<Position> getPositionList(String taskId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> orgUnitList = new ArrayList<>();
+        List<Position> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(taskId)) {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<HistoricTaskInstanceModel> hisTaskList = historicTaskApi
@@ -50,7 +54,7 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
                 }
             }
             if (StringUtils.isNotBlank(assignee)) {
-                OrgUnit position = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                Position position = (Position)orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                 if (null != position) {
                     orgUnitList.add(position);
                 }

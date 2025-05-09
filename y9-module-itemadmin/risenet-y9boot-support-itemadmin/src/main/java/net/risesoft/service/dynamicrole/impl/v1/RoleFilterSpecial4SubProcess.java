@@ -3,18 +3,20 @@ package net.risesoft.service.dynamicrole.impl.v1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -39,14 +41,17 @@ public class RoleFilterSpecial4SubProcess extends AbstractDynamicRoleMember {
 
     private final HistoricTaskApi historicTaskApi;
 
+    private final PositionRoleApi positionRoleApi;
+
     @Override
-    public List<OrgUnit> getOrgUnitList(String taskId, DynamicRole dynamicRole) {
+    public List<Position> getPositionList(String taskId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String currentOrgUnitId = Y9LoginUserHolder.getOrgUnitId();
         if (StringUtils.isNotBlank(taskId)) {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             String roleId = dynamicRole.getRoleId();
-            List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
+            List<Position> orgUnitList =
+                positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
             boolean openTodo = task.getAssignee().equals(currentOrgUnitId);
             if (openTodo) {
                 OrgUnit currentOrgUnit = orgUnitApi.getOrgUnit(tenantId, currentOrgUnitId).getData();

@@ -58,6 +58,7 @@ import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
 import net.risesoft.entity.form.Y9Form;
+import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
@@ -239,8 +240,7 @@ public class DocumentServiceImpl implements DocumentService {
             String processDefinitionId = pdModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             model = genDocumentModel(itemId, processDefinitionKey, "", taskDefKey, mobile, model);
-            model =
-                menuControl(itemId, processDefinitionId, taskDefKey, "", model, ItemBoxTypeEnum.ADD.getValue());
+            model = menuControl(itemId, processDefinitionId, taskDefKey, "", model, ItemBoxTypeEnum.ADD.getValue());
             model.setProcessDefinitionId(processDefinitionId);
             model.setTaskDefKey(taskDefKey);
             model.setActivitiUser(userId);
@@ -446,8 +446,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
 
-        model =
-            genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model = genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
         model = menuControl(itemId, processDefinitionId, taskDefinitionKey, taskId, model, itemboxStr);
         return model;
     }
@@ -991,7 +990,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public List<OrgUnit> getUserChoice(String itemId, String processDefinitionId, String taskDefinitionKey,
-        String processSerialNumber) {
+        String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemPermission> list = itemPermissionService.listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
             processDefinitionId, taskDefinitionKey);
@@ -1005,26 +1004,35 @@ public class DocumentServiceImpl implements DocumentService {
                     orgUnitList.add(orgUnit);
                 }
             } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
-                List<OrgUnit> deptList =
-                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData();
-                List<OrgUnit> personList =
-                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData();
-                orgUnitList.addAll(deptList);
-                orgUnitList.addAll(personList);
+                List<Position> positionList = positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData();
+                orgUnitList.addAll(positionList);
             } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
+                // 部门集合
+                List<OrgUnit> deptList = new ArrayList<>();
+                // 岗位集合
+                List<Position> positionList = new ArrayList<>();
                 DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
-                List<OrgUnit> ouList =
-                    dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole,
-                    processSerialNumber);
-                for (OrgUnit orgUnit : ouList) {
-                    if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnit.getId()).getData();
-                        if (user != null && !user.getDisabled()) {
-                            orgUnitList.add(user);
+                if (null == dynamicRole.getKinds()
+                    || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+                    // 动态角色种类为【无】或null时，针对岗位或部门
+                    List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
+                        .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
+                    for (OrgUnit orgUnit : orgUnitList1) {
+                        if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                            positionList.add((Position)orgUnit);
+                        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+                            deptList.add(orgUnit);
                         }
-                    } else {
-                        orgUnitList.add(orgUnit);
                     }
+                } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
+                    positionList = dynamicRoleMemberService.listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole,
+                        processInstanceId);
+                }
+                for (OrgUnit orgUnit : positionList) {
+                    orgUnitList.add(orgUnit);
+                }
+                for (OrgUnit orgUnit : deptList) {
+                    orgUnitList.add(orgUnit);
                 }
             }
         }
@@ -1288,8 +1296,7 @@ public class DocumentServiceImpl implements DocumentService {
              */
             String taskDefNameJson;
             if (k == 15 && isButtonShow[15]) {
-                List<TargetModel> taskNodes =
-                    processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+                List<TargetModel> taskNodes = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
                 for (TargetModel node : taskNodes) {
                     Map<String, Object> map3 = new HashMap<>(16);
                     // 流程不显示在重定向按钮下面
@@ -1835,8 +1842,8 @@ public class DocumentServiceImpl implements DocumentService {
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
             FlowElementModel flowElementModel =
                 processDefinitionApi.getNode(tenantId, processDefinitionId, routeToTaskId).getData();
-            Y9Result<List<String>> userResult = parserUser(itemId, processDefinitionId, routeToTaskId,
-                routeToTaskName, "", flowElementModel.getMultiInstance());
+            Y9Result<List<String>> userResult = parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName,
+                "", flowElementModel.getMultiInstance());
             if (!userResult.isSuccess()) {
                 return Y9Result.failure(userResult.getMsg());
             }
@@ -2053,7 +2060,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
 
-             processParamService.saveOrUpdate(processParam);
+            processParamService.saveOrUpdate(processParam);
 
             // 异步处理数据
             asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
@@ -2102,7 +2109,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
 
-             processParamService.saveOrUpdate(processParam);
+            processParamService.saveOrUpdate(processParam);
 
             // 异步处理数据
             asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
@@ -2148,7 +2155,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
 
-             processParamService.saveOrUpdate(processParam);
+            processParamService.saveOrUpdate(processParam);
 
             // 异步处理数据
             asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
@@ -2240,8 +2247,8 @@ public class DocumentServiceImpl implements DocumentService {
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
             FlowElementModel flowElementModel =
                 processDefinitionApi.getNode(tenantId, processDefinitionId, routeToTaskId).getData();
-            Y9Result<List<String>> userResult = parserUser(itemId, processDefinitionId, routeToTaskId,
-                routeToTaskName, processInstanceId, flowElementModel.getMultiInstance());
+            Y9Result<List<String>> userResult = parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName,
+                processInstanceId, flowElementModel.getMultiInstance());
             if (!userResult.isSuccess()) {
                 return Y9Result.failure(userResult.getMsg());
             }
