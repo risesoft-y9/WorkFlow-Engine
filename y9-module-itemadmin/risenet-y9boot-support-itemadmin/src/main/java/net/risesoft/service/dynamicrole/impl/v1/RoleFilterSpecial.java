@@ -3,16 +3,18 @@ package net.risesoft.service.dynamicrole.impl.v1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -33,8 +35,10 @@ public class RoleFilterSpecial extends AbstractDynamicRoleMember {
 
     private final RoleApi roleApi;
 
+    private final PositionRoleApi positionRoleApi;
+
     @Override
-    public List<OrgUnit> getOrgUnitList(String processInstanceId, DynamicRole dynamicRole) {
+    public List<Position> getPositionList(String processInstanceId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit currentOrgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
@@ -45,7 +49,9 @@ public class RoleFilterSpecial extends AbstractDynamicRoleMember {
         OrgUnit personOrPosition = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
         OrgUnit bureau = orgUnitApi.getBureau(tenantId, userId).getData();
         String roleId = dynamicRole.getRoleId();
-        List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
+        List<Position> orgUnitList =
+            positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
+        String assignee = "";
         boolean match = orgUnitList.stream().anyMatch(orgUnit -> orgUnit.getId().equals(currentOrgUnit.getId()));
         if (match) {
             // 和[当前人或者流程启动人]同委办局

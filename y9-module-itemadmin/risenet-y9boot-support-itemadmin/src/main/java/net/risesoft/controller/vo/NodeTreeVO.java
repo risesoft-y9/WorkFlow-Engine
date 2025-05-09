@@ -49,4 +49,9 @@ public class NodeTreeVO implements Serializable {
      */
     private Boolean nocheck;
 
+    /**
+     * 节点路径
+     */
+    private String dn;
+
 }

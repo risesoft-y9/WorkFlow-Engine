@@ -1,6 +1,7 @@
 package net.risesoft.service.config.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +21,13 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
@@ -139,53 +142,32 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     map.put("existDepartment", true);
-                    continue;
                 }
+            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
+                DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
+                List<Position> pList = new ArrayList<>();
+                if (null == dynamicRole.getKinds()
+                    || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+                    // 动态角色种类为【无】或null时，针对岗位或部门
+                    List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
+                        .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
+                    for (OrgUnit orgUnit : orgUnitList1) {
+                        if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                            map.put("existPosition", true);
+                            break;
+                        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                            || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
+                            map.put("existDepartment", true);
+                            break;
+                        }
+                    }
+                } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
+                    map.put("existPosition", true);
+                }
+            } else {
+                map.put("existPosition", true);
             }
 
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
-                if (null != orgUnit) {
-                    map.put("existPosition", true);
-                    continue;
-                }
-            }
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
-                int positionSize =
-                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData().size();
-                int departmentSize =
-                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
-                int organizationSize =
-                    roleApi.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData().size();
-                if (positionSize > 0) {
-                    map.put("existPosition", true);
-                }
-                if (departmentSize > 0 || organizationSize > 0) {
-                    map.put("existDepartment", true);
-                }
-            }
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
-                DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
-                List<OrgUnit> orgUnitList;
-                if (dynamicRole.getClassPath().contains("4SubProcess")) {
-                    orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
-                } else {
-                    orgUnitList = dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole,
-                        processInstanceId);
-                }
-                for (OrgUnit orgUnit : orgUnitList) {
-                    if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        map.put("existPosition", true);
-                    }
-                    if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                        || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-                        map.put("existDepartment", true);
-                    }
-                    if ((boolean)map.get("existPosition") && (boolean)map.get("existDepartment")) {
-                        break;
-                    }
-                }
-            }
         }
         return map;
     }
