@@ -1382,6 +1382,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             // 5、催办
             taskRelatedList.addAll(getTaskRelated4Urge(ardModel.getProcessSerialNumber(), ardModel.isSub(),
                 ardModel.getExecutionId()));
+            // 6、原、复
+            taskRelatedList.addAll(getTaskRelated4FuYuan(ardModel.getProcessSerialNumber(), List.of()));
             return taskRelatedList;
         } catch (Exception e) {
             e.printStackTrace();
