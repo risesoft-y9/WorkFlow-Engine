@@ -1091,6 +1091,6 @@ public class ButtonOperationRestController {
 
     @PostMapping(value = "/removes")
     public Y9Result<String> removes(@RequestParam String[] processSerialNumbers) {
-        return buttonOperationService.recovers(processSerialNumbers);
+        return buttonOperationService.removes(processSerialNumbers);
     }
 }
