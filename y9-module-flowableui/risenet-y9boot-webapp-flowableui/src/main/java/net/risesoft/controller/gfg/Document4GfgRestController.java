@@ -1100,7 +1100,7 @@ public class Document4GfgRestController {
         if (!word1.isSuccess() || !word2.isSuccess()) {
             return Y9Result.failure("操作失败：复制正文失败!");
         }
-        // 3复制流程参数并启动流程
+        // 4复制流程参数并启动流程
         Y9Result<StartProcessResultModel> startY9Result = processParamService.saveOrUpdate(oldProcessParam.getItemId(),
             targetProcessSerialNumber, "", oldProcessParam.getTitle(), oldProcessParam.getCustomNumber(),
             oldProcessParam.getCustomLevel(), false, startTaskDefKey);
@@ -1109,7 +1109,7 @@ public class Document4GfgRestController {
         }
         StartProcessResultModel startProcess = startY9Result.getData();
         Position position = Y9LoginUserHolder.getPosition();
-        // 4 设置原文件的相关信息
+        // 5 设置原文件的相关信息
         TaskRelatedModel sourceTaskRelated = new TaskRelatedModel();
         sourceTaskRelated.setInfoType(TaskRelatedEnum.YUAN.getValue());
         sourceTaskRelated.setProcessInstanceId(oldProcessParam.getProcessInstanceId());
@@ -1121,7 +1121,7 @@ public class Document4GfgRestController {
         sourceTaskRelated.setSenderId(position.getId());
         sourceTaskRelated.setSenderName(position.getName());
         Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(tenantId, sourceTaskRelated);
-        // 5 设置复制件的相关信息
+        // 6 设置复制件的相关信息
         Map<String, Object> fwFormDataMap =
             formDataApi.getData4TableAlias(tenantId, processSerialNumber, "fw").getData();
         String sourceLsh = (String)fwFormDataMap.getOrDefault("lsh", "流水号不存在");
