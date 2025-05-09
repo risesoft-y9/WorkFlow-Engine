@@ -45,6 +45,15 @@ public class DocumentWordApiImpl implements DocumentWordApi {
 
     private final DocumentHisWordService documentHisWordService;
 
+    @Override
+    public Y9Result<Object> copyByProcessSerialNumberAndWordType(@RequestParam String tenantId,
+        @RequestParam String sourceProcessSerialNumber, @RequestParam String targetProcessSerialNumber,
+        @RequestParam String wordType) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return documentWordService.copyByProcessSerialNumberAndWordType(sourceProcessSerialNumber,
+            targetProcessSerialNumber, wordType);
+    }
+
     /**
      * 根据流程编号和正文类型查询正文
      *

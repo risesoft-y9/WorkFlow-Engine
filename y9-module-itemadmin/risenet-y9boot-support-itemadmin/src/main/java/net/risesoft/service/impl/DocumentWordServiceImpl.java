@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.DocumentHistoryWord;
 import net.risesoft.entity.DocumentWord;
+import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWordModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DocumentHistoryWordRepository;
 import net.risesoft.repository.jpa.DocumentWordRepository;
 import net.risesoft.service.DocumentWordService;
@@ -34,6 +36,27 @@ public class DocumentWordServiceImpl implements DocumentWordService {
     private final DocumentHistoryWordRepository documentHistoryWordRepository;
 
     private final Y9FileStoreService y9FileStoreService;
+
+    @Override
+    @Transactional
+    public Y9Result<Object> copyByProcessSerialNumberAndWordType(String sourceProcessSerialNumber,
+        String targetProcessSerialNumber, String wordType) {
+        List<DocumentWord> list = documentWordRepository
+            .findByProcessSerialNumberAndWordTypeOderByTypeDesc(sourceProcessSerialNumber, wordType);
+        list.forEach(documentWord -> {
+            documentWord.setId(Y9IdGenerator.genId());
+            documentWord.setProcessSerialNumber(targetProcessSerialNumber);
+        });
+        documentWordRepository.saveAll(list);
+        List<DocumentHistoryWord> hisList = documentHistoryWordRepository
+            .findByProcessSerialNumberAndWordTypeOrderByUpdateDateAsc(sourceProcessSerialNumber, wordType);
+        hisList.forEach(documentHistoryWord -> {
+            documentHistoryWord.setId(Y9IdGenerator.genId());
+            documentHistoryWord.setProcessSerialNumber(targetProcessSerialNumber);
+        });
+        documentHistoryWordRepository.saveAll(hisList);
+        return Y9Result.success();
+    }
 
     @Override
     public List<DocumentWordModel> findByProcessSerialNumberAndWordType(String processSerialNumber, String wordType) {
@@ -72,14 +95,16 @@ public class DocumentWordServiceImpl implements DocumentWordService {
     public DocumentWord saveWord(DocumentWord documentWord) {
         DocumentWord oldDocumentWord = documentWordRepository.findByProcessSerialNumberAndWordTypeAndType(
             documentWord.getProcessSerialNumber(), documentWord.getWordType(), documentWord.getType());
-        if (oldDocumentWord != null) {// 存在当前type则更新
+        // 存在当前type则更新
+        if (oldDocumentWord != null) {
             documentWord.setId(oldDocumentWord.getId());
         }
         documentWordRepository.save(documentWord);
         List<DocumentWord> list = documentWordRepository.findByProcessSerialNumberAndWordTypeOderByTypeDesc(
             documentWord.getProcessSerialNumber(), documentWord.getWordType());
         for (DocumentWord word : list) {
-            if (word.getType() > documentWord.getType()) {// 大于当前type则删除，撤销套红，撤销pdf等
+            // 大于当前type则删除，撤销套红，撤销pdf等
+            if (word.getType() > documentWord.getType()) {
                 documentWordRepository.delete(word);
             }
         }

@@ -538,7 +538,7 @@ public class DocumentApiImpl implements DocumentApi {
     @Override
     public Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processSerialNumber,
-        @RequestParam String processDefinitionKey, @RequestParam String theTaskKey) {
+        @RequestParam String processDefinitionKey, @RequestParam(required = false) String theTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);

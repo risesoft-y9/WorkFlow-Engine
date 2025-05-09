@@ -94,4 +94,17 @@ public interface MergeFileApi {
     @PostMapping(value = "/saveMergeFile", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveMergeFile(@RequestParam("tenantId") String tenantId,
         @RequestBody MergeFileModel mergeFileModel);
+
+    /**
+     * 更新合并文件名称
+     *
+     * @param tenantId 租户id
+     * @param id 文件id
+     * @param fileName 文件名称
+     * @return @code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.0
+     */
+    @PostMapping(value = "/updateFileName")
+    Y9Result<Object> updateFileName(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
+        @RequestParam("fileName") String fileName);
 }
