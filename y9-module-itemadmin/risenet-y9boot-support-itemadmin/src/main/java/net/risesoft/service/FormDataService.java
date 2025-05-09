@@ -15,6 +15,8 @@ import net.risesoft.pojo.Y9Result;
  */
 public interface FormDataService {
 
+    Y9Result<Object> copy(String sourceProcessSerialNumber, String targetProcessSerialNumber);
+
     /**
      * 删除子表数据
      *

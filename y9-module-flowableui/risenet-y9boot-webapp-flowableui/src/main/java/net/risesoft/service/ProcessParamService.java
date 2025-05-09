@@ -3,6 +3,9 @@ package net.risesoft.service;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.pojo.Y9Result;
 
+/**
+ * @author qinman
+ */
 public interface ProcessParamService {
 
     /**

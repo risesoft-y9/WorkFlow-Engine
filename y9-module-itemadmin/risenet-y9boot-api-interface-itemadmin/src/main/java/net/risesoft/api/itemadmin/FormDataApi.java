@@ -23,6 +23,11 @@ import net.risesoft.pojo.Y9Result;
  */
 public interface FormDataApi {
 
+    @GetMapping("/copy")
+    Y9Result<Object> copy(@RequestParam("tenantId") String tenantId,
+        @RequestParam("sourceProcessSerialNumber") String sourceProcessSerialNumber,
+        @RequestParam("targetProcessSerialNumber") String targetProcessSerialNumber);
+
     /**
      * 删除子表数据
      *
