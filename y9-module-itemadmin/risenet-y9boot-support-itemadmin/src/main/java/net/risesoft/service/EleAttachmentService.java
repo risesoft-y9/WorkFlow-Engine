@@ -2,7 +2,6 @@ package net.risesoft.service;
 
 import java.util.List;
 
-
 import net.risesoft.entity.EleAttachment;
 
 /**
@@ -36,12 +35,21 @@ public interface EleAttachmentService {
 
     /**
      * 根据流程编号和附件类型获取附件
-     * 
+     *
      * @param processSerialNumber
      * @param attachmentType
      * @return
      */
     List<EleAttachment> findByProcessSerialNumberAndAttachmentType(String processSerialNumber, String attachmentType);
+
+    /**
+     * 根据流程编号和附件类型获取附件
+     *
+     * @param processSerialNumber
+     * @param attachmentType
+     * @return
+     */
+    List<EleAttachment> findByProcessSerialNumberAndTypeOrderByTime(String processSerialNumber, String attachmentType);
 
     /**
      * Description: 保存附件
@@ -52,7 +60,7 @@ public interface EleAttachmentService {
 
     /**
      * 附件排序
-     * 
+     *
      * @param id1
      * @param id2
      */

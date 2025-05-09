@@ -92,7 +92,7 @@ public class EleAttachmentApiImpl implements EleAttachmentApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param attachmentType 附件类型
-     * @return {@code Y9Result<List<AttachmentModel>>} 通用请求返回对象 - data是附件列表
+     * @return {@code Y9Result<List<EleAttachmentModel>>} 通用请求返回对象 - data是附件列表
      * @since 9.6.6
      */
     @Override
@@ -101,6 +101,31 @@ public class EleAttachmentApiImpl implements EleAttachmentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EleAttachment> eleAttachmentList =
             eleAttachmentService.findByProcessSerialNumberAndAttachmentType(processSerialNumber, attachmentType);
+        List<EleAttachmentModel> modelList = new ArrayList<>();
+        EleAttachmentModel model;
+        for (EleAttachment eleAttachment : eleAttachmentList) {
+            model = new EleAttachmentModel();
+            Y9BeanUtil.copyProperties(eleAttachment, model);
+            modelList.add(model);
+        }
+        return Y9Result.success(modelList);
+    }
+
+    /**
+     * 获取附件列表，根据时间排序
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @param attachmentType 附件类型
+     * @return {@code Y9Result<List<EleAttachmentModel>>} 通用请求返回对象 - data是附件列表
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<List<EleAttachmentModel>> findByProcessSerialNumberAndTypeOrderByTime(String tenantId,
+        String processSerialNumber, String attachmentType) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<EleAttachment> eleAttachmentList =
+            eleAttachmentService.findByProcessSerialNumberAndTypeOrderByTime(processSerialNumber, attachmentType);
         List<EleAttachmentModel> modelList = new ArrayList<>();
         EleAttachmentModel model;
         for (EleAttachment eleAttachment : eleAttachmentList) {

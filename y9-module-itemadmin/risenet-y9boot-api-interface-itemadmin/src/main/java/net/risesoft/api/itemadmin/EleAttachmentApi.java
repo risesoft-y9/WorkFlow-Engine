@@ -60,11 +60,25 @@ public interface EleAttachmentApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param attachmentType 附件类型
-     * @return {@code Y9Result<List<AttachmentModel>>} 通用请求返回对象 - data是附件列表
+     * @return {@code Y9Result<List<EleAttachmentModel>>} 通用请求返回对象 - data是附件列表
      * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumberAndAttachmentType")
     Y9Result<List<EleAttachmentModel>> findByProcessSerialNumberAndAttachmentType(
+        @RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("attachmentType") String attachmentType);
+
+    /**
+     * 获取附件列表，根据上传时间排序
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @param attachmentType 附件类型
+     * @return {@code Y9Result<List<EleAttachmentModel>>} 通用请求返回对象 - data是附件列表
+     * @since 9.6.6
+     */
+    @GetMapping("/findByProcessSerialNumberAndTypeOrderByTime")
+    Y9Result<List<EleAttachmentModel>> findByProcessSerialNumberAndTypeOrderByTime(
         @RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("attachmentType") String attachmentType);
 

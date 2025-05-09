@@ -69,6 +69,13 @@ public class EleAttachmentServiceImpl implements EleAttachmentService {
     }
 
     @Override
+    public List<EleAttachment> findByProcessSerialNumberAndTypeOrderByTime(String processSerialNumber,
+        String attachmentType) {
+        return eleAttachmentRepository
+            .findByProcessSerialNumberAndAttachmentTypeOrderByUploadTimeDesc(processSerialNumber, attachmentType);
+    }
+
+    @Override
     @Transactional
     public void saveOrUpdate(EleAttachment eleAttachment) {
         String id = eleAttachment.getId();
