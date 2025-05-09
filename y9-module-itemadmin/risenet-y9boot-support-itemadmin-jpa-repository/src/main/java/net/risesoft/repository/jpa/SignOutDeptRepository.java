@@ -24,6 +24,8 @@ public interface SignOutDeptRepository
 
     List<SignOutDept> findByDeptTypeId(String deptTypeId);
 
+    SignOutDept findByDeptNameMax(String deptNameMax);
+
     @Query("FROM SignOutDept where deptTypeId =?1 and isForbidden = ?2 order by deptOrder asc")
     List<SignOutDept> findByDeptTypeIdAndIsForbiddenOrderByDeptOrderAsc(String deptTypeId, Integer isForbidden);
 

@@ -33,6 +33,10 @@ public class SignOutDept implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String deptId;
 
+    @Comment("单位Id-old")
+    @Column(name = "DEPTIDOLD", length = 10, nullable = false)
+    private String deptIdOld;
+
     @Comment("单位类型Id")
     @Column(name = "DEPTTYPEID", length = 50)
     private String deptTypeId;
@@ -81,4 +85,7 @@ public class SignOutDept implements Serializable {
     @Column(name = "DEPTSUFFIX", length = 50)
     private String deptSuffix;
 
+    @Comment("单位总称")
+    @Column(name = "FULLDEPTNAME", length = 50)
+    private String fullDeptName;
 }
