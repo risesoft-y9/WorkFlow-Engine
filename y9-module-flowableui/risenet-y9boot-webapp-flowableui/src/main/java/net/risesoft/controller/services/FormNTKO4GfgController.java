@@ -207,7 +207,6 @@ public class FormNTKO4GfgController {
         List<SecretLevelModel> secretLevelRecord = secretLevelRecordApi.getRecord(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
 
         // 单独处理清样文件书签
-        String running = "running"; // 办结状态
         String permUpdate = "write"; // 修改权限
         String templateMeishouId = null; // 眉首id
         String templateBanJiId = null;  // 版式id
@@ -387,7 +386,6 @@ public class FormNTKO4GfgController {
 
         Map map = new HashMap();
         map.put("NGROPINION",typeSettingInfoModel.getCheckOpinion());
-        map.put("LASTJDYJ", typeSettingInfoModel.getShenheOpinion());
         Gson gson = new Gson();
         String jdyj = gson.toJson(map);
 
@@ -412,11 +410,13 @@ public class FormNTKO4GfgController {
         formData.put("cellNum", cellNum);
         formData.put("sheetNum", sheetNum);
         formData.put("rowNum", rowNum);
-        formData.put("running", running);
         formData.put("permUpdate", permUpdate);
         formData.put("OPINION", jdyj);
+        formData.put("ifHaveYj", typeSettingInfoModel.getIfHaveYj());
+        formData.put("NGROPINION", typeSettingInfoModel.getCheckOpinion());
+
         formData.put("lhfwdeptStr", lhfwdeptStr);
-        formData.put("LASTIFHAVEYJ", typeSettingInfoModel.getHgrOpinion());
+
         formData.put("templateMeishouId", templateMeishouId);
         formData.put("templateBanJiId", templateBanJiId);
         formData.put("configData", getQyConfig(rowNum, cellNum, sheetNum));
