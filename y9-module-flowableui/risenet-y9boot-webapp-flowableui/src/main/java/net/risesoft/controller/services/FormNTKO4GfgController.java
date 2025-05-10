@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -207,15 +210,18 @@ public class FormNTKO4GfgController {
         List<SecretLevelModel> secretLevelRecord = secretLevelRecordApi.getRecord(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
 
         // 单独处理清样文件书签
-        String running = "running"; // 办结状态
         String permUpdate = "write"; // 修改权限
         String templateMeishouId = null; // 眉首id
         String templateBanJiId = null;  // 版式id
         TypeSettingInfoModel typeSettingInfoModel = typeSettingInfoApi.getTypeSetting(Y9LoginUserHolder.getTenantId(), qingyangId).getData();
         String qymb = typeSettingInfoModel.getTemplate();
-        String yfdate = null;
-        Date date = new Date();
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy年M月d日");
+
+        String yfdate = "";
+        String yfdateStr = formData.get("fwd_fwdate") + "";
+        LocalDate date = LocalDate.parse(yfdateStr);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年M月d日");
+        yfdate = date.format(formatter) + "印发"; // 印发日期
+
         String wwcsDept = formData.get("wwcsdept") + "";
         String wncsDept = formData.get("wncsdept") + "";
         if ((wwcsDept != null) && (!wwcsDept.equals(""))) {
@@ -255,8 +261,14 @@ public class FormNTKO4GfgController {
             fwwh = (String)formData.get("fwwh");
             LOGGER.error("拼接fwwh出错，放弃拼接：" + fwwh + e);
         }
-        Date cwDate = (Date)formData.get("cwdate");
-
+        String cwDateStr = formData.get("cwdate")+"";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date cwDate = null;
+        try {
+            cwDate = sdf.parse(cwDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         if (cwDate != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(cwDate);
@@ -372,7 +384,7 @@ public class FormNTKO4GfgController {
             templateBanJiId = qymb + "-版记.doc";
             rowNum = "1";
         }
-        yfdate = sdf2.format(date) + "印发"; // 印发日期
+
         String zsDept = "";
         zsDept = (String)formData.get("zsdept");
         String banjifenjie = "1";
@@ -387,7 +399,6 @@ public class FormNTKO4GfgController {
 
         Map map = new HashMap();
         map.put("NGROPINION",typeSettingInfoModel.getCheckOpinion());
-        map.put("LASTJDYJ", typeSettingInfoModel.getShenheOpinion());
         Gson gson = new Gson();
         String jdyj = gson.toJson(map);
 
@@ -401,6 +412,12 @@ public class FormNTKO4GfgController {
         }
         formData.put("docZwInstanceId", docZwInstanceId);
 
+        String isHave = "0";
+        if ("1".equals( typeSettingInfoModel.getIsHave())) {
+            isHave = "1";
+        }
+        formData.put("isHave",isHave);
+
         formData.put("tingLeaderComment",tldContent);
         formData.put("reviewerComment",hgrContent);
         formData.put("leaderComment",ldContent);
@@ -412,11 +429,13 @@ public class FormNTKO4GfgController {
         formData.put("cellNum", cellNum);
         formData.put("sheetNum", sheetNum);
         formData.put("rowNum", rowNum);
-        formData.put("running", running);
         formData.put("permUpdate", permUpdate);
         formData.put("OPINION", jdyj);
+        formData.put("ifHaveYj", typeSettingInfoModel.getIfHaveYj());
+        formData.put("NGROPINION", typeSettingInfoModel.getCheckOpinion());
+
         formData.put("lhfwdeptStr", lhfwdeptStr);
-        formData.put("LASTIFHAVEYJ", typeSettingInfoModel.getHgrOpinion());
+
         formData.put("templateMeishouId", templateMeishouId);
         formData.put("templateBanJiId", templateBanJiId);
         formData.put("configData", getQyConfig(rowNum, cellNum, sheetNum));

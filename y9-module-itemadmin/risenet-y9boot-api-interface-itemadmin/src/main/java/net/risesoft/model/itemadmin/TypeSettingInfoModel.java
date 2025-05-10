@@ -80,4 +80,7 @@ public class TypeSettingInfoModel implements Serializable {
 
     // 排序
     private Integer tabIndex;
+
+    // 是否保存过
+    private String isHave;
 }
