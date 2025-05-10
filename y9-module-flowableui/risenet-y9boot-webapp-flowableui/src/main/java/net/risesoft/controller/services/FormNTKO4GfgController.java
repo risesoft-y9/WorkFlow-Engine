@@ -399,6 +399,12 @@ public class FormNTKO4GfgController {
         }
         formData.put("docZwInstanceId", docZwInstanceId);
 
+        String isHave = "0";
+        if ("1".equals( typeSettingInfoModel.getIsHave())) {
+            isHave = "1";
+        }
+        formData.put("isHave",isHave);
+
         formData.put("tingLeaderComment",tldContent);
         formData.put("reviewerComment",hgrContent);
         formData.put("leaderComment",ldContent);
