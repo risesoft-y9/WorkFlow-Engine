@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -212,9 +215,13 @@ public class FormNTKO4GfgController {
         String templateBanJiId = null;  // 版式id
         TypeSettingInfoModel typeSettingInfoModel = typeSettingInfoApi.getTypeSetting(Y9LoginUserHolder.getTenantId(), qingyangId).getData();
         String qymb = typeSettingInfoModel.getTemplate();
-        String yfdate = null;
-        Date date = new Date();
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy年M月d日");
+
+        String yfdate = "";
+        String yfdateStr = formData.get("fwd_fwdate") + "";
+        LocalDate date = LocalDate.parse(yfdateStr);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年M月d日");
+        yfdate = date.format(formatter) + "印发"; // 印发日期
+
         String wwcsDept = formData.get("wwcsdept") + "";
         String wncsDept = formData.get("wncsdept") + "";
         if ((wwcsDept != null) && (!wwcsDept.equals(""))) {
@@ -254,8 +261,14 @@ public class FormNTKO4GfgController {
             fwwh = (String)formData.get("fwwh");
             LOGGER.error("拼接fwwh出错，放弃拼接：" + fwwh + e);
         }
-        Date cwDate = (Date)formData.get("cwdate");
-
+        String cwDateStr = formData.get("cwdate")+"";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date cwDate = null;
+        try {
+            cwDate = sdf.parse(cwDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         if (cwDate != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(cwDate);
@@ -371,7 +384,7 @@ public class FormNTKO4GfgController {
             templateBanJiId = qymb + "-版记.doc";
             rowNum = "1";
         }
-        yfdate = sdf2.format(date) + "印发"; // 印发日期
+
         String zsDept = "";
         zsDept = (String)formData.get("zsdept");
         String banjifenjie = "1";
