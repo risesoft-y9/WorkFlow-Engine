@@ -246,6 +246,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     processParam =
                         processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("serialNumber", ++serialNumber);
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
@@ -590,6 +591,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("taskId", taskId);
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
@@ -1029,6 +1031,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
@@ -1093,6 +1096,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
@@ -1149,6 +1153,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("bureauName", processParam.getHostDeptName());
@@ -1210,6 +1215,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam =
                         processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
@@ -1298,6 +1304,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("serialNumber", ++serialNumber);
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
@@ -1656,6 +1663,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam =
                         processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    mapTemp.put("id", processSerialNumber);
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put("systemCNName", processParam.getSystemCnName());
                     mapTemp.put("serialNumber", ++serialNumber);
