@@ -119,4 +119,7 @@ public class TypeSettingInfo implements Serializable {
     @Column(name = "tabIndex", length = 10)
     private Integer tabIndex;
 
+    @Comment("是否保存过")
+    @Column(name = "isHave", length = 50)
+    private String isHave;
 }
