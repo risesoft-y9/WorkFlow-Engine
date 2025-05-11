@@ -210,214 +210,241 @@ public class FormNTKO4GfgController {
         List<SecretLevelModel> secretLevelRecord = secretLevelRecordApi.getRecord(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
 
         // 单独处理清样文件书签
-        String permUpdate = "write"; // 修改权限
-        String templateMeishouId = null; // 眉首id
-        String templateBanJiId = null;  // 版式id
-        TypeSettingInfoModel typeSettingInfoModel = typeSettingInfoApi.getTypeSetting(Y9LoginUserHolder.getTenantId(), qingyangId).getData();
-        String qymb = typeSettingInfoModel.getTemplate();
+        if (StringUtils.isNotBlank(qingyangId)) {
+            String permUpdate = "write"; // 修改权限
+            String templateMeishouId = null; // 眉首id
+            String templateBanJiId = null;  // 版式id
+            TypeSettingInfoModel typeSettingInfoModel = typeSettingInfoApi.getTypeSetting(Y9LoginUserHolder.getTenantId(), qingyangId).getData();
+            String qymb = typeSettingInfoModel.getTemplate();
 
-        String yfdate = "";
-        String yfdateStr = formData.get("fwd_fwdate") + "";
-        LocalDate date = LocalDate.parse(yfdateStr);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年M月d日");
-        yfdate = date.format(formatter) + "印发"; // 印发日期
-
-        String wwcsDept = formData.get("wwcsdept") + "";
-        String wncsDept = formData.get("wncsdept") + "";
-        if ((wwcsDept != null) && (!wwcsDept.equals(""))) {
-            wwcsDept = wwcsDept.replaceAll("\\s*|\r|\n", "");
-            formData.put("wwcsdept", wwcsDept);
-        }
-        if ((wncsDept != null) && (!wncsDept.equals(""))) {
-            wncsDept = wncsDept.replaceAll("\\s*|\r|\n", "");
-            formData.put("wncsdept", wncsDept);
-        }
-        String month = "";
-        String year = "";
-        String day = "";
-
-        String fwwh = (String)formData.get("fwwh");
-        String nianfen = "";
-        try {
-            if (fwwh.contains("[")) {
-                fwwh = fwwh.replace("[", "〔");
-                fwwh = fwwh.replace("]", "〕");
-                String num = fwwh.substring(fwwh.lastIndexOf("〕") + 1);
-                fwwh = fwwh.substring(0, fwwh.indexOf("〕") + 1) + num.replaceAll("^[0]+", "");
-                formData.put("fwwh", fwwh);
-            } else if (fwwh.contains("年")) {
-                nianfen = fwwh.substring(0, fwwh.indexOf("年"));
-                String num = fwwh.substring(fwwh.lastIndexOf("第") + 1);
-                num = num.substring(0, num.indexOf("号"));
-                fwwh = num;
-                formData.put("nianfen", nianfen);
-                formData.put("fwwh", fwwh);
-            } else if ((!fwwh.contains("年")) && (fwwh.contains("第")) && (fwwh.contains("号"))) {
-                String num = fwwh.substring(fwwh.lastIndexOf("第") + 1);
-                num = num.substring(0, num.indexOf("号"));
-                formData.put("fwwh", num);
-            }
-        } catch (Exception e) {
-            fwwh = (String)formData.get("fwwh");
-            LOGGER.error("拼接fwwh出错，放弃拼接：" + fwwh + e);
-        }
-        String cwDateStr = formData.get("cwdate")+"";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date cwDate = null;
-        try {
-            cwDate = sdf.parse(cwDateStr);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        if (cwDate != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(cwDate);
-            year = Integer.toString(calendar.get(1));
-            month = Integer.toString(calendar.get(2) + 1);
-            day = " ";
-        }
-        formData.put("year", year);
-        formData.put("month", month);
-        formData.put("day", day);
-        // 获取联合发文 1:委外、2:联合
-        List<SignDeptModel> lhfwdept = signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "2", processSerialNumber).getData();
-        String lhfwdeptStr = lhfwdept.stream()
-                .map(SignDeptModel::getDeptName)
-                .collect(Collectors.joining(","));
-        String lhfwdeptStrFull = "";
-        String[] lhfwdeptList = new String[0];
-        if (StringUtils.isBlank(lhfwdeptStr)) {
-            lhfwdeptStr = "国家发展和改革委员会";
-        }
-        if (!lhfwdeptStr.contains("国家发展和改革委员会")) {
-            lhfwdeptStr = "国家发展和改革委员会," + lhfwdeptStr;
-        }
-        if (lhfwdeptStr != null) {
-           lhfwdeptList = lhfwdeptStr.split("\\,");
-            if ((qymb.equals("令")) || (qymb.equals("公告"))) {
-               try {
-                    lhfwdeptStrFull = getLhfwdeptfull(tenantId,lhfwdeptList);
-               } catch (Exception e) {
-                    lhfwdeptStrFull = lhfwdeptStr;
-                    LOGGER.error("生成令与公告的联合发文单位出错（fulldeptname）,使用lhfwdeptStr，lhfwdeptStrFull:" + lhfwdeptStrFull, e);
-                }
-            }
-        }
-
-        String lhfwdeptZwList = "";
-        String zwMaxLength = "7";
-        Map mapList = null;
-        if (qymb.equals("令")) {
-            mapList = getLhfwdeptZwList(tenantId,lhfwdeptList);
-            lhfwdeptZwList = (String)mapList.get("lhfwdeptZwList");
-            zwMaxLength = (String)mapList.get("maxLength");
-        }
-
-        boolean isTing = false;
-        if ((qymb.equals("厅便函")) || (qymb.equals("厅下发"))) {
-            isTing = true;
-        }
-        if (qymb.equals("厅下发")) {
-            lhfwdeptStr = getLhfwdeptStrTing(lhfwdeptStr);
-        }
-        int columns = 0;
-        String lhfwdeptListWithOrder = "";
-        Map mapListWithOrder = null;
-        int maxLength = 7;
-        if (lhfwdeptList.length > 1) {
-            if (qymb.equals("委下发")) {
-                 columns = 3;
-            }
-            mapListWithOrder = getLhfwdeptList(tenantId,lhfwdeptList, columns, isTing);
-            lhfwdeptListWithOrder = (String)mapListWithOrder.get("lhfwdeptListWithOrder");
-            columns = ((Integer)mapListWithOrder.get("columns")).intValue();
-            maxLength = ((Integer)mapListWithOrder.get("maxLength")).intValue();
-        }
-
-        String cellNum = "11";
-        String sheetNum = "0";
-        String rowNum = "";
-        if (qymb.equals("公告")) {
-            cellNum = "6";
-            sheetNum = "1";
-        }
-        if (qymb.equals("厅下发")) {
-            cellNum = "10";
-            sheetNum = "2";
-        }
-        if (qymb.equals("令")) {
-            cellNum = "10";
-            sheetNum = "3";
-        }
-        if ((qymb.equals("委下发")) || (qymb.equals("厅下发")) ||
-                (qymb.equals("公告")) ||
-                (qymb.equals("厅便函")) ||
-                (qymb.equals("委便函")) ||
-                (qymb.equals("专报便函"))) {
-            if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length))
-            {
-                templateMeishouId = qymb + "-眉首-多.doc";
-                if (columns == 3)
-                    templateBanJiId = qymb + "-版记-多-3列.doc";
-                else {
-                    templateBanJiId = qymb + "-版记-多-2列.doc";
-                }
-                rowNum = Integer.toString(lhfwdeptList.length);
+            String yfdate = "";
+            String yfdateStr = formData.get("fwd_fwdate") + "";
+            if (StringUtils.isNotBlank(yfdateStr) && !"".equals(yfdateStr.trim())) {
+                LocalDate date = LocalDate.parse(yfdateStr);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年M月d日");
+                yfdate = date.format(formatter) + "印发"; // 印发日期
             } else {
+                yfdate = "印发"; // 印发日期
+            }
+
+            String wwcsDept = formData.get("wwcsdept") + "";
+            String wncsDept = formData.get("wncsdept") + "";
+            if ((wwcsDept != null) && (!wwcsDept.equals(""))) {
+                wwcsDept = wwcsDept.replaceAll("\\s*|\r|\n", "");
+                formData.put("wwcsdept", wwcsDept);
+            }
+            if ((wncsDept != null) && (!wncsDept.equals(""))) {
+                wncsDept = wncsDept.replaceAll("\\s*|\r|\n", "");
+                formData.put("wncsdept", wncsDept);
+            }
+            String month = "";
+            String year = "";
+            String day = "";
+
+            String fwwh = (String)formData.get("fwwh");
+            String nianfen = "";
+            try {
+                if (fwwh.contains("[")) {
+                    fwwh = fwwh.replace("[", "〔");
+                    fwwh = fwwh.replace("]", "〕");
+                    String num = fwwh.substring(fwwh.lastIndexOf("〕") + 1);
+                    fwwh = fwwh.substring(0, fwwh.indexOf("〕") + 1) + num.replaceAll("^[0]+", "");
+                    formData.put("fwwh", fwwh);
+                } else if (fwwh.contains("年")) {
+                    nianfen = fwwh.substring(0, fwwh.indexOf("年"));
+                    String num = fwwh.substring(fwwh.lastIndexOf("第") + 1);
+                    num = num.substring(0, num.indexOf("号"));
+                    fwwh = num;
+                    formData.put("nianfen", nianfen);
+                    formData.put("fwwh", fwwh);
+                } else if ((!fwwh.contains("年")) && (fwwh.contains("第")) && (fwwh.contains("号"))) {
+                    String num = fwwh.substring(fwwh.lastIndexOf("第") + 1);
+                    num = num.substring(0, num.indexOf("号"));
+                    formData.put("fwwh", num);
+                }
+            } catch (Exception e) {
+                fwwh = (String)formData.get("fwwh");
+                LOGGER.error("拼接fwwh出错，放弃拼接：" + fwwh + e);
+            }
+            String cwDateStr = formData.get("cwdate")+"";
+            Date cwDate = null;
+            if (StringUtils.isNotBlank(cwDateStr) && !"".equals(cwDateStr.trim())) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    cwDate = sdf.parse(cwDateStr);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (cwDate != null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(cwDate);
+                year = Integer.toString(calendar.get(1));
+                month = Integer.toString(calendar.get(2) + 1);
+                day = " ";
+            }
+            formData.put("year", year);
+            formData.put("month", month);
+            formData.put("day", day);
+            // 获取联合发文 1:委外、2:联合
+            List<SignDeptModel> lhfwdept = signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "2", processSerialNumber).getData();
+            String lhfwdeptStr = lhfwdept.stream()
+                    .map(SignDeptModel::getDeptName)
+                    .collect(Collectors.joining(","));
+            String lhfwdeptStrFull = "";
+            String[] lhfwdeptList = new String[0];
+            if (StringUtils.isBlank(lhfwdeptStr)) {
+                lhfwdeptStr = "国家发展和改革委员会";
+            }
+            if (!lhfwdeptStr.contains("国家发展和改革委员会")) {
+                lhfwdeptStr = "国家发展和改革委员会," + lhfwdeptStr;
+            }
+            if (lhfwdeptStr != null) {
+                lhfwdeptList = lhfwdeptStr.split("\\,");
+                if ((qymb.equals("令")) || (qymb.equals("公告"))) {
+                    try {
+                        lhfwdeptStrFull = getLhfwdeptfull(tenantId,lhfwdeptList);
+                    } catch (Exception e) {
+                        lhfwdeptStrFull = lhfwdeptStr;
+                        LOGGER.error("生成令与公告的联合发文单位出错（fulldeptname）,使用lhfwdeptStr，lhfwdeptStrFull:" + lhfwdeptStrFull, e);
+                    }
+                }
+            }
+
+            String lhfwdeptZwList = "";
+            String zwMaxLength = "7";
+            Map mapList = null;
+            if (qymb.equals("令")) {
+                mapList = getLhfwdeptZwList(tenantId,lhfwdeptList);
+                lhfwdeptZwList = (String)mapList.get("lhfwdeptZwList");
+                zwMaxLength = (String)mapList.get("maxLength");
+            }
+
+            boolean isTing = false;
+            if ((qymb.equals("厅便函")) || (qymb.equals("厅下发"))) {
+                isTing = true;
+            }
+            if (qymb.equals("厅下发")) {
+                lhfwdeptStr = getLhfwdeptStrTing(lhfwdeptStr);
+            }
+            int columns = 0;
+            String lhfwdeptListWithOrder = "";
+            Map mapListWithOrder = null;
+            int maxLength = 7;
+            if (lhfwdeptList.length > 1) {
+                if (qymb.equals("委下发")) {
+                    columns = 3;
+                }
+                mapListWithOrder = getLhfwdeptList(tenantId,lhfwdeptList, columns, isTing);
+                lhfwdeptListWithOrder = (String)mapListWithOrder.get("lhfwdeptListWithOrder");
+                columns = ((Integer)mapListWithOrder.get("columns")).intValue();
+                maxLength = ((Integer)mapListWithOrder.get("maxLength")).intValue();
+            }
+
+            String cellNum = "11";
+            String sheetNum = "0";
+            String rowNum = "";
+            if (qymb.equals("公告")) {
+                cellNum = "6";
+                sheetNum = "1";
+            }
+            if (qymb.equals("厅下发")) {
+                cellNum = "10";
+                sheetNum = "2";
+            }
+            if (qymb.equals("令")) {
+                cellNum = "10";
+                sheetNum = "3";
+            }
+            if ((qymb.equals("委下发")) || (qymb.equals("厅下发")) ||
+                    (qymb.equals("公告")) ||
+                    (qymb.equals("厅便函")) ||
+                    (qymb.equals("委便函")) ||
+                    (qymb.equals("专报便函"))) {
+                if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length))
+                {
+                    templateMeishouId = qymb + "-眉首-多.doc";
+                    if (columns == 3)
+                        templateBanJiId = qymb + "-版记-多-3列.doc";
+                    else {
+                        templateBanJiId = qymb + "-版记-多-2列.doc";
+                    }
+                    rowNum = Integer.toString(lhfwdeptList.length);
+                } else {
+                    templateMeishouId = qymb + "-眉首.doc";
+                    templateBanJiId = qymb + "-版记.doc";
+                    rowNum = "1";
+                }
+            } else {
+                templateBanJiId = qymb + "-版记.doc";
+                if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length))
+                {
+                    templateMeishouId = qymb + "-眉首-多.doc";
+                    rowNum = Integer.toString(lhfwdeptList.length);
+                } else {
+                    templateMeishouId = qymb + "-眉首.doc";
+                    rowNum = "1";
+                }
+            }
+            if (qymb.equals("会议纪要")) {
                 templateMeishouId = qymb + "-眉首.doc";
                 templateBanJiId = qymb + "-版记.doc";
                 rowNum = "1";
             }
-        } else {
-            templateBanJiId = qymb + "-版记.doc";
-            if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length))
-            {
-                templateMeishouId = qymb + "-眉首-多.doc";
-                rowNum = Integer.toString(lhfwdeptList.length);
-            } else {
-                templateMeishouId = qymb + "-眉首.doc";
-                rowNum = "1";
+
+            String zsDept = "";
+            zsDept = (String)formData.get("zsdept");
+            String banjifenjie = "1";
+            if ((StringUtils.isNotBlank(zsDept)) &&
+                    ((zsDept.contains("国务院"))
+                            || (zsDept.contains("中共中央"))
+                            || (zsDept.contains("中共中央办公厅")))
+                    && (!zsDept.contains("国务院办公厅"))) {
+                banjifenjie = "1";
             }
-        }
-        if (qymb.equals("会议纪要")) {
-            templateMeishouId = qymb + "-眉首.doc";
-            templateBanJiId = qymb + "-版记.doc";
-            rowNum = "1";
-        }
+            formData.put("yfdate", yfdate);
 
-        String zsDept = "";
-        zsDept = (String)formData.get("zsdept");
-        String banjifenjie = "1";
-        if ((StringUtils.isNotBlank(zsDept)) &&
-                ((zsDept.contains("国务院"))
-                        || (zsDept.contains("中共中央"))
-                        || (zsDept.contains("中共中央办公厅")))
-                && (!zsDept.contains("国务院办公厅"))) {
-            banjifenjie = "1";
+            Map map = new HashMap();
+            map.put("NGROPINION",typeSettingInfoModel.getCheckOpinion());
+            Gson gson = new Gson();
+            String jdyj = gson.toJson(map);
+
+            String docZwInstanceId = null;
+            // 获取发文稿纸fileStoreId
+            List<DocumentWordModel> list = documentWordApi
+                    .findByProcessSerialNumberAndWordType(tenantId, processSerialNumber, "发文稿纸")
+                    .getData();
+            if (list.size() > 0) {
+                docZwInstanceId = list.get(0).getFileStoreId();
+            }
+            formData.put("docZwInstanceId", docZwInstanceId);
+
+            String isHave = "0";
+            if ("1".equals( typeSettingInfoModel.getIsHave())) {
+                isHave = "1";
+            }
+            formData.put("isHave",isHave);
+            formData.put("cellNum", cellNum);
+            formData.put("sheetNum", sheetNum);
+            formData.put("rowNum", rowNum);
+            formData.put("permUpdate", permUpdate);
+            formData.put("OPINION", jdyj);
+            formData.put("ifHaveYj", typeSettingInfoModel.getIfHaveYj());
+            formData.put("NGROPINION", typeSettingInfoModel.getCheckOpinion());
+
+            formData.put("lhfwdeptStr", lhfwdeptStr);
+
+            formData.put("templateMeishouId", templateMeishouId);
+            formData.put("templateBanJiId", templateBanJiId);
+            formData.put("configData", getQyConfig(rowNum, cellNum, sheetNum));
+            formData.put("columns", Integer.valueOf(columns));
+            formData.put("lhfwdeptListWithOrder", lhfwdeptListWithOrder);
+            formData.put("lhfwdeptZwList", lhfwdeptZwList);
+            formData.put("zwMaxLength", zwMaxLength);
+            formData.put("lhfwdeptStrFull", lhfwdeptStrFull);
+            formData.put("maxLength", Integer.valueOf(maxLength));
+            formData.put("banjifenjie", banjifenjie);
         }
-        formData.put("yfdate", yfdate);
-
-        Map map = new HashMap();
-        map.put("NGROPINION",typeSettingInfoModel.getCheckOpinion());
-        Gson gson = new Gson();
-        String jdyj = gson.toJson(map);
-
-        String docZwInstanceId = null;
-        // 获取发文稿纸fileStoreId
-        List<DocumentWordModel> list = documentWordApi
-                .findByProcessSerialNumberAndWordType(tenantId, processSerialNumber, "发文稿纸")
-                .getData();
-        if (list.size() > 0) {
-            docZwInstanceId = list.get(0).getFileStoreId();
-        }
-        formData.put("docZwInstanceId", docZwInstanceId);
-
-        String isHave = "0";
-        if ("1".equals( typeSettingInfoModel.getIsHave())) {
-            isHave = "1";
-        }
-        formData.put("isHave",isHave);
-
         formData.put("tingLeaderComment",tldContent);
         formData.put("reviewerComment",hgrContent);
         formData.put("leaderComment",ldContent);
@@ -425,28 +452,6 @@ public class FormNTKO4GfgController {
         formData.put("deptLeaderComment",czContent);
         formData.put("secretLevelRecord",secretLevelRecord);
         formData.put("DT_zzfj",paperAttList);
-
-        formData.put("cellNum", cellNum);
-        formData.put("sheetNum", sheetNum);
-        formData.put("rowNum", rowNum);
-        formData.put("permUpdate", permUpdate);
-        formData.put("OPINION", jdyj);
-        formData.put("ifHaveYj", typeSettingInfoModel.getIfHaveYj());
-        formData.put("NGROPINION", typeSettingInfoModel.getCheckOpinion());
-
-        formData.put("lhfwdeptStr", lhfwdeptStr);
-
-        formData.put("templateMeishouId", templateMeishouId);
-        formData.put("templateBanJiId", templateBanJiId);
-        formData.put("configData", getQyConfig(rowNum, cellNum, sheetNum));
-        formData.put("columns", Integer.valueOf(columns));
-        formData.put("lhfwdeptListWithOrder", lhfwdeptListWithOrder);
-        formData.put("lhfwdeptZwList", lhfwdeptZwList);
-        formData.put("zwMaxLength", zwMaxLength);
-        formData.put("lhfwdeptStrFull", lhfwdeptStrFull);
-        formData.put("maxLength", Integer.valueOf(maxLength));
-        formData.put("banjifenjie", banjifenjie);
-
         return Y9Result.success(formData);
     }
     // 获取excel配置
