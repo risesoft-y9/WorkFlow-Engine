@@ -1096,4 +1096,26 @@
             <column name="LWSX" remarks="来文时限" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700543333-55" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_OUT_DEPT" columnName="DEPTIDOLD"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_OUT_DEPT">
+            <column name="DEPTIDOLD" remarks="单位Id-old" type="VARCHAR(50)"/>
+            <column name="FULLDEPTNAME" remarks="单位总称" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1704700543333-56" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_TYPESETTING_INFO" columnName="isHave"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_TYPESETTING_INFO">
+            <column name="isHave" remarks="是否保存过" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
