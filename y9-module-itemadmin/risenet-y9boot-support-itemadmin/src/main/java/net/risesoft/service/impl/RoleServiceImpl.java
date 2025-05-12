@@ -81,6 +81,7 @@ public class RoleServiceImpl implements RoleService {
                 model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
                 model.setPerson("6:" + position.getId());
                 model.setOrderedPath(position.getOrderedPath());
+                model.setGuidPath(position.getGuidPath());
                 if (itemList.contains(model)) {
                     continue;// 去重
                 }
