@@ -49,6 +49,18 @@ public interface SignDeptInfoApi {
         @RequestParam("positionId") String positionId, @RequestParam("id") String id);
 
     /**
+     * 获取联合发文单位总称
+     *
+     * @param tenantId 租户ID
+     * @param deptNameMax 部门名称
+     * @return Y9Result<List<Department>>
+     * @since 9.6.0
+     */
+    @GetMapping(value = "/findByDeptNameMax")
+    Y9Result<Map<String, String>> findByDeptNameMax(@RequestParam("tenantId") String tenantId,
+        @RequestParam("deptNameMax") String deptNameMax);
+
+    /**
      * 根据流程编号获取会签信息
      *
      * @param tenantId 租户ID
@@ -119,14 +131,18 @@ public interface SignDeptInfoApi {
         @RequestParam(value = "userName", required = false) String userName);
 
     /**
-     * 获取联合发文单位总称
+     * 插入或更新会签部门，更新显示名称
      *
      * @param tenantId 租户ID
-     * @param deptNameMax 部门名称
-     * @return Y9Result<List<Department>>
+     * @param positionId 岗位id
+     * @param processSerialNumber 流程编号
+     * @param type 中央预算内投资计划下达类文件类型,1为是，0为否
+     * @param tzsDeptId 司局部门id
+     * @return Y9Result<Object>
      * @since 9.6.0
      */
-    @GetMapping(value = "/findByDeptNameMax")
-    Y9Result<Map<String,String>> findByDeptNameMax(@RequestParam("tenantId") String tenantId,
-                                            @RequestParam("deptNameMax") String deptNameMax);
+    @PostMapping(value = "/updateSignDept")
+    Y9Result<Object> updateSignDept(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("type") String type, @RequestParam("tzsDeptId") String tzsDeptId);
 }

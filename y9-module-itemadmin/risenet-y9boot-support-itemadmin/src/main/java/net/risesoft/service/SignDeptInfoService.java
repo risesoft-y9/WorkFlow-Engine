@@ -20,4 +20,6 @@ public interface SignDeptInfoService {
     void saveSignDept(String processSerialNumber, String deptType, String deptIds, String tzsDeptId);
 
     void saveSignDeptInfo(String id, String userName);
+
+    void updateSignDept(String processSerialNumber, String positionId, String type, String tzsDeptId);
 }

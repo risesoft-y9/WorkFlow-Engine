@@ -97,4 +97,19 @@ public class SignDept4GfgController {
         return signDeptInfoApi.saveSignDeptInfo(Y9LoginUserHolder.getTenantId(), id, userName);
     }
 
+    /**
+     * 插入或更新会签部门，更新显示名称
+     *
+     * @param processSerialNumber 流程编号
+     * @param type 中央预算内投资计划下达类文件类型,1为是，0为否
+     * @param tzsDeptId 司局部门id
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/updateSignDept")
+    public Y9Result<Object> updateSignDept(@RequestParam String processSerialNumber, @RequestParam String type,
+        @RequestParam String tzsDeptId) {
+        return signDeptInfoApi.updateSignDept(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+            processSerialNumber, type, tzsDeptId);
+    }
+
 }

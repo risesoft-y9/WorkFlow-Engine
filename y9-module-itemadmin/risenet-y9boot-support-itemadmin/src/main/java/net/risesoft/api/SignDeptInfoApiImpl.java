@@ -91,6 +91,26 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
         return Y9Result.success();
     }
 
+    @Override
+    public Y9Result<Map<String, String>> findByDeptNameMax(@RequestParam String tenantId,
+        @RequestParam String deptNameMax) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, String> map = new HashMap<String, String>();
+
+        SignOutDept signOutDept = signDeptOutService.findByDeptNameMax(deptNameMax);
+        if (signOutDept != null) {
+            String fullDeptName = signOutDept.getFullDeptName();
+            String ldcw = signOutDept.getLdcw();
+            String deptName = signOutDept.getDeptName();
+            String deptSuffix = signOutDept.getDeptSuffix();
+            map.put("fullDeptName", fullDeptName);
+            map.put("ldcw", ldcw);
+            map.put("deptName", deptName);
+            map.put("deptSuffix", deptSuffix);
+        }
+        return Y9Result.success(map);
+    }
+
     /**
      * 根据流程编号获取会签信息
      *
@@ -112,25 +132,6 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
             modelList.add(model);
         }
         return Y9Result.success(modelList);
-    }
-
-    @Override
-    public Y9Result<Map<String,String>> findByDeptNameMax(@RequestParam String tenantId, @RequestParam String deptNameMax) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, String> map = new HashMap<String, String>();
-
-        SignOutDept signOutDept = signDeptOutService.findByDeptNameMax(deptNameMax);
-        if (signOutDept != null) {
-            String fullDeptName = signOutDept.getFullDeptName();
-            String ldcw = signOutDept.getLdcw();
-            String deptName = signOutDept.getDeptName();
-            String deptSuffix = signOutDept.getDeptSuffix();
-            map.put("fullDeptName",fullDeptName);
-            map.put("ldcw",ldcw);
-            map.put("deptName",deptName);
-            map.put("deptSuffix",deptSuffix);
-        }
-        return Y9Result.success(map);
     }
 
     /**
@@ -226,6 +227,27 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     public Y9Result<Object> saveSignDeptInfo(@RequestParam String tenantId, @RequestParam String id, String userName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         signDeptInfoService.saveSignDeptInfo(id, userName);
+        return Y9Result.success();
+    }
+
+    /**
+     * 插入或更新会签部门，更新显示名称
+     *
+     * @param tenantId 租户ID
+     * @param positionId 岗位id
+     * @param processSerialNumber 流程编号
+     * @param type 中央预算内投资计划下达类文件类型,1为是，0为否
+     * @param tzsDeptId 司局部门id
+     * @return Y9Result<Object>
+     * @since 9.6.0
+     */
+    @Override
+    public Y9Result<Object> updateSignDept(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String processSerialNumber, @RequestParam String type, @RequestParam String tzsDeptId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        signDeptInfoService.updateSignDept(processSerialNumber, positionId, type, tzsDeptId);
         return Y9Result.success();
     }
 }
