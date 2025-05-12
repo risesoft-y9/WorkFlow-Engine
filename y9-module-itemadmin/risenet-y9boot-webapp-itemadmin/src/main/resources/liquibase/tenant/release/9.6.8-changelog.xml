@@ -203,6 +203,7 @@
             <column name="DEPTID" remarks="单位Id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
+            <column name="DEPTIDOLD" remarks="单位Id-old" type="VARCHAR(50)"/>
             <column name="DEPTTYPEID" remarks="单位类型Id" type="VARCHAR(50)"/>
             <column name="DEPTNAME" remarks="单位名称" type="VARCHAR(100)"/>
             <column name="DEPTORDER" remarks="单位序号" type="INT"/>
@@ -212,6 +213,7 @@
             <column name="DEPTNAMEMAX" remarks="单位全称" type="VARCHAR(100)"/>
             <column name="FULLSPELL" remarks="全拼" type="VARCHAR(100)"/>
             <column name="FIRSTSPELL" remarks="第一字母简拼" type="VARCHAR(100)"/>
+            <column name="FULLDEPTNAME" remarks="单位总称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700543333-11" author="qinMan" runOnChange="true">
