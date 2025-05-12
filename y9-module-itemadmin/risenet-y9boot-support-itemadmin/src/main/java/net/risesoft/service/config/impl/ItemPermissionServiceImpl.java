@@ -146,23 +146,30 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
                 DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                 List<Position> pList = new ArrayList<>();
-                if (null == dynamicRole.getKinds()
-                    || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
-                    // 动态角色种类为【无】或null时，针对岗位或部门
-                    List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
-                        .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
-                    for (OrgUnit orgUnit : orgUnitList1) {
-                        if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                            map.put("existPosition", true);
-                            break;
-                        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                            || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-                            map.put("existDepartment", true);
-                            break;
-                        }
+                if (dynamicRole.getClassPath().contains("4SubProcess")) {// 针对岗位,加入岗位集合
+                    pList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
+                    if (pList.size() > 0) {
+                        map.put("existPosition", true);
                     }
-                } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
-                    map.put("existPosition", true);
+                } else {
+                    if (null == dynamicRole.getKinds()
+                        || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+                        // 动态角色种类为【无】或null时，针对岗位或部门
+                        List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
+                            .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
+                        for (OrgUnit orgUnit : orgUnitList1) {
+                            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                                map.put("existPosition", true);
+                                break;
+                            } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                                || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
+                                map.put("existDepartment", true);
+                                break;
+                            }
+                        }
+                    } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
+                        map.put("existPosition", true);
+                    }
                 }
             } else {
                 map.put("existPosition", true);
