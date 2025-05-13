@@ -10,6 +10,7 @@ import java.util.Map;
 
 import jakarta.annotation.Resource;
 
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -34,11 +35,32 @@ public class ShuangYangServiceImpl implements ShuangYangService {
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
+    // 查询并案
+    private static String getBingAnSql(String instanceId, String eventType) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select lw.hallreg,lwpi.instanceid from ");
+        if ("办结".equals(eventType)) {
+            sb.append(" bpm_processinstancedone lwpi, ");
+        } else {
+            sb.append(" bpm_processinstanceruntime lwpi, ");
+        }
+        sb.append("d_gw_lwinfo lw ");
+        sb.append(" WHERE lwpi.businesskey = lw.lwinfouid AND ");
+        sb.append(" lwpi.masterid = '" + instanceId + "'");
+        return sb.toString();
+    }
+
     // 发文关联来件查来件大厅编码
     private static String getFwLinkLjSql(final PushData pushData) {
         String sql =
             "SELECT lw.hallreg from bpm_linkruntime l, d_gw_lwinfo lw WHERE lw.lwinfouid = l.toinstanceid AND l.frominstanceid = '"
                 + pushData.getProcessinstanceid() + "' AND lw.hallreg IS NOT NULL AND l.linktype != 'BING_AN'";
+        return sql;
+    }
+
+    // 查询是否是委托评估
+    private static String getIswtpgSql(final PushData pushData) {
+        String sql = "select * from y9_form_fw where wtpg = '1' AND GUID='" + pushData.getProcessserialnumber() + "'";
         return sql;
     }
 
@@ -57,25 +79,33 @@ public class ShuangYangServiceImpl implements ShuangYangService {
         return sql;
     }
 
-    // 查询并案
-    private static String getBingAnSql(String instanceId, String eventType) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(" select lw.hallreg,lwpi.instanceid from ");
-        if ("办结".equals(eventType)) {
-            sb.append(" bpm_processinstancedone lwpi, ");
-        } else {
-            sb.append(" bpm_processinstanceruntime lwpi, ");
+    // 推送至双杨
+    public Boolean pushDataInterface(PushData data) {
+        Boolean result = false;
+        try {
+            String url = Y9Context.getProperty("y9.common.shangHuiUrl");
+            String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+            xml += "<pushdata>";
+            if ("非法上会".equals(data.getEventtype())) {
+                xml += "<instanceId></instanceId>";
+                xml += "<fwinstanceId>" + data.getProcessinstanceid() + "</fwinstanceId>";
+            } else {
+                xml += "<instanceId>" + data.getProcessinstanceid() + "</instanceId>";
+                xml += "<fwinstanceId></fwinstanceId>";
+            }
+            xml += "<xmdm>" + data.getXmdm() + "</xmdm>";
+            xml += "<eventType>" + data.getEventtype() + "</eventType>";
+            xml += "<operateDate>" + sdf.format(data.getCreatedate() != null ? data.getCreatedate() : new Date())
+                + "</operateDate>";
+            xml += "</pushdata>";
+            LOGGER.info("推送双杨xml:" + xml);
+            Object o = RemoteCallUtil.invoke(url, "invoke", new Object[] {xml});
+            result = Boolean.parseBoolean(o.toString());
+            LOGGER.info("推送双杨返回结果:" + result);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        sb.append("d_gw_lwinfo lw ");
-        sb.append(" WHERE lwpi.businesskey = lw.lwinfouid AND ");
-        sb.append(" lwpi.masterid = '" + instanceId + "'");
-        return sb.toString();
-    }
-
-    // 查询是否是委托评估
-    private static String getIswtpgSql(final PushData pushData) {
-        String sql = "select * from y9_form_fw where iswtpg = '1' AND GUID='" + pushData.getProcessserialnumber() + "'";
-        return sql;
+        return result;
     }
 
     @Override
@@ -87,24 +117,23 @@ public class ShuangYangServiceImpl implements ShuangYangService {
             ds.setUsername(Y9Context.getProperty("y9.app.oldDataSource.username"));
             ds.setPassword(Y9Context.getProperty("y9.app.oldDataSource.password"));
             JdbcTemplate oldjdbcTemplate = new JdbcTemplate(ds);
-            // 查询未推送的数据
-            List<PushData> pushDataList = jdbcTemplate
-                .query("select * from PUSHDATA where tszt ='0' order by CREATEDATE", new RowMapper<PushData>() {
-                    @Override
-                    public PushData mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        PushData pushData = new PushData();
-                        pushData.setId(rs.getString("ID"));
-                        pushData.setCreatedate(rs.getDate("CREATEDATE"));
-                        pushData.setEventtype(rs.getString("EVENTTYPE"));
-                        pushData.setProcessinstanceid(rs.getString("PROCESSINSTANCEID"));
-                        pushData.setProcessserialnumber(rs.getString("PROCESSSERIALNUMBER"));
-                        pushData.setTsdate(rs.getDate("TSDATE"));
-                        pushData.setTsjg(rs.getString("TSJG"));
-                        pushData.setTszt(rs.getString("TSZT"));
-                        pushData.setXmdm(rs.getString("XMDM"));
-                        return pushData;
-                    }
-                });
+            //查询未推送的数据
+            List<PushData> pushDataList = jdbcTemplate.query("select * from PUSHDATA where tszt ='0' order by CREATEDATE", new RowMapper<PushData>() {
+                @Override
+                public PushData mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    PushData pushData = new PushData();
+                    pushData.setId(rs.getString("ID"));
+                    pushData.setCreatedate(rs.getDate("CREATEDATE"));
+                    pushData.setEventtype(rs.getString("EVENTTYPE"));
+                    pushData.setProcessinstanceid(rs.getString("PROCESSINSTANCEID"));
+                    pushData.setProcessserialnumber(rs.getString("PROCESSSERIALNUMBER"));
+                    pushData.setTsdate(rs.getDate("TSDATE"));
+                    pushData.setTsjg(rs.getString("TSJG"));
+                    pushData.setTszt(rs.getString("TSZT"));
+                    pushData.setXmdm(rs.getString("XMDM"));
+                    return pushData;
+                }
+            });
             for (PushData pushData : pushDataList) {
                 Boolean result = false;
                 LOGGER.info("处理的pushData的id：" + pushData.getId());
@@ -204,34 +233,5 @@ public class ShuangYangServiceImpl implements ShuangYangService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    // 推送至双杨
-    public Boolean pushDataInterface(PushData data) {
-        Boolean result = false;
-        try {
-            String url = Y9Context.getProperty("y9.common.shangHuiUrl");
-            String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-            xml += "<pushdata>";
-            if ("非法上会".equals(data.getEventtype())) {
-                xml += "<instanceId></instanceId>";
-                xml += "<fwinstanceId>" + data.getProcessinstanceid() + "</fwinstanceId>";
-            } else {
-                xml += "<instanceId>" + data.getProcessinstanceid() + "</instanceId>";
-                xml += "<fwinstanceId></fwinstanceId>";
-            }
-            xml += "<xmdm>" + data.getXmdm() + "</xmdm>";
-            xml += "<eventType>" + data.getEventtype() + "</eventType>";
-            xml += "<operateDate>" + sdf.format(data.getCreatedate() != null ? data.getCreatedate() : new Date())
-                + "</operateDate>";
-            xml += "</pushdata>";
-            LOGGER.info("推送双杨xml:" + xml);
-            Object o = RemoteCallUtil.invoke(url, "invoke", new Object[] {xml});
-            result = Boolean.parseBoolean(o.toString());
-            LOGGER.info("推送双杨返回结果:" + result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 }
