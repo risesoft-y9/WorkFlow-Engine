@@ -2,12 +2,15 @@ package net.risesoft.controller.gfg;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,15 +65,19 @@ public class SignDeptDetailRestController {
 
     private final FormDataApi formDataApi;
 
+    @Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
+
     /**
      * 根据主键删除会签信息
      *
      * @param id 主键
+     * @param tzsDeptId tzs部门id
      * @return Y9Result<Object>
      * @since 9.6.8
      */
     @PostMapping(value = "/deleteById")
-    Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
+    Y9Result<Object> deleteById(@RequestParam @NotBlank String id, @RequestParam String tzsDeptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
@@ -79,6 +86,20 @@ public class SignDeptDetailRestController {
             .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())).count() == 1) {
             return Y9Result.failure("仅剩一个会签部门，不能删除会签信息");
         }
+
+        if (tzsDeptId.equals(signDeptDetail.getDeptId())) {// 投资司会签
+            String sql = "select * from y9_form_fw where (wtpg = '1' or tzjhxdlwj like '%1%') AND GUID='"
+                + signDeptDetail.getProcessSerialNumber() + "'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list.size() > 0) {// 委托评估,中央预算内投资计划下达类文件,不能减签投资司会签
+                String msg = "中央预算内投资计划下达类文件";
+                if (list.get(0).get("wtpg") != null && list.get(0).get("wtpg").toString().equals("1")) {
+                    msg = "委托评估类文件";
+                }
+                return Y9Result.failure("该文件为" + msg + "，不能删除投资司会签");
+            }
+        }
+
         /*
          * 1、删除流程参与信息
          */
@@ -131,9 +152,8 @@ public class SignDeptDetailRestController {
         @RequestParam(required = false) String signDeptDetailId) {
         String bureauId;
         if (StringUtils.isBlank(signDeptDetailId)) {
-            bureauId =
-                orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId())
-                    .getData().getId();
+            bureauId = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId())
+                .getData().getId();
         } else {
             bureauId =
                 signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDeptDetailId).getData().getDeptId();
@@ -242,7 +262,7 @@ public class SignDeptDetailRestController {
     @PostMapping(value = "/saveOrUpdate")
     Y9Result<Object> saveOrUpdate(@RequestParam @NotBlank String jsonData) {
         SignDeptDetailModel signDeptDetailModel = Y9JsonUtil.readValue(jsonData, SignDeptDetailModel.class);
-        return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(),
-            Y9LoginUserHolder.getPositionId(), signDeptDetailModel);
+        return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+            signDeptDetailModel);
     }
 }
