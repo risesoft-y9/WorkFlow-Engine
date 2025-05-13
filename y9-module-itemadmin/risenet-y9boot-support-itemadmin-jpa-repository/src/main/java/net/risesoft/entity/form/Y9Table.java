@@ -42,7 +42,7 @@ public class Y9Table implements Serializable {
     @Comment("表中文名称")
     private String tableCnName;
 
-    @Column(name = "TABLEALIAS", length = 4)
+    @Column(name = "TABLEALIAS", length = 20)
     @Comment("表别名")
     private String tableAlias;
 

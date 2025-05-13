@@ -2133,7 +2133,7 @@
             <column name="OLDTABLENAME" remarks="老表英文名称" type="VARCHAR(30)"/>
             <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(50)"/>
             <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
-            <column name="TABLEALIAS" remarks="表别名" type="VARCHAR(4)"/>
+            <column name="TABLEALIAS" remarks="表别名" type="VARCHAR(20)"/>
             <column name="TABLECNNAME" remarks="表中文名称" type="VARCHAR(30)"/>
             <column name="TABLEMEMO" remarks="表备注" type="VARCHAR(50)"/>
             <column name="TABLENAME" remarks="表英文名称" type="VARCHAR(30)"/>
