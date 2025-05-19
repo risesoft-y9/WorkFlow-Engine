@@ -92,27 +92,7 @@ public class MobileV1SystemDockingController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            /*
-              1保存表单数据和流转参数数据
-             */
-            Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            List<ItemMappingConfModel> list = itemApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
-            Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
-            for (ItemMappingConfModel mapping : list) {
-                if (mapFormData != null && null != mapFormData.get(mapping.getMappingName())) {
-                    bindFormDataMap.put(mapping.getColumnName(), mapFormData.get(mapping.getMappingName()));
-                }
-            }
-            String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
-            String number = null != bindFormDataMap.get("number") ? bindFormDataMap.get("number").toString() : "";
-            String level = null != bindFormDataMap.get("level") ? bindFormDataMap.get("level").toString() : "";
-            String guid = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-            if (bindFormDataMap.get("guid") == null || StringUtils.isBlank(bindFormDataMap.get("guid").toString())) {
-                bindFormDataMap.put("guid", guid);
-                bindFormDataMap.put("processInstanceId", guid);
-            } else {
-                guid = bindFormDataMap.get("guid").toString();
-            }
+            // 1、判断任务是否存在
             String processInstanceId = "";
             if (StringUtils.isNotBlank(taskId)) {
                 TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
@@ -125,10 +105,23 @@ public class MobileV1SystemDockingController {
                 map.put("val", false);
                 variableApi.setVariable(tenantId, taskId, "stopProcess", map);
             }
-            Y9Result<String> map1 =
-                processParamService.saveOrUpdate(itemId, guid, processInstanceId, title, number, level, false);
-            if (!map1.isSuccess()) {
-                return Y9Result.failure("发生异常");
+            /*
+              2、保存表单数据
+             */
+            Map<String, Object> formData = Y9JsonUtil.readValue(formJsonData, Map.class);
+            List<ItemMappingConfModel> list = itemApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
+            Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
+            for (ItemMappingConfModel mapping : list) {
+                if (formData != null && null != formData.get(mapping.getMappingName())) {
+                    bindFormDataMap.put(mapping.getColumnName(), formData.get(mapping.getMappingName()));
+                }
+            }
+            String guid = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+            if (bindFormDataMap.get("guid") == null || StringUtils.isBlank(bindFormDataMap.get("guid").toString())) {
+                bindFormDataMap.put("guid", guid);
+                bindFormDataMap.put("processInstanceId", guid);
+            } else {
+                guid = bindFormDataMap.get("guid").toString();
             }
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
@@ -145,7 +138,18 @@ public class MobileV1SystemDockingController {
                 variables.put("subProcessNum", subProcessNum);
             }
             /*
-              3启动流程并发送
+              3、保存流程参数
+             */
+            String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
+            String number = null != bindFormDataMap.get("number") ? bindFormDataMap.get("number").toString() : "";
+            String level = null != bindFormDataMap.get("level") ? bindFormDataMap.get("level").toString() : "";
+            Y9Result<String> processParamResult =
+                processParamService.saveOrUpdate(itemId, guid, processInstanceId, title, number, level, false);
+            if (!processParamResult.isSuccess()) {
+                return Y9Result.failure("发生异常");
+            }
+            /*
+              4启动流程并发送
              */
             Y9Result<String> y9Result = documentApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId,
                 "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, variables);
@@ -178,18 +182,16 @@ public class MobileV1SystemDockingController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
+            // 1、处理表单数据
+            Map<String, Object> formData = Y9JsonUtil.readValue(formJsonData, Map.class);
             List<ItemMappingConfModel> list = itemApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
             Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
-                if (mapFormData != null && null != mapFormData.get(mapping.getMappingName())) {
-                    String text = mapFormData.get(mapping.getMappingName()).toString();
+                if (formData != null && null != formData.get(mapping.getMappingName())) {
+                    String text = formData.get(mapping.getMappingName()).toString();
                     bindFormDataMap.put(mapping.getColumnName(), text);
                 }
             }
-            String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
-            String number = null != bindFormDataMap.get("number") ? bindFormDataMap.get("number").toString() : "";
-            String level = null != bindFormDataMap.get("level") ? bindFormDataMap.get("level").toString() : "";
             String guid = Y9IdGenerator.genId(IdType.SNOWFLAKE);
             if (bindFormDataMap.get("guid") == null || StringUtils.isBlank(bindFormDataMap.get("guid").toString())) {
                 bindFormDataMap.put("guid", guid);
@@ -197,20 +199,27 @@ public class MobileV1SystemDockingController {
             } else {
                 guid = bindFormDataMap.get("guid").toString();
             }
-            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, guid, "", title, number, level, false);
-            if (!map1.isSuccess()) {
+            // 2、保存流程参数
+            String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
+            String number = null != bindFormDataMap.get("number") ? bindFormDataMap.get("number").toString() : "";
+            String level = null != bindFormDataMap.get("level") ? bindFormDataMap.get("level").toString() : "";
+            Y9Result<String> processParamResult =
+                processParamService.saveOrUpdate(itemId, guid, "", title, number, level, false);
+            if (!processParamResult.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
+            // 3、保存表单数据
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
-            String tempIds = itemApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
-            if (StringUtils.isNotBlank(tempIds)) {
-                List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
+            String formIds = itemApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
+            if (StringUtils.isNotBlank(formIds)) {
+                List<String> formIdList = Y9Util.stringToList(formIds, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", bindFormJsonData);
-                for (String formId : tempIdList) {
+                for (String formId : formIdList) {
                     formDataApi.saveFormData(tenantId, formId, bindFormJsonData);
                 }
             }
+            // 4、保存附件数据
             if (null != files) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
@@ -243,6 +252,7 @@ public class MobileV1SystemDockingController {
                     }
                 }
             }
+            // 5、启动流程
             Y9Result<StartProcessResultModel> y9Result =
                 documentApi.startProcess(tenantId, positionId, itemId, guid, item.getWorkflowGuid(), positionChoice);
             if (y9Result.isSuccess()) {
