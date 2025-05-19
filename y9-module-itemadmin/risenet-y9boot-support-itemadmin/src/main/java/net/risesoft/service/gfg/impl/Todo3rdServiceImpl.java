@@ -14,6 +14,8 @@ import javax.transaction.Transactional;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,6 @@ import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.Todo3rdRepository;
-import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.FormDataService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
@@ -54,6 +55,7 @@ import net.risesoft.y9.util.RemoteCallUtil;
  **/
 @Slf4j
 @Service
+@EnableAsync
 @RequiredArgsConstructor
 public class Todo3rdServiceImpl implements Todo3rdService {
 
@@ -66,8 +68,6 @@ public class Todo3rdServiceImpl implements Todo3rdService {
     private final SpmApproveItemService itemService;
 
     private final FormDataService formDataService;
-
-    private final DocumentCopyService documentCopyService;
 
     private final PositionApi positionApi;
 
@@ -86,6 +86,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
 
     private final String DELETEURL = "/todo/delete";
 
+    @Async
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void addTodo3rd(ActRuDetail actRuDetail) {
@@ -115,6 +116,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         todo3rdRepository.save(todo3rd);
     }
 
+    @Async
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void addTodo3rd(DocumentCopy documentCopy) {
@@ -190,6 +192,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         todo3rdRepository.save(todo3rd);
     }
 
+    @Async
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void updateTodo3rd(ActRuDetail actRuDetail) {
@@ -220,6 +223,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         todo3rdRepository.save(todo3rd);
     }
 
+    @Async
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void deleteTodo3rd(ActRuDetail actRuDetail) {
@@ -253,6 +257,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         }
     }
 
+    @Async
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void deleteTodo3rd(DocumentCopy documentCopy) {
