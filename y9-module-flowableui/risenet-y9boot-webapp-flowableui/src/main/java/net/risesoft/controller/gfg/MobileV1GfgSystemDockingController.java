@@ -25,8 +25,6 @@ import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
@@ -66,19 +64,6 @@ public class MobileV1GfgSystemDockingController {
 
     private final AttachmentApi attachmentApi;
 
-    private final TaskApi taskApi;
-
-    private final VariableApi variableApi;
-
-    /**
-     * 对接系统提交接口
-     *
-     * @param itemId
-     * @param mappingId
-     * @param targetPositionIds
-     * @param formJsonData
-     * @return Y9Result<Map < String, Object>>
-     */
     /**
      *
      * @param itemId 事项id
