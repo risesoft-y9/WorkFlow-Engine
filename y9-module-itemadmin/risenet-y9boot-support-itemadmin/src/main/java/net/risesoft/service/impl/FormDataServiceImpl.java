@@ -574,11 +574,11 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     @Transactional
-    public Y9Result<String> insertFormData(String guid, String tableName, String formData) {
+    public Y9Result<String> insertFormData(String tableName, String guid, String formData) {
         try {
             Map<String, Object> formDataMap = Y9JsonUtil.readHashMap(formData);
             assert formDataMap != null;
-            Y9Table y9Table = y9TableService.findByTableAlias(tableName);
+            Y9Table y9Table = y9TableService.findByTableName(tableName);
             if (null == y9Table) {
                 return Y9Result.failure("表不存在：{}", tableName);
             }
@@ -589,9 +589,13 @@ public class FormDataServiceImpl implements FormDataService {
             }
             StringBuilder columns = new StringBuilder();
             StringBuilder values = new StringBuilder();
-            for (String key : formDataMap.keySet()) {
-                columns.append(key).append(",");
-                values.append("?").append(",");
+            for (Map.Entry<String, Object> entry : formDataMap.entrySet()) {
+                String column = entry.getKey();
+                Object value = entry.getValue();
+                if (value != null) {
+                    columns.append(column).append(",");
+                    values.append("'").append(value).append("',");
+                }
             }
             if (columns.length() > 0) {
                 columns.deleteCharAt(columns.length() - 1);
@@ -603,7 +607,7 @@ public class FormDataServiceImpl implements FormDataService {
             jdbcTemplate.execute(insertSql);
             return Y9Result.success("操作成功");
         } catch (Exception e) {
-            LOGGER.error("****************************[updateFormData]更新表单数据异常，表单数据：{}", formData);
+            LOGGER.error("****************************[insertFormData]插入表单数据异常，表单数据：{}", formData);
         }
         return Y9Result.failure("发生异常");
     }

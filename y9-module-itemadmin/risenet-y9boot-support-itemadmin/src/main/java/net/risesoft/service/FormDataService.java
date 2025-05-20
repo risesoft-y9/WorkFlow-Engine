@@ -179,7 +179,7 @@ public interface FormDataService {
 
     Y9Result<String> updateFormData(String guid, String formData);
 
-    Y9Result<String> insertFormData(String guid, String tableName, String formData);
+    Y9Result<String> insertFormData(String tableName, String guid, String formData);
 
     Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias);
 }
