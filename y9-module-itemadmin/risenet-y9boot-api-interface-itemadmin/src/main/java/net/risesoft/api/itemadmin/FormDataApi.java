@@ -271,6 +271,10 @@ public interface FormDataApi {
     Y9Result<String> updateFormData(@RequestParam("tenantId") String tenantId, @RequestParam("guid") String guid,
         @RequestBody String formJsonData);
 
+    @PostMapping(value = "/insertFormData")
+    Y9Result<String> insertFormData(@RequestParam("tenantId") String tenantId, @RequestParam("guid") String guid,
+        @RequestParam("tableName") String tableName, @RequestBody String formJsonData);
+
     /**
      * 根据表别名以及流程序列号获取表数据
      * 

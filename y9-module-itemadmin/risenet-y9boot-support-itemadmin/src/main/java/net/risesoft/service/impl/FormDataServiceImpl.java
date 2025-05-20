@@ -571,4 +571,40 @@ public class FormDataServiceImpl implements FormDataService {
         }
         return Y9Result.failure("发生异常");
     }
+
+    @Override
+    @Transactional
+    public Y9Result<String> insertFormData(String guid, String tableName, String formData) {
+        try {
+            Map<String, Object> formDataMap = Y9JsonUtil.readHashMap(formData);
+            assert formDataMap != null;
+            Y9Table y9Table = y9TableService.findByTableAlias(tableName);
+            if (null == y9Table) {
+                return Y9Result.failure("表不存在：{}", tableName);
+            }
+            List<Map<String, Object>> list =
+                jdbcTemplate.queryForList("SELECT * FROM " + tableName + " WHERE GUID ='" + guid + "'");
+            if (!list.isEmpty()) {
+                return Y9Result.failure("主键已存在：{}", guid);
+            }
+            StringBuilder columns = new StringBuilder();
+            StringBuilder values = new StringBuilder();
+            for (String key : formDataMap.keySet()) {
+                columns.append(key).append(",");
+                values.append("?").append(",");
+            }
+            if (columns.length() > 0) {
+                columns.deleteCharAt(columns.length() - 1);
+            }
+            if (values.length() > 0) {
+                values.deleteCharAt(values.length() - 1);
+            }
+            String insertSql = String.format("INSERT INTO " + tableName + " (%s) VALUES (%s)", columns, values);
+            jdbcTemplate.execute(insertSql);
+            return Y9Result.success("操作成功");
+        } catch (Exception e) {
+            LOGGER.error("****************************[updateFormData]更新表单数据异常，表单数据：{}", formData);
+        }
+        return Y9Result.failure("发生异常");
+    }
 }
