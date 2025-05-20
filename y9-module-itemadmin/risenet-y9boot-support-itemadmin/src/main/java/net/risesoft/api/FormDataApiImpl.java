@@ -387,6 +387,13 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     @Override
+    public Y9Result<String> insertFormData(@RequestParam String tenantId, @RequestParam String guid,
+        @RequestParam String tableName, @RequestBody String formJsonData) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.insertFormData(guid, tableName, formJsonData);
+    }
+
+    @Override
     public Y9Result<Map<String, Object>> getData4TableAlias(@RequestParam String tenantId, @RequestParam String guid,
         @RequestParam String tableAlias) {
         Y9LoginUserHolder.setTenantId(tenantId);
