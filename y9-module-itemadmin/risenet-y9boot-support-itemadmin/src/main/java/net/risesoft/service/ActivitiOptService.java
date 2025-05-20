@@ -17,9 +17,11 @@ public interface ActivitiOptService {
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param systemName 系统名称
+     * @param startPositionId 流程启动岗位唯一标识
      * @param map 流程变量
      * @return
      */
     TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName,
+        String startPositionId,
         Map<String, Object> map);
 }

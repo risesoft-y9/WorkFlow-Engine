@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.model.processadmin.FlowElementModel;
 import org.apache.commons.lang3.StringUtils;
+
+import net.risesoft.model.processadmin.FlowElementModel;
 
 /**
  * @author qinman
@@ -59,7 +60,6 @@ public class CommonOpt {
      * @param taskSender    发送人的中文名称，即是由谁发送的
      * @param routeToTaskId 目标节点的Id
      * @param users
-     * @param multiInstance 串行、并行标志
      * @return
      */
     public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId,

@@ -3,6 +3,7 @@ package net.risesoft.service.impl;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -32,12 +33,14 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
 
     @Override
     public TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName,
+        String startPositionId,
         Map<String, Object> map) {
         TaskModel task = new TaskModel();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+            startPositionId = StringUtils.isBlank(startPositionId) ? userId : startPositionId;
             map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getOrgUnit().getName(), "",
-                Collections.singletonList(userId), processSerialNumber, null, map);
+                Collections.singletonList(startPositionId), processSerialNumber, null, map);
             ProcessInstanceModel piModel =
                 runtimeApi.startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map).getData();
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况

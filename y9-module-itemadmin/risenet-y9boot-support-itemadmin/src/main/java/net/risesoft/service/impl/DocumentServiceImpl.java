@@ -1582,23 +1582,27 @@ public class DocumentServiceImpl implements DocumentService {
             String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
             for (String s : userChoices) {
                 String[] s2 = s.split(SysVariables.COLON);
-                int principalType = Integer.parseInt(s2[0]);
-                String userIdTemp = s2[1];
+                int principalType = ItemPermissionEnum.POSITION.getValue();
+                String userIdTemp = s;
+                if (s2.length == 2) {
+                    principalType = Integer.parseInt(s2[0]);
+                    userIdTemp = s2[1];
+                }
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, s2[1]).getData();
+                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdTemp).getData();
                     if (null == orgUnit) {
                         continue;
                     }
                     users = addUserId(users, userIdTemp);
                 } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
                     List<Position> employeeList = new ArrayList<>();
-                    getAllPosition(employeeList, s2[1]);
+                    getAllPosition(employeeList, userIdTemp);
                     for (Position pTemp : employeeList) {
                         users = addUserId(users, pTemp.getId());
                     }
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
                     List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
+                        Y9LoginUserHolder.getPersonId(), userIdTemp, OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list) {
                         OrgUnit orgUnit =
                             orgUnitApi.getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
@@ -1814,7 +1818,7 @@ public class DocumentServiceImpl implements DocumentService {
             return Y9Result.failure("发送人数过多");
         }
         Map<String, Object> map1 =
-            startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId);
+            startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId, "");
         String taskId = (String)map1.get("taskId");
         if (!variables.isEmpty()) {
             variableApi.setVariables(tenantId, taskId, variables);
@@ -2051,7 +2055,8 @@ public class DocumentServiceImpl implements DocumentService {
                 vars.putAll(variables);
             }
             TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
+                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), "",
+                    vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
@@ -2129,7 +2134,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber,
-        String processDefinitionKey, String startRouteToTaskId) {
+        String processDefinitionKey, String startRouteToTaskId, String startOrgUnitId) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         try {
@@ -2140,7 +2145,8 @@ public class DocumentServiceImpl implements DocumentService {
             vars.put(SysVariables.ROUTETOTASKID, startRouteToTaskId);
             assert item != null;
             TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
+                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(),
+                    startOrgUnitId, vars);
             map.put("processInstanceId", task.getProcessInstanceId());
             map.put("processSerialNumber", processSerialNumber);
             map.put("processDefinitionId", task.getProcessDefinitionId());
@@ -2170,16 +2176,16 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public StartProcessResultModel startProcessByTheTaskKey(String itemId, String processSerialNumber,
-        String processDefinitionKey, String theTaskKey) {
+        String processDefinitionKey, String startTaskDefKey, String startOrgUnitId) {
         StartProcessResultModel model = null;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            theTaskKey =
-                StringUtils.isBlank(theTaskKey) ? itemStartNodeRoleService.getStartTaskDefKey(itemId) : theTaskKey;
+            startTaskDefKey = StringUtils.isBlank(startTaskDefKey) ? itemStartNodeRoleService.getStartTaskDefKey(itemId)
+                : startTaskDefKey;
             Map<String, Object> vars = new HashMap<>(16);
             SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
-            vars.put("routeToTaskId", theTaskKey);
+            vars.put("routeToTaskId", startTaskDefKey);
             vars.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
             assert item != null;
             if (item.isShowSubmitButton()) {
@@ -2206,7 +2212,8 @@ public class DocumentServiceImpl implements DocumentService {
                 vars.putAll(variables);
             }
             TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
+                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(),
+                    startOrgUnitId, vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
