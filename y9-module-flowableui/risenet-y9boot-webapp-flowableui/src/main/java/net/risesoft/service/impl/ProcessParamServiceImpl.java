@@ -81,7 +81,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     @Override
     public Y9Result<StartProcessResultModel> saveOrUpdate(String itemId, String processSerialNumber,
         String processInstanceId, String documentTitle, String number, String level, Boolean customItem,
-        String theTaskKey) {
+        String startTaskDefKey) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
@@ -131,7 +131,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
 
             if (StringUtils.isBlank(processInstanceId)) {
                 return documentApi.startProcessByTheTaskKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId,
-                    processSerialNumber, item.getWorkflowGuid(), theTaskKey);
+                    processSerialNumber, item.getWorkflowGuid(), startTaskDefKey, "");
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {

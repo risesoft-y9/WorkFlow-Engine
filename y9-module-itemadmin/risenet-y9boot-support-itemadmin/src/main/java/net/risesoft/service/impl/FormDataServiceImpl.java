@@ -607,7 +607,8 @@ public class FormDataServiceImpl implements FormDataService {
             jdbcTemplate.execute(insertSql);
             return Y9Result.success("操作成功");
         } catch (Exception e) {
-            LOGGER.error("****************************[insertFormData]插入表单数据异常，表单数据：{}", formData);
+            LOGGER.error("****************************[insertFormData]插入表单数据异常：{}，表单数据：{}", e, formData);
+            e.printStackTrace();
         }
         return Y9Result.failure("发生异常");
     }
