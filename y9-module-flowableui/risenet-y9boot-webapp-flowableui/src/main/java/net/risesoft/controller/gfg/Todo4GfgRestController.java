@@ -3,7 +3,6 @@ package net.risesoft.controller.gfg;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.validation.Valid;
 
 import org.springframework.http.MediaType;
@@ -19,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
@@ -43,8 +43,6 @@ public class Todo4GfgRestController {
 
     private final ItemViewConfApi itemViewConfApi;
 
-    private final ServletContext servletContext;
-
     /**
      * 获取待办件列表
      *
@@ -54,13 +52,14 @@ public class Todo4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "待办列表")
     @PostMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4GfgService.todoList(itemId, searchMapStr, page, rows);
     }
 
+    @FlowableLog(operationName = "待办列表-其他")
     @PostMapping(value = "/todoList4Other")
     public Y9Page<Map<String, Object>> todoList4Other(@RequestParam String itemId, @RequestParam String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -75,6 +74,7 @@ public class Todo4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "待办列表-指定节点")
     @RequestMapping(value = "/todoList4TaskDefKey")
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(@RequestParam String itemId,
         @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
@@ -102,6 +102,7 @@ public class Todo4GfgRestController {
      * @param queryParamModel 查询参数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "我的待办")
     @GetMapping(value = "/allTodoList")
     public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
         return workList4GfgService.allTodoList(queryParamModel);

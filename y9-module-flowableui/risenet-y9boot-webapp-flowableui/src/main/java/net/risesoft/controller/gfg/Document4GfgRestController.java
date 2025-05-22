@@ -55,6 +55,8 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
@@ -196,6 +198,7 @@ public class Document4GfgRestController {
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "新建", operationType = FlowableOperationTypeEnum.ADD)
     @GetMapping(value = "/addWithStartTaskDefKey")
     public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String startTaskDefKey) {
@@ -476,6 +479,7 @@ public class Document4GfgRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "在办详情")
     @GetMapping(value = "/editDoing")
     public Y9Result<DocumentDetailModel> editDoing(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId) {
@@ -574,6 +578,7 @@ public class Document4GfgRestController {
      * @param taskId 任务id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "待办详情")
     @GetMapping(value = "/editTodo")
     public Y9Result<DocumentDetailModel> editTodo(@RequestParam @NotBlank String taskId) {
         try {
