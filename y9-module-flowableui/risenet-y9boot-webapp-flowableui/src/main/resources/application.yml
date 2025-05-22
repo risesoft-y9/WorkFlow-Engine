@@ -4,16 +4,16 @@ management:
             exposure:
                 include: '*'
 server:
-    port: 8080
-    servlet:
-        encoding:
-            charset: UTF-8
-            enabled: true
-            force: true
-        session:
-            tracking-modes: COOKIE
-        context-path: /flowableUI
-        register-default-servlet: true
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    session:
+      tracking-modes: COOKIE
+    context-path: /flowableUI
+    register-default-servlet: true
 spring:
     application:
         name: flowableUI
@@ -55,7 +55,7 @@ spring:
             host: localhost
             port: 6379
             username: default
-            password: 'y9i-83204585'
+            password: '111111'
             ssl:
                 enabled: false
             lettuce:
@@ -121,133 +121,137 @@ spring:
         resources:
             static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
-    systemName: flowableUI
-    internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
-    app:
-        flowable:
-            systemCnName: 办件3.0
-            systemName: flowableUI
-    service:
-        itemAdmin:
-            directUrl: http://localhost:7057
-        processAdmin:
-            directUrl: http://localhost:7056
-        org:
-            directUrl: http://localhost:7055
-        todo:
-            directUrl: http://localhost:7055
-    common:
-        cacheEnabled: true
-        kafkaEnabled: true
-        flowableBaseUrl: http://localhost:7058/flowableUI
-        itemAdminBaseUrl: http://localhost:7057/itemAdmin
-        orgBaseUrl: http://localhost:7055/platform
-        processAdminBaseUrl: http://localhost:7056/processAdmin
-        todoBaseUrl: https://test.youshengyun.com/todo
-        todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
-        jodconverterBaseUrl: http://localhost:7055/jodconverter/onlinePreview?url=
-        logBaseUrl: http://localhost:7056/log
-        userOnlineBaseUrl: http://localhost:7056/userOnline
-    feature:
-        apisix:
-            enabled: false
-            adminAddress: http://localhost:8888/apisix/admin/
-            adminKey: edd1c9f034335f136f87ad84b625c8f1
-            upstreamType: roundrobin   #负载均衡算法，1、roundrobin:轮训 ; 2、chash:一致性哈希; 3、ewma:指数加权移动平均法; 4、least_conn:最小连接数
-            #etcdAddress: http://localhost:2379  #有多个时逗号分隔
-            apiBasePackages: net.risesoft.controller.mobile #有多个时逗号分隔
-        file:
-            base64FileName: false
-            encryptionFileContent: false
-            #privateKey:
-            #publicKey:
-            rest:
-                fileManagerUrl: http://test-api.youshengyun.com/fileManager
-            ftp:
-                host: nexus-internal.youshengyun.com
-                port: 21
-                username: y9admin
-                password: '83204585'
-                blockWhenExhausted: true
-                bufferSize: 10240
-                connectTimeOut: 50000
-                controlEncoding: UTF-8
-                dataTimeout: 1200000
-                fileType: 2
-                maxIdle: 10
-                maxTotal: 50
-                minIdle: 2
-                maxWaitMillis: 5400000
-                testOnBorrow: true
-                testOnCreate: true
-                testOnReturn: true
-                testWhileIdle: true
-                useEPSVwithIPv4: false
-                passiveMode: true
-        jpa:
-            packagesToScanEntityPublic: net.risesoft.y9public.entity
-            packagesToScanEntityTenant: net.risesoft.entity
-            packagesToScanRepositoryPublic: net.risesoft.y9public.repository
-            packagesToScanRepositoryTenant: net.risesoft.repository
-        multi-tenant:
-            # kafka, db
-            event-source: kafka
-        log:
-            enabled: true
-            # kafka, api
-            reportMethod: kafka
-        session:
-            redis:
-                enabled: true
-                maxInactiveIntervalInSeconds: 3600
-        security:
-            enabled: true
-            csrf:
-                accepted-referer:
-                    - localhost
-                    - 127.0.0.1
-                    - youshengyun.com
-                    - 192.168.3.120
-            cors:
-                allowCredentials: true
-                allowed-headers: '*'
-                allowedOriginPatterns:
-                    - https://*.youshengyun.com
-                    - http://*.youshengyun.com
-                    - http://localhost:7070
-                    - http://localhost:7071
-                    - http://localhost:7055
-                    - http://localhost:7056
-                    - http://localhost:8080
-                    - http://localhost:8081
-                    - http://localhost:8082
-                    - http://localhost:8083
-                    - http://127.0.0.1:7055
-                    - http://127.0.0.1:7056
-                    - http://127.0.0.1:7070
-                    - http://localhost:17061
-                    - http://127.0.0.1:17061
-                    - http://192.168.3.120:8080
-            xss:
-                ignoreParam:
-                    - jsonData
-                    - formJson
-                    - fieldJson
-                    - printUrl
-                    - formdata
-                    - formJsonData
-                    - documentTitle
-                    - title
-                    - searchMapStr
-        oauth2:
-            resource:
-                enabled: true
-                allowBasicAuthentication: true
-                allowFormEncodedBodyParameter: true
-                allowUriQueryParameter: true
-                protectedUrlPatterns: /vue/*
-                opaque:
-                    client-id: clientid_oidc
-                    client-secret: secret_oidc
-                    introspection-uri: http://localhost:7055/sso/oidc/introspect
-                    profile-uri: http://localhost:7055/sso/oidc/profile
+  systemName: flowableUI
+  internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
+  app:
+    flowable:
+      systemCnName: 办件3.0
+      systemName: flowableUI
+      log:
+        enabled: true
+        # kafka, api
+        reportMethod: kafka
+  service:
+    itemAdmin:
+      directUrl: http://localhost:7057
+    processAdmin:
+      directUrl: http://localhost:7056
+    org:
+      directUrl: http://localhost:7055
+    todo:
+      directUrl: http://localhost:7055
+  common:
+    cacheEnabled: true
+    kafkaEnabled: true
+    flowableBaseUrl: http://localhost:7058/flowableUI
+    itemAdminBaseUrl: http://localhost:7057/itemAdmin
+    orgBaseUrl: http://localhost:7055/platform
+    processAdminBaseUrl: http://localhost:7056/processAdmin
+    todoBaseUrl: https://test.youshengyun.com/todo
+    todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
+    jodconverterBaseUrl: http://localhost:7055/jodconverter/onlinePreview?url=
+    logBaseUrl: http://localhost:7056/log
+    userOnlineBaseUrl: http://localhost:7056/userOnline
+  feature:
+    apisix:
+      enabled: false
+      adminAddress: http://localhost:8888/apisix/admin/
+      adminKey: edd1c9f034335f136f87ad84b625c8f1
+      upstreamType: roundrobin   #负载均衡算法，1、roundrobin:轮训 ; 2、chash:一致性哈希; 3、ewma:指数加权移动平均法; 4、least_conn:最小连接数
+      #etcdAddress: http://localhost:2379  #有多个时逗号分隔
+      apiBasePackages: net.risesoft.controller.mobile #有多个时逗号分隔
+    file:
+      base64FileName: false
+      encryptionFileContent: false
+      #privateKey:
+      #publicKey:
+      rest:
+        fileManagerUrl: http://test-api.youshengyun.com/fileManager
+      ftp:
+        host: nexus-internal.youshengyun.com
+        port: 21
+        username: y9admin
+        password: '83204585'
+        blockWhenExhausted: true
+        bufferSize: 10240
+        connectTimeOut: 50000
+        controlEncoding: UTF-8
+        dataTimeout: 1200000
+        fileType: 2
+        maxIdle: 10
+        maxTotal: 50
+        minIdle: 2
+        maxWaitMillis: 5400000
+        testOnBorrow: true
+        testOnCreate: true
+        testOnReturn: true
+        testWhileIdle: true
+        useEPSVwithIPv4: false
+        passiveMode: true
+    jpa:
+      packagesToScanEntityPublic: net.risesoft.y9public.entity
+      packagesToScanEntityTenant: net.risesoft.entity
+      packagesToScanRepositoryPublic: net.risesoft.y9public.repository
+      packagesToScanRepositoryTenant: net.risesoft.repository
+    multi-tenant:
+      # kafka, db
+      event-source: kafka
+    log:
+      enabled: true
+      # kafka, api
+      reportMethod: kafka
+    session:
+      redis:
+        enabled: true
+        maxInactiveIntervalInSeconds: 3600
+    security:
+      enabled: true
+      csrf:
+        accepted-referer:
+          - localhost
+          - 127.0.0.1
+          - youshengyun.com
+          - 192.168.3.120
+      cors:
+        allowCredentials: true
+        allowed-headers: '*'
+        allowedOriginPatterns:
+          - https://*.youshengyun.com
+          - http://*.youshengyun.com
+          - http://localhost:7070
+          - http://localhost:7071
+          - http://localhost:7055
+          - http://localhost:7056
+          - http://localhost:8080
+          - http://localhost:8081
+          - http://localhost:8082
+          - http://localhost:8083
+          - http://127.0.0.1:7055
+          - http://127.0.0.1:7056
+          - http://127.0.0.1:7070
+          - http://localhost:17061
+          - http://127.0.0.1:17061
+          - http://192.168.3.120:8080
+      xss:
+        ignoreParam:
+          - jsonData
+          - formJson
+          - fieldJson
+          - printUrl
+          - formdata
+          - formJsonData
+          - documentTitle
+          - title
+          - searchMapStr
+    oauth2:
+      resource:
+        enabled: true
+        allowBasicAuthentication: true
+        allowFormEncodedBodyParameter: true
+        allowUriQueryParameter: true
+        protectedUrlPatterns: /vue/*
+        opaque:
+          client-id: clientid_oidc
+          client-secret: secret_oidc
+          introspection-uri: http://localhost:7055/sso/oidc/introspect
+          profile-uri: http://localhost:7055/sso/oidc/profile
