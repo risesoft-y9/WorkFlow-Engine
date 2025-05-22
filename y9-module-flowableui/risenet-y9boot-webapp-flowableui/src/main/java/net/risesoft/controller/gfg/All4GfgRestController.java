@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.WorkList4GfgService;
 
@@ -39,10 +40,10 @@ public class All4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "办理列表")
     @PostMapping(value = "/allList")
     public Y9Page<Map<String, Object>> allList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.workList4GfgService.allList(itemId, searchMapStr, false, page, rows);
     }
 

@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.log.FlowableLogLevelEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -47,10 +49,10 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "督办列表", logLevel = FlowableLogLevelEnum.DU_BAN)
     @PostMapping(value = "/doingList4DuBan")
     public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4GfgService.doingList4DuBan(itemId, searchMapStr, page, rows);
     }
 
@@ -62,10 +64,10 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控本处室/司局在办", logLevel = FlowableLogLevelEnum.DEPT)
     @PostMapping(value = "/doingList4Dept")
     public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
-        @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4GfgService.doingList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
@@ -77,6 +79,7 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控所有在办", logLevel = FlowableLogLevelEnum.ALL)
     @PostMapping(value = "/doingList4All")
     public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
