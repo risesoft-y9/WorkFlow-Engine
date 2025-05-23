@@ -40,7 +40,7 @@ import net.risesoft.y9.configuration.feature.log.FlowableLogProperties;
  */
 @EnableAsync
 @Configuration
-@ConditionalOnProperty(name = "y9.app.flowable.log.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "y9.app.flowable.log.enabled", havingValue = "true")
 @EnableConfigurationProperties({Y9Properties.class, FlowableLogProperties.class})
 public class FlowableLogConfiguration {
 
