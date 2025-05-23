@@ -1,6 +1,5 @@
 package net.risesoft.controller.services;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,7 +9,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -18,21 +21,25 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-import net.risesoft.api.itemadmin.*;
-import net.risesoft.model.itemadmin.*;
-import net.risesoft.service.fgw.HTKYService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import com.google.gson.Gson;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +50,9 @@ import net.risesoft.api.itemadmin.MergeFileApi;
 import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.itemadmin.PaperAttachmentApi;
 import net.risesoft.api.itemadmin.PrintLogApi;
+import net.risesoft.api.itemadmin.SecretLevelRecordApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.itemadmin.TmhPictureApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.TypeSettingInfoApi;
@@ -57,9 +66,12 @@ import net.risesoft.model.itemadmin.MergeFileModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.PaperAttachmentModel;
 import net.risesoft.model.itemadmin.PrintLogModel;
+import net.risesoft.model.itemadmin.SecretLevelModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
+import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.TmhPictureModel;
+import net.risesoft.model.itemadmin.TypeSettingInfoModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
@@ -122,6 +134,42 @@ public class FormNTKO4GfgController {
     @Autowired
     private HTKYService htkyService;
 
+    public static HashMap<String, String> getConfigByExcel(String rowNum, String cellNum, String sheetNum) {
+        HashMap rowMap = new HashMap();
+        try {
+            Workbook workbook = getWorkbook();
+            Sheet sheet = workbook.getSheetAt(Integer.parseInt(sheetNum));
+
+            Row row = sheet.getRow(0);
+            int rowNumber = Integer.parseInt(rowNum);
+            Row rowConfig = sheet.getRow(rowNumber);
+            if (rowConfig == null) {
+                LOGGER.error("从EXCEL中获取配置失败,查看是否没有配置所需的行，自动读取最后一行有效数据");
+                for (int num = rowNumber - 1; (rowConfig == null) && (num > 0); num--) {
+                    rowConfig = sheet.getRow(num);
+                }
+
+            }
+
+            for (int a = 0; a < Integer.parseInt(cellNum); a++) {
+                row.getCell(a).setCellType(CellType.STRING);
+                rowConfig.getCell(a).setCellType(CellType.STRING);
+                rowMap.put(row.getCell((short)a).getStringCellValue(),
+                    rowConfig.getCell((short)a).getStringCellValue());
+            }
+        } catch (Exception e) {
+            LOGGER.error("从EXCEL中获取配置失败", e);
+        }
+        return rowMap;
+    }
+
+    private static Workbook getWorkbook() throws Exception {
+        String rootDir = Y9Context.getProperty("y9.feature.file.local.basePath");
+        FileInputStream fileInputStream = new FileInputStream(rootDir + "/template/清样配置/印厂清样模板配置表.xls");
+        Workbook workbook = new HSSFWorkbook(fileInputStream);
+        fileInputStream.close();
+        return workbook;
+    }
 
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String tenantId, @RequestParam String userId,
@@ -175,7 +223,7 @@ public class FormNTKO4GfgController {
     public Y9Result<Map<String, Object>> getFormData(@RequestParam(required = false) String processSerialNumber,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String processInstanceId,
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String itembox,@RequestParam(required = false) String qingyangId) {
+        @RequestParam(required = false) String itembox, @RequestParam(required = false) String qingyangId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
         // 办文要报-厅领导意见
@@ -196,25 +244,30 @@ public class FormNTKO4GfgController {
 
         // 办文要报-司长意见
         String bwybSzyj = "directorComment";
-        List<OpinionListModel> data4 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybSzyj, itemId, null, null, null).getData();
+        List<OpinionListModel> data4 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId,
+            itembox, bwybSzyj, itemId, null, null, null).getData();
         String szContent = OpinionUtil.generateOpinions(data4);
         // 办文要报-处长意见
         String bwybCzyj = "deptLeaderComment";
-        List<OpinionListModel> data5 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, bwybCzyj, itemId, null, null, null).getData();
+        List<OpinionListModel> data5 = opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId,
+            itembox, bwybCzyj, itemId, null, null, null).getData();
         String czContent = OpinionUtil.generateOpinions(data5);
 
         // 获取办文信息纸质附件清单
-        List<PaperAttachmentModel> paperAttList = paperAttachmentApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        List<PaperAttachmentModel> paperAttList =
+            paperAttachmentApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
 
         // 发文稿纸-定密依据、具体事项、说明（定密记录）
-        List<SecretLevelModel> secretLevelRecord = secretLevelRecordApi.getRecord(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        List<SecretLevelModel> secretLevelRecord =
+            secretLevelRecordApi.getRecord(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
 
         // 单独处理清样文件书签
         if (StringUtils.isNotBlank(qingyangId)) {
             String permUpdate = "write"; // 修改权限
             String templateMeishouId = null; // 眉首id
-            String templateBanJiId = null;  // 版式id
-            TypeSettingInfoModel typeSettingInfoModel = typeSettingInfoApi.getTypeSetting(Y9LoginUserHolder.getTenantId(), qingyangId).getData();
+            String templateBanJiId = null; // 版式id
+            TypeSettingInfoModel typeSettingInfoModel =
+                typeSettingInfoApi.getTypeSetting(Y9LoginUserHolder.getTenantId(), qingyangId).getData();
             String qymb = typeSettingInfoModel.getTemplate();
 
             String yfdate = "";
@@ -266,7 +319,7 @@ public class FormNTKO4GfgController {
                 fwwh = (String)formData.get("fwwh");
                 LOGGER.error("拼接fwwh出错，放弃拼接：" + fwwh + e);
             }
-            String cwDateStr = formData.get("cwdate")+"";
+            String cwDateStr = formData.get("cwdate") + "";
             Date cwDate = null;
             if (StringUtils.isNotBlank(cwDateStr) && !"".equals(cwDateStr.trim())) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -287,10 +340,9 @@ public class FormNTKO4GfgController {
             formData.put("month", month);
             formData.put("day", day);
             // 获取联合发文 1:委外、2:联合
-            List<SignDeptModel> lhfwdept = signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "2", processSerialNumber).getData();
-            String lhfwdeptStr = lhfwdept.stream()
-                    .map(SignDeptModel::getDeptName)
-                    .collect(Collectors.joining(","));
+            List<SignDeptModel> lhfwdept =
+                signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), "2", processSerialNumber).getData();
+            String lhfwdeptStr = lhfwdept.stream().map(SignDeptModel::getDeptName).collect(Collectors.joining(","));
             String lhfwdeptStrFull = "";
             String[] lhfwdeptList = new String[0];
             if (StringUtils.isBlank(lhfwdeptStr)) {
@@ -303,10 +355,11 @@ public class FormNTKO4GfgController {
                 lhfwdeptList = lhfwdeptStr.split("\\,");
                 if ((qymb.equals("令")) || (qymb.equals("公告"))) {
                     try {
-                        lhfwdeptStrFull = getLhfwdeptfull(tenantId,lhfwdeptList);
+                        lhfwdeptStrFull = getLhfwdeptfull(tenantId, lhfwdeptList);
                     } catch (Exception e) {
                         lhfwdeptStrFull = lhfwdeptStr;
-                        LOGGER.error("生成令与公告的联合发文单位出错（fulldeptname）,使用lhfwdeptStr，lhfwdeptStrFull:" + lhfwdeptStrFull, e);
+                        LOGGER.error("生成令与公告的联合发文单位出错（fulldeptname）,使用lhfwdeptStr，lhfwdeptStrFull:" + lhfwdeptStrFull,
+                            e);
                     }
                 }
             }
@@ -315,15 +368,12 @@ public class FormNTKO4GfgController {
             String zwMaxLength = "7";
             Map mapList = null;
             if (qymb.equals("令")) {
-                mapList = getLhfwdeptZwList(tenantId,lhfwdeptList);
+                mapList = getLhfwdeptZwList(tenantId, lhfwdeptList);
                 lhfwdeptZwList = (String)mapList.get("lhfwdeptZwList");
                 zwMaxLength = (String)mapList.get("maxLength");
             }
 
-            boolean isTing = false;
-            if ((qymb.equals("厅便函")) || (qymb.equals("厅下发"))) {
-                isTing = true;
-            }
+            boolean isTing = (qymb.equals("厅便函")) || (qymb.equals("厅下发"));
             if (qymb.equals("厅下发")) {
                 lhfwdeptStr = getLhfwdeptStrTing(lhfwdeptStr);
             }
@@ -335,7 +385,7 @@ public class FormNTKO4GfgController {
                 if (qymb.equals("委下发")) {
                     columns = 3;
                 }
-                mapListWithOrder = getLhfwdeptList(tenantId,lhfwdeptList, columns, isTing);
+                mapListWithOrder = getLhfwdeptList(tenantId, lhfwdeptList, columns, isTing);
                 lhfwdeptListWithOrder = (String)mapListWithOrder.get("lhfwdeptListWithOrder");
                 columns = ((Integer)mapListWithOrder.get("columns")).intValue();
                 maxLength = ((Integer)mapListWithOrder.get("maxLength")).intValue();
@@ -356,13 +406,9 @@ public class FormNTKO4GfgController {
                 cellNum = "10";
                 sheetNum = "3";
             }
-            if ((qymb.equals("委下发")) || (qymb.equals("厅下发")) ||
-                    (qymb.equals("公告")) ||
-                    (qymb.equals("厅便函")) ||
-                    (qymb.equals("委便函")) ||
-                    (qymb.equals("专报便函"))) {
-                if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length))
-                {
+            if ((qymb.equals("委下发")) || (qymb.equals("厅下发")) || (qymb.equals("公告")) || (qymb.equals("厅便函"))
+                || (qymb.equals("委便函")) || (qymb.equals("专报便函"))) {
+                if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length)) {
                     templateMeishouId = qymb + "-眉首-多.doc";
                     if (columns == 3)
                         templateBanJiId = qymb + "-版记-多-3列.doc";
@@ -377,8 +423,7 @@ public class FormNTKO4GfgController {
                 }
             } else {
                 templateBanJiId = qymb + "-版记.doc";
-                if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length))
-                {
+                if ((StringUtils.isNotBlank(lhfwdeptStr)) && (1 < lhfwdeptList.length)) {
                     templateMeishouId = qymb + "-眉首-多.doc";
                     rowNum = Integer.toString(lhfwdeptList.length);
                 } else {
@@ -395,35 +440,32 @@ public class FormNTKO4GfgController {
             String zsDept = "";
             zsDept = (String)formData.get("zsdept");
             String banjifenjie = "1";
-            if ((StringUtils.isNotBlank(zsDept)) &&
-                    ((zsDept.contains("国务院"))
-                            || (zsDept.contains("中共中央"))
-                            || (zsDept.contains("中共中央办公厅")))
-                    && (!zsDept.contains("国务院办公厅"))) {
+            if ((StringUtils.isNotBlank(zsDept))
+                && ((zsDept.contains("国务院")) || (zsDept.contains("中共中央")) || (zsDept.contains("中共中央办公厅")))
+                && (!zsDept.contains("国务院办公厅"))) {
                 banjifenjie = "1";
             }
             formData.put("yfdate", yfdate);
 
             Map map = new HashMap();
-            map.put("NGROPINION",typeSettingInfoModel.getCheckOpinion());
+            map.put("NGROPINION", typeSettingInfoModel.getCheckOpinion());
             Gson gson = new Gson();
             String jdyj = gson.toJson(map);
 
             String docZwInstanceId = null;
             // 获取发文稿纸fileStoreId
-            List<DocumentWordModel> list = documentWordApi
-                    .findByProcessSerialNumberAndWordType(tenantId, processSerialNumber, "发文稿纸")
-                    .getData();
+            List<DocumentWordModel> list =
+                documentWordApi.findByProcessSerialNumberAndWordType(tenantId, processSerialNumber, "发文稿纸").getData();
             if (list.size() > 0) {
                 docZwInstanceId = list.get(0).getFileStoreId();
             }
             formData.put("docZwInstanceId", docZwInstanceId);
 
             String isHave = "0";
-            if ("1".equals( typeSettingInfoModel.getIsHave())) {
+            if ("1".equals(typeSettingInfoModel.getIsHave())) {
                 isHave = "1";
             }
-            formData.put("isHave",isHave);
+            formData.put("isHave", isHave);
             formData.put("cellNum", cellNum);
             formData.put("sheetNum", sheetNum);
             formData.put("rowNum", rowNum);
@@ -445,134 +487,18 @@ public class FormNTKO4GfgController {
             formData.put("maxLength", Integer.valueOf(maxLength));
             formData.put("banjifenjie", banjifenjie);
         }
-        formData.put("tingLeaderComment",tldContent);
-        formData.put("reviewerComment",hgrContent);
-        formData.put("leaderComment",ldContent);
-        formData.put("directorComment",szContent);
-        formData.put("deptLeaderComment",czContent);
-        formData.put("secretLevelRecord",secretLevelRecord);
-        formData.put("DT_zzfj",paperAttList);
+        formData.put("tingLeaderComment", tldContent);
+        formData.put("reviewerComment", hgrContent);
+        formData.put("leaderComment", ldContent);
+        formData.put("directorComment", szContent);
+        formData.put("deptLeaderComment", czContent);
+        formData.put("secretLevelRecord", secretLevelRecord);
+        formData.put("DT_zzfj", paperAttList);
         return Y9Result.success(formData);
     }
-    // 获取excel配置
-    private Map<String, String> getQyConfig(String rowNum, String cellNum, String sheetNum) {
-        Map configMap = getConfigByExcel(rowNum, cellNum, sheetNum);
-        return configMap;
-    }
 
-    public static HashMap<String, String> getConfigByExcel(String rowNum, String cellNum, String sheetNum)
-    {
-        HashMap rowMap = new HashMap();
-        try {
-            Workbook workbook = getWorkbook();
-            Sheet sheet = workbook.getSheetAt(Integer.parseInt(sheetNum));
-
-            Row row = sheet.getRow(0);
-            int rowNumber = Integer.parseInt(rowNum);
-            Row rowConfig = sheet.getRow(rowNumber);
-            if (rowConfig == null) {
-                LOGGER.error("从EXCEL中获取配置失败,查看是否没有配置所需的行，自动读取最后一行有效数据");
-                for (int num = rowNumber - 1; (rowConfig == null) && (num > 0); num--) {
-                    rowConfig = sheet.getRow(num);
-                }
-
-            }
-
-            for (int a = 0; a < Integer.parseInt(cellNum); a++) {
-                row.getCell(a).setCellType(CellType.STRING);
-                rowConfig.getCell(a).setCellType(CellType.STRING);
-                rowMap.put(row.getCell((short)a).getStringCellValue(), rowConfig.getCell((short)a).getStringCellValue());
-            }
-        }
-        catch (Exception e)
-        {
-            LOGGER.error("从EXCEL中获取配置失败", e);
-        }
-        return rowMap;
-    }
-
-
-    private static Workbook getWorkbook() throws Exception {
-        String rootDir = Y9Context.getProperty("y9.feature.file.local.basePath");
-        FileInputStream fileInputStream = new FileInputStream(rootDir + "/template/清样配置/印厂清样模板配置表.xls");
-        Workbook workbook = new HSSFWorkbook(fileInputStream);
-        fileInputStream.close();
-        return workbook;
-    }
-
-    // 获取联合发文正文列表
-    private Map<String, Object> getLhfwdeptZwList(String tenantId,String[] lhfwdeptList) {
-        String lhfwdeptZwList = "";
-        String[] lhfwdeptListTemp = new String[lhfwdeptList.length];
-        System.arraycopy(lhfwdeptList, 0, lhfwdeptListTemp, 0, lhfwdeptList.length);
-        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
-            Map<String, String> map = signDeptInfoApi.findByDeptNameMax(tenantId, lhfwdeptListTemp[i]).getData();
-            String ldcw = map.get("ldcw");
-            if (StringUtils.isNotBlank(ldcw)) {
-                lhfwdeptListTemp[i] = (lhfwdeptListTemp[i] + ldcw);
-            }
-        }
-
-        int maxLength = 0;
-        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
-            if (maxLength < lhfwdeptListTemp[i].length()) {
-                maxLength = lhfwdeptListTemp[i].length();
-            }
-        }
-        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
-            if (i != lhfwdeptListTemp.length - 1)
-                lhfwdeptZwList = lhfwdeptZwList + lhfwdeptListTemp[i] + ",";
-            else {
-                lhfwdeptZwList = lhfwdeptZwList + lhfwdeptListTemp[i] + "";
-            }
-        }
-
-        Map mapList = new HashMap();
-        mapList.put("lhfwdeptZwList", lhfwdeptZwList);
-        mapList.put("maxLength", Integer.toString(maxLength));
-        return mapList;
-    }
-    // 获取联合发文部门字符集-厅
-    private String getLhfwdeptStrTing(String lhfwdeptStr) {
-        String[] lhfwdeptListTemp = new String[0];
-
-        if (lhfwdeptStr != null) {
-            lhfwdeptListTemp = lhfwdeptStr.split("\\,");
-        }
-        String lhfwdeptStrTemp = "";
-        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
-            if (i != lhfwdeptListTemp.length - 1)
-                lhfwdeptStrTemp = lhfwdeptStrTemp + lhfwdeptListTemp[i] + ",";
-            else {
-                lhfwdeptStrTemp = lhfwdeptStrTemp + lhfwdeptListTemp[i] + "";
-            }
-        }
-        return lhfwdeptStrTemp;
-    }
-    // 获取联合发文部门总称
-    private String getLhfwdeptfull(String tenantId,String[] lhfwdeptList) throws Exception {
-        String lhfwdeptStrFull = "";
-        String[] lhfwdeptListTemp = new String[lhfwdeptList.length];
-        System.arraycopy(lhfwdeptList, 0, lhfwdeptListTemp, 0, lhfwdeptList.length);
-        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
-            Map<String, String> map = signDeptInfoApi.findByDeptNameMax(tenantId, lhfwdeptListTemp[i]).getData();
-            String fullDeptName = map.get("fullDeptName");
-            if (StringUtils.isNotBlank(fullDeptName)) {
-                lhfwdeptListTemp[i] = fullDeptName;
-            }
-        }
-        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
-            if (i != lhfwdeptListTemp.length - 1)
-                lhfwdeptStrFull = lhfwdeptStrFull + lhfwdeptListTemp[i] + ",";
-            else {
-                lhfwdeptStrFull = lhfwdeptStrFull + lhfwdeptListTemp[i] + "";
-            }
-        }
-
-        return lhfwdeptStrFull;
-    }
     // 获取联合发文部门集合
-    private Map<String, Object> getLhfwdeptList(String tenantId,String[] lhfwdeptList, int columns, boolean isTing) {
+    private Map<String, Object> getLhfwdeptList(String tenantId, String[] lhfwdeptList, int columns, boolean isTing) {
         String[] lhfwdeptListTemp = new String[lhfwdeptList.length];
         System.arraycopy(lhfwdeptList, 0, lhfwdeptListTemp, 0, lhfwdeptList.length);
         for (int i = 0; i < lhfwdeptListTemp.length; i++) {
@@ -632,7 +558,7 @@ public class FormNTKO4GfgController {
             if (i != lhfwdeptListTemp.length - 1)
                 lhfwdeptListStr = lhfwdeptListStr + lhfwdeptListTemp[i] + ",";
             else {
-                lhfwdeptListStr = lhfwdeptListStr + lhfwdeptListTemp[i] + "";
+                lhfwdeptListStr = lhfwdeptListStr + lhfwdeptListTemp[i];
             }
         }
 
@@ -642,6 +568,80 @@ public class FormNTKO4GfgController {
         mapList.put("columns", Integer.valueOf(columns));
         mapList.put("maxLength", Integer.valueOf(maxLength));
         return mapList;
+    }
+
+    // 获取联合发文部门字符集-厅
+    private String getLhfwdeptStrTing(String lhfwdeptStr) {
+        String[] lhfwdeptListTemp = new String[0];
+
+        if (lhfwdeptStr != null) {
+            lhfwdeptListTemp = lhfwdeptStr.split("\\,");
+        }
+        String lhfwdeptStrTemp = "";
+        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
+            if (i != lhfwdeptListTemp.length - 1)
+                lhfwdeptStrTemp = lhfwdeptStrTemp + lhfwdeptListTemp[i] + ",";
+            else {
+                lhfwdeptStrTemp = lhfwdeptStrTemp + lhfwdeptListTemp[i];
+            }
+        }
+        return lhfwdeptStrTemp;
+    }
+
+    // 获取联合发文正文列表
+    private Map<String, Object> getLhfwdeptZwList(String tenantId, String[] lhfwdeptList) {
+        String lhfwdeptZwList = "";
+        String[] lhfwdeptListTemp = new String[lhfwdeptList.length];
+        System.arraycopy(lhfwdeptList, 0, lhfwdeptListTemp, 0, lhfwdeptList.length);
+        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
+            Map<String, String> map = signDeptInfoApi.findByDeptNameMax(tenantId, lhfwdeptListTemp[i]).getData();
+            String ldcw = map.get("ldcw");
+            if (StringUtils.isNotBlank(ldcw)) {
+                lhfwdeptListTemp[i] = (lhfwdeptListTemp[i] + ldcw);
+            }
+        }
+
+        int maxLength = 0;
+        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
+            if (maxLength < lhfwdeptListTemp[i].length()) {
+                maxLength = lhfwdeptListTemp[i].length();
+            }
+        }
+        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
+            if (i != lhfwdeptListTemp.length - 1)
+                lhfwdeptZwList = lhfwdeptZwList + lhfwdeptListTemp[i] + ",";
+            else {
+                lhfwdeptZwList = lhfwdeptZwList + lhfwdeptListTemp[i];
+            }
+        }
+
+        Map mapList = new HashMap();
+        mapList.put("lhfwdeptZwList", lhfwdeptZwList);
+        mapList.put("maxLength", Integer.toString(maxLength));
+        return mapList;
+    }
+
+    // 获取联合发文部门总称
+    private String getLhfwdeptfull(String tenantId, String[] lhfwdeptList) throws Exception {
+        String lhfwdeptStrFull = "";
+        String[] lhfwdeptListTemp = new String[lhfwdeptList.length];
+        System.arraycopy(lhfwdeptList, 0, lhfwdeptListTemp, 0, lhfwdeptList.length);
+        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
+            Map<String, String> map = signDeptInfoApi.findByDeptNameMax(tenantId, lhfwdeptListTemp[i]).getData();
+            String fullDeptName = map.get("fullDeptName");
+            if (StringUtils.isNotBlank(fullDeptName)) {
+                lhfwdeptListTemp[i] = fullDeptName;
+            }
+        }
+        for (int i = 0; i < lhfwdeptListTemp.length; i++) {
+            if (i != lhfwdeptListTemp.length - 1)
+                lhfwdeptStrFull = lhfwdeptStrFull + lhfwdeptListTemp[i] + ",";
+            else {
+                lhfwdeptStrFull = lhfwdeptStrFull + lhfwdeptListTemp[i];
+            }
+        }
+
+        return lhfwdeptStrFull;
     }
 
     /**
@@ -696,6 +696,12 @@ public class FormNTKO4GfgController {
             LOGGER.info("清样生成二维码错误的条码号" + tmh);
             e.printStackTrace();
         }
+    }
+
+    // 获取excel配置
+    private Map<String, String> getQyConfig(String rowNum, String cellNum, String sheetNum) {
+        Map configMap = getConfigByExcel(rowNum, cellNum, sheetNum);
+        return configMap;
     }
 
     /**
@@ -833,16 +839,21 @@ public class FormNTKO4GfgController {
                 List<MergeFileModel> mlist = mergeFileApi.getOfdFile(tenantId, sourceFileId).getData();
                 if (mlist.size() > 0) {// 判断源合并文件是否已经转过ofd文件，如已经转过，则更新ofd文件
                     id = mlist.get(0).getId();
-                    fileName = mlist.get(0).getFileName();// 文件名使用原文件名
-                } else {// 使用源合并文件名拼接文件类型
-                    MergeFileModel mergeFileModel = mergeFileApi.getMergeFile(tenantId, sourceFileId).getData();
-                    fileName = mergeFileModel.getFileName().split(".")[0] + fileType;
                 }
+                // 使用源合并文件名拼接文件类型
+                MergeFileModel mergeFileModel = mergeFileApi.getMergeFile(tenantId, sourceFileId).getData();
+                fileName = mergeFileModel.getFileName().split(".")[0] + fileType;
             } else {// 合并文件
                 List<MergeFileModel> mergeFileList = mergeFileApi
                     .getMergeFileList(tenantId, person.getId(), processSerialNumber, listType, wordType).getData();
                 if (mergeFileList.size() > 0) {
-                    String oldfileName = mergeFileList.get(mergeFileList.size() - 1).getFileName();
+                    List<MergeFileModel> list1 =
+                        mergeFileList.stream().filter(mergeFileModel -> mergeFileModel.getFileName().contains("合并文件"))
+                            .collect(Collectors.toList());
+                    String oldfileName = "";
+                    if (list1.size() > 0) {
+                        oldfileName = list1.get(list1.size() - 1).getFileName();
+                    }
                     if (oldfileName.contains("(")) {// 获取最后的文件名 +1
                         oldfileName.replace("(", "&").replace(")", "&");
                         String index = oldfileName.split("&")[1];
