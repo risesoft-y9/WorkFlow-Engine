@@ -172,7 +172,7 @@ public class ChaoSong4GfgRestController {
         return Y9Result.failure("传签失败");
     }
 
-    @FlowableLog(operationName = "撤销传签件", operationType = FlowableOperationTypeEnum.DELETE)
+    @FlowableLog(operationName = "撤销传签件", operationType = FlowableOperationTypeEnum.CANCEL)
     @PostMapping(value = "/setStatus")
     public Y9Result<Object> setStatus(@RequestParam @NotBlank String id, @RequestParam Integer status) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();

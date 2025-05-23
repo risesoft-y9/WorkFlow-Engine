@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.log.OperationTypeEnum;
-import net.risesoft.log.annotation.RiseLog;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.service.ExportService;
 import net.risesoft.util.ExportRequest;
 import net.risesoft.y9.util.mime.ContentDispositionUtil;
@@ -43,13 +43,13 @@ public class ExportRestController {
     private final ServletContext servletContext;
 
     /**
-     * 导出列表
+     * 选择导出
      *
      * @param processSerialNumbers 流程序列号
      * @param columns 列属性
      * @param response 响应
      */
-    @RiseLog(operationName = "导出", operationType = OperationTypeEnum.ADD)
+    @FlowableLog(operationName = "选择导出", operationType = FlowableOperationTypeEnum.EXPORT)
     @PostMapping(value = "/select")
     public void select(@RequestParam String[] processSerialNumbers, @RequestParam String[] columns,
         @RequestParam String itemBox, HttpServletResponse response) {
@@ -64,12 +64,12 @@ public class ExportRestController {
     }
 
     /**
-     * 导出列表
+     * 导出全部
      *
      * @param columns 列属性
      * @param response 响应
      */
-    @RiseLog(operationName = "导出全部", operationType = OperationTypeEnum.ADD)
+    @FlowableLog(operationName = "导出全部", operationType = FlowableOperationTypeEnum.EXPORT)
     @PostMapping(value = "/all")
     public void all(@RequestParam String itemId, @RequestParam String itemBox, @RequestParam String[] columns,
         @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
@@ -93,7 +93,7 @@ public class ExportRestController {
      * @param exportRequest 导出的请求
      * @param response 响应
      */
-    @RiseLog(operationName = "导出传签件", operationType = OperationTypeEnum.ADD)
+    @FlowableLog(operationName = "导出传签件", operationType = FlowableOperationTypeEnum.EXPORT)
     @PostMapping(value = "/dc")
     public void dc(@RequestBody ExportRequest exportRequest, HttpServletResponse response) {
         try (OutputStream outStream = response.getOutputStream()) {

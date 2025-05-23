@@ -42,6 +42,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.EleAttachmentApi;
 import net.risesoft.enums.BrowserTypeEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.EleAttachmentModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -80,6 +82,7 @@ public class EleAttachmentRestController {
      * @param ids 附件ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除附件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delFile")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -92,6 +95,7 @@ public class EleAttachmentRestController {
      *
      * @param id 附件id
      */
+    @FlowableLog(operationName = "附件下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -124,6 +128,7 @@ public class EleAttachmentRestController {
      * @param request
      * @param response
      */
+    @FlowableLog(operationName = "清样生成二维码", operationType = FlowableOperationTypeEnum.ADD)
     @GetMapping("/getQYTmhPicture")
     public void getQYTmhPicture(@RequestParam String processSerialNumber, HttpServletRequest request,
         HttpServletResponse response) {
@@ -166,6 +171,7 @@ public class EleAttachmentRestController {
      * @param response
      * @return
      */
+    @FlowableLog(operationName = "条码号图片生成并下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping("/getTmhPicture")
     public void getTmhPicture(@RequestParam String processSerialNumber, HttpServletRequest request,
         HttpServletResponse response) {
@@ -208,6 +214,7 @@ public class EleAttachmentRestController {
      * @param attachmentType 附件类型
      * @return Y9Result<List < EleAttachmentModel>>
      */
+    @FlowableLog(operationName = "获取附件列表")
     @GetMapping(value = "/list")
     public Y9Result<List<EleAttachmentModel>> list(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam String attachmentType) {
@@ -221,6 +228,7 @@ public class EleAttachmentRestController {
      * @param processSerialNumber 流程编号
      * @param attachmentType 附件类型
      */
+    @FlowableLog(operationName = "附加打包zip下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/packDownload")
     public void packDownload(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String attachmentType, HttpServletResponse response, HttpServletRequest request) {
@@ -298,6 +306,7 @@ public class EleAttachmentRestController {
      * @param id2 主键id2
      * @return
      */
+    @FlowableLog(operationName = "保存附加排序", operationType = FlowableOperationTypeEnum.ORDER)
     @PostMapping(value = "/saveOrder")
     public Y9Result<Object> saveOrder(String id1, String id2) {
         return eleAttachmentApi.saveOrder(Y9LoginUserHolder.getTenantId(), id1, id2);
@@ -311,6 +320,7 @@ public class EleAttachmentRestController {
      * @param attachmentType 文件来源
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "上传附件", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/upload")
     public Y9Result<Object> upload(MultipartFile file, @RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String miJi, @RequestParam @NotBlank String attachmentType) {

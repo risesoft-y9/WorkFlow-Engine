@@ -12,8 +12,22 @@ import lombok.Getter;
 public enum FlowableOperationTypeEnum {
     /** 查看 */
     BROWSE("查看"),
+    /** 保存 */
+    SAVE("保存"),
     /** 增加 */
     ADD("增加"),
+    /** 签收 */
+    CLAIM("签收"),
+    /** 办结 */
+    COMPLETE("办结"),
+    /** 产生 */
+    CREATE("产生"),
+    /** 完成任务 */
+    COMPLETE_TASK("完成任务"),
+    /** 恢复 */
+    RESUME("恢复"),
+    /** 退签 */
+    UN_CLAIM("退签"),
     /** 修改 */
     MODIFY("修改"),
     /** 新增或修改 */
@@ -24,12 +38,22 @@ public enum FlowableOperationTypeEnum {
     SEND("发送"),
     /** 活动 */
     EVENT("活动"),
-    /** 登录 */
-    LOGIN("登录"),
-    /** 退出 */
-    LOGOUT("退出"),
     /** 检查 */
-    CHECK("检查");
+    CHECK("检查"),
+    /** 导出 */
+    EXPORT("导出"),
+    /** 取消 */
+    CANCEL("取消"),
+    /** 退回 */
+    ROLLBACK("退回"),
+    /** 收回 */
+    TAKE_BACK("收回"),
+    /** 上传 */
+    UPLOAD("上传"),
+    /** 下载 */
+    DOWNLOAD("下载"),
+    /** 排序 */
+    ORDER("排序");
 
     private final String value;
 

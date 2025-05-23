@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.pojo.Y9Result;
@@ -40,6 +42,7 @@ public class SignDept4GfgController {
      * @param id 主键id
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "删除会签信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteById")
     public Y9Result<Object> deleteById(@RequestParam String id) {
         return signDeptInfoApi.deleteById(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id);
@@ -52,6 +55,7 @@ public class SignDept4GfgController {
      * @param deptType 部门类型
      * @return Y9Result<List<SignDeptModel>>
      */
+    @FlowableLog(operationName = "获取会签信息")
     @GetMapping(value = "/getSignDeptList")
     public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String processSerialNumber,
         @RequestParam String deptType) {
@@ -64,6 +68,7 @@ public class SignDept4GfgController {
      * @param id 部门id
      * @return Y9Result<List<Department>>
      */
+    @FlowableLog(operationName = "获取委外会签部门树")
     @GetMapping(value = "/getSignOutDeptTree")
     public Y9Result<List<Department>> getSignOutDeptTree(@RequestParam(required = false) String id) {
         return signDeptInfoApi.getSignOutDeptTree(Y9LoginUserHolder.getTenantId(), id);
@@ -78,6 +83,7 @@ public class SignDept4GfgController {
      * @param tzsDeptId 部门id，不为空，表示需要将显示名称改为原司局单位名称
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存会签部门", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveSignDept")
     public Y9Result<Object> saveSignDept(@RequestParam String processSerialNumber, @RequestParam String deptType,
         @RequestParam String deptIds, @RequestParam(required = false) String tzsDeptId) {
@@ -92,6 +98,7 @@ public class SignDept4GfgController {
      * @param userName 用户名
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存会签签名", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveSignDeptInfo")
     public Y9Result<Object> saveSignDeptInfo(@RequestParam String id, @RequestParam(required = false) String userName) {
         return signDeptInfoApi.saveSignDeptInfo(Y9LoginUserHolder.getTenantId(), id, userName);
@@ -105,6 +112,7 @@ public class SignDept4GfgController {
      * @param tzsDeptId 司局部门id
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "插入或更新会签部门，更新显示名称", operationType = FlowableOperationTypeEnum.ADD_MODIFY)
     @PostMapping(value = "/updateSignDept")
     public Y9Result<Object> updateSignDept(@RequestParam String processSerialNumber, @RequestParam String type,
         @RequestParam String tzsDeptId) {

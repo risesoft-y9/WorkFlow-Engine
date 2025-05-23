@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.AfterWorkInfoApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.AfterWorkModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -48,6 +50,7 @@ public class AfterWorkInfoRestController {
      * @param id 主键id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除核稿后工作事项", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delAfterWork")
     public Y9Result<String> delAfterWork(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -61,6 +64,7 @@ public class AfterWorkInfoRestController {
      * @param processSerialNumber 流程实例id
      * @return Y9Result<List < AfterWorkModel>>
      */
+    @FlowableLog(operationName = "获取核稿后工作事项列表")
     @GetMapping(value = "/list")
     public Y9Result<List<AfterWorkModel>> list(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -77,6 +81,7 @@ public class AfterWorkInfoRestController {
      *
      * @return Y9Result<AfterWorkModel>
      */
+    @FlowableLog(operationName = "新增核稿后工作事项", operationType = FlowableOperationTypeEnum.ADD)
     @GetMapping(value = "/newAfterWork")
     public Y9Result<AfterWorkModel> newAfterWork() {
         AfterWorkModel afterWorkModel = new AfterWorkModel();
@@ -90,6 +95,7 @@ public class AfterWorkInfoRestController {
      * @param afterWorkModel 核稿后工作事项信息
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存核稿后工作事项信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/save")
     public Y9Result<Object> save(@Valid AfterWorkModel afterWorkModel) {
         try {

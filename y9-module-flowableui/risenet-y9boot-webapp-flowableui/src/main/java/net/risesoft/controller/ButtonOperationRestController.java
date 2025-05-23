@@ -37,6 +37,8 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -86,12 +88,14 @@ public class ButtonOperationRestController {
     private final CustomProcessInfoApi customProcessInfoApi;
     private final ButtonOperationService buttonOperationService;
     private final ActRuDetailApi actRuDetailApi;
+
     /**
      * 任务签收
      *
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "签收", operationType = FlowableOperationTypeEnum.CLAIM)
     @PostMapping(value = "/claim")
     public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
         try {
@@ -99,7 +103,8 @@ public class ButtonOperationRestController {
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
             for (IdentityLinkModel il : list) {
-                if ("assignee".equals(il.getType())) {// 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
+                // 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
+                if ("assignee".equals(il.getType())) {
                     return Y9Result.failure("您好，该件已被签收");
                 }
             }
@@ -117,6 +122,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "任务完成", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
     @PostMapping(value = "/completeTask")
     public Y9Result<String> completeTask(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -136,6 +142,7 @@ public class ButtonOperationRestController {
      * @param userChoice 收件人
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "任务协商", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
     @PostMapping(value = "/consult")
     public Y9Result<String> consult(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -161,6 +168,7 @@ public class ButtonOperationRestController {
      * @param infoOvert 数据中心公开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "定制流程办理", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
     @SuppressWarnings("unchecked")
     @PostMapping(value = "/customProcessHandle")
     public Y9Result<String> customProcessHandle(@RequestParam @NotBlank String itemId,
@@ -255,6 +263,7 @@ public class ButtonOperationRestController {
      * @param routeToTask 任务key
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "发送至流程启动人", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/directSend")
     public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
@@ -492,6 +501,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "办理完成", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
     @SuppressWarnings("unchecked")
     @PostMapping(value = "/handleParallel")
     public Y9Result<String> handleParallel(@RequestParam @NotBlank String taskId) {
@@ -537,6 +547,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "送下一人", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
     @PostMapping(value = "/handleSerial")
     public Y9Result<String> handleSerial(@RequestParam @NotBlank String taskId) {
         try {
@@ -559,6 +570,7 @@ public class ButtonOperationRestController {
      * @param userChoice 收件人
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "任务委托", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
     @PostMapping(value = "/reAssign")
     public Y9Result<String> reAssign(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -578,6 +590,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
+    @FlowableLog(operationName = "任务拒签", operationType = FlowableOperationTypeEnum.UN_CLAIM)
     @PostMapping(value = "/refuseClaim")
     public Y9Result<String> refuseClaim(@RequestParam @NotBlank String taskId) {
         String activitiUser = "";
@@ -615,6 +628,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "最后一人拒签退回任务", operationType = FlowableOperationTypeEnum.UN_CLAIM)
     @PostMapping(value = "/refuseClaimRollback")
     public Y9Result<String> refuseClaimRollback(@RequestParam @NotBlank String taskId) {
         Position position = Y9LoginUserHolder.getPosition();
@@ -643,6 +657,7 @@ public class ButtonOperationRestController {
      * @param smsContent 短信内容
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "重定向", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/reposition")
     public Y9Result<String> reposition(@RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber,
@@ -686,6 +701,7 @@ public class ButtonOperationRestController {
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.8
      */
+    @FlowableLog(operationName = "多步退回", operationType = FlowableOperationTypeEnum.ROLLBACK)
     @PostMapping(value = "/rollBack2History")
     public Y9Result<String> rollBack2History(@RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String routeToTaskId, @RequestParam String[] orgUnitIds) {
@@ -712,6 +728,7 @@ public class ButtonOperationRestController {
      * @param reason 退回原因
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "退回上一步", operationType = FlowableOperationTypeEnum.ROLLBACK)
     @PostMapping(value = "/rollback")
     public Y9Result<String> rollback(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
@@ -758,6 +775,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "退回发送人", operationType = FlowableOperationTypeEnum.ROLLBACK)
     @PostMapping(value = "/rollbackToSender")
     public Y9Result<String> rollbackToSender(@RequestParam @NotBlank String taskId) {
         Position position = Y9LoginUserHolder.getPosition();
@@ -778,6 +796,7 @@ public class ButtonOperationRestController {
      * @param reason 退回原因
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "退回拟稿人", operationType = FlowableOperationTypeEnum.ROLLBACK)
     @PostMapping(value = "/rollbackToStartor")
     public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
@@ -800,6 +819,7 @@ public class ButtonOperationRestController {
      *
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量退回拟稿人", operationType = FlowableOperationTypeEnum.ROLLBACK)
     @PostMapping(value = "/batchRollBack")
     public Y9Result<List<TargetModel>> batchRollBack(@RequestParam @NotBlank String actionName,
         @RequestParam String[] taskIdAndProcessSerialNumbers) {
@@ -873,6 +893,7 @@ public class ButtonOperationRestController {
      * @param jsonData 任务数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存流程定制信息", operationType = FlowableOperationTypeEnum.SAVE)
     @SuppressWarnings("unchecked")
     @PostMapping(value = "/saveCustomProcess")
     public Y9Result<String> saveCustomProcess(@RequestParam @NotBlank String itemId,
@@ -916,6 +937,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "返回任务发送人", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/sendToSender")
     public Y9Result<String> sendToSender(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -934,6 +956,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "返回拟稿人", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/sendToStartor")
     public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -973,6 +996,7 @@ public class ButtonOperationRestController {
      * @param reason 特殊办结原因
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "特殊办结", operationType = FlowableOperationTypeEnum.COMPLETE)
     @PostMapping(value = "/specialComplete")
     public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
@@ -1021,6 +1045,7 @@ public class ButtonOperationRestController {
      * @param reason 收回原因
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "任务收回", operationType = FlowableOperationTypeEnum.TAKE_BACK)
     @PostMapping(value = "/takeback")
     public Y9Result<String> takeback(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
@@ -1042,6 +1067,7 @@ public class ButtonOperationRestController {
      * @param reason 收回原因
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "任务收回", operationType = FlowableOperationTypeEnum.TAKE_BACK)
     @PostMapping(value = "/takeBack2TaskDefKey")
     public Y9Result<String> takeBack2TaskDefKey(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
@@ -1062,6 +1088,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "撤销签收", operationType = FlowableOperationTypeEnum.UN_CLAIM)
     @PostMapping(value = "/unclaim")
     public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
         try {
@@ -1074,21 +1101,25 @@ public class ButtonOperationRestController {
         return Y9Result.failure("撤销签收失败");
     }
 
+    @FlowableLog(operationName = "放入回收站", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteTodos")
     public Y9Result<String> deleteTodos(@RequestParam String[] taskIdAndProcessSerialNumbers) {
         return buttonOperationService.deleteTodos(taskIdAndProcessSerialNumbers);
     }
 
+    @FlowableLog(operationName = "批量放入回收站", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteByProcessSerialNumbers")
     public Y9Result<String> deleteByProcessSerialNumbers(@RequestParam String[] processSerialNumbers) {
         return buttonOperationService.deleteByProcessSerialNumbers(processSerialNumbers);
     }
 
+    @FlowableLog(operationName = "从回收站恢复待办", operationType = FlowableOperationTypeEnum.RESUME)
     @PostMapping(value = "/recovers")
     public Y9Result<String> recovers(@RequestParam String[] processSerialNumbers) {
         return buttonOperationService.recovers(processSerialNumbers);
     }
 
+    @FlowableLog(operationName = "从回收站彻底删除", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/removes")
     public Y9Result<String> removes(@RequestParam String[] processSerialNumbers) {
         return buttonOperationService.removes(processSerialNumbers);

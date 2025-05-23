@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.PreWorkInfoApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.PreWorkModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -48,6 +50,7 @@ public class PreWorkInfoRestController {
      * @param id 主键id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除前期工作事项", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delPreWork")
     public Y9Result<String> delPreWork(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -61,6 +64,7 @@ public class PreWorkInfoRestController {
      * @param processSerialNumber 流程实例id
      * @return Y9Result<List < PreWorkModel>>
      */
+    @FlowableLog(operationName = "获取前期工作事项列表")
     @GetMapping(value = "/list")
     public Y9Result<List<PreWorkModel>> list(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -77,6 +81,7 @@ public class PreWorkInfoRestController {
      *
      * @return Y9Result<PreWorkModel>
      */
+    @FlowableLog(operationName = "新增前期工作事项", operationType = FlowableOperationTypeEnum.ADD)
     @GetMapping(value = "/newPreWork")
     public Y9Result<PreWorkModel> newPreWork() {
         PreWorkModel preWorkModel = new PreWorkModel();
@@ -90,6 +95,7 @@ public class PreWorkInfoRestController {
      * @param preWorkModel 前期工作事项信息
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存前期工作事项信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/save")
     public Y9Result<Object> save(@Valid PreWorkModel preWorkModel) {
         try {

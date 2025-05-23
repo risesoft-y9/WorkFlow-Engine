@@ -2,7 +2,6 @@ package net.risesoft.controller.gfg;
 
 import java.util.List;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FileAttributeApi;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.FileAttributeModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
- * 待办，在办，办结列表
+ * 文件属性
  *
  * @author zhangchongjie
  * @date 2024/06/05
@@ -39,6 +39,7 @@ public class FileAttributeRestController {
      * @param pcode 文件属性编码
      * @return {@link Y9Result<List<FileAttributeModel>>}
      */
+    @FlowableLog(operationName = "获取文件属性")
     @GetMapping(value = "/getFileAttribute")
     public Y9Result<List<FileAttributeModel>> getFileAttribute(@RequestParam String tenantId,
         @RequestParam(required = false) String pcode) {

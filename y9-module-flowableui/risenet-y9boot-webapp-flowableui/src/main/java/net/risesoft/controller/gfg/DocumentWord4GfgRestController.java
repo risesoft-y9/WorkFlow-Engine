@@ -25,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -56,6 +58,7 @@ public class DocumentWord4GfgRestController {
      *
      * @param id 正文id
      */
+    @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         try {
@@ -98,6 +101,7 @@ public class DocumentWord4GfgRestController {
      *
      * @param id 正文id
      */
+    @FlowableLog(operationName = "下载历史正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downloadHis")
     public void downloadHis(@RequestParam @NotBlank String id, HttpServletResponse response,
         HttpServletRequest request) {
@@ -143,6 +147,7 @@ public class DocumentWord4GfgRestController {
      * @param wordType 正文类型
      * @return Y9Result<List<DocumentWordModel>>
      */
+    @FlowableLog(operationName = "获取历史正文")
     @RequestMapping(value = "/getHisWord")
     public Y9Result<List<DocumentWordModel>> getHisWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
@@ -161,6 +166,7 @@ public class DocumentWord4GfgRestController {
      * @param wordType 正文类型
      * @return Y9Result<Boolean>
      */
+    @FlowableLog(operationName = "获取正文权限")
     @RequestMapping(value = "/getPermissionWord")
     public Y9Result<Boolean> getPermissionWord(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
@@ -176,6 +182,7 @@ public class DocumentWord4GfgRestController {
      * @param wordType 正文类型
      * @return Y9Result<DocumentWordModel>
      */
+    @FlowableLog(operationName = "获取正文")
     @RequestMapping(value = "/getWord")
     public Y9Result<DocumentWordModel> getWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
@@ -193,6 +200,7 @@ public class DocumentWord4GfgRestController {
      * @param file 文件
      * @return Y9Result<DocumentWordModel>
      */
+    @FlowableLog(operationName = "替换正文", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/replaceWord")
     public Y9Result<DocumentWordModel> replaceWord(@RequestParam String oldId, @RequestParam String taskId,
         MultipartFile file) {

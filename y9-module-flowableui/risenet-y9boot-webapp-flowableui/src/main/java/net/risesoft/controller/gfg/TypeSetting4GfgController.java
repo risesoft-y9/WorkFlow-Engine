@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
 import net.risesoft.api.itemadmin.TypeSettingInfoApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.model.itemadmin.TypeSettingInfoModel;
 import net.risesoft.model.user.UserInfo;
@@ -60,6 +62,7 @@ public class TypeSetting4GfgController {
      * @param id 主键id
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "删除排版信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delTypeSetting")
     public Y9Result<Object> delTypeSetting(@RequestParam String id) {
         return typeSettingInfoApi.delTypeSetting(Y9LoginUserHolder.getTenantId(), id);
@@ -119,6 +122,7 @@ public class TypeSetting4GfgController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<List<TypeSettingInfoModel>>
      */
+    @FlowableLog(operationName = "获取排版信息")
     @GetMapping(value = "/getList")
     public Y9Result<List<TypeSettingInfoModel>> getList(@RequestParam String processSerialNumber) {
         return typeSettingInfoApi.getList(Y9LoginUserHolder.getTenantId(), processSerialNumber);
@@ -130,6 +134,7 @@ public class TypeSetting4GfgController {
      * @param id 主键id
      * @return Y9Result<TypeSettingInfoModel>
      */
+    @FlowableLog(operationName = "获取排版详情")
     @GetMapping(value = "/getTypeSetting")
     public Y9Result<TypeSettingInfoModel> getTypeSetting(@RequestParam String id) {
         return typeSettingInfoApi.getTypeSetting(Y9LoginUserHolder.getTenantId(), id);
@@ -142,6 +147,7 @@ public class TypeSetting4GfgController {
      * @param jsonData 数据信息
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存排版信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveTypeSetting")
     public Y9Result<Object> saveTypeSetting(@RequestParam String processSerialNumber, @RequestParam String jsonData) {
         return typeSettingInfoApi.saveTypeSetting(Y9LoginUserHolder.getTenantId(), processSerialNumber, jsonData);
@@ -154,6 +160,7 @@ public class TypeSetting4GfgController {
      * @param jsonData 数据信息
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存排版信息", operationType = FlowableOperationTypeEnum.MODIFY)
     @PostMapping(value = "/updateTypeSetting")
     public Y9Result<Object> updateTypeSetting(@RequestParam String processSerialNumber, @RequestParam String jsonData) {
         return typeSettingInfoApi.updateTypeSetting(Y9LoginUserHolder.getTenantId(), processSerialNumber, jsonData);
@@ -166,6 +173,7 @@ public class TypeSetting4GfgController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "上传清样文件", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/uploadQingyangFile")
     public Y9Result<String> uploadQingyangFile(MultipartFile file, @RequestParam @NotBlank String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -178,11 +186,11 @@ public class TypeSetting4GfgController {
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             String storeId = y9FileStore.getId();
             // 生成清样文件,发文稿纸正文替换书签 --- 须与原系统生成方式保持一致，故注释
-//            byte[] os = this.generateQingyangFile(processSerialNumber, storeId, fileName);
-//            if (os != null) {
-//                y9FileStore = y9FileStoreService.uploadFile(os, fullPath, fileName);
-//                storeId = y9FileStore.getId();
-//            }
+            // byte[] os = this.generateQingyangFile(processSerialNumber, storeId, fileName);
+            // if (os != null) {
+            // y9FileStore = y9FileStoreService.uploadFile(os, fullPath, fileName);
+            // storeId = y9FileStore.getId();
+            // }
             return Y9Result.success(storeId);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
