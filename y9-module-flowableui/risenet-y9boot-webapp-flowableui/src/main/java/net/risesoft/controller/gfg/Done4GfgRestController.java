@@ -16,10 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.log.FlowableLogLevelEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.DoneService;
 import net.risesoft.service.WorkList4GfgService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -37,8 +38,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class Done4GfgRestController {
 
     private final WorkList4GfgService workList4GfgService;
-
-    private final DoneService doneService;
 
     private final ItemViewConfApi itemViewConfApi;
 
@@ -65,10 +64,10 @@ public class Done4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控本处室/司局办结", logLevel = FlowableLogLevelEnum.DEPT)
     @PostMapping(value = "/doneList4Dept")
     public Y9Page<Map<String, Object>> doneList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
-        @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4GfgService.doneList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
@@ -80,6 +79,7 @@ public class Done4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控本处室/司局在办", logLevel = FlowableLogLevelEnum.ALL)
     @PostMapping(value = "/doneList4All")
     public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {

@@ -15,6 +15,7 @@
     <version>${revision}</version>
 
     <modules>
+        <module>risenet-y9boot-starter-log-flowable</module>
         <module>risenet-y9boot-webapp-flowableui</module>
     </modules>
 
