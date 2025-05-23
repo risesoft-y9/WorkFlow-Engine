@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.WorkList4GfgService;
@@ -56,6 +57,7 @@ public class All4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控所有件列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/allList4Org")
     public Y9Page<Map<String, Object>> allList4Org(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {

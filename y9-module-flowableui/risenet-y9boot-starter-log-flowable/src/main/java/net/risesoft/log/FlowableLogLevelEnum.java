@@ -12,12 +12,8 @@ import lombok.Getter;
 public enum FlowableLogLevelEnum {
     /** 普通用户 */
     COMMON("普通用户"),
-    /** 部门/委办局管理员 */
-    DEPT("部门/委办局管理员"),
-    /** 部门/委办局管理员 */
-    DU_BAN("督办管理员"),
-    /** 全局管理员 */
-    ALL("全局管理员");
+    /** 管理员 */
+    ADMIN("管理员");
 
     private final String value;
 

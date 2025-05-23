@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,19 +16,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.log.service.FlowableAccessLogReporter;
+import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.log.FlowableAccessLog;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  *
@@ -40,8 +46,11 @@ public class FlowableLogAdvice implements MethodInterceptor {
 
     private final FlowableAccessLogReporter flowableAccessLogReporter;
 
-    public FlowableLogAdvice(FlowableAccessLogReporter flowableAccessLogReporter) {
+    private final ProcessParamApi processParamApi;
+
+    public FlowableLogAdvice(FlowableAccessLogReporter flowableAccessLogReporter, ProcessParamApi processParamApi) {
         this.flowableAccessLogReporter = flowableAccessLogReporter;
+        this.processParamApi = processParamApi;
     }
 
     @Override
@@ -52,8 +61,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
         String success = "成功";
         String userAgent = "";
         String hostIp = "";
-        String systemName = "";
-        String processSerialNumber = "", description = "";
+        String processSerialNumber = "", optName = "";
 
         Object ret;
         try {
@@ -79,10 +87,9 @@ public class FlowableLogAdvice implements MethodInterceptor {
                     userAgent = request.getHeader("User-Agent");
                     hostIp = Y9Context.getIpAddr(request);
                     processSerialNumber = request.getHeader("processSerialNumber");
-                    description = StringUtils.hasText(request.getHeader("description"))
-                        ? URLDecoder.decode(request.getHeader("description"), StandardCharsets.UTF_8) : "";
+                    optName = StringUtils.hasText(request.getHeader("optName"))
+                        ? URLDecoder.decode(request.getHeader("optName"), StandardCharsets.UTF_8) : "";
                 }
-                systemName = Y9Context.getSystemName();
             } catch (Exception e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -93,13 +100,9 @@ public class FlowableLogAdvice implements MethodInterceptor {
                 FlowableAccessLog flowableAccessLog = new FlowableAccessLog();
                 try {
                     flowableAccessLog.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-                    flowableAccessLog.setProcessSerialNumber(processSerialNumber);
                     flowableAccessLog.setOperateType(flowableLog.operationType().getValue());
                     flowableAccessLog.setLogTime(new Date());
                     flowableAccessLog.setLogLevel(FlowableLogLevelEnum.COMMON.toString());
-                    flowableAccessLog.setDescription(description);
-                    flowableAccessLog.setSystemName(systemName);
-                    flowableAccessLog.setModularName("工作流");
                     flowableAccessLog.setMethodName(method.getDeclaringClass().getName() + "." + method.getName());
                     flowableAccessLog.setElapsedTime(String.valueOf(elapsedTime));
                     flowableAccessLog.setServerIp(Y9Context.getHostIp());
@@ -108,6 +111,30 @@ public class FlowableLogAdvice implements MethodInterceptor {
                     flowableAccessLog.setThrowable(throwable);
                     flowableAccessLog.setUserHostIp(hostIp);
                     flowableAccessLog.setUserAgent(userAgent);
+                    flowableAccessLog.setProcessSerialNumber(processSerialNumber);
+
+                    if (StringUtils.hasText(processSerialNumber)) {
+                        ProcessParamModel processParam = processParamApi
+                            .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+                        if (null != processParam) {
+                            flowableAccessLog.setSystemName(processParam.getSystemCnName());
+                            flowableAccessLog.setModularName(processParam.getItemName());
+                            flowableAccessLog.setDescription(processParam.getTitle());
+                        }
+                    } else {
+                        Object[] args = invocation.getArguments();
+                        ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+                        String[] paramNames = parameterNameDiscoverer.getParameterNames(method);
+                        Map<String, Object> map = new HashMap<>();
+                        if (paramNames != null && paramNames.length == args.length) {
+                            for (int i = 0; i < paramNames.length; i++) {
+                                map.put(paramNames[i], args[i]);
+                            }
+                        }
+                        if (args.length > 0) {
+                            flowableAccessLog.setDescription(Y9JsonUtil.writeValueAsString(map));
+                        }
+                    }
 
                     Map<String, Object> map = Y9LoginUserHolder.getMap();
                     if (map != null) {
@@ -121,10 +148,14 @@ public class FlowableLogAdvice implements MethodInterceptor {
                         }
                     }
 
-                    if (StringUtils.hasText(flowableLog.operationName())) {
-                        flowableAccessLog.setOperateName(flowableLog.operationName());
+                    if (StringUtils.hasText(optName)) {
+                        flowableAccessLog.setOperateName(optName);
                     } else {
-                        flowableAccessLog.setOperateName(method.getName());
+                        if (StringUtils.hasText(flowableLog.operationName())) {
+                            flowableAccessLog.setOperateName(flowableLog.operationName());
+                        } else {
+                            flowableAccessLog.setOperateName(method.getName());
+                        }
                     }
                     if (null != flowableLog.logLevel()) {
                         flowableAccessLog.setLogLevel(flowableLog.logLevel().toString());

@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentCopyApi;
 import net.risesoft.api.itemadmin.OpinionCopyApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.OpinionCopyModel;
 import net.risesoft.model.itemadmin.QueryParamModel;
@@ -50,6 +52,7 @@ public class ChaoSong4GfgRestController {
      * @param id 意见id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除会签意见", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteById")
     public Y9Result<String> deleteById(@RequestParam @NotBlank String id) {
         try {
@@ -67,6 +70,7 @@ public class ChaoSong4GfgRestController {
      * @param processSerialNumbers 传签件流程序列号
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量删除自己的传签件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteByProcessSerialNumber")
     public Y9Result<String> deleteByProcessSerialNumber(@RequestParam String[] processSerialNumbers) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -86,6 +90,7 @@ public class ChaoSong4GfgRestController {
      * 
      * @return Y9Page<DocumentCopyModel>
      */
+    @FlowableLog(operationName = "传签件列表")
     @GetMapping(value = "/list4Receive")
     public Y9Page<DocumentCopyModel> list4Receive(QueryParamModel queryParamModel) {
         return documentCopyApi.findByUserId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
@@ -98,6 +103,7 @@ public class ChaoSong4GfgRestController {
      * @param processSerialNumber 流程序列号
      * @return Y9Result<List<DocumentCopyModel>>
      */
+    @FlowableLog(operationName = "传签记录")
     @GetMapping(value = "/list4Sender")
     public Y9Result<List<DocumentCopyModel>> list4Sender(@RequestParam @NotBlank String processSerialNumber) {
         return documentCopyApi.findByProcessSerialNumberAndSenderId(Y9LoginUserHolder.getTenantId(),
@@ -110,6 +116,7 @@ public class ChaoSong4GfgRestController {
      * @param processSerialNumber 流程序列号
      * @return Y9Result<List<OpinionCopyModel>>
      */
+    @FlowableLog(operationName = "传签意见")
     @GetMapping(value = "/opinionCopyList")
     public Y9Result<List<OpinionCopyModel>> opinionCopyList(@RequestParam @NotBlank String processSerialNumber) {
         return opinionCopyApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(),
@@ -122,6 +129,7 @@ public class ChaoSong4GfgRestController {
      * @param jsonData 意见实体json
      * @return Y9Result<OpinionModel>
      */
+    @FlowableLog(operationName = "保存传签意见", operationType = FlowableOperationTypeEnum.ADD_MODIFY)
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<OpinionCopyModel> save(@RequestParam @NotBlank String jsonData) {
         try {
@@ -144,6 +152,7 @@ public class ChaoSong4GfgRestController {
      * @param opinion 传签意见
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "抄送", operationType = FlowableOperationTypeEnum.ADD)
     @PostMapping(value = "/save")
     public Y9Result<Object> save(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String users, @RequestParam(required = false) String opinion) {
@@ -163,6 +172,7 @@ public class ChaoSong4GfgRestController {
         return Y9Result.failure("传签失败");
     }
 
+    @FlowableLog(operationName = "撤销传签件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/setStatus")
     public Y9Result<Object> setStatus(@RequestParam @NotBlank String id, @RequestParam Integer status) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();

@@ -26,6 +26,7 @@ import com.alibaba.ttl.threadpool.TtlExecutors;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.log.aop.FlowableLogAdvice;
 import net.risesoft.log.aop.FlowableLogAdvisor;
 import net.risesoft.log.service.FlowableAccessLogReporter;
@@ -63,8 +64,9 @@ public class FlowableLogConfiguration {
     @Bean
     @ConditionalOnMissingBean(FlowableLogAdvice.class)
     @DependsOn({"y9Context"})
-    public FlowableLogAdvice flowableLogAdvice(FlowableAccessLogReporter flowableAccessLogReporter) {
-        return new FlowableLogAdvice(flowableAccessLogReporter);
+    public FlowableLogAdvice flowableLogAdvice(FlowableAccessLogReporter flowableAccessLogReporter,
+        ProcessParamApi processParamApi) {
+        return new FlowableLogAdvice(flowableAccessLogReporter, processParamApi);
     }
 
     @Bean

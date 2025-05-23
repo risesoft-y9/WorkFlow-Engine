@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.log.FlowableLogLevelEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -61,10 +63,10 @@ public class Recycle4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "回收站列表")
     @PostMapping(value = "/recycleList")
     public Y9Page<Map<String, Object>> recycleList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.workList4GfgService.recycleList(itemId, searchMapStr, page, rows);
     }
 
@@ -76,10 +78,10 @@ public class Recycle4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控部门回收站列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/recycleList4Dept")
     public Y9Page<Map<String, Object>> recycleList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
-        @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.workList4GfgService.recycleList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
@@ -91,10 +93,10 @@ public class Recycle4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控所有回收站列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/recycleList4All")
     public Y9Page<Map<String, Object>> recycleList4All(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.workList4GfgService.recycleList4All(itemId, searchMapStr, page, rows);
     }
 }
