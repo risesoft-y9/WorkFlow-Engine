@@ -7,7 +7,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.PaperAttachmentApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.PaperAttachmentModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -41,11 +42,12 @@ public class PaperAttachmentRestController {
     private final PaperAttachmentApi paperAttachmentApi;
 
     /**
-     * 删除附件
+     * 删除纸质附件
      *
      * @param ids 附件ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除纸质附件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delPaperAttachments")
     public Y9Result<String> delPaperAttachments(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -59,6 +61,7 @@ public class PaperAttachmentRestController {
      * @param processSerialNumber 流程实例id
      * @return Y9Result<List < PaperFileModel>>
      */
+    @FlowableLog(operationName = "获取纸质附件列表")
     @GetMapping(value = "/list")
     public Y9Result<List<PaperAttachmentModel>> list(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -76,6 +79,7 @@ public class PaperAttachmentRestController {
      * @param paperAttachmentModel 纸质附件信息
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "获取纸质附件列表", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/save")
     public Y9Result<Object> save(@Valid PaperAttachmentModel paperAttachmentModel) {
         try {

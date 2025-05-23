@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.UrgeInfoModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableUrgeInfoService;
@@ -39,6 +41,7 @@ public class UrgeInfoRestController {
      * @param id 催办信息唯一标示
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "删除催办信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteById")
     Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
         return flowableUrgeInfoService.deleteById(id);
@@ -62,6 +65,7 @@ public class UrgeInfoRestController {
      * @param msgContent 催办消息
      * @return
      */
+    @FlowableLog(operationName = "保存催办信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/save")
     Y9Result<Object> save(@RequestParam String[] processSerialNumbers, @RequestParam("msgContent") String msgContent) {
         return flowableUrgeInfoService.save(processSerialNumbers, msgContent);

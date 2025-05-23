@@ -36,6 +36,7 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -441,6 +442,7 @@ public class Main4GfgRestController {
      *
      * @return Y9Result<List < Resource>>
      */
+    @FlowableLog(operationName = "获取当前岗有权限的菜单")
     @GetMapping(value = "/getResources")
     public Y9Result<List<VueMenu>> getResources() {
         String tenantId = Y9LoginUserHolder.getTenantId();

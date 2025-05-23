@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
@@ -45,8 +44,6 @@ public class ProcessParam4GfgRestController {
     private final VariableApi variableApi;
 
     private final ActRuDetailApi actRuDetailApi;
-
-    private final OrgUnitApi orgUnitApi;
 
     /**
      * 保存流程变量

@@ -223,6 +223,7 @@ public class Document4GfgRestController {
      * @param tableName 表名
      * @return Y9Result<Boolean>
      */
+    @FlowableLog(operationName = "取消上会", operationType = FlowableOperationTypeEnum.CANCEL)
     @PostMapping(value = "/cancelShangHui")
     public Y9Result<Object> cancelShangHui(@RequestParam String[] processSerialNumbers, @RequestParam String fields,
         @RequestParam String tableName) {
@@ -338,6 +339,7 @@ public class Document4GfgRestController {
      * @param infoOvert 办结数据是否在数据中心公开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "办结", operationType = FlowableOperationTypeEnum.COMPLETE)
     @PostMapping(value = "/complete")
     public Y9Result<String> complete(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String infoOvert) {
@@ -410,6 +412,7 @@ public class Document4GfgRestController {
      * @param taskIdAndProcessSerialNumbers 任务id和流程序列号集合
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量办结", operationType = FlowableOperationTypeEnum.COMPLETE)
     @PostMapping(value = "/completeTodo")
     public Y9Result<String> completeTodo(@RequestParam String[] taskIdAndProcessSerialNumbers) {
         for (String tandp : taskIdAndProcessSerialNumbers) {
@@ -439,6 +442,7 @@ public class Document4GfgRestController {
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "办件详情")
     @GetMapping(value = "/edit")
     public Y9Result<OpenDataModel> edit(@RequestParam @NotBlank String itembox,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processInstanceId,
@@ -544,6 +548,7 @@ public class Document4GfgRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控办结详情", logLevel = FlowableLogLevelEnum.ADMIN)
     @GetMapping(value = "/editDone4Admin")
     public Y9Result<DocumentDetailModel> editDone4Admin(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId, @RequestParam @NotBlank String itemBox) {
@@ -972,6 +977,7 @@ public class Document4GfgRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "获取条码号数据", operationType = FlowableOperationTypeEnum.BROWSE)
     @PostMapping(value = "/getTmhData")
     public Y9Result<String> getTmhData(@RequestParam @NotBlank String processSerialNumber) {
         // 调用第三方接口
@@ -1014,6 +1020,7 @@ public class Document4GfgRestController {
      * @param processSerialNumber 流程序列号
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "检查是否必须送会签", operationType = FlowableOperationTypeEnum.CHECK)
     @GetMapping(value = "/isMust2SignDept")
     public Y9Result<Boolean> isMust2SignDept(@RequestParam @NotBlank String processSerialNumber) {
         try {
@@ -1037,6 +1044,8 @@ public class Document4GfgRestController {
      * @param processInstanceIds 流程实例ids ，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量恢复待办", operationType = FlowableOperationTypeEnum.RESUME,
+        logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/multipleResumeToDo")
     public Y9Result<String> multipleResumeToDo(@RequestParam String[] processInstanceIds) {
         return buttonOperationService.multipleResumeTodo(processInstanceIds, "重新激活");
@@ -1049,6 +1058,8 @@ public class Document4GfgRestController {
      * @param formJsonData 表单数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "重印", operationType = FlowableOperationTypeEnum.RESUME,
+        logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/reprint")
     public Y9Result<String> reprint(@RequestParam String[] processInstanceIds,
         @RequestParam @NotBlank String formJsonData) {
@@ -1067,11 +1078,12 @@ public class Document4GfgRestController {
     }
 
     /**
-     * 复制并起草失败
+     * 复制并起草
      *
      * @param processSerialNumber
      * @return
      */
+    @FlowableLog(operationName = "复制并起草", operationType = FlowableOperationTypeEnum.ADD)
     @PostMapping(value = "/copy2Todo")
     public Y9Result<Map<String, Object>> copy2Todo(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String startTaskDefKey) {
@@ -1173,6 +1185,7 @@ public class Document4GfgRestController {
      * @param processSerialNumbers
      * @param eventtype
      */
+    @FlowableLog(operationName = "保存并推送双杨数据", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/savePushData")
     public void savePushData(@RequestParam String[] processSerialNumbers, @RequestParam String eventtype) {
         for (String processSerialNumber : processSerialNumbers) {
@@ -1194,6 +1207,7 @@ public class Document4GfgRestController {
      * @param description 描述
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存密级等级记录", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveSecretLevelRecord")
     public Y9Result<String> saveSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String secretLevel, @RequestParam @NotBlank String secretBasis,
@@ -1217,6 +1231,7 @@ public class Document4GfgRestController {
      * @param tableName 表名
      * @return Y9Result<Boolean>
      */
+    @FlowableLog(operationName = "保存上会", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveShangHui")
     public Y9Result<Object> saveShangHui(@RequestParam String[] processSerialNumbers, @RequestParam String fields,
         @RequestParam String tableName) {
@@ -1239,6 +1254,7 @@ public class Document4GfgRestController {
         return Y9Result.success();
     }
 
+    @FlowableLog(operationName = "批量签收", operationType = FlowableOperationTypeEnum.CLAIM)
     @PostMapping(value = "/sign4Batch")
     public Y9Result<String> sign4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -1333,6 +1349,7 @@ public class Document4GfgRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<DocUserChoiseModel>
      */
+    @FlowableLog(operationName = "获取用户选人发送界面数据", operationType = FlowableOperationTypeEnum.BROWSE)
     @GetMapping(value = "/userChoiseData")
     public Y9Result<DocUserChoiseModel> userChoiseData(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String routeToTask, @RequestParam @NotBlank String processDefinitionId,

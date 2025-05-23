@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.PrintLogApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.PrintLogModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
@@ -46,6 +48,7 @@ public class PrintLog4GfgController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<List<PrintLogModel>>
      */
+    @FlowableLog(operationName = "获取打印日志列表")
     @GetMapping(value = "/getPrintLogList")
     public Y9Result<List<PrintLogModel>> getPrintLogList(@RequestParam String processSerialNumber) {
         return printLogApi.getPrintLogList(Y9LoginUserHolder.getTenantId(), processSerialNumber);
@@ -59,6 +62,7 @@ public class PrintLog4GfgController {
      * @param actionType 操作类型
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存打印日志", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/savePrintLog")
     public Y9Result<Object> savePrintLog(@RequestParam String processSerialNumber, @RequestParam String actionContent,
         @RequestParam String actionType, HttpServletRequest request) {

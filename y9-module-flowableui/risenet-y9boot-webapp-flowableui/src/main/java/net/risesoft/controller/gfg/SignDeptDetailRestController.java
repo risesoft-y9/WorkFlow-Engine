@@ -30,6 +30,8 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
@@ -76,6 +78,7 @@ public class SignDeptDetailRestController {
      * @return Y9Result<Object>
      * @since 9.6.8
      */
+    @FlowableLog(operationType = FlowableOperationTypeEnum.DELETE, operationName = "删除会签信息")
     @PostMapping(value = "/deleteById")
     Y9Result<Object> deleteById(@RequestParam @NotBlank String id, @RequestParam String tzsDeptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -213,6 +216,7 @@ public class SignDeptDetailRestController {
      * @return Y9Result<Object>
      * @since 9.6.8
      */
+    @FlowableLog(operationName = "恢复会签信息", operationType = FlowableOperationTypeEnum.RESUME)
     @PostMapping(value = "/recoverById")
     Y9Result<Object> recoverById(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -259,6 +263,7 @@ public class SignDeptDetailRestController {
      * @return Y9Result<Object>
      * @since 9.6.8
      */
+    @FlowableLog(operationName = "保存会签信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
     Y9Result<Object> saveOrUpdate(@RequestParam @NotBlank String jsonData) {
         SignDeptDetailModel signDeptDetailModel = Y9JsonUtil.readValue(jsonData, SignDeptDetailModel.class);

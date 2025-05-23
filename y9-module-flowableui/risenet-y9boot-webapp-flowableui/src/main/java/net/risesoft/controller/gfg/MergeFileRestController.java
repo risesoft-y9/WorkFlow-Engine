@@ -37,6 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.EleAttachmentApi;
 import net.risesoft.api.itemadmin.MergeFileApi;
 import net.risesoft.enums.BrowserTypeEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.EleAttachmentModel;
 import net.risesoft.model.itemadmin.MergeFileModel;
 import net.risesoft.model.user.UserInfo;
@@ -86,6 +88,7 @@ public class MergeFileRestController {
      * @param ids 文件id
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "删除合并文件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delMergeFile")
     public Y9Result<Object> delMergeFile(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -97,6 +100,7 @@ public class MergeFileRestController {
      *
      * @param id 附件id
      */
+    @FlowableLog(operationName = "文件下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -128,6 +132,7 @@ public class MergeFileRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<List<MergeFileModel>>
      */
+    @FlowableLog(operationName = "获取附件列表")
     @GetMapping(value = "/getFileList")
     public Y9Result<List<MergeFileModel>> getFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -165,6 +170,7 @@ public class MergeFileRestController {
      * @param fileType 文件类型,1为合并文件,2为合并版式文件
      * @return Y9Result<List<MergeFileModel>>
      */
+    @FlowableLog(operationName = "获取合并列表")
     @GetMapping(value = "/getMergeFileList")
     public Y9Result<List<MergeFileModel>> getMergeFileList(@RequestParam(required = false) String processSerialNumber,
         @RequestParam String listType, @RequestParam String fileType) {
@@ -185,6 +191,7 @@ public class MergeFileRestController {
      * @param response HttpServletResponse
      * @param request HttpServletRequest
      */
+    @FlowableLog(operationName = "打包zip下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/packDownload")
     public void packDownload(@RequestParam String[] ids, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -260,6 +267,7 @@ public class MergeFileRestController {
      * @param fileName 文件名称
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "修改文件名称", operationType = FlowableOperationTypeEnum.MODIFY)
     @PostMapping(value = "/updateFileName")
     public Y9Result<Object> updateFileName(@RequestParam String id, @RequestParam String fileName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -272,6 +280,7 @@ public class MergeFileRestController {
      * @param file 文件
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "文件合并上传文件", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/upload")
     public Y9Result<String> upload(MultipartFile file) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();

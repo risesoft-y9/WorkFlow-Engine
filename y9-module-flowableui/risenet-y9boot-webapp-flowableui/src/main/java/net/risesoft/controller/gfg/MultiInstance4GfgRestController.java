@@ -23,12 +23,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.Department;
@@ -62,8 +63,6 @@ public class MultiInstance4GfgRestController {
 
     private final ProcessParamApi processParamApi;
 
-    private final SignDeptDetailApi signDeptDetailApi;
-
     private final OrgUnitApi orgUnitApi;
 
     private final SignDeptInfoApi signDeptInfoApi;
@@ -78,6 +77,7 @@ public class MultiInstance4GfgRestController {
      * @param description 办文说明
      * @return
      */
+    @FlowableLog(operationType = FlowableOperationTypeEnum.ADD, operationName = "加签")
     @PostMapping(value = "/addExecutionId")
     public Y9Result<List<SignDeptDetailModel>> addExecutionId(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String activityId, @RequestParam @NotBlank String userChoice,

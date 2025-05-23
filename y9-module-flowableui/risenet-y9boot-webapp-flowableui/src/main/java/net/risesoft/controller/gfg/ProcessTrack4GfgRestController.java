@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
@@ -42,6 +43,7 @@ public class ProcessTrack4GfgRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationType = FlowableOperationTypeEnum.BROWSE, operationName = "查看电子历程")
     @GetMapping(value = "/historyList")
     public Y9Result<List<HistoryProcessModel>> historyList(@RequestParam @NotBlank String processInstanceId) {
         Position position = Y9LoginUserHolder.getPosition();

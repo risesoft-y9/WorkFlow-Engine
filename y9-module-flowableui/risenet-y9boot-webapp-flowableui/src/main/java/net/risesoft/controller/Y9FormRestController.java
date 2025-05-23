@@ -464,7 +464,7 @@ public class Y9FormRestController {
      * @param jsonData 表单数据
      * @return Y9Result<String>
      */
-    @FlowableLog(operationName = "保存表单数据", operationType = FlowableOperationTypeEnum.MODIFY)
+    @FlowableLog(operationName = "保存表单数据", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveFormData")
     public Y9Result<String> saveFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String jsonData) {
