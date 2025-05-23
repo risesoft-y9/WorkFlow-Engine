@@ -53,7 +53,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
         String userAgent = "";
         String hostIp = "";
         String systemName = "";
-        String processSerialNumber = "", title = "";
+        String processSerialNumber = "", description = "";
 
         Object ret;
         try {
@@ -79,8 +79,8 @@ public class FlowableLogAdvice implements MethodInterceptor {
                     userAgent = request.getHeader("User-Agent");
                     hostIp = Y9Context.getIpAddr(request);
                     processSerialNumber = request.getHeader("processSerialNumber");
-                    title = StringUtils.hasText(request.getHeader("title"))
-                        ? URLDecoder.decode(request.getHeader("title"), StandardCharsets.UTF_8) : "";
+                    description = StringUtils.hasText(request.getHeader("description"))
+                        ? URLDecoder.decode(request.getHeader("description"), StandardCharsets.UTF_8) : "";
                 }
                 systemName = Y9Context.getSystemName();
             } catch (Exception e) {
@@ -97,7 +97,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
                     flowableAccessLog.setOperateType(flowableLog.operationType().getValue());
                     flowableAccessLog.setLogTime(new Date());
                     flowableAccessLog.setLogLevel(FlowableLogLevelEnum.COMMON.toString());
-                    flowableAccessLog.setTitle(title);
+                    flowableAccessLog.setDescription(description);
                     flowableAccessLog.setSystemName(systemName);
                     flowableAccessLog.setModularName("工作流");
                     flowableAccessLog.setMethodName(method.getDeclaringClass().getName() + "." + method.getName());
