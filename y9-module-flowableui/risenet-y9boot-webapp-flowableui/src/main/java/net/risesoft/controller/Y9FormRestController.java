@@ -33,6 +33,8 @@ import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
@@ -462,6 +464,7 @@ public class Y9FormRestController {
      * @param jsonData 表单数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存表单数据", operationType = FlowableOperationTypeEnum.MODIFY)
     @PostMapping(value = "/saveFormData")
     public Y9Result<String> saveFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String jsonData) {

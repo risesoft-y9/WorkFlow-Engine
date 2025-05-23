@@ -64,7 +64,7 @@ public class Done4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "监控本处室/司局办结", logLevel = FlowableLogLevelEnum.DEPT)
+    @FlowableLog(operationName = "监控本处室/司局办结列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/doneList4Dept")
     public Y9Page<Map<String, Object>> doneList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
@@ -79,7 +79,7 @@ public class Done4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "监控本处室/司局在办", logLevel = FlowableLogLevelEnum.ALL)
+    @FlowableLog(operationName = "监控所有办结件列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/doneList4All")
     public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {

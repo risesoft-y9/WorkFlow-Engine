@@ -55,6 +55,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -461,6 +462,7 @@ public class Document4GfgRestController {
      * @param processSerialNumber 流程序列号
      * @return
      */
+    @FlowableLog(operationName = "传签件详情")
     @GetMapping(value = "/editCopy")
     public Y9Result<DocumentDetailModel> editCopy(@RequestParam @NotBlank String processSerialNumber) {
         try {
@@ -500,6 +502,7 @@ public class Document4GfgRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "监控在办件详情", logLevel = FlowableLogLevelEnum.ADMIN)
     @GetMapping(value = "/editDoing4Admin")
     public Y9Result<DocumentDetailModel> editDoing4Admin(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId) {
@@ -520,6 +523,7 @@ public class Document4GfgRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "办结详情")
     @GetMapping(value = "/editDone")
     public Y9Result<DocumentDetailModel> editDone(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String documentId) {
@@ -560,6 +564,7 @@ public class Document4GfgRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "回收件详情")
     @GetMapping(value = "/editRecycle")
     public Y9Result<DocumentDetailModel> editRecycle(@RequestParam @NotBlank String processInstanceId) {
         try {
@@ -607,6 +612,7 @@ public class Document4GfgRestController {
      * @param routeToTaskId 发送路由，任务key
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "发送", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/forwarding")
     public Y9Result<Map<String, Object>> forwarding(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String taskId,
@@ -656,6 +662,7 @@ public class Document4GfgRestController {
      * @param sponsorGuid 主办人id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "批量发送", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/forwarding4Batch")
     public Y9Result<String> forwarding4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers,
         @RequestParam @NotBlank String userChoice, @RequestParam @NotBlank String routeToTaskId,

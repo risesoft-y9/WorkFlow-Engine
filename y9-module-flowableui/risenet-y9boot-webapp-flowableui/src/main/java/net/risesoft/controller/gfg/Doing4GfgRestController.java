@@ -49,7 +49,7 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "督办列表", logLevel = FlowableLogLevelEnum.DU_BAN)
+    @FlowableLog(operationName = "督办件列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/doingList4DuBan")
     public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
@@ -64,7 +64,7 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "监控本处室/司局在办", logLevel = FlowableLogLevelEnum.DEPT)
+    @FlowableLog(operationName = "监控本处室/司局在办件列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/doingList4Dept")
     public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
@@ -79,7 +79,7 @@ public class Doing4GfgRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "监控所有在办", logLevel = FlowableLogLevelEnum.ALL)
+    @FlowableLog(operationName = "监控所有在办件列表", logLevel = FlowableLogLevelEnum.ADMIN)
     @PostMapping(value = "/doingList4All")
     public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {

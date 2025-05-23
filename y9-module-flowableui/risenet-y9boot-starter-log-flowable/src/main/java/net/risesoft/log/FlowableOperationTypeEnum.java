@@ -16,6 +16,8 @@ public enum FlowableOperationTypeEnum {
     ADD("增加"),
     /** 修改 */
     MODIFY("修改"),
+    /** 新增或修改 */
+    ADD_MODIFY("新增或修改"),
     /** 删除 */
     DELETE("删除"),
     /** 发送 */
