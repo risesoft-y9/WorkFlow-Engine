@@ -6,11 +6,21 @@
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>
         </Console>
-        <File name="File" fileName="/software/tomcat9/logs/processAdmin/processAdmin.log">
+        <!--        <File name="File" fileName="/software/tomcat9/logs/processAdmin/processAdmin.log">-->
+        <!--            <PatternLayout>-->
+        <!--                <pattern>%d %p %C{1.} [%t] %m%n</pattern>-->
+        <!--            </PatternLayout>-->
+        <!--        </File>-->
+        <RollingFile name="RollingFile" fileName="/software/tomcat9/logs/processAdmin/processAdmin.log"
+                     filePattern="/software/tomcat9/logs/processAdmin/processAdmin-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>
-        </File>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.apache.catalina.util.LifecycleBase" level="error"/>
@@ -26,6 +36,7 @@
         <logger name="org.hibernate" level="WARN"/>
         <Root level="WARN">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
         </Root>
     </Loggers>
 </Configuration>
