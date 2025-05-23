@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,9 +39,11 @@ import net.risesoft.api.itemadmin.MergeFileApi;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.model.itemadmin.EleAttachmentModel;
 import net.risesoft.model.itemadmin.MergeFileModel;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
 import cn.hutool.core.date.DateUtil;
@@ -260,5 +264,28 @@ public class MergeFileRestController {
     public Y9Result<Object> updateFileName(@RequestParam String id, @RequestParam String fileName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return mergeFileApi.updateFileName(tenantId, id, fileName);
+    }
+
+    /**
+     * 文件合并上传文件
+     *
+     * @param file 文件
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/upload")
+    public Y9Result<String> upload(MultipartFile file) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String fileName = FilenameUtils.getName(originalFilename);
+            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/mergeFile" + "/" + userId;
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            String storeId = y9FileStore.getId();
+            return Y9Result.success(storeId);
+        } catch (Exception e) {
+            LOGGER.error("上传失败", e);
+        }
+        return Y9Result.failure("上传失败");
     }
 }
