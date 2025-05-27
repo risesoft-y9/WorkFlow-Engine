@@ -173,7 +173,6 @@ public interface DocumentApi {
         @RequestParam("documentId") String documentId, @RequestParam("isAdmin") boolean isAdmin,
         @RequestParam("itemBox") ItemBoxTypeEnum itemBox);
 
-
     /**
      * 编辑文档
      *
@@ -409,7 +408,7 @@ public interface DocumentApi {
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processDefinitionKey") String processDefinitionKey,
         @RequestParam(name = "startTaskDefKey", required = false) String startTaskDefKey,
-        @RequestParam(name = "startOrgUnitId", required = false) String startOrgUnitId) throws Exception;
+        @RequestBody List<String> startOrgUnitIdList) throws Exception;
 
     /**
      * 启动流程，多人

@@ -381,7 +381,7 @@ public interface DocumentService {
      * @return
      */
     StartProcessResultModel startProcessByTheTaskKey(String itemId, String processSerialNumber,
-        String processDefinitionKey, String startTaskDefKey, String startOrgUnitId);
+        String processDefinitionKey, String startTaskDefKey, List<String> startOrgUnitIdList);
 
     /**
      * 启动流程，多人
@@ -405,7 +405,7 @@ public interface DocumentService {
      * @return
      */
     Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey,
-        String startRouteToTaskId, String startOrgUnitId);
+        String startRouteToTaskId, List<String> startOrgUnitIdList);
 
     /**
      * Description: 启动流程并提交
