@@ -78,6 +78,7 @@ public class AttachmentRestController {
      *
      * @param id 附件id
      */
+    @FlowableLog(operationName = "附件下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/attachmentDownload")
     public void attachmentDownload(@RequestParam @NotBlank String id, HttpServletResponse response,
         HttpServletRequest request) {
@@ -110,6 +111,7 @@ public class AttachmentRestController {
      * @param ids 附件ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除附件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delFile")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -126,6 +128,7 @@ public class AttachmentRestController {
      * @param rows 条数
      * @return Y9Page<AttachmentModel>
      */
+    @FlowableLog(operationName = "获取附件列表")
     @GetMapping(value = "/getAttachmentList")
     public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
@@ -139,6 +142,7 @@ public class AttachmentRestController {
      * @param processSerialNumber 流程编号
      * @param fileSource 附件来源
      */
+    @FlowableLog(operationName = "附加打包zip下载")
     @GetMapping(value = "/packDownload")
     public void packDownload(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, HttpServletResponse response, HttpServletRequest request) {
@@ -254,6 +258,7 @@ public class AttachmentRestController {
      * @param attachmentType
      * @return
      */
+    @FlowableLog(operationName = "获取附件配置")
     @GetMapping(value = "/getAttachmentConfig")
     public Y9Result<List<AttachmentConfModel>> getAttachmentConfig(@RequestParam @NotBlank String attachmentType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -266,6 +271,7 @@ public class AttachmentRestController {
      * @param file 文件
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "上传附件", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/uploadForm")
     public Y9Result<Object> uploadForm(@RequestParam("file") MultipartFile file,
         @ModelAttribute AttachmentModel attachmentModel) {
