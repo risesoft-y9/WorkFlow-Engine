@@ -4,8 +4,12 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.validation.constraints.NotBlank;
@@ -212,9 +216,8 @@ public class MobileV1GfgSystemDockingController {
                 }
             }
             // 5、启动流程
-            Y9Result<StartProcessResultModel> y9Result =
-                documentApi.startProcessByTheTaskKey(tenantId, positionId, itemId, guid, item.getWorkflowGuid(),
-                    startTaskDefKey, startPositionId);
+            Y9Result<StartProcessResultModel> y9Result = documentApi.startProcessByTheTaskKey(tenantId, positionId,
+                itemId, guid, item.getWorkflowGuid(), startTaskDefKey, startPositionId);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(y9Result.getData(), "提交成功");
             }
@@ -224,4 +227,53 @@ public class MobileV1GfgSystemDockingController {
             return Y9Result.failure("提交失败");
         }
     }
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    @RequestMapping(value = "/start")
+    public Y9Result<StartProcessResultModel> start(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String mappingId, @RequestParam(required = false) String startTaskDefKey,
+        @RequestParam(required = false) String startPositionId, @RequestParam Integer startNumber,
+        @RequestParam Integer endNumber) {
+        try {
+            if (endNumber - startNumber < 0) {
+                return Y9Result.failure("结束数量不能小于开始数量");
+            }
+            if (endNumber - startNumber > 50000) {
+                return Y9Result.failure("数量不能大于50000");
+            }
+            Map<String, Object> map = new HashMap<>();
+            List<Future<Y9Result<StartProcessResultModel>>> futures = new ArrayList<>();
+            for (int i = startNumber; i <= endNumber; i++) {
+                map.clear();
+                map.put("a0", "测试" + i);
+                String formJsonData = Y9JsonUtil.writeValueAsString(map);
+                Future<Y9Result<StartProcessResultModel>> future = executor.submit(
+                    () -> startProcess(itemId, mappingId, formJsonData, startTaskDefKey, startPositionId, null));
+                futures.add(future);
+            }
+            long successCount = futures.stream().filter(future -> {
+                try {
+                    return future.get().isSuccess();
+                } catch (Exception e) {
+                    return false;
+                }
+            }).count();
+            long errorCount = futures.stream().filter(future -> {
+                try {
+                    if (!future.get().isSuccess()) {
+                        LOGGER.info("***********************启动流程失败：{}**********", future.get().getMsg());
+                    }
+                    return !future.get().isSuccess();
+                } catch (Exception e) {
+                    return false;
+                }
+            }).count();
+            return Y9Result.successMsg("启动流程成功：" + successCount + "，启动流程失败：" + errorCount);
+        } catch (Exception e) {
+            LOGGER.error("提交失败", e);
+            return Y9Result.failure("提交失败");
+        }
+    }
+
 }
