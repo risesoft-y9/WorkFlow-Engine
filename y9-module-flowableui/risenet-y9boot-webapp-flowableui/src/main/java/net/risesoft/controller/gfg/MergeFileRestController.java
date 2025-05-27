@@ -267,7 +267,7 @@ public class MergeFileRestController {
      * @param fileName 文件名称
      * @return Y9Result<Object>
      */
-    @FlowableLog(operationName = "修改文件名称", operationType = FlowableOperationTypeEnum.MODIFY)
+    @FlowableLog(operationName = "修改文件名称", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/updateFileName")
     public Y9Result<Object> updateFileName(@RequestParam String id, @RequestParam String fileName) {
         String tenantId = Y9LoginUserHolder.getTenantId();

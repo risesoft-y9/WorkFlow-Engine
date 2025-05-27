@@ -199,7 +199,7 @@ public class Document4GfgRestController {
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
-    @FlowableLog(operationName = "新建", operationType = FlowableOperationTypeEnum.ADD)
+    @FlowableLog(operationName = "新建", operationType = FlowableOperationTypeEnum.DRAFT)
     @GetMapping(value = "/addWithStartTaskDefKey")
     public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String startTaskDefKey) {
@@ -1083,7 +1083,7 @@ public class Document4GfgRestController {
      * @param processSerialNumber
      * @return
      */
-    @FlowableLog(operationName = "复制并起草", operationType = FlowableOperationTypeEnum.ADD)
+    @FlowableLog(operationName = "复制并起草", operationType = FlowableOperationTypeEnum.DRAFT)
     @PostMapping(value = "/copy2Todo")
     public Y9Result<Map<String, Object>> copy2Todo(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String startTaskDefKey) {

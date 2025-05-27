@@ -112,7 +112,7 @@ public class SignDept4GfgController {
      * @param tzsDeptId 司局部门id
      * @return Y9Result<Object>
      */
-    @FlowableLog(operationName = "插入或更新会签部门，更新显示名称", operationType = FlowableOperationTypeEnum.ADD_MODIFY)
+    @FlowableLog(operationName = "插入或更新会签部门，更新显示名称", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/updateSignDept")
     public Y9Result<Object> updateSignDept(@RequestParam String processSerialNumber, @RequestParam String type,
         @RequestParam String tzsDeptId) {

@@ -21,6 +21,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,28 +112,38 @@ public class FlowableLogAdvice implements MethodInterceptor {
                     flowableAccessLog.setThrowable(throwable);
                     flowableAccessLog.setUserHostIp(hostIp);
                     flowableAccessLog.setUserAgent(userAgent);
+                    // 设置请求参数
+                    ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+                    String[] paramNames = parameterNameDiscoverer.getParameterNames(method);
+                    if (null != paramNames) {
+                        Object[] args = invocation.getArguments();
+                        Map<String, Object> paramap = new HashMap<>();
+                        for (int i = 0; i < args.length; i++) {
+                            String paramName = paramNames.length > i ? paramNames[i] : "arg" + i;
+                            Object paramValue = args[i];
+                            if (paramValue instanceof MultipartFile) {
+                                MultipartFile file = (MultipartFile)paramValue;
+                                paramValue = file.getOriginalFilename();
+                            } else {
+                                if ("processSerialNumber".equalsIgnoreCase(paramName)) {
+                                    processSerialNumber = (String)paramValue;
+                                }
+                            }
+                            paramap.put(paramName, paramValue);
+                        }
+                        if (args.length > 0) {
+                            flowableAccessLog.setArguments(Y9JsonUtil.writeValueAsString(paramap));
+                        }
+                    }
                     flowableAccessLog.setProcessSerialNumber(processSerialNumber);
-
+                    // 设置标题
                     if (StringUtils.hasText(processSerialNumber)) {
                         ProcessParamModel processParam = processParamApi
                             .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
                         if (null != processParam) {
                             flowableAccessLog.setSystemName(processParam.getSystemCnName());
                             flowableAccessLog.setModularName(processParam.getItemName());
-                            flowableAccessLog.setDescription(processParam.getTitle());
-                        }
-                    } else {
-                        Object[] args = invocation.getArguments();
-                        ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
-                        String[] paramNames = parameterNameDiscoverer.getParameterNames(method);
-                        Map<String, Object> map = new HashMap<>();
-                        if (paramNames != null && paramNames.length == args.length) {
-                            for (int i = 0; i < paramNames.length; i++) {
-                                map.put(paramNames[i], args[i]);
-                            }
-                        }
-                        if (args.length > 0) {
-                            flowableAccessLog.setDescription(Y9JsonUtil.writeValueAsString(map));
+                            flowableAccessLog.setTitle(processParam.getTitle());
                         }
                     }
 

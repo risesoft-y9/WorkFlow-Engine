@@ -160,7 +160,7 @@ public class TypeSetting4GfgController {
      * @param jsonData 数据信息
      * @return Y9Result<Object>
      */
-    @FlowableLog(operationName = "保存排版信息", operationType = FlowableOperationTypeEnum.MODIFY)
+    @FlowableLog(operationName = "保存排版信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/updateTypeSetting")
     public Y9Result<Object> updateTypeSetting(@RequestParam String processSerialNumber, @RequestParam String jsonData) {
         return typeSettingInfoApi.updateTypeSetting(Y9LoginUserHolder.getTenantId(), processSerialNumber, jsonData);
