@@ -1,5 +1,7 @@
 package net.risesoft.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,7 +133,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
 
             if (StringUtils.isBlank(processInstanceId)) {
                 return documentApi.startProcessByTheTaskKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId,
-                    processSerialNumber, item.getWorkflowGuid(), startTaskDefKey, "");
+                    processSerialNumber, item.getWorkflowGuid(), startTaskDefKey, List.of());
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {

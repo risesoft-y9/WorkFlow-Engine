@@ -1817,9 +1817,9 @@ public class DocumentServiceImpl implements DocumentService {
         if (tooMuch) {
             return Y9Result.failure("发送人数过多");
         }
-        Map<String, Object> map1 =
-            startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId, "");
-        String taskId = (String)map1.get("taskId");
+        Map<String, Object> startMap =
+            startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId, List.of());
+        String taskId = (String)startMap.get("taskId");
         if (!variables.isEmpty()) {
             variableApi.setVariables(tenantId, taskId, variables);
         }
@@ -2054,9 +2054,8 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 vars.putAll(variables);
             }
-            TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), "",
-                    vars);
+            TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey,
+                item.getSystemName(), List.of(), vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
@@ -2134,7 +2133,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber,
-        String processDefinitionKey, String startRouteToTaskId, String startOrgUnitId) {
+        String processDefinitionKey, String startRouteToTaskId, List<String> startOrgUnitIdList) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         try {
@@ -2144,9 +2143,8 @@ public class DocumentServiceImpl implements DocumentService {
             vars.put("tenantId", tenantId);
             vars.put(SysVariables.ROUTETOTASKID, startRouteToTaskId);
             assert item != null;
-            TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(),
-                    startOrgUnitId, vars);
+            TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey,
+                item.getSystemName(), startOrgUnitIdList, vars);
             map.put("processInstanceId", task.getProcessInstanceId());
             map.put("processSerialNumber", processSerialNumber);
             map.put("processDefinitionId", task.getProcessDefinitionId());
@@ -2176,7 +2174,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public StartProcessResultModel startProcessByTheTaskKey(String itemId, String processSerialNumber,
-        String processDefinitionKey, String startTaskDefKey, String startOrgUnitId) {
+        String processDefinitionKey, String startTaskDefKey, List<String> startOrgUnitIdList) {
         StartProcessResultModel model = null;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -2211,9 +2209,8 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 vars.putAll(variables);
             }
-            TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(),
-                    startOrgUnitId, vars);
+            TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey,
+                item.getSystemName(), startOrgUnitIdList, vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getOrgUnitId());
