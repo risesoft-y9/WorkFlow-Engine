@@ -129,7 +129,7 @@ public class ChaoSong4GfgRestController {
      * @param jsonData 意见实体json
      * @return Y9Result<OpinionModel>
      */
-    @FlowableLog(operationName = "保存传签意见", operationType = FlowableOperationTypeEnum.ADD_MODIFY)
+    @FlowableLog(operationName = "保存传签意见", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<OpinionCopyModel> save(@RequestParam @NotBlank String jsonData) {
         try {
