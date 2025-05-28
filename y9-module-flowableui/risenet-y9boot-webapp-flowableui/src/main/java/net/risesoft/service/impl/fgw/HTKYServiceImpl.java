@@ -5,6 +5,7 @@ import com.htky.pdf417.BarCodeImgCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.risesoft.service.fgw.HTKYService;
+import net.risesoft.util.gfg.OldUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.RemoteCallUtil;
@@ -28,9 +29,7 @@ import javax.annotation.Resource;
 import java.awt.image.BufferedImage;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -195,6 +194,9 @@ public class HTKYServiceImpl implements HTKYService {
         BufferedImage image = null;
         byte[] bytes = null;
         try {
+            if (tmh.length() == 16) {
+                tmh = tmh+"001";
+            }
             image = jbcode.createBarcode(tmh);
             bytes = ImageUtil.encode(image, "jpeg");
         } catch (Exception e) {
@@ -217,6 +219,9 @@ public class HTKYServiceImpl implements HTKYService {
             BarCodeEntity entity = new BarCodeEntity();
             entity.setVerStr("GB0626-2005");
             String tmh = map.get("tmh")==null?"":map.get("tmh").toString();
+            if (tmh.length() == 16) {
+                tmh = tmh+"001";
+            }
             entity.setBarcode(tmh);
             entity.setSendDept("办公厅");
             entity.setFileName("");
@@ -291,5 +296,119 @@ public class HTKYServiceImpl implements HTKYService {
             e.printStackTrace();
         }
         return bytes;
+    }
+
+    /**
+     * 判断是否已在老系统生成过待办，已生成的件不能关联
+     * @param wnbh
+     * @return
+     */
+    @Override
+    public Boolean findIsExist(String wnbh) {
+        JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();
+        Boolean flag = false;
+        List<Map<String, Object>> lw = oldjdbcTemplate.queryForList("select lwcode,lwinfouid,wnbh,lwtitle,lwdept from D_GW_LWINFO where wnbh = '"+wnbh+"'");
+        if (lw.isEmpty()) {
+            flag = false;
+            return flag;
+        }
+        Map<String, Object> lwMap = lw.get(0);
+        String lwinfouid = String.valueOf(lwMap.get("lwinfouid"));
+        String sqlRuntime = "select a.instanceId from bpm_ProcessInstanceRuntime a where a.businessKey = '"+lwinfouid+"'";
+        String runtime = oldjdbcTemplate.queryForObject(sqlRuntime,String.class);
+        String sqlHistory = "select a.instanceId from bpm_ProcessInstanceHistory a where a.businessKey = '"+lwinfouid+"'";
+        String history = oldjdbcTemplate.queryForObject(sqlHistory,String.class);
+        String sqlDone = "select a.instanceId from bpm_ProcessInstanceDone a where a.businessKey = '"+lwinfouid+"'";
+        String done = oldjdbcTemplate.queryForObject(sqlDone,String.class);
+        if (runtime.isEmpty() && done.isEmpty() && history.isEmpty()) {
+            flag = true;
+        }
+        return flag;
+    }
+
+    /**
+     * 智能交换 获取司局名称list
+     * @param tmh
+     * @return
+     */
+    @Override
+    public List<String> getFileOnMove(String tmh) {
+        String url = Y9Context.getProperty("y9.common.getSJMC");
+        List<String> deptname = new ArrayList<>();
+        if (StringUtils.isNotBlank(tmh)) {
+            DocumentFactory factory = new DocumentFactory();
+            Document document = factory.createDocument();
+            Element root = document.addElement("comefileinfo");
+            root.addElement("Sysid").setText(Y9Context.getProperty("y9.common.gwsysid"));
+            root.addElement("fileCode").setText(tmh);
+            String xml = root.asXML();
+            LOGGER.info("智能交换中取得的司局名称List,发送的XML："+xml+",url:"+url);
+            String result = RemoteCallUtil.postXml(url,xml,String.class).toString();
+            LOGGER.info("智能交换中取得的司局名称List,航天开元返回result：" + result);
+            try {
+                Document xmlResult = (new SAXReader()).read(new InputSource(new StringReader(result)));
+                Element xmlResultRoot = xmlResult.getRootElement();
+                List<Element> list = xmlResultRoot.elements();
+                for (Element e : list) {
+                    List<Element> elements = e.elements();
+                    for (Element file : elements) {
+                        deptname.add(file.elementText("dept"));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return deptname;
+        }
+        return deptname;
+    }
+
+    /**
+     * 判断当前人是否有权限在来文信息中关联来文
+     * @param bianhao 委内编号
+     * @return
+     */
+    @Override
+    public Boolean isAssociated(String bianhao) {
+        Boolean flag = false;
+        if ("_0000000000000000000000".equals(Y9LoginUserHolder.getUserInfo().getPersonId())) {
+            flag = true;
+            return flag;
+        }
+        String dn = Y9LoginUserHolder.getUserInfo().getDn();
+        List<Map<String, Object>> lwcodes = jdbcTemplate.queryForList("select lwcode,lwinfouid,wnbh,lwtitle,lwdept from D_GW_LWINFO where wnbh = '"+bianhao+"'");
+        if (lwcodes.size() < 1) {
+            flag = true;
+            return flag;
+        }
+        Map<String, Object> lwCodeMap = lwcodes.get(0);
+        String tmh = String.valueOf(lwCodeMap.get("lwcode"));
+        String deptAliasnameList = "";
+        //智能交换中取得的司局名称List
+        List<String> list = getFileOnMove(tmh);
+        for (int i = 0; i < list.size(); i++) {
+            String deptAliasname = list.get(i);
+            if (i == list.size() - 1) {
+                deptAliasnameList = deptAliasnameList + "'" + deptAliasname + "'";
+            }else {
+                deptAliasnameList = deptAliasnameList + "'" + deptAliasname + "',";
+            }
+        }
+        if (deptAliasnameList.length() > 1) {
+            String sqlDn = "select DN from Y9_ORG_DEPARTMENT WHERE ALIAS_NAME IN (" + deptAliasnameList + ")";
+            List<Map<String, Object>> dnList = jdbcTemplate.query(sqlDn,(rs,rowNum) -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("DN", rs.getObject("DN"));
+                return map;
+            });
+            for (Map<String, Object> map : dnList) {
+                if (dn.contains(String.valueOf(map.get("DN")))){
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        return flag;
     }
 }

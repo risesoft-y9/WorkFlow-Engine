@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 
+import net.risesoft.util.gfg.OldUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -111,12 +112,7 @@ public class ShuangYangServiceImpl implements ShuangYangService {
     @Override
     public void toShuangYang() {
         try {
-            DriverManagerDataSource ds = new DriverManagerDataSource();
-            ds.setDriverClassName(Y9Context.getProperty("y9.app.oldDataSource.driver-class-name"));
-            ds.setUrl(Y9Context.getProperty("y9.app.oldDataSource.url"));
-            ds.setUsername(Y9Context.getProperty("y9.app.oldDataSource.username"));
-            ds.setPassword(Y9Context.getProperty("y9.app.oldDataSource.password"));
-            JdbcTemplate oldjdbcTemplate = new JdbcTemplate(ds);
+            JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();
             // 查询未推送的数据
             List<PushData> pushDataList = jdbcTemplate
                 .query("select * from PUSHDATA where tszt ='0' order by CREATEDATE", new RowMapper<PushData>() {
