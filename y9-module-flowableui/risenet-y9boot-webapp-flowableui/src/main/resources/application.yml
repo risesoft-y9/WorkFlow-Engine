@@ -178,6 +178,9 @@ y9:
         jodconverterBaseUrl: http://localhost:7055/jodconverter/onlinePreview?url=
         logBaseUrl: http://localhost:7056/log
         userOnlineBaseUrl: http://localhost:7056/userOnline
+        tenantId: 1714687473316511744
+        systemManagerPersonId: 1715428451071197184
+        systemManagerPositionId: 1715428451641622528
     feature:
         apisix:
             enabled: false
