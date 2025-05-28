@@ -327,6 +327,11 @@ public class ScheduledTaskService {
                             , processDefinitionByKey, bd_routeToTaskId, userChoiceList);
                     if (y9Result.isSuccess()) {
                         LOGGER.info("*******启动流程成功：{}", y9Result.getData());
+                        String updateSql = "update y9_form_fwd set fillstate = 1 where guid ='" + processSerialNumber + "'";
+                        int num = jdbcTemplate.update(updateSql);
+                        if (num > 0) {
+                            LOGGER.info("*******更新发文表数据成功：{}", num);
+                        }
                     }
                 }
             }
