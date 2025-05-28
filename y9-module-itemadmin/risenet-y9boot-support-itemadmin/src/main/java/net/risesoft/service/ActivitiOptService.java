@@ -1,5 +1,6 @@
 package net.risesoft.service;
 
+import java.util.List;
 import java.util.Map;
 
 import net.risesoft.model.processadmin.TaskModel;
@@ -22,6 +23,5 @@ public interface ActivitiOptService {
      * @return
      */
     TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName,
-        String startPositionId,
-        Map<String, Object> map);
+        List<String> startOrgUnitIdList, Map<String, Object> map);
 }
