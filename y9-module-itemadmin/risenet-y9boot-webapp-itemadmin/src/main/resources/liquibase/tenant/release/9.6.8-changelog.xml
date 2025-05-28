@@ -1118,4 +1118,39 @@
             <column name="isHave" remarks="是否保存过" type="VARCHAR(50)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-57" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_DMYJ_INFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="定密依据信息表" tableName="FF_DMYJ_INFO">
+            <column name="dmyjid" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="dmyjmiji" remarks="定密依据密级" type="VARCHAR(50)"/>
+            <column name="dmyjmc" remarks="定密依据名称" type="VARCHAR(50)"/>
+            <column name="dmyjsj" remarks="定密依据司局" type="VARCHAR(50)"/>
+            <column name="isdelete" remarks="是否删除" type="VARCHAR(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700543333-58" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_DMYJSX_INFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="定密依据事项信息表" tableName="FF_DMYJSX_INFO">
+            <column name="dmyjid" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="dmyjmiji" remarks="定密依据密级" type="VARCHAR(50)"/>
+            <column name="dmyjmc" remarks="定密依据名称" type="VARCHAR(50)"/>
+            <column name="dmyjsx" remarks="定密依据事项" type="VARCHAR(100)"/>
+            <column name="dmyjsxvalue" remarks="定密依据事项值" type="VARCHAR(100)"/>
+            <column name="dmyjsj" remarks="定密依据司局" type="VARCHAR(50)"/>
+            <column name="isdelete" remarks="是否删除" type="VARCHAR(10)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

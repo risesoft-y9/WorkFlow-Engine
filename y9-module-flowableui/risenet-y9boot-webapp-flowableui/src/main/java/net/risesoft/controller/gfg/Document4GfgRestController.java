@@ -59,6 +59,7 @@ import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.DmyjInfoModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -434,6 +435,108 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 复制并起草
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    @FlowableLog(operationName = "复制并起草", operationType = FlowableOperationTypeEnum.DRAFT)
+    @PostMapping(value = "/copy2Todo")
+    public Y9Result<Map<String, Object>> copy2Todo(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String startTaskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId();
+        List<TaskRelatedModel> processRelatedList =
+            taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        if (processRelatedList.stream()
+            .anyMatch(taskRelatedModel -> TaskRelatedEnum.FU.getValue().equals(taskRelatedModel.getInfoType()))) {
+            return Y9Result.failure("操作失败：复制件不能被复制!");
+        }
+        if (processRelatedList.stream()
+            .anyMatch(taskRelatedModel -> TaskRelatedEnum.YUAN.getValue().equals(taskRelatedModel.getInfoType()))) {
+            return Y9Result.failure("操作失败：该文件已被复制!");
+        }
+        // 1复制表单数据
+        String targetProcessSerialNumber = Y9IdGenerator.genId();
+        Y9Result<Object> copy = formDataApi.copy(tenantId, processSerialNumber, targetProcessSerialNumber);
+        if (!copy.isSuccess()) {
+            return Y9Result.failure("操作失败：表单数据不存在!");
+        }
+        Y9Result<ProcessParamModel> processParamY9Result =
+            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+        if (!processParamY9Result.isSuccess()) {
+            return Y9Result.failure("操作失败：流程参数不存在!");
+        }
+        ProcessParamModel oldProcessParam = processParamY9Result.getData();
+        // 2修改表单流水号
+        Y9Result<String> numberY9Result =
+            asyncUtilService.getNumber(tenantId, personId, oldProcessParam.getItemId(), targetProcessSerialNumber);
+        if (!numberY9Result.isSuccess()) {
+            return Y9Result.failure("操作失败：修改表单流水号失败!");
+        }
+        // 3复制正文数据 正文类别,1:办文要报，2：发文稿纸
+        Y9Result<Object> word1 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
+            targetProcessSerialNumber, "1");
+        Y9Result<Object> word2 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
+            targetProcessSerialNumber, "2");
+        if (!word1.isSuccess() || !word2.isSuccess()) {
+            return Y9Result.failure("操作失败：复制正文失败!");
+        }
+        // 4复制流程参数并启动流程
+        Y9Result<StartProcessResultModel> startY9Result = processParamService.saveOrUpdate(oldProcessParam.getItemId(),
+            targetProcessSerialNumber, "", oldProcessParam.getTitle(), oldProcessParam.getCustomNumber(),
+            oldProcessParam.getCustomLevel(), false, startTaskDefKey);
+        if (!startY9Result.isSuccess()) {
+            return Y9Result.failure("操作失败：保存流程参数启动流程失败!");
+        }
+        StartProcessResultModel startProcess = startY9Result.getData();
+        Position position = Y9LoginUserHolder.getPosition();
+        // 5 设置原文件的相关信息
+        TaskRelatedModel sourceTaskRelated = new TaskRelatedModel();
+        sourceTaskRelated.setInfoType(TaskRelatedEnum.YUAN.getValue());
+        sourceTaskRelated.setProcessInstanceId(oldProcessParam.getProcessInstanceId());
+        sourceTaskRelated.setProcessSerialNumber(processSerialNumber);
+        sourceTaskRelated.setExecutionId(oldProcessParam.getProcessInstanceId());
+        sourceTaskRelated.setTaskId("copy2Todo");
+        sourceTaskRelated.setSub(false);
+        sourceTaskRelated.setMsgContent(numberY9Result.getData());
+        sourceTaskRelated.setSenderId(position.getId());
+        sourceTaskRelated.setSenderName(position.getName());
+        Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(tenantId, sourceTaskRelated);
+        // 6 设置复制件的相关信息
+        Map<String, Object> fwFormDataMap =
+            formDataApi.getData4TableAlias(tenantId, processSerialNumber, "fw").getData();
+        String sourceLsh = (String)fwFormDataMap.getOrDefault("lsh", "流水号不存在");
+        TaskRelatedModel targetTaskRelated = new TaskRelatedModel();
+        targetTaskRelated.setInfoType(TaskRelatedEnum.FU.getValue());
+        targetTaskRelated.setProcessInstanceId(startProcess.getProcessInstanceId());
+        targetTaskRelated.setProcessSerialNumber(targetProcessSerialNumber);
+        targetTaskRelated.setExecutionId(startProcess.getProcessInstanceId());
+        targetTaskRelated.setTaskId("copy2Todo");
+        targetTaskRelated.setSub(false);
+        targetTaskRelated.setMsgContent(sourceLsh);
+        targetTaskRelated.setSenderId(position.getId());
+        targetTaskRelated.setSenderName(position.getName());
+        Y9Result<Object> fuResult = taskRelatedApi.saveOrUpdate(tenantId, targetTaskRelated);
+
+        List<ActRuDetailModel> actRuDetailList = actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId,
+            targetProcessSerialNumber, ActRuDetailStatusEnum.TODO.getValue()).getData();
+        ActRuDetailModel actRuDetail = actRuDetailList.stream()
+            .filter(actRuDetailModel -> actRuDetailModel.getTaskId().equals(startProcess.getTaskId())).findFirst()
+            .orElse(null);
+        Map<String, Object> map = new HashMap<>();
+        assert actRuDetail != null;
+        map.put("taskId", actRuDetail.getTaskId());
+        map.put("taskName", actRuDetail.getTaskDefName());
+        map.put("actRuDetailId", actRuDetail.getId());
+        map.put("lsh", numberY9Result.getData());
+        map.put("userName", actRuDetail.getAssigneeName());
+        if (yuanResult.isSuccess() && fuResult.isSuccess()) {
+            return Y9Result.success(map);
+        }
+        return Y9Result.success(map, "复制并起草成功，但是建立关联关系失败！");
+    }
+
+    /**
      * 获取编辑办件数据
      *
      * @param itembox 办件状态
@@ -753,7 +856,7 @@ public class Document4GfgRestController {
 
     /**
      * 获取部门信息
-     * 
+     *
      * @param deptId
      * @return
      */
@@ -761,6 +864,21 @@ public class Document4GfgRestController {
     public Y9Result<Department> getDeptInfo(@RequestParam @NotBlank String deptId) {
         Department dept = departmentApi.get(Y9LoginUserHolder.getTenantId(), deptId).getData();
         return Y9Result.success(dept);
+    }
+
+    /**
+     * 获取定密依据信息
+     *
+     * @param miji 密级
+     * @param dmyjmc 定密依据名称
+     * @param dmyjsj 定密依据司局
+     * @return {@code Y9Result<List<DmyjInfoModel>>} 通用请求返回对象
+     * @since 9.6.8
+     */
+    @GetMapping(value = "/getDmyjInfoList")
+    public Y9Result<List<DmyjInfoModel>> getDmyjInfoList(@RequestParam String miji,
+        @RequestParam(required = false) String dmyjmc, @RequestParam String dmyjsj) {
+        return secretLevelRecordApi.getDmyjInfo(Y9LoginUserHolder.getTenantId(), miji, dmyjmc, dmyjsj);
     }
 
     /**
@@ -1075,108 +1193,6 @@ public class Document4GfgRestController {
             });
         }
         return y9Result;
-    }
-
-    /**
-     * 复制并起草
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    @FlowableLog(operationName = "复制并起草", operationType = FlowableOperationTypeEnum.DRAFT)
-    @PostMapping(value = "/copy2Todo")
-    public Y9Result<Map<String, Object>> copy2Todo(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String startTaskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId();
-        List<TaskRelatedModel> processRelatedList =
-            taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-        if (processRelatedList.stream()
-            .anyMatch(taskRelatedModel -> TaskRelatedEnum.FU.getValue().equals(taskRelatedModel.getInfoType()))) {
-            return Y9Result.failure("操作失败：复制件不能被复制!");
-        }
-        if (processRelatedList.stream()
-            .anyMatch(taskRelatedModel -> TaskRelatedEnum.YUAN.getValue().equals(taskRelatedModel.getInfoType()))) {
-            return Y9Result.failure("操作失败：该文件已被复制!");
-        }
-        // 1复制表单数据
-        String targetProcessSerialNumber = Y9IdGenerator.genId();
-        Y9Result<Object> copy = formDataApi.copy(tenantId, processSerialNumber, targetProcessSerialNumber);
-        if (!copy.isSuccess()) {
-            return Y9Result.failure("操作失败：表单数据不存在!");
-        }
-        Y9Result<ProcessParamModel> processParamY9Result =
-            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
-        if (!processParamY9Result.isSuccess()) {
-            return Y9Result.failure("操作失败：流程参数不存在!");
-        }
-        ProcessParamModel oldProcessParam = processParamY9Result.getData();
-        // 2修改表单流水号
-        Y9Result<String> numberY9Result =
-            asyncUtilService.getNumber(tenantId, personId, oldProcessParam.getItemId(), targetProcessSerialNumber);
-        if (!numberY9Result.isSuccess()) {
-            return Y9Result.failure("操作失败：修改表单流水号失败!");
-        }
-        // 3复制正文数据 正文类别,1:办文要报，2：发文稿纸
-        Y9Result<Object> word1 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
-            targetProcessSerialNumber, "1");
-        Y9Result<Object> word2 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
-            targetProcessSerialNumber, "2");
-        if (!word1.isSuccess() || !word2.isSuccess()) {
-            return Y9Result.failure("操作失败：复制正文失败!");
-        }
-        // 4复制流程参数并启动流程
-        Y9Result<StartProcessResultModel> startY9Result = processParamService.saveOrUpdate(oldProcessParam.getItemId(),
-            targetProcessSerialNumber, "", oldProcessParam.getTitle(), oldProcessParam.getCustomNumber(),
-            oldProcessParam.getCustomLevel(), false, startTaskDefKey);
-        if (!startY9Result.isSuccess()) {
-            return Y9Result.failure("操作失败：保存流程参数启动流程失败!");
-        }
-        StartProcessResultModel startProcess = startY9Result.getData();
-        Position position = Y9LoginUserHolder.getPosition();
-        // 5 设置原文件的相关信息
-        TaskRelatedModel sourceTaskRelated = new TaskRelatedModel();
-        sourceTaskRelated.setInfoType(TaskRelatedEnum.YUAN.getValue());
-        sourceTaskRelated.setProcessInstanceId(oldProcessParam.getProcessInstanceId());
-        sourceTaskRelated.setProcessSerialNumber(processSerialNumber);
-        sourceTaskRelated.setExecutionId(oldProcessParam.getProcessInstanceId());
-        sourceTaskRelated.setTaskId("copy2Todo");
-        sourceTaskRelated.setSub(false);
-        sourceTaskRelated.setMsgContent(numberY9Result.getData());
-        sourceTaskRelated.setSenderId(position.getId());
-        sourceTaskRelated.setSenderName(position.getName());
-        Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(tenantId, sourceTaskRelated);
-        // 6 设置复制件的相关信息
-        Map<String, Object> fwFormDataMap =
-            formDataApi.getData4TableAlias(tenantId, processSerialNumber, "fw").getData();
-        String sourceLsh = (String)fwFormDataMap.getOrDefault("lsh", "流水号不存在");
-        TaskRelatedModel targetTaskRelated = new TaskRelatedModel();
-        targetTaskRelated.setInfoType(TaskRelatedEnum.FU.getValue());
-        targetTaskRelated.setProcessInstanceId(startProcess.getProcessInstanceId());
-        targetTaskRelated.setProcessSerialNumber(targetProcessSerialNumber);
-        targetTaskRelated.setExecutionId(startProcess.getProcessInstanceId());
-        targetTaskRelated.setTaskId("copy2Todo");
-        targetTaskRelated.setSub(false);
-        targetTaskRelated.setMsgContent(sourceLsh);
-        targetTaskRelated.setSenderId(position.getId());
-        targetTaskRelated.setSenderName(position.getName());
-        Y9Result<Object> fuResult = taskRelatedApi.saveOrUpdate(tenantId, targetTaskRelated);
-
-        List<ActRuDetailModel> actRuDetailList = actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId,
-            targetProcessSerialNumber, ActRuDetailStatusEnum.TODO.getValue()).getData();
-        ActRuDetailModel actRuDetail = actRuDetailList.stream()
-            .filter(actRuDetailModel -> actRuDetailModel.getTaskId().equals(startProcess.getTaskId())).findFirst()
-            .orElse(null);
-        Map<String, Object> map = new HashMap<>();
-        assert actRuDetail != null;
-        map.put("taskId", actRuDetail.getTaskId());
-        map.put("taskName", actRuDetail.getTaskDefName());
-        map.put("actRuDetailId", actRuDetail.getId());
-        map.put("lsh", numberY9Result.getData());
-        map.put("userName", actRuDetail.getAssigneeName());
-        if (yuanResult.isSuccess() && fuResult.isSuccess()) {
-            return Y9Result.success(map);
-        }
-        return Y9Result.success(map, "复制并起草成功，但是建立关联关系失败！");
     }
 
     /**
