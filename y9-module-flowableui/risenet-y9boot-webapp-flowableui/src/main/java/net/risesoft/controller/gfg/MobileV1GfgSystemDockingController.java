@@ -16,6 +16,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -216,8 +217,12 @@ public class MobileV1GfgSystemDockingController {
                 }
             }
             // 5、启动流程
+            List<String> startOrgUnitIdList = new ArrayList<>();
+            if (StringUtils.isNotBlank(startPositionId)) {
+                startOrgUnitIdList.add(startPositionId);
+            }
             Y9Result<StartProcessResultModel> y9Result = documentApi.startProcessByTheTaskKey(tenantId, positionId,
-                itemId, guid, item.getWorkflowGuid(), startTaskDefKey, startPositionId);
+                itemId, guid, item.getWorkflowGuid(), startTaskDefKey, startOrgUnitIdList);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(y9Result.getData(), "提交成功");
             }
