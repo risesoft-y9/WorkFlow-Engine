@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.model.itemadmin.DmyjInfoModel;
 import net.risesoft.model.itemadmin.SecretLevelModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -16,6 +17,21 @@ import net.risesoft.pojo.Y9Result;
  * @date 2025/02/12
  */
 public interface SecretLevelRecordApi {
+
+    /**
+     * 获取定密依据信息
+     *
+     * @param tenantId 租户id
+     * @param miji 密级
+     * @param dmyjmc 定密依据名称
+     * @param dmyjsj 定密依据司局
+     * @return {@code Y9Result<List<DmyjInfoModel>>} 通用请求返回对象
+     * @since 9.6.8
+     */
+    @GetMapping("/getDmyjInfo")
+    Y9Result<List<DmyjInfoModel>> getDmyjInfo(@RequestParam("tenantId") String tenantId,
+        @RequestParam("miji") String miji, @RequestParam(value = "dmyjmc", required = false) String dmyjmc,
+        @RequestParam("dmyjsj") String dmyjsj);
 
     /**
      * 获取密级记录
