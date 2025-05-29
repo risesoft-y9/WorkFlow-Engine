@@ -33,12 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.command.RecoveryTodoCommand;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomRuntimeService;
@@ -75,13 +77,16 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final ActRuDetailApi actRuDetailApi;
 
+    private final ProcessParamApi processParamApi;
+
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,
         IdentityService identityService, ManagementService managementService,
         CustomProcessDefinitionService customProcessDefinitionService, OfficeDoneInfoApi officeDoneInfoApi,
-        ErrorLogApi errorLogApi, DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
+        ErrorLogApi errorLogApi, DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi,
+        ProcessParamApi processParamApi) {
         this.runtimeService = runtimeService;
         this.historyService = historyService;
         this.identityService = identityService;
@@ -91,6 +96,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         this.errorLogApi = errorLogApi;
         this.deleteProcessUtilService = deleteProcessUtilService;
         this.actRuDetailApi = actRuDetailApi;
+        this.processParamApi = processParamApi;
     }
 
     @Override
@@ -254,9 +260,8 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             for (Execution execution : executionList) {
                 executionSet.add(execution.getId());
             }
-            String nodeType =
-                customProcessDefinitionService.getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
-                    .getMultiInstance();
+            String nodeType = customProcessDefinitionService
+                .getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getMultiInstance();
 
             /*
              * 复制年度历史数据到正在运行历史表
@@ -382,6 +387,11 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setEndTime(null);
                 officeDoneInfoApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);
+
+                ProcessParamModel processParamModel = processParamApi
+                    .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+                processParamModel.setCompleter("");
+                processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
             } catch (Exception e) {
                 final Writer result = new StringWriter();
                 final PrintWriter print = new PrintWriter(result);
