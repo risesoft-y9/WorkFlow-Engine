@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,6 +45,22 @@ public class ProcessParam4GfgRestController {
     private final VariableApi variableApi;
 
     private final ActRuDetailApi actRuDetailApi;
+
+    /**
+     * 根据流程实例id获取流程变量
+     *
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<ProcessParamModel>
+     */
+    @GetMapping(value = "/getProcessParam")
+    public Y9Result<ProcessParamModel> getProcessParam(@RequestParam String processInstanceId) {
+        ProcessParamModel processParamModel =
+            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+        if (processParamModel != null) {
+            return Y9Result.success(processParamModel);
+        }
+        return Y9Result.success(null);
+    }
 
     /**
      * 保存流程变量
