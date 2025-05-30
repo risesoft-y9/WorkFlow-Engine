@@ -156,13 +156,22 @@ public class ProcessModelVueController {
     public void exportModel(@RequestParam @NotBlank String modelId, HttpServletResponse response) {
         try {
             Model model = modelService.getModel(modelId);
+            if (model == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Model not found");
+                return;
+            }
+            
             byte[] bpmnBytes = modelService.getBpmnXML(model);
 
-            ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
             String filename = model.getKey() + ".bpmn20.xml";
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            IOUtils.copy(in, response.getOutputStream());
-            response.flushBuffer();
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, "UTF-8"));
+            
+            try (ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes)) {
+                IOUtils.copy(in, response.getOutputStream());
+                response.flushBuffer();
+            }
         } catch (Exception e) {
             LOGGER.error("导出模型失败,modelId:{} 异常：{}", modelId, e.getMessage());
         }

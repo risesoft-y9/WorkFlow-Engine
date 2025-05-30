@@ -261,7 +261,8 @@ public class CacheServiceRocksDBImpl implements CacheService {
     private Object toObject(byte[] bytes) throws IOException, ClassNotFoundException {
         Object obj;
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        ObjectInputStream ois = new ObjectInputStream(bis);
+        ValidatingObjectInputStream ois = new ValidatingObjectInputStream(bis); {
+        ois.accept(LinkedList.class, LogMutation.class, HashMap.class, String.class);
         obj = ois.readObject();
         ois.close();
         bis.close();
