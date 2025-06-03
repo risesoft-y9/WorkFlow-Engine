@@ -1,6 +1,7 @@
 package net.risesoft.controller.gfg;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,7 @@ public class LwInfo4GfgRestController {
         //1.判断是否已在老系统生成过待办，已生成的件不能关联
         Boolean isExist = htkyService.findIsExist(bianhao);
         if (isExist) {
-            return Y9Result.success(null,"此委内编号已生成“行政许可来文待办件”，请先处理该来文待办件。");
+            return Y9Result.failure("此委内编号已生成“行政许可来文待办件”，请先处理该来文待办件。");
         }else {
             //2.判断当前人是否有权限在来文信息中关联来文
             Boolean flag = htkyService.isAssociated(bianhao);
@@ -82,48 +83,37 @@ public class LwInfo4GfgRestController {
                     map.put("lwdept", rs.getObject("lwdept"));
                     return map;
                 });
-                Map<String, Object> map = lwMap.get(0);
-                LwLinkBwModel lwInfoModel = new LwLinkBwModel();
-                lwInfoModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                lwInfoModel.setProcessSerialNumber(processSerialNumber);
-                lwInfoModel.setWnbh(bianhao);
-                lwInfoModel.setLwInfoUid(String.valueOf(map.get("lwinfouid")));
-                lwInfoModel.setLwTitle(String.valueOf(map.get("lwtitle")));
-                lwInfoModel.setLwDept(String.valueOf(map.get("lwdept")));
-                lwInfoModel.setLwsx(String.valueOf(map.get("limittime")));
-                lwInfoModel.setRecordTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
-                lwInfoModel.setInputPerson(Y9LoginUserHolder.getUserInfo().getName());
-                //插入新系统 办文信息的来文信息表
-                lwInfoApi.saveLwInfo(Y9LoginUserHolder.getTenantId(), lwInfoModel);
-                //插入老系统 linkruntime
-                String insertsql = "insert into BPM_LINKRUNTIME (LINKID,DESCRIPTION,FROMINSTANCEID,NAME,TOINSTANCEID,BPMSERVER,CREATED," +
-                        "CREATERDN,CREATERNAME,CREATERUID,UPDATED,UPDATERDN,UPDATERNAME,UPDATERUID,LINKTYPE) " +
-                        "values ('"+Y9IdGenerator.genId()+"','"+String.valueOf(map.get("lwtitle"))+"','"+processInstanceId+"'," +
-                        "'"+bianhao+"','"+String.valueOf(map.get("lwinfouid"))+"','bpmServer1','"+new Date()+"'," +
-                        "'"+Y9LoginUserHolder.getUserInfo().getDn()+"','"+Y9LoginUserHolder.getUserInfo().getName()+"','"+Y9LoginUserHolder.getPersonId()+"'," +
-                        "'"+new Date()+"','"+Y9LoginUserHolder.getUserInfo().getDn()+"','"+Y9LoginUserHolder.getUserInfo().getName()+"','"+Y9LoginUserHolder.getPersonId()+"','NORMAL_OFFICELINE')";
-                oldjdbcTemplate.update(insertsql);
-                //根据上述回填
-                Map<String, Object> htmap = new HashMap<>();
-                String filePropertyStr = map.get("fileproperty") != null ? map.get("fileproperty").toString() : "";
-                switch (filePropertyStr.length()) {
-                    case 4:
-                        htmap.put("yjlb", filePropertyStr);
-                        break;
-                    case 5:
-                        htmap.put("yjlb", filePropertyStr.substring(0, 4));
-                        htmap.put("ejlb", filePropertyStr);
-                        break;
-                    case 8:
-                        htmap.put("yjlb", filePropertyStr.substring(0, 4));
-                        htmap.put("ejlb", filePropertyStr.substring(0, 8));
-                        htmap.put("sjlb", filePropertyStr);
-                        break;
+                if (lwMap.size()>0){
+                    Map<String, Object> map = lwMap.get(0);
+                    LwLinkBwModel lwInfoModel = new LwLinkBwModel();
+                    lwInfoModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    lwInfoModel.setProcessSerialNumber(processSerialNumber);
+                    lwInfoModel.setWnbh(bianhao);
+                    lwInfoModel.setLwInfoUid(String.valueOf(map.get("lwinfouid")));
+                    lwInfoModel.setLwTitle(String.valueOf(map.get("lwtitle")));
+                    lwInfoModel.setLwDept(String.valueOf(map.get("lwdept")));
+                    lwInfoModel.setLwsx(String.valueOf(map.get("limittime")));
+                    lwInfoModel.setRecordTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
+                    lwInfoModel.setInputPerson(Y9LoginUserHolder.getUserInfo().getName());
+                    //插入新系统 办文信息的来文信息表(已存在则提示：来文信息已经存在~)
+                    Y9Result o =lwInfoApi.saveLwInfo(Y9LoginUserHolder.getTenantId(), lwInfoModel);
+                    if (!o.isSuccess()){
+                        return Y9Result.failure(o.getMsg());
+                    }
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    String date = sdf.format(new Date());
+                    //插入老系统 关联文件表
+                    String insertsql = "insert into BPM_LINKRUNTIME (LINKID,DESCRIPTION,FROMINSTANCEID,NAME,TOINSTANCEID,BPMSERVER,CREATED," +
+                            "CREATERDN,CREATERNAME,CREATERUID,UPDATED,UPDATERDN,UPDATERNAME,UPDATERUID,LINKTYPE) " +
+                            "values ('"+Y9IdGenerator.genId()+"','"+String.valueOf(map.get("lwtitle"))+"','"+processInstanceId+"'," +
+                            "'"+bianhao+"','"+String.valueOf(map.get("lwinfouid"))+"','new','"+date+"'," +
+                            "'"+Y9LoginUserHolder.getUserInfo().getDn()+"','"+Y9LoginUserHolder.getUserInfo().getName()+"','"+Y9LoginUserHolder.getPersonId()+"'," +
+                            "'"+date+"','"+Y9LoginUserHolder.getUserInfo().getDn()+"','"+Y9LoginUserHolder.getUserInfo().getName()+"','"+Y9LoginUserHolder.getPersonId()+"','NORMAL_OFFICELINE')";
+                    oldjdbcTemplate.update(insertsql);
+                    return Y9Result.success();
+                }else{
+                    return Y9Result.failure("未查询到对应委内编号来文信息~");
                 }
-                if (!String.valueOf(map.get("limittime")).isBlank()){
-                    htmap.put("dbsx", String.valueOf(map.get("limittime")));
-                }
-                return Y9Result.success(htmap);
             }else {
                 return Y9Result.success(null,"对不起!您没有权限关联此来文！");
             }

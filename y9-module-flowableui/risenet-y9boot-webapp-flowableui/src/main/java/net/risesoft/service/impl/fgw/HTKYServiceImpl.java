@@ -314,13 +314,13 @@ public class HTKYServiceImpl implements HTKYService {
         }
         Map<String, Object> lwMap = lw.get(0);
         String lwinfouid = String.valueOf(lwMap.get("lwinfouid"));
-        String sqlRuntime = "select a.instanceId from bpm_ProcessInstanceRuntime a where a.businessKey = '"+lwinfouid+"'";
-        String runtime = oldjdbcTemplate.queryForObject(sqlRuntime,String.class);
-        String sqlHistory = "select a.instanceId from bpm_ProcessInstanceHistory a where a.businessKey = '"+lwinfouid+"'";
-        String history = oldjdbcTemplate.queryForObject(sqlHistory,String.class);
-        String sqlDone = "select a.instanceId from bpm_ProcessInstanceDone a where a.businessKey = '"+lwinfouid+"'";
-        String done = oldjdbcTemplate.queryForObject(sqlDone,String.class);
-        if (runtime.isEmpty() && done.isEmpty() && history.isEmpty()) {
+        String sqlRuntime = "select INSTANCEID from BPM_PROCESSINSTANCERUNTIME where BUSINESSKEY = '"+lwinfouid+"'";
+        List<Object> runtime = oldjdbcTemplate.query(sqlRuntime, (rs, rowNum) -> rs.getString("INSTANCEID"));
+        String sqlHistory = "select INSTANCEID from BPM_PROCESSINSTANCEHISTORY where BUSINESSKEY = '"+lwinfouid+"'";
+        List<Object> history = oldjdbcTemplate.query(sqlHistory, (rs, rowNum) -> rs.getString("INSTANCEID"));
+        String sqlDone = "select INSTANCEID from BPM_PROCESSINSTANCEDONE where BUSINESSKEY = '"+lwinfouid+"'";
+        List<Object> done = oldjdbcTemplate.query(sqlDone, (rs, rowNum) -> rs.getString("INSTANCEID"));
+        if (runtime.size() > 0 || done.size() > 0 || history.size() > 0) {
             flag = true;
         }
         return flag;
@@ -376,8 +376,17 @@ public class HTKYServiceImpl implements HTKYService {
             flag = true;
             return flag;
         }
+        JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();
         String dn = Y9LoginUserHolder.getUserInfo().getDn();
-        List<Map<String, Object>> lwcodes = jdbcTemplate.queryForList("select lwcode,lwinfouid,wnbh,lwtitle,lwdept from D_GW_LWINFO where wnbh = '"+bianhao+"'");
+        List<Map<String, Object>> lwcodes = oldjdbcTemplate.query("select lwcode,lwinfouid,wnbh,lwtitle,lwdept from D_GW_LWINFO where wnbh = '"+bianhao+"'",(rs,row) ->{
+            Map<String, Object> map = new HashMap<>();
+            map.put("lwcode", rs.getString("lwcode"));
+            map.put("lwinfouid", rs.getString("lwinfouid"));
+            map.put("wnbh", rs.getString("wnbh"));
+            map.put("lwtitle", rs.getString("lwtitle"));
+            map.put("lwdept", rs.getString("lwdept"));
+            return map;
+        });
         if (lwcodes.size() < 1) {
             flag = true;
             return flag;
