@@ -366,6 +366,7 @@ public class ScheduledTaskService {
     @Scheduled(fixedDelay = 300000L)
     public void syncIdentityRole() {
         LOGGER.info("******* 定时推送双杨数据 *******");
+        Y9LoginUserHolder.setTenantId(tenantId);
         shuangYangService.toShuangYang();
     }
 
