@@ -212,8 +212,7 @@ public class ButtonUtil {
                  * 是否签收，true表示签收了，false表示没有签收 如果未签收了，除了签收、拒签、返回按钮都不显示 因此下面每个按钮都需要判断isAssignee为true还是false
                  */
                 boolean isAssignee = StringUtils.isNotBlank(assignee);
-                Boolean isContainEndEvent =
-                    processDefinitionApi.isContainEndEvent(tenantId, taskId).getData();
+                Boolean isContainEndEvent = processDefinitionApi.isContainEndEvent(tenantId, taskId).getData();
                 // 获取某个节点除去end节点的所有的输出线路的个数
                 int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
                 String processDefinitionId = task.getProcessDefinitionId();
@@ -600,6 +599,93 @@ public class ButtonUtil {
         return buttonModelList;
     }
 
+    public List<ItemButtonModel> showButton4Copy() {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(ItemButton.siNeiChuanQian);
+        buttonModelList.add(ItemButton.chuanQianJiLu);
+        buttonModelList.add(ItemButton.chuanQianYiJian);
+        buttonModelList.add(ItemButton.shanChuChuanQianJian);
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
+
+    public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        if (task != null) {
+            Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
+            String taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
+            String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+            String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+            String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            // 下面是收回按钮
+            if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
+                && rollbackObj == null && repositionObj == null) {
+                Boolean isSub4Current = processDefinitionApi
+                    .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
+                if (isSub4Current) {
+                    OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
+                    OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+                    if (currentBureau.getId().equals(sendBureau.getId())) {
+                        buttonModelList.add(ItemButton.shouHui);
+                    }
+                } else {
+                    List<HistoricTaskInstanceModel> hisTaskList =
+                        historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
+                    if (!hisTaskList.isEmpty()) {
+                        Boolean isSubProcess4Send =
+                            processDefinitionApi.isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
+                                hisTaskList.stream().findFirst().get().getTaskDefinitionKey()).getData();
+                        if (!isSubProcess4Send) {
+                            buttonModelList.add(ItemButton.shouHui);
+                        }
+                    }
+                }
+            }
+        }
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
+
+    public List<ItemButtonModel> showButton4Done(DocumentDetailModel model) {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        ItemBoxTypeEnum itemBox = ItemBoxTypeEnum.fromString(model.getItembox());
+        switch (itemBox) {
+            case DONE:
+                ProcessParam processParam =
+                    processParamService.findByProcessSerialNumber(model.getProcessSerialNumber());
+                String year = processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
+                List<HistoricTaskInstanceModel> list =
+                    historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
+                        model.getProcessInstanceId(), year).getData();
+                HistoricTaskInstanceModel hisTaskModelTemp = list != null && list.size() > 0 ? list.get(0) : null;
+                if (hisTaskModelTemp != null
+                    && hisTaskModelTemp.getAssignee().equals(Y9LoginUserHolder.getOrgUnit().getId())) {
+                    buttonModelList.add(ItemButton.huiFuDaiBan);
+                }
+                break;
+            case MONITOR_DONE:
+                buttonModelList.add(ItemButton.huiFuDaiBan);
+                break;
+        }
+        /*buttonModelList.add(ItemButton.chaoSong);
+        buttonModelList.add(ItemButton.daYin);
+        buttonModelList.add(ItemButton.fanHui);*/
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
+
+    public List<ItemButtonModel> showButton4Recycle() {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(ItemButton.huiFu);
+        buttonModelList.add(ItemButton.cheDiShanChu);
+        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
+
     public List<ItemButtonModel> showButton4Todo(String itemId, String taskId, DocumentDetailModel model) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonList = new ArrayList<>();
@@ -932,90 +1018,5 @@ public class ButtonUtil {
         buttonList =
             buttonList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
         return buttonList;
-    }
-
-    public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        List<ItemButtonModel> buttonModelList = new ArrayList<>();
-
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        if (task != null) {
-            Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
-            String taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
-            String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-            String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-            String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
-            // 下面是收回按钮
-            if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
-                && rollbackObj == null && repositionObj == null) {
-                Boolean isSub4Current = processDefinitionApi
-                    .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getData();
-                if (isSub4Current) {
-                    OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
-                    OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
-                    if (currentBureau.getId().equals(sendBureau.getId())) {
-                        buttonModelList.add(ItemButton.shouHui);
-                    }
-                } else {
-                    List<HistoricTaskInstanceModel> hisTaskList =
-                        historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
-                    if (!hisTaskList.isEmpty()) {
-                        Boolean isSubProcess4Send =
-                            processDefinitionApi.isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
-                                hisTaskList.stream().findFirst().get().getTaskDefinitionKey()).getData();
-                        if (!isSubProcess4Send) {
-                            buttonModelList.add(ItemButton.shouHui);
-                        }
-                    }
-                }
-            }
-        }
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
-            .collect(Collectors.toList());
-    }
-
-    public List<ItemButtonModel> showButton4Done(DocumentDetailModel model) {
-        List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        ItemBoxTypeEnum itemBox = ItemBoxTypeEnum.fromString(model.getItembox());
-        switch (itemBox) {
-            case DONE:
-                ProcessParam processParam =
-                    processParamService.findByProcessSerialNumber(model.getProcessSerialNumber());
-                String year = processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
-                HistoricTaskInstanceModel hisTaskModelTemp =
-                    historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
-                        model.getProcessInstanceId(), year).getData().get(0);
-                if (hisTaskModelTemp.getAssignee().equals(Y9LoginUserHolder.getOrgUnit().getId())) {
-                    buttonModelList.add(ItemButton.huiFuDaiBan);
-                }
-                break;
-            case MONITOR_DONE:
-                buttonModelList.add(ItemButton.huiFuDaiBan);
-                break;
-        }
-        /*buttonModelList.add(ItemButton.chaoSong);
-        buttonModelList.add(ItemButton.daYin);
-        buttonModelList.add(ItemButton.fanHui);*/
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
-            .collect(Collectors.toList());
-    }
-
-    public List<ItemButtonModel> showButton4Recycle() {
-        List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(ItemButton.huiFu);
-        buttonModelList.add(ItemButton.cheDiShanChu);
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
-            .collect(Collectors.toList());
-    }
-
-    public List<ItemButtonModel> showButton4Copy() {
-        List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(ItemButton.siNeiChuanQian);
-        buttonModelList.add(ItemButton.chuanQianJiLu);
-        buttonModelList.add(ItemButton.chuanQianYiJian);
-        buttonModelList.add(ItemButton.shanChuChuanQianJian);
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
-            .collect(Collectors.toList());
     }
 }
