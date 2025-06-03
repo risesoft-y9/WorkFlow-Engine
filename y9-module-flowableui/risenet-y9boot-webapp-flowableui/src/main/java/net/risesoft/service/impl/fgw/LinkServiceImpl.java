@@ -362,14 +362,14 @@ public class LinkServiceImpl implements LinkService {
                     continue;
                 }
                 if (listType == 0 && ccTo != null ){
+                    departmentName = getBmjc(ccTo.getCreaterDn());
                     if (to != null){
                         if (!to.getProcessId().equals(process.getProcessId())){
                             continue;
                         }
                         type="0";
-                        departmentName = getBmjc(to.getCreaterDn());
                         activityInstanceId = to.getActivityInstanceId();
-                    }else if (StringUtils.isNotBlank(nto.getInstanceid())){
+                    }else if (nto != null){
                         type="1";
                         if (!nto.getProcessId().equals(process.getProcessId())){
                             continue;
@@ -377,29 +377,27 @@ public class LinkServiceImpl implements LinkService {
                     }
                 }
                 if (listType == 0 && isSl && process.getProcessId().equals(OldUtil.ljProcessId)){
+                    departmentName = getBmjc(ccFrom.getCreaterDn());
                     if (from != null){
                         type = "0";
-                        departmentName = getBmjc(from.getCreaterDn());
                     }else {
                         type ="1";
-                        departmentName = getBmjc(nfrom.getCreaterDn());
                     }
 
                 }
                 if (listType == 1 && (from != null || nfrom != null)){
+                    departmentName = getBmjc(ccFrom.getCreaterDn());
                     if (from != null){
                         if (!from.getProcessId().equals(process.getProcessId())){
                             continue;
                         }
                         type = "0";
-                        departmentName = getBmjc(from.getCreaterDn());
                         activityInstanceId = from.getActivityInstanceId();
                     }else {
                         type ="1";
                         if (!nfrom.getProcessId().equals(process.getProcessId())){
                             continue;
                         }
-                        departmentName = getBmjc(nfrom.getCreaterDn());
                     }
                 }
                 if (ccFrom != null && ccTo != null){
