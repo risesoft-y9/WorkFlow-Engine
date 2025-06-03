@@ -86,9 +86,9 @@ public class LwInfoApiImpl implements LwInfoApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         GwLwLinkBw gwLwInfo = new GwLwLinkBw();
         Y9BeanUtil.copyProperties(lwInfoModel, gwLwInfo);
-        List<GwLwLinkBw> list = gwLwLinkBwRepository.findByProcessSerialNumber(gwLwInfo.getProcessSerialNumber());
-        if (list.size() > 0) {
-            gwLwInfo.setId(list.get(0).getId());
+        GwLwLinkBw GwLwLinkBw = gwLwLinkBwRepository.findByProcessSerialNumberAndLwinfoUid(gwLwInfo.getProcessSerialNumber(),gwLwInfo.getLwInfoUid());
+        if (GwLwLinkBw != null) {
+            return Y9Result.failure("来文信息已经存在~");
         }
         gwLwLinkBwRepository.save(gwLwInfo);
         return Y9Result.success();

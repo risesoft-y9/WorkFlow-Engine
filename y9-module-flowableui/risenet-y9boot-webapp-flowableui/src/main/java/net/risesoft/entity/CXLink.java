@@ -21,4 +21,5 @@ public class CXLink {
     private ProcessInstance from;
     private ProcessInstance to;
     private String type;//0是老件 ，1是新件
+    private String processInstanceId;//processInstanceId
 }
