@@ -100,6 +100,9 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             } else {
                 targetModel.setMultiInstance(SysVariables.COMMON);
             }
+            if (StringUtils.isNoneBlank(sequenceFlow.getConditionExpression())) {
+                targetModel.setConditionExpression(sequenceFlow.getConditionExpression());
+            }
         } else if (fe instanceof SubProcess) {
             targetModel.setType(SysVariables.SUBPROCESS);
             SubProcess subProcess = (SubProcess)fe;
