@@ -7,10 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
-import net.risesoft.service.fgw.HTKYService;
-import net.risesoft.util.gfg.OldUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +27,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.LwLinkBwModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.fgw.HTKYService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -48,6 +48,9 @@ public class LwInfo4GfgRestController {
     @Autowired
     private HTKYService htkyService;
 
+    @Resource(name = "jdbcTemplate4Dedicated")
+    private JdbcTemplate jdbcTemplate4Dedicated;
+
     /**
      * 关联来文信息
      *
@@ -56,22 +59,25 @@ public class LwInfo4GfgRestController {
      * @return Y9Result<Object>
      */
     @GetMapping(value = "/guanLianLaiWen")
-    public Y9Result<Object> guanLianLaiWen(@RequestParam @NotBlank String processSerialNumber,@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String bianhao) {
+    public Y9Result<Object> guanLianLaiWen(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String bianhao) {
         if (!bianhao.endsWith("号")) {
             bianhao = bianhao + "号";
         }
-        //1.判断是否已在老系统生成过待办，已生成的件不能关联
+        // 1.判断是否已在老系统生成过待办，已生成的件不能关联
         Boolean isExist = htkyService.findIsExist(bianhao);
         if (isExist) {
             return Y9Result.failure("此委内编号已生成“行政许可来文待办件”，请先处理该来文待办件。");
-        }else {
-            //2.判断当前人是否有权限在来文信息中关联来文
+        } else {
+            // 2.判断当前人是否有权限在来文信息中关联来文
             Boolean flag = htkyService.isAssociated(bianhao);
             if (flag) {
-                //3.查询老系统数据
-                JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();
-                String sql = "select lwinfouid,wnbh,lwtitle,lwdept,to_char(limittime, 'yyyy-MM-dd hh24:mi:ss') limittime,lwcode,zbdept,fileproperty from D_GW_LWINFO where wnbh = '"+bianhao+"'";
-                List<Map<String, Object>> lwMap = oldjdbcTemplate.query(sql,(rs, rowNum) -> {
+                // 3.查询老系统数据
+
+                String sql =
+                    "select lwinfouid,wnbh,lwtitle,lwdept,to_char(limittime, 'yyyy-MM-dd hh24:mi:ss') limittime,lwcode,zbdept,fileproperty from D_GW_LWINFO where wnbh = '"
+                        + bianhao + "'";
+                List<Map<String, Object>> lwMap = jdbcTemplate4Dedicated.query(sql, (rs, rowNum) -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("lwinfouid", rs.getObject("lwinfouid"));
                     map.put("wnbh", rs.getObject("wnbh"));
@@ -83,7 +89,7 @@ public class LwInfo4GfgRestController {
                     map.put("lwdept", rs.getObject("lwdept"));
                     return map;
                 });
-                if (lwMap.size()>0){
+                if (lwMap.size() > 0) {
                     Map<String, Object> map = lwMap.get(0);
                     LwLinkBwModel lwInfoModel = new LwLinkBwModel();
                     lwInfoModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -95,27 +101,31 @@ public class LwInfo4GfgRestController {
                     lwInfoModel.setLwsx(String.valueOf(map.get("limittime")));
                     lwInfoModel.setRecordTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
                     lwInfoModel.setInputPerson(Y9LoginUserHolder.getUserInfo().getName());
-                    //插入新系统 办文信息的来文信息表(已存在则提示：来文信息已经存在~)
-                    Y9Result o =lwInfoApi.saveLwInfo(Y9LoginUserHolder.getTenantId(), lwInfoModel);
-                    if (!o.isSuccess()){
+                    // 插入新系统 办文信息的来文信息表(已存在则提示：来文信息已经存在~)
+                    Y9Result o = lwInfoApi.saveLwInfo(Y9LoginUserHolder.getTenantId(), lwInfoModel);
+                    if (!o.isSuccess()) {
                         return Y9Result.failure(o.getMsg());
                     }
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     String date = sdf.format(new Date());
-                    //插入老系统 关联文件表
-                    String insertsql = "insert into BPM_LINKRUNTIME (LINKID,DESCRIPTION,FROMINSTANCEID,NAME,TOINSTANCEID,BPMSERVER,CREATED," +
-                            "CREATERDN,CREATERNAME,CREATERUID,UPDATED,UPDATERDN,UPDATERNAME,UPDATERUID,LINKTYPE) " +
-                            "values ('"+Y9IdGenerator.genId()+"','"+String.valueOf(map.get("lwtitle"))+"','"+processInstanceId+"'," +
-                            "'"+bianhao+"','"+String.valueOf(map.get("lwinfouid"))+"','new','"+date+"'," +
-                            "'"+Y9LoginUserHolder.getUserInfo().getDn()+"','"+Y9LoginUserHolder.getUserInfo().getName()+"','"+Y9LoginUserHolder.getPersonId()+"'," +
-                            "'"+date+"','"+Y9LoginUserHolder.getUserInfo().getDn()+"','"+Y9LoginUserHolder.getUserInfo().getName()+"','"+Y9LoginUserHolder.getPersonId()+"','NORMAL_OFFICELINE')";
-                    oldjdbcTemplate.update(insertsql);
+                    // 插入老系统 关联文件表
+                    String insertsql =
+                        "insert into BPM_LINKRUNTIME (LINKID,DESCRIPTION,FROMINSTANCEID,NAME,TOINSTANCEID,BPMSERVER,CREATED,"
+                            + "CREATERDN,CREATERNAME,CREATERUID,UPDATED,UPDATERDN,UPDATERNAME,UPDATERUID,LINKTYPE) "
+                            + "values ('" + Y9IdGenerator.genId() + "','" + map.get("lwtitle") + "','"
+                            + processInstanceId + "'," + "'" + bianhao + "','" + map.get("lwinfouid") + "','new','"
+                            + date + "'," + "'" + Y9LoginUserHolder.getUserInfo().getDn() + "','"
+                            + Y9LoginUserHolder.getUserInfo().getName() + "','" + Y9LoginUserHolder.getPersonId() + "',"
+                            + "'" + date + "','" + Y9LoginUserHolder.getUserInfo().getDn() + "','"
+                            + Y9LoginUserHolder.getUserInfo().getName() + "','" + Y9LoginUserHolder.getPersonId()
+                            + "','NORMAL_OFFICELINE')";
+                    jdbcTemplate4Dedicated.update(insertsql);
                     return Y9Result.success();
-                }else{
+                } else {
                     return Y9Result.failure("未查询到对应委内编号来文信息~");
                 }
-            }else {
-                return Y9Result.success(null,"对不起!您没有权限关联此来文！");
+            } else {
+                return Y9Result.success(null, "对不起!您没有权限关联此来文！");
             }
         }
     }
