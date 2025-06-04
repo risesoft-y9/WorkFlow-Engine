@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,8 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
         TaskModel task = new TaskModel();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
-            if (startOrgUnitIdList.isEmpty()) {
+            if (startOrgUnitIdList == null || startOrgUnitIdList.isEmpty()) {
+                startOrgUnitIdList = new ArrayList<>();
                 startOrgUnitIdList.add(userId);
             }
             map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getOrgUnit().getName(), "", startOrgUnitIdList,

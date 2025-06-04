@@ -73,6 +73,24 @@ spring:
                 enabled: false
                 url-pattern: /*
                 exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/static/*'
+            flowableUI:
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
+                username: root
+                password: '111111'
+                initialSize: 1
+                maxActive: 20
+                maxPoolPreparedStatementPerConnectionSize: 100
+                maxWait: 60000
+                minEvictableIdleTimeMillis: 300000
+                minIdle: 1
+                poolPreparedStatements: true
+                testOnBorrow: false
+                testOnReturn: false
+                testWhileIdle: true
+                timeBetweenEvictionRunsMillis: 60000
+                useGlobalDataSourceStat: true
+                validationQuery: SELECT 1 FROM DUAL
             y9-public:
                 #driver-class-name: oracle.jdbc.OracleDriver
                 #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
@@ -222,6 +240,8 @@ y9:
             packagesToScanEntityTenant: net.risesoft.entity
             packagesToScanRepositoryPublic: net.risesoft.y9public.repository
             packagesToScanRepositoryTenant: net.risesoft.repository
+            packagesToScanEntityDedicated: net.risesoft.flowable.entity
+            packagesToScanRepositoryDedicated: net.risesoft.flowable.repository
         multi-tenant:
             # kafka, db
             event-source: kafka

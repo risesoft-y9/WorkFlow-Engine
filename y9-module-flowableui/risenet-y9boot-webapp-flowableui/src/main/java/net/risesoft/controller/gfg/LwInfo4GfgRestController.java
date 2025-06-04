@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
 import net.risesoft.service.fgw.HTKYService;
@@ -28,6 +29,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.LwLinkBwModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.fgw.HTKYService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -48,6 +50,9 @@ public class LwInfo4GfgRestController {
     @Autowired
     private HTKYService htkyService;
 
+    @Resource(name = "jdbcTemplate4Dedicated")
+    private JdbcTemplate jdbcTemplate4Dedicated;
+
     /**
      * 关联来文信息
      *
@@ -56,18 +61,18 @@ public class LwInfo4GfgRestController {
      * @return Y9Result<Object>
      */
     @GetMapping(value = "/guanLianLaiWen")
-    public Y9Result<Object> guanLianLaiWen(@RequestParam @NotBlank String processSerialNumber,@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String bianhao) {
+    public Y9Result<Object> guanLianLaiWen(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String bianhao) {
         if (!bianhao.endsWith("号")) {
             bianhao = bianhao + "号";
         }
-        //1.判断是否已在老系统生成过待办，已生成的件不能关联
+        // 1.判断是否已在老系统生成过待办，已生成的件不能关联
         Boolean isExist = htkyService.findIsExist(bianhao);
         if (isExist) {
             return Y9Result.failure("此委内编号已生成“行政许可来文待办件”，请先处理该来文待办件。");
-        }else {
-            //2.判断当前人是否有权限在来文信息中关联来文
-//            Boolean flag = htkyService.isAssociated(bianhao);
-            Boolean flag = true;
+        } else {
+            // 2.判断当前人是否有权限在来文信息中关联来文
+            Boolean flag = htkyService.isAssociated(bianhao);
             if (flag) {
                 //3.查询老系统数据
                 JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();

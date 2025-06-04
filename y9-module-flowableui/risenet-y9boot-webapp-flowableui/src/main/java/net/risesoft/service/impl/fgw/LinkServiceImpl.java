@@ -47,15 +47,18 @@ import cn.idev.excel.util.StringUtils;
 @Service(value = "linkService")
 @Transactional(readOnly = true)
 public class LinkServiceImpl implements LinkService {
-    private static final JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final WorkList4GfgService workList4GfgService;
     private final LwInfoApi lwInfoApi;
     private final ProcessParamApi processParamApi;
     private final PositionApi positionApi;
+    private final OldUtil oldUtil;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
+
+    @Resource(name = "jdbcTemplate4Dedicated")
+    private JdbcTemplate jdbcTemplate4Dedicated;
 
     /**
      * 查询可以关联的流程
@@ -72,15 +75,15 @@ public class LinkServiceImpl implements LinkService {
     @Override
     public void deleteById(String linkid) {
         String sql = "select *  from bpm_linkruntime where linkid='" + linkid + "'";
-        List<LinkModel> results = oldjdbcTemplate.query(sql, new BeanPropertyRowMapper<>(LinkModel.class));
+        List<LinkModel> results = jdbcTemplate4Dedicated.query(sql, new BeanPropertyRowMapper<>(LinkModel.class));
         LinkModel linkModel = results.isEmpty() ? null : results.get(0);
         if (linkModel == null) {
             return;
         }
         String delete = "delete from bpm_linkruntime where linkid='" + linkid + "'";
-        oldjdbcTemplate.update(delete);
-        ProcessInstance from = OldUtil.getOldProcessModel(linkModel.getFrominstanceid());
-        ProcessInstance to = OldUtil.getOldProcessModel(linkModel.getToinstanceid());
+        jdbcTemplate4Dedicated.update(delete);
+        ProcessInstance from = oldUtil.getOldProcessModel(linkModel.getFrominstanceid());
+        ProcessInstance to = oldUtil.getOldProcessModel(linkModel.getToinstanceid());
         ProcessInstance nfrom = fwchange(Y9LoginUserHolder.getTenantId(), linkModel.getFrominstanceid());
         ProcessInstance nto = fwchange(Y9LoginUserHolder.getTenantId(), linkModel.getToinstanceid());
         ProcessInstance cxfrom = null;
@@ -103,9 +106,9 @@ public class LinkServiceImpl implements LinkService {
                 String lwinfoUid = cxfrom.getBusinesskey();
                 // 需要修改 大厅来件
                 String cx = "select name from D_GW_GJJ_CONFIG";
-                List<String> cxList = oldjdbcTemplate.query(cx, (rs, rowNum) -> rs.getString("name"));
+                List<String> cxList = jdbcTemplate4Dedicated.query(cx, (rs, rowNum) -> rs.getString("name"));
                 String lwsql = "select ZBDEPT from D_GW_LWINFO where lwinfouid='" + lwinfoUid + "'";
-                List<String> res = oldjdbcTemplate.query(lwsql, (rs, rowNum) -> rs.getString("ZBDEPT"));
+                List<String> res = jdbcTemplate4Dedicated.query(lwsql, (rs, rowNum) -> rs.getString("ZBDEPT"));
                 String lwzbdept = res.isEmpty() ? null : res.get(0);
                 String xgSql = "";
                 if (cxList.contains(lwzbdept)) {// 办结方式制空，办理方式不制空
@@ -114,7 +117,7 @@ public class LinkServiceImpl implements LinkService {
                     xgSql = " update D_GW_LWINFO set finishtype=0,handletype=0 where lwinfouid ='"
                         + from.getBusinesskey() + "'";
                 }
-                oldjdbcTemplate.update(xgSql);
+                jdbcTemplate4Dedicated.update(xgSql);
             }
         }
         // 非电子件删除办文信息表的数据
@@ -129,11 +132,11 @@ public class LinkServiceImpl implements LinkService {
     public Map<String, List<CXLink>> findByInstanceId(String processInstanceId) {
         String fromSql = "select * from bpm_linkruntime a where a.fromInstanceId = '" + processInstanceId
             + "' order by a.created desc ";
-        List<LinkModel> fromlist = oldjdbcTemplate.query(fromSql, new BeanPropertyRowMapper<>(LinkModel.class));
+        List<LinkModel> fromlist = jdbcTemplate4Dedicated.query(fromSql, new BeanPropertyRowMapper<>(LinkModel.class));
         Map<String, List<CXLink>> fromLinkMap = linkMap(processInstanceId, fromlist, 0);
         String toSql = "select * from bpm_linkruntime a where a.toInstanceId = '" + processInstanceId
             + "' order by a.created desc ";
-        List<LinkModel> tolist = oldjdbcTemplate.query(toSql, new BeanPropertyRowMapper<>(LinkModel.class));
+        List<LinkModel> tolist = jdbcTemplate4Dedicated.query(toSql, new BeanPropertyRowMapper<>(LinkModel.class));
         Map<String, List<CXLink>> toLinkMap = linkMap(processInstanceId, tolist, 1);
         Map<String, List<CXLink>> map = new HashMap<String, List<CXLink>>();
         List<ProcessModel> processList = allProccesId(processInstanceId);
@@ -185,7 +188,7 @@ public class LinkServiceImpl implements LinkService {
             String userId =
                 Y9LoginUserHolder.getUserInfo().getCaid().replace("-", "").replace("{", "").replace("}", "");
             String sql_count = linkListSql(processId, userId, 0, searchMapStr);
-            int totalRows = oldjdbcTemplate.queryForObject(sql_count, Integer.class);
+            int totalRows = jdbcTemplate4Dedicated.queryForObject(sql_count, Integer.class);
             int totalPages = 0;
             if (totalRows > 0) {
                 totalPages = (int)Math.ceil((double)totalRows / row);
@@ -193,7 +196,7 @@ public class LinkServiceImpl implements LinkService {
             String sql_content = "select * from (" + "select query.*, rownum rnum from ("
                 + linkListSql(processId, userId, 1, searchMapStr) + ") query where rownum <= " + page * row
                 + ") where rnum >" + (page - 1) * row + " order by rnum";
-            List<Map<String, Object>> list = oldjdbcTemplate.queryForList(sql_content);
+            List<Map<String, Object>> list = jdbcTemplate4Dedicated.queryForList(sql_content);
             List<Map<String, Object>> dataList = new ArrayList();
             for (Map<String, Object> listData : list) {
                 HashMap map = new HashMap();
@@ -372,8 +375,8 @@ public class LinkServiceImpl implements LinkService {
         for (LinkModel linkModel : links) {
             String fromInstanceId = linkModel.getFrominstanceid();
             String toInstanceId = linkModel.getToinstanceid();
-            ProcessInstance from = OldUtil.getOldProcessModel(fromInstanceId); // 老系统查询的fpi
-            ProcessInstance to = OldUtil.getOldProcessModel(toInstanceId); // 老系统查询的tpi
+            ProcessInstance from = oldUtil.getOldProcessModel(fromInstanceId); // 老系统查询的fpi
+            ProcessInstance to = oldUtil.getOldProcessModel(toInstanceId); // 老系统查询的tpi
             ProcessInstance nfrom = fwchange(tenantId, fromInstanceId); // 新系统查询的fpi
             ProcessInstance nto = fwchange(tenantId, toInstanceId); // 新系统查询的tpi
             // 这个是最后实际用的pi
@@ -498,12 +501,12 @@ public class LinkServiceImpl implements LinkService {
                     String baSql = "select * from bpm_linkruntime a where a.fromInstanceId = '" + from.getInstanceid()
                         + "' order by a.created desc ";
                     List<LinkModel> fromlist =
-                        oldjdbcTemplate.query(baSql, new BeanPropertyRowMapper<>(LinkModel.class));
+                        jdbcTemplate4Dedicated.query(baSql, new BeanPropertyRowMapper<>(LinkModel.class));
                     for (LinkModel link2 : fromlist) {
                         if ("BING_AN".equals(link2.getLinktype())) {
                             CXLink CXLink2 = new CXLink();
                             BeanUtils.copyProperties(CXLink, CXLink2);
-                            ProcessInstance toPi = OldUtil.getOldProcessModel(link2.getToinstanceid());
+                            ProcessInstance toPi = oldUtil.getOldProcessModel(link2.getToinstanceid());
                             if (toPi != null) {
                                 CXLink2.setType("0");
                                 CXLink2.setLinkId(link2.getLinkid());
@@ -534,7 +537,7 @@ public class LinkServiceImpl implements LinkService {
         for (GLJ glj : to) {
             String sql = "SELECT linkId FROM bpm_linkruntime a " + "WHERE a.fromInstanceId = '" + processInstanceId
                 + "' " + "AND a.toInstanceId = '" + glj.getInstanceId() + "' " + "ORDER BY a.created DESC";
-            List<String> results = oldjdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("linkId"));
+            List<String> results = jdbcTemplate4Dedicated.query(sql, (rs, rowNum) -> rs.getString("linkId"));
             String linkId = results.isEmpty() ? null : results.get(0);
             if (linkId != null && !"null".equals(linkId)) {
                 deleteById(linkId);
@@ -551,7 +554,7 @@ public class LinkServiceImpl implements LinkService {
                 + glj.getInstanceId() + "','new','" + time + "','" + user.getDn() + "'," + "'" + user.getName() + "','"
                 + userId + "','" + tenantId + "','" + time + "'," + "'" + user.getDn() + "','" + user.getName() + "','"
                 + userId + "','" + time + "'," + "'NORMAL')";
-            oldjdbcTemplate.update(insertSql);
+            jdbcTemplate4Dedicated.update(insertSql);
         }
     }
 }

@@ -67,7 +67,7 @@ import net.risesoft.y9.util.Y9Util;
 @Slf4j
 @EnableScheduling
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = {"y9.common.tenantId", "y9.app.oldDataSource.driver-class-name"})
+@ConditionalOnProperty(name = {"y9.common.tenantId"})
 public class ScheduledTaskService {
 
     private final FormDataApi formDataApi;
@@ -102,11 +102,6 @@ public class ScheduledTaskService {
     private String systemManagerPositionId;
     @Autowired
     private ShuangYangService shuangYangService;
-
-    @PostConstruct
-    public void init() {
-        LOGGER.info("ScheduledTaskService initialized with tenantId: {}", tenantId);
-    }
 
     /**
      * 定时办结，每5分钟执行
@@ -200,6 +195,83 @@ public class ScheduledTaskService {
     }
 
     /**
+     * 定时任务，定时查询发文单表fillstate为0的补登件
+     */
+    @Scheduled(cron = "0 0/5 * * * ?") // 每5分钟执行一次
+    public void createBDJ() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        try {
+            LOGGER.info("******************定时任务查询发文单表fillstate为0的补登件数据开始：{}******************", sdf.format(date));
+            Y9LoginUserHolder.setTenantId(tenantId);
+            String sql = "select * from y9_form_fwd where fillstate = 0";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            LOGGER.info("*******查询到数据：{}", list);
+            for (Map<String, Object> map : list) {
+                String processSerialNumber = (String)map.get("guid");
+                String title = (String)map.get("title");
+                LOGGER.info("*******补登件开始处理数据processSerialNumber：{}", processSerialNumber);
+                ProcessParamModel model =
+                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+
+                LOGGER.info("*******补登件开始处理数据model：{}", model);
+                // 根据流程序列号查询并判断流程参数表数据是否为空,或者流程参数表有数据，流程实例id为空的数据，通过则为未启动流程，然后，执行文印中心补登件操作
+                if (null == model || (null != model && StringUtils.isBlank(model.getProcessInstanceId()))) {
+                    // 解析文印中心配置的角色
+                    ItemModel itemModel =
+                        itemApi.findByProcessDefinitionKey(tenantId, processDefinitionByKey).getData();
+                    String itemId = itemModel.getId();
+                    ProcessDefinitionModel processDefinitionModel =
+                        repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionByKey).getData();
+                    LOGGER.info("*******流程定义：{}", processDefinitionModel);
+                    List<ItemRoleOrgUnitModel> roleList =
+                        itemRoleApi.findAllPermUser(tenantId, systemManagerPersonId, systemManagerPositionId, itemId,
+                            processDefinitionModel.getId(), bd_routeToTaskId, 6, "", "", "").getData();
+                    LOGGER.info("*******角色列表：{}", roleList);
+                    List<String> assignee = new ArrayList<>();
+                    for (ItemRoleOrgUnitModel itemRoleOrgUnitModel : roleList) {
+                        if (itemRoleOrgUnitModel.getOrgType().equals("Position")) {
+                            assignee.add(itemRoleOrgUnitModel.getPerson());
+                        }
+                    }
+                    LOGGER.info("*******办理人数据assignee：{}", assignee);
+                    // 保存流程参数
+                    Y9Result<String> processParamResult =
+                        processParamService.saveOrUpdate(itemId, processSerialNumber, "", title, "", "", false);
+                    if (!processParamResult.isSuccess()) {
+                        LOGGER.error("*******保存流程参数失败：{}", processParamResult.getMsg());
+                    }
+                    String userChoice = Y9Util.join(assignee, SysVariables.SEMICOLON);
+                    LOGGER.info("*******办理人数据处理前userChoice：{}", userChoice);
+                    List<String> userChoiceList = ParseUserChoiceUtil.parseUserChoice(userChoice);
+                    LOGGER.info("*******办理人数据处理后userChoiceList：{}", userChoiceList);
+                    // 启动流程
+                    Y9Result<StartProcessResultModel> y9Result =
+                        documentApi.startProcessByTheTaskKey(tenantId, systemManagerPositionId, itemId,
+                            processSerialNumber, processDefinitionByKey, bd_routeToTaskId, userChoiceList);
+                    if (y9Result.isSuccess()) {
+                        LOGGER.info("*******启动流程成功：{}", y9Result.getData());
+                        String updateSql =
+                            "update y9_form_fwd set fillstate = 1 where guid ='" + processSerialNumber + "'";
+                        int num = jdbcTemplate.update(updateSql);
+                        if (num > 0) {
+                            LOGGER.info("*******更新发文表数据成功：{}", num);
+                        }
+                    }
+                }
+            }
+            LOGGER.info("******************定时任务查询发文单表fillstate为0的补登件数据结束：{}*", sdf.format(date));
+        } catch (Exception e) {
+            LOGGER.error("定时任务查询发文单表数据异常：{}", e.getMessage());
+        }
+    }
+
+    @PostConstruct
+    public void init() {
+        LOGGER.info("ScheduledTaskService initialized with tenantId: {}", tenantId);
+    }
+
+    /**
      * 定时发送，每2分钟执行
      */
     @Scheduled(cron = "0 */2 * * * ?")
@@ -289,78 +361,6 @@ public class ScheduledTaskService {
             }
         }
         LOGGER.info("*******" + time + "  定时发送成功数量:" + num);
-    }
-
-    /**
-     * 定时任务，定时查询发文单表fillstate为0的补登件
-     */
-    @Scheduled(cron = "0 0/5 * * * ?") // 每5分钟执行一次
-    public void createBDJ() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        try {
-            LOGGER.info("******************定时任务查询发文单表fillstate为0的补登件数据开始：{}******************", sdf.format(date));
-            Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "select * from y9_form_fwd where fillstate = 0";
-            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            LOGGER.info("*******查询到数据：{}", list);
-            for (Map<String, Object> map : list) {
-                String processSerialNumber = (String)map.get("guid");
-                String title = (String)map.get("title");
-                LOGGER.info("*******补登件开始处理数据processSerialNumber：{}", processSerialNumber);
-                ProcessParamModel model =
-                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-
-                LOGGER.info("*******补登件开始处理数据model：{}", model);
-                // 根据流程序列号查询并判断流程参数表数据是否为空,或者流程参数表有数据，流程实例id为空的数据，通过则为未启动流程，然后，执行文印中心补登件操作
-                if (null == model || (null != model && StringUtils.isBlank(model.getProcessInstanceId()))) {
-                    // 解析文印中心配置的角色
-                    ItemModel itemModel =
-                        itemApi.findByProcessDefinitionKey(tenantId, processDefinitionByKey).getData();
-                    String itemId = itemModel.getId();
-                    ProcessDefinitionModel processDefinitionModel =
-                        repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionByKey).getData();
-                    LOGGER.info("*******流程定义：{}", processDefinitionModel);
-                    List<ItemRoleOrgUnitModel> roleList =
-                        itemRoleApi.findAllPermUser(tenantId, systemManagerPersonId, systemManagerPositionId, itemId,
-                            processDefinitionModel.getId(), bd_routeToTaskId, 6, "", "", "").getData();
-                    LOGGER.info("*******角色列表：{}", roleList);
-                    List<String> assignee = new ArrayList<>();
-                    for (ItemRoleOrgUnitModel itemRoleOrgUnitModel : roleList) {
-                        if (itemRoleOrgUnitModel.getOrgType().equals("Position")) {
-                            assignee.add(itemRoleOrgUnitModel.getPerson());
-                        }
-                    }
-                    LOGGER.info("*******办理人数据assignee：{}", assignee);
-                    // 保存流程参数
-                    Y9Result<String> processParamResult =
-                        processParamService.saveOrUpdate(itemId, processSerialNumber, "", title, "", "", false);
-                    if (!processParamResult.isSuccess()) {
-                        LOGGER.error("*******保存流程参数失败：{}", processParamResult.getMsg());
-                    }
-                    String userChoice = Y9Util.join(assignee, SysVariables.SEMICOLON);
-                    LOGGER.info("*******办理人数据处理前userChoice：{}", userChoice);
-                    List<String> userChoiceList = ParseUserChoiceUtil.parseUserChoice(userChoice);
-                    LOGGER.info("*******办理人数据处理后userChoiceList：{}", userChoiceList);
-                    // 启动流程
-                    Y9Result<StartProcessResultModel> y9Result =
-                        documentApi.startProcessByTheTaskKey(tenantId, systemManagerPositionId, itemId,
-                            processSerialNumber, processDefinitionByKey, bd_routeToTaskId, userChoiceList);
-                    if (y9Result.isSuccess()) {
-                        LOGGER.info("*******启动流程成功：{}", y9Result.getData());
-                        String updateSql =
-                            "update y9_form_fwd set fillstate = 1 where guid ='" + processSerialNumber + "'";
-                        int num = jdbcTemplate.update(updateSql);
-                        if (num > 0) {
-                            LOGGER.info("*******更新发文表数据成功：{}", num);
-                        }
-                    }
-                }
-            }
-            LOGGER.info("******************定时任务查询发文单表fillstate为0的补登件数据结束：{}*", sdf.format(date));
-        } catch (Exception e) {
-            LOGGER.error("定时任务查询发文单表数据异常：{}", e.getMessage());
-        }
     }
 
     @Scheduled(fixedDelay = 300000L)
