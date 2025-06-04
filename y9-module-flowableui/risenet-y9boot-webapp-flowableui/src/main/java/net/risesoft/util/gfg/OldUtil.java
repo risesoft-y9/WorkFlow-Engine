@@ -4,23 +4,32 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import net.risesoft.entity.ProcessInstance;
 import net.risesoft.entity.ProcessModel;
-import net.risesoft.y9.Y9Context;
 
 public class OldUtil {
     public static final String ljProcessId = "_BTjEIOYIEeO5oaEWear_Cw";// 大厅来件
     public static final String fwProcessId = "_N7pw8DY8EeO5EqWURXzpRA"; // 发文
     public static final String zqyjProcessId = "_HtSCIfOuEeSrt-rFRbhdxw"; // 征求意见
     public static final String qianbaoProcessId = "_6j7bwTlcEeSDIc7kqzcU1A"; // 签报
-    public static final String newFwProcessId = Y9Context.getProperty("y9.common.itemId");
+    // public static final String newFwProcessId = Y9Context.getProperty("y9.common.itemId");
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    @Value("${y9.common.itemId}")
+    public static String newFwProcessId;
+    @Value("${y9.app.oldDataSource.driver-class-name}")
+    private static String driver;
+    @Value("${y9.app.oldDataSource.url}")
+    private static String url;
+    @Value("${y9.app.oldDataSource.username}")
+    private static String username;
+    @Value("${y9.app.oldDataSource.password}")
+    private static String password;
 
     // 查询所有流程
     public static List<ProcessModel> allProccesId() {
@@ -72,14 +81,14 @@ public class OldUtil {
     }
 
     public static JdbcTemplate getOldjdbcTemplate() {
-        if (Y9Context.getProperty("y9.app.oldDataSource.driver-class-name") == null) {
+        if (driver == null) {
             return null;
         }
         DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setDriverClassName(Y9Context.getProperty("y9.app.oldDataSource.driver-class-name"));
-        ds.setUrl(Y9Context.getProperty("y9.app.oldDataSource.url"));
-        ds.setUsername(Y9Context.getProperty("y9.app.oldDataSource.username"));
-        ds.setPassword(Y9Context.getProperty("y9.app.oldDataSource.password"));
+        ds.setDriverClassName(driver);
+        ds.setUrl(url);
+        ds.setUsername(username);
+        ds.setPassword(password);
         JdbcTemplate oldjdbcTemplate = new JdbcTemplate(ds);
         return oldjdbcTemplate;
     }
