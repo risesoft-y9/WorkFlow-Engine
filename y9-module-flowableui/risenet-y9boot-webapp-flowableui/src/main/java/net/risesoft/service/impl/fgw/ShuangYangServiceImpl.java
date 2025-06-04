@@ -11,10 +11,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 
-import net.risesoft.util.gfg.OldUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +33,9 @@ public class ShuangYangServiceImpl implements ShuangYangService {
 
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
+
+    @Resource(name = "jdbcTemplate4Dedicated")
+    private JdbcTemplate jdbcTemplate4Dedicated;
 
     // 查询并案
     private static String getBingAnSql(String instanceId, String eventType) {
@@ -112,7 +113,6 @@ public class ShuangYangServiceImpl implements ShuangYangService {
     @Override
     public void toShuangYang() {
         try {
-            JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();
             // 查询未推送的数据
             List<PushData> pushDataList = jdbcTemplate
                 .query("select * from PUSHDATA where tszt ='0' order by CREATEDATE", new RowMapper<PushData>() {
@@ -135,11 +135,12 @@ public class ShuangYangServiceImpl implements ShuangYangService {
                 Boolean result = false;
                 LOGGER.info("处理的pushData的id：" + pushData.getId());
                 // 发文关联来件
-                List<Map<String, Object>> fwLinkLj = oldjdbcTemplate.query(getFwLinkLjSql(pushData), (rs, rowNum) -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("hallreg", rs.getObject("hallreg"));
-                    return map;
-                });
+                List<Map<String, Object>> fwLinkLj =
+                    jdbcTemplate4Dedicated.query(getFwLinkLjSql(pushData), (rs, rowNum) -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("hallreg", rs.getObject("hallreg"));
+                        return map;
+                    });
                 for (int i = 0; i < fwLinkLj.size(); ++i) {
                     Map<String, Object> map = fwLinkLj.get(i);
                     PushData pd = new PushData();
@@ -152,13 +153,14 @@ public class ShuangYangServiceImpl implements ShuangYangService {
                 }
 
                 // 来件关联发文
-                List<Map<String, Object>> ljLinkFw = oldjdbcTemplate.query(getLjLinkFwSql(pushData), (rs, rowNum) -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("hallreg", rs.getObject("hallreg"));
-                    map.put("instanceid", rs.getObject("instanceid"));
-                    map.put("bingan", rs.getObject("bingan"));
-                    return map;
-                });
+                List<Map<String, Object>> ljLinkFw =
+                    jdbcTemplate4Dedicated.query(getLjLinkFwSql(pushData), (rs, rowNum) -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("hallreg", rs.getObject("hallreg"));
+                        map.put("instanceid", rs.getObject("instanceid"));
+                        map.put("bingan", rs.getObject("bingan"));
+                        return map;
+                    });
                 for (int i = 0; i < ljLinkFw.size(); i++) {
                     Map<String, Object> map = ljLinkFw.get(i);
                     PushData pd = new PushData();
@@ -169,7 +171,7 @@ public class ShuangYangServiceImpl implements ShuangYangService {
                     pd.setEventtype(pushData.getEventtype());
                     result = pushDataInterface(pd);
                     if (map.get("bingan") != null && map.get("bingan").toString().equals("1")) { // 并案文件
-                        List<Map<String, Object>> ljLinkfwBingAn = oldjdbcTemplate
+                        List<Map<String, Object>> ljLinkfwBingAn = jdbcTemplate4Dedicated
                             .query(getBingAnSql(map.get("instanceid") + "", pushData.getEventtype()), (rs, rowNum) -> {
                                 Map<String, Object> rsmap = new HashMap<>();
                                 rsmap.put("hallreg", rs.getObject("hallreg"));
@@ -188,11 +190,12 @@ public class ShuangYangServiceImpl implements ShuangYangService {
                     }
                 }
                 if (fwLinkLj.size() == 0 && ljLinkFw.size() == 0) {
-                    List<Map<String, Object>> listwtpg = oldjdbcTemplate.query(getIswtpgSql(pushData), (rs, rowNum) -> {
-                        Map<String, Object> rsmap = new HashMap<>();
-                        rsmap.put("guid", rs.getObject("guid"));
-                        return rsmap;
-                    });
+                    List<Map<String, Object>> listwtpg =
+                        jdbcTemplate4Dedicated.query(getIswtpgSql(pushData), (rs, rowNum) -> {
+                            Map<String, Object> rsmap = new HashMap<>();
+                            rsmap.put("guid", rs.getObject("guid"));
+                            return rsmap;
+                        });
                     if (listwtpg.size() == 0) {
                         if ("上会".equals(pushData.getEventtype())) {
                             PushData pd = new PushData();
