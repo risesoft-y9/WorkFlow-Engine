@@ -31,7 +31,7 @@ public interface LwInfoApi {
      */
     @PostMapping(value = "/delLwInfo")
     Y9Result<Object> delLwInfo(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+        @RequestParam("id") String id);
 
     /**
      * 获取来文信息列表
