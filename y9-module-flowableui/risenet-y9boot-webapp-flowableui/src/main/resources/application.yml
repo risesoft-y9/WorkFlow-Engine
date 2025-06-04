@@ -240,6 +240,8 @@ y9:
             packagesToScanEntityTenant: net.risesoft.entity
             packagesToScanRepositoryPublic: net.risesoft.y9public.repository
             packagesToScanRepositoryTenant: net.risesoft.repository
+            packagesToScanEntityDedicated: net.risesoft.flowable.entity
+            packagesToScanRepositoryDedicated: net.risesoft.flowable.repository
         multi-tenant:
             # kafka, db
             event-source: kafka
