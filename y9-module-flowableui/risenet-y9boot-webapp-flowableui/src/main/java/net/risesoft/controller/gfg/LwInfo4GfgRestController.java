@@ -66,7 +66,8 @@ public class LwInfo4GfgRestController {
             return Y9Result.failure("此委内编号已生成“行政许可来文待办件”，请先处理该来文待办件。");
         }else {
             //2.判断当前人是否有权限在来文信息中关联来文
-            Boolean flag = htkyService.isAssociated(bianhao);
+//            Boolean flag = htkyService.isAssociated(bianhao);
+            Boolean flag = true;
             if (flag) {
                 //3.查询老系统数据
                 JdbcTemplate oldjdbcTemplate = OldUtil.getOldjdbcTemplate();
@@ -131,4 +132,16 @@ public class LwInfo4GfgRestController {
         return lwInfoApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
     }
 
+    @GetMapping(value = "/deletefwgllw")
+    public Y9Result deletefwgllw(@RequestParam @NotBlank String id, @RequestParam @NotBlank String lwinfouid, @RequestParam @NotBlank String processInstanceId) {
+        Boolean flag = lwInfoApi.delLwInfo(Y9LoginUserHolder.getTenantId(), id).isSuccess();
+        if (flag){
+            String sql = "delete from BPM_LINKRUNTIME where FROMINSTANCEID='"+processInstanceId+"' and TOINSTANCEID ='"+lwinfouid+"'";
+            int i =OldUtil.getOldjdbcTemplate().update(sql);
+            if (i>0) {
+                return Y9Result.success();
+            }
+        }
+            return Y9Result.failure("删除失败");
+    }
 }

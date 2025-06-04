@@ -45,9 +45,9 @@ public class LwInfoApiImpl implements LwInfoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delLwInfo(String tenantId, String processSerialNumber) {
+    public Y9Result<Object> delLwInfo(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        gwLwLinkBwRepository.deleteByProcessSerialNumber(processSerialNumber);
+        gwLwLinkBwRepository.deleteById(id);
         return Y9Result.success();
     }
 
