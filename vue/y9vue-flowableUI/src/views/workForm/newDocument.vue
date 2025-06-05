@@ -793,7 +793,7 @@
             nextNode.value = todoData.nextNode;
             doneManage.value = todoData.doneManage;
             setBasicData(todoData);
-            // myForm.value.show(formId.value);
+            myForm.value.show(formId.value);
         }
     }
 
@@ -812,7 +812,7 @@
         } else if (item.name == 'associatedFile') {
             associatedFileListShow.value = true;
         } else if (item.name.indexOf('y9form') > -1) {
-            myForm.value.show(item.name.slice(6));
+            // myForm.value.show(item.name.slice(6));
         }
     }
 
