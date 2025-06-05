@@ -1,6 +1,6 @@
 {
     "name": "y9vue-item-admin",
-    "version": "0.0.0",
+    "version": "9.6.7",
     "scripts": {
         "serve": "vite  --mode development",
         "serve-local": "vite  --mode localEnv",
@@ -40,7 +40,9 @@
         "echarts": "^5.3.2",
         "element-plus": "^2.7.7",
         "js-cookie": "^3.0.1",
+        "jsencrypt": "^3.0.1",
         "jspdf": "^2.5.1",
+        "jwt-decode": "^4.0.0",
         "lodash": "^4.17.21",
         "marked": "^5.0.2",
         "md5": "^2.3.0",
@@ -62,9 +64,10 @@
         "vue-router": "4",
         "vuedraggable": "^4.1.0",
         "vxe-table": "^4.3.5",
+        "x2js": "^3.4.4",
         "xe-utils": "^3.5.7",
-        "y9plugin-components": "^3.0.1",
-        "y9plugin-sso": "^4.1.0",
+        "y9plugin-components": "^3.0.19",
+        "y9plugin-sso": "^4.2.9",
         "y9plugin-watermark": "^1.2.0"
     },
     "devDependencies": {

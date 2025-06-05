@@ -10,10 +10,10 @@
 import settings from '@/settings';
 import y9_storage from '@/utils/storage';
 import axios from 'axios'; // 考虑CDN
-import {ElMessage} from 'element-plus';
+import { ElMessage } from 'element-plus';
 import i18n from '@/language/index';
-import {isExternal} from '@/utils/validate.ts';
-import {$y9_SSO} from '@/main';
+import { isExternal } from '@/utils/validate.ts';
+import { $y9_SSO } from '@/main';
 
 const { t } = i18n.global;
 
@@ -123,12 +123,7 @@ logRequest.interceptors.response.use(
                             window.location.href = settings.serverLoginUrl;
                         } else {
                             const params = {
-                                to: { path: window.location.pathname },
-                                logoutUrl: import.meta.env.VUE_APP_SSO_LOGOUT_URL + import.meta.env.VUE_APP_NAME + '/',
-                                __y9delete__: () => {
-                                    // 删除前执行的函数
-                                    console.log('删除前执行的函数');
-                                }
+                                redirect_uri: import.meta.env.VUE_APP_HOST_INDEX
                             };
                             $y9_SSO.ssoLogout(params);
                             // window.location.reload();
