@@ -73,6 +73,12 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-support-file-service-ftp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-sso-oauth2-resource</artifactId>
             <version>${project.version}</version>
         </dependency>
