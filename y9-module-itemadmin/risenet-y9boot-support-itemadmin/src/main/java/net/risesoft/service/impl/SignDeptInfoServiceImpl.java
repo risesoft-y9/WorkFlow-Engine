@@ -122,10 +122,9 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         String starter = null == processParam ? Y9LoginUserHolder.getOrgUnit().getId() : processParam.getStartor();
         Department bureau = (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), starter).getData();
-        deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName())
-            .append("(3)");
+        deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName());
         List<SignDeptInfo> signDeptList = this.getSignDeptList(processSerialNumber, "0");
-        signDeptList.forEach(signDeptInfo -> deptNames.append(",").append(signDeptInfo.getDeptName()).append("(3)"));
+        signDeptList.forEach(signDeptInfo -> deptNames.append(",").append(signDeptInfo.getDeptName()));
         map.put(aliasColumnName, deptNames);
         formDataService.updateFormData(processSerialNumber, Y9JsonUtil.writeValueAsString(map));
     }
