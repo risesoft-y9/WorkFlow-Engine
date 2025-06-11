@@ -180,7 +180,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
             refresh(processSerialNumber);
         } else {
             Integer index = 1;
-            deptIdList.forEach(deptId -> {
+            for (String deptId : deptIdList) {
                 SignDeptInfo signDeptInfo = signDeptInfoRepository
                     .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
                 if (signDeptInfo == null) {
@@ -192,13 +192,14 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                     signDeptInfo.setDeptId(deptId);
                     signDeptInfo.setRecordTime(new Date());
                     Optional<SignOutDept> signOutDept = signOutDeptRepository.findById(deptId);
-                    signDeptInfo.setDeptName(signOutDept.isPresent() ? signOutDept.get().getDeptName() : "单位不存在");
+                    signDeptInfo.setDeptName(signOutDept.isPresent() ? signOutDept.get().getDeptName() : deptId);
                     signDeptInfo.setProcessSerialNumber(processSerialNumber);
                     signDeptInfo.setDeptType(deptType);
                 }
                 signDeptInfo.setOrderIndex(index);
+                index++;
                 signDeptInfoRepository.save(signDeptInfo);
-            });
+            }
         }
     }
 
