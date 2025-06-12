@@ -45,6 +45,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
+import net.risesoft.api.itemadmin.EleAttachmentApi;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.MergeFileApi;
 import net.risesoft.api.itemadmin.OpinionApi;
@@ -62,6 +63,7 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWordModel;
+import net.risesoft.model.itemadmin.EleAttachmentModel;
 import net.risesoft.model.itemadmin.MergeFileModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.PaperAttachmentModel;
@@ -129,6 +131,8 @@ public class FormNTKO4GfgController {
     private final SecretLevelRecordApi secretLevelRecordApi;
 
     private final SignDeptInfoApi signDeptInfoApi;
+
+    private final EleAttachmentApi eleAttachmentApi;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
     @Autowired
@@ -1023,6 +1027,46 @@ public class FormNTKO4GfgController {
             LOGGER.error("保存正文失败", e);
         }
         return Y9Result.failure("保存正文失败");
+    }
+
+    /**
+     * 更新附件内容
+     *
+     * @param processSerialNumber 流程编号
+     * @param id 附件d
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param file 文件
+     * @param request 请求
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/uploadTextWord")
+    public Y9Result<String> uploadTextWord(@RequestParam String processSerialNumber, @RequestParam String id,
+        @RequestParam String tenantId, @RequestParam String userId, @RequestParam MultipartFile file,
+        HttpServletRequest request) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
+        if (multipartFile == null) {
+            multipartFile = file;
+        }
+        try {
+            EleAttachmentModel eleAttachmentModel = eleAttachmentApi.findById(tenantId, id).getData();
+            String fullPath =
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
+            Y9FileStore y9FileStore =
+                y9FileStoreService.uploadFile(multipartFile, fullPath, eleAttachmentModel.getName());
+            eleAttachmentModel.setFileStoreId(y9FileStore.getId());
+            Y9Result<Object> flag = eleAttachmentApi.saveOrUpdate(tenantId, eleAttachmentModel);
+            if (flag.isSuccess()) {
+                return Y9Result.success(y9FileStore.getId());
+            }
+        } catch (Exception e) {
+            LOGGER.error("保存附件失败", e);
+        }
+        return Y9Result.failure("保存附件失败！");
     }
 
     /**
