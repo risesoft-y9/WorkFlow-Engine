@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.tenant.TenantApi;
-import net.risesoft.enums.platform.TenantTypeEnum;
 import net.risesoft.model.platform.Tenant;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
@@ -38,7 +37,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     private void createDeployment(String processDefinitionKey) {
         try {
-            List<Tenant> tlist = tenantApi.listByTenantType(TenantTypeEnum.TENANT).getData();
+            List<Tenant> tlist = tenantApi.listAllTenants().getData();
             for (Tenant tenant : tlist) {
                 Y9LoginUserHolder.setTenantId(tenant.getId());
                 FlowableTenantInfoHolder.setTenantId(tenant.getId());
