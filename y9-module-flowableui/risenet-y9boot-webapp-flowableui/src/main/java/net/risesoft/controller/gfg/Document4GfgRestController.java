@@ -1104,6 +1104,42 @@ public class Document4GfgRestController {
     }
 
     /**
+     * 批量获取条码号数据
+     *
+     * @param processSerialNumbers 流程编号
+     * @return Y9Result<String>
+     */
+    @FlowableLog(operationName = "批量获取条码号数据", operationType = FlowableOperationTypeEnum.BROWSE)
+    @PostMapping(value = "/getTmhDatas")
+    public Y9Result<String> getTmhDatas(@RequestParam String[] processSerialNumbers) {
+        boolean flag = false;
+        boolean flag1 = false;
+        for (String processSerialNumber : processSerialNumbers) {
+            String sql = "select bwwh from y9_form_fw where guid='" + processSerialNumber + "'";
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            if (list.get(0).get("bwwh") == null || list.get(0).get("bwwh").toString().equals("")) {
+                // 调用第三方接口
+                String tmh = htkyService.getTMH(processSerialNumber);
+                if (tmh.equals("")) {
+                    flag1 = true;
+                }
+            } else {
+                flag = true;
+            }
+        }
+        if (flag && processSerialNumbers.length > 1) {
+            return Y9Result.success("获取成功，有数据已有条码号");
+        }
+        if (flag && processSerialNumbers.length == 1) {
+            return Y9Result.failure("已有条码号");
+        }
+        if (flag1 && processSerialNumbers.length == 1) {
+            return Y9Result.failure("获取失败");
+        }
+        return Y9Result.success("获取成功");
+    }
+
+    /**
      * 获取当前登录用户信息
      *
      * @return Y9Result<Person>
@@ -1227,7 +1263,7 @@ public class Document4GfgRestController {
     @PostMapping(value = "/saveSecretLevelRecord")
     public Y9Result<String> saveSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String secretLevel, @RequestParam @NotBlank String secretBasis,
-        @RequestParam @NotBlank String secretItem, @RequestParam @NotBlank String tableName,
+        @RequestParam(required = false) String secretItem, @RequestParam @NotBlank String tableName,
         @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String description) {
         try {
             secretLevelRecordApi.saveRecord(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),

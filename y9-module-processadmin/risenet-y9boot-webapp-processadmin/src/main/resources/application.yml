@@ -160,6 +160,8 @@ spring:
     redis:
         database: 8
         host: localhost
+        password: 111111
+        port: 6379
         lettuce:
             pool:
                 max-active: 8
@@ -167,8 +169,6 @@ spring:
                 max-wait: -1
                 min-idle: 0
             shutdown-timeout: 100ms
-        password: 111111
-        port: 6379
         ssl: false
         timeout: 10000
     servlet:
@@ -178,7 +178,7 @@ spring:
 y9:
     systemName: processAdmin
     systemCnName: 流程管理器
-    internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
+    internalIp: 192.168.x.x,10.x.x.x,172.20.x.x
     app:
         processAdmin:
             cooperationStateSwitch: false

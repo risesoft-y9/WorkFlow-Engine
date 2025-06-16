@@ -122,10 +122,9 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         String starter = null == processParam ? Y9LoginUserHolder.getOrgUnit().getId() : processParam.getStartor();
         Department bureau = (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), starter).getData();
-        deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName())
-            .append("(3)");
+        deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName());
         List<SignDeptInfo> signDeptList = this.getSignDeptList(processSerialNumber, "0");
-        signDeptList.forEach(signDeptInfo -> deptNames.append(",").append(signDeptInfo.getDeptName()).append("(3)"));
+        signDeptList.forEach(signDeptInfo -> deptNames.append(",").append(signDeptInfo.getDeptName()));
         map.put(aliasColumnName, deptNames);
         formDataService.updateFormData(processSerialNumber, Y9JsonUtil.writeValueAsString(map));
     }
@@ -181,7 +180,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
             refresh(processSerialNumber);
         } else {
             Integer index = 1;
-            deptIdList.forEach(deptId -> {
+            for (String deptId : deptIdList) {
                 SignDeptInfo signDeptInfo = signDeptInfoRepository
                     .findByProcessSerialNumberAndDeptTypeAndDeptId(processSerialNumber, deptType, deptId);
                 if (signDeptInfo == null) {
@@ -193,13 +192,14 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                     signDeptInfo.setDeptId(deptId);
                     signDeptInfo.setRecordTime(new Date());
                     Optional<SignOutDept> signOutDept = signOutDeptRepository.findById(deptId);
-                    signDeptInfo.setDeptName(signOutDept.isPresent() ? signOutDept.get().getDeptName() : "单位不存在");
+                    signDeptInfo.setDeptName(signOutDept.isPresent() ? signOutDept.get().getDeptName() : deptId);
                     signDeptInfo.setProcessSerialNumber(processSerialNumber);
                     signDeptInfo.setDeptType(deptType);
                 }
                 signDeptInfo.setOrderIndex(index);
+                index++;
                 signDeptInfoRepository.save(signDeptInfo);
-            });
+            }
         }
     }
 

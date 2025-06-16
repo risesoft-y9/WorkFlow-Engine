@@ -144,8 +144,10 @@ spring:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
     redis:
-        database: 9
+        database: 8
         host: 192.168.3.31
+        password: 111111
+        port: 6379
         lettuce:
             pool:
                 max-active: 8
@@ -153,8 +155,6 @@ spring:
                 max-wait: -1
                 min-idle: 0
             shutdown-timeout: 100ms
-        password: 111111
-        port: 6379
         ssl: false
         timeout: 10000
     servlet:
@@ -166,7 +166,7 @@ spring:
             static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
     systemName: flowableUI
-    internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
+    internalIp: 192.168.x.x,10.x.x.x,172.20.x.x
     app:
         flowable:
             systemCnName: 办件3.0
