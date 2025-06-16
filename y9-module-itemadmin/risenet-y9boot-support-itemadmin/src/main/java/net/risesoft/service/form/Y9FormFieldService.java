@@ -1,11 +1,10 @@
 package net.risesoft.service.form;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.pojo.Y9Result;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -81,4 +80,27 @@ public interface Y9FormFieldService {
      */
     Y9Result<Y9FormField> saveOrUpdate(Y9FormField formField);
 
+    /**
+     * 复制表单绑定字段
+     *
+     * @param systemName
+     * @param systemCnName
+     * @param copyFormId
+     * @param tableName
+     * @return
+     */
+    Y9Result<Object> copyFormAndFieldBind(String systemName, String systemCnName, String copyFormId, String tableName);
+
+    /**
+     * 保存表单绑定字段
+     *
+     * @param formId
+     * @param tableId
+     * @param tableName
+     * @param isAppend
+     * @param fieldJson
+     * @return
+     */
+    Y9Result<String> saveFormFieldBind(String formId, String tableId,
+                                       String tableName, Boolean isAppend, String fieldJson);
 }
