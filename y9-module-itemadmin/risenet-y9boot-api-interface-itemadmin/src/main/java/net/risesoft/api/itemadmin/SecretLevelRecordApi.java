@@ -64,7 +64,8 @@ public interface SecretLevelRecordApi {
     Y9Result<Object> saveRecord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam(value = "secretLevel") String secretLevel,
-        @RequestParam(value = "secretBasis") String secretBasis, @RequestParam(value = "secretItem") String secretItem,
+        @RequestParam(value = "secretBasis") String secretBasis,
+        @RequestParam(value = "secretItem", required = false) String secretItem,
         @RequestParam(value = "description", required = false) String description,
         @RequestParam(value = "tableName") String tableName, @RequestParam(value = "fieldName") String fieldName);
 

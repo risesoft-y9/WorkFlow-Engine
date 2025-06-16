@@ -117,8 +117,7 @@ public class SecretLevelRecordApiImpl implements SecretLevelRecordApi {
     @Override
     public Y9Result<Object> saveRecord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String secretLevel, @RequestParam String secretBasis,
-        @RequestParam String secretItem, String description, @RequestParam String tableName,
-        @RequestParam String fieldName) {
+        String secretItem, String description, @RequestParam String tableName, @RequestParam String fieldName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPersonId(userId);
         Person person = personApi.get(tenantId, userId).getData();
