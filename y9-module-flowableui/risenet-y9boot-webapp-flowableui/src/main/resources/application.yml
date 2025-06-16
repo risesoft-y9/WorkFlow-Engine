@@ -68,7 +68,6 @@ spring:
                 enabled: false
     datasource:
         hikari:
-            tenantDefault: spring.datasource.hikari.flowable
             y9-public:
                 driverClassName: com.mysql.cj.jdbc.Driver
                 jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
@@ -122,7 +121,7 @@ spring:
             static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
     systemName: flowableUI
-    internalIp: 192.168.x.x,10.0.x.x,172.20.x.x
+    internalIp: 192.168.x.x,10.x.x.x,172.20.x.x
     app:
         flowable:
             systemCnName: 办件3.0
