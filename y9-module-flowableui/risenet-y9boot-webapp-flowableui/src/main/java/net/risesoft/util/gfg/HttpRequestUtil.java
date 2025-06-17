@@ -1,4 +1,4 @@
-﻿package net.risesoft.util.gfg;
+package net.risesoft.util.gfg;
 
 import java.io.*;
 import java.net.HttpURLConnection;
