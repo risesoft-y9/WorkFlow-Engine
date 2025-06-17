@@ -1263,7 +1263,7 @@ public class Document4GfgRestController {
     @PostMapping(value = "/saveSecretLevelRecord")
     public Y9Result<String> saveSecretLevelRecord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String secretLevel, @RequestParam @NotBlank String secretBasis,
-        @RequestParam @NotBlank String secretItem, @RequestParam @NotBlank String tableName,
+        @RequestParam(required = false) String secretItem, @RequestParam @NotBlank String tableName,
         @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String description) {
         try {
             secretLevelRecordApi.saveRecord(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),

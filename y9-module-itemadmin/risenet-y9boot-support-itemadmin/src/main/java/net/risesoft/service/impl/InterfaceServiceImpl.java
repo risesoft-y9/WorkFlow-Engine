@@ -1,41 +1,29 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.entity.*;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.jpa.*;
+import net.risesoft.service.InterfaceService;
+import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
-
-import net.risesoft.entity.InterfaceInfo;
-import net.risesoft.entity.InterfaceRequestParams;
-import net.risesoft.entity.InterfaceResponseParams;
-import net.risesoft.entity.ItemInterfaceBind;
-import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.InterfaceInfoRepository;
-import net.risesoft.repository.jpa.InterfaceRequestParamsRepository;
-import net.risesoft.repository.jpa.InterfaceResponseParamsRepository;
-import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
-import net.risesoft.service.InterfaceService;
-import net.risesoft.y9.json.Y9JsonUtil;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
- *
  * @author zhangchongjie
  * @date 2024/05/23
  */
@@ -53,6 +41,22 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     private final InterfaceResponseParamsRepository interfaceResponseParamsRepository;
 
+    @Override
+    public InterfaceInfo findById(String id) {
+        return interfaceInfoRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<InterfaceInfo> findByInterfaceName(String interfaceName) {
+        return interfaceInfoRepository.findByInterfaceNameLike("%" + interfaceName + "%");
+    }
+
+    @Override
+    public List<InterfaceInfo> findAll() {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        return interfaceInfoRepository.findAll(sort);
+    }
+
     @SuppressWarnings("serial")
     @Override
     public List<ItemInterfaceBind> listInterfaceById(String id) {
@@ -60,7 +64,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         List<ItemInterfaceBind> list = itemInterfaceBindRepository.findAll(new Specification<ItemInterfaceBind>() {
             @Override
             public Predicate toPredicate(Root<ItemInterfaceBind> root, CriteriaQuery<?> query,
-                CriteriaBuilder builder) {
+                                         CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 list.add(builder.equal(root.get("interfaceId"), id));
                 Predicate[] predicates = new Predicate[list.size()];
@@ -106,7 +110,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         return interfaceRequestParamsRepository.findAll(new Specification<InterfaceRequestParams>() {
             @Override
             public Predicate toPredicate(Root<InterfaceRequestParams> root, CriteriaQuery<?> query,
-                CriteriaBuilder builder) {
+                                         CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
@@ -131,7 +135,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         return interfaceResponseParamsRepository.findAll(new Specification<InterfaceResponseParams>() {
             @Override
             public Predicate toPredicate(Root<InterfaceResponseParams> root, CriteriaQuery<?> query,
-                CriteriaBuilder builder) {
+                                         CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
@@ -192,7 +196,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @Override
     @Transactional
-    public void saveInterfaceInfo(InterfaceInfo info) {
+    public InterfaceInfo saveInterfaceInfo(InterfaceInfo info) {
         String id = info.getId();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
@@ -203,7 +207,7 @@ public class InterfaceServiceImpl implements InterfaceService {
                 item.setInterfaceAddress(info.getInterfaceAddress());
                 item.setAbnormalStop(info.getAbnormalStop());
                 item.setAsyn(info.getAsyn());
-                return;
+                return item;
             }
         }
         InterfaceInfo item = new InterfaceInfo();
@@ -214,7 +218,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setAbnormalStop(info.getAbnormalStop());
         item.setAsyn(info.getAsyn());
         item.setCreateTime(sdf.format(new Date()));
-        interfaceInfoRepository.saveAndFlush(item);
+        return interfaceInfoRepository.saveAndFlush(item);
     }
 
     @Override

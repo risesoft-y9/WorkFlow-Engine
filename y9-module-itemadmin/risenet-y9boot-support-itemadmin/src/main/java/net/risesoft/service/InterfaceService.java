@@ -1,11 +1,11 @@
 package net.risesoft.service;
 
-import java.util.List;
-
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceBind;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -13,6 +13,29 @@ import net.risesoft.entity.ItemInterfaceBind;
  * @date 2022/12/20
  */
 public interface InterfaceService {
+
+    /**
+     * 根据id获取接口信息
+     *
+     * @param id
+     * @return
+     */
+    InterfaceInfo findById(String id);
+
+    /**
+     * 根据接口名称获取接口信息
+     *
+     * @param interfaceName
+     * @return
+     */
+    List<InterfaceInfo> findByInterfaceName(String interfaceName);
+
+    /**
+     * 获取所有接口信息
+     *
+     * @return
+     */
+    List<InterfaceInfo> findAll();
 
     /**
      * 获取接口绑定事项列表
@@ -85,7 +108,7 @@ public interface InterfaceService {
      *
      * @param info
      */
-    void saveInterfaceInfo(InterfaceInfo info);
+    InterfaceInfo saveInterfaceInfo(InterfaceInfo info);
 
     /**
      * 保存接口请求参数

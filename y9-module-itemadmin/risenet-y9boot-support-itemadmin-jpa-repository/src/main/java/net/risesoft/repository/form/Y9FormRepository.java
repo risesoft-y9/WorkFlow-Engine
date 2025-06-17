@@ -1,7 +1,6 @@
 package net.risesoft.repository.form;
 
-import java.util.List;
-
+import net.risesoft.entity.form.Y9Form;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.form.Y9Form;
+import java.util.List;
 
 /**
  * @author qinman
@@ -25,4 +24,7 @@ public interface Y9FormRepository extends JpaRepository<Y9Form, String>, JpaSpec
     Page<Y9Form> findBySystemName(String systemName, Pageable pageable);
 
     List<Y9Form> findBySystemNameAndFormNameLike(String systemName, String formName);
+
+    boolean existsBySystemNameAndFormName(String systemName, String formName);
+
 }
