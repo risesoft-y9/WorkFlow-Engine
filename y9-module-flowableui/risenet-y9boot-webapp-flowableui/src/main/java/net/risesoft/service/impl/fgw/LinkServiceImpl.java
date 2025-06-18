@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;

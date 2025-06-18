@@ -79,7 +79,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final ProcessParamApi processParamApi;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @jakarta.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,

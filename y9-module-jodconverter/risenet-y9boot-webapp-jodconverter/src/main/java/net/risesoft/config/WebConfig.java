@@ -3,7 +3,7 @@ package net.risesoft.config;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

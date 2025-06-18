@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.apache.commons.io.FilenameUtils;
