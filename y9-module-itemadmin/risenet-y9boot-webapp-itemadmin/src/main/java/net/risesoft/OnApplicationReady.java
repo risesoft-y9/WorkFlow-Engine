@@ -159,7 +159,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
             createSystem("itemAdmin");// 创建系统
             creatApp();// 创建应用
 
-            String sql = "select * from Y9_COMMON_TENANT where TENANT_TYPE = 3";
+            String sql = "select * from Y9_COMMON_TENANT";
             List<Map<String, Object>> tlist = jdbcTemplate.queryForList(sql);
             for (Map<String, Object> map : tlist) {
                 Tenant tenant = new Tenant();

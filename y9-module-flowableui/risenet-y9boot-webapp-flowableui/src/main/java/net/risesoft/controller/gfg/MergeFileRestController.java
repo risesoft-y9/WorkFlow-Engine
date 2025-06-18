@@ -21,7 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.util.gfg.HttpRequestUtil;
+import net.risesoft.y9.util.Y9ModelConvertUtil;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -296,5 +303,100 @@ public class MergeFileRestController {
             LOGGER.error("上传失败", e);
         }
         return Y9Result.failure("上传失败");
+    }
+
+    @FlowableLog(operationName = "不同格式文件合并转OFD", operationType = FlowableOperationTypeEnum.UPLOAD)
+    @PostMapping(value = "/ofdX2y")
+    public Y9Result<String> ofdX2y(String processSerialNumber, String fileStoreIds,String listType,String wordType) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String downloadBasePath = Y9Context.getProperty("y9.common.flowableBaseUrl");
+        Date now = new Date();
+        try {
+            String converterFileUri = Y9Context.getProperty("y9.common.ofdConverterBaseUrl") + "/sync/common/x2y";
+            String addPagerNumberUri = Y9Context.getProperty("y9.common.ofdConverterBaseUrl") + "/sync/common/addPagerNumber";
+            String[] fileStoreIdArray = fileStoreIds.split(",");
+            JsonArray components = new JsonArray();
+
+            for (String fileStoreId : fileStoreIdArray) {
+                Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
+                if(y9FileStore != null){
+                    String fileLoc =  downloadBasePath + "/s/" +y9FileStore.getId();
+                    String format = y9FileStore.getFileExt();
+                    JsonObject temp = new JsonObject();
+                    temp.addProperty("fileLoc", fileLoc);
+                    temp.addProperty("format", format);
+                    components.add(temp);
+                }
+            }
+            JsonObject convertJsonObject = new JsonObject();
+            convertJsonObject.add("components", components);
+            convertJsonObject.addProperty("target", "ofd");
+            String convertParam = convertJsonObject.toString();
+            LOGGER.info("----------文件转换服务请求参数:{}", convertParam);
+            //开始调用数科转换服务-合并文件
+            byte[] result = HttpRequestUtil.postFile(converterFileUri, convertParam);
+            if(result != null){
+                Y9FileStore y9FileStore  = y9FileStoreService.uploadFile(result, "ofd", "合并文件.ofd");
+                if(y9FileStore != null){
+                    JsonObject setPageJson = new JsonObject();
+                    setPageJson.addProperty("target", "ofd");
+                    String fileLoc = downloadBasePath + "/s/" + y9FileStore.getId();
+                    String format = y9FileStore.getFileExt();
+                    JsonArray componestsArray = new JsonArray();
+                    JsonObject componentJson = new JsonObject();
+                    componentJson.addProperty("fileLoc", fileLoc);
+                    componentJson.addProperty("format", format);
+                    componestsArray.add(componentJson);
+                    setPageJson.add("componests", componestsArray);
+                    JsonArray pageNumberArray = new JsonArray();
+                    JsonObject pageNumber = new JsonObject();
+                    pageNumber.addProperty("autoAdaptOrientation", "");
+                    pageNumber.addProperty("bold", true);
+                    pageNumber.addProperty("fontName", "TimesNewRoman");
+                    pageNumber.addProperty("fontSize", 12);
+                    pageNumber.addProperty("foreColor", "#ff0000");
+                    pageNumber.addProperty("italic", true);
+                    pageNumber.addProperty("operator", "Add");
+                    pageNumber.addProperty("orientation", "");
+                    pageNumber.addProperty("pageNumberFormat", "--${PageNumber}--");
+                    pageNumber.addProperty("pagePadding", "");
+                    pageNumber.addProperty("pageRange", "all");
+                    pageNumber.addProperty("predefinedPosition", "");
+                    pageNumber.addProperty("rotate", 45);
+                    pageNumber.addProperty("startNumber", 1);
+                    pageNumber.addProperty("step", 1);
+                    pageNumber.addProperty("x", "center");
+                    pageNumber.addProperty("y", "bottom");
+                    pageNumberArray.add(pageNumber);
+                    setPageJson.add("pageNumber", pageNumberArray);
+                    String setPageParam = setPageJson.toString();
+                    LOGGER.info("----------文件转换服务----设置页码请求参数:{}", setPageParam);
+                    byte[] setPageResult = HttpRequestUtil.postFile(addPagerNumberUri, setPageParam);
+                    if(setPageResult != null){
+                        Y9FileStore y9FileStoreSetPage  = y9FileStoreService.uploadFile(setPageResult, "ofd", "合并文件.ofd");
+                        MergeFileModel mergeFileModel = new MergeFileModel();
+                        String id = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                        String fileName = "合并文件" + DateUtil.format(now,"yyyy-MM-dd HH:mm:ss") +".ofd";
+                        mergeFileModel.setId(id);
+                        mergeFileModel.setFileName(fileName);
+                        mergeFileModel.setListType(listType);
+                        mergeFileModel.setFileStoreId(y9FileStoreSetPage.getId());
+                        mergeFileModel.setProcessSerialNumber(StringUtils.isBlank(processSerialNumber) ? "" : processSerialNumber);
+                        mergeFileModel.setPersonName(person.getName());
+                        mergeFileModel.setPersonId(userId);
+                        mergeFileModel.setFileType(wordType);// 存wordType
+                        mergeFileModel.setCreateTime(DateUtil.format(now, "yyyy-MM-dd HH:mm:ss"));
+                        mergeFileModel.setSourceFileId("");
+                        mergeFileApi.saveMergeFile(tenantId, mergeFileModel);
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            LOGGER.error("转换失败", e);
+            return Y9Result.failure("转换失败");
+        }
+        return Y9Result.success("转换成功");
     }
 }
