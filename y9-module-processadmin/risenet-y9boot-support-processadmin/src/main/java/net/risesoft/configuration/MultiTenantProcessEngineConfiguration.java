@@ -147,7 +147,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
             List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql);
             if (list.size() == 1) {
                 Map<String, Object> smap = list.get(0);
-                sql = "select * from Y9_COMMON_TENANT where TENANT_TYPE = 3";
+                sql = "select * from Y9_COMMON_TENANT";
                 List<Map<String, Object>> tlist = jdbcTemplate4Public.queryForList(sql);
                 for (Map<String, Object> map : tlist) {
                     sql = "select * from y9_common_tenant_system where TENANT_ID = '" + map.get("ID").toString()
