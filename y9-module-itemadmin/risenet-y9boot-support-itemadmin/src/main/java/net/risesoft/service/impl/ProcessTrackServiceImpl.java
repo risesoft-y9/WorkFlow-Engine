@@ -137,6 +137,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         model.setAssignee("");
         model.setName(hai.getName());
         model.setActionName("");
+        model.setStartTime(hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
         List<TaskRelated> trList = this.taskRelatedService.findByTaskId(taskId);
         List<TaskRelated> actionNameList = trList.stream()
             .filter(tr -> tr.getInfoType().equals(TaskRelatedEnum.ACTIONNAME.getValue())).collect(Collectors.toList());
@@ -788,6 +789,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 oneModel.setId(signDeptDetail.getId());
                 oneModel.setPersonList(List.of());
                 oneModel.setActionName("并行会签【" + signDeptDetail.getDeptName() + "】");
+
                 List<HistoryProcessModel> twoProcessList = new ArrayList<>();
                 int subTabIndex = 1;
                 for (HistoricTaskInstanceModel hti : subResults) {
@@ -797,6 +799,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 }
                 oneModel.setTabIndex(tabIndex++);
                 oneModel.setChildren(twoProcessList);
+                oneModel.setStartTime(twoProcessList.size() > 0 ? twoProcessList.get(0).getStartTime() : "");
                 items.add(oneModel);
             }
         }
