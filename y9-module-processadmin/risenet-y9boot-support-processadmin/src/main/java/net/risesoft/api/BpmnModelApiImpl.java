@@ -214,8 +214,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         Map<String, GraphicInfo> infoMap = bpmnModel.getLocationMap();
         List<FlowElement> flowElements = customProcessDefinitionService.getFlowElements(pi.getProcessDefinitionId());
         for (FlowElement flowElement : flowElements) {
-            if (flowElement instanceof StartEvent) {
-                StartEvent startEvent = (StartEvent)flowElement;
+            if (flowElement instanceof StartEvent startEvent) {
                 GraphicInfo graphicInfo = infoMap.get(startEvent.getId());
                 txtFlowPath = startEvent.getId();
                 nodeDataArray.add(new FlowNodeModel(startEvent.getId(), "Start", "开始", "Circle", "#4fba4f", "1",
@@ -224,63 +223,51 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 List<SequenceFlow> list = startEvent.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
-                    if ((fe instanceof UserTask)) {
-                        UserTask u = (UserTask)fe;
+                    if ((fe instanceof UserTask u)) {
                         linkDataArray.add(new LinkNodeModel(startEvent.getId(), u.getId()));
                     }
                 }
-            } else if (flowElement instanceof UserTask) {
-                UserTask userTask = (UserTask)flowElement;
+            } else if (flowElement instanceof UserTask userTask) {
                 GraphicInfo graphicInfo = infoMap.get(userTask.getId());
                 nodeDataArray.add(new FlowNodeModel(userTask.getId(), "", userTask.getName(), "", "", "",
                     graphicInfo.getX() + " " + graphicInfo.getY(), "111111111"));
                 List<SequenceFlow> list = userTask.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
-                    if (fe instanceof ExclusiveGateway) {
+                    if (fe instanceof ExclusiveGateway gateway) {
                         // 目标节点时排他网关时，需要再次获取输出路线
-                        ExclusiveGateway gateway = (ExclusiveGateway)fe;
                         List<SequenceFlow> outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
-                            if (element instanceof UserTask) {
-                                UserTask task = (UserTask)element;
+                            if (element instanceof UserTask task) {
                                 linkDataArray.add(new LinkNodeModel(userTask.getId(), task.getId()));
-                            } else if (element instanceof EndEvent) {
-                                EndEvent endEvent = (EndEvent)element;
+                            } else if (element instanceof EndEvent endEvent) {
                                 linkDataArray.add(new LinkNodeModel(userTask.getId(), endEvent.getId()));
-                            } else if (element instanceof ParallelGateway) {
-                                ParallelGateway parallelgateway = (ParallelGateway)element;
+                            } else if (element instanceof ParallelGateway parallelgateway) {
                                 List<SequenceFlow> outgoingFlows1 = parallelgateway.getOutgoingFlows();
                                 for (SequenceFlow sf1 : outgoingFlows1) {
                                     FlowElement element1 = sf1.getTargetFlowElement();
-                                    if (element1 instanceof UserTask) {
-                                        UserTask task1 = (UserTask)element1;
+                                    if (element1 instanceof UserTask task1) {
                                         linkDataArray.add(new LinkNodeModel(userTask.getId(), task1.getId()));
                                     }
                                 }
                             }
                         }
-                    } else if ((fe instanceof UserTask)) {
-                        UserTask u = (UserTask)fe;
+                    } else if ((fe instanceof UserTask u)) {
                         linkDataArray.add(new LinkNodeModel(userTask.getId(), u.getId()));
-                    } else if (fe instanceof EndEvent) {
-                        EndEvent endEvent = (EndEvent)fe;
+                    } else if (fe instanceof EndEvent endEvent) {
                         linkDataArray.add(new LinkNodeModel(userTask.getId(), endEvent.getId()));
-                    } else if (fe instanceof ParallelGateway) {
-                        ParallelGateway gateway = (ParallelGateway)fe;
+                    } else if (fe instanceof ParallelGateway gateway) {
                         List<SequenceFlow> outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
-                            if (element instanceof UserTask) {
-                                UserTask task = (UserTask)element;
+                            if (element instanceof UserTask task) {
                                 linkDataArray.add(new LinkNodeModel(userTask.getId(), task.getId()));
                             }
                         }
                     }
                 }
-            } else if (flowElement instanceof EndEvent) {
-                EndEvent endEvent = (EndEvent)flowElement;
+            } else if (flowElement instanceof EndEvent endEvent) {
                 GraphicInfo graphicInfo = infoMap.get(endEvent.getId());
                 nodeDataArray.add(new FlowNodeModel(endEvent.getId(), "End", "结束", "Circle", "#CE0620", "4",
                     graphicInfo.getX() + " " + graphicInfo.getY(), ""));

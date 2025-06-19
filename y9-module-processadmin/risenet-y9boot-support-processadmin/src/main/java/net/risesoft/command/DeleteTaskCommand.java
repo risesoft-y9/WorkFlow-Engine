@@ -71,7 +71,6 @@ public class DeleteTaskCommand implements Command<Void> {
             CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity, taskEntity.getAssignee(),
                 reason, new Date());
             CommandContextUtil.getActivityInstanceEntityManager().recordActivityEnd(executionEntity, reason);
-
         }
         return null;
     }

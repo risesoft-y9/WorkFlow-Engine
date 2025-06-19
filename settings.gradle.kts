@@ -35,6 +35,7 @@ include(":y9-module-itemadmin:risenet-y9boot-support-itemadmin-jpa-repository")
 include(":y9-module-itemadmin:risenet-y9boot-support-itemadmin")
 include(":y9-module-itemadmin:risenet-y9boot-webapp-itemadmin")
 
+include(":y9-module-flowableui:risenet-y9boot-starter-log-flowable")
 include(":y9-module-flowableui:risenet-y9boot-webapp-flowableui")
 include(":y9-module-jodconverter:risenet-y9boot-webapp-jodconverter")
 

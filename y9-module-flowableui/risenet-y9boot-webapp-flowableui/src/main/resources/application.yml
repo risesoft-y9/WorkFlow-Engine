@@ -86,12 +86,15 @@ spring:
         #databasePlatform: org.hibernate.dialect.MySQL8Dialect
         properties:
             hibernate:
+                cache:
+                    use_query_cache: false
+                    use_second_level_cache: false
                 dialect: org.hibernate.dialect.MySQL8Dialect
                 hbm2ddl:
                     auto: none
                 jdbc:
-                    batchSize: 100
-                showSql: true
+                    batch_size: 100
+                show_sql: false
         hibernate:
             ddl-auto: none
             naming:

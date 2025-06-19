@@ -22,6 +22,7 @@ dependencies {
     api("net.risesoft:risenet-y9boot-starter-sso-oauth2-resource")
     api("net.risesoft:risenet-y9boot-common-sqlddl")
     api("net.risesoft:risenet-y9boot-api-feignclient-platform")
+    api(project(":y9-module-flowableui:risenet-y9boot-starter-log-flowable"))
     api(project(":y9-module-itemadmin:risenet-y9boot-api-feignclient-itemadmin"))
     api(project(":y9-module-processadmin:risenet-y9boot-api-feignclient-processadmin"))
     api("org.springframework.boot:spring-boot-starter-validation")

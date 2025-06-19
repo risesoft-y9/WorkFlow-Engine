@@ -67,8 +67,7 @@ public class Role4GfgRestController {
     public Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String id) {
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String id) {
         if (StringUtils.isBlank(id)) {
             id = "";
         }
@@ -119,12 +118,11 @@ public class Role4GfgRestController {
                 .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())
                     || ssd.getStatus().equals(SignDeptDetailStatusEnum.DELETED.getValue()))
                 .collect(Collectors.toList());
-        List<ItemRoleOrgUnitModel> list = itemRoleApi
-            .findByRoleId(tenantId, personId, positionId, roleId, principalType, id).getData()
-            .stream()
-            .filter(itemRoleOrgUnitModel -> sddList.stream()
-                .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
-            .collect(Collectors.toList());
+        List<ItemRoleOrgUnitModel> list =
+            itemRoleApi.findByRoleId(tenantId, personId, positionId, roleId, principalType, id).getData().stream()
+                .filter(itemRoleOrgUnitModel -> sddList.stream()
+                    .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
+                .collect(Collectors.toList());
         return Y9Result.success(list);
     }
 }

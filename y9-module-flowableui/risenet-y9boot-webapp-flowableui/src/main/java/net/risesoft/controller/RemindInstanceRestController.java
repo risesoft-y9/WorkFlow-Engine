@@ -72,8 +72,7 @@ public class RemindInstanceRestController {
         Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId).getData();
-        List<TargetModel> list0 =
-            processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId()).getData();
+        List<TargetModel> list0 = processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId()).getData();
         RemindInstanceModel remindInstance = remindInstanceApi
             .getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
         retMap.put("remindType", "");

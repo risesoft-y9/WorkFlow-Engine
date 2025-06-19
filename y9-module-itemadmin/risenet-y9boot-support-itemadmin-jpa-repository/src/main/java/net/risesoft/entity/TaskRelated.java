@@ -30,8 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_TASK_RELATED",
-        indexes = {@Index(name = "ff_task_related_001_taskId", columnList = "taskId")})
+@Table(name = "FF_TASK_RELATED", indexes = {@Index(name = "ff_task_related_001_taskId", columnList = "taskId")})
 @Comment("任务相关信息")
 public class TaskRelated implements Serializable {
 

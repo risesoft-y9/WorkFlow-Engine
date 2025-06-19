@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.task.TaskExecutorBuilder;
+import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,6 +82,20 @@ public class FlowableLogConfiguration {
         return new Y9Context();
     }
 
+    @Primary
+    @Bean(name = {"y9ThreadPoolTaskExecutor"})
+    @ConditionalOnMissingBean(name = "y9ThreadPoolTaskExecutor")
+    public Executor y9ThreadPoolTaskExecutor(ThreadPoolTaskExecutorBuilder builder) {
+        ThreadPoolTaskExecutor taskExecutor = builder.build();
+        taskExecutor.setCorePoolSize(10);
+        taskExecutor.setAllowCoreThreadTimeOut(true);
+        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setQueueCapacity(100);
+        taskExecutor.setThreadNamePrefix("y9-flowable-log-");
+        taskExecutor.initialize();
+        return TtlExecutors.getTtlExecutor(taskExecutor);
+    }
+
     @Slf4j
     @Configuration
     @AutoConfigureAfter(KafkaAutoConfiguration.class)
@@ -111,18 +125,5 @@ public class FlowableLogConfiguration {
             return new FlowableAccessLogApiReporter(y9Properties);
         }
 
-    }
-
-    @Primary
-    @Bean(name = {"y9ThreadPoolTaskExecutor"})
-    public Executor y9ThreadPoolTaskExecutor(TaskExecutorBuilder builder) {
-        ThreadPoolTaskExecutor taskExecutor = builder.build();
-        taskExecutor.setCorePoolSize(10);
-        taskExecutor.setAllowCoreThreadTimeOut(true);
-        taskExecutor.setMaxPoolSize(20);
-        taskExecutor.setQueueCapacity(100);
-        taskExecutor.setThreadNamePrefix("y9-flowable-log-");
-        taskExecutor.initialize();
-        return TtlExecutors.getTtlExecutor(taskExecutor);
     }
 }
