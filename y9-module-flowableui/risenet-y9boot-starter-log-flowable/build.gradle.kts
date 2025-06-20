@@ -15,7 +15,7 @@ dependencies {
     api(project(":y9-module-itemadmin:risenet-y9boot-api-interface-itemadmin"))
 
     api("org.springframework.kafka:spring-kafka")
-    api(libs.javax.ws.rs.api)
+    //api(libs.javax.ws.rs.api)
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")
 }
