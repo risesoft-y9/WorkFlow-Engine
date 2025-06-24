@@ -6,13 +6,8 @@
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>
         </Console>
-        <!--        <File name="File" fileName="/software/tomcat9/logs/processAdmin/processAdmin.log">-->
-        <!--            <PatternLayout>-->
-        <!--                <pattern>%d %p %C{1.} [%t] %m%n</pattern>-->
-        <!--            </PatternLayout>-->
-        <!--        </File>-->
-        <RollingFile name="RollingFile" fileName="/software/tomcat9/logs/processAdmin/processAdmin.log"
-                     filePattern="/software/tomcat9/logs/processAdmin/processAdmin-%d{yyyy-MM-dd}.log">
+        <RollingFile name="RollingFile" fileName="../logs/processAdmin/processAdmin.log"
+                     filePattern="../logs/processAdmin/processAdmin-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>
