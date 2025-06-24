@@ -507,8 +507,8 @@ public class FormNTKO4GfgController {
         System.arraycopy(lhfwdeptList, 0, lhfwdeptListTemp, 0, lhfwdeptList.length);
         for (int i = 0; i < lhfwdeptListTemp.length; i++) {
             Map<String, String> map = signDeptInfoApi.findByDeptNameMax(tenantId, lhfwdeptListTemp[i]).getData();
-            String deptname = map.get("DEPTNAME");
-            String deptSuffix = map.get("DEPTSUFFIX");
+            String deptname = map.get("deptName");
+            String deptSuffix = map.get("deptSuffix");
             if (isTing) {
                 if (StringUtils.isNotBlank(deptSuffix))
                     deptname = deptname + deptSuffix;
