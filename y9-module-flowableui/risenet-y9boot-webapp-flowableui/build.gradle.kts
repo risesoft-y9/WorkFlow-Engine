@@ -42,9 +42,6 @@ dependencies {
     api(libs.fastexcel)
     api(y9libs.dom4j)
     api(libs.graph.java.client)
-    // 条码号图片生成
-    api(libs.jbarcode)
-    api(libs.pdf417)
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
