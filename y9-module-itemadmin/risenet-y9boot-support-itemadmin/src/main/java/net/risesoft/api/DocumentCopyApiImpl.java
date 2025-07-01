@@ -2,11 +2,7 @@ package net.risesoft.api;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -182,8 +178,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         String bySql = " ORDER BY P.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String allSql =
             "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
-            + processParamSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql
-            + systemNameSql + " AND C.USERID = ? " + bySql;
+                + processParamSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql
+                + systemNameSql + " AND C.USERID = ? " + bySql;
         Object[] args = {orgUnitId};
         List<DocumentCopyModel> content =
             jdbcTemplate.query(allSql, args, new BeanPropertyRowMapper<>(DocumentCopyModel.class));

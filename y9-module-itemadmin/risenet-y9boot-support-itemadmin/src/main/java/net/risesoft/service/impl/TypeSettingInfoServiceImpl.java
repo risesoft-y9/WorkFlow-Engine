@@ -1,14 +1,9 @@
 package net.risesoft.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.platform.Person;
-import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.TypeSettingInfo;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -77,23 +73,15 @@ public class TypeSettingInfoServiceImpl implements TypeSettingInfoService {
             TypeSettingInfo typeSettingInfoHis;
             if (!typeSettingInfoHisOp.isEmpty()) {
                 typeSettingInfoHis = typeSettingInfoHisOp.get();
-                Optional.ofNullable(typeSettingInfo.getIfHaveYj())
-                        .ifPresent(typeSettingInfoHis::setIfHaveYj);
-                Optional.ofNullable(typeSettingInfo.getCheckOpinion())
-                        .ifPresent(typeSettingInfoHis::setCheckOpinion);
-                Optional.ofNullable(typeSettingInfo.getCheckTime())
-                        .ifPresent(typeSettingInfoHis::setCheckTime);
-                Optional.ofNullable(typeSettingInfo.getCheckUserName())
-                        .ifPresent(typeSettingInfoHis::setCheckUserName);
+                Optional.ofNullable(typeSettingInfo.getIfHaveYj()).ifPresent(typeSettingInfoHis::setIfHaveYj);
+                Optional.ofNullable(typeSettingInfo.getCheckOpinion()).ifPresent(typeSettingInfoHis::setCheckOpinion);
+                Optional.ofNullable(typeSettingInfo.getCheckTime()).ifPresent(typeSettingInfoHis::setCheckTime);
+                Optional.ofNullable(typeSettingInfo.getCheckUserName()).ifPresent(typeSettingInfoHis::setCheckUserName);
 
-                Optional.ofNullable(typeSettingInfo.getHgrOpinion())
-                        .ifPresent(typeSettingInfoHis::setHgrOpinion);
-                Optional.ofNullable(typeSettingInfo.getShenheOpinion())
-                        .ifPresent(typeSettingInfoHis::setShenheOpinion);
-                Optional.ofNullable(typeSettingInfo.getAuditTime())
-                        .ifPresent(typeSettingInfoHis::setAuditTime);
-                Optional.ofNullable(typeSettingInfo.getAuditUserName())
-                        .ifPresent(typeSettingInfoHis::setAuditUserName);
+                Optional.ofNullable(typeSettingInfo.getHgrOpinion()).ifPresent(typeSettingInfoHis::setHgrOpinion);
+                Optional.ofNullable(typeSettingInfo.getShenheOpinion()).ifPresent(typeSettingInfoHis::setShenheOpinion);
+                Optional.ofNullable(typeSettingInfo.getAuditTime()).ifPresent(typeSettingInfoHis::setAuditTime);
+                Optional.ofNullable(typeSettingInfo.getAuditUserName()).ifPresent(typeSettingInfoHis::setAuditUserName);
 
                 typeSettingInfoHis.setProcessSerialNumber(processSerialNumber);
                 typeSettingInfoRepository.save(typeSettingInfoHis);

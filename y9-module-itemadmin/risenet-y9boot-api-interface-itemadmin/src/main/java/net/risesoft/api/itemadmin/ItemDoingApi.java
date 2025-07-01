@@ -95,8 +95,8 @@ public interface ItemDoingApi {
      */
     @PostMapping("/searchBySystemName")
     Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestParam("systemName") String systemName, @RequestBody String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     @PostMapping("/searchListBySystemName")
     Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("tenantId") String tenantId,

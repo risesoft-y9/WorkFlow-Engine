@@ -1,20 +1,18 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.entity.PaperAttachment;
-import net.risesoft.entity.TransactionFile;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.PaperAttachmentRepository;
-import net.risesoft.service.PaperAttachmentService;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.entity.PaperAttachment;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.jpa.PaperAttachmentRepository;
+import net.risesoft.service.PaperAttachmentService;
 
 /**
  * @author : qinman

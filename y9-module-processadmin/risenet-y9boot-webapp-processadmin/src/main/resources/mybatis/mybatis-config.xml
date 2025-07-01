@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-<properties>
-		<property name="prefix" value="" />
-		<property name="blobType" value="BLOB" />
-	</properties>
+    <properties>
+        <property name="prefix" value=""/>
+        <property name="blobType" value="BLOB"/>
+    </properties>
 
-<mappers>
-		<!-- 对应Bean类的xml配置文件的路径信息 -->
-		<mapper resource="META-INF/modeler-mybatis-mappings/Model.xml" />
-		<mapper
-			resource="META-INF/modeler-mybatis-mappings/ModelHistory.xml" />
-		<mapper
-			resource="META-INF/modeler-mybatis-mappings/ModelRelation.xml" />
-	</mappers>
+    <mappers>
+        <!-- 对应Bean类的xml配置文件的路径信息 -->
+        <mapper resource="META-INF/modeler-mybatis-mappings/Model.xml"/>
+        <mapper
+                resource="META-INF/modeler-mybatis-mappings/ModelHistory.xml"/>
+        <mapper
+                resource="META-INF/modeler-mybatis-mappings/ModelRelation.xml"/>
+    </mappers>
 
 </configuration>

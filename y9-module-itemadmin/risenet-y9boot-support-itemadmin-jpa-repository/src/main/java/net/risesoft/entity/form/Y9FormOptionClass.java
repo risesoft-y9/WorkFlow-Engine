@@ -2,11 +2,7 @@ package net.risesoft.entity.form;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;

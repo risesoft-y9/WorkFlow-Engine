@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.log.annotation.FlowableLog;
 
-
 /**
  * @author qinman
  * @date 2025/05/20
@@ -25,7 +24,7 @@ public class FlowableLogAdvisor extends StaticMethodMatcherPointcutAdvisor {
 
     @SuppressWarnings("unchecked")
     private static final Class<? extends Annotation>[] ANNOTATION_CLASSES =
-        new Class[] {FlowableLog.class, RequestMapping.class , PostMapping.class, GetMapping.class};
+        new Class[] {FlowableLog.class, RequestMapping.class, PostMapping.class, GetMapping.class};
 
     public FlowableLogAdvisor() {
         LOGGER.debug("FlowableLogAdvisor init...............");

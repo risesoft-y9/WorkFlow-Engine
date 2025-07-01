@@ -82,6 +82,19 @@ public class FlowableLogConfiguration {
         return new Y9Context();
     }
 
+    @Primary
+    @Bean(name = {"y9ThreadPoolTaskExecutor"})
+    public Executor y9ThreadPoolTaskExecutor(TaskExecutorBuilder builder) {
+        ThreadPoolTaskExecutor taskExecutor = builder.build();
+        taskExecutor.setCorePoolSize(10);
+        taskExecutor.setAllowCoreThreadTimeOut(true);
+        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setQueueCapacity(100);
+        taskExecutor.setThreadNamePrefix("y9-flowable-log-");
+        taskExecutor.initialize();
+        return TtlExecutors.getTtlExecutor(taskExecutor);
+    }
+
     @Slf4j
     @Configuration
     @AutoConfigureAfter(KafkaAutoConfiguration.class)
@@ -111,18 +124,5 @@ public class FlowableLogConfiguration {
             return new FlowableAccessLogApiReporter(y9Properties);
         }
 
-    }
-
-    @Primary
-    @Bean(name = {"y9ThreadPoolTaskExecutor"})
-    public Executor y9ThreadPoolTaskExecutor(TaskExecutorBuilder builder) {
-        ThreadPoolTaskExecutor taskExecutor = builder.build();
-        taskExecutor.setCorePoolSize(10);
-        taskExecutor.setAllowCoreThreadTimeOut(true);
-        taskExecutor.setMaxPoolSize(20);
-        taskExecutor.setQueueCapacity(100);
-        taskExecutor.setThreadNamePrefix("y9-flowable-log-");
-        taskExecutor.initialize();
-        return TtlExecutors.getTtlExecutor(taskExecutor);
     }
 }

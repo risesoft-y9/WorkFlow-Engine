@@ -3,14 +3,7 @@ package net.risesoft.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
@@ -30,8 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_TASK_RELATED",
-        indexes = {@Index(name = "ff_task_related_001_taskId", columnList = "taskId")})
+@Table(name = "FF_TASK_RELATED", indexes = {@Index(name = "ff_task_related_001_taskId", columnList = "taskId")})
 @org.hibernate.annotations.Table(comment = "任务相关信息", appliesTo = "FF_TASK_RELATED")
 public class TaskRelated implements Serializable {
 

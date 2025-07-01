@@ -10,9 +10,10 @@ import net.risesoft.entity.TaskRelated;
 public interface TaskRelatedService {
 
     void saveOrUpdate(TaskRelated taskRelated);
+
     List<TaskRelated> findByTaskId(String taskId);
 
     List<TaskRelated> findByProcessSerialNumber(String processSerialNumber);
 
-    TaskRelated findByTaskIdAndInfoType(String taskId,String infoType);
+    TaskRelated findByTaskIdAndInfoType(String taskId, String infoType);
 }

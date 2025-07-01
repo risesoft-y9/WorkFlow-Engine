@@ -148,9 +148,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
-        Page<ActRuDetail> ardPage =
-            this.actRuDetailService.pageBySystemNameAndDeptIdAndEnded(systemName, deptId, isBureau, false, rows, page,
-                sort);
+        Page<ActRuDetail> ardPage = this.actRuDetailService.pageBySystemNameAndDeptIdAndEnded(systemName, deptId,
+            isBureau, false, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -175,8 +174,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
-        @RequestBody String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
@@ -185,14 +183,12 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             assigneeNameWhereSql = sqlList.get(3);
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? "
+                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql
-            + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ?" + whereSql
-            + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ?"
+                + whereSql + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
@@ -216,9 +212,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         }
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? "
+                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
@@ -292,14 +287,14 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
                 + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
-            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
                 + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql
-            + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
-            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + innerSql + assigneeNameInnerSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
                 + ") A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName, deptId};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
@@ -326,8 +321,8 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
                 + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
-            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
                 + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName, deptId};
         List<ActRuDetailModel> content =

@@ -11,7 +11,7 @@
     <artifactId>risenet-y9boot-webapp-itemadmin</artifactId>
     <!-- <version>${revision}</version> -->
     <packaging>war</packaging>
-    
+
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>

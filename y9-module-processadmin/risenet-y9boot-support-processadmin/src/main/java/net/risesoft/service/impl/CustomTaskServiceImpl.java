@@ -4,11 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
@@ -83,9 +79,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-            String nodeType =
-                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getMultiInstance();
+            String nodeType = customProcessDefinitionService
+                .getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getMultiInstance();
             HistoricProcessInstance historicProcessInstance =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
@@ -164,9 +159,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         try {
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             processInstanceId = task.getProcessInstanceId();
-            String nodeType =
-                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getMultiInstance();
+            String nodeType = customProcessDefinitionService
+                .getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getMultiInstance();
             if (nodeType.equals(SysVariables.PARALLEL)) {
                 List<Task> taskList = this.listByProcessInstanceId(task.getProcessInstanceId());
                 for (Task tTemp : taskList) {

@@ -1,25 +1,5 @@
 package net.risesoft.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.entity.InterfaceInfo;
-import net.risesoft.entity.InterfaceRequestParams;
-import net.risesoft.entity.InterfaceResponseParams;
-import net.risesoft.entity.ItemInterfaceParamsBind;
-import net.risesoft.model.InterfaceExportData;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.InterfaceService;
-import net.risesoft.service.config.ItemInterfaceParamsBindService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +8,29 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.entity.InterfaceInfo;
+import net.risesoft.entity.InterfaceRequestParams;
+import net.risesoft.entity.InterfaceResponseParams;
+import net.risesoft.entity.ItemInterfaceParamsBind;
+import net.risesoft.model.InterfaceExportData;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.InterfaceService;
+import net.risesoft.service.config.ItemInterfaceParamsBindService;
 
 /**
  * 接口信息
@@ -57,15 +60,15 @@ public class JsonImAndExportRestController {
         Object dataToExport;
         String filename = "export";
         switch (type) {
-            case "interface":  //  接口信息
+            case "interface": // 接口信息
                 dataToExport = buildInterfaceExportData(id);
-                filename = ((List<InterfaceExportData>) dataToExport).get(0).getInterfaceInfo().getInterfaceName();
+                filename = ((List<InterfaceExportData>)dataToExport).get(0).getInterfaceInfo().getInterfaceName();
                 break;
-            case "interfaceAll":  //  全部接口信息
+            case "interfaceAll": // 全部接口信息
                 dataToExport = buildInterfaceExportData("");
                 filename = "所有接口数据" + sdf.format(new Date());
                 break;
-            case "interfaceParam":  //  接口信息
+            case "interfaceParam": // 接口信息
                 dataToExport = buildInterfaceParamBindExportData(id);
                 filename = "接口参数" + sdf.format(new Date());
                 break;
@@ -81,19 +84,20 @@ public class JsonImAndExportRestController {
         if (StringUtils.isNotBlank(id)) {
             interfaceInfoList.add(interfaceService.findById(id));
         } else {
-            interfaceInfoList = interfaceService.findAll();  // 查询所有接口
+            interfaceInfoList = interfaceService.findAll(); // 查询所有接口
         }
-        return interfaceInfoList.stream()
-                .map(info -> {
-                    List<InterfaceRequestParams> requestParamsList = interfaceService.listRequestParams(null, null, info.getId());
-                    List<InterfaceResponseParams> responseParamsList = interfaceService.listResponseParamsByNameAndId(null, info.getId());
+        return interfaceInfoList.stream().map(info -> {
+            List<InterfaceRequestParams> requestParamsList =
+                interfaceService.listRequestParams(null, null, info.getId());
+            List<InterfaceResponseParams> responseParamsList =
+                interfaceService.listResponseParamsByNameAndId(null, info.getId());
 
-                    InterfaceExportData exportData = new InterfaceExportData();
-                    exportData.setInterfaceInfo(info);
-                    exportData.setRequestParamsList(requestParamsList);
-                    exportData.setResponseParamsList(responseParamsList);
-                    return exportData;
-                }).collect(Collectors.toList());
+            InterfaceExportData exportData = new InterfaceExportData();
+            exportData.setInterfaceInfo(info);
+            exportData.setRequestParamsList(requestParamsList);
+            exportData.setResponseParamsList(responseParamsList);
+            return exportData;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -117,11 +121,10 @@ public class JsonImAndExportRestController {
 
             String filename = URLEncoder.encode(baseFilename, StandardCharsets.UTF_8).replace("+", "%20");
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=" + filename + ".json; filename*=UTF-8''" + filename + ".json")
-                    .body(jsonData);
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=" + filename + ".json; filename*=UTF-8''" + filename + ".json")
+                .body(jsonData);
         } catch (Exception e) {
             LOGGER.error("导出 JSON 失败", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("导出失败".getBytes());
@@ -132,18 +135,19 @@ public class JsonImAndExportRestController {
      * 导入接口信息及参数
      *
      * @param file 导入文件
-     * @param id   (type:interfaceParam,事项配置导入接口参数：id(接口id:事项id)
+     * @param id (type:interfaceParam,事项配置导入接口参数：id(接口id:事项id)
      * @return
      */
     @PostMapping(value = "/importJson", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Y9Result<String> importJson(MultipartFile file, @RequestParam(required = false) String id, @RequestParam String type) {
+    public Y9Result<String> importJson(MultipartFile file, @RequestParam(required = false) String id,
+        @RequestParam String type) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             switch (type) {
-                case "interface":  //  接口信息以及接口参数导入
+                case "interface": // 接口信息以及接口参数导入
                     importInterfaceFromJson(file, objectMapper);
                     break;
-                case "interfaceParam":  //  接口参数导入
+                case "interfaceParam": // 接口参数导入
                     importInterfaceParamFromJson(file, id, objectMapper);
                     break;
                 // 可扩展其他类型
@@ -162,10 +166,8 @@ public class JsonImAndExportRestController {
             String itemId = id.split(":")[0];
             String interfaceId = id.split(":")[1];
             // 反序列化为 List<InterfaceExportData>
-            List<ItemInterfaceParamsBind> exportDataList = objectMapper.readValue(
-                    file.getInputStream(),
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, ItemInterfaceParamsBind.class)
-            );
+            List<ItemInterfaceParamsBind> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, ItemInterfaceParamsBind.class));
 
             for (ItemInterfaceParamsBind exportData : exportDataList) {
                 exportData.setId(null);
@@ -182,10 +184,8 @@ public class JsonImAndExportRestController {
     private void importInterfaceFromJson(MultipartFile file, ObjectMapper objectMapper) {
         try {
             // 反序列化为 List<InterfaceExportData>
-            List<InterfaceExportData> exportDataList = objectMapper.readValue(
-                    file.getInputStream(),
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, InterfaceExportData.class)
-            );
+            List<InterfaceExportData> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, InterfaceExportData.class));
 
             for (InterfaceExportData exportData : exportDataList) {
                 InterfaceInfo interfaceInfo = exportData.getInterfaceInfo();

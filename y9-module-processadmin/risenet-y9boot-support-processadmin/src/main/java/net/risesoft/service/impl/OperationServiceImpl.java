@@ -4,11 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,13 +36,7 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.CustomHistoricVariableService;
-import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.service.CustomRuntimeService;
-import net.risesoft.service.CustomTaskService;
-import net.risesoft.service.CustomVariableService;
-import net.risesoft.service.OperationService;
+import net.risesoft.service.*;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -98,9 +88,8 @@ public class OperationServiceImpl implements OperationService {
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reason0));
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
-        String multiInstance =
-            this.customProcessDefinitionService.getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey)
-                .getMultiInstance();
+        String multiInstance = this.customProcessDefinitionService
+            .getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey).getMultiInstance();
         // 更新自定义历程结束时间
         List<ProcessTrackModel> ptModelList =
             this.processTrackApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
@@ -249,9 +238,8 @@ public class OperationServiceImpl implements OperationService {
             String endKey = this.customProcessDefinitionService.getTaskDefKey4EndEvent(task.getProcessDefinitionId());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             processInstanceId = task.getProcessInstanceId();
-            HistoricProcessInstance historicProcessInstance =
-                this.historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId)
-                    .singleResult();
+            HistoricProcessInstance historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(processInstanceId).singleResult();
             String year = sdf.format(historicProcessInstance.getStartTime());
             /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据

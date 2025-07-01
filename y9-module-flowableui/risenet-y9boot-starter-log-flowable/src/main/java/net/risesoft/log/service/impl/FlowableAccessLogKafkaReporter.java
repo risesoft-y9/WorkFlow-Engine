@@ -1,12 +1,12 @@
 package net.risesoft.log.service.impl;
 
-import net.risesoft.model.log.FlowableAccessLog;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.log.service.FlowableAccessLogReporter;
+import net.risesoft.model.log.FlowableAccessLog;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.pubsub.constant.Y9TopicConst;
 

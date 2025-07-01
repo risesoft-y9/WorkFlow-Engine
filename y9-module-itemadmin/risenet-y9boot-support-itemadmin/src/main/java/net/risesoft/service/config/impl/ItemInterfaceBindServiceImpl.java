@@ -15,11 +15,7 @@ import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.InterfaceInfoRepository;
-import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
-import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
-import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.*;
 import net.risesoft.service.config.ItemInterfaceBindService;
 
 /**

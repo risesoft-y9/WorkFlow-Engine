@@ -19,26 +19,26 @@ public interface TaskRelatedApi {
     /**
      * 保存或者更新
      *
-     * @param tenantId         租户id
+     * @param tenantId 租户id
      * @param taskRelatedModel 详情对象
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,
-                                  @RequestBody TaskRelatedModel taskRelatedModel);
+        @RequestBody TaskRelatedModel taskRelatedModel);
 
     /**
      * 根据任务id查找任务相关信息
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @return {@code Y9Result<List<TaskRelatedModel>>} 通用请求返回对象 - data 是任务相关信息
      * @since 9.6.6
      */
     @GetMapping("/findByTaskId")
     Y9Result<List<TaskRelatedModel>> findByTaskId(@RequestParam("tenantId") String tenantId,
-                                                  @RequestParam("taskId") String taskId);
+        @RequestParam("taskId") String taskId);
 
     /**
      * 根据任务id查找任务相关信息

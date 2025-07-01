@@ -14,15 +14,7 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 
-import net.risesoft.model.processadmin.ExecutionModel;
-import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
-import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
-import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
-import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
-import net.risesoft.model.processadmin.IdentityLinkModel;
-import net.risesoft.model.processadmin.ProcessDefinitionModel;
-import net.risesoft.model.processadmin.ProcessInstanceModel;
-import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.model.processadmin.*;
 
 /**
  * @author qinman

@@ -19,7 +19,8 @@ public interface ItemWordTemplateBindRepository
 
     ItemWordTemplateBind findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
-    ItemWordTemplateBind findByItemIdAndProcessDefinitionIdAndTemplateId(String itemId, String processDefinitionId,String templateId);
+    ItemWordTemplateBind findByItemIdAndProcessDefinitionIdAndTemplateId(String itemId, String processDefinitionId,
+        String templateId);
 
     ItemWordTemplateBind findByItemIdAndProcessDefinitionIdAndBindValue(String itemId, String processDefinitionId,
         String bindValue);

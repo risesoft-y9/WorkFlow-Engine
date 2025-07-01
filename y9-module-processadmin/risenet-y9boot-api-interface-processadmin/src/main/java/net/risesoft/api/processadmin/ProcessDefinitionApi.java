@@ -78,7 +78,7 @@ public interface ProcessDefinitionApi {
      */
     @GetMapping(value = "/getNode")
     Y9Result<FlowElementModel> getNode(@RequestParam("tenantId") String tenantId,
-                                 @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 根据流程定义Id获取节点信息
@@ -254,5 +254,6 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getSubProcessChildNode")
-    Y9Result<List<TargetModel>> getSubProcessChildNode(@RequestParam("tenantId") String tenantId,@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<TargetModel>> getSubProcessChildNode(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 }

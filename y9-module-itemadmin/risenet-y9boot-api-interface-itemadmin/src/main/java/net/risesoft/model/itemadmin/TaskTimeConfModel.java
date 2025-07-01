@@ -2,7 +2,6 @@ package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
 
-
 import lombok.Data;
 
 /**
@@ -13,7 +12,6 @@ import lombok.Data;
  */
 @Data
 public class TaskTimeConfModel implements Serializable {
-
 
     private static final long serialVersionUID = 810056046275295446L;
     /**

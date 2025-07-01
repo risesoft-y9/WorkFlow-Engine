@@ -1,8 +1,8 @@
 package y9.client.rest.itemadmin;
 
-import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.EleAttachmentApi;
 import org.springframework.cloud.openfeign.FeignClient;
+
+import net.risesoft.api.itemadmin.EleAttachmentApi;
 
 /**
  * @author qinman

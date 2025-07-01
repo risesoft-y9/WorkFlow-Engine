@@ -1,13 +1,13 @@
 spring:
-    cloud:
-        nacos:
-            config:
-                enabled: false
-                namespace: local
-                group: DEFAULT_GROUP
-                server-addr: https://dev.youshengyun.com:443
-                username: nacos
-                password: ${NACOS_PASSWORD:111111}
-    config:
-        import:
-            - optional:nacos:processAdmin.yml
+  cloud:
+    nacos:
+      config:
+        enabled: false
+        namespace: local
+        group: DEFAULT_GROUP
+        server-addr: https://dev.youshengyun.com:443
+        username: nacos
+        password: ${NACOS_PASSWORD:111111}
+  config:
+    import:
+      - optional:nacos:processAdmin.yml

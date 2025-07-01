@@ -21,61 +21,68 @@ public interface ProcessParamApi {
     /**
      * 根据流程实例id删除流程变量
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/deleteByPprocessInstanceId")
-    Y9Result<Object> deleteByPprocessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteByPprocessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例查找流程数据
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
      * @since 9.6.6
      */
     @GetMapping("/findByProcessInstanceId")
-    Y9Result<ProcessParamModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<ProcessParamModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程编号查找流程数据
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 流程数据对象
      * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
-    Y9Result<ProcessParamModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<ProcessParamModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存或更新流程数据
      *
-     * @param tenantId     租户ID
+     * @param tenantId 租户ID
      * @param processParam 流程数据对象
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestBody ProcessParamModel processParam);
+    Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,
+        @RequestBody ProcessParamModel processParam);
 
     /**
      * 更新定制流程状态
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @param isCustomItem        是否定制流程
+     * @param isCustomItem 是否定制流程
      * @return{@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/updateCustomItem")
-    Y9Result<Object> updateCustomItem(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("isCustomItem") boolean isCustomItem);
+    Y9Result<Object> updateCustomItem(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("isCustomItem") boolean isCustomItem);
 
     /**
      * 初始化callActivity流程数据
+     * 
      * @param tenantId
      * @param processSerialNumber
      * @param subProcessSerialNumber
@@ -85,5 +92,9 @@ public interface ProcessParamApi {
      * @return
      */
     @PostMapping(value = "/initCallActivity", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> initCallActivity(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("subProcessSerialNumber") String subProcessSerialNumber, @RequestParam("subProcessInstanceId") String subProcessInstanceId, @RequestParam("itemId") String itemId, @RequestParam("itemName") String itemName);
+    Y9Result<Object> initCallActivity(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("subProcessSerialNumber") String subProcessSerialNumber,
+        @RequestParam("subProcessInstanceId") String subProcessInstanceId, @RequestParam("itemId") String itemId,
+        @RequestParam("itemName") String itemName);
 }

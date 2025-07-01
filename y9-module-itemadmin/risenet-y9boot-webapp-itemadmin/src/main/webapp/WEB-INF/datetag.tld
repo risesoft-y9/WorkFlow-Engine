@@ -1,25 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" ?>  
-  
-<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"  
-    version="2.0">  
-  
-    <description>date formate taglib</description>  
-    <display-name>date taglib</display-name>  
-    <tlib-version>1.0</tlib-version>  
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/j2ee"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+
+    <description>date formate taglib</description>
+    <display-name>date taglib</display-name>
+    <tlib-version>1.0</tlib-version>
     <!-- 在taglib.jsp文件中加上如下内容，<%@ taglib uri="<span style="font-family: Arial, Helvetica, sans-serif;">http://vanfon.p2p.cn</span>"   
-        prefix="p2p"%> uri中的值必须与标签<uri></uri>中的值一致，prefix名称随便取，取完后JSP那端的前缀名必须与这一致。 -->  
-    <uri>http://www.risesoft.com/jstl/date</uri>  
-  
-    <tag>  
-        <description>时间格式化标签</description>  
+        prefix="p2p"%> uri中的值必须与标签<uri></uri>中的值一致，prefix名称随便取，取完后JSP那端的前缀名必须与这一致。 -->
+    <uri>http://www.risesoft.com/jstl/date</uri>
+
+    <tag>
+        <description>时间格式化标签</description>
         <name>date</name>
-        <tag-class>net.risesoft.tag.DateTag</tag-class>  
+        <tag-class>net.risesoft.tag.DateTag</tag-class>
         <body-content>JSP</body-content>
         <attribute>
-            <name> value</name >
-            <required> true</required >
-            <rtexprvalue> true</rtexprvalue >
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
-    </tag>  
+    </tag>
 </taglib>  

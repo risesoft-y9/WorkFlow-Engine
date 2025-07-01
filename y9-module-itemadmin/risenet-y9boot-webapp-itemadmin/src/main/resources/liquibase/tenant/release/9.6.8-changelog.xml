@@ -1090,7 +1090,8 @@
             <column name="INPUTPERSON" remarks="录入人" type="VARCHAR(100)"/>
             <column name="RECORDTIME" remarks="录入时间" type="VARCHAR(50)"/>
             <column name="LWINFOUID" remarks="lwinfo的唯一键" type="VARCHAR(100)"/>
-            <column name="ISINSTANCEASSOCIATE" remarks="判断是否是来文转的办文，0办文关联的来文 1来文转办文" type="VARCHAR(20)"/>
+            <column name="ISINSTANCEASSOCIATE" remarks="判断是否是来文转的办文，0办文关联的来文 1来文转办文"
+                    type="VARCHAR(20)"/>
             <column name="LWTITLE" remarks="来文标题" type="VARCHAR(500)"/>
             <column name="LWDEPT" remarks="来文单位" type="VARCHAR(100)"/>
             <column name="LWSX" remarks="来文时限" type="VARCHAR(100)"/>

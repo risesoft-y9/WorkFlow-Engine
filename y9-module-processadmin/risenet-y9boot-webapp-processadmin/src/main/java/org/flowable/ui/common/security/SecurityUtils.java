@@ -35,6 +35,8 @@ public class SecurityUtils {
 
     private static SecurityScopeProvider securityScopeProvider = new FlowableSecurityScopeProvider();
 
+    private SecurityUtils() {}
+
     public static GrantedAuthority createGroupAuthority(String groupId) {
         return new SimpleGrantedAuthority(GROUP_PREFIX + groupId);
     }
@@ -77,7 +79,5 @@ public class SecurityUtils {
     public static void setSecurityScopeProvider(SecurityScopeProvider securityScopeProvider) {
         SecurityUtils.securityScopeProvider = securityScopeProvider;
     }
-
-    private SecurityUtils() {}
 
 }

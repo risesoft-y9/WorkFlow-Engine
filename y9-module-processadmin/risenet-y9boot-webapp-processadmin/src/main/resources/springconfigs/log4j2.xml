@@ -1,80 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Configuration status="WARN" monitorInterval="300">
-	<CustomLevels>
-		<CustomLevel name="RSLOG" intLevel="110" />
-	</CustomLevels>
+    <CustomLevels>
+        <CustomLevel name="RSLOG" intLevel="110"/>
+    </CustomLevels>
 
-	<Appenders>
-		<Console name="Console">
-			<PatternLayout pattern="[%d %5p] (%c:%L) %m%n" />
-		</Console>
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="[%d %5p] (%c:%L) %m%n"/>
+        </Console>
 
-		<RollingRandomAccessFile name="DailyRollingFile" fileName="${web:rootDir}/dynamicfile/app.log" filePattern="${web:rootDir}/dynamicfile/app-%d{yyyy-MM-dd}-%i.log.gz">
-			<PatternLayout pattern="[%d %5p] (%c:%L) %m%n" />
-			<Policies>
-				<SizeBasedTriggeringPolicy size="5 MB" />
-			</Policies>
-			<!-- <Filters>
-				<ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
-			</Filters> -->
-		</RollingRandomAccessFile>
+        <RollingRandomAccessFile name="DailyRollingFile" fileName="${web:rootDir}/dynamicfile/app.log"
+                                 filePattern="${web:rootDir}/dynamicfile/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="[%d %5p] (%c:%L) %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <!-- <Filters>
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters> -->
+        </RollingRandomAccessFile>
 
-		<JDBC name="databaseAppender" tableName="RS_COMMON_LOG">
-			<Filters>
-				<ThresholdFilter level="RSLOG" onMatch="ACCEPT" onMismatch="DENY"/>
-			</Filters>
-			<DataSource jndiName="java:/comp/env/y9PublicDS" />
-			<Column name="id" isUnicode="false" pattern="%uuid" />
-			<Column name="logTime" isEventTimestamp="true" />
-			<Column name="logLevel" isUnicode="false" pattern="%level" />
-			<Column name="logMessage" isUnicode="false" isClob="true" pattern="%message" />
-			
-			<Column name="operateType" isUnicode="false" pattern="%mdc{operateType}" />
-			<Column name="operateName" isUnicode="false" pattern="%mdc{operateName}" />
-			<Column name="modularName" isUnicode="false" pattern="%mdc{modularName}" />
-			<Column name="methodName" isUnicode="false" pattern="%mdc{methodName}" />
-			<Column name="elapsedTime" isUnicode="false" pattern="%mdc{elapsedTime}" />
-			<Column name="userId" isUnicode="false" pattern="%mdc{userId}" />
-			<Column name="userName" isUnicode="false" pattern="%mdc{userName}" />
-			<Column name="userHostIP" isUnicode="false" pattern="%mdc{userHostIP}" />
-			<Column name="requestURL" isUnicode="false" pattern="%mdc{requestURL}" />
-			<Column name="tenantId" isUnicode="false" pattern="%mdc{tenantId}" />
-			<Column name="tenantName" isUnicode="false" pattern="%mdc{tenantName}" />
-			<Column name="serverIp" isUnicode="false" pattern="%mdc{serverIp}" />
-			<Column name="success" isUnicode="false" pattern="%mdc{success}" />
-			<Column name="errorMessage" isUnicode="false" isClob="true" pattern="%mdc{errorMessage}" />
-			<Column name="throwable" isUnicode="false" isClob="true" pattern="%mdc{throwable}" />
-			<Column name="dn" isUnicode="false" pattern="%mdc{dn}" />
-		</JDBC>
-	</Appenders>
+        <JDBC name="databaseAppender" tableName="RS_COMMON_LOG">
+            <Filters>
+                <ThresholdFilter level="RSLOG" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <DataSource jndiName="java:/comp/env/y9PublicDS"/>
+            <Column name="id" isUnicode="false" pattern="%uuid"/>
+            <Column name="logTime" isEventTimestamp="true"/>
+            <Column name="logLevel" isUnicode="false" pattern="%level"/>
+            <Column name="logMessage" isUnicode="false" isClob="true" pattern="%message"/>
 
-	<Loggers>
-		<Logger level="debug" name="net.risesoft.filter" additivity="false">
-			<AppenderRef ref="Console" />
-		</Logger>
+            <Column name="operateType" isUnicode="false" pattern="%mdc{operateType}"/>
+            <Column name="operateName" isUnicode="false" pattern="%mdc{operateName}"/>
+            <Column name="modularName" isUnicode="false" pattern="%mdc{modularName}"/>
+            <Column name="methodName" isUnicode="false" pattern="%mdc{methodName}"/>
+            <Column name="elapsedTime" isUnicode="false" pattern="%mdc{elapsedTime}"/>
+            <Column name="userId" isUnicode="false" pattern="%mdc{userId}"/>
+            <Column name="userName" isUnicode="false" pattern="%mdc{userName}"/>
+            <Column name="userHostIP" isUnicode="false" pattern="%mdc{userHostIP}"/>
+            <Column name="requestURL" isUnicode="false" pattern="%mdc{requestURL}"/>
+            <Column name="tenantId" isUnicode="false" pattern="%mdc{tenantId}"/>
+            <Column name="tenantName" isUnicode="false" pattern="%mdc{tenantName}"/>
+            <Column name="serverIp" isUnicode="false" pattern="%mdc{serverIp}"/>
+            <Column name="success" isUnicode="false" pattern="%mdc{success}"/>
+            <Column name="errorMessage" isUnicode="false" isClob="true" pattern="%mdc{errorMessage}"/>
+            <Column name="throwable" isUnicode="false" isClob="true" pattern="%mdc{throwable}"/>
+            <Column name="dn" isUnicode="false" pattern="%mdc{dn}"/>
+        </JDBC>
+    </Appenders>
 
-		<Logger level="warn" name="org.activiti" additivity="false">
-		</Logger>
+    <Loggers>
+        <Logger level="debug" name="net.risesoft.filter" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
 
-		<Logger level="error" name="org.apache.commons" additivity="false">
-		</Logger>
+        <Logger level="warn" name="org.activiti" additivity="false">
+        </Logger>
 
-		<Logger level="warn" name="com.hazelcast" additivity="false">
-		</Logger>
+        <Logger level="error" name="org.apache.commons" additivity="false">
+        </Logger>
 
-		<Logger level="error" name="org.apache.shiro" additivity="false">
-		</Logger>
+        <Logger level="warn" name="com.hazelcast" additivity="false">
+        </Logger>
 
-		<Logger level="error" name="org.hibernate" additivity="false">
-		</Logger>
+        <Logger level="error" name="org.apache.shiro" additivity="false">
+        </Logger>
 
-		<Logger level="error" name="net.sf.ehcache" additivity="false">
-		</Logger>
+        <Logger level="error" name="org.hibernate" additivity="false">
+        </Logger>
 
-		<Root level="warn">
-			<AppenderRef ref="Console" />
-			<AppenderRef ref="DailyRollingFile" />
-			<AppenderRef ref="databaseAppender" />
-		</Root>
-	</Loggers>
+        <Logger level="error" name="net.sf.ehcache" additivity="false">
+        </Logger>
+
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="DailyRollingFile"/>
+            <AppenderRef ref="databaseAppender"/>
+        </Root>
+    </Loggers>
 </Configuration>

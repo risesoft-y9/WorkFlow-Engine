@@ -68,7 +68,7 @@ public interface HistoricTaskApi {
      */
     @GetMapping("/getByIdAndYear")
     Y9Result<HistoricTaskInstanceModel> getById(@RequestParam("tenantId") String tenantId,
-                                                @RequestParam("taskId") String taskId,@RequestParam("year") String year);
+        @RequestParam("taskId") String taskId, @RequestParam("year") String year);
 
     /**
      * 根据流程实例获取所有历史任务实例

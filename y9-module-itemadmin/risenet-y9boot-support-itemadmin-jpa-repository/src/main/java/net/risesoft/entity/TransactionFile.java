@@ -1,13 +1,15 @@
 package net.risesoft.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
+
+import javax.persistence.*;
+
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.Transient;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author qinman

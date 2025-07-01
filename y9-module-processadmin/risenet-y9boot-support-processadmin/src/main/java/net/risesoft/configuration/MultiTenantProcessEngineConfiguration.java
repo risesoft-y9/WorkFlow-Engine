@@ -36,21 +36,11 @@ import net.risesoft.y9.util.base64.Y9Base64Util;
 public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenantProcessEngineConfiguration {
 
     public static final String SYSTEM_ID = "11111111-1111-1111-1111-111111111100";
-
-    private static TenantInfoHolder getFlowableTenantInfoHolder() {
-        FlowableTenantInfoHolder flowableTenantInfoHolder = new FlowableTenantInfoHolder();
-        flowableTenantInfoHolder.addTenant(null);
-        return flowableTenantInfoHolder;
-    }
-
     private final JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
-
     @Resource(name = "jdbcTemplate4Public")
     private JdbcTemplate jdbcTemplate4Public;
-
     @Resource(name = "y9FlowableDS")
     private DruidDataSource defaultDataSource;
-
     @Autowired
     private Y9Properties y9Properties;
 
@@ -60,6 +50,12 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     public MultiTenantProcessEngineConfiguration(TenantInfoHolder tenantInfoHolder) {
         super(tenantInfoHolder);
+    }
+
+    private static TenantInfoHolder getFlowableTenantInfoHolder() {
+        FlowableTenantInfoHolder flowableTenantInfoHolder = new FlowableTenantInfoHolder();
+        flowableTenantInfoHolder.addTenant(null);
+        return flowableTenantInfoHolder;
     }
 
     @Override

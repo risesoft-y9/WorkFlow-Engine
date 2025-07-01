@@ -72,7 +72,7 @@ public interface TypeSettingInfoApi {
      */
     @PostMapping(value = "/updateTypeSetting")
     Y9Result<Object> updateTypeSetting(@RequestParam("tenantId") String tenantId,
-                                     @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("jsonData") String jsonData);
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("jsonData") String jsonData);
 
     /**
      * 更新排版信息

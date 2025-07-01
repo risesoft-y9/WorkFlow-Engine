@@ -84,8 +84,7 @@ public interface ItemAllApi {
     @PostMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestBody String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     @PostMapping("/searchBySystemName")
     Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,

@@ -3,11 +3,7 @@ package net.risesoft.controller.config;
 import java.util.List;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,8 +58,7 @@ public class ItemInterfaceTaskBindController {
     public Y9Result<List<FlowElementModel>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<FlowElementModel> list =
-            processDefinitionApi.listUserTask(tenantId, processDefinitionId).getData();
+        List<FlowElementModel> list = processDefinitionApi.listUserTask(tenantId, processDefinitionId).getData();
         for (FlowElementModel feModel : list) {
             String elementKey = feModel.getElementKey();
             ItemInterfaceTaskBind bind =

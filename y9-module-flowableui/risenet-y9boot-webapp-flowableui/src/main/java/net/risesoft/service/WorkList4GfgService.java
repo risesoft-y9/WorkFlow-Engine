@@ -1,11 +1,9 @@
 package net.risesoft.service;
 
-import java.util.List;
 import java.util.Map;
 
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -22,11 +20,6 @@ public interface WorkList4GfgService {
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows);
-
-    /**
-     * 刷新字典map,保证列表显示的字典数据和事项定义的一致
-     */
-    void refreshMap();
 
     /**
      * 获取待办列表
@@ -48,8 +41,7 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
-        Integer page,
+    Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr, Integer page,
         Integer rows);
 
     /**
@@ -60,8 +52,7 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page,
-        Integer rows);
+    Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取科室在办列表
@@ -94,14 +85,6 @@ public interface WorkList4GfgService {
      * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> haveDoneList(String itemId, String searchMapStr, Integer page, Integer rows);
-
-    /**
-     * 获取流程序列号的所有会签流程信息
-     *
-     * @param processSerialNumber 流程序列号
-     * @return List<Map < String, Object>>
-     */
-    Y9Result<List<Map<String, Object>>> getSignDeptDetailList(String processSerialNumber);
 
     /**
      * 获取已办列表

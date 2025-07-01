@@ -149,9 +149,8 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
-        Page<ActRuDetail> ardPage =
-            this.actRuDetailService.pageBySystemNameAndDeptIdAndEnded(systemName, deptId, isBureau, true, rows, page,
-                sort);
+        Page<ActRuDetail> ardPage = this.actRuDetailService.pageBySystemNameAndDeptIdAndEnded(systemName, deptId,
+            isBureau, true, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -185,14 +184,12 @@ public class ItemDoneApiImpl implements ItemDoneApi {
             assigneeNameWhereSql = sqlList.get(3);
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? "
+                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql
-            + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ?" + whereSql
-            + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ?"
+                + whereSql + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
@@ -216,9 +213,8 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         }
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? "
+                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
@@ -292,14 +288,14 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
                 + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
-            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
                 + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql
-            + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
-            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + innerSql + assigneeNameInnerSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
                 + ") A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName, deptId};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
@@ -326,8 +322,8 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
                 + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
-            + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = TRUE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
                 + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName, deptId};
         List<ActRuDetailModel> content =

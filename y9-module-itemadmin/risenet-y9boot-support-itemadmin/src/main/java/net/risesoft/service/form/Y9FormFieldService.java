@@ -1,10 +1,11 @@
 package net.risesoft.service.form;
 
-import net.risesoft.entity.form.Y9FormField;
-import net.risesoft.pojo.Y9Result;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import net.risesoft.entity.form.Y9FormField;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -101,6 +102,6 @@ public interface Y9FormFieldService {
      * @param fieldJson
      * @return
      */
-    Y9Result<String> saveFormFieldBind(String formId, String tableId,
-                                       String tableName, Boolean isAppend, String fieldJson);
+    Y9Result<String> saveFormFieldBind(String formId, String tableId, String tableName, Boolean isAppend,
+        String fieldJson);
 }

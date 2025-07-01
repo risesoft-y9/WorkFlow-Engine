@@ -373,8 +373,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             + ")  ORDER BY T.CREATETIME DESC";
         String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + signSql + commonSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql
-            + ")";
+            + assigneeNameSql + signSql + commonSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql + ")";
         Object[] args = {systemName, userId};
         ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);

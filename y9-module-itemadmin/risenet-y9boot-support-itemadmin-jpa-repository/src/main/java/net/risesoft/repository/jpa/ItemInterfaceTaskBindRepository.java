@@ -2,7 +2,6 @@ package net.risesoft.repository.jpa;
 
 import java.util.List;
 
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,7 +15,7 @@ import net.risesoft.entity.ItemInterfaceTaskBind;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface ItemInterfaceTaskBindRepository
-        extends JpaRepository<ItemInterfaceTaskBind, String>, JpaSpecificationExecutor<ItemInterfaceTaskBind> {
+    extends JpaRepository<ItemInterfaceTaskBind, String>, JpaSpecificationExecutor<ItemInterfaceTaskBind> {
 
     @Transactional
     void deleteByItemId(String itemId);
@@ -30,9 +29,9 @@ public interface ItemInterfaceTaskBindRepository
     List<ItemInterfaceTaskBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
     List<ItemInterfaceTaskBind> findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(
-            String itemId, String taskKey, String processDefinitionId, String condition);
+        String itemId, String taskKey, String processDefinitionId, String condition);
 
     ItemInterfaceTaskBind findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(String elementKey,
-                                                                                        String itemId, String processDefinitionId, String interfaceId);
+        String itemId, String processDefinitionId, String interfaceId);
 
 }

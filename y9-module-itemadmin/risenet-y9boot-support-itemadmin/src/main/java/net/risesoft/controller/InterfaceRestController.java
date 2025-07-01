@@ -1,16 +1,18 @@
 package net.risesoft.controller;
 
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.InterfaceService;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 接口信息
@@ -40,14 +42,14 @@ public class InterfaceRestController {
     /**
      * 获取接口列表
      *
-     * @param name    接口名称
-     * @param type    接口类型
+     * @param name 接口名称
+     * @param type 接口类型
      * @param address 接口地址
      * @return
      */
     @GetMapping(value = "/findInterfaceList")
     public Y9Result<List<InterfaceInfo>> findInterfaceList(@RequestParam(required = false) String name,
-                                                           @RequestParam(required = false) String type, @RequestParam(required = false) String address) {
+        @RequestParam(required = false) String type, @RequestParam(required = false) String address) {
         List<InterfaceInfo> list = interfaceService.listInterfaces(name, type, address);
         return Y9Result.success(list, "获取列表成功");
     }
@@ -57,12 +59,12 @@ public class InterfaceRestController {
      *
      * @param name 参数名称
      * @param type 参数类型
-     * @param id   接口id
+     * @param id 接口id
      * @return
      */
     @GetMapping(value = "/findRequestParamsList")
     public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name,
-                                                                        @RequestParam(required = false) String type, @RequestParam String id) {
+        @RequestParam(required = false) String type, @RequestParam String id) {
         List<InterfaceRequestParams> list = interfaceService.listRequestParams(name, type, id);
         return Y9Result.success(list, "获取列表成功");
     }
@@ -71,12 +73,12 @@ public class InterfaceRestController {
      * 获取接口响应参数列表
      *
      * @param name 参数名称
-     * @param id   接口id
+     * @param id 接口id
      * @return
      */
     @GetMapping(value = "/findResponseParamsList")
     public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name,
-                                                                          @RequestParam String id) {
+        @RequestParam String id) {
         List<InterfaceResponseParams> list = interfaceService.listResponseParamsByNameAndId(name, id);
         return Y9Result.success(list, "获取列表成功");
     }

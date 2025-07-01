@@ -146,11 +146,12 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
      */
     @Override
     public Y9Result<List<HistoryProcessModel>> processTrackListWithActionName(@RequestParam String tenantId,
-                                                                @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
+        @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         try {
-            List<HistoryProcessModel> items = processTrackService.listByProcessInstanceIdWithActionName(processInstanceId);
+            List<HistoryProcessModel> items =
+                processTrackService.listByProcessInstanceIdWithActionName(processInstanceId);
             return Y9Result.success(items);
         } catch (Exception e) {
             LOGGER.error("获取历程列表异常", e);

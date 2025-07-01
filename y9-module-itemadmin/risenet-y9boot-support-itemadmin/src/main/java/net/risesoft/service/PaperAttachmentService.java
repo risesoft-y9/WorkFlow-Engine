@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.PaperAttachment;
-
 import java.util.List;
+
+import net.risesoft.entity.PaperAttachment;
 
 public interface PaperAttachmentService {
 

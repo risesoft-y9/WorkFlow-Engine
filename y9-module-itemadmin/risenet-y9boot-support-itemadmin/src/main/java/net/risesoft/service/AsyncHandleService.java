@@ -5,11 +5,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -35,15 +31,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.ChaoSong;
-import net.risesoft.entity.ErrorLog;
-import net.risesoft.entity.ItemTaskConf;
-import net.risesoft.entity.Opinion;
-import net.risesoft.entity.OpinionHistory;
-import net.risesoft.entity.ProcessParam;
-import net.risesoft.entity.ProcessTrack;
-import net.risesoft.entity.SignDeptDetail;
-import net.risesoft.entity.TaskVariable;
+import net.risesoft.entity.*;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -58,11 +46,7 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
-import net.risesoft.repository.jpa.DraftEntityRepository;
-import net.risesoft.repository.jpa.OpinionHistoryRepository;
-import net.risesoft.repository.jpa.OpinionRepository;
-import net.risesoft.repository.jpa.ProcessTrackRepository;
-import net.risesoft.repository.jpa.TaskVariableRepository;
+import net.risesoft.repository.jpa.*;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -238,8 +222,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel,
-            sponsorGuid, processParam, userList);
+        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
+            processParam, userList);
     }
 
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
@@ -297,8 +281,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel,
-            sponsorGuid, processParam, userList);
+        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
+            processParam, userList);
     }
 
     /**

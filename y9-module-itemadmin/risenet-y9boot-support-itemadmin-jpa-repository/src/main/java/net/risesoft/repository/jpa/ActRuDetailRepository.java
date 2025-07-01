@@ -108,20 +108,18 @@ public interface ActRuDetailRepository
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee,
         Pageable pageable);
 
-    @Query(nativeQuery = true,
-        value = "SELECT A.* FROM ("
-            + "SELECT *,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 AND T.DEPTID = ?2 AND T.ENDED = ?3 AND T.DELETED = false"
-            + ") A WHERE A.RS_NUM = 1",
+    @Query(nativeQuery = true, value = "SELECT A.* FROM ("
+        + "SELECT *,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 AND T.DEPTID = ?2 AND T.ENDED = ?3 AND T.DELETED = false"
+        + ") A WHERE A.RS_NUM = 1",
         countQuery = "SELECT COUNT(*) FROM ("
             + "SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 AND T.DEPTID = ?2 AND T.ENDED = ?3 AND T.DELETED = FALSE) A WHERE A.RS_NUM = 1"
             + ") ALIAS")
     Page<ActRuDetail> findBySystemNameAndDeptIdAndEndedAndDeletedFalseNativeQuery(String systemName, String deptId,
         boolean ended, Pageable pageable);
 
-    @Query(nativeQuery = true,
-        value = "SELECT A.* FROM ("
-            + "SELECT *,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 AND T.BUREAUID = ?2 AND T.ENDED = ?3 AND  T.DELETED = FALSE"
-            + ") A WHERE A.RS_NUM = 1",
+    @Query(nativeQuery = true, value = "SELECT A.* FROM ("
+        + "SELECT *,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 AND T.BUREAUID = ?2 AND T.ENDED = ?3 AND  T.DELETED = FALSE"
+        + ") A WHERE A.RS_NUM = 1",
         countQuery = "SELECT COUNT(*) FROM ("
             + "SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME = ?1 AND T.BUREAUID = ?2 AND T.ENDED = ?3 AND T.DELETED = FALSE) A WHERE A.RS_NUM = 1"
             + ") ALIAS")

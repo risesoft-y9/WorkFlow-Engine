@@ -1,276 +1,276 @@
 MobPush:
-    appKey: 2fcd5e3a22ff8
-    masterSecret: a1b1325012cd9ba86d48f02332e62bf6
+  appKey: 2fcd5e3a22ff8
+  masterSecret: a1b1325012cd9ba86d48f02332e62bf6
 flowable:
-    common:
-        app:
-            idm-url: http://localhost:7056/processAdmin
-            tenantId: ""
-            idmAdmin:
-                user: admin
-                password: 111111
-hibernate:
-    dialect:
-        mssql: org.hibernate.dialect.SQLServer2012Dialect
-        mysql: org.hibernate.dialect.MySQL8Dialect
-        oracle: org.hibernate.dialect.Oracle10gDialect
-logging:
-    config: classpath:log4j2.xml
-management:
-    endpoints:
-        web:
-            exposure:
-                include: '*'
-mybatis:
-    mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
-server:
-    port: 8080
-    servlet:
-        encoding:
-            charset: UTF-8
-            enabled: true
-            force: true
-        session:
-            tracking-modes: COOKIE
-        context-path: /processAdmin
-        register-default-servlet: true
-    tomcat:
-        uri-encoding: UTF-8
-spring:
-    application:
-        name: processAdmin
-    autoconfigure:
-        exclude:
-            - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-            - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
-            - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
-    cloud:
-        nacos:
-            server-addr: https://test.youshengyun.com:443
-            username: nacos
-            password: ${NACOS_PASSWORD:111111}
-            config:
-                enabled: false
-                group: DEFAULT_GROUP
-                namespace: test
-            discovery:
-                enabled: false
-                group: DEFAULT_GROUP
-                namespace: test
-    config:
-        import:
-            - optional:nacos:processAdmin.yml
-            #- optional:nacos:test01.yml?group=group_02
-            #- optional:nacos:test02.yml?group=group_03&refreshEnabled=false
-    datasource:
-        type: com.alibaba.druid.pool.DruidDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        druid:
-            filter:
-                stat:
-                    log-slow-sql: true
-                    mergeSql: true
-                    slow-sql-millis: 3000
-                wall:
-                    config:
-                        drop-table-allow: false
-                    enabled: true
-            stat-view-servlet:
-                enabled: false
-                url-pattern: /druid/*
-                login-username: admin
-                login-password: admin
-                reset-enable: false
-                allow: 127.0.0.1
-            web-stat-filter:
-                enabled: false
-                url-pattern: /*
-                exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/static/*'
-            tenantDefault: spring.datasource.druid.flowable
-            y9-public:
-                #driver-class-name: oracle.jdbc.OracleDriver
-                #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
-                #username: Y9_PUBLIC
-                #password: '111111'
-                driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://127.0.0.1:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-                username: root
-                password: 111111
-                initialSize: 1
-                maxActive: 20
-                maxPoolPreparedStatementPerConnectionSize: 100
-                maxWait: 60000
-                minEvictableIdleTimeMillis: 300000
-                minIdle: 1
-                poolPreparedStatements: true
-                testOnBorrow: false
-                testOnReturn: false
-                testWhileIdle: true
-                timeBetweenEvictionRunsMillis: 60000
-                useGlobalDataSourceStat: true
-                validationQuery: SELECT 1 FROM DUAL
-            flowable:
-                driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-                username: root
-                password: 111111
-                initialSize: 1
-                maxActive: 20
-                maxPoolPreparedStatementPerConnectionSize: 100
-                maxWait: 60000
-                minEvictableIdleTimeMillis: 300000
-                minIdle: 1
-                poolPreparedStatements: true
-                testOnBorrow: false
-                testOnReturn: false
-                testWhileIdle: true
-                timeBetweenEvictionRunsMillis: 60000
-                useGlobalDataSourceStat: true
-                validationQuery: SELECT 1 FROM DUAL
-    jpa:
-        generate-ddl: true
-        hibernate:
-            naming:
-                implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
-                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        open-in-view: false
-        properties:
-            hibernate:
-                cache:
-                    use_query_cache: false
-                    use_second_level_cache: false
-                dialect: org.hibernate.dialect.MySQL8Dialect
-                hbm2ddl:
-                    auto: none
-                jdbc:
-                    batch_size: 100
-                show_sql: false
-    kafka:
-        bootstrap-servers: localhost:9092
-        consumer:
-            auto-commit-interval: 1000
-            enable-auto-commit: true
-            group-id: y9processAdmin-server
-    main:
-        allow-bean-definition-overriding: true
-    mvc:
-        view:
-            prefix: /WEB-INF/jsp/
-            suffix: .jsp
-    redis:
-        database: 8
-        host: localhost
-        password: 111111
-        port: 6379
-        lettuce:
-            pool:
-                max-active: 8
-                max-idle: 8
-                max-wait: -1
-                min-idle: 0
-            shutdown-timeout: 100ms
-        ssl: false
-        timeout: 10000
-    servlet:
-        multipart:
-            max-file-size: 200MB
-            max-request-size: 1000MB
-y9:
-    systemName: processAdmin
-    systemCnName: 流程管理器
-    internalIp: 192.168.x.x,10.x.x.x,172.20.x.x
+  common:
     app:
-        processAdmin:
-            cooperationStateSwitch: false
-            dataCenterSwitch: false
-            entrustSwitch: true
-            messagePushSwitch: false
-            pushSwitch: false
-            smsSwitch: false
-            todoSwitch: false
-            interfaceSwitch: false
-            weiXinSwitch: false
-            weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
-            imageCountUrl: http://localhost:8081/imageCount
-    service:
-        itemAdmin:
-            directUrl: http://localhost:7057
-        datacenter:
-            directUrl: http://localhost:7056
-        sms:
-            directUrl: http://localhost:7056
-        todo:
-            directUrl: http://localhost:7056
-        msgRemind:
-            directUrl: http://localhost:7056
-        org:
-            directUrl: http://localhost:7055
-    common:
-        cacheEnabled: true
-        kafkaEnabled: true
-        orgBaseUrl: http://localhost:7055/platform
-        processAdminBaseUrl: http://localhost:7056/processAdmin
-        itemAdminBaseUrl: http://localhost:7056/itemAdmin
-        datacenterBaseUrl: http://localhost:7056/datacenter
-        msgRemindBaseUrl: http://localhost:7056/msgRemind
-        smsBaseUrl: http://localhost:7056/sms
-        todoBaseUrl: http://localhost:7056/todo
-        logBaseUrl: http://localhost:7056/log
-        userOnlineBaseUrl: http://localhost:7056/userOnline
-    feature:
-        jpa:
-            packagesToScanEntityPublic: net.risesoft.y9public.entity
-            packagesToScanEntityTenant: net.risesoft.entity
-            packagesToScanRepositoryPublic: net.risesoft.y9public.repository
-            packagesToScanRepositoryTenant: net.risesoft.repository
-        liquibase:
-            public-enabled: true
-        multi-tenant:
-            # kafka, db
-            event-source: kafka
-        log:
-            enabled: true
-            # kafka, api
-            reportMethod: kafka
-        session:
-            redis:
-                enabled: true
-                maxInactiveIntervalInSeconds: 3600
-        security:
-            enabled: true
-            csrf:
-                accepted-referer:
-                    - youshengyun.com
-                    - localhost
-                    - 127.0.0.1
-                    - 192.168.3.120
-            cors:
-                allowCredentials: true
-                allowed-headers: '*'
-                allowedOriginPatterns:
-                    - https://*.youshengyun.com
-                    - http://*.youshengyun.com
-                    - https://vue.youshengyun.com:8443
-                    - http://localhost:7056
-                    - http://localhost:8080
-                    - http://localhost:8081
-                    - http://127.0.0.1:7056
-                    - http://localhost:17056
-                    - http://127.0.0.1:17056
-                    - http://192.168.3.120:8081
-            xss:
-                ignoreParam:
-                    - json_xml
-                    - conditionExpression
-        oauth2:
-            resource:
-                enabled: true
-                allowBasicAuthentication: true
-                allowFormEncodedBodyParameter: true
-                allowUriQueryParameter: true
-                protectedUrlPatterns: /vue/*,/editor/*,/modeler*
-                opaque:
-                    client-id: clientid_oidc
-                    client-secret: secret_oidc
-                    introspection-uri: http://localhost:7055/sso/oidc/introspect
-                    profile-uri: http://localhost:7055/sso/oidc/profile
+      idm-url: http://localhost:7056/processAdmin
+      tenantId: ""
+      idmAdmin:
+        user: admin
+        password: 111111
+hibernate:
+  dialect:
+    mssql: org.hibernate.dialect.SQLServer2012Dialect
+    mysql: org.hibernate.dialect.MySQL8Dialect
+    oracle: org.hibernate.dialect.Oracle10gDialect
+logging:
+  config: classpath:log4j2.xml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+mybatis:
+  mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    session:
+      tracking-modes: COOKIE
+    context-path: /processAdmin
+    register-default-servlet: true
+  tomcat:
+    uri-encoding: UTF-8
+spring:
+  application:
+    name: processAdmin
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+  cloud:
+    nacos:
+      server-addr: https://test.youshengyun.com:443
+      username: nacos
+      password: ${NACOS_PASSWORD:111111}
+      config:
+        enabled: false
+        group: DEFAULT_GROUP
+        namespace: test
+      discovery:
+        enabled: false
+        group: DEFAULT_GROUP
+        namespace: test
+  config:
+    import:
+      - optional:nacos:processAdmin.yml
+      #- optional:nacos:test01.yml?group=group_02
+      #- optional:nacos:test02.yml?group=group_03&refreshEnabled=false
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      filter:
+        stat:
+          log-slow-sql: true
+          mergeSql: true
+          slow-sql-millis: 3000
+        wall:
+          config:
+            drop-table-allow: false
+          enabled: true
+      stat-view-servlet:
+        enabled: false
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+        reset-enable: false
+        allow: 127.0.0.1
+      web-stat-filter:
+        enabled: false
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/static/*'
+      tenantDefault: spring.datasource.druid.flowable
+      y9-public:
+        #driver-class-name: oracle.jdbc.OracleDriver
+        #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+        #username: Y9_PUBLIC
+        #password: '111111'
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+        username: root
+        password: 111111
+        initialSize: 1
+        maxActive: 20
+        maxPoolPreparedStatementPerConnectionSize: 100
+        maxWait: 60000
+        minEvictableIdleTimeMillis: 300000
+        minIdle: 1
+        poolPreparedStatements: true
+        testOnBorrow: false
+        testOnReturn: false
+        testWhileIdle: true
+        timeBetweenEvictionRunsMillis: 60000
+        useGlobalDataSourceStat: true
+        validationQuery: SELECT 1 FROM DUAL
+      flowable:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+        username: root
+        password: 111111
+        initialSize: 1
+        maxActive: 20
+        maxPoolPreparedStatementPerConnectionSize: 100
+        maxWait: 60000
+        minEvictableIdleTimeMillis: 300000
+        minIdle: 1
+        poolPreparedStatements: true
+        testOnBorrow: false
+        testOnReturn: false
+        testWhileIdle: true
+        timeBetweenEvictionRunsMillis: 60000
+        useGlobalDataSourceStat: true
+        validationQuery: SELECT 1 FROM DUAL
+  jpa:
+    generate-ddl: true
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+    properties:
+      hibernate:
+        cache:
+          use_query_cache: false
+          use_second_level_cache: false
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        hbm2ddl:
+          auto: none
+        jdbc:
+          batch_size: 100
+        show_sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-commit-interval: 1000
+      enable-auto-commit: true
+      group-id: y9processAdmin-server
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  redis:
+    database: 8
+    host: localhost
+    password: 111111
+    port: 6379
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
+      shutdown-timeout: 100ms
+    ssl: false
+    timeout: 10000
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 1000MB
+y9:
+  systemName: processAdmin
+  systemCnName: 流程管理器
+  internalIp: 192.168.x.x,10.x.x.x,172.20.x.x
+  app:
+    processAdmin:
+      cooperationStateSwitch: false
+      dataCenterSwitch: false
+      entrustSwitch: true
+      messagePushSwitch: false
+      pushSwitch: false
+      smsSwitch: false
+      todoSwitch: false
+      interfaceSwitch: false
+      weiXinSwitch: false
+      weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
+      imageCountUrl: http://localhost:8081/imageCount
+  service:
+    itemAdmin:
+      directUrl: http://localhost:7057
+    datacenter:
+      directUrl: http://localhost:7056
+    sms:
+      directUrl: http://localhost:7056
+    todo:
+      directUrl: http://localhost:7056
+    msgRemind:
+      directUrl: http://localhost:7056
+    org:
+      directUrl: http://localhost:7055
+  common:
+    cacheEnabled: true
+    kafkaEnabled: true
+    orgBaseUrl: http://localhost:7055/platform
+    processAdminBaseUrl: http://localhost:7056/processAdmin
+    itemAdminBaseUrl: http://localhost:7056/itemAdmin
+    datacenterBaseUrl: http://localhost:7056/datacenter
+    msgRemindBaseUrl: http://localhost:7056/msgRemind
+    smsBaseUrl: http://localhost:7056/sms
+    todoBaseUrl: http://localhost:7056/todo
+    logBaseUrl: http://localhost:7056/log
+    userOnlineBaseUrl: http://localhost:7056/userOnline
+  feature:
+    jpa:
+      packagesToScanEntityPublic: net.risesoft.y9public.entity
+      packagesToScanEntityTenant: net.risesoft.entity
+      packagesToScanRepositoryPublic: net.risesoft.y9public.repository
+      packagesToScanRepositoryTenant: net.risesoft.repository
+    liquibase:
+      public-enabled: true
+    multi-tenant:
+      # kafka, db
+      event-source: kafka
+    log:
+      enabled: true
+      # kafka, api
+      reportMethod: kafka
+    session:
+      redis:
+        enabled: true
+        maxInactiveIntervalInSeconds: 3600
+    security:
+      enabled: true
+      csrf:
+        accepted-referer:
+          - youshengyun.com
+          - localhost
+          - 127.0.0.1
+          - 192.168.3.120
+      cors:
+        allowCredentials: true
+        allowed-headers: '*'
+        allowedOriginPatterns:
+          - https://*.youshengyun.com
+          - http://*.youshengyun.com
+          - https://vue.youshengyun.com:8443
+          - http://localhost:7056
+          - http://localhost:8080
+          - http://localhost:8081
+          - http://127.0.0.1:7056
+          - http://localhost:17056
+          - http://127.0.0.1:17056
+          - http://192.168.3.120:8081
+      xss:
+        ignoreParam:
+          - json_xml
+          - conditionExpression
+    oauth2:
+      resource:
+        enabled: true
+        allowBasicAuthentication: true
+        allowFormEncodedBodyParameter: true
+        allowUriQueryParameter: true
+        protectedUrlPatterns: /vue/*,/editor/*,/modeler*
+        opaque:
+          client-id: clientid_oidc
+          client-secret: secret_oidc
+          introspection-uri: http://localhost:7055/sso/oidc/introspect
+          profile-uri: http://localhost:7055/sso/oidc/profile

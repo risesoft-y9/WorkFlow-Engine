@@ -1,11 +1,12 @@
 package net.risesoft.repository.jpa;
 
-import net.risesoft.entity.InterfaceInfo;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import net.risesoft.entity.InterfaceInfo;
 
 /**
  * @author zhangchongjie
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface InterfaceInfoRepository
-        extends JpaRepository<InterfaceInfo, String>, JpaSpecificationExecutor<InterfaceInfo> {
+    extends JpaRepository<InterfaceInfo, String>, JpaSpecificationExecutor<InterfaceInfo> {
 
     List<InterfaceInfo> findByInterfaceNameLike(String interfaceName);
 }

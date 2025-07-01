@@ -5,11 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -189,8 +185,7 @@ public class Y9FormItemBindRestController {
         @RequestParam String itemId) {
         List<Y9FormItemBindVO> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> targetModelList =
-            processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        List<TargetModel> targetModelList = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         Y9FormItemBindVO map;
         List<Y9FormItemBind> pcBindList;
         List<Y9FormItemMobileBind> mobileBindList;

@@ -10,11 +10,11 @@ import net.risesoft.entity.TaskRelated;
 
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface TaskRelatedRepository
-        extends JpaRepository<TaskRelated, String>, JpaSpecificationExecutor<TaskRelated> {
+    extends JpaRepository<TaskRelated, String>, JpaSpecificationExecutor<TaskRelated> {
 
     List<TaskRelated> findByTaskIdOrderByCreateTimeAsc(String taskId);
 
-    TaskRelated findByTaskIdAndInfoType(String taskId,String infoType);
+    TaskRelated findByTaskIdAndInfoType(String taskId, String infoType);
 
     List<TaskRelated> findByProcessSerialNumberOrderByCreateTimeDesc(String processSerialNumber);
 }

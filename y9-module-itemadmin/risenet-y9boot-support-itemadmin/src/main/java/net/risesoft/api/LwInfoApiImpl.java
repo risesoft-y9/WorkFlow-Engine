@@ -3,7 +3,6 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,7 +85,8 @@ public class LwInfoApiImpl implements LwInfoApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         GwLwLinkBw gwLwInfo = new GwLwLinkBw();
         Y9BeanUtil.copyProperties(lwInfoModel, gwLwInfo);
-        GwLwLinkBw GwLwLinkBw = gwLwLinkBwRepository.findByProcessSerialNumberAndLwinfoUid(gwLwInfo.getProcessSerialNumber(),gwLwInfo.getLwInfoUid());
+        GwLwLinkBw GwLwLinkBw = gwLwLinkBwRepository
+            .findByProcessSerialNumberAndLwinfoUid(gwLwInfo.getProcessSerialNumber(), gwLwInfo.getLwInfoUid());
         if (GwLwLinkBw != null) {
             return Y9Result.failure("来文信息已经存在~");
         }
