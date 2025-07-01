@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller.worklist;
 
 import java.util.List;
 import java.util.Map;
@@ -34,68 +34,68 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/done/gfg", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Done4GfgRestController {
+@RequestMapping(value = "/vue/doing", produces = MediaType.APPLICATION_JSON_VALUE)
+public class DoingRestController {
 
     private final WorkList4GfgService workList4GfgService;
 
     private final ItemViewConfApi itemViewConfApi;
 
     /**
-     * 获取办结件列表
+     * 获取在办件列表
      *
      * @param itemId 事项id
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/doneList")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        return workList4GfgService.doneList(itemId, page, rows);
-    }
-
-    /**
-     * 获取科室办结件列表
-     *
-     * @param itemId 事项id
-     * @param isBureau 是否是委办局
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @FlowableLog(operationName = "监控本处室/司局办结列表", logLevel = FlowableLogLevelEnum.ADMIN)
-    @PostMapping(value = "/doneList4Dept")
-    public Y9Page<Map<String, Object>> doneList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+    @FlowableLog(operationName = "督办件列表", logLevel = FlowableLogLevelEnum.ADMIN)
+    @PostMapping(value = "/doingList4DuBan")
+    public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doneList4Dept(itemId, isBureau, searchMapStr, page, rows);
+        return workList4GfgService.doingList4DuBan(itemId, searchMapStr, page, rows);
     }
 
     /**
-     * 获取所有办结件列表
+     * 获取科室在办件列表
      *
      * @param itemId 事项id
      * @param page 页码
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "监控所有办结件列表", logLevel = FlowableLogLevelEnum.ADMIN)
-    @PostMapping(value = "/doneList4All")
-    public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId,
+    @FlowableLog(operationName = "监控本处室/司局在办件列表", logLevel = FlowableLogLevelEnum.ADMIN)
+    @PostMapping(value = "/doingList4Dept")
+    public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doneList4All(itemId, searchMapStr, page, rows);
+        return workList4GfgService.doingList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
     /**
-     * 获取办结列表视图配置
+     * 获取所有在办件
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @FlowableLog(operationName = "监控所有在办件列表", logLevel = FlowableLogLevelEnum.ADMIN)
+    @PostMapping(value = "/doingList4All")
+    public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        return workList4GfgService.doingList4All(itemId, searchMapStr, page, rows);
+    }
+
+    /**
+     * 获取在办列表视图配置
      *
      * @param itemId 事项id
      * @return Y9Result<List < ItemViewConfModel>>
      */
-    @GetMapping(value = "/doneViewConf")
-    public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam String itemId) {
+    @GetMapping(value = "/doingViewConf")
+    public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam String itemId) {
         List<ItemViewConfModel> itemViewConfList = itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue())
+            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
     }

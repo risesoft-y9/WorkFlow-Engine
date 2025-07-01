@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller;
 
 import java.util.Collections;
 import java.util.List;

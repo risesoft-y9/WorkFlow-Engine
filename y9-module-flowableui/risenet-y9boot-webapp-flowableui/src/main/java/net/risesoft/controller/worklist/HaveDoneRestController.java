@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller.worklist;
 
 import java.util.Map;
 
@@ -26,8 +26,8 @@ import net.risesoft.service.WorkList4GfgService;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/haveDone/gfg", produces = MediaType.APPLICATION_JSON_VALUE)
-public class HaveDone4GfgRestController {
+@RequestMapping(value = "/vue/haveDone", produces = MediaType.APPLICATION_JSON_VALUE)
+public class HaveDoneRestController {
 
     private final WorkList4GfgService workList4GfgService;
 
