@@ -164,8 +164,7 @@ public class DoingServiceImpl implements DoingService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
-                    positionId,
-                    processDefinitionKey, page, rows);
+                    positionId, processDefinitionKey, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
@@ -293,8 +292,7 @@ public class DoingServiceImpl implements DoingService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
-                    positionId,
-                    processDefinitionKey, page, rows);
+                    positionId, processDefinitionKey, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
@@ -367,9 +365,8 @@ public class DoingServiceImpl implements DoingService {
                             mapTemp.put("remindSetting", true);
                         }
 
-                        int countFollow =
-                            this.officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId)
-                                .getData();
+                        int countFollow = this.officeFollowApi
+                            .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("follow", countFollow > 0);
                     } catch (Exception e) {
                         LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -448,8 +445,7 @@ public class DoingServiceImpl implements DoingService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr,
-        Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
@@ -522,9 +518,8 @@ public class DoingServiceImpl implements DoingService {
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
-                    int countFollow =
-                        this.officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId)
-                            .getData();
+                    int countFollow = this.officeFollowApi
+                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);

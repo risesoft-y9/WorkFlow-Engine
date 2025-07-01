@@ -1,7 +1,15 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.PaperAttachmentApi;
 import net.risesoft.entity.PaperAttachment;
 import net.risesoft.model.itemadmin.PaperAttachmentModel;
@@ -9,12 +17,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.PaperAttachmentService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 附件接口

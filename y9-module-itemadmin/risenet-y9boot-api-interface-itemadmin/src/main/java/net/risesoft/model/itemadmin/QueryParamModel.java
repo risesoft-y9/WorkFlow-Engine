@@ -15,39 +15,32 @@ import lombok.Data;
 public class QueryParamModel implements Serializable {
 
     private static final long serialVersionUID = 616504649565222078L;
-
-    /**
-     * 系统名称
-     */
-    private String systemName;
-
-    /**
-     * 事项唯一标示
-     */
-    private String itemId;
-
-    /**
-     * 标题
-     */
-    private String title;
-
-    /**
-     * 编号
-     */
-    private String customNumber;
-
-    /**
-     * 委办局id
-     */
-    private String bureauIds;
-
     /**
      * 当前页码
      */
     Integer page;
-
     /**
      * 每页行数
      */
     Integer rows;
+    /**
+     * 系统名称
+     */
+    private String systemName;
+    /**
+     * 事项唯一标示
+     */
+    private String itemId;
+    /**
+     * 标题
+     */
+    private String title;
+    /**
+     * 编号
+     */
+    private String customNumber;
+    /**
+     * 委办局id
+     */
+    private String bureauIds;
 }

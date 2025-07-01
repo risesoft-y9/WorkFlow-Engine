@@ -8,13 +8,11 @@ import java.io.Serializable;
  * @date 2023-08-02
  */
 public class ReturnResponse<T> implements Serializable {
-    private static final long serialVersionUID = 313975329998789878L;
-
     public static final int SUCCESS_CODE = 0;
     public static final int FAILURE_CODE = 1;
     public static final String SUCCESS_MSG = "SUCCESS";
     public static final String FAILURE_MSG = "FAILURE";
-
+    private static final long serialVersionUID = 313975329998789878L;
     /**
      * 返回状态 0. 成功 1. 失败
      */

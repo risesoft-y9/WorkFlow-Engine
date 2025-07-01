@@ -137,8 +137,7 @@ public class WorkListRestController {
      */
     @PostMapping(value = "/searchDoingList")
     public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.doingService.pageSearchList(itemId, searchMapStr, page, rows);
     }
 

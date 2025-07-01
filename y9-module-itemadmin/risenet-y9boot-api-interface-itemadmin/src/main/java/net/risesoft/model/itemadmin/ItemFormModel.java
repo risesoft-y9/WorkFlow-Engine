@@ -1,10 +1,8 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+
+import lombok.Data;
 
 /**
  * 流程详情数据

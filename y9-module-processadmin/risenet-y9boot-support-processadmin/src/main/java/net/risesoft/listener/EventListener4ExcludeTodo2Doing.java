@@ -44,12 +44,12 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void onEvent(FlowableEvent event) {
-        FlowableEngineEventType type = (FlowableEngineEventType) event.getType();
+        FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
         switch (type) {
             case TASK_CREATED:
                 org.flowable.common.engine.impl.event.FlowableEntityEventImpl entity =
-                        (org.flowable.common.engine.impl.event.FlowableEntityEventImpl) event;
-                TaskEntityImpl taskEntity = (TaskEntityImpl) entity.getEntity();
+                    (org.flowable.common.engine.impl.event.FlowableEntityEventImpl)event;
+                TaskEntityImpl taskEntity = (TaskEntityImpl)entity.getEntity();
                 String assignee = taskEntity.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
                     taskEntity.setVariable(assignee, assignee);
@@ -58,13 +58,13 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                  * 下面是添加其他业务逻辑需要的任务变量String taskSenderId=(String)
                  */
                 Map<String, Object> mapTemp = new HashMap<>(16);
-                String user = (String) taskEntity.getVariable(SysVariables.USER);
-                List<String> users = (List<String>) taskEntity.getVariable(SysVariables.USERS);
-                String taskSender = (String) taskEntity.getVariable(SysVariables.TASKSENDER);
-                String taskSenderId = (String) taskEntity.getVariable(SysVariables.TASKSENDERID);
-                String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
-                String processSerialNumber = (String) taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
-                Integer priority = (Integer) taskEntity.getVariable(SysVariables.PRIORITY);
+                String user = (String)taskEntity.getVariable(SysVariables.USER);
+                List<String> users = (List<String>)taskEntity.getVariable(SysVariables.USERS);
+                String taskSender = (String)taskEntity.getVariable(SysVariables.TASKSENDER);
+                String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASKSENDERID);
+                String tenantId = (String)taskEntity.getVariable(SysVariables.TENANTID);
+                String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
+                Integer priority = (Integer)taskEntity.getVariable(SysVariables.PRIORITY);
                 Object actionName = taskEntity.getVariable(SysVariables.ACTIONNAME + ":" + taskSenderId);
 
                 if (null != user) {
@@ -87,7 +87,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                         taskEntity.setPriority(priority);
                         try {
                             Y9Context.getBean(CustomHistoricProcessService.class)
-                                    .setPriority(taskEntity.getProcessInstanceId(), priority.toString());
+                                .setPriority(taskEntity.getProcessInstanceId(), priority.toString());
                         } catch (Exception e) {
                             LOGGER.error("设置优先级失败", e);
                         }
@@ -100,7 +100,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                  */
                 ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
                 ProcessParamModel processParamModel =
-                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 if (null != processParamModel.getDueDate()) {
                     taskEntity.setDueDate(processParamModel.getDueDate());
                 }
@@ -144,7 +144,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 }
 
                 HistoricProcessInstance historicProcessInstance =
-                        Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
+                    Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
                 if (null != historicProcessInstance) {
                     String businessKey = historicProcessInstance.getBusinessKey();
                     taskEntity.setCategory(businessKey);
@@ -154,7 +154,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 break;
             case SEQUENCEFLOW_TAKEN:
                 // 路由监听
-                FlowableSequenceFlowTakenEventImpl entity0 = (FlowableSequenceFlowTakenEventImpl) event;
+                FlowableSequenceFlowTakenEventImpl entity0 = (FlowableSequenceFlowTakenEventImpl)event;
                 // 接口调用
                 InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
                 try {

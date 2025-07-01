@@ -3,7 +3,6 @@ package net.risesoft.service.dynamicrole.impl.v1;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

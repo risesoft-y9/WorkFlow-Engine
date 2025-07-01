@@ -1,12 +1,8 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-import org.springframework.util.StringUtils;
-
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+
+import lombok.Data;
 
 /**
  * 历程信息
@@ -15,7 +11,7 @@ import java.util.List;
  * @date 2024/06/26
  */
 @Data
-public class HistorySubProcessModel implements Serializable{
+public class HistorySubProcessModel implements Serializable {
 
     private static final long serialVersionUID = -915011932260839215L;
 

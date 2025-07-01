@@ -73,9 +73,8 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<ItemRoleOrgUnitModel> list =
-            roleService.listAllPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId,
-                taskId);
+        List<ItemRoleOrgUnitModel> list = roleService.listAllPermUser(itemId, processDefinitionId, taskDefKey,
+            principalType, id, processInstanceId, taskId);
         return Y9Result.success(list);
     }
 

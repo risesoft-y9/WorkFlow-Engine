@@ -56,39 +56,23 @@ import net.risesoft.y9.util.Y9Util;
 @Transactional(readOnly = true)
 public class ExportServiceImpl implements ExportService {
 
-    private final ProcessParamApi processParamApi;
-
-    private final FormDataApi formDataApi;
-
-    private final ItemAllApi itemAllApi;
-
-    private final ItemTodoApi itemTodoApi;
-
-    private final ItemRecycleApi itemRecycleApi;
-
-    private final ItemDoingApi itemDoingApi;
-
-    private final ItemDoneApi itemDoneApi;
-
-    private final ItemHaveDoneApi itemHaveDoneApi;
-
-    private final TaskApi taskApi;
-
-    private final OrgUnitApi orgUnitApi;
-
-    private final IdentityApi identityApi;
-
-    private final SignDeptDetailApi signDeptDetailApi;
-
-    private final ExcelHandlerService excelHandlerService;
-
-    private final OptionClassApi optionClassApi;
-
-    private final ItemApi itemApi;
-
-    private final DocumentCopyApi documentCopyApi;
-
     private static Map<String, Object> map = new HashMap<>();
+    private final ProcessParamApi processParamApi;
+    private final FormDataApi formDataApi;
+    private final ItemAllApi itemAllApi;
+    private final ItemTodoApi itemTodoApi;
+    private final ItemRecycleApi itemRecycleApi;
+    private final ItemDoingApi itemDoingApi;
+    private final ItemDoneApi itemDoneApi;
+    private final ItemHaveDoneApi itemHaveDoneApi;
+    private final TaskApi taskApi;
+    private final OrgUnitApi orgUnitApi;
+    private final IdentityApi identityApi;
+    private final SignDeptDetailApi signDeptDetailApi;
+    private final ExcelHandlerService excelHandlerService;
+    private final OptionClassApi optionClassApi;
+    private final ItemApi itemApi;
+    private final DocumentCopyApi documentCopyApi;
 
     @Override
     public void select(OutputStream outStream, String[] processSerialNumbers, String[] columns, String itemBox) {

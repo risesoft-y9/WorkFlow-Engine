@@ -201,9 +201,10 @@ public class WorkflowTaskService {
                         if (StringUtils.isNotBlank(taskDefKey)) {
                             if (!taskDefKey.equals(historicTaskInstance.getTaskDefinitionKey())) {
                                 // 得到当前任务的前一个任务节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-                                String multiInstance = customProcessDefinitionService.getNode(
-                                    historicTaskInstance.getProcessDefinitionId(),
-                                    historicTaskInstance.getTaskDefinitionKey()).getMultiInstance();
+                                String multiInstance = customProcessDefinitionService
+                                    .getNode(historicTaskInstance.getProcessDefinitionId(),
+                                        historicTaskInstance.getTaskDefinitionKey())
+                                    .getMultiInstance();
                                 // 前一个任务节点如果是并行，则要获取主办人的guid，如果主办人的guid不为空，则返回historicTaskInstance，如果不是并行，则直接返回historicTaskInstance
                                 if (multiInstance.equals(SysVariables.PARALLEL)) {
                                     Map<String, Object> localMap = historicTaskInstance.getTaskLocalVariables();

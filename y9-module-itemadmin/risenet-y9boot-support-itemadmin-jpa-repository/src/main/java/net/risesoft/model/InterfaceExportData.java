@@ -1,13 +1,14 @@
 package net.risesoft.model;
 
+import java.io.Serializable;
+import java.util.List;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
-
-import java.io.Serializable;
-import java.util.List;
 
 @NoArgsConstructor
 @Data

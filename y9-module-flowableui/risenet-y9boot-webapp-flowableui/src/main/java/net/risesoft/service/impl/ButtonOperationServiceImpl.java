@@ -88,8 +88,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         documentApi.complete(tenantId, positionId, taskId);
 
         boolean isSubProcessChildNode = processDefinitionApi
-                .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
-                .getData();
+            .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+            .getData();
         if (isSubProcessChildNode) {// 子流程办结，不更新自定义历程信息
             return;
         }
@@ -124,7 +124,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     public Y9Result<String> complete4Sub(String taskId, String taskDefName, String desc) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        String mainSenderId = variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAINSENDERID).getData();
+        String mainSenderId =
+            variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAINSENDERID).getData();
         if (StringUtils.isBlank(mainSenderId)) {
             return Y9Result.failure("办结失败：缺少主流程的发送人！");
         }
@@ -182,17 +183,17 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
-                    officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
                 ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
             HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi
-                    .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
+                .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
 
             /*
@@ -279,10 +280,13 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                     continue;
                 }
                 if (nodeList.isEmpty()) {
-                    String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
-                    nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode).getData();
+                    String startNode = processDefinitionApi
+                        .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
+                    nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode)
+                        .getData();
                 }
-                boolean canDelete = nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
+                boolean canDelete =
+                    nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
                 if (canDelete) {
                     actRuDetailApi.deleteByProcessSerialNumber(tenantId, tpArr[1]);
                     success.getAndIncrement();

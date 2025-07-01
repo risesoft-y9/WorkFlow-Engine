@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import org.flowable.task.service.delegate.DelegateTask;
-
 import java.util.Map;
+
+import org.flowable.task.service.delegate.DelegateTask;
 
 /**
  * @author qinman

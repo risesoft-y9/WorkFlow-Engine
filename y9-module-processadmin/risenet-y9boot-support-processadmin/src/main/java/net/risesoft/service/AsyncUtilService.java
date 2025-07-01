@@ -2,7 +2,6 @@ package net.risesoft.service;
 
 import java.util.concurrent.Future;
 
-
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;

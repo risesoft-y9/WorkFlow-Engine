@@ -184,8 +184,8 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName,
-        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;

@@ -28,9 +28,9 @@ import net.risesoft.web.filter.BaseUrlFilter;
 @Service
 public class OfficeFilePreviewImpl implements FilePreview {
 
-    private static final String OFFICE_PASSWORD_MSG = "password";
     public static final String OFFICE_PREVIEW_TYPE_IMAGE = "image";
     public static final String OFFICE_PREVIEW_TYPE_ALL_IMAGES = "allImages";
+    private static final String OFFICE_PASSWORD_MSG = "password";
     private final FileHandlerService fileHandlerService;
     private final OfficeToPdfService officeToPdfService;
     private final OtherFilePreviewImpl otherFilePreview;

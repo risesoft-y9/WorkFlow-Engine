@@ -2,7 +2,6 @@ package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +29,7 @@ public interface LwInfoApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/delLwInfo")
-    Y9Result<Object> delLwInfo(@RequestParam("tenantId") String tenantId,
-        @RequestParam("id") String id);
+    Y9Result<Object> delLwInfo(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
      * 获取来文信息列表

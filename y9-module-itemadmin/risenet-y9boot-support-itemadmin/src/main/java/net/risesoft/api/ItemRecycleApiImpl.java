@@ -183,14 +183,12 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
             assigneeNameWhereSql = sqlList.get(3);
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? " + whereSql
+                + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql
-            + assigneeNameInnerSql + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-                + " ) A WHERE A.RS_NUM = 1) ALIAS";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? " + whereSql
+                + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
@@ -214,9 +212,8 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
         }
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? " + whereSql + assigneeNameWhereSql
-                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? " + whereSql
+                + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
@@ -237,8 +234,8 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName,
-        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
@@ -305,14 +302,14 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
             assigneeNameWhereSql = sqlList.get(3);
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM  FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T." + (isBureau ? "BUREAUID" : "DEPTID") + " = ? "
-                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-                + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T." + (isBureau ? "BUREAUID" : "DEPTID") + " = ? "
-                + whereSql + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + " ) A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName, deptId};
         ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
@@ -336,9 +333,9 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
         }
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T." + (isBureau ? "BUREAUID" : "DEPTID") + " = ? "
-                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = TRUE AND T.SYSTEMNAME = ? AND T."
+                + (isBureau ? "BUREAUID" : "DEPTID") + " = ? " + whereSql + assigneeNameWhereSql
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName, deptId};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));

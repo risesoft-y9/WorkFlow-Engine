@@ -17,8 +17,8 @@ import net.risesoft.config.ConfigConstants;
 @Slf4j
 public class KkFileUtils {
 
-    private static final List<String> illegalFileStrList = new ArrayList<>();
     public static final String DEFAULT_FILE_ENCODING = "UTF-8";
+    private static final List<String> illegalFileStrList = new ArrayList<>();
 
     static {
         illegalFileStrList.add("../");

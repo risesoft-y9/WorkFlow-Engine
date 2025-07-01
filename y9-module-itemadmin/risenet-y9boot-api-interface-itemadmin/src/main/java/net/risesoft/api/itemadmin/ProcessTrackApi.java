@@ -95,7 +95,7 @@ public interface ProcessTrackApi {
      */
     @GetMapping("/processTrackListWithActionName")
     Y9Result<List<HistoryProcessModel>> processTrackListWithActionName(@RequestParam("tenantId") String tenantId,
-                                                         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取历程信息

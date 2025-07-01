@@ -18,15 +18,15 @@ public class CommonOpt {
     /**
      * 设置流程需要的变量
      *
-     * @param taskSenderId     发送人的guid，即是由谁发送的
-     * @param taskSender       发送人的中文名称，即是由谁发送的
-     * @param routeToTaskId    目标节点的Id
+     * @param taskSenderId 发送人的guid，即是由谁发送的
+     * @param taskSender 发送人的中文名称，即是由谁发送的
+     * @param routeToTaskId 目标节点的Id
      * @param users
      * @param flowElementModel 节点
      * @return
      */
     public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId,
-                                                   List<String> users, FlowElementModel flowElementModel) {
+        List<String> users, FlowElementModel flowElementModel) {
         if (users == null || users.size() == 0) {
             try {
                 throw new Exception("发送人不能为空");
@@ -46,7 +46,8 @@ public class CommonOpt {
         }
         varMap.put(SysVariables.USER, user);
         varMap.put(SysVariables.USERS, users);
-        if (null != flowElementModel && (flowElementModel.getType().equals(SysVariables.SUBPROCESS) || flowElementModel.getType().equals(SysVariables.CALLACTIVITY))) {
+        if (null != flowElementModel && (flowElementModel.getType().equals(SysVariables.SUBPROCESS)
+            || flowElementModel.getType().equals(SysVariables.CALLACTIVITY))) {
             varMap.put(SysVariables.MAINSENDERID, taskSenderId);
             varMap.put(SysVariables.MAINSENDER, taskSender);
         }
@@ -56,14 +57,14 @@ public class CommonOpt {
     /**
      * 设置流程需要的变量
      *
-     * @param taskSenderId  发送人的guid，即是由谁发送的
-     * @param taskSender    发送人的中文名称，即是由谁发送的
+     * @param taskSenderId 发送人的guid，即是由谁发送的
+     * @param taskSender 发送人的中文名称，即是由谁发送的
      * @param routeToTaskId 目标节点的Id
      * @param users
      * @return
      */
     public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId,
-                                                   List<String> users, String processSerialNumber, FlowElementModel flowElementModel, Map<String, Object> map) {
+        List<String> users, String processSerialNumber, FlowElementModel flowElementModel, Map<String, Object> map) {
         map.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
         map.putAll(setVariables(taskSenderId, taskSender, routeToTaskId, users, flowElementModel));
         return map;
@@ -72,8 +73,8 @@ public class CommonOpt {
     /**
      * 设置流程需要的变量
      *
-     * @param taskSenderId  发送人的guid，即是由谁发送的
-     * @param taskSender    发送人的中文名称，即是由谁发送的
+     * @param taskSenderId 发送人的guid，即是由谁发送的
+     * @param taskSender 发送人的中文名称，即是由谁发送的
      * @param routeToTaskId 目标节点的Id
      * @param users
      * @param documentTitle
@@ -81,7 +82,7 @@ public class CommonOpt {
      * @return
      */
     public static Map<String, Object> setVariables4Dept(String taskSenderId, String taskSender, String routeToTaskId,
-                                                        List<List<String>> users, String documentTitle, String multiInstance) {
+        List<List<String>> users, String documentTitle, String multiInstance) {
         if (users == null || users.size() == 0) {
             try {
                 throw new Exception("发送人不能为空");

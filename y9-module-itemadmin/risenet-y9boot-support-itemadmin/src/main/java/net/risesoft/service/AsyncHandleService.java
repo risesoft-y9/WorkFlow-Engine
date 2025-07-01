@@ -238,8 +238,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel,
-            sponsorGuid, processParam, userList);
+        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
+            processParam, userList);
     }
 
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
@@ -297,8 +297,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel,
-            sponsorGuid, processParam, userList);
+        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
+            processParam, userList);
     }
 
     /**

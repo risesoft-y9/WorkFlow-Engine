@@ -13,11 +13,6 @@ import net.risesoft.utils.ConfigUtils;
 @Component(value = ConfigConstants.BEAN_NAME)
 public class ConfigConstants {
 
-    static {
-        // pdfbox兼容低版本jdk
-        System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
-    }
-
     public static final String BEAN_NAME = "configConstants";
     public static final String DEFAULT_CACHE_ENABLED = "true";
     public static final String DEFAULT_TXT_TYPE =
@@ -63,7 +58,6 @@ public class ConfigConstants {
     public static final String DEFAULT_PDF_TIMEOUT80 = "180";
     public static final String DEFAULT_PDF_TIMEOUT200 = "300";
     public static final String DEFAULT_PDF_THREAD = "5";
-
     private static Boolean cacheEnabled;
     private static String[] simTexts = {};
     private static String[] medias = {};
@@ -113,6 +107,11 @@ public class ConfigConstants {
     private static int pdfTimeout80;
     private static int pdfTimeout200;
     private static int pdfThread;
+
+    static {
+        // pdfbox兼容低版本jdk
+        System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
+    }
 
     public static Boolean isCacheEnabled() {
         return cacheEnabled;

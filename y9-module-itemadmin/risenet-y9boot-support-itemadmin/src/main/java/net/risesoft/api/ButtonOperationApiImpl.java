@@ -345,9 +345,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        ActRuDetail actRuDetail =
-            actRuDetailService.findByProcessInstanceIdAndAssigneeAndStatusEquals1(task.getProcessInstanceId(),
-                orgUnitId);
+        ActRuDetail actRuDetail = actRuDetailService
+            .findByProcessInstanceIdAndAssigneeAndStatusEquals1(task.getProcessInstanceId(), orgUnitId);
         return Y9Result.success(specialOperationApi
             .takeBack2TaskDefKey(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey(), reason).isSuccess());
     }

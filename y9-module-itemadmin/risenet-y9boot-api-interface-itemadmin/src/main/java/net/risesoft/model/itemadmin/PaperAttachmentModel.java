@@ -1,11 +1,10 @@
 package net.risesoft.model.itemadmin;
 
+import java.io.Serializable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 纸质附件模型

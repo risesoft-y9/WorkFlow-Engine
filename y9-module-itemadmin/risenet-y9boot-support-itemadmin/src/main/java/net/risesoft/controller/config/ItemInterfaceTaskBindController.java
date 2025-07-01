@@ -62,8 +62,7 @@ public class ItemInterfaceTaskBindController {
     public Y9Result<List<FlowElementModel>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId,
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<FlowElementModel> list =
-            processDefinitionApi.listUserTask(tenantId, processDefinitionId).getData();
+        List<FlowElementModel> list = processDefinitionApi.listUserTask(tenantId, processDefinitionId).getData();
         for (FlowElementModel feModel : list) {
             String elementKey = feModel.getElementKey();
             ItemInterfaceTaskBind bind =

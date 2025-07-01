@@ -1,18 +1,20 @@
 package net.risesoft.service.config.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author zhangchongjie
@@ -27,9 +29,9 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
 
     @Override
     public List<ItemInterfaceParamsBind> listByItemIdAndInterfaceIdAndType(String itemId, String interfaceId,
-                                                                           String type) {
+        String type) {
         return itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdAndBindTypeOrderByCreateTimeDesc(itemId,
-                interfaceId, type);
+            interfaceId, type);
     }
 
     @Override

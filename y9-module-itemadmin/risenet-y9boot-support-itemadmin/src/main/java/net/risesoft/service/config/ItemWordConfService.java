@@ -2,7 +2,6 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-
 import net.risesoft.entity.ItemWordConf;
 
 /**
@@ -20,10 +19,11 @@ public interface ItemWordConfService {
 
     void deleteRole(String id, String roleId);
 
-    Boolean getPermissionWord(String positionId, String itemId, String processDefinitionId, String taskDefKey, String wordType);
+    Boolean getPermissionWord(String positionId, String itemId, String processDefinitionId, String taskDefKey,
+        String wordType);
 
     List<ItemWordConf> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
-                                                                       String taskDefKey);
+        String taskDefKey);
 
     void save(String wordType, String itemId, String processDefinitionId, String taskDefKey);
 }

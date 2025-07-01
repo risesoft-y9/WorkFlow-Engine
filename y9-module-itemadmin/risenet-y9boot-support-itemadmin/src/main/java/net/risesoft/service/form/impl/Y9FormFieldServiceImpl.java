@@ -1,7 +1,20 @@
 package net.risesoft.service.form.impl;
 
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9TableField;
@@ -14,17 +27,6 @@ import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -127,9 +129,10 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
 
     @Override
     @Transactional
-    public Y9Result<Object> copyFormAndFieldBind(String systemName, String systemCnName, String copyFormId, String tableName) {
+    public Y9Result<Object> copyFormAndFieldBind(String systemName, String systemCnName, String copyFormId,
+        String tableName) {
         try {
-            //复制表单
+            // 复制表单
             Y9Form copyForm = y9FormRepository.findById(copyFormId).orElse(null);
             if (null != copyForm) {
                 Y9Form y9Form = new Y9Form();
@@ -146,7 +149,8 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
                 y9Form = y9FormRepository.save(y9Form);
                 List<Y9FormField> list = y9FormFieldRepository.findByFormId(copyFormId);
                 for (Y9FormField element : list) {
-                    Y9TableField tableField = y9TableFieldRepository.findByTableNameAndFieldNameIgnoreCase(tableName, element.getFieldName());
+                    Y9TableField tableField =
+                        y9TableFieldRepository.findByTableNameAndFieldNameIgnoreCase(tableName, element.getFieldName());
                     if (null != tableField) {
                         Y9FormField newElement = new Y9FormField();
                         Y9BeanUtil.copyProperties(element, newElement);
@@ -166,7 +170,8 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
 
     @Override
     @Transactional
-    public Y9Result<String> saveFormFieldBind(String formId, String tableId, String tableName, Boolean isAppend, String fieldJson) {
+    public Y9Result<String> saveFormFieldBind(String formId, String tableId, String tableName, Boolean isAppend,
+        String fieldJson) {
         List<Y9FormField> addFieldList = new ArrayList<>();
         String updatedJson = "";
         try {
@@ -174,30 +179,29 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
             Y9Form y9Form = y9FormRepository.findById(formId).orElse(null);
             if (null != y9Form && StringUtils.isNotBlank(y9Form.getFormJson())) {
                 for (Map<String, Object> map : listMap) {
-                    String fieldName = (String) map.get("fieldName");
+                    String fieldName = (String)map.get("fieldName");
                     List<Y9FormField> fieldList = y9FormFieldRepository.findByFormIdAndFieldName(formId, fieldName);
                     if (fieldList.size() == 0) {
                         Y9FormField formField = new Y9FormField();
                         formField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        formField.setFieldCnName((String) map.get("fieldCnName"));
+                        formField.setFieldCnName((String)map.get("fieldCnName"));
                         formField.setFieldName(fieldName);
-                        formField.setFieldType((String) map.get("fieldType"));
+                        formField.setFieldType((String)map.get("fieldType"));
                         formField.setFormId(formId);
-                        formField.setTableId((String) map.get("tableId"));
-                        formField.setTableName((String) map.get("tableName"));
-                        formField.setQuerySign((String) map.get("querySign"));
-                        formField.setQueryType((String) map.get("queryType"));
-                        formField.setOptionValue((String) map.get("optionValue"));
+                        formField.setTableId((String)map.get("tableId"));
+                        formField.setTableName((String)map.get("tableName"));
+                        formField.setQuerySign((String)map.get("querySign"));
+                        formField.setQueryType((String)map.get("queryType"));
+                        formField.setOptionValue((String)map.get("optionValue"));
                         y9FormFieldRepository.save(formField);
                         addFieldList.add(formField);
                     }
                 }
-                if (isAppend) {  // 追加字段，解析表单设计formJson,在list后面插入追加字段的组件信息
+                if (isAppend) { // 追加字段，解析表单设计formJson,在list后面插入追加字段的组件信息
                     if (null != addFieldList && !addFieldList.isEmpty()) {
                         String formJson = y9Form.getFormJson();
                         Map<String, Object> jsonMap = Y9JsonUtil.readValue(formJson, Map.class);
-                        List<Map<String, Object>> formList = (List<Map<String, Object>>) jsonMap.get("list");
-
+                        List<Map<String, Object>> formList = (List<Map<String, Object>>)jsonMap.get("list");
 
                         for (Y9FormField field : addFieldList) {
                             String fieldName = field.getFieldName();
@@ -280,8 +284,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     /**
-     * 生成随机的key
-     * 获取字母和数字组合的随机字符串
+     * 生成随机的key 获取字母和数字组合的随机字符串
      *
      * @return
      */

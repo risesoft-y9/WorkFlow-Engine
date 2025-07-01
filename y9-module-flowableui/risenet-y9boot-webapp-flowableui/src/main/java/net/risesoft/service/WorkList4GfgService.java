@@ -48,8 +48,7 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
-        Integer page,
+    Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr, Integer page,
         Integer rows);
 
     /**
@@ -60,8 +59,7 @@ public interface WorkList4GfgService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page,
-        Integer rows);
+    Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page, Integer rows);
 
     /**
      * 获取科室在办列表

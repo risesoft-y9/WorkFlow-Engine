@@ -1,10 +1,10 @@
 package net.risesoft.utils;
 
-import org.springframework.util.Assert;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+
+import org.springframework.util.Assert;
 
 public class CaptchaUtil {
 
@@ -15,11 +15,13 @@ public class CaptchaUtil {
     private static final int HEIGHT = 30;// 定义图片的height
     private static final int CODE_LENGTH = 4;// 定义图片上显示验证码的个数
     private static final int FONT_HEIGHT = 28;
-    private static final char[] CODE_SEQUENCE = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private static final char[] CODE_SEQUENCE = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q',
+        'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q',
+        'r', 's', 't', 'u', 'v', 'w', 'x', 'y', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     /**
      * 指定验证码、生成验证码图片。
+     * 
      * @param captchaCode 验证码
      * @return 验证码图片
      */
@@ -61,6 +63,7 @@ public class CaptchaUtil {
 
     /**
      * 生成随机字符串。
+     * 
      * @return 字符串
      */
     public static String generateCaptchaCode() {

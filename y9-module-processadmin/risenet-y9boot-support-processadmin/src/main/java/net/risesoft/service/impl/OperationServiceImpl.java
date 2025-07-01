@@ -98,9 +98,8 @@ public class OperationServiceImpl implements OperationService {
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reason0));
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
-        String multiInstance =
-            this.customProcessDefinitionService.getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey)
-                .getMultiInstance();
+        String multiInstance = this.customProcessDefinitionService
+            .getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey).getMultiInstance();
         // 更新自定义历程结束时间
         List<ProcessTrackModel> ptModelList =
             this.processTrackApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
@@ -249,9 +248,8 @@ public class OperationServiceImpl implements OperationService {
             String endKey = this.customProcessDefinitionService.getTaskDefKey4EndEvent(task.getProcessDefinitionId());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             processInstanceId = task.getProcessInstanceId();
-            HistoricProcessInstance historicProcessInstance =
-                this.historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId)
-                    .singleResult();
+            HistoricProcessInstance historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(processInstanceId).singleResult();
             String year = sdf.format(historicProcessInstance.getStartTime());
             /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据

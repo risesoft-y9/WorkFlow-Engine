@@ -2,7 +2,6 @@ package net.risesoft.service;
 
 import java.util.List;
 
-
 import net.risesoft.entity.FileAttribute;
 
 /**

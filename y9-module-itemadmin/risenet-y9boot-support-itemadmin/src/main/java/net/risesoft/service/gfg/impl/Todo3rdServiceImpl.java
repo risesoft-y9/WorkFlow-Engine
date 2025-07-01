@@ -72,19 +72,13 @@ public class Todo3rdServiceImpl implements Todo3rdService {
     private final PositionApi positionApi;
 
     private final OrgUnitApi orgUnitApi;
-
+    private final String APP = "GWQBXTX";
+    private final String KEY = "250411144433itAss5bjPA8fm9Qhzc9";
+    private final String ADDURL = "/todo/add";
+    private final String UPDATEURL = "/todo/update";
+    private final String DELETEURL = "/todo/delete";
     @Value("${y9.common.todo3rdUrl:http://192.168.50.128:8080/todoService/serviceapi}")
     private String todo3rdUrl;
-
-    private final String APP = "GWQBXTX";
-
-    private final String KEY = "250411144433itAss5bjPA8fm9Qhzc9";
-
-    private final String ADDURL = "/todo/add";
-
-    private final String UPDATEURL = "/todo/update";
-
-    private final String DELETEURL = "/todo/delete";
 
     @Async
     @Override
@@ -356,14 +350,12 @@ public class Todo3rdServiceImpl implements Todo3rdService {
                 urgentText = "加急";
         }
         return Todo3rd.builder().id(actRuDetail.getId()).appCode(processParam.getSystemName())
-            .appName(processParam.getSystemCnName()).title(processParam.getTitle())
-            .content(content)
+            .appName(processParam.getSystemCnName()).title(processParam.getTitle()).content(content)
             .receiveUserId(receiveUserId).receiveUserName(receiveUserName).receiveDeptId(actRuDetail.getDeptId())
             .receiveDeptName(actRuDetail.getDeptName()).receiveTime(sdf.format(actRuDetail.getCreateTime()))
             .sendUserId(sendUserId).sendUserName(sendUserName).sendDeptId(actRuDetail.getDeptId())
             .sendDeptName(actRuDetail.getSendDeptName()).optType(optType).urgent(urgent).urgentText(urgentText)
-            .processSerialNumber(actRuDetail.getProcessSerialNumber()).todoType(1)
-            .success(Boolean.TRUE).build();
+            .processSerialNumber(actRuDetail.getProcessSerialNumber()).todoType(1).success(Boolean.TRUE).build();
     }
 
     private Todo3rd getTodo3rd(DocumentCopy documentCopy, ProcessParam processParam, Integer optType) {

@@ -1,8 +1,18 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.entity.AttachmentConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -11,13 +21,6 @@ import net.risesoft.repository.jpa.AttachmentConfRepository;
 import net.risesoft.service.AttachmentConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -96,7 +99,7 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
         newConf.setSpanWidth(attachmentConf.getSpanWidth());
         newConf.setIsRequired(attachmentConf.getIsRequired());
         Integer index =
-                attachmentConfRepository.getMaxTabIndex(attachmentConf.getAttachmentType(), attachmentConf.getConfigType());
+            attachmentConfRepository.getMaxTabIndex(attachmentConf.getAttachmentType(), attachmentConf.getConfigType());
         if (index == null) {
             newConf.setTabIndex(1);
         } else {

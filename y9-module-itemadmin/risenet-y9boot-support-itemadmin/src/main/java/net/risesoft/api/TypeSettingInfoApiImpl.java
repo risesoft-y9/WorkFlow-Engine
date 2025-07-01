@@ -2,7 +2,6 @@ package net.risesoft.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,14 +63,14 @@ public class TypeSettingInfoApiImpl implements TypeSettingInfoApi {
         List<TypeSettingInfo> list = typeSettingInfoService.findByProcessSerialNumber(processSerialNumber);
         List<TypeSettingInfoModel> modelList = new ArrayList<>();
         for (TypeSettingInfo typeSettingInfo : list) {
-            System.out.println("=============VAAAAA================="+typeSettingInfo.getId());
-            System.out.println("=============VAAAAA================="+typeSettingInfo.getAuditUserName());
-            System.out.println("=============VAAAAA================="+typeSettingInfo.getAuditTime());
+            System.out.println("=============VAAAAA=================" + typeSettingInfo.getId());
+            System.out.println("=============VAAAAA=================" + typeSettingInfo.getAuditUserName());
+            System.out.println("=============VAAAAA=================" + typeSettingInfo.getAuditTime());
             TypeSettingInfoModel model = new TypeSettingInfoModel();
             Y9BeanUtil.copyProperties(typeSettingInfo, model);
-            System.out.println("=============VBBBBBB================="+model.getId());
-            System.out.println("=============VBBBBBB================="+model.getAuditUserName());
-            System.out.println("=============VBBBBBB================="+model.getAuditTime());
+            System.out.println("=============VBBBBBB=================" + model.getId());
+            System.out.println("=============VBBBBBB=================" + model.getAuditUserName());
+            System.out.println("=============VBBBBBB=================" + model.getAuditTime());
             modelList.add(model);
         }
         return Y9Result.success(modelList);
@@ -122,7 +121,7 @@ public class TypeSettingInfoApiImpl implements TypeSettingInfoApi {
      */
     @Override
     public Y9Result<Object> updateTypeSetting(@RequestParam String tenantId, @RequestParam String processSerialNumber,
-                                            @RequestParam String jsonData) {
+        @RequestParam String jsonData) {
         Y9LoginUserHolder.setTenantId(tenantId);
         typeSettingInfoService.updateTypeSetting(processSerialNumber, jsonData);
         return Y9Result.success();

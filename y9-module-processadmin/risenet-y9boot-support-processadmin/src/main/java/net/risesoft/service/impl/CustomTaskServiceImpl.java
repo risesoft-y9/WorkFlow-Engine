@@ -83,9 +83,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-            String nodeType =
-                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getMultiInstance();
+            String nodeType = customProcessDefinitionService
+                .getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getMultiInstance();
             HistoricProcessInstance historicProcessInstance =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
@@ -164,9 +163,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         try {
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             processInstanceId = task.getProcessInstanceId();
-            String nodeType =
-                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getMultiInstance();
+            String nodeType = customProcessDefinitionService
+                .getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getMultiInstance();
             if (nodeType.equals(SysVariables.PARALLEL)) {
                 List<Task> taskList = this.listByProcessInstanceId(task.getProcessInstanceId());
                 for (Task tTemp : taskList) {
