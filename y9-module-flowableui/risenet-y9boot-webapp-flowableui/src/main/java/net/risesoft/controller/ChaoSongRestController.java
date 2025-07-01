@@ -11,12 +11,22 @@ import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.*;
+import net.risesoft.api.itemadmin.AssociatedFileApi;
+import net.risesoft.api.itemadmin.AttachmentApi;
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.DocumentApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
+import net.risesoft.api.itemadmin.SpeakInfoApi;
+import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
