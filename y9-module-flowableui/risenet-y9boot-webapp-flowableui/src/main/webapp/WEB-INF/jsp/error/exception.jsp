@@ -9,7 +9,7 @@
 <body>
 <div style="text-align: center;">
     <div style="font-size: 16px"><font color="red">系统内部异常！</font></div>
-    <a href="javascript:;" onclick="openexception()" style="font-size: 12px">查看详细信息</a>
+    <a href="javascript:" onclick="openexception()" style="font-size: 12px">查看详细信息</a>
 </div>
 <table width="100%" border="1" style="display: none" id="erro">
     <tr>
