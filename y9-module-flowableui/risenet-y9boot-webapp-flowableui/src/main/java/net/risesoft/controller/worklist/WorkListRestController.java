@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.worklist;
 
 import java.util.List;
 import java.util.Map;

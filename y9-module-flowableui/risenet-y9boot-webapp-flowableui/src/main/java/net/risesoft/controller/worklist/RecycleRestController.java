@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller.worklist;
 
 import java.util.List;
 import java.util.Map;
@@ -34,15 +34,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/recycle/gfg", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Recycle4GfgRestController {
+@RequestMapping(value = "/vue/recycle", produces = MediaType.APPLICATION_JSON_VALUE)
+public class RecycleRestController {
 
     private final WorkList4GfgService workList4GfgService;
 
     private final ItemViewConfApi itemViewConfApi;
 
     /**
-     * 获取在办列表视图配置
+     * 获取回收站列表视图配置
      *
      * @param itemId 事项id
      * @return Y9Result<List < ItemViewConfModel>>

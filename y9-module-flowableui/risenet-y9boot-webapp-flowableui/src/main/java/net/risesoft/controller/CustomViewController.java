@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RestController
 @RequestMapping(value = "/vue/customView", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public class CustomView4GfgController {
+public class CustomViewController {
 
     private final CustomViewApi customViewApi;
 

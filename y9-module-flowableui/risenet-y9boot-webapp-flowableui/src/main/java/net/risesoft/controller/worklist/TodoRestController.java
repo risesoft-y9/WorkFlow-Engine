@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller.worklist;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/todo/gfg", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Todo4GfgRestController {
+public class TodoRestController {
 
     private final WorkList4GfgService workList4GfgService;
 

@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RestController
 @RequestMapping(value = "/vue/signDept", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public class SignDept4GfgController {
+public class SignDeptController {
 
     private final SignDeptInfoApi signDeptInfoApi;
 

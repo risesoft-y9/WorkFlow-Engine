@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.worklist;
 
 import java.util.ArrayList;
 import java.util.List;

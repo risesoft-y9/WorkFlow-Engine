@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,6 +103,23 @@ public class ProcessTrackRestController {
         map.put("mychaosongNum", mychaosongNum);
         map.put("otherchaosongNum", otherchaosongNum);
         return Y9Result.success(map, "获取成功");
+    }
+
+    /**
+     * 获取历史任务数据
+     *
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @FlowableLog(operationType = FlowableOperationTypeEnum.BROWSE, operationName = "查看电子历程")
+    @GetMapping(value = "/list")
+    public Y9Result<List<HistoryProcessModel>> list(@RequestParam @NotBlank String processInstanceId) {
+        Position position = Y9LoginUserHolder.getPosition();
+        String positionId = position.getId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<HistoryProcessModel> items =
+            processTrackApi.processTrackListWithActionName(tenantId, positionId, processInstanceId).getData();
+        return Y9Result.success(items, "获取成功");
     }
 
     /**

@@ -1,4 +1,4 @@
-package net.risesoft.controller.gfg;
+package net.risesoft.controller;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -47,7 +47,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RestController
 @Slf4j
 @RequestMapping(value = "/vue/docWord", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DocumentWord4GfgRestController {
+public class DocumentWordRestController {
 
     private final Y9FileStoreService y9FileStoreService;
 
