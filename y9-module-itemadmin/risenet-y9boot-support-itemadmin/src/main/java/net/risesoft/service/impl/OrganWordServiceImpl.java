@@ -1,7 +1,13 @@
 package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +26,12 @@ import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.PunctuationConsts;
-import net.risesoft.entity.*;
+import net.risesoft.entity.ItemOrganWordBind;
+import net.risesoft.entity.OrganWord;
+import net.risesoft.entity.OrganWordDetail;
+import net.risesoft.entity.OrganWordProperty;
+import net.risesoft.entity.OrganWordUseHistory;
+import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemOrganWordEnum;
 import net.risesoft.id.IdType;
@@ -31,7 +42,11 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.OrganWordRepository;
-import net.risesoft.service.*;
+import net.risesoft.service.OrganWordDetailService;
+import net.risesoft.service.OrganWordPropertyService;
+import net.risesoft.service.OrganWordService;
+import net.risesoft.service.OrganWordUseHistoryService;
+import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.config.ItemOrganWordBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

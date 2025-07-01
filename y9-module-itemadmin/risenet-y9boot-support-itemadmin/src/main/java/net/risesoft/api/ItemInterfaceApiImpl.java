@@ -11,13 +11,23 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
-import net.risesoft.entity.*;
+import net.risesoft.entity.InterfaceInfo;
+import net.risesoft.entity.InterfaceResponseParams;
+import net.risesoft.entity.ItemInterfaceBind;
+import net.risesoft.entity.ItemInterfaceParamsBind;
+import net.risesoft.entity.ItemInterfaceTaskBind;
+import net.risesoft.entity.TaskTimeConf;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.InterfaceParamsModel;
 import net.risesoft.model.itemadmin.TaskTimeConfModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.*;
+import net.risesoft.repository.jpa.InterfaceInfoRepository;
+import net.risesoft.repository.jpa.InterfaceResponseParamsRepository;
+import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
+import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
+import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
+import net.risesoft.repository.jpa.TaskTimeConfRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

@@ -8,7 +8,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +22,12 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.entity.*;
+import net.risesoft.entity.ItemWordTemplateBind;
+import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.TaoHongTemplate;
+import net.risesoft.entity.TransactionHistoryWord;
+import net.risesoft.entity.TransactionWord;
+import net.risesoft.entity.WordTemplate;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemWordTypeEnum;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
