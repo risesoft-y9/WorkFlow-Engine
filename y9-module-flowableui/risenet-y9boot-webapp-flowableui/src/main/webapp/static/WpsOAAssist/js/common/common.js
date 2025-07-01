@@ -82,96 +82,98 @@ function utf16ToUtf8(s) {
     return ret.join('');
 
 }
+
 var Base64 = {
-	_keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-	encode: function(e) {
-		var t = "";
-		var n, r, i, s, o, u, a;
-		var f = 0;
-		e = Base64._utf8_encode(e);
-		while (f < e.length) {
-			n = e.charCodeAt(f++);
-			r = e.charCodeAt(f++);
-			i = e.charCodeAt(f++);
-			s = n >> 2;
-			o = (n & 3) << 4 | r >> 4;
-			u = (r & 15) << 2 | i >> 6;
-			a = i & 63;
-			if (isNaN(r)) {
-				u = a = 64
-			} else if (isNaN(i)) {
-				a = 64
-			}
-			t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
-		}
-		return t
-	},
-	decode: function(e) {
-		var t = "";
-		var n, r, i;
-		var s, o, u, a;
-		var f = 0;
-		e = e.replace(/[^A-Za-z0-9+/=]/g, "");
-		while (f < e.length) {
-			s = this._keyStr.indexOf(e.charAt(f++));
-			o = this._keyStr.indexOf(e.charAt(f++));
-			u = this._keyStr.indexOf(e.charAt(f++));
-			a = this._keyStr.indexOf(e.charAt(f++));
-			n = s << 2 | o >> 4;
-			r = (o & 15) << 4 | u >> 2;
-			i = (u & 3) << 6 | a;
-			t = t + String.fromCharCode(n);
-			if (u != 64) {
-				t = t + String.fromCharCode(r)
-			}
-			if (a != 64) {
-				t = t + String.fromCharCode(i)
-			}
-		}
-		t = Base64._utf8_decode(t);
-		return t
-	},
-	_utf8_encode: function(e) {
-		e = e.replace(/rn/g, "n");
-		var t = "";
-		for (var n = 0; n < e.length; n++) {
-			var r = e.charCodeAt(n);
-			if (r < 128) {
-				t += String.fromCharCode(r)
-			} else if (r > 127 && r < 2048) {
-				t += String.fromCharCode(r >> 6 | 192);
-				t += String.fromCharCode(r & 63 | 128)
-			} else {
-				t += String.fromCharCode(r >> 12 | 224);
-				t += String.fromCharCode(r >> 6 & 63 | 128);
-				t += String.fromCharCode(r & 63 | 128)
-			}
-		}
-		return t
-	},
-	_utf8_decode: function(e) {
-		var t = "";
-		var n = 0;
-		var r = c1 = c2 = 0;
-		while (n < e.length) {
-			r = e.charCodeAt(n);
-			if (r < 128) {
-				t += String.fromCharCode(r);
-				n++
-			} else if (r > 191 && r < 224) {
-				c2 = e.charCodeAt(n + 1);
-				t += String.fromCharCode((r & 31) << 6 | c2 & 63);
-				n += 2
-			} else {
-				c2 = e.charCodeAt(n + 1);
-				c3 = e.charCodeAt(n + 2);
-				t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
-				n += 3
-			}
-		}
-		return t
-	}
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+    encode: function (e) {
+        var t = "";
+        var n, r, i, s, o, u, a;
+        var f = 0;
+        e = Base64._utf8_encode(e);
+        while (f < e.length) {
+            n = e.charCodeAt(f++);
+            r = e.charCodeAt(f++);
+            i = e.charCodeAt(f++);
+            s = n >> 2;
+            o = (n & 3) << 4 | r >> 4;
+            u = (r & 15) << 2 | i >> 6;
+            a = i & 63;
+            if (isNaN(r)) {
+                u = a = 64
+            } else if (isNaN(i)) {
+                a = 64
+            }
+            t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
+        }
+        return t
+    },
+    decode: function (e) {
+        var t = "";
+        var n, r, i;
+        var s, o, u, a;
+        var f = 0;
+        e = e.replace(/[^A-Za-z0-9+/=]/g, "");
+        while (f < e.length) {
+            s = this._keyStr.indexOf(e.charAt(f++));
+            o = this._keyStr.indexOf(e.charAt(f++));
+            u = this._keyStr.indexOf(e.charAt(f++));
+            a = this._keyStr.indexOf(e.charAt(f++));
+            n = s << 2 | o >> 4;
+            r = (o & 15) << 4 | u >> 2;
+            i = (u & 3) << 6 | a;
+            t = t + String.fromCharCode(n);
+            if (u != 64) {
+                t = t + String.fromCharCode(r)
+            }
+            if (a != 64) {
+                t = t + String.fromCharCode(i)
+            }
+        }
+        t = Base64._utf8_decode(t);
+        return t
+    },
+    _utf8_encode: function (e) {
+        e = e.replace(/rn/g, "n");
+        var t = "";
+        for (var n = 0; n < e.length; n++) {
+            var r = e.charCodeAt(n);
+            if (r < 128) {
+                t += String.fromCharCode(r)
+            } else if (r > 127 && r < 2048) {
+                t += String.fromCharCode(r >> 6 | 192);
+                t += String.fromCharCode(r & 63 | 128)
+            } else {
+                t += String.fromCharCode(r >> 12 | 224);
+                t += String.fromCharCode(r >> 6 & 63 | 128);
+                t += String.fromCharCode(r & 63 | 128)
+            }
+        }
+        return t
+    },
+    _utf8_decode: function (e) {
+        var t = "";
+        var n = 0;
+        var r = c1 = c2 = 0;
+        while (n < e.length) {
+            r = e.charCodeAt(n);
+            if (r < 128) {
+                t += String.fromCharCode(r);
+                n++
+            } else if (r > 191 && r < 224) {
+                c2 = e.charCodeAt(n + 1);
+                t += String.fromCharCode((r & 31) << 6 | c2 & 63);
+                n += 2
+            } else {
+                c2 = e.charCodeAt(n + 1);
+                c3 = e.charCodeAt(n + 2);
+                t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+                n += 3
+            }
+        }
+        return t
+    }
 }
+
 //UTF-8转UTF-16
 function utf8ToUtf16(s) {
     if (!s) {
@@ -244,7 +246,7 @@ function currentTime() {
  */
 function getHtmlURL(html) {
     //弹出辅助窗格框
-    var GetUrlPath = ()=> {
+    var GetUrlPath = () => {
         var e = document.location.toString();
         return -1 != (e = decodeURI(e)).indexOf("/") && (e = e.substring(0, e.lastIndexOf("/"))), e
     }
@@ -352,10 +354,11 @@ function pGetParamName(data, attr) {
     data = data.substring(start + attr.length);
     return data;
 }
+
 /**
  * 从requst中获取文件名（确保请求中有filename这个参数）
- * @param {*} request 
- * @param {*} url 
+ * @param {*} request
+ * @param {*} url
  */
 function pGetFileName(request, url) {
     var disposition = request.getResponseHeader("Content-Disposition");
@@ -383,6 +386,7 @@ function StringToUint8Array(string) {
     }
     return buffer;
 }
+
 /**
  * WPS下载文件到本地打开（业务系统可根据实际情况进行修改）
  * @param {*} url 文件流的下载路径
@@ -408,6 +412,7 @@ function DownloadFile(url, callback) {
     xhr.responseType = 'blob';
     xhr.send();
 }
+
 /**
  * WPS上传文件到服务端（业务系统可根据实际情况进行修改，为了兼容中文，服务端约定用UTF-8编码格式）
  * @param {*} strFileName 上传到服务端的文件名称（包含文件后缀）
@@ -423,7 +428,7 @@ function UploadFile(strFileName, strPath, uploadPath, strFieldName, OnSuccess, O
 
     var fileData = wps.FileSystem.readAsBinaryString(strPath);
     var data = new FakeFormData();
-    if (strFieldName == "" || typeof strFieldName == "undefined"){//如果业务方没定义，默认设置为'file'
+    if (strFieldName == "" || typeof strFieldName == "undefined") {//如果业务方没定义，默认设置为'file'
         strFieldName = 'file';
     }
     data.append(strFieldName, {
@@ -508,9 +513,9 @@ function pSetWPSAppUserName() {
 
 /**
  *  设置文档参数的属性值
- * @param {*} Doc 
- * @param {*} Key 
- * @param {*} Value 
+ * @param {*} Doc
+ * @param {*} Key
+ * @param {*} Value
  */
 function SetDocParamsValue(Doc, Key, Value) {
     if (!Doc || !Key) {
@@ -523,7 +528,7 @@ function SetDocParamsValue(Doc, Key, Value) {
     }
 
     var l_objParams = JSON.parse(l_Params);
-    if (!(typeof(l_objParams) == "undefined")) {
+    if (!(typeof (l_objParams) == "undefined")) {
         l_objParams[Key] = Value;
     }
 

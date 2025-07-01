@@ -50,23 +50,7 @@ import cn.wps.yun.ApiException;
 import cn.wps.yun.api.AppFilesApi;
 import cn.wps.yun.api.UserOrgApi;
 import cn.wps.yun.api.YunApi;
-import cn.wps.yun.model.CreateEmptyRequest;
-import cn.wps.yun.model.EmptyFile;
-import cn.wps.yun.model.FileContent;
-import cn.wps.yun.model.FileEditor;
-import cn.wps.yun.model.FilePermissionCreateRequest;
-import cn.wps.yun.model.FilePreview;
-import cn.wps.yun.model.FilePrivilege;
-import cn.wps.yun.model.FilePrivileges;
-import cn.wps.yun.model.Grantee;
-import cn.wps.yun.model.Identity;
-import cn.wps.yun.model.Scope;
-import cn.wps.yun.model.UploadConflictBehavior;
-import cn.wps.yun.model.UploadMethod;
-import cn.wps.yun.model.UploadTransactionCreateRequest;
-import cn.wps.yun.model.UploadTransactionPatchResponse;
-import cn.wps.yun.model.User;
-import cn.wps.yun.model.WebofficeEditorGetUrlRequest;
+import cn.wps.yun.model.*;
 
 @RestController
 @RequestMapping("/docWps")

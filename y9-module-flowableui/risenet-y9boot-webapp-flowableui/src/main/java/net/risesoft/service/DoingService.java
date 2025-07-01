@@ -39,6 +39,5 @@ public interface DoingService {
      * @param rows 每页条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page,
-        Integer rows);
+    Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page, Integer rows);
 }

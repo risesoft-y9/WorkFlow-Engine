@@ -1,22 +1,14 @@
 package net.risesoft.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,30 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
-import net.risesoft.api.platform.org.DepartmentApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.OrganizationApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.org.*;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
-import net.risesoft.model.itemadmin.BindFormModel;
-import net.risesoft.model.itemadmin.FieldPermModel;
-import net.risesoft.model.itemadmin.FormFieldDefineModel;
-import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.Y9FormFieldModel;
-import net.risesoft.model.itemadmin.Y9FormOptionValueModel;
-import net.risesoft.model.platform.Department;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Organization;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.PersonExt;
-import net.risesoft.model.platform.Position;
-import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.itemadmin.*;
+import net.risesoft.model.platform.*;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;

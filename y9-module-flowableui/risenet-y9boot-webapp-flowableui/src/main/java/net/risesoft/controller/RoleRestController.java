@@ -6,9 +6,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
-import net.risesoft.api.itemadmin.SignDeptDetailApi;
-import net.risesoft.enums.SignDeptDetailStatusEnum;
-import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -20,10 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemRoleApi;
+import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
@@ -239,12 +239,11 @@ public class RoleRestController {
                 .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())
                     || ssd.getStatus().equals(SignDeptDetailStatusEnum.DELETED.getValue()))
                 .collect(Collectors.toList());
-        List<ItemRoleOrgUnitModel> list = itemRoleApi
-            .findByRoleId(tenantId, personId, positionId, roleId, principalType, id).getData()
-            .stream()
-            .filter(itemRoleOrgUnitModel -> sddList.stream()
-                .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
-            .collect(Collectors.toList());
+        List<ItemRoleOrgUnitModel> list =
+            itemRoleApi.findByRoleId(tenantId, personId, positionId, roleId, principalType, id).getData().stream()
+                .filter(itemRoleOrgUnitModel -> sddList.stream()
+                    .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
+                .collect(Collectors.toList());
         return Y9Result.success(list);
     }
 }

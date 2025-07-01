@@ -1,11 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -17,14 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ChaoSongApi;
-import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.ItemApi;
-import net.risesoft.api.itemadmin.ItemDoingApi;
-import net.risesoft.api.itemadmin.OfficeFollowApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.itemadmin.SpeakInfoApi;
+import net.risesoft.api.itemadmin.*;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDoingApi;
@@ -164,8 +153,7 @@ public class DoingServiceImpl implements DoingService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
-                    positionId,
-                    processDefinitionKey, page, rows);
+                    positionId, processDefinitionKey, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
@@ -293,8 +281,7 @@ public class DoingServiceImpl implements DoingService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
-                    positionId,
-                    processDefinitionKey, page, rows);
+                    positionId, processDefinitionKey, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
@@ -367,9 +354,8 @@ public class DoingServiceImpl implements DoingService {
                             mapTemp.put("remindSetting", true);
                         }
 
-                        int countFollow =
-                            this.officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId)
-                                .getData();
+                        int countFollow = this.officeFollowApi
+                            .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("follow", countFollow > 0);
                     } catch (Exception e) {
                         LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -448,8 +434,7 @@ public class DoingServiceImpl implements DoingService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr,
-        Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> pageSearchList(String itemId, String searchMapStr, Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
@@ -522,9 +507,8 @@ public class DoingServiceImpl implements DoingService {
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
-                    int countFollow =
-                        this.officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId)
-                            .getData();
+                    int countFollow = this.officeFollowApi
+                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);

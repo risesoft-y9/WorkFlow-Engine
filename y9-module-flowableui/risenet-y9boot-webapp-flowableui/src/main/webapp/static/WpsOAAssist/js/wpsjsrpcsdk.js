@@ -27,6 +27,7 @@
         }
         return httpobj;
     }
+
     //兼容IE低版本的创建xmlhttprequest对象的方法
     function createXHR() {
         if (typeof XMLHttpRequest != 'undefined') { //兼容高版本浏览器
@@ -111,6 +112,7 @@
             xmlReq.timeout = options.timeout;
             xmlReq.send(options.sendData)
         }
+
         startWpsInnder(options.tryCount);
         return;
     }
@@ -122,7 +124,7 @@
             var cc = c.charCodeAt(0);
             return cc < 0x80 ? c :
                 cc < 0x800 ? (fromCharCode(0xc0 | (cc >>> 6)) +
-                    fromCharCode(0x80 | (cc & 0x3f))) :
+                        fromCharCode(0x80 | (cc & 0x3f))) :
                     (fromCharCode(0xe0 | ((cc >>> 12) & 0x0f)) +
                         fromCharCode(0x80 | ((cc >>> 6) & 0x3f)) +
                         fromCharCode(0x80 | (cc & 0x3f)));
@@ -250,17 +252,18 @@
     }
 
     var exId = 0;
+
     /**
      * 支持浏览器触发，WPS有返回值的启动
      *
-     * @param {*} clientType	组件类型
-     * @param {*} name			WPS加载项名称
-     * @param {*} func			WPS加载项入口方法
-     * @param {*} param			参数：包括WPS加载项内部定义的方法，参数等
-     * @param {*} useHttps		是否使用https协议
-     * @param {*} callback		回调函数
-     * @param {*} tryCount		重试次数
-     * @param {*} bPop			是否弹出浏览器提示对话框
+     * @param {*} clientType    组件类型
+     * @param {*} name            WPS加载项名称
+     * @param {*} func            WPS加载项入口方法
+     * @param {*} param            参数：包括WPS加载项内部定义的方法，参数等
+     * @param {*} useHttps        是否使用https协议
+     * @param {*} callback        回调函数
+     * @param {*} tryCount        重试次数
+     * @param {*} bPop            是否弹出浏览器提示对话框
      */
     function WpsStartWrapExInner(clientType, name, func, param, useHttps, callback, tryCount, bPop) {
         var rspUrl = "http://127.0.0.1:58890/transferEcho/runParams";
@@ -277,7 +280,7 @@
             "name": name,
             "function": funcEx,
             "info": infoEx,
-			"showToFront": param.showToFront,
+            "showToFront": param.showToFront,
             "jsPluginsXml": param.jsPluginsXml
         };
         var strData = JSON.stringify(startInfo);
@@ -347,6 +350,7 @@
     }
 
     var RegWebNotifyID = null
+
     /**
      * 注册一个前端页面接收WPS传来消息的方法
      * @param {*} clientType wps | et | wpp
@@ -399,7 +403,7 @@
     function WpsStartWrapVersion(clientType, name, func, param, callback, showToFront, jsPluginsXml) {
         let paramEx = {
             jsPluginsXml: jsPluginsXml ? jsPluginsXml : "",
-			showToFront: typeof(showToFront) == 'boolean' ? showToFront : true,
+            showToFront: typeof (showToFront) == 'boolean' ? showToFront : true,
             param: (typeof (param) == 'object' ? param : JSON.parse(param))
         }
         WpsStartWrapVersionInner(clientType, name, func, paramEx, false, callback);
@@ -408,7 +412,7 @@
     function WpsStartWrapHttpsVersion(clientType, name, func, param, callback, showToFront, jsPluginsXml) {
         let paramEx = {
             jsPluginsXml: jsPluginsXml ? jsPluginsXml : "",
-			showToFront: typeof(showToFront) == 'boolean' ? showToFront : true,
+            showToFront: typeof (showToFront) == 'boolean' ? showToFront : true,
             param: (typeof (param) == 'object' ? param : JSON.parse(param))
         }
         WpsStartWrapVersionInner(clientType, name, func, paramEx, true, callback);
@@ -452,20 +456,20 @@
         xmlReq.open("POST", "http://localhost:58890/redirect/runParams");
         xmlReq.onload = function (res) {
             if (offline && !res.target.response.startsWith("7z")) {
-                callBack({ status: 1, msg: "不是有效的7z格式" + url });
+                callBack({status: 1, msg: "不是有效的7z格式" + url});
             } else if (!offline && !res.target.response.startsWith("<customUI")) {
-                callBack({ status: 1, msg: "不是有效的ribbon.xml, " + url })
+                callBack({status: 1, msg: "不是有效的ribbon.xml, " + url})
             } else {
-                callBack({ status: 0, msg: "OK" })
+                callBack({status: 0, msg: "OK"})
             }
         }
         xmlReq.onerror = function (res) {
             xmlReq.bTimeout = true;
-            callBack({ status: 2, msg: "网页路径不可访问，如果是跨域问题，不影响使用" + url })
+            callBack({status: 2, msg: "网页路径不可访问，如果是跨域问题，不影响使用" + url})
         }
         xmlReq.ontimeout = function (res) {
             xmlReq.bTimeout = true;
-            callBack({ status: 3, msg: "访问超时" + url })
+            callBack({status: 3, msg: "访问超时" + url})
         }
         if (IEVersion() < 10) {
             xmlReq.onreadystatechange = function () {
@@ -520,7 +524,7 @@
             "addonType": element.addonType,
             "online": element.online,
             "version": element.version,
-            "time":new Date().getTime()
+            "time": new Date().getTime()
         }
         return FormatSendData(data);
     }
@@ -544,5 +548,5 @@
         window.WpsAddonMgr = WpsAddonMgr;
     }
 
-    return { WpsInvoke: WpsInvoke, WpsAddonMgr: WpsAddonMgr, version: "1.0.4" };
+    return {WpsInvoke: WpsInvoke, WpsAddonMgr: WpsAddonMgr, version: "1.0.4"};
 });

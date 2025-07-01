@@ -1,5 +1,10 @@
 package net.risesoft.util;
 
+import java.util.*;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -13,10 +18,6 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 @Component
 public class ParseUserChoiceUtil {
@@ -24,7 +25,7 @@ public class ParseUserChoiceUtil {
     public static void removeDuplicateWithOrder(List list) {
         Set set = new HashSet();
         List newList = new ArrayList();
-        for (Iterator iter = list.iterator(); iter.hasNext(); ) {
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
             Object element = iter.next();
             if (set.add(element)) {
                 newList.add(element);
@@ -48,7 +49,8 @@ public class ParseUserChoiceUtil {
                     userIdTemp = s2[1];
                 }
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    OrgUnit orgUnit = Y9Context.getBean(OrgUnitApi.class).getOrgUnitPersonOrPosition(tenantId, userIdTemp).getData();
+                    OrgUnit orgUnit =
+                        Y9Context.getBean(OrgUnitApi.class).getOrgUnitPersonOrPosition(tenantId, userIdTemp).getData();
                     if (null == orgUnit) {
                         continue;
                     }
@@ -60,11 +62,12 @@ public class ParseUserChoiceUtil {
                         users = addUserId(users, pTemp.getId());
                     }
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    List<CustomGroupMember> list = Y9Context.getBean(CustomGroupApi.class).listCustomGroupMemberByGroupIdAndMemberType(tenantId,
+                    List<CustomGroupMember> list =
+                        Y9Context.getBean(CustomGroupApi.class).listCustomGroupMemberByGroupIdAndMemberType(tenantId,
                             Y9LoginUserHolder.getPersonId(), userIdTemp, OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list) {
-                        OrgUnit orgUnit =
-                                Y9Context.getBean(OrgUnitApi.class).getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
+                        OrgUnit orgUnit = Y9Context.getBean(OrgUnitApi.class)
+                            .getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
                         if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
                             users = addUserId(users, orgUnit.getId());
                         }
@@ -99,8 +102,10 @@ public class ParseUserChoiceUtil {
     }
 
     private static void getAllPosition(List<Position> list, String deptId) {
-        List<Department> deptList = Y9Context.getBean(DepartmentApi.class).listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
-        List<Position> list0 = Y9Context.getBean(PositionApi.class).listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Department> deptList =
+            Y9Context.getBean(DepartmentApi.class).listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Position> list0 =
+            Y9Context.getBean(PositionApi.class).listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             list.addAll(list0);
         }

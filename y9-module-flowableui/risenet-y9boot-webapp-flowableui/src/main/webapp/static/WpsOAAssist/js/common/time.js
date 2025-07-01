@@ -68,8 +68,7 @@ function toTime(dtSrc, b1904) {
         n400Years = 4;
         n400Century = 3;
         n4Yr = 0;
-    }
-    else {
+    } else {
         // Leap years every 4 yrs except centuries not multiples of 400.
         n400Years = Math.floor(nDaysAbsolute / 146097);
 
@@ -93,8 +92,7 @@ function toTime(dtSrc, b1904) {
                 bLeap4 = false;
                 n4Day = Math.floornDaysAbsolute;
             }
-        }
-        else {
+        } else {
             // Leap century - not special case!
             n4Years = Math.floor(nDaysAbsolute / 1461);
             n4Day = Math.floor(nDaysAbsolute % 1461);
@@ -106,8 +104,7 @@ function toTime(dtSrc, b1904) {
 
             if (n4Yr != 0)
                 n4Day = (n4Day - 1) % 365;
-        }
-        else {
+        } else {
             n4Yr = n4Day / 365;
             n4Day %= 365;
         }
@@ -125,8 +122,7 @@ function toTime(dtSrc, b1904) {
             /* Feb. 29 */
             tmDest.tm_mon = 2;
             tmDest.tm_mday = 29;
-        }
-        else {
+        } else {
             // Pretend it's not a leap year for month/day comp.
             if (n4Day >= 60)
                 --n4Day;
@@ -139,7 +135,7 @@ function toTime(dtSrc, b1904) {
 
         // Month number always >= n/32, so save some loop time */
         for (tmDest.tm_mon = (n4Day >> 5) + 1;
-            n4Day > _afxMonthDays[tmDest.tm_mon]; tmDest.tm_mon++);
+             n4Day > _afxMonthDays[tmDest.tm_mon]; tmDest.tm_mon++) ;
 
         tmDest.tm_mday = Math.floor(n4Day - _afxMonthDays[tmDest.tm_mon - 1]);
     }
@@ -152,6 +148,6 @@ function toTime(dtSrc, b1904) {
         tmDest.tm_min = Math.floor(nMinutesInDay % 60);
         tmDest.tm_hour = Math.floor(nMinutesInDay / 60);
     }
-    
+
     return new Date(tmDest.tm_year, tmDest.tm_mon + 1, tmDest.tm_mday, tmDest.tm_mday, tmDest.tm_min, tmDest.tm_sec);
 }

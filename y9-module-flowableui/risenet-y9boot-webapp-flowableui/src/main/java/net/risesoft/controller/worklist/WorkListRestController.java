@@ -5,11 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -137,8 +133,7 @@ public class WorkListRestController {
      */
     @PostMapping(value = "/searchDoingList")
     public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.doingService.pageSearchList(itemId, searchMapStr, page, rows);
     }
 

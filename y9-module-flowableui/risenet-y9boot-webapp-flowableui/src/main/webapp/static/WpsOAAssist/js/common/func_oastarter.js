@@ -1,6 +1,6 @@
 /**
  * 在这个js中，集中处理来自OA的传入参数
- * 
+ *
  */
 
 /**
@@ -14,7 +14,8 @@
  *   ]
  * @param {*} info
  */
-let testFuncs=null;
+let testFuncs = null;
+
 function dispatcher(info) {
     var funcs = info.funcs;
     //解析参数
@@ -24,7 +25,7 @@ function dispatcher(info) {
      */
     for (var index = 0; index < funcs.length; index++) {
         var func = funcs[index];
-        for (var key in func) {                    
+        for (var key in func) {
             if (key === "GetDocStatus") {
                 return GetDocStatus(func[key])
             } else if (key === "ExitWPS") {
@@ -36,9 +37,9 @@ function dispatcher(info) {
      * 2、业务系统不依赖客户端返回：
      * 做异步处理，先返回接收状态，再在setTimeout中做打开文档的一系列业务逻辑
      */
-    setTimeout(function(){
+    setTimeout(function () {
         for (var index = 0; index < funcs.length; index++) {
-            testFuncs=funcs;
+            testFuncs = funcs;
             var func = funcs[index];
             for (var key in func) {
                 if (key === "OpenDoc") { // OpenDoc 属于普通的打开文档的操作方式，文档落地操作
@@ -51,15 +52,15 @@ function dispatcher(info) {
                     OpenDoc(func[key]);
                 } else if (key === "InsertRedHead") {
                     InsertRedHead(func[key]);
-                } else if (key === "taskPaneBookMark"){
+                } else if (key === "taskPaneBookMark") {
                     taskPaneBookMark(func[key])
-                } else if (key === "NewOfficialDocument"){
+                } else if (key === "NewOfficialDocument") {
                     return OpenDoc(func[key])
                 }
             }
         }
-    },100)
-    return {message:"ok", app:wps.WpsApplication().Name}
+    }, 100)
+    return {message: "ok", app: wps.WpsApplication().Name}
 }
 
 
@@ -69,15 +70,15 @@ function dispatcher(info) {
 function GetDocStatus() {
     let l_doc = wps.WpsApplication().ActiveDocument
     if (l_doc && pCheckIfOADoc()) {//此方法还可根据需要进行扩展
-        return{
+        return {
             message: "GetDocStatus",
-            docstatus:{
+            docstatus: {
                 words: l_doc.Words.Count,
                 saved: l_doc.Saved,
                 pages: l_doc.ActiveWindow.Panes.Item(1).Pages.Count
             }
         }
-    }    
+    }
 }
 
 /**
@@ -90,13 +91,13 @@ function ExitWPS() {
     if (l_doc && pCheckIfOADoc()) {//此方法还可根据需要进行扩展
         l_doc.Close();
     }
-    if(wps.confirm("要关闭WPS软件，请确认文档都已保存。\n点击确定后关闭WPS，点击取消继续编辑。")){
+    if (wps.confirm("要关闭WPS软件，请确认文档都已保存。\n点击确定后关闭WPS，点击取消继续编辑。")) {
         wps.WpsApplication().Quit();
     }
 }
 
 /**
- * 
+ *
  * @param {*} params  OA端传入的参数
  */
 function OnlineEditDoc(OaParams) {
@@ -118,7 +119,7 @@ function OpenDoc(OaParams) {
     }
 }
 
-function taskPaneBookMark(OaParams){
+function taskPaneBookMark(OaParams) {
     let filePath = OaParams.fileName
     if (filePath == "")
         return
@@ -126,15 +127,14 @@ function taskPaneBookMark(OaParams){
 
     //创建taskpane，只创建一次
     let id = wps.PluginStorage.getItem(constStrEnum.taskpaneid)
-    if (id){
+    if (id) {
         let tp = wps.GetTaskPane(id)
         tp.Width = 300
         tp.Visible = true
-    }
-    else{
+    } else {
         let url = getHtmlURL("taskpane.html");
-        let tp =  wps.CreateTaskPane(url, "书签操作")
-        if (tp){
+        let tp = wps.CreateTaskPane(url, "书签操作")
+        if (tp) {
             tp.DockPosition = WPS_Enum.msoCTPDockPositionRight  //这里可以设置taskapne是在左边还是右边
             tp.Width = 300
             tp.Visible = true

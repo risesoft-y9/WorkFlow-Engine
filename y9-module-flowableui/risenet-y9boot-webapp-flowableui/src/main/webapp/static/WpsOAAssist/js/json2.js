@@ -149,6 +149,7 @@ if (typeof JSON !== "object") {
     function this_value() {
         return this.valueOf();
     }
+
     if (typeof Date.prototype.toJSON !== "function") {
         Date.prototype.toJSON = function () {
             return isFinite(this.valueOf()) ?
@@ -230,8 +231,8 @@ if (typeof JSON !== "object") {
                 // typeof null does not produce "null". The case is included here in
                 // the remote chance that this gets fixed someday.
                 return String(value);
-                // If the type is "object", we might be dealing with an object or an array or
-                // null.
+            // If the type is "object", we might be dealing with an object or an array or
+            // null.
             case "object":
                 // Due to a specification blunder in ECMAScript, typeof null is "object",
                 // so watch out for that case.
@@ -254,15 +255,15 @@ if (typeof JSON !== "object") {
                     v = partial.length === 0 ?
                         "[]" :
                         gap ?
-                        (
-                            "[\n" +
-                            gap +
-                            partial.join(",\n" + gap) +
-                            "\n" +
-                            mind +
-                            "]"
-                        ) :
-                        "[" + partial.join(",") + "]";
+                            (
+                                "[\n" +
+                                gap +
+                                partial.join(",\n" + gap) +
+                                "\n" +
+                                mind +
+                                "]"
+                            ) :
+                            "[" + partial.join(",") + "]";
                     gap = mind;
                     return v;
                 }
@@ -276,8 +277,8 @@ if (typeof JSON !== "object") {
                             if (v) {
                                 partial.push(quote(k) + (
                                     (gap) ?
-                                    ": " :
-                                    ":"
+                                        ": " :
+                                        ":"
                                 ) + v);
                             }
                         }
@@ -290,8 +291,8 @@ if (typeof JSON !== "object") {
                             if (v) {
                                 partial.push(quote(k) + (
                                     (gap) ?
-                                    ": " :
-                                    ":"
+                                        ": " :
+                                        ":"
                                 ) + v);
                             }
                         }
@@ -302,12 +303,13 @@ if (typeof JSON !== "object") {
                 v = partial.length === 0 ?
                     "{}" :
                     gap ?
-                    "{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}" :
-                    "{" + partial.join(",") + "}";
+                        "{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}" :
+                        "{" + partial.join(",") + "}";
                 gap = mind;
                 return v;
         }
     }
+
     // If the JSON object does not yet have a stringify method, give it one.
     if (typeof JSON.stringify !== "function") {
         meta = { // table of character substitutions
@@ -342,9 +344,9 @@ if (typeof JSON !== "object") {
             // Otherwise, throw an error.
             rep = replacer;
             if (replacer && typeof replacer !== "function" && (
-                    typeof replacer !== "object" ||
-                    typeof replacer.length !== "number"
-                )) {
+                typeof replacer !== "object" ||
+                typeof replacer.length !== "number"
+            )) {
                 throw new Error("JSON.stringify");
             }
             // Make a fake root object containing our value under the key of "".
@@ -381,6 +383,7 @@ if (typeof JSON !== "object") {
                 }
                 return reviver.call(holder, key, value);
             }
+
             // Parsing happens in four stages. In the first stage, we replace certain
             // Unicode characters with escape sequences. JavaScript handles many characters
             // incorrectly, either silently deleting them, or treating them as line endings.
@@ -408,9 +411,9 @@ if (typeof JSON !== "object") {
             if (
                 rx_one.test(
                     text
-                    .replace(rx_two, "@")
-                    .replace(rx_three, "]")
-                    .replace(rx_four, "")
+                        .replace(rx_two, "@")
+                        .replace(rx_three, "]")
+                        .replace(rx_four, "")
                 )
             ) {
                 // In the third stage we use the eval function to compile the text into a

@@ -1,12 +1,7 @@
 package net.risesoft.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -15,28 +10,14 @@ import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.itemadmin.ButtonOperationApi;
-import net.risesoft.api.itemadmin.CustomProcessInfoApi;
-import net.risesoft.api.itemadmin.DocumentApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.itemadmin.*;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.HistoricVariableApi;
-import net.risesoft.api.processadmin.IdentityApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.api.processadmin.*;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
@@ -44,11 +25,7 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
-import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
-import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
-import net.risesoft.model.processadmin.IdentityLinkModel;
-import net.risesoft.model.processadmin.TargetModel;
-import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.model.processadmin.*;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;

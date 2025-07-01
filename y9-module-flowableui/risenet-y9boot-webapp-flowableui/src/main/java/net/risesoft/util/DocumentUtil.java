@@ -5,11 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
-import net.risesoft.api.itemadmin.OpinionApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.*;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionListModel;

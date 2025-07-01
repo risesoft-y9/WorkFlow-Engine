@@ -42,12 +42,12 @@ function OnDocumentBeforeSave(doc) {
             wps.ApiEvent.Cancel = true;
         }
         //2.如果是落地打开的OA文档并且通过WPS自身按钮或者快捷键保存，则执行保存到本地临时目录，取消弹出对话框
-        if (pIsOnlineOADoc(doc) == false && l_IsOADocButtonSave == false){
+        if (pIsOnlineOADoc(doc) == false && l_IsOADocButtonSave == false) {
             //用户手动另存为操作时，在这里被屏蔽掉
             doc.Save();
             //如果是OA文档，则禁止另存为
             wps.ApiEvent.Cancel = true;
-        }        
+        }
     }
     //保存文档后，也要刷新一下Ribbon按钮的状态
     showOATab();
@@ -58,7 +58,7 @@ function OnDocumentBeforeSave(doc) {
 //文档保存前关闭事件
 /**
  * 作用：
- * @param {*} doc 
+ * @param {*} doc
  */
 function OnDocumentBeforeClose(doc) {
     console.log('OnDocumentBeforeClose');
@@ -71,14 +71,14 @@ function OnDocumentBeforeClose(doc) {
     //判断是否只读的文档，或受保护的文档，对于只读的文档，不给予保存提示
     if (pISOADocReadOnly(doc) == false) {
         //if (doc.Saved == false) { //如果OA文档关闭前，有未保存的数据
-            //if (wps.confirm("系统文件有改动，是否提交后关闭？" + "\n" + "确认后请按上传按钮执行上传操作。取消则继续关闭文档。")) {
-                //wps.ApiEvent.Cancel = true;
-               // return;
-           // }
+        //if (wps.confirm("系统文件有改动，是否提交后关闭？" + "\n" + "确认后请按上传按钮执行上传操作。取消则继续关闭文档。")) {
+        //wps.ApiEvent.Cancel = true;
+        // return;
+        // }
         //}
     }
     // 有未保存的数据，确认无需保存直接关闭
-    doc.Close(wps.Enum&&wps.Enum.wdDoNotSaveChanges||0); // 不保存待定的更改。枚举值兼容性写法
+    doc.Close(wps.Enum && wps.Enum.wdDoNotSaveChanges || 0); // 不保存待定的更改。枚举值兼容性写法
     closeWpsIfNoDocument(); // 判断WPS中的文件个数是否为0，若为0则关闭WPS函数
     wps.FileSystem.Remove(l_fullName);
 }
@@ -110,7 +110,7 @@ function OnDocumentOpen(doc) {
     console.log(testFuncs);
     OnWindowActivate();
     ChangeOATabOnDocOpen(); //打开文档后，默认打开Tab页
-    setTimeout(activeTab,2000); // 激活OA助手菜单
+    setTimeout(activeTab, 2000); // 激活OA助手菜单
 }
 
 //新建文档事件
@@ -167,7 +167,6 @@ function SetCurrDocEnvProp(doc) {
 }
 
 
-
 /*
     入口参数：doc
     功能说明：判断当前文档是否能另存为本地文件
@@ -190,7 +189,7 @@ function pCheckCurrOADocCanSaveAs(doc) {
 /**
  * 作用：文档关闭后，删除对应的PluginStorage内的参数信息
  * 返回值：没有返回值
- * @param {*} doc 
+ * @param {*} doc
  */
 function pRemoveDocParam(doc) {
     if (!doc) return;
@@ -201,7 +200,7 @@ function pRemoveDocParam(doc) {
 /**
  * 作用：判断当前文档是否从OA来的文档，如果非OA文档（就是本地新建或打开的文档，则设置EnumOAFlag 标识）
  * 作用：设置非OA文档的标识状态
- * @param {*} doc 
+ * @param {*} doc
  * 返回值：无
  */
 function pSetNoneOADocFlag(doc) {
@@ -223,7 +222,7 @@ function ChangeOATabOnDocOpen() {
     var l_ShowOATab = true; //默认打开
     l_ShowOATab = wps.PluginStorage.getItem(constStrEnum.ShowOATabDocActive);
     if (l_ShowOATab == true) {
-        setTimeout(activeTab,500);
+        setTimeout(activeTab, 500);
         // wps.ribbonUI.ActivateTab("WPSWorkExtTab"); //新建文档时，自动切换到OA助手状态
     }
 }

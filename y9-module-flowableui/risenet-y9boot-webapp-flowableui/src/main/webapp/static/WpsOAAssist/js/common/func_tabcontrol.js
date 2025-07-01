@@ -18,7 +18,7 @@ var EnumDocLandMode = {
 //加载时会执行的方法
 function OnWPSWorkTabLoad(ribbonUI) {
     wps.ribbonUI = ribbonUI;
-    if (typeof(wps.Enum) == "undefined") { // 如果没有内置枚举值
+    if (typeof (wps.Enum) == "undefined") { // 如果没有内置枚举值
         wps.Enum = WPS_Enum;
     }
     OnJSWorkInit(); //初始化文档事件(全局参数,挂载监听事件)
@@ -89,7 +89,7 @@ function OnPageSetupClicked() {
     if (!doc) {
         return;
     }
-    wpsApp.Dialogs.Item(wps.Enum&&wps.Enum.wdDialogFilePageSetup||178).Show();
+    wpsApp.Dialogs.Item(wps.Enum && wps.Enum.wdDialogFilePageSetup || 178).Show();
 }
 
 /**
@@ -101,13 +101,13 @@ function OnPrintDocBtnClicked() {
     if (!doc) {
         return;
     }
-    wpsApp.Dialogs.Item(wps.Enum&&wps.Enum.wdDialogFilePrint||88).Show();
+    wpsApp.Dialogs.Item(wps.Enum && wps.Enum.wdDialogFilePrint || 88).Show();
 }
 
 
 /**
  * 作用：接受所有修订内容
- * 
+ *
  */
 function OnAcceptAllRevisions() {
     //获取当前文档对象
@@ -222,7 +222,7 @@ function DoInsertPicToDoc() {
         // alert("未获取到系统传入的图片URL路径，不能正常插入图片");
         // return;
         //如果没有传，则默认写一个图片地址
-        l_picPath="http://127.0.0.1:3888/file/OA模板公章.png"
+        l_picPath = "http://127.0.0.1:3888/file/OA模板公章.png"
     }
 
     var l_picHeight = GetDocParamsValue(l_doc, constStrEnum.picHeight); //图片高
@@ -239,6 +239,7 @@ function DoInsertPicToDoc() {
     l_shape.Select();
     // l_shape.WrapFormat.Type = wps.Enum&&wps.Enum.wdWrapBehind||5; //图片的默认版式为浮于文字上方，可通过此设置图片环绕模式
 }
+
 /**
  * 作用：模拟插入签章图片
  * @param {*} doc 文档对象
@@ -246,7 +247,7 @@ function DoInsertPicToDoc() {
  * @param {*} picWidth 图片宽度
  * @param {*} picHeight 图片高度
  */
-function OnInsertPicToDoc(doc, picPath, picWidth, picHeight,callBack) {
+function OnInsertPicToDoc(doc, picPath, picWidth, picHeight, callBack) {
     // alert("图片路径："+picPath);
     if (!doc) {
         return;
@@ -263,9 +264,9 @@ function OnInsertPicToDoc(doc, picPath, picWidth, picHeight,callBack) {
     }
 
     var selection = doc.ActiveWindow.Selection; // 活动窗口选定范围或插入点
-    var pagecount = doc.BuiltInDocumentProperties.Item(wps.Enum&&wps.Enum.wdPropertyPages||14); //获取文档页数
-    selection.GoTo(wps.Enum&&wps.Enum.wdGoToPage||1, wps.Enum&&wps.Enum.wdGoToPage||1, pagecount.Value); //将光标指向文档最后一页
-    DownloadFile(picPath,function(url){
+    var pagecount = doc.BuiltInDocumentProperties.Item(wps.Enum && wps.Enum.wdPropertyPages || 14); //获取文档页数
+    selection.GoTo(wps.Enum && wps.Enum.wdGoToPage || 1, wps.Enum && wps.Enum.wdGoToPage || 1, pagecount.Value); //将光标指向文档最后一页
+    DownloadFile(picPath, function (url) {
         selection.ParagraphFormat.LineSpacing = 12 //防止文档设置了固定行距
         var picture = selection.InlineShapes.AddPicture(url, true, true); //插入图片
         wps.FileSystem.Remove(url) //删除本地的图片
@@ -274,19 +275,18 @@ function OnInsertPicToDoc(doc, picPath, picWidth, picHeight,callBack) {
         picture.Width = picWidth; //设定图片宽度
         picture.LockAspectRatio = 0;
         picture.Select(); //当前图片为焦点
-    
+
         //定义印章图片对象
         var seal_shape = picture.ConvertToShape(); //类型转换:嵌入型图片->粘贴版型图片
-    
-        seal_shape.RelativeHorizontalPosition = wps.Enum&&wps.Enum.wdRelativeHorizontalPositionPage||1;
-        seal_shape.RelativeVerticalPosition = wps.Enum&&wps.Enum.wdRelativeVerticalPositionPage||1;
+
+        seal_shape.RelativeHorizontalPosition = wps.Enum && wps.Enum.wdRelativeHorizontalPositionPage || 1;
+        seal_shape.RelativeVerticalPosition = wps.Enum && wps.Enum.wdRelativeVerticalPositionPage || 1;
         seal_shape.Left = 315; //设置指定形状或形状范围的垂直位置（以磅为单位）。
         seal_shape.Top = 630; //指定形状或形状范围的水平位置（以磅为单位）。
-        callBack&&callBack()
+        callBack && callBack()
     })
-    
-}
 
+}
 
 
 /**
@@ -305,7 +305,7 @@ function OnDoChangeToOtherDocFormat(p_FileSuffix, pShowPrompt) {
         return;
     }
     console.log(pShowPrompt)
-    if (typeof(pShowPrompt) == "undefined") {
+    if (typeof (pShowPrompt) == "undefined") {
         pShowPrompt = true; //默认设置为弹出用户确认框
     }
     //默认设置为以当前文件的显示模式输出，即当前为修订则输出带有修订痕迹的
@@ -350,10 +350,10 @@ function pDoChangeToOtherDocFormat(p_Doc, p_Suffix, pShowPrompt, p_ShowRevision)
     wps.PluginStorage.setItem(constStrEnum.OADocUserSave, true); //设置一个临时变量，用于在BeforeSave事件中判断 
     if (p_ShowRevision == false) { // 强制关闭痕迹显示
         var l_SourceName = p_Doc.FullName;
-        var l_NewName="";
-        if(p_Doc.Path.indexOf("\\")>0){
+        var l_NewName = "";
+        if (p_Doc.Path.indexOf("\\") > 0) {
             l_NewName = p_Doc.Path + "\\B_" + p_Doc.Name;
-        }else{
+        } else {
             l_NewName = p_Doc.Path + "/B_" + p_Doc.Name;
         }
         p_Doc.SaveAs2($FileName = l_NewName, $AddToRecentFiles = false);
@@ -382,7 +382,8 @@ function pDoChangeToOtherDocFormat(p_Doc, p_Suffix, pShowPrompt, p_ShowRevision)
 /**
  * 把文档转换成UOT在上传
  */
-function OnDoChangeToUOF() {}
+function OnDoChangeToUOF() {
+}
 
 /**
  *  打开WPS云文档的入口
@@ -420,7 +421,8 @@ function OnBtnSaveAsLocalFile() {
 
         wps.ribbonUI.Invalidate(); //刷新Ribbon的状态
 
-    };
+    }
+    ;
 }
 
 //
@@ -445,7 +447,7 @@ function OnBtnClearRevDoc() {
     }
     //去除所有批注
     if (doc.Comments.Count >= 1) {
-        doc.RemoveDocumentInformation(wps.Enum&&wps.Enum.wdRDIComments||1);
+        doc.RemoveDocumentInformation(wps.Enum && wps.Enum.wdRDIComments || 1);
     }
 
     //删除所有ink墨迹对象
@@ -459,7 +461,7 @@ function OnBtnClearRevDoc() {
 
 /**
  * 作用：删除当前文档的所有墨迹对象
- * @param {*} p_Doc 
+ * @param {*} p_Doc
  */
 function pDeleteAllInkObj(p_Doc) {
     var l_Count = 0;
@@ -493,7 +495,7 @@ function pDeleteInkObj(p_Doc) {
 
 
 /**
- * 
+ *
  */
 function pSaveAnotherDoc(p_Doc) {
     if (!p_Doc) {
@@ -544,10 +546,10 @@ function OnBtnSaveToServer() {
 
     var l_showConfirm = wps.PluginStorage.getItem(constStrEnum.Save2OAShowConfirm)
     //if (l_showConfirm) {
-        //if (!wps.confirm("先保存文档，并开始上传到系统后台，请确认？")) {
-           // return;
-        //}
-   // }
+    //if (!wps.confirm("先保存文档，并开始上传到系统后台，请确认？")) {
+    // return;
+    //}
+    // }
 
     var l_FieldName = GetDocParamsValue(l_doc, constStrEnum.uploadFieldName); //上载到后台的业务方自定义的字段名称
     if (l_FieldName == "") {
@@ -619,10 +621,10 @@ function OnInsertRedHeaderClick() {
     var l_insertFileUrl = GetDocParamsValue(l_Doc, constStrEnum.insertFileUrl); //插入文件的位置
     //var l_BkFile = GetDocParamsValue(l_Doc, constStrEnum.bkInsertFile);
     //if (l_BkFile == "" || l_insertFileUrl == "") {
-        var height = 250;
-        var width = 400;
-        OnShowDialog("redhead.html", "OA助手", width, height);
-        return;
+    var height = 250;
+    var width = 400;
+    OnShowDialog("redhead.html", "OA助手", width, height);
+    return;
     //}
     //InsertRedHeadDoc(l_Doc);
 }
@@ -643,7 +645,7 @@ function OnRevokeRedHeaderClick() {
         var selection = wpsApp.ActiveWindow.Selection;
         var revokeRedHeaderPath = GetDocParamsValue(l_Doc, "revokeRedHeaderPath"); // 获取OA参数传入的撤销套红路径
         var openType = GetDocParamsValue(l_Doc, "openType");
-    	l_Doc.Unprotect(openType.password);//取消文档保护
+        l_Doc.Unprotect(openType.password);//取消文档保护
         l_Doc.TrackRevisions = false;
         selection.WholeStory(); //选取全文
         selection.Cut();
@@ -655,21 +657,21 @@ function OnRevokeRedHeaderClick() {
  * 插入时间
  * params参数结构
  * params:{
- *   
+ *
  * }
  */
 function OnInsertDateClicked() {
     var l_Doc = wps.WpsApplication().ActiveDocument;
     if (l_Doc) {
         //打开插入日期对话框
-        wps.WpsApplication().Dialogs.Item(wps.Enum&&wps.Enum.wdDialogInsertDateTime||165).Show();
+        wps.WpsApplication().Dialogs.Item(wps.Enum && wps.Enum.wdDialogInsertDateTime || 165).Show();
     }
 }
 
 
 /**
  * 调用文件上传到OA服务端时，
- * @param {*} resp 
+ * @param {*} resp
  */
 function OnUploadToServerSuccess(resp) {
     console.log("成功上传服务端后的回调：" + resp)
@@ -702,7 +704,6 @@ function OnbtnTabClick() {
 }
 
 
-
 //判断当前文档是否是OA文档
 function pCheckIfOADoc() {
     var doc = wps.WpsApplication().ActiveDocument;
@@ -720,7 +721,8 @@ function CheckIfDocIsOADoc(doc) {
     var l_isOA = GetDocParamsValue(doc, constStrEnum.isOA);
     if (l_isOA == "") {
         return false
-    };
+    }
+    ;
 
     return l_isOA == EnumOAFlag.DocFromOA ? true : false;
 }
@@ -729,7 +731,6 @@ function CheckIfDocIsOADoc(doc) {
 function pGetDocSourceLabel() {
     return pCheckIfOADoc() ? "OA文件" : "非OA文件";
 }
-
 
 
 /**
@@ -764,6 +765,7 @@ function pIsOnlineOADoc(doc) {
     }
     return l_LandMode == EnumDocLandMode.DLM_OnlineDoc;
 }
+
 /**
  *  作用：返回OA文档落地模式标签
  */
@@ -810,7 +812,7 @@ function pShowRibbonGroupByOADocParam(CtrlID) {
 
 
     // 要求OA传入控制自定义按钮显示的参数为字符串 中间用 , 分隔开
-    if (typeof(l_grpButtonParams) == "string") {
+    if (typeof (l_grpButtonParams) == "string") {
         var l_arrayGroup = new Array();
         l_arrayGroup = l_grpButtonParams.split(",");
         //console.log(l_grpButtonParams);
@@ -835,8 +837,8 @@ function pShowRibbonGroupByOADocParam(CtrlID) {
 
 /**
  * 根据传入Document对象，获取OA传入的参数的某个Key值的Value
- * @param {*} Doc 
- * @param {*} Key 
+ * @param {*} Doc
+ * @param {*} Key
  * 返回值：返回指定 Key的 Value
  */
 function GetDocParamsValue(Doc, Key) {
@@ -850,31 +852,30 @@ function GetDocParamsValue(Doc, Key) {
     }
 
     var l_objParams = JSON.parse(l_Params);
-    if (typeof(l_objParams) == "undefined") {
+    if (typeof (l_objParams) == "undefined") {
         return "";
     }
 
     var l_rtnValue = l_objParams[Key];
-    if (typeof(l_rtnValue) == "undefined" || l_rtnValue == null) {
+    if (typeof (l_rtnValue) == "undefined" || l_rtnValue == null) {
         return "";
     }
     return l_rtnValue;
 }
 
 /**
- * 
- * @param {*} params 
- * @param {*} Key 
+ *
+ * @param {*} params
+ * @param {*} Key
  */
 function GetParamsValue(Params, Key) {
-    if (typeof(Params) == "undefined") {
+    if (typeof (Params) == "undefined") {
         return "";
     }
 
     var l_rtnValue = Params[Key];
     return l_rtnValue;
 }
-
 
 
 /**
@@ -901,7 +902,7 @@ function OnInsertSeal() {
 }
 
 /**
- * 导入模板到文档中 
+ * 导入模板到文档中
  */
 function OnImportTemplate() {
     OnShowDialog("importTemplate.html", "导入模板", 560, 400);
@@ -947,7 +948,7 @@ function OnAction(control) {
         case "btnChangeToOFD": //转OFD文档并上传
             OnDoChangeToOtherDocFormat(".ofd");
             break;
-            //------------------------------------
+        //------------------------------------
         case "btnInsertRedHeader": //插入红头
             OnInsertRedHeaderClick(); //套红头功能
             break;
@@ -960,31 +961,31 @@ function OnAction(control) {
         case "btnInsertSeal": //插入印章
             OnInsertSeal();
             break;
-            //------------------------------------
-            //修订按钮组
+        //------------------------------------
+        //修订按钮组
         case "btnClearRevDoc": //执行 清稿 按钮
             OnBtnClearRevDoc();
             break;
         case "btnOpenRevision": //打开修订
-            {
-                let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
-                wps.PluginStorage.setItem(constStrEnum.RevisionEnableFlag, !bFlag)
-                //通知wps刷新以下几个按钮的状态
-                wps.ribbonUI.InvalidateControl("btnOpenRevision")
-                wps.ribbonUI.InvalidateControl("btnCloseRevision")
-                OnOpenRevisions(); //
-                break;
-            }
+        {
+            let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
+            wps.PluginStorage.setItem(constStrEnum.RevisionEnableFlag, !bFlag)
+            //通知wps刷新以下几个按钮的状态
+            wps.ribbonUI.InvalidateControl("btnOpenRevision")
+            wps.ribbonUI.InvalidateControl("btnCloseRevision")
+            OnOpenRevisions(); //
+            break;
+        }
         case "btnCloseRevision": //关闭修订
-            {
-                let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
-                wps.PluginStorage.setItem(constStrEnum.RevisionEnableFlag, !bFlag)
-                //通知wps刷新以下几个按钮的状态
-                wps.ribbonUI.InvalidateControl("btnOpenRevision")
-                wps.ribbonUI.InvalidateControl("btnCloseRevision")
-                OnCloseRevisions();
-                break;
-            }
+        {
+            let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
+            wps.PluginStorage.setItem(constStrEnum.RevisionEnableFlag, !bFlag)
+            //通知wps刷新以下几个按钮的状态
+            wps.ribbonUI.InvalidateControl("btnOpenRevision")
+            wps.ribbonUI.InvalidateControl("btnCloseRevision")
+            OnCloseRevisions();
+            break;
+        }
         case "btnShowRevision":
             break;
         case "btnAcceptAllRevisions": //接受所有修订功能
@@ -993,7 +994,7 @@ function OnAction(control) {
         case "btnRejectAllRevisions": //拒绝修订
             OnRejectAllRevisions();
             break;
-            //------------------------------------
+        //------------------------------------
         case "btnInsertPic": //插入图片
             DoInsertPicToDoc();
             break;
@@ -1027,82 +1028,77 @@ function OnAction(control) {
         // case "FileSaveAsMenu": //通过idMso进行「另存为」功能的自定义
         // case "FileSaveAs":
         case "FileSave": //通过idMso进行「保存」功能的自定义
-            {
-                if (pCheckIfOADoc()) { //文档来源是业务系统的，做自定义
-                    console.log("这是OA文档，将Ctrl+S动作做了重定义，可以调用OA的保存文件流到业务系统的接口。")
-                    OnBtnSaveToServer();
-                } else { //本地的文档，期望不做自定义，通过转调idMso的方法实现
-                    // wps.WpsApplication().CommandBars.ExecuteMso("FileSave");
-                    wps.WpsApplication().CommandBars.ExecuteMso("SaveAll");
-                    //此处一定不能去调用与重写idMso相同的ID，否则就是个无线递归了，即在这个场景下不可调用FileSaveAs和FileSaveAsMenu这两个方法
-                }
-                break;
+        {
+            if (pCheckIfOADoc()) { //文档来源是业务系统的，做自定义
+                console.log("这是OA文档，将Ctrl+S动作做了重定义，可以调用OA的保存文件流到业务系统的接口。")
+                OnBtnSaveToServer();
+            } else { //本地的文档，期望不做自定义，通过转调idMso的方法实现
+                // wps.WpsApplication().CommandBars.ExecuteMso("FileSave");
+                wps.WpsApplication().CommandBars.ExecuteMso("SaveAll");
+                //此处一定不能去调用与重写idMso相同的ID，否则就是个无线递归了，即在这个场景下不可调用FileSaveAs和FileSaveAsMenu这两个方法
             }
+            break;
+        }
         case "FileNew":
         case "FileNewMenu":
         case "WindowNew":
-        case "FileNewBlankDocument":
-            {
-                if (pCheckIfOADoc()) { //文档来源是业务系统的，做自定义
-                    alert("这是OA文档，将Ctrl+N动作做了禁用")
-                }
+        case "FileNewBlankDocument": {
+            if (pCheckIfOADoc()) { //文档来源是业务系统的，做自定义
+                alert("这是OA文档，将Ctrl+N动作做了禁用")
             }
-        case "ShowAlert_ContextMenuText":
-            {
-                let selectText = wps.WpsApplication().Selection.Text;
-                alert("您选择的内容是：\n" + selectText);
-                break;
-            }
-        case "btnSendMessage1":
-            {
-                 /**
-                 * 内部封装了主动响应前端发送的请求的方法
-                 */
+        }
+        case "ShowAlert_ContextMenuText": {
+            let selectText = wps.WpsApplication().Selection.Text;
+            alert("您选择的内容是：\n" + selectText);
+            break;
+        }
+        case "btnSendMessage1": {
+            /**
+             * 内部封装了主动响应前端发送的请求的方法
+             */
                 //参数自定义，这里只是负责传递参数，在WpsInvoke.RegWebNotify方法的回调函数中去做接收，自行解析参数
-                let params={
-                    type:'executeFunc1',
-                    message:"当前时间为：" + currentTime()
+            let params = {
+                    type: 'executeFunc1',
+                    message: "当前时间为：" + currentTime()
                 }
-                /**
-                 * WebNotify:
-                 * 参数1：发送给业务系统的消息
-                 * 参数2：是否将消息加入队列，是否防止丢失消息，都需要设置为true
-                 */
-                wps.OAAssist.WebNotify(JSON.stringify(params),true); //如果想传一个对象，则使用JSON.stringify方法转成对象字符串。
-                break;
-            }
-        case "btnSendMessage2":
-            {
-                /**
-                 * 内部封装了主动响应前端发送的请求的方法
-                 */
-                let msgInfo =
+            /**
+             * WebNotify:
+             * 参数1：发送给业务系统的消息
+             * 参数2：是否将消息加入队列，是否防止丢失消息，都需要设置为true
+             */
+            wps.OAAssist.WebNotify(JSON.stringify(params), true); //如果想传一个对象，则使用JSON.stringify方法转成对象字符串。
+            break;
+        }
+        case "btnSendMessage2": {
+            /**
+             * 内部封装了主动响应前端发送的请求的方法
+             */
+            let msgInfo =
                 {
-                     id: 1,
-                     name: 'kingsoft',
-                     since: "1988"
+                    id: 1,
+                    name: 'kingsoft',
+                    since: "1988"
                 }
-                //参数自定义，这里只是负责传递参数，在WpsInvoke.RegWebNotify方法的回调函数中去做接收，自行解析参数
-                
-                let params={
-                    type:'executeFunc2',
-                    message:"当前时间为：" + currentTime(),
-                    msgInfoStr: JSON.stringify(msgInfo)
-                }
-                 /**
-                 * WebNotify:
-                 * 参数1：发送给业务系统的消息
-                 * 参数2：是否将消息加入队列，是否防止丢失消息，都需要设置为true
-                 */
-                wps.OAAssist.WebNotify(JSON.stringify(params),true); //如果想传一个对象，则使用JSON.stringify方法转成对象字符串。
-                break;
+            //参数自定义，这里只是负责传递参数，在WpsInvoke.RegWebNotify方法的回调函数中去做接收，自行解析参数
+
+            let params = {
+                type: 'executeFunc2',
+                message: "当前时间为：" + currentTime(),
+                msgInfoStr: JSON.stringify(msgInfo)
             }
-        case "btnAddWebShape":
-            {                
-                let l_doc = wps.WpsApplication().ActiveDocument;
-                l_doc.Shapes.AddWebShape("https://www.wps.cn");
-                break;
-            }
+            /**
+             * WebNotify:
+             * 参数1：发送给业务系统的消息
+             * 参数2：是否将消息加入队列，是否防止丢失消息，都需要设置为true
+             */
+            wps.OAAssist.WebNotify(JSON.stringify(params), true); //如果想传一个对象，则使用JSON.stringify方法转成对象字符串。
+            break;
+        }
+        case "btnAddWebShape": {
+            let l_doc = wps.WpsApplication().ActiveDocument;
+            l_doc.Shapes.AddWebShape("https://www.wps.cn");
+            break;
+        }
         default:
             break;
     }
@@ -1116,6 +1112,7 @@ function OnUserNameSetClick() {
     var l_UserPageUrl = "setUserName.html"
     OnShowDialog(l_UserPageUrl, "OA助手用户名称设置", 500, 300);
 }
+
 /**
  * 作用：展示当前文档，被OA助手打开后的，操作记录及相关附加信息
  */
@@ -1239,7 +1236,7 @@ function OnGetLabel(control) {
             return "编辑人:"; //pSetUserNameLabelControl();
         case "btnUserName":
             return pSetUserNameLabelControl();
-            //======================================================
+        //======================================================
         case "btnInsertRedHeader": //套红头
             return "套红头";
         case "btnRevokeRedHeader": //撤销红头
@@ -1248,7 +1245,7 @@ function OnGetLabel(control) {
             return "印章";
         case "btnUploadOABackup": //文件备份
             return "文件备份";
-            //======================================================
+        //======================================================
         case "btnOpenRevision": //打开修订按钮
             return pGetOpenRevisionButtonLabel();
         case "btnShowRevision": //显示修订按钮
@@ -1263,7 +1260,7 @@ function OnGetLabel(control) {
             return "拒绝修订";
         case "lblDocLandMode": //显示 文档落地方式 ：不落地还是本地，包括是否受保护
             return pGetOADocLabel();
-            //---------------------------------------------
+        //---------------------------------------------
         case "btnInsertPic": //插入图片
             return "插图片";
         case "btnInsertDate": //插入日期
@@ -1307,13 +1304,12 @@ function OnGetVisible(control) {
             return true;
         case "btnOpenScan":
             return false;
-        case "btnAddWebShape":
-            {
-                if (wps.WpsApplication().Build.toString().indexOf("11.1") != -1){
-                    return true;
-                }
-                return false;
+        case "btnAddWebShape": {
+            if (wps.WpsApplication().Build.toString().indexOf("11.1") != -1) {
+                return true;
             }
+            return false;
+        }
             break;
         default:
 
@@ -1351,32 +1347,30 @@ function OnGetEnabled(control) {
         case "WindowNew":
         case "FileNewBlankDocument":
             return OnSetSaveToOAEnable();
-        case "btnCloseRevision":
-            {
-                let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
-                return bFlag
-            }
-        case "btnOpenRevision":
-            {
-                let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
-                return !bFlag
-            }
+        case "btnCloseRevision": {
+            let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
+            return bFlag
+        }
+        case "btnOpenRevision": {
+            let bFlag = wps.PluginStorage.getItem(constStrEnum.RevisionEnableFlag)
+            return !bFlag
+        }
         case "PictureInsert":
             return false;
         case "TabInsert"://WPS自身tab：插入
-        	return true;
+            return true;
         case "TabDeveloper": //WPS自身tab：开发工具
-        // case "TabPageLayoutWord": //WPS自身tab：页面布局
-        // case "TabReferences": //WPS自身tab：引用
-        // case "TabReviewWord": //WPS自身tab：审阅
-        // case "TabView": //WPS自身tab：视图
-            {
-                if(pCheckIfOADoc()){
-                    return false;//如果是OA打开的文档，把这个几个tab不可用/隐藏
-                }else{
-                    return true;
-                }
+            // case "TabPageLayoutWord": //WPS自身tab：页面布局
+            // case "TabReferences": //WPS自身tab：引用
+            // case "TabReviewWord": //WPS自身tab：审阅
+            // case "TabView": //WPS自身tab：视图
+        {
+            if (pCheckIfOADoc()) {
+                return false;//如果是OA打开的文档，把这个几个tab不可用/隐藏
+            } else {
+                return true;
             }
+        }
         default:
             ;
     }

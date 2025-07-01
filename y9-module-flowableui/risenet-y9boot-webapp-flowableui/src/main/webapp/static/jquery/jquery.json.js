@@ -15,35 +15,35 @@
     'use strict';
 
     var escape = /["\\\x00-\x1f\x7f-\x9f]/g,
-		meta = {
-		    '\b': '\\b',
-		    '\t': '\\t',
-		    '\n': '\\n',
-		    '\f': '\\f',
-		    '\r': '\\r',
-		    '"': '\\"',
-		    '\\': '\\\\'
-		},
-		hasOwn = Object.prototype.hasOwnProperty;
+        meta = {
+            '\b': '\\b',
+            '\t': '\\t',
+            '\n': '\\n',
+            '\f': '\\f',
+            '\r': '\\r',
+            '"': '\\"',
+            '\\': '\\\\'
+        },
+        hasOwn = Object.prototype.hasOwnProperty;
 
     /**
-	 * jQuery.toJSON
-	 * Converts the given argument into a JSON representation.
-	 *
-	 * @param o {Mixed} The json-serializable *thing* to be converted
-	 *
-	 * If an object has a toJSON prototype, that will be used to get the representation.
-	 * Non-integer/string keys are skipped in the object, as are keys that point to a
-	 * function.
-	 *
-	 */
+     * jQuery.toJSON
+     * Converts the given argument into a JSON representation.
+     *
+     * @param o {Mixed} The json-serializable *thing* to be converted
+     *
+     * If an object has a toJSON prototype, that will be used to get the representation.
+     * Non-integer/string keys are skipped in the object, as are keys that point to a
+     * function.
+     *
+     */
     $.toJSON = typeof JSON === 'object' && JSON.stringify ? JSON.stringify : function (o) {
         if (o === null) {
             return 'null';
         }
 
         var pairs, k, name, val,
-			type = $.type(o);
+            type = $.type(o);
 
         if (type === 'undefined') {
             return undefined;
@@ -66,12 +66,12 @@
         }
         if (type === 'date') {
             var month = o.getUTCMonth() + 1,
-				day = o.getUTCDate(),
-				year = o.getUTCFullYear(),
-				hours = o.getUTCHours(),
-				minutes = o.getUTCMinutes(),
-				seconds = o.getUTCSeconds(),
-				milli = o.getUTCMilliseconds();
+                day = o.getUTCDate(),
+                year = o.getUTCFullYear(),
+                hours = o.getUTCHours(),
+                minutes = o.getUTCMinutes(),
+                seconds = o.getUTCSeconds(),
+                milli = o.getUTCMilliseconds();
 
             if (month < 10) {
                 month = '0' + month;
@@ -95,8 +95,8 @@
                 milli = '0' + milli;
             }
             return '"' + year + '-' + month + '-' + day + 'T' +
-				hours + ':' + minutes + ':' + seconds +
-				'.' + milli + 'Z"';
+                hours + ':' + minutes + ':' + seconds +
+                '.' + milli + 'Z"';
         }
 
         pairs = [];
@@ -141,28 +141,28 @@
     };
 
     /**
-	 * jQuery.evalJSON
-	 * Evaluates a given json string.
-	 *
-	 * @param str {String}
-	 */
+     * jQuery.evalJSON
+     * Evaluates a given json string.
+     *
+     * @param str {String}
+     */
     $.evalJSON = typeof JSON === 'object' && JSON.parse ? JSON.parse : function (str) {
         /*jshint evil: true */
         return eval('(' + str + ')');
     };
 
     /**
-	 * jQuery.secureEvalJSON
-	 * Evals JSON in a way that is *more* secure.
-	 *
-	 * @param str {String}
-	 */
+     * jQuery.secureEvalJSON
+     * Evals JSON in a way that is *more* secure.
+     *
+     * @param str {String}
+     */
     $.secureEvalJSON = typeof JSON === 'object' && JSON.parse ? JSON.parse : function (str) {
         var filtered =
-			str
-			.replace(/\\["\\\/bfnrtu]/g, '@')
-			.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
-			.replace(/(?:^|:|,)(?:\s*\[)+/g, '');
+            str
+                .replace(/\\["\\\/bfnrtu]/g, '@')
+                .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
+                .replace(/(?:^|:|,)(?:\s*\[)+/g, '');
 
         if (/^[\],:{}\s]*$/.test(filtered)) {
             /*jshint evil: true */
@@ -172,16 +172,16 @@
     };
 
     /**
-	 * jQuery.quoteString
-	 * Returns a string-repr of a string, escaping quotes intelligently.
-	 * Mostly a support function for toJSON.
-	 * Examples:
-	 * >>> jQuery.quoteString('apple')
-	 * "apple"
-	 *
-	 * >>> jQuery.quoteString('"Where are we going?", she asked.')
-	 * "\"Where are we going?\", she asked."
-	 */
+     * jQuery.quoteString
+     * Returns a string-repr of a string, escaping quotes intelligently.
+     * Mostly a support function for toJSON.
+     * Examples:
+     * >>> jQuery.quoteString('apple')
+     * "apple"
+     *
+     * >>> jQuery.quoteString('"Where are we going?", she asked.')
+     * "\"Where are we going?\", she asked."
+     */
     $.quoteString = function (str) {
         if (str.match(escape)) {
             return '"' + str.replace(escape, function (a) {

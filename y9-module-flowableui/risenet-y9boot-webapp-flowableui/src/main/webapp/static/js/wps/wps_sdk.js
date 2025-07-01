@@ -12,12 +12,12 @@
     typeof exports === 'object' && typeof module !== 'undefined' ?
         module.exports = factory(global) :
         typeof define === 'function' && define.amd ?
-        define(factory) : factory(global)
+            define(factory) : factory(global)
 }((
     typeof self !== 'undefined' ? self :
-    typeof window !== 'undefined' ? window :
-    typeof global !== 'undefined' ? global :
-    this
+        typeof window !== 'undefined' ? window :
+            typeof global !== 'undefined' ? global :
+                this
 ), function (global) {
     global = global || {};
     var bFinished = true;
@@ -35,6 +35,7 @@
         }
         return httpobj;
     }
+
     //兼容IE低版本的创建xmlhttprequest对象的方法
     function createXHR() {
         if (typeof XMLHttpRequest != 'undefined') { //兼容高版本浏览器
@@ -87,11 +88,12 @@
             xmlReq.open('POST', options.url);
             xmlReq.onload = function (res) {
                 bFinished = true;
-                if (options.callback){}
-                    options.callback({
-                        status: 0,
-                        response: IEVersion() < 10?xmlReq.responseText:res.target.response
-                    });
+                if (options.callback) {
+                }
+                options.callback({
+                    status: 0,
+                    response: IEVersion() < 10 ? xmlReq.responseText : res.target.response
+                });
             }
             xmlReq.ontimeout = xmlReq.onerror = function (res) {
                 xmlReq.bTimeout = true;
@@ -118,6 +120,7 @@
             xmlReq.timeout = options.timeout;
             xmlReq.send(options.sendData)
         }
+
         startWpsInnder(options.tryCount);
         return;
     }
@@ -129,10 +132,10 @@
             var cc = c.charCodeAt(0);
             return cc < 0x80 ? c :
                 cc < 0x800 ? (fromCharCode(0xc0 | (cc >>> 6)) +
-                    fromCharCode(0x80 | (cc & 0x3f))) :
-                (fromCharCode(0xe0 | ((cc >>> 12) & 0x0f)) +
-                    fromCharCode(0x80 | ((cc >>> 6) & 0x3f)) +
-                    fromCharCode(0x80 | (cc & 0x3f)));
+                        fromCharCode(0x80 | (cc & 0x3f))) :
+                    (fromCharCode(0xe0 | ((cc >>> 12) & 0x0f)) +
+                        fromCharCode(0x80 | ((cc >>> 6) & 0x3f)) +
+                        fromCharCode(0x80 | (cc & 0x3f)));
         } else {
             var cc = 0x10000 +
                 (c.charCodeAt(0) - 0xD800) * 0x400 +
@@ -223,14 +226,14 @@
             "info": param
         };
         var strData = JSON.stringify(startInfo);
-        if (IEVersion() < 10){
-            try{
+        if (IEVersion() < 10) {
+            try {
                 eval("strData = '" + JSON.stringify(startInfo) + "';");
-            }catch(err){
+            } catch (err) {
 
             }
         }
-            
+
         var baseData = encode(strData);
         var url = "http://127.0.0.1:58890/" + clientType + "/runParams";
         if (useHttps)
@@ -256,17 +259,18 @@
     }
 
     var exId = 0;
+
     /**
      * 支持浏览器触发，WPS有返回值的启动
      *
-     * @param {*} clientType	组件类型
-     * @param {*} name			WPS加载项名称
-     * @param {*} func			WPS加载项入口方法
-     * @param {*} param			参数：包括WPS加载项内部定义的方法，参数等
-     * @param {*} useHttps		是否使用https协议
-     * @param {*} callback		回调函数
-     * @param {*} tryCount		重试次数
-     * @param {*} bPop			是否弹出浏览器提示对话框
+     * @param {*} clientType    组件类型
+     * @param {*} name            WPS加载项名称
+     * @param {*} func            WPS加载项入口方法
+     * @param {*} param            参数：包括WPS加载项内部定义的方法，参数等
+     * @param {*} useHttps        是否使用https协议
+     * @param {*} callback        回调函数
+     * @param {*} tryCount        重试次数
+     * @param {*} bPop            是否弹出浏览器提示对话框
      */
     function WpsStartWrapExInner(clientType, name, func, param, useHttps, callback, tryCount, bPop) {
         var rspUrl = "http://127.0.0.1:58890/transferEcho/runParams";
@@ -285,14 +289,14 @@
             "info": infoEx
         };
         var strData = JSON.stringify(startInfo);
-        if (IEVersion() < 10){
-            try{
+        if (IEVersion() < 10) {
+            try {
                 eval("strData = '" + JSON.stringify(startInfo) + "';");
-            }catch(err){
+            } catch (err) {
 
             }
         }
-            
+
         var baseData = encode(strData);
         var url = "http://127.0.0.1:58890/transfer/runParams";
         if (useHttps)
@@ -351,6 +355,7 @@
     }
 
     var RegWebNotifyID = null
+
     /**
      * 注册一个前端页面接收WPS传来消息的方法
      * @param {*} clientType wps | et | wpp
@@ -370,14 +375,14 @@
         }
         var askItem = function () {
             var xhr = WpsInvoke.CreateXHR()
-            xhr.onload = function(e) {
+            xhr.onload = function (e) {
                 callback(xhr.responseText)
                 window.setTimeout(askItem, 300)
             }
-            xhr.onerror = function(e) {
+            xhr.onerror = function (e) {
                 window.setTimeout(askItem, 10000)
             }
-            xhr.ontimeout = function(e) {
+            xhr.ontimeout = function (e) {
                 window.setTimeout(askItem, 10000)
             }
             if (IEVersion() < 10) {

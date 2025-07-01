@@ -44,7 +44,7 @@ function NewFile(params) {
     DoSetOADocLandMode(doc, EnumDocLandMode.DLM_LocalDoc);
     //强制执行一次Activate事件
     OnWindowActivate();
-    wps.WpsApplication().WindowState=1;
+    wps.WpsApplication().WindowState = 1;
     wps.WpsApplication().Activate(); //把WPS对象置前
 
     return doc; //返回新创建的Document对象
@@ -62,7 +62,7 @@ function OpenFile(params) {
         //下载文档之前，判断是否已下载该文件
         if (pCheckIsExistOpenOADoc(l_strFileUrl) == true) {
             //如果找到相同OA地址文档，则给予提示
-            wps.WpsApplication().WindowState=1;
+            wps.WpsApplication().WindowState = 1;
             wps.WpsApplication().Activate(); //把WPS对象置前
             //根据OA助手对是否允许再次打开相同文件的判断处理
             var l_AllowOADocReOpen = false;
@@ -86,7 +86,7 @@ function OpenFile(params) {
         } else {
             //如果当前没有打开文档，则另存为本地文件，再打开
             if (l_strFileUrl.startWith("http")) { // 网络文档
-                DownloadFile(l_strFileUrl, function(path) {
+                DownloadFile(l_strFileUrl, function (path) {
                     if (path == "") {
                         alert("从服务端下载路径：" + l_strFileUrl + "\n" + "获取文件下载失败！");
                         return null;
@@ -122,9 +122,9 @@ function OpenFile(params) {
  */
 function pOpenFile(doc, params, isOnlineDoc) {
     var l_IsOnlineDoc = isOnlineDoc
-        //Office文件打开后，设置该文件属性：从服务端来的OA文件
+    //Office文件打开后，设置该文件属性：从服务端来的OA文件
     pSetOADocumentFlag(doc, params)
-        //设置当前文档为 本地磁盘落地模式
+    //设置当前文档为 本地磁盘落地模式
     if (l_IsOnlineDoc == true) {
         DoSetOADocLandMode(doc, EnumDocLandMode.DLM_OnlineDoc);
     } else {
@@ -149,11 +149,10 @@ function pOpenFile(doc, params, isOnlineDoc) {
     // 触发切换窗口事件
     OnWindowActivate();
     // 把WPS对象置前
-    wps.WpsApplication().WindowState=1;
+    wps.WpsApplication().WindowState = 1;
     wps.WpsApplication().Activate();
     return doc;
 }
-
 
 
 /**
@@ -169,7 +168,7 @@ function pOpenFile(doc, params, isOnlineDoc) {
  *  text 类型：直接插入对应的书签位置
  *  link 类型： 把对应的URL的文件插入到指定的书签位置
  *  pic 类型： 把对应的URL的图片文件插入到指定的书签位置
- * @param {*} params 
+ * @param {*} params
  */
 function GetServerTemplateData(template, pTemplateDataUrl) {
     //获取文档内容
@@ -178,10 +177,10 @@ function GetServerTemplateData(template, pTemplateDataUrl) {
         async: false,
         method: "get",
         dataType: 'json',
-        success: function(res) {
+        success: function (res) {
             var data = res;
             let Bookmarks = template.Bookmarks;
-            data.forEach(function(it) {
+            data.forEach(function (it) {
 
                 var bookmark = Bookmarks.Item(it.name);
                 let bookStart = bookmark.Range.Start;
@@ -228,7 +227,7 @@ function OpenOnLineFile(OAParams) {
 
 /**
  * 打开在线文档成功后触发事件
- * @param {*} resp 
+ * @param {*} resp
  */
 function OnOpenOnLineDocSuccess(resp) {
 
@@ -265,7 +264,7 @@ function DoSetOADocLandMode(doc, DocLandMode) {
 
 /**
  * 作用：设置Ribbon工具条的按钮显示状态
- * @param {*} paramsGroups 
+ * @param {*} paramsGroups
  */
 function pDoResetRibbonGroups(paramsGroups) {
 
@@ -334,12 +333,12 @@ function pDoOpenOADocProcess(params, TempLocalFile) {
 
     //打开文档后，根据保护类型设置文档保护
     if (l_ProtectType > -1) {// -1 :不设置文档保护
-    	SetOADocProtect(l_Doc, l_ProtectType, l_ProtectPassword);
+        SetOADocProtect(l_Doc, l_ProtectType, l_ProtectPassword);
     }
-    
+
     var bookMarks = l_Doc.Bookmarks;
     if (bookMarks.Item("quanwen")) { // 当前文档存在"quanwen"书签时候表示已经套过红头
-    	SetOADocProtect(l_Doc, 3, l_ProtectPassword);
+        SetOADocProtect(l_Doc, 3, l_ProtectPassword);
     }
     return l_Doc;
 }
@@ -351,8 +350,8 @@ function pDoOpenOADocProcess(params, TempLocalFile) {
  *                                  1：只允许添加批注，
  *                                  2：只允许修改窗体域，
  *                                  3：只读)
- * @param {*} protectType 
- * @param {*} doc 
+ * @param {*} protectType
+ * @param {*} doc
  */
 function SetOADocProtect(doc, protectType, ProtectPassword) {
     if (!doc) return; //校验文档是否存在
@@ -365,8 +364,6 @@ function SetOADocProtect(doc, protectType, ProtectPassword) {
     }
     return;
 }
-
-
 
 
 /**
@@ -398,7 +395,6 @@ function DoOADocOpenRevision(doc, bOpenRevision, bShowRevision) {
 }
 
 
-
 /**
  *   描述：如何处理再次打开相同的OA文件
  *   返回值：打开的Document对象
@@ -412,7 +408,7 @@ function pReOpenOADoc(OADocURL) {
 
 /**
  * 功能说明：判断是否已存在来自OA的已打开的文档
- * @param {字符串} FileURL 
+ * @param {字符串} FileURL
  */
 function pCheckIsExistOpenOADoc(FileURL) {
     var l_DocCount = wps.WpsApplication().Documents.Count;
@@ -457,10 +453,10 @@ function pSetOADocumentFlag(doc, params) {
 /**
  * 作用：
  * @param {*} suffix  ：文档后缀明：.pdf 或 .uot 或 .uof
- * @param {*} doc 
- * @param {*} uploadPath 
+ * @param {*} doc
+ * @param {*} uploadPath
  * @param {}    FieldName ： 上传到服务器端的字段名称，可由OA传入的参数设置
- * 
+ *
  * 返回值：是否执行了上传操作，布尔值
  */
 function handleFileAndUpload(suffix, doc, uploadPath, FieldName) {
@@ -496,14 +492,14 @@ function handleFileAndUpload(suffix, doc, uploadPath, FieldName) {
         case '.pdf':
             l_strPath = pGetValidDocTempPath(doc) + ".pdf"; //获取有效输出路径
             wps.FileSystem.Remove(l_strPath); //先删除之前可能存在的临时文件
-            doc.ExportAsFixedFormat(l_strPath, wps.Enum&&wps.Enum.wdFormatPDF||17, true); //文档另存为PDF格式
+            doc.ExportAsFixedFormat(l_strPath, wps.Enum && wps.Enum.wdFormatPDF || 17, true); //文档另存为PDF格式
             l_strChangeFileName = doc.Name.split(".")[0] + ".pdf";
             UploadFile(l_strChangeFileName, l_strPath, uploadPath, l_FieldName, OnChangeSuffixUploadSuccess, OnChangeSuffixUploadFail);
             break;
         case '.uof':
             l_strPath = pGetValidDocTempPath(doc) + suffix;
             wps.FileSystem.Remove(l_strPath); //先删除之前可能存在的临时文件
-            doc.ExportAsFixedFormat(l_strPath, wps.Enum&&wps.Enum.wdFormatOpenDocumentText||23, true); //转换文件格式
+            doc.ExportAsFixedFormat(l_strPath, wps.Enum && wps.Enum.wdFormatOpenDocumentText || 23, true); //转换文件格式
             doc.SaveAs2(l_strPath);
             l_strChangeFileName = doc.Name.split(".")[0] + suffix;
             UploadFile(l_strChangeFileName, l_strPath, uploadPath, l_FieldName, OnChangeSuffixUploadSuccess, OnChangeSuffixUploadFail);
@@ -512,7 +508,7 @@ function handleFileAndUpload(suffix, doc, uploadPath, FieldName) {
         case '.uot':
             l_strPath = pGetValidDocTempPath(doc) + suffix;
             wps.FileSystem.Remove(l_strPath); //先删除之前可能存在的临时文件
-            doc.ExportAsFixedFormat(l_strPath, wps.Enum&&wps.Enum.wdFormatOpenDocumentText||23, true);
+            doc.ExportAsFixedFormat(l_strPath, wps.Enum && wps.Enum.wdFormatOpenDocumentText || 23, true);
             doc.SaveAs2(l_strPath);
             l_strChangeFileName = doc.Name.split(".")[0] + suffix;
             UploadFile(l_strChangeFileName, l_strPath, uploadPath, l_FieldName, OnChangeSuffixUploadSuccess, OnChangeSuffixUploadFail);
@@ -521,8 +517,8 @@ function handleFileAndUpload(suffix, doc, uploadPath, FieldName) {
         case '.ofd':
             l_strPath = pGetValidDocTempPath(doc) + suffix;
             wps.FileSystem.Remove(l_strPath); //先删除之前可能存在的临时文件
-            doc.ExportAsFixedFormat(l_strPath, wps.Enum&&wps.Enum.wdFormatOpenDocumentText||23, true);
-            doc.SaveAs2(l_strPath,102);
+            doc.ExportAsFixedFormat(l_strPath, wps.Enum && wps.Enum.wdFormatOpenDocumentText || 23, true);
+            doc.SaveAs2(l_strPath, 102);
             l_strChangeFileName = doc.Name.split(".")[0] + suffix;
             UploadFile(l_strChangeFileName, l_strPath, uploadPath, l_FieldName, OnChangeSuffixUploadSuccess, OnChangeSuffixUploadFail);
             doc.SaveAs2(l_DocSourcePath); //保存回原来的文档内容
@@ -543,14 +539,14 @@ function handleFileAndUpload(suffix, doc, uploadPath, FieldName) {
 
 /**
  * 作用：获取一个有效的临时文档路径，用于保存转换格式后的文档
- * @param {*} doc 
+ * @param {*} doc
  */
 function pGetValidDocTempPath(doc) {
     if (!doc) {
         return;
     }
     if (doc.Path == "") { //对于不落地文档，文档路径为空
-        return wps.Env.GetTempPath()+"/"+doc.Name.split(".")[0];
+        return wps.Env.GetTempPath() + "/" + doc.Name.split(".")[0];
     } else {
         return doc.FullName.split(".")[0]
     }
@@ -558,7 +554,7 @@ function pGetValidDocTempPath(doc) {
 
 /**
  * 作用：转格式保存上传成功后，触发这个事件的回调
- * @param {} response 
+ * @param {} response
  */
 function OnChangeSuffixUploadSuccess(response) {
     l_result = handleResultBody(response);
@@ -567,7 +563,7 @@ function OnChangeSuffixUploadSuccess(response) {
 
 /**
  * 作用：转格式保存失败，触发失败事件回调
- * @param {*} response 
+ * @param {*} response
  */
 function OnChangeSuffixUploadFail(response) {
     var l_result = "";
@@ -577,7 +573,7 @@ function OnChangeSuffixUploadFail(response) {
 
 /**
  * 解析返回response的参数
- * @param {*} resp 
+ * @param {*} resp
  * @return {*} body
  */
 function handleResultBody(resp) {
@@ -646,7 +642,8 @@ function pAutoUploadToServer(p_Doc) {
         try {
             //调用不落地上传方法
             p_Doc.SaveAsUrl(l_UploadName, l_uploadPath, l_FieldName, "OnAutoUploadSuccess", "OnAutoUploadFail");
-        } catch (err) {}
+        } catch (err) {
+        }
         wps.PluginStorage.setItem(constStrEnum.OADocUserSave, EnumDocSaveFlag.NoneOADocSave);
     }
 
@@ -705,7 +702,7 @@ function OpenTimerRun(funcCallBack) {
         l_AutoSaveToServerTime = 3;
     }
 
-    l_timeID = setInterval(function() {
+    l_timeID = setInterval(function () {
         l_mCount = l_mCount + 1;
         if (l_mCount > l_AutoSaveToServerTime) { //l_AutoSaveToServerTime 值由系统配置时设定，见pInitParameters()函数
             l_mCount = 0;
@@ -792,8 +789,8 @@ function pInsertRInedHead(doc, strFile, bookmark) {
     var l_revisionCtrl = GetDocParamsValue(activeDoc, constStrEnum.revisionCtrl);
     activeDoc.TrackRevisions = l_revisionCtrl == "" ? false : l_revisionCtrl.bOpenRevision;
     //取消WPS关闭时的提示信息
-    wps.WpsApplication().DisplayAlerts = wps.Enum&&wps.Enum.wdAlertsNone||0;
-    
+    wps.WpsApplication().DisplayAlerts = wps.Enum && wps.Enum.wdAlertsNone || 0;
+
     /**********************/
     var l_doc = wps.WpsApplication().ActiveDocument;
     if (!l_doc) {
@@ -807,11 +804,11 @@ function pInsertRInedHead(doc, strFile, bookmark) {
     if (l_UploadName == "") {
         l_UploadName = l_doc.Name; //默认文件名称就是当前文件编辑名称
     }
-    
+
     //套红后设置保护文档,编辑受限+
     var openType = GetDocParamsValue(l_doc, "openType");
     SetOADocProtect(l_doc, 3, openType.password);
-    
+
     //套红后保存套红文档+
     var l_DocPath = l_doc.FullName; // 文件所在路径
     var l_uploadPath = GetDocParamsValue(l_doc, constStrEnum.uploadPath); // 文件上载路径
@@ -820,8 +817,9 @@ function pInsertRInedHead(doc, strFile, bookmark) {
     //设置用户保存按钮标志
     wps.PluginStorage.setItem(constStrEnum.OADocUserSave, EnumDocSaveFlag.NoneOADocSave);
     //调用OA助手的上传方法
-    UploadFile(l_UploadName, l_DocPath, l_uploadPath+"&istaohong=1", l_FieldName, null, null);
+    UploadFile(l_UploadName, l_DocPath, l_uploadPath + "&istaohong=1", l_FieldName, null, null);
 }
+
 /**
  * 从OA-web端点击套红头
  *  doc : 需要存在以下属性
@@ -863,7 +861,6 @@ function OpenLocalFile() {
         }
     }
 }
-
 
 
 /**

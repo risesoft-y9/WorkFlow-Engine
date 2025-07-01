@@ -1,12 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,18 +10,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.itemadmin.ButtonOperationApi;
-import net.risesoft.api.itemadmin.DocumentApi;
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.processadmin.HistoricProcessApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.RuntimeApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.api.itemadmin.*;
+import net.risesoft.api.processadmin.*;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -88,8 +73,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         documentApi.complete(tenantId, positionId, taskId);
 
         boolean isSubProcessChildNode = processDefinitionApi
-                .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
-                .getData();
+            .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+            .getData();
         if (isSubProcessChildNode) {// 子流程办结，不更新自定义历程信息
             return;
         }
@@ -124,7 +109,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     public Y9Result<String> complete4Sub(String taskId, String taskDefName, String desc) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        String mainSenderId = variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAINSENDERID).getData();
+        String mainSenderId =
+            variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAINSENDERID).getData();
         if (StringUtils.isBlank(mainSenderId)) {
             return Y9Result.failure("办结失败：缺少主流程的发送人！");
         }
@@ -182,17 +168,17 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
-                    officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
                 ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
             HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi
-                    .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
+                .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
 
             /*
@@ -279,10 +265,13 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                     continue;
                 }
                 if (nodeList.isEmpty()) {
-                    String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
-                    nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode).getData();
+                    String startNode = processDefinitionApi
+                        .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
+                    nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode)
+                        .getData();
                 }
-                boolean canDelete = nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
+                boolean canDelete =
+                    nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
                 if (canDelete) {
                     actRuDetailApi.deleteByProcessSerialNumber(tenantId, tpArr[1]);
                     success.getAndIncrement();

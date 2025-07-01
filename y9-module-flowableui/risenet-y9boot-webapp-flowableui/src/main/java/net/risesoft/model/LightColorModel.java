@@ -9,8 +9,7 @@ import lombok.Data;
 @Data
 public class LightColorModel {
     /**
-     * 灯的颜色
-     * 1/2/3/4/5
+     * 灯的颜色 1/2/3/4/5
      */
     private int color;
     /**

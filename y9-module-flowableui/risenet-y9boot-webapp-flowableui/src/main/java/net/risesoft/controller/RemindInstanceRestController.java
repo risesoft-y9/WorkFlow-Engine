@@ -1,22 +1,14 @@
 package net.risesoft.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,8 +64,7 @@ public class RemindInstanceRestController {
         Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId).getData();
-        List<TargetModel> list0 =
-            processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId()).getData();
+        List<TargetModel> list0 = processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId()).getData();
         RemindInstanceModel remindInstance = remindInstanceApi
             .getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
         retMap.put("remindType", "");

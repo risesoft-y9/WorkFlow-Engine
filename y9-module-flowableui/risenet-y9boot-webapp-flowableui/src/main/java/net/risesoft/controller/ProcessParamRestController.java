@@ -1,30 +1,26 @@
 package net.risesoft.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
-
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 自定义流程变量

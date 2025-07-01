@@ -2,80 +2,45 @@ package net.risesoft.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.itemadmin.DocumentWordApi;
-import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.SignDeptDetailApi;
-import net.risesoft.api.itemadmin.TaskRelatedApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.*;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.api.processadmin.ProcessTodoApi;
+import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
+import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.DocumentDetailModel;
-import net.risesoft.model.itemadmin.ItemButtonModel;
-import net.risesoft.model.itemadmin.SignDeptDetailModel;
-import net.risesoft.model.itemadmin.StartProcessResultModel;
-import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.model.itemadmin.*;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TargetModel;
-import net.risesoft.service.ProcessParamService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import net.risesoft.api.itemadmin.AssociatedFileApi;
-import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.ChaoSongApi;
-import net.risesoft.api.itemadmin.DocumentApi;
-import net.risesoft.api.itemadmin.ItemApi;
-import net.risesoft.api.itemadmin.OfficeFollowApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.ProcessTodoApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.itemadmin.DocUserChoiseModel;
-import net.risesoft.model.itemadmin.ItemListModel;
-import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
-import net.risesoft.model.itemadmin.OpenDataModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.SignTaskConfigModel;
-import net.risesoft.model.itemadmin.TransactionWordModel;
-import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
+import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -175,10 +140,13 @@ public class DocumentRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/addWithStartTaskDefKey")
-    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,@RequestParam @NotBlank String startTaskDefKey) {
+    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String startTaskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            DocumentDetailModel model = documentApi.addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false).getData();
+            DocumentDetailModel model = documentApi
+                .addWithStartTaskDefKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId, startTaskDefKey, false)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取新建办件数据失败", e);
@@ -188,6 +156,7 @@ public class DocumentRestController {
 
     /**
      * 检查是否可以批量发送
+     * 
      * @param taskIdAndProcessSerialNumbers
      * @return
      */
@@ -243,6 +212,7 @@ public class DocumentRestController {
 
     /**
      * 检查是否可以批量重定向
+     * 
      * @param processSerialNumber
      * @param documentId
      * @return
@@ -970,7 +940,7 @@ public class DocumentRestController {
         sourceTaskRelated.setExecutionId(oldProcessParam.getProcessInstanceId());
         sourceTaskRelated.setTaskId("copy2Todo");
         sourceTaskRelated.setSub(false);
-        //sourceTaskRelated.setMsgContent(numberY9Result.getData());
+        // sourceTaskRelated.setMsgContent(numberY9Result.getData());
         sourceTaskRelated.setSenderId(position.getId());
         sourceTaskRelated.setSenderName(position.getName());
         Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(tenantId, sourceTaskRelated);
@@ -1000,7 +970,7 @@ public class DocumentRestController {
         map.put("taskId", actRuDetail.getTaskId());
         map.put("taskName", actRuDetail.getTaskDefName());
         map.put("actRuDetailId", actRuDetail.getId());
-        //map.put("lsh", numberY9Result.getData());
+        // map.put("lsh", numberY9Result.getData());
         map.put("userName", actRuDetail.getAssigneeName());
         if (yuanResult.isSuccess() && fuResult.isSuccess()) {
             return Y9Result.success(map);

@@ -7,9 +7,10 @@
  */
 
 var bUseHttps = false;
+
 function _WpsInvoke(funcs, front, jsPluginsXml) {
     var info = {};
-    info.funcs = funcs;    
+    info.funcs = funcs;
     var func = bUseHttps ? WpsInvoke.InvokeAsHttps : WpsInvoke.InvokeAsHttp
     func(WpsInvoke.ClientType.wps, // 组件类型
         "WpsOAAssist", // 插件名，与wps客户端加载的加载的插件名对应
@@ -31,6 +32,7 @@ function _WpsInvoke(funcs, front, jsPluginsXml) {
         front,
         jsPluginsXml)
 }
+
 /**
  * 该方法封装了发送给WPS客户端的请求，不需要用户去实现
  * 接收消息：WpsInvoke.RegWebNotify（type，name,callback）
@@ -39,12 +41,12 @@ function _WpsInvoke(funcs, front, jsPluginsXml) {
  * @param {*} name 加载项对应的名字
  * @param {func} callback 接收到WPS客户端的消息后的回调函数
  */
-WpsInvoke.RegWebNotify(WpsInvoke.ClientType.wps, "WpsOAAssist",handleOaMessage)
+WpsInvoke.RegWebNotify(WpsInvoke.ClientType.wps, "WpsOAAssist", handleOaMessage)
 
-function handleOaMessage(data){
-    data=typeof (data) == 'object' ? data : JSON.parse(data)
-    var type=data.type;
-    switch(type){
+function handleOaMessage(data) {
+    data = typeof (data) == 'object' ? data : JSON.parse(data)
+    var type = data.type;
+    switch (type) {
         case "executeFunc1":
             handleOaFunc1(data.message);
             break;
@@ -55,14 +57,17 @@ function handleOaMessage(data){
             alert(data.messageData)
     }
 }
-function handleOaFunc1(message){
-    alert("我是函数handleOaFunc1，我接收到的参数是："+message)
+
+function handleOaFunc1(message) {
+    alert("我是函数handleOaFunc1，我接收到的参数是：" + message)
 }
-function handleOaFunc2(message){
-    alert("我是函数handleOaFunc2，我接收到的参数是："+message)
+
+function handleOaFunc2(message) {
+    alert("我是函数handleOaFunc2，我接收到的参数是：" + message)
     var span = window.parent.document.getElementById("webnotifyspan")
     span.innerHTML = message
 }
+
 /**
  * 处理WPS加载项的方法返回值
  *
@@ -84,6 +89,7 @@ function showresult(resultData) {
         }
     }
 }
+
 /**
  * 这是页面中针对代码显示的变量定义，开发者无需关心
  */
@@ -93,13 +99,13 @@ var _wps = {}
 
 function newDoc() {
     _WpsInvoke([{
-            "NewDoc": {
-            	"uploadPath" : ctx + "/mobile/docWps/upload?processSerialNumber="+processSerialNumber
-            	+"&tenantId="+y9Form_TenantId +"&userId="+y9Form_UerId +"&taskId="+taskId,// 保存文档上传路径
-            "userName" : userName,
-            "redHeadsPath" : ctx + "/mobile/docWps/taoHongTemplateList?tenantId="+y9Form_TenantId +"&userId="+y9Form_UerId
-            }
-        }]) // NewDoc方法对应于OA助手dispatcher支持的方法名
+        "NewDoc": {
+            "uploadPath": ctx + "/mobile/docWps/upload?processSerialNumber=" + processSerialNumber
+                + "&tenantId=" + y9Form_TenantId + "&userId=" + y9Form_UerId + "&taskId=" + taskId,// 保存文档上传路径
+            "userName": userName,
+            "redHeadsPath": ctx + "/mobile/docWps/taoHongTemplateList?tenantId=" + y9Form_TenantId + "&userId=" + y9Form_UerId
+        }
+    }]) // NewDoc方法对应于OA助手dispatcher支持的方法名
 }
 
 _wps['newDoc'] = {
@@ -149,15 +155,15 @@ function GetDemoPngPath() {
 }
 
 function openDoc() {
-    var filePath = flowableUIBaseURL + "/mobile/docWps/download?processSerialNumber="+processSerialNumber+"&itemId="+itemId
-    					+"&tenantId="+y9Form_TenantId +"&userId="+y9Form_UerId ; // 打开文件路径（本地或是url）
-    
-    var uploadPath = flowableUIBaseURL + "/mobile/docWps/upload?processSerialNumber="+processSerialNumber
-            	+"&tenantId="+y9Form_TenantId +"&userId="+y9Form_UerId +"&taskId="+taskId; // 保存文档上传路径
+    var filePath = flowableUIBaseURL + "/mobile/docWps/download?processSerialNumber=" + processSerialNumber + "&itemId=" + itemId
+        + "&tenantId=" + y9Form_TenantId + "&userId=" + y9Form_UerId; // 打开文件路径（本地或是url）
+
+    var uploadPath = flowableUIBaseURL + "/mobile/docWps/upload?processSerialNumber=" + processSerialNumber
+        + "&tenantId=" + y9Form_TenantId + "&userId=" + y9Form_UerId + "&taskId=" + taskId; // 保存文档上传路径
     var backupPath = "";//请输入文档备份路径
     var protectType = -1;
-    if(itembox != "add" && itembox != "todo" && itembox != "draft"){
-    	protectType = 3;
+    if (itembox != "add" && itembox != "todo" && itembox != "draft") {
+        protectType = 3;
     }
     _WpsInvoke([{
         "OpenDoc": {
@@ -174,9 +180,9 @@ function openDoc() {
             },
             "copyUrl": backupPath,
             "userName": userName,
-            "revokeRedHeaderPath" : flowableUIBaseURL + "/mobile/docWps/revokeRedHeader?tenantId="+y9Form_TenantId +"&userId="+y9Form_UerId+"&processSerialNumber="+processSerialNumber,//获取套红模板路径
-            "redHeadsPath" : flowableUIBaseURL + "/mobile/docWps/taoHongTemplateList?tenantId="+y9Form_TenantId +"&userId="+y9Form_UerId,//获取套红模板路径
-            "getRedHeadPath" : flowableUIBaseURL + "/mobile/docWps/getTaoHongTemplate?tenantId="+y9Form_TenantId +"&userId="+y9Form_UerId+"&template_guid="//打开套红模板路径
+            "revokeRedHeaderPath": flowableUIBaseURL + "/mobile/docWps/revokeRedHeader?tenantId=" + y9Form_TenantId + "&userId=" + y9Form_UerId + "&processSerialNumber=" + processSerialNumber,//获取套红模板路径
+            "redHeadsPath": flowableUIBaseURL + "/mobile/docWps/taoHongTemplateList?tenantId=" + y9Form_TenantId + "&userId=" + y9Form_UerId,//获取套红模板路径
+            "getRedHeadPath": flowableUIBaseURL + "/mobile/docWps/getTaoHongTemplate?tenantId=" + y9Form_TenantId + "&userId=" + y9Form_UerId + "&template_guid="//打开套红模板路径
         }
     }]) // OpenDoc方法对应于OA助手dispatcher支持的方法名
 }
@@ -520,7 +526,7 @@ _wps['taskPaneBookMark'] = {
 function exitWPS() {
     _WpsInvoke([{
         "ExitWPS": {}
-    }],true)
+    }], true)
 }
 
 _wps['exitWPS'] = {
@@ -539,9 +545,9 @@ _wps['exitWPS'] = {
 
 function getDocStatus() {
     _WpsInvoke([{
-        "GetDocStatus": {}
-    }],
-    false)
+            "GetDocStatus": {}
+        }],
+        false)
 }
 
 _wps['getDocStatus'] = {
@@ -571,6 +577,7 @@ function checkOSisLinux() {
         alert("此方法仅在WPS Linux特定版本支持")
     }
 }
+
 /**
  * 新建一个使用公文写作打开的公文
  *
@@ -621,6 +628,7 @@ function openOfficialDocument() {
         }]) // OpenDoc方法对应于OA助手dispatcher支持的方法名
     }
 }
+
 _wps['openOfficialDocument'] = {
     action: openOfficialDocument,
     code: _WpsInvoke.toString() + "\n\n" + openOfficialDocument.toString(),
@@ -642,6 +650,7 @@ _wps['openOfficialDocument'] = {
             userName 传给wps要显示的OA用户名\n\
 "
 }
+
 /**
  * 在线不落地打开一个使用公文写作打开的公文
  */
@@ -684,7 +693,7 @@ _wps['onlineEditOfficialDocument'] = {
 "
 }
 
-/** 
+/**
  * 这是HTML页面上的按钮赋予事件的实现，开发者无需关心，使用自己习惯的方式做开发即可
  */
 window.onload = function () {
@@ -718,6 +727,7 @@ window.onload = function () {
         }
     }
 }
+
 /**
  * 检查操作系统
  *

@@ -111,8 +111,8 @@ public class AsyncUtilService {
                 numberStr = String.valueOf(number);
             }
             String hao = characterValue + "[" + year + "]" + numberStr;
-            String sql = "update y9_form_fw set lsh = '"+characterValue+"[" + year + "]" + numberStr + "' where guid = '"
-                + processSerialNumber + "'";
+            String sql = "update y9_form_fw set lsh = '" + characterValue + "[" + year + "]" + numberStr
+                + "' where guid = '" + processSerialNumber + "'";
             jdbcTemplate.execute(sql);
             return Y9Result.success(hao);
         } else {
