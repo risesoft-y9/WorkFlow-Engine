@@ -74,7 +74,6 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             String send = processParamModel.getSended();
             // 第一步新建产生的任务，不发送提醒
             if (StringUtils.isBlank(send) || UtilConsts.FALSE.equals(send)) {
-                return;
             }
             // Y9Push.pushNormalMessage(list, itemName, title);
         } catch (Exception e) {
