@@ -353,18 +353,22 @@
                 /* if(browser=="chrome"){
                     if(version<"42"){
                         ntkoUrl = "
+
                 ${ctx}/transactionWord/openBlankWordTemplate";
 					}else{
 						ntkoUrl = "
+
                 ${ctx}/services/ntkoForm/openBlankWordTemplate";
 					}
 				}else if(browser=="firefox"){
 					console.log(version);
 					if(version<"50"){
 						ntkoUrl = "
+
                 ${ctx}/transactionWord/openBlankWordTemplate";
 					}else{
 						ntkoUrl = "
+
                 ${ctx}/services/ntkoForm/openBlankWordTemplate";
 					}
 				} */
@@ -385,33 +389,43 @@
                 + processSerialNumber + "&itemId=${itemId}";
             /* if(browser!='IE'){
                 hUrl = "
+
             ${ctx}/services/print/openDoc?processSerialNumber="
 					+ processSerialNumber + "&itemId=
+
             ${itemId}"+"&tenantId="+tenantId+"&userId="+userId;
 			} */
             if (browser != "IE") {
                 /* if(browser=="chrome"){
                     if(version<"42"){
                         hUrl = "
+
                 ${ctx}/transactionWord/openDocument?processSerialNumber="
 							+ processSerialNumber + "&itemId=
+
                 ${itemId}";
 					}else{
 						hUrl = "
+
                 ${ctx}/services/ntkoForm/openDocument?processSerialNumber="
 							+ processSerialNumber + "&itemId=
+
                 ${itemId}"+"&tenantId="+tenantId+"&userId="+userId;
 					}
 				}else if(browser=="firefox"){
 					if(version<"50"){
 						hUrl = "
+
                 ${ctx}/transactionWord/openDocument?processSerialNumber="
 							+ processSerialNumber + "&itemId=
+
                 ${itemId}";
 					}else{
 						hUrl = "
+
                 ${ctx}/services/ntkoForm/openDocument?processSerialNumber="
 							+ processSerialNumber + "&itemId=
+
                 ${itemId}"+"&tenantId="+tenantId+"&userId="+userId;
 					}
 				} */
