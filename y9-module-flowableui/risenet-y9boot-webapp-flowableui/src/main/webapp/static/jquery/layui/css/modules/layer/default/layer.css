@@ -148,9 +148,9 @@ keyframes layer-bounceIn {
     60% {
         opacity: 1;
         -webkit-transform: scale(
-        .475) translateY(60 px);
+                .475) translateY(60px);
         transform: scale(
-        .475) translateY(60 px);
+                .475) translateY(60px);
         -webkit-animation-timing-function: ease-out;
         animation-timing-function: ease-out
     }
@@ -170,11 +170,11 @@ keyframes layer-zoomInDown {
     60% {
         opacity: 1;
         -webkit-transform: scale(
-        .475) translateY(60 px);
+                .475) translateY(60px);
         -ms-transform: scale(
-        .475) translateY(60 px);
+                .475) translateY(60px);
         transform: scale(
-        .475) translateY(60 px);
+                .475) translateY(60px);
         -webkit-animation-timing-function: ease-out;
         animation-timing-function: ease-out
     }
@@ -235,9 +235,9 @@ keyframes layer-fadeInUpBig {
     60% {
         opacity: 1;
         -webkit-transform: scale(
-        .475) translateX(48 px);
+                .475) translateX(48px);
         transform: scale(
-        .475) translateX(48 px);
+                .475) translateX(48px);
         -webkit-animation-timing-function: ease-out;
         animation-timing-function: ease-out
     }
@@ -257,11 +257,11 @@ keyframes layer-zoomInLeft {
     60% {
         opacity: 1;
         -webkit-transform: scale(
-        .475) translateX(48 px);
+                .475) translateX(48px);
         -ms-transform: scale(
-        .475) translateX(48 px);
+                .475) translateX(48px);
         transform: scale(
-        .475) translateX(48 px);
+                .475) translateX(48px);
         -webkit-animation-timing-function: ease-out;
         animation-timing-function: ease-out
     }
