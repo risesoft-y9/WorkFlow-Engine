@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.BpmnModelApi;
  */
 @FeignClient(contextId = "BpmnModelApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/bpmnModel")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/bpmnModel")
 public interface BpmnModelApiClient extends BpmnModelApi {
 
 }

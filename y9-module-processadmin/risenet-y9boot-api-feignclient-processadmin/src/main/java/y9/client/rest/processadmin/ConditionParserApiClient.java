@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.ConditionParserApi;
  */
 @FeignClient(contextId = "ConditionParserApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/conditionParser")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/conditionParser")
 public interface ConditionParserApiClient extends ConditionParserApi {
 
 }

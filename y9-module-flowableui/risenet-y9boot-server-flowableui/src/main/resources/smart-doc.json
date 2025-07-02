@@ -1,5 +1,5 @@
 {
-  "serverUrl": "https://test.youshengyun.com/flowableUI",
+  "serverUrl": "https://test.youshengyun.com/server-flowableui",
   //设置服务器地址,非必须
   "isStrict": false,
   //是否开启严格模式

@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
  */
 @FeignClient(contextId = "ProcessParamApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/processParam")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/processParam")
 public interface ProcessParamApiClient extends ProcessParamApi {
 
 }

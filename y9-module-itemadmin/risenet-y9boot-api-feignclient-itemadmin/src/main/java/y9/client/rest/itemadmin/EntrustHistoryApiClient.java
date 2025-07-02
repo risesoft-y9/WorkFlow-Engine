@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.EntrustHistoryApi;
  */
 @FeignClient(contextId = "EntrustHistoryApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/entrustHistory")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/entrustHistory")
 public interface EntrustHistoryApiClient extends EntrustHistoryApi {
 
 }

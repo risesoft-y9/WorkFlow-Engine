@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.QueryListApi;
  */
 @FeignClient(contextId = "QueryListApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/queryList")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/queryList")
 public interface QueryListApiClient extends QueryListApi {
 
 }

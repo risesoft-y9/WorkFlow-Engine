@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.TaskRelatedApi;
  */
 @FeignClient(contextId = "TaskRelatedApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/taskRelated")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/taskRelated")
 public interface TaskRelatedApiClient extends TaskRelatedApi {
 
 }

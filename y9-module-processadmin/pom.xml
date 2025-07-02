@@ -26,7 +26,7 @@
         <module>risenet-y9boot-api-interface-processadmin</module>
         <module>risenet-y9boot-api-feignclient-processadmin</module>
         <module>risenet-y9boot-support-processadmin</module>
-        <module>risenet-y9boot-webapp-processadmin</module>
+        <module>risenet-y9boot-server-processadmin</module>
     </modules>
 
 </project>

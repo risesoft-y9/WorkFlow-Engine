@@ -10,7 +10,7 @@ import net.risesoft.api.itemadmin.EleAttachmentApi;
  */
 @FeignClient(contextId = "EleAttachmentApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/eleAttachment")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/eleAttachment")
 public interface EleAttachmentApiClient extends EleAttachmentApi {
 
 }

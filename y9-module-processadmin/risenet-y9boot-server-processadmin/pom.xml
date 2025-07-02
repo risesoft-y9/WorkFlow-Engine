@@ -7,7 +7,7 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>risenet-y9boot-webapp-processadmin</artifactId>
+    <artifactId>risenet-y9boot-server-processadmin</artifactId>
     <!-- <version>${revision}</version> -->
     <packaging>war</packaging>
 
@@ -212,7 +212,7 @@
     </dependencies>
 
     <build>
-        <finalName>processAdmin</finalName>
+        <finalName>server-processadmin</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

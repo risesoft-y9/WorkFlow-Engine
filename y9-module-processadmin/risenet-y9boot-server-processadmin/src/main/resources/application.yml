@@ -208,15 +208,15 @@ y9:
   common:
     cacheEnabled: true
     kafkaEnabled: true
-    orgBaseUrl: http://localhost:7055/platform
-    processAdminBaseUrl: http://localhost:7056/processAdmin
-    itemAdminBaseUrl: http://localhost:7056/itemAdmin
-    datacenterBaseUrl: http://localhost:7056/datacenter
-    msgRemindBaseUrl: http://localhost:7056/msgRemind
+    orgBaseUrl: http://localhost:7055/server-platform
+    processAdminBaseUrl: http://localhost:7056/server-processadmin
+    itemAdminBaseUrl: http://localhost:7056/server-itemadmin
+    datacenterBaseUrl: http://localhost:7056/server-datacenter
+    msgRemindBaseUrl: http://localhost:7056/server-msgremind
     smsBaseUrl: http://localhost:7056/sms
-    todoBaseUrl: http://localhost:7056/todo
-    logBaseUrl: http://localhost:7056/log
-    userOnlineBaseUrl: http://localhost:7056/userOnline
+    todoBaseUrl: http://localhost:7056/server-todo
+    logBaseUrl: http://localhost:7056/server-log
+    userOnlineBaseUrl: http://localhost:7056/server-useronline
   feature:
     jpa:
       packagesToScanEntityPublic: net.risesoft.y9public.entity

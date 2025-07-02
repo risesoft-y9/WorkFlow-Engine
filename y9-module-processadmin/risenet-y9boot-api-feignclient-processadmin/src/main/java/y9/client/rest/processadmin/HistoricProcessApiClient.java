@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
  */
 @FeignClient(contextId = "HistoricProcessApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/historicProcess")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/historicProcess")
 public interface HistoricProcessApiClient extends HistoricProcessApi {
 
 }

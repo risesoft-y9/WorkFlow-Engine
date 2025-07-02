@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.ItemRecycleApi;
  */
 @FeignClient(contextId = "itemRecycleApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemRecycle")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemRecycle")
 public interface ItemRecycleApiClient extends ItemRecycleApi {
 
 }

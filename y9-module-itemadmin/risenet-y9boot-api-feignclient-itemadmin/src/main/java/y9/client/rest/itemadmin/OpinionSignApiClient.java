@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.OpinionSignApi;
  */
 @FeignClient(contextId = "OpinionSignApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/opinionSign")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/opinionSign")
 public interface OpinionSignApiClient extends OpinionSignApi {
 
 }

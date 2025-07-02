@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.IdentityApi;
  */
 @FeignClient(contextId = "IdentityApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/identity")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/identity")
 public interface IdentityApiClient extends IdentityApi {
 
 }

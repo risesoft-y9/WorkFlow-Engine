@@ -10,7 +10,7 @@ import net.risesoft.api.processadmin.HistoricIdentityApi;
  */
 @FeignClient(contextId = "HistoricIdentityApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/historicIdentity")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/historicIdentity")
 public interface HistoricIdentityApiClient extends HistoricIdentityApi {
 
 }

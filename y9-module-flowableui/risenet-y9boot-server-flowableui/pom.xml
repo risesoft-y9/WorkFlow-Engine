@@ -8,7 +8,7 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>risenet-y9boot-webapp-flowableui</artifactId>
+    <artifactId>risenet-y9boot-server-flowableui</artifactId>
     <packaging>war</packaging>
 
     <properties>
@@ -221,7 +221,7 @@
     </dependencies>
 
     <build>
-        <finalName>flowableUI</finalName>
+        <finalName>server-flowableui</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

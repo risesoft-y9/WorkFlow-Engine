@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.ChaoSong4DataBaseApi;
  */
 @FeignClient(contextId = "ChaoSong4DataBaseApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/chaoSong4database")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/chaoSong4database")
 public interface ChaoSong4DataBaseApiClient extends ChaoSong4DataBaseApi {
 
 }

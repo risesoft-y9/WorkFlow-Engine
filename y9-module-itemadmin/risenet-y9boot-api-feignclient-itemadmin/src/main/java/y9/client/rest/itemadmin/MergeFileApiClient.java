@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.MergeFileApi;
  */
 @FeignClient(contextId = "MergeFileApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/mergeFile")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/mergeFile")
 public interface MergeFileApiClient extends MergeFileApi {
 
 }

@@ -12,7 +12,7 @@ import net.risesoft.api.itemadmin.ItemMonitorApi;
  */
 @FeignClient(contextId = "ItemMonitorApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemMonitor")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemMonitor")
 public interface ItemMonitorApiClient extends ItemMonitorApi {
 
 }

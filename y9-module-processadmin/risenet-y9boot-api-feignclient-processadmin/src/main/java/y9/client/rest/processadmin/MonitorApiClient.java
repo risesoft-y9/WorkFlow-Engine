@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.MonitorApi;
  */
 @FeignClient(contextId = "MonitorApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/monitor")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/monitor")
 public interface MonitorApiClient extends MonitorApi {
 
 }
