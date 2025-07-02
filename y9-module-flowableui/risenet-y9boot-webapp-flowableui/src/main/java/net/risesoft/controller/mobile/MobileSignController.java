@@ -148,11 +148,9 @@ public class MobileSignController {
             dayStr = calendarConfig.getEveryYearHoliday();
             switch (type) {
                 case "天": {
-                    boolean isdel = true;
-                    if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假")
-                        || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
-                        isdel = false;
-                    }
+                    boolean isdel = !StringUtils.isNotBlank(leaveType) || (!leaveType.equals("离京报备")
+                        && !leaveType.equals("产假") && !leaveType.equals("婚假") && !leaveType.equals("陪产假"));
+                    // 产假不排除节假日，直接算天数
                     if (leaveStartTime.equals(leaveEndTime)) {
                         if (isdel && dayStr.contains(leaveStartTime)) {
                             map.put("data", "0");

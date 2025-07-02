@@ -60,7 +60,6 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkDayService;
 import net.risesoft.service.WorkList4GfgService;
 import net.risesoft.util.SysVariables;
@@ -741,47 +740,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         return childrenList;
     }
 
-    @Override
-    public Y9Result<List<Map<String, Object>>> getSignDeptDetailList(String processSerialNumber) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            ProcessParamModel processParam =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            Map<String, Object> mapTemp = new HashMap<>();
-            mapTemp.put("id", processSerialNumber);
-            mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-            mapTemp.put("systemCNName", processParam.getSystemCnName());
-            mapTemp.put("bureauName", processParam.getHostDeptName());
-            mapTemp.put("itemId", processParam.getItemId());
-            mapTemp.put("processInstanceId", processParam.getProcessInstanceId());
-            mapTemp.putAll(formDataApi.getData(tenantId, processParam.getItemId(), processSerialNumber).getData());
-            mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())
-                ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-            List<SignDeptDetailModel> signDeptDetailList =
-                signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            List<TaskModel> finalTaskList =
-                taskApi.findByProcessInstanceId(tenantId, processParam.getProcessInstanceId()).getData();
-            AtomicInteger count = new AtomicInteger(0);
-            List<Map<String, Object>> childrenList = new ArrayList<>();
-            signDeptDetailList.forEach(sdd -> {
-                List<String> taskNameAndAssigneeNames = getTaskNameAndUserName4SignDept(finalTaskList, sdd);
-                Map<String, Object> childrenMap = new HashMap<>(mapTemp);
-                childrenMap.put("id", sdd.getId());
-                childrenMap.put("serialNumber", count.incrementAndGet());
-                childrenMap.put("taskName", taskNameAndAssigneeNames.get(0));
-                childrenMap.put("taskAssignee", taskNameAndAssigneeNames.get(1));
-                childrenMap.put("children", List.of());
-                childrenMap.put("status", sdd.getStatus());
-                childrenMap.put("bureauName", sdd.getDeptName());
-                childrenList.add(childrenMap);
-            });
-            return Y9Result.success(childrenList, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
-        }
-        return Y9Result.success(List.of(), "获取列表失败");
-    }
-
     private Map<String, Object> getTaskNameAndUserName4Doing(ProcessParamModel processParam, List<TaskModel> taskList,
         List<SignDeptDetailModel> signDeptDetailList) {
         String tenantId = Y9LoginUserHolder.getTenantId(), processInstanceId = processParam.getProcessInstanceId();
@@ -1459,13 +1417,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             LOGGER.error("获取待办异常", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-    }
-
-    @Override
-    public void refreshMap() {
-        optionClassApi.findAll(Y9LoginUserHolder.getTenantId()).getData().forEach(item -> {
-            map.put(item.getType() + "." + item.getCode(), item.getName());
-        });
     }
 
     /**
