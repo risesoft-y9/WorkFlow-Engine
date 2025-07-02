@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.ItemDoingApi;
  */
 @FeignClient(contextId = "ItemDoingApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemDoing")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemDoing")
 public interface ItemDoingApiClient extends ItemDoingApi {
 
 }

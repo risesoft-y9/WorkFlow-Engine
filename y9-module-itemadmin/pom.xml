@@ -26,7 +26,7 @@
         <module>risenet-y9boot-api-feignclient-itemadmin</module>
         <module>risenet-y9boot-support-itemadmin-jpa-repository</module>
         <module>risenet-y9boot-support-itemadmin</module>
-        <module>risenet-y9boot-webapp-itemadmin</module>
+        <module>risenet-y9boot-server-itemadmin</module>
     </modules>
 
 </project>

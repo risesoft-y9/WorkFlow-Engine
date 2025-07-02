@@ -12,7 +12,7 @@ server:
             force: true
         session:
             tracking-modes: COOKIE
-        context-path: /itemAdmin
+        context-path: /server-itemddmin
         register-default-servlet: true
     tomcat:
         uri-encoding: UTF-8
@@ -52,39 +52,81 @@ spring:
         elasticsearch:
             repositories:
                 enabled: true
-        redis:
-            database: 8
-            host: localhost
-            port: 6379
-            username: default
-            password: '111111'
-            ssl:
-                enabled: false
-            lettuce:
-                pool:
-                    max-active: 8
-                    max-idle: 8
-                    max-wait: -1
-                    min-idle: 1
-            repositories:
-                enabled: false
     datasource:
-        hikari:
-            tenantDefault: spring.datasource.hikari.flowable
+        type: com.alibaba.druid.pool.DruidDataSource
+        druid:
+            #driver-class-name: com.kingbase8.Driver
+            filter:
+                stat:
+                    log-slow-sql: true
+                    mergeSql: true
+                    slow-sql-millis: 3000
+                wall:
+                    config:
+                        drop-table-allow: false
+                    enabled: true #使用人大金仓数据库要设为false
+            stat-view-servlet:
+                enabled: false
+                url-pattern: /druid/*
+                login-username: admin
+                login-password: admin
+                reset-enable: false
+                allow: 127.0.0.1
+            web-stat-filter:
+                enabled: false
+                url-pattern: /*
+                exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/static/*'
+            tenantDefault: spring.datasource.druid.flowable
             y9-public:
-                driverClassName: com.mysql.cj.jdbc.Driver
-                jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                #driver-class-name: oracle.jdbc.OracleDriver
+                #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+                #username: Y9_PUBLIC
+                #password: '111111'
+                
+                #driverClassName: com.kingbase8.Driver
+                #url: jdbc:kingbase8://127.0.0.1:54321/risesoft?currentSchema=y9_public
+                #username: y9_public
+                #password: 111111
+                
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
-                password: '111111'
-                maximumPoolSize: 20
-                minimumIdle: 1
+                password: 111111
+                initialSize: 1
+                maxActive: 20
+                maxPoolPreparedStatementPerConnectionSize: 100
+                maxWait: 60000
+                minEvictableIdleTimeMillis: 300000
+                minIdle: 1
+                poolPreparedStatements: true
+                testOnBorrow: false
+                testOnReturn: false
+                testWhileIdle: true
+                timeBetweenEvictionRunsMillis: 60000
+                useGlobalDataSourceStat: true
+                validationQuery: SELECT 1 FROM DUAL
             flowable:
-                driverClassName: com.mysql.cj.jdbc.Driver
-                jdbcUrl: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                #driverClassName: com.kingbase8.Driver
+                #url: jdbc:kingbase8://127.0.0.1:54321/risesoft?currentSchema=y9_flowable
+                #username: y9_flowable
+                #password: 111111
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://localhost:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
-                password: '111111'
-                maximumPoolSize: 20
-                minimumIdle: 1
+                password: 111111
+                initialSize: 1
+                maxActive: 20
+                maxPoolPreparedStatementPerConnectionSize: 100
+                maxWait: 60000
+                minEvictableIdleTimeMillis: 300000
+                minIdle: 1
+                poolPreparedStatements: true
+                testOnBorrow: false
+                testOnReturn: false
+                testWhileIdle: true
+                timeBetweenEvictionRunsMillis: 60000
+                useGlobalDataSourceStat: true
+                validationQuery: SELECT 1 FROM DUAL
     elasticsearch:
         uris: localhost:9200
         username: elastic
@@ -92,22 +134,24 @@ spring:
     jmx:
         default-domain: itemAdmin
     jpa:
-        #databasePlatform: org.hibernate.dialect.MySQL8Dialect
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQL8Dialect
-                hbm2ddl:
-                    auto: none
-                jdbc:
-                    batchSize: 100
-                showSql: true
+        generate-ddl: true
         hibernate:
-            ddl-auto: none
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         open-in-view: false
-        generate-ddl: true
+        properties:
+            hibernate:
+                cache:
+                    use_query_cache: false
+                    use_second_level_cache: false
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                hbm2ddl:
+                    # 正式环境务必设置为none
+                    auto: none
+                jdbc:
+                    batch_size: 100
+                show_sql: false
     kafka:
         bootstrap-servers: localhost:9092
         consumer:
@@ -120,6 +164,20 @@ spring:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
+    redis:
+        database: 8
+        host: localhost
+        password: 111111
+        port: 6379
+        lettuce:
+            pool:
+                max-active: 8
+                max-idle: 8
+                max-wait: -1
+                min-idle: 0
+            shutdown-timeout: 100ms
+        ssl: false
+        timeout: 10000
     servlet:
         multipart:
             max-file-size: 200MB
@@ -152,17 +210,17 @@ y9:
     common:
         cacheEnabled: true
         kafkaEnabled: true
-        orgBaseUrl: http://localhost:7055/platform
-        processAdminBaseUrl: http://localhost:7056/processAdmin
-        itemAdminBaseUrl: http://localhost:7056/itemAdmin
-        datacenterBaseUrl: https://dev.youshengyun.com/datacenter
-        msgRemindBaseUrl: https://dev.youshengyun.com/msgRemind
+        orgBaseUrl: http://localhost:7055/server-platform
+        processAdminBaseUrl: http://localhost:7056/server-processadmin
+        itemAdminBaseUrl: http://localhost:7056/server-itemddmin
+        datacenterBaseUrl: https://dev.youshengyun.com/server-datacenter
+        msgRemindBaseUrl: https://dev.youshengyun.com/server-msgremind
         smsBaseUrl: http://localhost:7056/sms
-        todoBaseUrl: https://dev.youshengyun.com/todo
+        todoBaseUrl: https://dev.youshengyun.com/server-todo
         flowableBaseUrl: https://dev.youshengyun.com/flowableUI/index
-        logBaseUrl: http://localhost:7056/log
-        userOnlineBaseUrl: http://localhost:7056/userOnline
-        todo3rdUrl: http://localhost:7057/itemAdmin
+        logBaseUrl: http://localhost:7056/server-log
+        userOnlineBaseUrl: http://localhost:7056/server-useronline
+        todo3rdUrl: http://localhost:7057/server-itemadmin
     feature:
         file:
             base64FileName: false

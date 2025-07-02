@@ -13,7 +13,7 @@ import net.risesoft.api.itemadmin.AssociatedFileApi;
  */
 @FeignClient(contextId = "AssociatedFileApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/associatedFile")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/associatedFile")
 public interface AssociatedFileApiClient extends AssociatedFileApi {
 
 }

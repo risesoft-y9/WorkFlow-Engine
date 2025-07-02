@@ -10,7 +10,8 @@ import net.risesoft.api.itemadmin.PrintLogApi;
  * @date 2022/12/19
  */
 @FeignClient(contextId = "PrintLogApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
-    url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/printLog")
+    url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/printLog")
 public interface PrintLogApiClient extends PrintLogApi {
 
 }

@@ -16,7 +16,7 @@
 
     <modules>
         <module>risenet-y9boot-starter-log-flowable</module>
-        <module>risenet-y9boot-webapp-flowableui</module>
+        <module>risenet-y9boot-server-flowableui</module>
     </modules>
 
 </project>

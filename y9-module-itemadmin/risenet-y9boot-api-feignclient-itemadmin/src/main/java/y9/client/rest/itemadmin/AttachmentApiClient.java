@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.AttachmentApi;
  */
 @FeignClient(contextId = "AttachmentApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/attachment")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/attachment")
 public interface AttachmentApiClient extends AttachmentApi {
 
 }

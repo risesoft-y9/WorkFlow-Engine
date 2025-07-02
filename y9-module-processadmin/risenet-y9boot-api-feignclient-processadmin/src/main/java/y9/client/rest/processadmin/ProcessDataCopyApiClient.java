@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.ProcessDataCopyApi;
  */
 @FeignClient(contextId = "ProcessDataCopyApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/processDataCopy")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/processDataCopy")
 public interface ProcessDataCopyApiClient extends ProcessDataCopyApi {
 
 }

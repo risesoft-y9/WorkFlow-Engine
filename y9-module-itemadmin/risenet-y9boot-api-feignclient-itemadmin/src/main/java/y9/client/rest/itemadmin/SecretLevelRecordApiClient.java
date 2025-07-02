@@ -10,7 +10,7 @@ import net.risesoft.api.itemadmin.SecretLevelRecordApi;
  */
 @FeignClient(contextId = "SecretLevelRecordApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/secretLevelRecord")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/secretLevelRecord")
 public interface SecretLevelRecordApiClient extends SecretLevelRecordApi {
 
 }

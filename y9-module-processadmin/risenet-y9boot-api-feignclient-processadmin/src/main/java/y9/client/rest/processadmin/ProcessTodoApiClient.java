@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.ProcessTodoApi;
  */
 @FeignClient(contextId = "ProcessTodoApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/processTodo")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/processTodo")
 public interface ProcessTodoApiClient extends ProcessTodoApi {
 
 }

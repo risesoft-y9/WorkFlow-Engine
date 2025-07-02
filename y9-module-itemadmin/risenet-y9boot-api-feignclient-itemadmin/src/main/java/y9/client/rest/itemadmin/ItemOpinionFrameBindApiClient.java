@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
  */
 @FeignClient(contextId = "ItemOpinionFrameBindApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemOpinionFrameBind")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemOpinionFrameBind")
 public interface ItemOpinionFrameBindApiClient extends ItemOpinionFrameBindApi {
 
 }

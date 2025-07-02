@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.SpeakInfoApi;
  */
 @FeignClient(contextId = "SpeakInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/speakInfo")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/speakInfo")
 public interface SpeakInfoApiClient extends SpeakInfoApi {
 
 }

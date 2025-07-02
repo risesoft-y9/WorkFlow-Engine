@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.extend.ItemMsgRemindApi;
  */
 @FeignClient(contextId = "ItemMsgRemindApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemMsgRemind")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemMsgRemind")
 public interface ItemMsgRemindApiClient extends ItemMsgRemindApi {
 
 }

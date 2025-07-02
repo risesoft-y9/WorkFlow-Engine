@@ -12,7 +12,7 @@ import net.risesoft.api.itemadmin.ItemHaveDoneApi;
  */
 @FeignClient(contextId = "ItemHaveDoneApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemHaveDone")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemHaveDone")
 public interface ItemHaveDoneApiClient extends ItemHaveDoneApi {
 
 }

@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.PreWorkInfoApi;
  */
 @FeignClient(contextId = "PreWorkInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/preWorkInfo")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/preWorkInfo")
 public interface PreWorkInfoApiClient extends PreWorkInfoApi {
 
 }

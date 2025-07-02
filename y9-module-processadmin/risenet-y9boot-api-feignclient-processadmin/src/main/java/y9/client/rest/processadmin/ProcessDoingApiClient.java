@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.ProcessDoingApi;
  */
 @FeignClient(contextId = "DoingApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/doing")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/doing")
 public interface ProcessDoingApiClient extends ProcessDoingApi {
 
 }

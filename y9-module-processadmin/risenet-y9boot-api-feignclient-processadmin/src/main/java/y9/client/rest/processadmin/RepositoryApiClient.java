@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.RepositoryApi;
  */
 @FeignClient(contextId = "RepositoryApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/repository")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/repository")
 public interface RepositoryApiClient extends RepositoryApi {
 
 }

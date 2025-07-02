@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.SignaturePictureApi;
  */
 @FeignClient(contextId = "SignaturePictureApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/signaturePicture")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/signaturePicture")
 public interface SignaturePictureApiClient extends SignaturePictureApi {
 
 }

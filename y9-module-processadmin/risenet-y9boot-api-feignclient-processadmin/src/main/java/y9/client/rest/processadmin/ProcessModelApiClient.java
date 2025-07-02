@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.ProcessModelApi;
  */
 @FeignClient(contextId = "ProcessModelApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/processModel")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/processModel")
 public interface ProcessModelApiClient extends ProcessModelApi {
 
 }

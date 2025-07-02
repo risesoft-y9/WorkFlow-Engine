@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
  */
 @FeignClient(contextId = "ItemTodoTaskApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemTodoTask")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemTodoTask")
 public interface ItemTodoTaskApiClient extends ItemTodoTaskApi {
 
 }

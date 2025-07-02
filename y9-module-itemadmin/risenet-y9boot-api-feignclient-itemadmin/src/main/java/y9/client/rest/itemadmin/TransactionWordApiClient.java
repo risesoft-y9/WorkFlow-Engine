@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
  */
 @FeignClient(contextId = "TransactionWordApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/transactionWord")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/transactionWord")
 public interface TransactionWordApiClient extends TransactionWordApi {
 
 }

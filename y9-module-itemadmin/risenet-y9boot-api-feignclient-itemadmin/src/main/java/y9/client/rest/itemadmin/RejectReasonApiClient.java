@@ -11,7 +11,7 @@ import net.risesoft.api.itemadmin.RejectReasonApi;
  */
 @FeignClient(contextId = "RejectReasonApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/rejectReason")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/rejectReason")
 public interface RejectReasonApiClient extends RejectReasonApi {
 
 }

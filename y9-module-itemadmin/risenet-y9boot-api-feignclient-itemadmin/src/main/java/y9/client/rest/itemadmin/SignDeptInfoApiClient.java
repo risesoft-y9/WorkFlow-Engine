@@ -10,7 +10,8 @@ import net.risesoft.api.itemadmin.SignDeptInfoApi;
  * @date 2022/12/19
  */
 @FeignClient(contextId = "SignDeptInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
-    url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/signDept")
+    url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/signDept")
 public interface SignDeptInfoApiClient extends SignDeptInfoApi {
 
 }

@@ -13,7 +13,7 @@ import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
  */
 @FeignClient(contextId = "OfficeDoneInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
     url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/officeDoneInfo")
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/officeDoneInfo")
 public interface OfficeDoneInfoApiClient extends OfficeDoneInfoApi {
 
 }

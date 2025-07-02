@@ -11,7 +11,8 @@ import net.risesoft.api.itemadmin.ItemAllApi;
  * @date 2024/12/19
  */
 @FeignClient(contextId = "ItemAllApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
-    url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemAll")
+    url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:server-itemadmin}/services/rest/itemAll")
 public interface ItemAllApiClient extends ItemAllApi {
 
 }

@@ -11,7 +11,7 @@ import net.risesoft.api.processadmin.RuntimeApi;
  */
 @FeignClient(contextId = "RuntimeApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
     url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/runtime")
+    path = "/${y9.service.processAdmin.name:server-processadmin}/services/rest/runtime")
 public interface RuntimeApiClient extends RuntimeApi {
 
 }
