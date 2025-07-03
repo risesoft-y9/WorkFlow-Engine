@@ -1,41 +1,41 @@
 MobPush:
-    appKey: 2fcd5e3a22ff8
-    masterSecret: a1b1325012cd9ba86d48f02332e62bf6
+  appKey: 2fcd5e3a22ff8
+  masterSecret: a1b1325012cd9ba86d48f02332e62bf6
 flowable:
-    common:
-        app:
-            idm-url: http://localhost:7056/processAdmin
-            tenantId: ""
-            idmAdmin:
-                user: admin
-                password: 111111
+  common:
+    app:
+      idm-url: http://localhost:7056/processAdmin
+      tenantId: ""
+      idmAdmin:
+        user: admin
+        password: 111111
 hibernate:
   dialect:
     mssql: org.hibernate.dialect.SQLServer2012Dialect
     mysql: org.hibernate.dialect.MySQL8Dialect
     oracle: org.hibernate.dialect.Oracle10gDialect
 logging:
-    config: classpath:log4j2.xml
+  config: classpath:log4j2.xml
 management:
-    endpoints:
-        web:
-            exposure:
-                include: '*'
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 mybatis:
-    mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
+  mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
 server:
-    port: 8080
-    servlet:
-        encoding:
-            charset: UTF-8
-            enabled: true
-            force: true
-        session:
-            tracking-modes: COOKIE
-        context-path: /processAdmin
-        register-default-servlet: true
-    tomcat:
-        uri-encoding: UTF-8
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    session:
+      tracking-modes: COOKIE
+    context-path: /server-processadmin
+    register-default-servlet: true
+  tomcat:
+    uri-encoding: UTF-8
 spring:
     application:
         name: processAdmin
