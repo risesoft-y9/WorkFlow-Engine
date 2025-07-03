@@ -13,6 +13,8 @@
     <artifactId>y9-module-flowableui</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
+    <name>y9-module-flowableui</name>
+    <description>RiseSoft/WorkFlow Engine flowableui parent pom.xml file</description>
 
     <modules>
         <module>risenet-y9boot-starter-log-flowable</module>
