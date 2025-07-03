@@ -223,7 +223,6 @@
                         <artifactId>central-publishing-maven-plugin</artifactId>
                         <configuration>
                             <excludeArtifacts>
-                                <artifact>y9-module-flowableui</artifact>
                                 <artifact>risenet-y9boot-webapp-flowableui</artifact>
                                 <artifact>y9-module-jodconverter</artifact>
                                 <artifact>risenet-y9boot-webapp-jodconverter</artifact>
