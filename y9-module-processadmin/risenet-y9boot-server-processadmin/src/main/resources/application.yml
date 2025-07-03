@@ -32,7 +32,7 @@ server:
       force: true
     session:
       tracking-modes: COOKIE
-    context-path: /processAdmin
+    context-path: /server-processadmin
     register-default-servlet: true
   tomcat:
     uri-encoding: UTF-8

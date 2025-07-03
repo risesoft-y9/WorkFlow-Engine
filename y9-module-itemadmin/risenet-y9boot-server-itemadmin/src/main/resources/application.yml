@@ -228,7 +228,7 @@ y9:
             #privateKey:
             #publicKey:
             rest:
-                fileManagerUrl: http://localhost:8080/fileManager
+                fileManagerUrl: http://localhost:8080/filemanager
             ftp:
                 host: nexus-internal.youshengyun.com
                 port: 21
