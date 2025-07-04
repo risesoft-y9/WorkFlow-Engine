@@ -27,14 +27,18 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceParamsBind;
+import net.risesoft.entity.ItemViewConf;
 import net.risesoft.model.InterfaceExportData;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.InterfaceService;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
+import net.risesoft.service.config.ItemViewConfService;
 
 /**
  * 接口信息
@@ -50,6 +54,8 @@ public class JsonImAndExportRestController {
 
     private final InterfaceService interfaceService;
     private final ItemInterfaceParamsBindService itemInterfaceParamsBindService;
+    private final ItemViewConfService itemViewConfService;
+    private final DynamicRoleService dynamicRoleService;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 
     /**
@@ -76,6 +82,14 @@ public class JsonImAndExportRestController {
                 dataToExport = buildInterfaceParamBindExportData(id);
                 filename = "接口参数" + sdf.format(new Date());
                 break;
+            case "itemViewConfig": // 事项视图配置
+                dataToExport = buildItemViewConfigExportData(id);
+                filename = "视图配置" + sdf.format(new Date());
+                break;
+            case "dynamicRoleConfig": // 动态角色配置
+                dataToExport = buildDynamicRoleConfigExportData();
+                filename = "动态角色配置" + sdf.format(new Date());
+                break;
             // 可扩展其他类型
             default:
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("不支持的导出类型".getBytes());
@@ -83,6 +97,31 @@ public class JsonImAndExportRestController {
         return buildJsonDownloadResponse(dataToExport, filename);
     }
 
+    /**
+     * 获取动态角色数据
+     * 
+     * @return
+     */
+    private List<DynamicRole> buildDynamicRoleConfigExportData() {
+        return dynamicRoleService.listAll();
+    }
+
+    /**
+     * 获取视图配置数据
+     * 
+     * @param id
+     * @return
+     */
+    private List<ItemViewConf> buildItemViewConfigExportData(String id) {
+        return itemViewConfService.listByItemId(id);
+    }
+
+    /**
+     * 获取接口以及接口参数数据
+     * 
+     * @param id
+     * @return
+     */
     private List<InterfaceExportData> buildInterfaceExportData(String id) {
         List<InterfaceInfo> interfaceInfoList = new ArrayList<>();
         if (StringUtils.isNotBlank(id)) {
@@ -116,6 +155,13 @@ public class JsonImAndExportRestController {
         return itemInterfaceParamsBindService.listByItemIdAndInterfaceId(itemId, interfaceId);
     }
 
+    /**
+     * 导出json
+     * 
+     * @param data
+     * @param baseFilename
+     * @return
+     */
     protected ResponseEntity<byte[]> buildJsonDownloadResponse(Object data, String baseFilename) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -154,6 +200,12 @@ public class JsonImAndExportRestController {
                 case "interfaceParam": // 接口参数导入
                     importInterfaceParamFromJson(file, id, objectMapper);
                     break;
+                case "itemViewConfig": // 事项视图配置
+                    importItemViewFormJson(file, id, objectMapper);
+                    break;
+                case "dynamicRoleConfig": // 动态角色配置
+                    importDynamicRoleFormJson(file, objectMapper);
+                    break;
                 // 可扩展其他类型
                 default:
                     return Y9Result.failure("不支持的导出类型");
@@ -165,6 +217,66 @@ public class JsonImAndExportRestController {
         }
     }
 
+    /**
+     * 导入动态角色配置
+     *
+     * @param file
+     * @param objectMapper
+     */
+    private void importDynamicRoleFormJson(MultipartFile file, ObjectMapper objectMapper) {
+        try {
+            // 反序列化为 List<DynamicRole>
+            List<DynamicRole> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, DynamicRole.class));
+            for (DynamicRole dynamicRole : exportDataList) {
+                DynamicRole role =
+                    dynamicRoleService.findByNameAndClassPath(dynamicRole.getName(), dynamicRole.getClassPath());
+                if (null == role) {
+                    dynamicRole.setId(null);
+                    dynamicRoleService.saveOrUpdate(dynamicRole);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析视图配置json文件
+     *
+     * @param file
+     * @param id
+     * @param objectMapper
+     */
+    private void importItemViewFormJson(MultipartFile file, String id, ObjectMapper objectMapper) {
+        try {
+            // 反序列化为 List<ItemViewConf>
+            List<ItemViewConf> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, ItemViewConf.class));
+
+            for (ItemViewConf conf : exportDataList) {
+                // 如果当前事项的视图分类已经绑定了这个字段，将不保存。
+                ItemViewConf viewConf = itemViewConfService.findByItemIdAndViewTypeAndColumnName(id, conf.getViewType(),
+                    conf.getColumnName());
+                if (null == viewConf) {
+                    conf.setId(null);
+                    conf.setItemId(id);
+                    itemViewConfService.saveOrUpdate(conf);
+                }
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("导入失败：" + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 解析导入的接口参数方法
+     * 
+     * @param file
+     * @param id
+     * @param objectMapper
+     */
     private void importInterfaceParamFromJson(MultipartFile file, String id, ObjectMapper objectMapper) {
         try {
             String itemId = id.split(":")[0];
@@ -185,6 +297,12 @@ public class JsonImAndExportRestController {
         }
     }
 
+    /**
+     * 解析接口以及接口参数方法
+     * 
+     * @param file
+     * @param objectMapper
+     */
     private void importInterfaceFromJson(MultipartFile file, ObjectMapper objectMapper) {
         try {
             // 反序列化为 List<InterfaceExportData>

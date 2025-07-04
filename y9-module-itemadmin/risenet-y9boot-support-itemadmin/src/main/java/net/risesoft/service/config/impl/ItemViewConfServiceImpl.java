@@ -98,6 +98,11 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
+    public ItemViewConf findByItemIdAndViewTypeAndColumnName(String itemId, String viewType, String columnName) {
+        return itemViewConfRepository.findByItemIdAndViewTypeAndColumnName(itemId, viewType, columnName);
+    }
+
+    @Override
     public List<ItemViewConf> listByItemId(String itemId) {
         return itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
     }

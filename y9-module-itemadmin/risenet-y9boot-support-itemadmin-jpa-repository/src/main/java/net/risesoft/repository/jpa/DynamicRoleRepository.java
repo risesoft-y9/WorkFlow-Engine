@@ -44,4 +44,6 @@ public interface DynamicRoleRepository
     @Transactional(readOnly = false)
     @Query("update DynamicRole t set t.tabIndex=?1 where t.id=?2")
     void update4Order(Integer tabIndex, String id);
+
+    DynamicRole findByNameAndClassPath(String name, String classPath);
 }

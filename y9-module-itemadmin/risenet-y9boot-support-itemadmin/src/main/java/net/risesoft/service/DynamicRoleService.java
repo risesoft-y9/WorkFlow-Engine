@@ -40,4 +40,13 @@ public interface DynamicRoleService {
      * @return
      */
     DynamicRole saveOrUpdate(DynamicRole dynamicRole);
+
+    /**
+     * 根据名称和类路径查找动态角色
+     *
+     * @param name
+     * @param classPath
+     * @return
+     */
+    DynamicRole findByNameAndClassPath(String name, String classPath);
 }

@@ -43,6 +43,16 @@ public interface ItemViewConfService {
     ItemViewConf findById(String id);
 
     /**
+     * 根据事项id、视图分类和字段名称查询视图绑定信息
+     * 
+     * @param itemId
+     * @param viewType
+     * @param columnName
+     * @return
+     */
+    ItemViewConf findByItemIdAndViewTypeAndColumnName(String itemId, String viewType, String columnName);
+
+    /**
      * 根据事项唯一标示和视图类型
      *
      * @param itemId
