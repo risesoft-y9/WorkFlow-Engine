@@ -89,4 +89,9 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
         dynamicRoleRepository.save(d);
         return d;
     }
+
+    @Override
+    public DynamicRole findByNameAndClassPath(String name, String classPath) {
+        return dynamicRoleRepository.findByNameAndClassPath(name, classPath);
+    }
 }
