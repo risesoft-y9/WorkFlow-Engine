@@ -150,13 +150,11 @@
         downloadZipShow.value = false;
         y9UserInfo.value = y9_storage.getObjectItem('ssoUserInfo');
         downloadUrl.value =
-            import.meta.env.VUE_APP_HOST +
-            import.meta.env.VUE_APP_NAME +
+            import.meta.env.VUE_APP_CONTEXT +
             '/vue/attachment/attachmentDownload?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
         downloadZipUrl.value =
-            import.meta.env.VUE_APP_HOST +
-            import.meta.env.VUE_APP_NAME +
+            import.meta.env.VUE_APP_CONTEXT +
             '/vue/attachment/packDownload?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
     });
@@ -198,7 +196,7 @@
                 if (png.indexOf(type) > -1) {
                     //图片使用外网地址，使用前端配置
                     fileList[i].downloadUrl =
-                        import.meta.env.VUE_APP_HOST + 'itemAdmin' + fileList[i].downloadUrl.split('/itemAdmin')[1];
+                        import.meta.env.VUE_APP_CONTEXT + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
                     fileList[i].jodconverterURL = import.meta.env.VUE_APP_JODCONVERTERURL + fileList[i].downloadUrl;
                 }
             }
@@ -211,8 +209,7 @@
 
     function download(row) {
         window.open(
-            import.meta.env.VUE_APP_HOST +
-                import.meta.env.VUE_APP_NAME +
+            import.meta.env.VUE_APP_CONTEXT +
                 '/vue/attachment/attachmentDownload?id=' +
                 row.id +
                 '&access_token=' +
@@ -229,8 +226,7 @@
             fileSource: ''
         };
         upload.value.url =
-            import.meta.env.VUE_APP_HOST +
-            import.meta.env.VUE_APP_NAME +
+            import.meta.env.VUE_APP_CONTEXT +
             '/vue/attachment/upload?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
         Object.assign(dialogConfig.value, {

@@ -213,7 +213,7 @@ y9:
             #privateKey:
             #publicKey:
             rest:
-                fileManagerUrl: http://test-api.youshengyun.com/fileManager
+                fileManagerUrl: http://test-api.youshengyun.com/filemanager
             ftp:
                 enabled: true
                 host: nexus-internal.youshengyun.com

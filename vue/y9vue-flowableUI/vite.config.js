@@ -17,23 +17,23 @@ export default (serve) => {
         base: ENV.VUE_APP_PUBLIC_PATH,
         build: {
             outDir: ENV.VUE_APP_NAME,
+            chunkSizeWarningLimit: 1000,
             rollupOptions: {
                 output: {
                     manualChunks(id) {
-                        if(id.includes('node_modules')){
+                        if (id.includes('node_modules')) {
                             return id.toString().split('node_modules/')[1].split('/')[0].toString();
                         }
-
                     }
                 }
-            },
+            }
         },
         envPrefix: prefix,
         resolve: {
             alias: {
                 '@': resolve(__dirname, 'src'),
-                'vue': 'vue/dist/vue.esm-bundler.js'//表单设计器需要引用完整版vue
-            },
+                vue: 'vue/dist/vue.esm-bundler.js' //表单设计器需要引用完整版vue
+            }
         },
         server: {
             port: 8080,
@@ -43,8 +43,8 @@ export default (serve) => {
                     target: process.env.VUE_APP_SSO_DOMAINURL,
                     changeOrigin: true,
                     secure: true,
-                    pathRewrite: { '^/.*/sso': '/sso' },
-                },
+                    pathRewrite: { '^/.*/sso': '/sso' }
+                }
                 // '/flowableUI.*/(.*)/vue': {
                 //     target: process.env.VUE_APP_APIHOST,
                 //     changeOrigin: true,
@@ -56,24 +56,23 @@ export default (serve) => {
             headers: {
                 'Access-Control-Allow-Origin': '*'
             }
-      
         },
         plugins: [
             vue(),
             AutoImport({
                 imports: ['vue', 'pinia', 'vue-i18n', 'vue-router', '@vueuse/core'],
-                resolvers: [ElementPlusResolver()], 
+                resolvers: [ElementPlusResolver()]
             }),
             Components({
                 resolvers: [
                     ElementPlusResolver({
-                        importStyle: 'sass', // 实现element自定义主题 & 切换，这里选择 sass
-                    }),
-                ],
+                        importStyle: 'sass' // 实现element自定义主题 & 切换，这里选择 sass
+                    })
+                ]
             }),
             Icons({
                 compiler: 'vue3',
-                autoInstall: true,
+                autoInstall: true
             }),
             vitePluginIconSvg(),
             // 创建预设主题切换
@@ -86,28 +85,28 @@ export default (serve) => {
                         {
                             scopeName: 'theme-default',
                             // 变量文件内容不应该夹带样式代码，设定上只需存在变量
-                            path: path.resolve('src/theme/default/default.scss'),
+                            path: path.resolve('src/theme/default/default.scss')
                         },
                         {
                             scopeName: 'theme-green',
-                            path: path.resolve('src/theme/green/green.scss'),
+                            path: path.resolve('src/theme/green/green.scss')
                         },
                         {
                             scopeName: 'theme-blue',
-                            path: path.resolve('src/theme/blue/blue.scss'),
+                            path: path.resolve('src/theme/blue/blue.scss')
                         },
                         {
                             scopeName: 'theme-dark',
-                            path: path.resolve('src/theme/dark/dark.scss'),
-                        },
+                            path: path.resolve('src/theme/dark/dark.scss')
+                        }
                     ],
                     // css中不是由主题色变量生成的颜色，也让它抽取到主题css内，可以提高权重
                     includeStyleWithColors: [
                         {
                             color: '#ffffff',
                             // 此类颜色的是否跟随主题色梯度变化，默认false
-                            inGradient: true,
-                        },
+                            inGradient: true
+                        }
                     ],
                     // 默认取 multipleScopeVars[0].scopeName
                     defaultScopeName: '',
@@ -122,11 +121,11 @@ export default (serve) => {
                     // 是否对抽取的css文件内对应scopeName的权重类名移除
                     removeCssScopeName: false,
                     // 可以自定义css文件名称的函数
-                    customThemeCssFileName: (scopeName) => scopeName,
-                },
+                    customThemeCssFileName: (scopeName) => scopeName
+                }
             }),
             // 主题热更新，不得已分开插件，因为需要vite插件顺序enforce
-            themePreprocessorHmrPlugin(),
-        ],
+            themePreprocessorHmrPlugin()
+        ]
     });
 };

@@ -16,7 +16,8 @@ export default (serve) => {
     return defineConfig({
         base: ENV.VUE_APP_PUBLIC_PATH,
         build: {
-            outDir: ENV.VUE_APP_NAME
+            outDir: ENV.VUE_APP_NAME,
+            chunkSizeWarningLimit: 6500
         },
         envPrefix: prefix,
         resolve: {
