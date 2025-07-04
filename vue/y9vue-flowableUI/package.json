@@ -1,6 +1,6 @@
 {
     "name": "y9vue-flowableUI",
-    "version": "9.6.7",
+    "version": "9.6.8",
     "scripts": {
         "serve": "vite  --mode development",
         "serve-local": "vite  --mode localEnv",
@@ -63,7 +63,7 @@
         "vuedraggable": "^4.1.0",
         "vxe-table": "^4.3.5",
         "xe-utils": "^3.5.7",
-        "y9plugin-components": "^3.0.19",
+        "y9plugin-components": "^3.0.21",
         "y9plugin-sso": "^4.2.9",
         "y9plugin-watermark": "^1.2.0"
     },
