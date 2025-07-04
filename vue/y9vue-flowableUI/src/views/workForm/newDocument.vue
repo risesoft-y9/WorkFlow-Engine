@@ -450,7 +450,7 @@
                 basicData.value.processSerialNumber = currentrRute.query.processSerialNumber;
                 basicData.value.formType = currentrRute.query.formType; //前置表单标识
             }
-            // myForm.value.show(formId.value);
+            myForm.value.show(formId.value);
         }
     }
 
@@ -748,7 +748,7 @@
                 draftData.associatedFileNum == 0 ? '关联流程' : '关联流程(' + draftData.associatedFileNum + ')';
             setBasicData(draftData);
             printFormType.value = draftData.printFormType;
-            // myForm.value.show(formId.value);
+            myForm.value.show(formId.value);
         }
     }
 
