@@ -124,7 +124,7 @@
         uploadLoading.value = true;
         axios
             .post(
-                import.meta.env.VUE_APP_HOST + import.meta.env.VUE_APP_NAME + '/vue/attachment/upload',
+                import.meta.env.VUE_APP_CONTEXT + '/vue/attachment/upload',
                 formData,
                 config
             )
