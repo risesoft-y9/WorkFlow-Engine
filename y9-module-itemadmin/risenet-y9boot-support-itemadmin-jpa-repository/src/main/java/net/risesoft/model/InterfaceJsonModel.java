@@ -12,7 +12,7 @@ import net.risesoft.entity.InterfaceResponseParams;
 
 @NoArgsConstructor
 @Data
-public class InterfaceExportData implements Serializable {
+public class InterfaceJsonModel implements Serializable {
 
     private static final long serialVersionUID = 7669425535268773230L;
 

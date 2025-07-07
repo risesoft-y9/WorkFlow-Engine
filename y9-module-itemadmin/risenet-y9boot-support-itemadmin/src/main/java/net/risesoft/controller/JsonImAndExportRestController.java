@@ -27,18 +27,28 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.entity.CommonButton;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.ItemViewConf;
-import net.risesoft.model.InterfaceExportData;
+import net.risesoft.entity.OpinionFrame;
+import net.risesoft.entity.SendButton;
+import net.risesoft.entity.form.Y9FormOptionClass;
+import net.risesoft.entity.form.Y9FormOptionValue;
+import net.risesoft.model.InterfaceJsonModel;
+import net.risesoft.model.OptionClassJsonModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.InterfaceService;
+import net.risesoft.service.OpinionFrameService;
+import net.risesoft.service.SendButtonService;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
 import net.risesoft.service.config.ItemViewConfService;
+import net.risesoft.service.form.Y9FormOptionClassService;
 
 /**
  * 接口信息
@@ -56,6 +66,10 @@ public class JsonImAndExportRestController {
     private final ItemInterfaceParamsBindService itemInterfaceParamsBindService;
     private final ItemViewConfService itemViewConfService;
     private final DynamicRoleService dynamicRoleService;
+    private final OpinionFrameService opinionFrameService;
+    private final CommonButtonService commonButtonService;
+    private final SendButtonService sendButtonService;
+    private final Y9FormOptionClassService y9FormOptionClassService;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 
     /**
@@ -72,7 +86,7 @@ public class JsonImAndExportRestController {
         switch (type) {
             case "interface": // 接口信息
                 dataToExport = buildInterfaceExportData(id);
-                filename = ((List<InterfaceExportData>)dataToExport).get(0).getInterfaceInfo().getInterfaceName();
+                filename = ((List<InterfaceJsonModel>)dataToExport).get(0).getInterfaceInfo().getInterfaceName();
                 break;
             case "interfaceAll": // 全部接口信息
                 dataToExport = buildInterfaceExportData("");
@@ -90,11 +104,81 @@ public class JsonImAndExportRestController {
                 dataToExport = buildDynamicRoleConfigExportData();
                 filename = "动态角色配置" + sdf.format(new Date());
                 break;
+            case "opinionFrame":
+                dataToExport = buildOpinionFrameExportData();
+                filename = "意见框配置" + sdf.format(new Date());
+                break;
+            case "commonButton":
+                dataToExport = buildCommonButtonExportData();
+                filename = "普通按钮配置" + sdf.format(new Date());
+                break;
+            case "sendButton":
+                dataToExport = buildSendButtonExportData();
+                filename = "发送按钮配置" + sdf.format(new Date());
+                break;
+            case "optionClassAll":
+                dataToExport = buildOptionClassExportData("");
+                filename = "数字字典所有配置" + sdf.format(new Date());
+                break;
+            case "optionClass":
+                dataToExport = buildOptionClassExportData(id);
+                filename = "数字字典【" + id + "】配置" + sdf.format(new Date());
+                break;
             // 可扩展其他类型
             default:
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("不支持的导出类型".getBytes());
         }
         return buildJsonDownloadResponse(dataToExport, filename);
+    }
+
+    /**
+     * 获取数字字典数据
+     *
+     * @param id
+     * @return
+     */
+    private List<OptionClassJsonModel> buildOptionClassExportData(String id) {
+        List<Y9FormOptionClass> optionClassList = new ArrayList<>();
+        if (StringUtils.isNotBlank(id)) {
+            optionClassList.add(y9FormOptionClassService.findByType(id));
+        } else {
+            optionClassList = y9FormOptionClassService.listAllOptionClass(); // 查询所有接口
+        }
+        return optionClassList.stream().map(y9FormOptionClass -> {
+            List<Y9FormOptionValue> optionValueList =
+                y9FormOptionClassService.listByTypeOrderByTabIndexAsc(y9FormOptionClass.getType());
+            OptionClassJsonModel exportData = new OptionClassJsonModel();
+            exportData.setOptionClass(y9FormOptionClass);
+            exportData.setFormOptionValueList(optionValueList);
+            return exportData;
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取普通按钮配置数据
+     * 
+     * @return
+     */
+    private List<CommonButton> buildCommonButtonExportData() {
+        return commonButtonService.listAll();
+    }
+
+    /**
+     * 获取发送按钮配置数据
+     *
+     * @return
+     */
+    private List<SendButton> buildSendButtonExportData() {
+        return sendButtonService.listAll();
+    }
+
+    /**
+     * 获取意见框数据
+     *
+     * @return
+     */
+    private List<OpinionFrame> buildOpinionFrameExportData() {
+        return opinionFrameService.listAll();
     }
 
     /**
@@ -122,7 +206,7 @@ public class JsonImAndExportRestController {
      * @param id
      * @return
      */
-    private List<InterfaceExportData> buildInterfaceExportData(String id) {
+    private List<InterfaceJsonModel> buildInterfaceExportData(String id) {
         List<InterfaceInfo> interfaceInfoList = new ArrayList<>();
         if (StringUtils.isNotBlank(id)) {
             interfaceInfoList.add(interfaceService.findById(id));
@@ -135,7 +219,7 @@ public class JsonImAndExportRestController {
             List<InterfaceResponseParams> responseParamsList =
                 interfaceService.listResponseParamsByNameAndId(null, info.getId());
 
-            InterfaceExportData exportData = new InterfaceExportData();
+            InterfaceJsonModel exportData = new InterfaceJsonModel();
             exportData.setInterfaceInfo(info);
             exportData.setRequestParamsList(requestParamsList);
             exportData.setResponseParamsList(responseParamsList);
@@ -194,7 +278,7 @@ public class JsonImAndExportRestController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             switch (type) {
-                case "interface": // 接口信息以及接口参数导入
+                case "interfaceAll": // 接口信息以及接口参数导入
                     importInterfaceFromJson(file, objectMapper);
                     break;
                 case "interfaceParam": // 接口参数导入
@@ -206,14 +290,111 @@ public class JsonImAndExportRestController {
                 case "dynamicRoleConfig": // 动态角色配置
                     importDynamicRoleFormJson(file, objectMapper);
                     break;
+                case "opinionFrame": // 意见框配置
+                    importOpinionFrameFormJson(file, objectMapper);
+                    break;
+                case "commonButton": // 普通按钮配置
+                    importCommonButtonFormJson(file, objectMapper);
+                    break;
+                case "sendButton": // 发送按钮配置
+                    importSendButtonFormJson(file, objectMapper);
+                    break;
+                case "optionClassAll":
+                    importOptionClassFormJson(file, objectMapper);
+                    break;
                 // 可扩展其他类型
                 default:
                     return Y9Result.failure("不支持的导出类型");
             }
             return Y9Result.successMsg("导入成功");
         } catch (Exception e) {
-            e.printStackTrace();
             return Y9Result.failure("导入失败：" + e.getMessage());
+        }
+    }
+
+    private void importOptionClassFormJson(MultipartFile file, ObjectMapper objectMapper) {
+        try {
+            // 反序列化为 List<OptionClassExportModel>
+            List<OptionClassJsonModel> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, OptionClassJsonModel.class));
+
+            for (OptionClassJsonModel exportData : exportDataList) {
+                Y9FormOptionClass optionClass = exportData.getOptionClass();
+                List<Y9FormOptionValue> optionValueList = exportData.getFormOptionValueList();
+
+                Y9FormOptionClass Y9FormOptionClass = y9FormOptionClassService.saveOptionClass(optionClass).getData();
+                if (null != Y9FormOptionClass) {
+                    for (Y9FormOptionValue Y9FormOptionValue : optionValueList) {
+                        Y9FormOptionValue.setId(null);
+                        Y9FormOptionValue.setType(Y9FormOptionClass.getType());
+                        y9FormOptionClassService.saveOptionValue(Y9FormOptionValue);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("导入数据异常：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 导入普通按钮数据
+     *
+     * @param file
+     * @param objectMapper
+     */
+    private void importCommonButtonFormJson(MultipartFile file, ObjectMapper objectMapper) {
+        try {
+            List<CommonButton> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, CommonButton.class));
+            for (CommonButton commonButton : exportDataList) {
+                commonButton.setId(null);
+                commonButton.setCustomId(commonButton.getCustomId().replace("common_", ""));
+                commonButtonService.saveOrUpdate(commonButton);
+            }
+        } catch (Exception e) {
+            LOGGER.error("导入数据异常：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 导入发送按钮数据
+     *
+     * @param file
+     * @param objectMapper
+     */
+    private void importSendButtonFormJson(MultipartFile file, ObjectMapper objectMapper) {
+        try {
+            List<SendButton> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, SendButton.class));
+            for (SendButton sendButton : exportDataList) {
+                sendButton.setId(null);
+                sendButton.setCustomId(sendButton.getCustomId().replace("send_", ""));
+                sendButtonService.saveOrUpdate(sendButton);
+            }
+        } catch (Exception e) {
+            LOGGER.error("导入数据异常：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 导入意见框数据
+     * 
+     * @param file
+     * @param objectMapper
+     */
+    private void importOpinionFrameFormJson(MultipartFile file, ObjectMapper objectMapper) {
+        try {
+            List<OpinionFrame> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, OpinionFrame.class));
+            for (OpinionFrame opinionFrame : exportDataList) {
+                OpinionFrame existOpinionFrame = opinionFrameService.getByMark(opinionFrame.getMark());
+                if (null == existOpinionFrame) {
+                    opinionFrame.setId(null);
+                    opinionFrameService.saveOrUpdate(opinionFrame);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("导入数据异常：" + e.getMessage());
         }
     }
 
@@ -237,7 +418,7 @@ public class JsonImAndExportRestController {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("导入数据异常：" + e.getMessage());
         }
     }
 
@@ -306,10 +487,10 @@ public class JsonImAndExportRestController {
     private void importInterfaceFromJson(MultipartFile file, ObjectMapper objectMapper) {
         try {
             // 反序列化为 List<InterfaceExportData>
-            List<InterfaceExportData> exportDataList = objectMapper.readValue(file.getInputStream(),
-                objectMapper.getTypeFactory().constructCollectionType(List.class, InterfaceExportData.class));
+            List<InterfaceJsonModel> exportDataList = objectMapper.readValue(file.getInputStream(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, InterfaceJsonModel.class));
 
-            for (InterfaceExportData exportData : exportDataList) {
+            for (InterfaceJsonModel exportData : exportDataList) {
                 InterfaceInfo interfaceInfo = exportData.getInterfaceInfo();
                 List<InterfaceRequestParams> requestParamsList = exportData.getRequestParamsList();
                 List<InterfaceResponseParams> responseParamsList = exportData.getResponseParamsList();
