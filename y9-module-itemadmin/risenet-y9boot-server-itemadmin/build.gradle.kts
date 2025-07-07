@@ -21,9 +21,9 @@ dependencies {
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 }
 
-description = "risenet-y9boot-webapp-itemadmin"
+description = "risenet-y9boot-server-itemadmin"
 
-val finalName = "itemAdmin"
+val finalName = "server-itemadmin"
 y9Docker {
     appName = finalName
 }

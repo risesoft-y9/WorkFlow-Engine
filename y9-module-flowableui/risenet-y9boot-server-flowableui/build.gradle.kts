@@ -47,9 +47,9 @@ dependencies {
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 }
 
-description = "risenet-y9boot-webapp-flowableui"
+description = "risenet-y9boot-server-flowableui"
 
-val finalName = "flowableUI"
+val finalName = "server-flowableui"
 y9Docker {
     appName = finalName
 }
