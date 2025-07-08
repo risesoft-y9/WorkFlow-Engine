@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.permission.RoleApi;
-import net.risesoft.entity.ItemOrganWordRole;
+import net.risesoft.entity.organword.ItemOrganWordRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;

@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.entity.OpinionSign;
 import net.risesoft.entity.SignDeptDetail;
+import net.risesoft.entity.opinion.OpinionSign;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;

@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.entity.AttachmentConf;
-import net.risesoft.entity.TransactionFile;
+import net.risesoft.entity.attachment.Attachment;
+import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AttachmentConfModel;
@@ -116,7 +116,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @Override
     public Y9Result<AttachmentModel> findById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        TransactionFile file = transactionFileService.findById(id);
+        Attachment file = transactionFileService.findById(id);
         AttachmentModel model = null;
         if (file != null) {
             model = new AttachmentModel();
@@ -175,9 +175,9 @@ public class AttachmentApiImpl implements AttachmentApi {
     public Y9Result<List<AttachmentModel>> getAttachmentModelList(@RequestParam String tenantId,
         @RequestParam String processSerialNumber, String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<TransactionFile> transactionFileList =
+        List<Attachment> attachmentList =
             transactionFileService.listSearchByProcessSerialNumber(processSerialNumber, fileSource);
-        List<AttachmentModel> list = ItemAdminModelConvertUtil.attachmentList2ModelList(transactionFileList);
+        List<AttachmentModel> list = ItemAdminModelConvertUtil.attachmentList2ModelList(attachmentList);
         return Y9Result.success(list);
     }
 
@@ -192,7 +192,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @Override
     public Y9Result<AttachmentModel> getFile(@RequestParam String tenantId, @RequestParam String fileId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        TransactionFile file = transactionFileRepository.findById(fileId).orElse(null);
+        Attachment file = transactionFileRepository.findById(fileId).orElse(null);
         AttachmentModel model = null;
         if (file != null) {
             model = new AttachmentModel();
@@ -223,7 +223,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         assert attachmentJson != null;
         List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentJson.get("attachment");
         for (Map<String, Object> map : attachmentList) {
-            TransactionFile file = new TransactionFile();
+            Attachment file = new Attachment();
             file.setDescribes(map.get("describes") == null ? "" : map.get("describes").toString());
             file.setFileStoreId(map.get("filePath").toString());
             file.setFileSize(map.get("fileSize") == null ? "" : map.get("fileSize").toString());
@@ -266,7 +266,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            TransactionFile attachment = transactionFileService.getFileInfoByFileName(fileName, processSerialNumber);
+            Attachment attachment = transactionFileService.getFileInfoByFileName(fileName, processSerialNumber);
             if (null != attachment) {
                 attachment.setFileStoreId(y9FileStoreId);
                 attachment.setName(fileName);
@@ -277,7 +277,7 @@ public class AttachmentApiImpl implements AttachmentApi {
                 attachment.setUploadTime(sdf.format(new Date()));
                 transactionFileRepository.save(attachment);
             } else {
-                TransactionFile fileAttachment = new TransactionFile();
+                Attachment fileAttachment = new Attachment();
                 fileAttachment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 fileAttachment.setFileStoreId(y9FileStoreId);
                 fileAttachment.setName(fileName);
@@ -322,7 +322,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            TransactionFile attachment = transactionFileRepository.findById(fileId).orElse(null);
+            Attachment attachment = transactionFileRepository.findById(fileId).orElse(null);
             if (null != attachment) {
                 attachment.setFileStoreId(y9FileStoreId);
                 attachment.setFileSize(fileSize);
@@ -384,7 +384,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        TransactionFile file = new TransactionFile();
+        Attachment file = new Attachment();
         Y9BeanUtil.copyProperties(attachmentModel, file);
         transactionFileService.uploadRestModel(file);
         return Y9Result.success();

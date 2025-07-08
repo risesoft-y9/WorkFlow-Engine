@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.AttachmentConf;
-import net.risesoft.entity.TransactionFile;
+import net.risesoft.entity.attachment.Attachment;
+import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AttachmentConfService;
 import net.risesoft.util.CommentUtil;
@@ -46,7 +46,7 @@ public class AttachmentConfRestController {
      */
     @GetMapping(value = "/getColumns")
     public Y9Result<List<Map<String, Object>>> getColumns() {
-        List<Map<String, Object>> list = CommentUtil.getEntityFieldList(TransactionFile.class);
+        List<Map<String, Object>> list = CommentUtil.getEntityFieldList(Attachment.class);
         return Y9Result.success(list, "获取成功");
     }
 

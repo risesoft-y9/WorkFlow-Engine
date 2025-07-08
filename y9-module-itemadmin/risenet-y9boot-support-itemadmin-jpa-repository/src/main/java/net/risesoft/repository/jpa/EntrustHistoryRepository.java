@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.Entrust;
-import net.risesoft.entity.EntrustHistory;
+import net.risesoft.entity.entrust.Entrust;
+import net.risesoft.entity.entrust.EntrustHistory;
 
 /**
  * @author qinman

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.EntrustHistory;
+import net.risesoft.entity.entrust.EntrustHistory;
 
 /**
  * @author qinman

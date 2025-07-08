@@ -1,6 +1,6 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.OrganWordUseHistory;
+import net.risesoft.entity.organword.OrganWordUseHistory;
 
 /**
  * @author qinman

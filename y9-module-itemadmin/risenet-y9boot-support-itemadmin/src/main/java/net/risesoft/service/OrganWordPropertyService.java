@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.OrganWordProperty;
+import net.risesoft.entity.organword.OrganWordProperty;
 
 /**
  * @author qinman

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.EntrustHistoryApi;
-import net.risesoft.entity.EntrustHistory;
+import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.model.itemadmin.EntrustHistoryModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.EntrustHistoryService;

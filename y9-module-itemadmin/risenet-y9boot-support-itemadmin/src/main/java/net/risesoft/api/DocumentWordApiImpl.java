@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWordApi;
-import net.risesoft.entity.DocumentHistoryWord;
-import net.risesoft.entity.DocumentWord;
+import net.risesoft.entity.documentword.DocumentHistoryWord;
+import net.risesoft.entity.documentword.DocumentWord;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DocumentHistoryWordRepository;

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.entity.Opinion;
+import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;

@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemOrganWordRole;
+import net.risesoft.entity.organword.ItemOrganWordRole;
 
 /**
  * @author qinman

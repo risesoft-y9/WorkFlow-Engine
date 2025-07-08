@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.entity.TransactionFile;
+import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -45,7 +45,7 @@ public interface TransactionFileService {
      * @param id
      * @return
      */
-    TransactionFile findById(String id);
+    Attachment findById(String id);
 
     /**
      * (软航附件控件) 根据附件名称查询附件信息
@@ -54,7 +54,7 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    TransactionFile getFileInfoByFileName(String fileName, String processSerialNumber);
+    Attachment getFileInfoByFileName(String fileName, String processSerialNumber);
 
     /**
      * 根据流程实例id、附件来源和文件类型获取附件数
@@ -73,7 +73,7 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex, String processSerialNumber);
+    Attachment getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex, String processSerialNumber);
 
     /**
      * 根据processSerialNumber获取
@@ -81,7 +81,7 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    List<TransactionFile> listByProcessSerialNumber(String processSerialNumber);
+    List<Attachment> listByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据流程实例id和附件来源获取附件列表
@@ -90,7 +90,7 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    List<TransactionFile> listByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
+    List<Attachment> listByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
 
     /**
      * Description: 获取附件列表
@@ -99,7 +99,7 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    List<TransactionFile> listSearchByProcessSerialNumber(String processSerialNumber, String fileSource);
+    List<Attachment> listSearchByProcessSerialNumber(String processSerialNumber, String fileSource);
 
     /**
      * Description: 获取附件列表
@@ -118,7 +118,7 @@ public interface TransactionFileService {
      *
      * @param file
      */
-    void save(TransactionFile file);
+    void save(Attachment file);
 
     /**
      * Description: 保存附件信息
@@ -171,8 +171,8 @@ public interface TransactionFileService {
     /**
      * Description: 上传附件
      *
-     * @param transactionFile
+     * @param attachment
      * @return
      */
-    TransactionFile uploadRestModel(TransactionFile transactionFile);
+    Attachment uploadRestModel(Attachment attachment);
 }

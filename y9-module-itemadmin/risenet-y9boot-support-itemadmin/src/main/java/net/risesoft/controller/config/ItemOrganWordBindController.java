@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.entity.ItemOrganWordBind;
-import net.risesoft.entity.OrganWord;
+import net.risesoft.entity.organword.ItemOrganWordBind;
+import net.risesoft.entity.organword.OrganWord;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OrganWordService;

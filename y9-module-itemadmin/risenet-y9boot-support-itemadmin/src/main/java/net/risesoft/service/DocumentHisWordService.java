@@ -1,6 +1,6 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.DocumentHistoryWord;
+import net.risesoft.entity.documentword.DocumentHistoryWord;
 
 /**
  * @author qinman

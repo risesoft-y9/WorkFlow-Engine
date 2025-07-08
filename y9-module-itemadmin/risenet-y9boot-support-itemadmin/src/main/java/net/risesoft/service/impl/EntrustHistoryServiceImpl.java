@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.EntrustHistory;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.EntrustHistoryRepository;
 import net.risesoft.service.EntrustHistoryService;

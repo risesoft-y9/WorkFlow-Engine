@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.CommonSentences;
-import net.risesoft.entity.CommonSentencesInit;
+import net.risesoft.entity.commonsentences.CommonSentences;
+import net.risesoft.entity.commonsentences.CommonSentencesInit;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.CommonSentencesInitRepository;

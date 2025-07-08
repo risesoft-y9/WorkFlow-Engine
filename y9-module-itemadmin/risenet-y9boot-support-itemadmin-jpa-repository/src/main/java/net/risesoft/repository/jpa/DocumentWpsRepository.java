@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.DocumentWps;
+import net.risesoft.entity.documentword.DocumentWps;
 
 /**
  * @author qinman

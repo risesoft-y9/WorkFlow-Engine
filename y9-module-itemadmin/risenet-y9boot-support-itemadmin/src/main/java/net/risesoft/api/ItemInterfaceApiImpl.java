@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
-import net.risesoft.entity.InterfaceInfo;
-import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.ItemInterfaceTaskBind;
 import net.risesoft.entity.TaskTimeConf;
+import net.risesoft.entity.interfaceinfo.InterfaceInfo;
+import net.risesoft.entity.interfaceinfo.InterfaceResponseParams;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.model.itemadmin.InterfaceModel;
 import net.risesoft.model.itemadmin.InterfaceParamsModel;

@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
-import net.risesoft.entity.OpinionFrame;
+import net.risesoft.entity.opinion.OpinionFrame;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OpinionFrameService;

@@ -3,7 +3,7 @@ package net.risesoft.service;
 import java.text.ParseException;
 import java.util.List;
 
-import net.risesoft.entity.Entrust;
+import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.model.EntrustItemModel;
 import net.risesoft.model.itemadmin.EntrustModel;
 

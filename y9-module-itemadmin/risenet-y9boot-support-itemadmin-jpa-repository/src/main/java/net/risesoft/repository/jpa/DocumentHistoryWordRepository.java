@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.DocumentHistoryWord;
+import net.risesoft.entity.documentword.DocumentHistoryWord;
 
 /**
  * @author qinman

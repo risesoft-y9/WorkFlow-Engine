@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.DocumentHistoryWord;
+import net.risesoft.entity.documentword.DocumentHistoryWord;
 import net.risesoft.repository.jpa.DocumentHistoryWordRepository;
 import net.risesoft.service.DocumentHisWordService;
 
