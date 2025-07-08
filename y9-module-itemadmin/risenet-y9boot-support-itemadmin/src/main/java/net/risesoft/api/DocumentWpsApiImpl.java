@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.DocumentWpsApi;
-import net.risesoft.entity.DocumentWps;
+import net.risesoft.entity.documentword.DocumentWps;
 import net.risesoft.model.itemadmin.DocumentWpsModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentWpsService;

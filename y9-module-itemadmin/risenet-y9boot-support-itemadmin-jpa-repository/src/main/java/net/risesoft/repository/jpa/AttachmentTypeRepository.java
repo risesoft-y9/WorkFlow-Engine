@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.AttachmentType;
+import net.risesoft.entity.attachment.AttachmentType;
 
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface AttachmentTypeRepository

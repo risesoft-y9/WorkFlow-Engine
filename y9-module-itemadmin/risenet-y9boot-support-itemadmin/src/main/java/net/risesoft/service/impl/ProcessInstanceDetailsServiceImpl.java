@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.Opinion;
 import net.risesoft.entity.ProcessInstance;
 import net.risesoft.entity.ProcessInstanceDetails;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ProcessCooperationModel;

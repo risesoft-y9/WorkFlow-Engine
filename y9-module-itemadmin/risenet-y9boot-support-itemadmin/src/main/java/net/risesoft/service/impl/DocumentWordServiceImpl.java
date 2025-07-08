@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.DocumentHistoryWord;
-import net.risesoft.entity.DocumentWord;
+import net.risesoft.entity.documentword.DocumentHistoryWord;
+import net.risesoft.entity.documentword.DocumentWord;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.pojo.Y9Result;

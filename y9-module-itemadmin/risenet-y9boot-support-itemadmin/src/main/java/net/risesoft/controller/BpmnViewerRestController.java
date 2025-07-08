@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
-import net.risesoft.entity.Opinion;
+import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.OpinionFrame;
+import net.risesoft.entity.opinion.OpinionFrame;
 
 /**
  * @author qinman

@@ -3,7 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Optional;
 
-import net.risesoft.entity.OpinionCopy;
+import net.risesoft.entity.opinion.OpinionCopy;
 
 /**
  * @author : qinman

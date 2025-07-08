@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.entity.CommonSentences;
+import net.risesoft.entity.commonsentences.CommonSentences;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;

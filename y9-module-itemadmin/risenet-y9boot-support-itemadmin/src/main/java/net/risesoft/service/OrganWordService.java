@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.OrganWord;
+import net.risesoft.entity.organword.OrganWord;
 import net.risesoft.model.itemadmin.OrganWordModel;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 

@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.entity.Entrust;
+import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;

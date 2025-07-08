@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.DocumentWord;
+import net.risesoft.entity.documentword.DocumentWord;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.pojo.Y9Result;
 

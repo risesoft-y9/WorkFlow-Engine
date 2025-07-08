@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.CommonSentences;
+import net.risesoft.entity.commonsentences.CommonSentences;
 
 /**
  * @author qinman

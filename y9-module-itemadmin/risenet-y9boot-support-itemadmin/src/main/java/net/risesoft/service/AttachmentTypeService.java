@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.AttachmentType;
+import net.risesoft.entity.attachment.AttachmentType;
 
 public interface AttachmentTypeService {
 

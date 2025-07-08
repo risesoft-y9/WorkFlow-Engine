@@ -1,6 +1,6 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.EntrustDetail;
+import net.risesoft.entity.entrust.EntrustDetail;
 
 /**
  * @author qinman

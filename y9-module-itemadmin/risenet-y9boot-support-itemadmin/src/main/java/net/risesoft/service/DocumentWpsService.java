@@ -1,6 +1,6 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.DocumentWps;
+import net.risesoft.entity.documentword.DocumentWps;
 
 /**
  * @author qinman

@@ -6,9 +6,9 @@ import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import net.risesoft.entity.InterfaceInfo;
-import net.risesoft.entity.InterfaceRequestParams;
-import net.risesoft.entity.InterfaceResponseParams;
+import net.risesoft.entity.interfaceinfo.InterfaceInfo;
+import net.risesoft.entity.interfaceinfo.InterfaceRequestParams;
+import net.risesoft.entity.interfaceinfo.InterfaceResponseParams;
 
 @NoArgsConstructor
 @Data

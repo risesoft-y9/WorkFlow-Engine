@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.OrganWordProperty;
+import net.risesoft.entity.organword.OrganWordProperty;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OrganWordPropertyService;
 

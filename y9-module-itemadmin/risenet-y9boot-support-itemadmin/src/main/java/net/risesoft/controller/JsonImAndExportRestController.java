@@ -29,15 +29,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.CommonButton;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.entity.InterfaceInfo;
-import net.risesoft.entity.InterfaceRequestParams;
-import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.ItemViewConf;
-import net.risesoft.entity.OpinionFrame;
 import net.risesoft.entity.SendButton;
 import net.risesoft.entity.form.Y9FormOptionClass;
 import net.risesoft.entity.form.Y9FormOptionValue;
+import net.risesoft.entity.interfaceinfo.InterfaceInfo;
+import net.risesoft.entity.interfaceinfo.InterfaceRequestParams;
+import net.risesoft.entity.interfaceinfo.InterfaceResponseParams;
+import net.risesoft.entity.opinion.OpinionFrame;
 import net.risesoft.model.InterfaceJsonModel;
 import net.risesoft.model.OptionClassJsonModel;
 import net.risesoft.pojo.Y9Result;
@@ -70,7 +70,7 @@ public class JsonImAndExportRestController {
     private final CommonButtonService commonButtonService;
     private final SendButtonService sendButtonService;
     private final Y9FormOptionClassService y9FormOptionClassService;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 
     /**
      * 导出 JSON 数据

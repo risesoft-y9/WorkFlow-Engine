@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.AttachmentConf;
+import net.risesoft.entity.attachment.AttachmentConf;
 
 public interface AttachmentConfService {
 

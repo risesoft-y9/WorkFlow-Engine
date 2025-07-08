@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.OrganWordProperty;
+import net.risesoft.entity.organword.OrganWordProperty;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.OrganWordPropertyRepository;

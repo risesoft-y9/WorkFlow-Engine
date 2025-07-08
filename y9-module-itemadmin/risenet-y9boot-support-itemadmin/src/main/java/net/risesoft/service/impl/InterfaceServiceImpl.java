@@ -19,11 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.InterfaceInfo;
-import net.risesoft.entity.InterfaceRequestParams;
-import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.interfaceinfo.InterfaceInfo;
+import net.risesoft.entity.interfaceinfo.InterfaceRequestParams;
+import net.risesoft.entity.interfaceinfo.InterfaceResponseParams;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.InterfaceInfoRepository;

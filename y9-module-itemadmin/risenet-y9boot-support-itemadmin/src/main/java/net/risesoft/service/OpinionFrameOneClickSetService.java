@@ -3,7 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.entity.OpinionFrameOneClickSet;
+import net.risesoft.entity.opinion.OpinionFrameOneClickSet;
 import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
 
 public interface OpinionFrameOneClickSetService {

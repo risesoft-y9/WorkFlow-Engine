@@ -20,7 +20,7 @@ import net.risesoft.api.itemadmin.OpinionCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.DocumentCopy;
-import net.risesoft.entity.OpinionCopy;
+import net.risesoft.entity.opinion.OpinionCopy;
 import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.model.itemadmin.OpinionCopyModel;
 import net.risesoft.model.platform.OrgUnit;
