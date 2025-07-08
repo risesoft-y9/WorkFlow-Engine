@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.DocumentWordApi;
+import net.risesoft.api.itemadmin.documentword.DocumentWordApi;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.CustomViewApi;
+import net.risesoft.api.itemadmin.view.CustomViewApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.itemadmin.CustomViewModel;
 import net.risesoft.model.platform.OrgUnit;

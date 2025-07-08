@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.itemadmin.OpinionApi;
+import net.risesoft.api.itemadmin.opinion.OpinionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.itemadmin.OpinionListModel;

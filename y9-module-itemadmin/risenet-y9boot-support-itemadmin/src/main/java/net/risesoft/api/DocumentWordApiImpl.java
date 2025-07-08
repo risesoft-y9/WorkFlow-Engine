@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.DocumentWordApi;
+import net.risesoft.api.itemadmin.documentword.DocumentWordApi;
 import net.risesoft.entity.documentword.DocumentHistoryWord;
 import net.risesoft.entity.documentword.DocumentWord;
 import net.risesoft.model.itemadmin.DocumentWordModel;

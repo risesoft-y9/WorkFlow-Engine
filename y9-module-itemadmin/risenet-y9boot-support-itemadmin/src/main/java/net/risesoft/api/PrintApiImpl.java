@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.PrintApi;
+import net.risesoft.api.itemadmin.template.PrintApi;
 import net.risesoft.entity.template.ItemPrintTemplateBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
