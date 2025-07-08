@@ -18,7 +18,7 @@ import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.model.platform.Person;
 import net.risesoft.repository.entrust.EntrustHistoryRepository;
 import net.risesoft.service.EntrustHistoryService;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -33,7 +33,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
 
     private final EntrustHistoryRepository entrustHistoryRepository;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final PersonApi personApi;
 
@@ -53,7 +53,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
             if ("ALL".equals(itemId)) {
                 eh.setItemName("所有事项");
             } else {
-                itemTemp = spmApproveItemService.findById(eh.getItemId());
+                itemTemp = itemService.findById(eh.getItemId());
                 eh.setItemName(itemTemp.getName());
             }
         }
@@ -71,7 +71,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
         if (UtilConsts.ALL.equals(itemId)) {
             itemName = "所有事项";
         } else {
-            itemTemp = spmApproveItemService.findById(itemId);
+            itemTemp = itemService.findById(itemId);
             itemName = itemTemp.getName();
         }
 

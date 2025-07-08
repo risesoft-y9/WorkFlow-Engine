@@ -25,7 +25,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.repository.entrust.EntrustHistoryRepository;
 import net.risesoft.repository.entrust.EntrustRepository;
 import net.risesoft.service.EntrustService;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -43,7 +43,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     private final EntrustHistoryRepository entrustHistoryRepository;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -165,7 +165,7 @@ public class EntrustServiceImpl implements EntrustService {
             if (Entrust.ITEMID4ALL.equals(itemId)) {
                 entrust.setItemName(Entrust.ITEMNAME4ALL);
             } else {
-                Item itemTemp = spmApproveItemService.findById(itemId);
+                Item itemTemp = itemService.findById(itemId);
                 if (null == itemTemp || StringUtils.isEmpty(itemTemp.getId())) {
                     entrust.setItemName("此事项已删除");
                 } else {
@@ -221,7 +221,7 @@ public class EntrustServiceImpl implements EntrustService {
             if ("ALL".equals(itemId)) {
                 entrust.setItemName("所有事项");
             } else {
-                itemTemp = spmApproveItemService.findById(entrust.getItemId());
+                itemTemp = itemService.findById(entrust.getItemId());
                 if (null != itemTemp) {
                     entrust.setItemName(itemTemp.getName());
                 } else {
@@ -272,7 +272,7 @@ public class EntrustServiceImpl implements EntrustService {
             if ("ALL".equals(itemId)) {
                 entrust.setItemName("所有事项");
             } else {
-                itemTemp = spmApproveItemService.findById(entrust.getItemId());
+                itemTemp = itemService.findById(entrust.getItemId());
                 if (null != itemTemp) {
                     entrust.setItemName(itemTemp.getName());
                 } else {
@@ -323,7 +323,7 @@ public class EntrustServiceImpl implements EntrustService {
             if ("ALL".equals(itemId)) {
                 entrust.setItemName("所有事项");
             } else {
-                itemTemp = spmApproveItemService.findById(entrust.getItemId());
+                itemTemp = itemService.findById(entrust.getItemId());
                 if (null != itemTemp) {
                     entrust.setItemName(itemTemp.getName());
                 } else {
@@ -400,7 +400,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<EntrustItemModel> listItem(String userId, Integer page, Integer rows) {
-        Page<Item> pageList = spmApproveItemService.page(page, rows);
+        Page<Item> pageList = itemService.page(page, rows);
         List<Item> itemList = pageList.getContent();
         List<EntrustItemModel> eimList = new ArrayList<>();
         EntrustItemModel eim = null;

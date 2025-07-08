@@ -65,12 +65,12 @@ import net.risesoft.service.CalendarConfigService;
 import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.ItemDataCopyService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.OpinionFrameService;
 import net.risesoft.service.OrganWordPropertyService;
 import net.risesoft.service.OrganWordService;
 import net.risesoft.service.PrintTemplateService;
 import net.risesoft.service.SendButtonService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.service.TaoHongTemplateService;
 import net.risesoft.service.TaoHongTemplateTypeService;
@@ -108,7 +108,7 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
-    private final SpmApproveItemService itemService;
+    private final ItemService itemService;
 
     private final DynamicRoleService dynamicRoleService;
 

@@ -37,8 +37,8 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.Todo3rdRepository;
 import net.risesoft.service.FormDataService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.TaskRelatedService;
 import net.risesoft.service.gfg.Todo3rdService;
 import net.risesoft.util.MD5Util;
@@ -65,7 +65,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
 
     private final TaskRelatedService taskRelatedService;
 
-    private final SpmApproveItemService itemService;
+    private final ItemService itemService;
 
     private final FormDataService formDataService;
 

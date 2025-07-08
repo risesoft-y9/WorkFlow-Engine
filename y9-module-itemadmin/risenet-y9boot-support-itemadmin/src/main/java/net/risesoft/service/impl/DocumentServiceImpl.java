@@ -110,12 +110,12 @@ import net.risesoft.service.DocumentService;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.ErrorLogService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.RoleService;
 import net.risesoft.service.SignDeptDetailService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
@@ -146,7 +146,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final ActivitiOptServiceImpl activitiOptService;
 
-    private final SpmApproveItemService spmApproveitemService;
+    private final ItemService spmApproveitemService;
 
     private final ItemRepository spmApproveitemRepository;
 

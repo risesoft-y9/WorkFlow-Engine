@@ -32,8 +32,8 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.DraftEntityService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.service.TransactionWordService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
@@ -56,7 +56,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final DraftEntityRepository draftEntityRepository;
 
-    private final SpmApproveItemService spmApproveitemService;
+    private final ItemService spmApproveitemService;
 
     private final DocumentService documentService;
 

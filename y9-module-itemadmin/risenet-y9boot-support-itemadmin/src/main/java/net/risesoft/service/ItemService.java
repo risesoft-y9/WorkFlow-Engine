@@ -14,7 +14,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface SpmApproveItemService {
+public interface ItemService {
 
     /**
      * Description:复制事项

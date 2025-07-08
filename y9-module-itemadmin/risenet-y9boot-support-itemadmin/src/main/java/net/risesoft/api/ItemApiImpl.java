@@ -25,7 +25,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DocumentService;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -44,7 +44,7 @@ public class ItemApiImpl implements ItemApi {
 
     private final DocumentService documentService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final ItemRepository itemRepository;
 
@@ -85,7 +85,7 @@ public class ItemApiImpl implements ItemApi {
     public Y9Result<ItemModel> findByProcessDefinitionKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        ItemModel itemModel = spmApproveItemService.findByProcessDefinitionKey(tenantId, processDefinitionKey);
+        ItemModel itemModel = itemService.findByProcessDefinitionKey(tenantId, processDefinitionKey);
         return Y9Result.success(itemModel);
     }
 
@@ -119,7 +119,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> getAllItemList(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Item> list = spmApproveItemService.list();
+        List<Item> list = itemService.list();
         List<ItemModel> itemList = new ArrayList<>();
         for (Item item : list) {
             ItemModel itemModel = new ItemModel();
@@ -140,7 +140,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<ItemModel> getByItemId(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Item item = spmApproveItemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         ItemModel itemModel = new ItemModel();
         if (item != null) {
             Y9BeanUtil.copyProperties(item, itemModel);
@@ -275,7 +275,7 @@ public class ItemApiImpl implements ItemApi {
     public Y9Result<Boolean> hasProcessDefinitionByKey(@RequestParam String tenantId,
         @RequestParam String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Boolean hasProcessDefinition = spmApproveItemService.hasProcessDefinitionByKey(processDefinitionKey);
+        Boolean hasProcessDefinition = itemService.hasProcessDefinitionByKey(processDefinitionKey);
         return Y9Result.success(hasProcessDefinition);
     }
 }

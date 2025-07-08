@@ -26,8 +26,8 @@ import net.risesoft.entity.opinion.ItemOpinionFrameRole;
 import net.risesoft.entity.opinion.OpinionFrameOneClickSet;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.OpinionFrameOneClickSetService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -52,7 +52,7 @@ public class ItemOpinionFrameBindRestController {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final OpinionFrameOneClickSetService opinionFrameOneClickSetService;
 
@@ -142,7 +142,7 @@ public class ItemOpinionFrameBindRestController {
             map = new HashMap<>(16);
             map.put("id", bind.getId());
 
-            item = spmApproveItemService.findById(bind.getItemId());
+            item = itemService.findById(bind.getItemId());
             map.put("itemName", null == item ? "事项不存在" : item.getName());
             map.put("processDefinitionId", bind.getProcessDefinitionId());
             roleList = itemOpinionFrameRoleService.listByItemOpinionFrameIdContainRoleName(bind.getId());

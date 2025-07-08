@@ -25,9 +25,9 @@ import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.ProcessInstanceDetailsRepository;
 import net.risesoft.repository.jpa.ProcessInstanceRepository;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.OpinionService;
 import net.risesoft.service.ProcessInstanceDetailsService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -41,7 +41,7 @@ import net.risesoft.y9.util.Y9Util;
 @RequiredArgsConstructor
 public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetailsService {
 
-    private final SpmApproveItemService spmApproveitemService;
+    private final ItemService spmApproveitemService;
 
     private final ProcessInstanceRepository processInstanceRepository;
 

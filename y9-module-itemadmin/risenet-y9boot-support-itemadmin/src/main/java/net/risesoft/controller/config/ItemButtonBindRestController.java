@@ -24,8 +24,8 @@ import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CommonButtonService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.SendButtonService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -49,7 +49,7 @@ public class ItemButtonBindRestController {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     /**
      * 复制按钮配置
@@ -93,7 +93,7 @@ public class ItemButtonBindRestController {
             map.put("processDefinitionId", bind.getProcessDefinitionId());
             map.put("roleNames", bind.getRoleNames());
 
-            item = spmApproveItemService.findById(bind.getItemId());
+            item = itemService.findById(bind.getItemId());
             map.put("itemName", null == item ? "事项不存在" : item.getName());
 
             String taskDefName = "整个流程";

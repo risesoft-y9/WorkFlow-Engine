@@ -41,8 +41,8 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ActRuDetailRepository;
 import net.risesoft.service.ActRuDetailService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.event.Y9TodoCreatedEvent;
 import net.risesoft.service.event.Y9TodoDeletedEvent;
 import net.risesoft.y9.Y9Context;
@@ -68,7 +68,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     private final ProcessParamService processParamService;
 
-    private final SpmApproveItemService itemService;
+    private final ItemService itemService;
 
     private final TaskApi taskApi;
 

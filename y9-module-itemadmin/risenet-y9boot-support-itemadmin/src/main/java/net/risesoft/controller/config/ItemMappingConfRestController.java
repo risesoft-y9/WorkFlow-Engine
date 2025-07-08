@@ -24,7 +24,7 @@ import net.risesoft.entity.form.Y9Table;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.config.ItemMappingConfService;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
@@ -43,7 +43,7 @@ public class ItemMappingConfRestController {
 
     private final Y9FormItemBindService y9FormItemBindService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final ItemMappingConfService itemMappingConfService;
 
@@ -88,7 +88,7 @@ public class ItemMappingConfRestController {
         @RequestParam String itemId, @RequestParam(required = false) String mappingItemId) {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Item item = spmApproveItemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
@@ -108,7 +108,7 @@ public class ItemMappingConfRestController {
             }
         }
         if (StringUtils.isNotBlank(mappingItemId)) {
-            Item item1 = spmApproveItemService.findById(mappingItemId);
+            Item item1 = itemService.findById(mappingItemId);
             String processDefineKey1 = item1.getWorkflowGuid();
             ProcessDefinitionModel processDefinition1 =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey1).getData();
