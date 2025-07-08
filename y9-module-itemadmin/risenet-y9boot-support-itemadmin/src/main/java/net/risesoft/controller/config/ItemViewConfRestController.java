@@ -23,7 +23,7 @@ import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
@@ -42,7 +42,7 @@ public class ItemViewConfRestController {
 
     private final Y9FormItemBindService y9FormItemBindService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final ItemViewConfService itemViewConfService;
 
@@ -89,7 +89,7 @@ public class ItemViewConfRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Y9FormField> list = new ArrayList<>();
         List<String> fieldNameList = new ArrayList<>();
-        Item item = spmApproveItemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
@@ -121,7 +121,7 @@ public class ItemViewConfRestController {
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Item item = spmApproveItemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();

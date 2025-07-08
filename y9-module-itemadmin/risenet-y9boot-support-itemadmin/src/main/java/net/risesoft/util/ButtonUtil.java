@@ -32,9 +32,9 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.service.DocumentCopyService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.ProcInstanceRelationshipService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -55,7 +55,7 @@ public class ButtonUtil {
     private final IdentityApi identityApi;
     private final HistoricTaskApi historictaskApi;
     private final CustomProcessInfoService customProcessInfoService;
-    private final SpmApproveItemService itemService;
+    private final ItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
     private final DocumentCopyService documentCopyService;
 
@@ -72,7 +72,7 @@ public class ButtonUtil {
         this.identityApi = Y9Context.getBean(IdentityApi.class);
         this.historictaskApi = Y9Context.getBean(HistoricTaskApi.class);
         this.customProcessInfoService = Y9Context.getBean(CustomProcessInfoService.class);
-        this.itemService = Y9Context.getBean(SpmApproveItemService.class);
+        this.itemService = Y9Context.getBean(ItemService.class);
         this.itemTaskConfService = Y9Context.getBean(ItemTaskConfService.class);
         this.orgUnitApi = Y9Context.getBean(OrgUnitApi.class);
         this.documentCopyService = Y9Context.getBean(DocumentCopyService.class);

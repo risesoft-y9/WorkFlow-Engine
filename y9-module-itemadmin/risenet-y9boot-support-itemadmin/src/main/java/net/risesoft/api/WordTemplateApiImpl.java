@@ -15,7 +15,7 @@ import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.template.ItemWordTemplateBindRepository;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.WordTemplateService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -33,7 +33,7 @@ public class WordTemplateApiImpl implements WordTemplateApi {
 
     private final WordTemplateService wordTemplateService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final ItemWordTemplateBindRepository itemWordTemplateBindRepository;
 
@@ -72,7 +72,7 @@ public class WordTemplateApiImpl implements WordTemplateApi {
         @RequestParam String wordType) {
         String y9FilePathId = null;
         Y9LoginUserHolder.setTenantId(tenantId);
-        Item item = spmApproveItemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();

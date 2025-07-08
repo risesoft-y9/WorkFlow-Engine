@@ -18,7 +18,7 @@ import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.entity.view.ViewType;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.ViewTypeService;
 import net.risesoft.service.config.ItemViewConfService;
 
@@ -36,7 +36,7 @@ public class ViewTypeRestController {
 
     private final ItemViewConfService itemViewConfService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     /**
      * 获取意见框
@@ -68,7 +68,7 @@ public class ViewTypeRestController {
             for (ItemViewConf ivc : ivcList) {
                 String itemId = ivc.getItemId();
                 if (!itemIds.toString().contains(itemId)) {
-                    Item item = spmApproveItemService.findById(itemId);
+                    Item item = itemService.findById(itemId);
                     if (null != item) {
                         itemIds.append(itemId).append(";");
                         if (StringUtils.isEmpty(itemNames)) {

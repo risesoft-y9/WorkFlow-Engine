@@ -49,11 +49,11 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.opinion.OpinionHistoryRepository;
 import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.AsyncHandleService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.service.OpinionService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.ProcessTrackService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.util.SysVariables;
@@ -86,7 +86,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     private final HistoricTaskApi historicTaskApi;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final RepositoryApi repositoryApi;
 
@@ -357,7 +357,7 @@ public class OpinionServiceImpl implements OpinionService {
                  * 当前意见框,不存在意见，则判断是否可以签写意见
                  */
                 model.setAddable(false);
-                Item item = spmApproveItemService.findById(itemId);
+                Item item = itemService.findById(itemId);
                 String proDefKey = item.getWorkflowGuid();
                 ProcessDefinitionModel latestpd =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();

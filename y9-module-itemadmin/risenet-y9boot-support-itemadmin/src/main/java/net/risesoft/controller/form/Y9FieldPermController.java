@@ -29,7 +29,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.form.Y9FormItemBindRepository;
 import net.risesoft.repository.form.Y9FormItemMobileBindRepository;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -52,7 +52,7 @@ public class Y9FieldPermController {
 
     private final RepositoryApi repositoryApi;
 
-    private final SpmApproveItemService itemService;
+    private final ItemService itemService;
 
     /**
      * 获取该字段是否配置权限

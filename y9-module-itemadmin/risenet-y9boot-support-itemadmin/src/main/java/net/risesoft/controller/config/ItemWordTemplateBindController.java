@@ -25,7 +25,7 @@ import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.WordTemplateService;
 import net.risesoft.service.config.ItemWordTemplateBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -45,7 +45,7 @@ public class ItemWordTemplateBindController {
 
     private final ItemWordTemplateBindService itemWordTemplateBindService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final RepositoryApi repositoryApi;
 
@@ -92,7 +92,7 @@ public class ItemWordTemplateBindController {
         int rows) {
         try {
             List<Map<String, Object>> listMap = new ArrayList<>();
-            Item item = spmApproveItemService.findById(itemId);
+            Item item = itemService.findById(itemId);
             List<ItemWordTemplateBind> list = itemWordTemplateBindService.listByItemIdOrderByBindValueAsc(itemId);
             for (ItemWordTemplateBind itemWordTemplateBind : list) {
                 Map<String, Object> map = new HashMap<>();
@@ -126,7 +126,7 @@ public class ItemWordTemplateBindController {
     @GetMapping(value = "/getTemplateBind")
     public Y9Result<Map<String, Object>> getTemplateBind(@RequestParam String itemId) {
         Map<String, Object> map = new HashMap<>(16);
-        Item item = spmApproveItemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid(), tenantId = Y9LoginUserHolder.getTenantId();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();

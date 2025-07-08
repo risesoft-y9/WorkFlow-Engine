@@ -39,8 +39,8 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.service.FormDataService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.config.Y9PreFormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
@@ -62,7 +62,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final Y9FormItemBindService y9FormItemBindService;
 
@@ -84,14 +84,13 @@ public class FormDataServiceImpl implements FormDataService {
 
     private final ProcessParamService processParamService;
 
-    public FormDataServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        SpmApproveItemService spmApproveItemService, Y9FormItemBindService y9FormItemBindService,
-        Y9PreFormItemBindService y9PreFormItemBindService, Y9FormFieldService y9FormFieldService,
-        Y9FormService y9FormService, Y9FormRepository y9FormRepository, RepositoryApi repositoryApi,
-        Y9FieldPermRepository y9FieldPermRepository, PositionRoleApi positionRoleApi, Y9TableService y9TableService,
-        ProcessParamService processParamService) {
+    public FormDataServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, ItemService itemService,
+        Y9FormItemBindService y9FormItemBindService, Y9PreFormItemBindService y9PreFormItemBindService,
+        Y9FormFieldService y9FormFieldService, Y9FormService y9FormService, Y9FormRepository y9FormRepository,
+        RepositoryApi repositoryApi, Y9FieldPermRepository y9FieldPermRepository, PositionRoleApi positionRoleApi,
+        Y9TableService y9TableService, ProcessParamService processParamService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.spmApproveItemService = spmApproveItemService;
+        this.itemService = itemService;
         this.y9FormItemBindService = y9FormItemBindService;
         this.y9PreFormItemBindService = y9PreFormItemBindService;
         this.y9FormFieldService = y9FormFieldService;
@@ -111,7 +110,7 @@ public class FormDataServiceImpl implements FormDataService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(sourceProcessSerialNumber);
             String itemId = processParam.getItemId();
-            Item item = spmApproveItemService.findById(itemId);
+            Item item = itemService.findById(itemId);
             ProcessDefinitionModel processDefinition =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
             // 流程上绑定的表单
@@ -186,7 +185,7 @@ public class FormDataServiceImpl implements FormDataService {
     public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber) {
         Map<String, Object> retMap = new HashMap<>(16);
         try {
-            Item item = spmApproveItemService.findById(itemId);
+            Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
@@ -323,7 +322,7 @@ public class FormDataServiceImpl implements FormDataService {
     public List<Y9FormFieldModel> listFormFieldByItemId(String itemId) {
         List<Y9FormFieldModel> list = new ArrayList<>();
         try {
-            Item item = spmApproveItemService.findById(itemId);
+            Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition = repositoryApi
                 .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
@@ -403,7 +402,7 @@ public class FormDataServiceImpl implements FormDataService {
             }
 
             // 获取事项绑定主表信息
-            Item item = spmApproveItemService.findById(itemId);
+            Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition = repositoryApi
                 .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();

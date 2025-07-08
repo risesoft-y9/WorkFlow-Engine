@@ -33,8 +33,8 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.PrintTemplateService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemInterfaceBindService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
@@ -63,7 +63,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public class SpmApproveItemServiceImpl implements SpmApproveItemService {
+public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final SystemApi systemApi;

@@ -33,7 +33,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -50,7 +50,7 @@ import jodd.util.Base64;
 @Slf4j
 public class ItemRestController {
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final RepositoryApi repositoryApi;
 
@@ -70,7 +70,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/copyItem")
     public Y9Result<String> copyItem(@RequestParam(required = true) String id) {
-        return spmApproveItemService.copyItem(id);
+        return itemService.copyItem(id);
     }
 
     /**
@@ -82,7 +82,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/copyAllBind")
     public Y9Result<String> copyAllBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
-        return spmApproveItemService.copyAllBind(itemId, processDefinitionId);
+        return itemService.copyAllBind(itemId, processDefinitionId);
     }
 
     /**
@@ -93,7 +93,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String id) {
-        return spmApproveItemService.delete(id);
+        return itemService.delete(id);
     }
 
     @SuppressWarnings("unused")
@@ -142,7 +142,7 @@ public class ItemRestController {
     @GetMapping(value = "/getBindItemList")
     public Y9Result<List<Item>> getBindItemList(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String itemName) {
-        List<Item> itemList = spmApproveItemService.listByIdNotAndNameLike(itemId, itemName);
+        List<Item> itemList = itemService.listByIdNotAndNameLike(itemId, itemName);
         return Y9Result.success(itemList, "获取成功");
     }
 
@@ -191,7 +191,7 @@ public class ItemRestController {
      */
     @GetMapping(value = "/list")
     public Y9Result<List<Item>> list() {
-        List<Item> list = spmApproveItemService.list();
+        List<Item> list = itemService.list();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -209,7 +209,7 @@ public class ItemRestController {
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         List<OrgUnit> manager = new ArrayList<>();
         if (StringUtils.isNotBlank(id)) {
-            item = spmApproveItemService.findById(id);
+            item = itemService.findById(id);
             if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
                 String idStr = item.getNature();
                 for (String userId : idStr.split(";")) {
@@ -242,7 +242,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/publishToSystemApp")
     public Y9Result<String> publishToSystemApp(@RequestParam String itemId) {
-        return spmApproveItemService.publishToSystemApp(itemId);
+        return itemService.publishToSystemApp(itemId);
     }
 
     /**
@@ -278,7 +278,7 @@ public class ItemRestController {
     @PostMapping(value = "/save")
     public Y9Result<Item> save(String itemJson) {
         Item item = Y9JsonUtil.readValue(itemJson, Item.class);
-        return spmApproveItemService.save(item);
+        return itemService.save(item);
     }
 
     /**
@@ -289,7 +289,7 @@ public class ItemRestController {
      */
     @PostMapping(value = "/saveOrder")
     public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
-        spmApproveItemService.updateOrder(idAndTabIndexs);
+        itemService.updateOrder(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
     }
 

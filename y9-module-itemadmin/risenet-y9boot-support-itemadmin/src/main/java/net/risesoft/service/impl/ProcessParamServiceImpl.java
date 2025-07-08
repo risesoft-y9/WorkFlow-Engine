@@ -17,8 +17,8 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ProcessParamRepository;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -36,7 +36,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
 
     private final VariableApi variableApi;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     @Override
     @Transactional

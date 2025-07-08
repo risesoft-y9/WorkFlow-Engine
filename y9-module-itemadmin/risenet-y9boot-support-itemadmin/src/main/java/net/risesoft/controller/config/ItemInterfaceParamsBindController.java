@@ -22,7 +22,7 @@ import net.risesoft.entity.interfaceinfo.ItemInterfaceParamsBind;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
 import net.risesoft.service.form.Y9TableFieldService;
 import net.risesoft.service.form.Y9TableService;
@@ -38,7 +38,7 @@ public class ItemInterfaceParamsBindController {
 
     private final ItemInterfaceParamsBindService itemInterfaceParamsBindService;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final Y9TableService y9TableService;
 
@@ -57,7 +57,7 @@ public class ItemInterfaceParamsBindController {
     public Y9Result<Map<String, Object>> getBindInfo(@RequestParam(required = false) String id,
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
-        Item item = spmApproveItemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         Y9Page<Y9Table> pageList = y9TableService.pageTables(item.getSystemName(), 1, 500);
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();

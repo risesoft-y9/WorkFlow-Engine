@@ -43,7 +43,7 @@ import net.risesoft.repository.documentword.TransactionHistoryWordRepository;
 import net.risesoft.repository.documentword.TransactionWordRepository;
 import net.risesoft.repository.template.ItemWordTemplateBindRepository;
 import net.risesoft.repository.template.WordTemplateRepository;
-import net.risesoft.service.SpmApproveItemService;
+import net.risesoft.service.ItemService;
 import net.risesoft.service.TaoHongTemplateService;
 import net.risesoft.service.TransactionHistoryWordService;
 import net.risesoft.service.TransactionWordService;
@@ -86,7 +86,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
 
     private final TaskApi taskApi;
 
-    private final SpmApproveItemService spmApproveItemService;
+    private final ItemService itemService;
 
     private final RepositoryApi repositoryApi;
 
@@ -329,7 +329,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
             }
         } else {// 打开事项配置的正文模板
-            Item item = spmApproveItemService.findById(itemId);
+            Item item = itemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
@@ -667,7 +667,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 TaskModel task = taskApi.findById(tenantId, taskId).getData();
                 processDefinitionId = task.getProcessDefinitionId();
             } else {
-                Item item = spmApproveItemService.findById(itemId);
+                Item item = itemService.findById(itemId);
                 String processDefinitionKey = item.getWorkflowGuid();
                 ProcessDefinitionModel processDefinitionModel =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
