@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Remind_Instance")
-@org.hibernate.annotations.Table(comment = "消息提醒实例表", appliesTo = "FF_Remind_Instance")
+@Table(name = "FF_REMIND_INSTANCE")
+@org.hibernate.annotations.Table(comment = "消息提醒实例表", appliesTo = "FF_REMIND_INSTANCE")
 public class RemindInstance implements Serializable {
 
     private static final long serialVersionUID = 1614771486879038754L;

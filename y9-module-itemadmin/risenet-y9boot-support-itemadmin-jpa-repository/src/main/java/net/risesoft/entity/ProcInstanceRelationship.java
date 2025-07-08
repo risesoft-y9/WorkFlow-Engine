@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@org.hibernate.annotations.Table(comment = "流程实例关系表", appliesTo = "ff_procInstanceRelationship")
-@Table(name = "ff_procInstanceRelationship")
+@org.hibernate.annotations.Table(comment = "流程实例关系表", appliesTo = "FF_PROCINSTANCERELATIONSHIP")
+@Table(name = "FF_PROCINSTANCERELATIONSHIP")
 public class ProcInstanceRelationship implements Serializable {
 
     private static final long serialVersionUID = 2191419695991175733L;

@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_SpeakInfo")
-@org.hibernate.annotations.Table(comment = "沟通交流信息表", appliesTo = "FF_SpeakInfo")
+@Table(name = "FF_SPEAKINFO")
+@org.hibernate.annotations.Table(comment = "沟通交流信息表", appliesTo = "FF_SPEAKINFO")
 public class SpeakInfo implements Serializable {
 
     private static final long serialVersionUID = 4264601224577400231L;

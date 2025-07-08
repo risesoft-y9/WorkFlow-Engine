@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CustomProcessInfo")
-@org.hibernate.annotations.Table(comment = "定制流程信息表", appliesTo = "FF_CustomProcessInfo")
+@Table(name = "FF_CUSTOMPROCESSINFO")
+@org.hibernate.annotations.Table(comment = "定制流程信息表", appliesTo = "FF_CUSTOMPROCESSINFO")
 public class CustomProcessInfo implements Serializable {
 
     private static final long serialVersionUID = -3115139234478159745L;

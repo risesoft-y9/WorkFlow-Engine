@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Entrust")
-@org.hibernate.annotations.Table(comment = "出差委托表", appliesTo = "FF_Entrust")
+@Table(name = "FF_ENTRUST")
+@org.hibernate.annotations.Table(comment = "出差委托表", appliesTo = "FF_ENTRUST")
 public class Entrust implements Serializable {
 
     public static final String ITEMID4ALL = "ALL";

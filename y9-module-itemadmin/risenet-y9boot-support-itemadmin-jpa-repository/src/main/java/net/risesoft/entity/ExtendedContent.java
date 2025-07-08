@@ -26,8 +26,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Extended_Content")
-@org.hibernate.annotations.Table(comment = "扩展内容", appliesTo = "FF_Extended_Content")
+@Table(name = "FF_EXTENDED_CONTENT")
+@org.hibernate.annotations.Table(comment = "扩展内容", appliesTo = "FF_EXTENDED_CONTENT")
 public class ExtendedContent implements Serializable {
 
     private static final long serialVersionUID = 8399151618865623680L;

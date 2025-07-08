@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Entrust_History")
-@org.hibernate.annotations.Table(comment = "出差委托历史表", appliesTo = "FF_Entrust_History")
+@Table(name = "FF_ENTRUST_HISTORY")
+@org.hibernate.annotations.Table(comment = "出差委托历史表", appliesTo = "FF_ENTRUST_HISTORY")
 public class EntrustHistory implements Serializable {
 
     private static final long serialVersionUID = 5575438162078024036L;

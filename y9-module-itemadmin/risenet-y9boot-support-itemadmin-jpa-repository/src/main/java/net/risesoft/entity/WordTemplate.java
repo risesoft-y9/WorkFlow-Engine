@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_WordTemplate")
-@org.hibernate.annotations.Table(comment = "正文模板信息表", appliesTo = "FF_WordTemplate")
+@Table(name = "FF_WORDTEMPLATE")
+@org.hibernate.annotations.Table(comment = "正文模板信息表", appliesTo = "FF_WORDTEMPLATE")
 public class WordTemplate implements Serializable {
 
     private static final long serialVersionUID = -7420288864269881175L;

@@ -29,8 +29,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_DraftEntity")
-@org.hibernate.annotations.Table(comment = "草稿信息表", appliesTo = "FF_DraftEntity")
+@Table(name = "FF_DRAFTENTITY")
+@org.hibernate.annotations.Table(comment = "草稿信息表", appliesTo = "FF_DRAFTENTITY")
 public class DraftEntity implements Serializable {
 
     private static final long serialVersionUID = 7730918053550120284L;

@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_AutoFormSequence")
-@org.hibernate.annotations.Table(comment = "序列编号", appliesTo = "FF_AutoFormSequence")
+@Table(name = "FF_AUTOFORMSEQUENCE")
+@org.hibernate.annotations.Table(comment = "序列编号", appliesTo = "FF_AUTOFORMSEQUENCE")
 public class AutoFormSequence implements Serializable {
 
     private static final long serialVersionUID = 500808565082122549L;

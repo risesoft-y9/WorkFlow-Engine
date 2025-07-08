@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_TabEntity")
-@org.hibernate.annotations.Table(comment = "自定义页签表", appliesTo = "FF_TabEntity")
+@Table(name = "FF_TABENTITY")
+@org.hibernate.annotations.Table(comment = "自定义页签表", appliesTo = "FF_TABENTITY")
 public class TabEntity implements Serializable {
 
     private static final long serialVersionUID = -1231641987535504621L;

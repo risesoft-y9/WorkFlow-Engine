@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CalendarConfig")
-@org.hibernate.annotations.Table(comment = "日历配置表", appliesTo = "FF_CalendarConfig")
+@Table(name = "FF_CALENDARCONFIG")
+@org.hibernate.annotations.Table(comment = "日历配置表", appliesTo = "FF_CALENDARCONFIG")
 public class CalendarConfig implements Serializable {
 
     private static final long serialVersionUID = -4235779237483037821L;

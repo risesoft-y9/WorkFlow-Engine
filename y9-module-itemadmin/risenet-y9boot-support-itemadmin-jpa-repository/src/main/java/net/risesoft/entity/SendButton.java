@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@org.hibernate.annotations.Table(comment = "发送按钮表", appliesTo = "FF_SendButton")
-@Table(name = "FF_SendButton")
+@org.hibernate.annotations.Table(comment = "发送按钮表", appliesTo = "FF_SENDBUTTON")
+@Table(name = "FF_SENDBUTTON")
 public class SendButton implements Serializable {
 
     private static final long serialVersionUID = -2922336553325642059L;

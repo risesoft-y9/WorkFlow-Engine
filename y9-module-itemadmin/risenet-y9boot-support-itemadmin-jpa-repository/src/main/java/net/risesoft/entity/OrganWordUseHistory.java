@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_OrganWord_UseHistory")
-@org.hibernate.annotations.Table(comment = "公文编号使用历史表", appliesTo = "FF_OrganWord_UseHistory")
+@Table(name = "FF_ORGANWORD_USEHISTORY")
+@org.hibernate.annotations.Table(comment = "公文编号使用历史表", appliesTo = "FF_ORGANWORD_USEHISTORY")
 public class OrganWordUseHistory implements Serializable {
 
     /**

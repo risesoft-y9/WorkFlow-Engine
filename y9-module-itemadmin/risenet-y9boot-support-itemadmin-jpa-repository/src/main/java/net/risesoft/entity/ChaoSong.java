@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ChaoSong")
-@org.hibernate.annotations.Table(comment = "抄送信息表", appliesTo = "FF_ChaoSong")
+@Table(name = "FF_CHAOSONG")
+@org.hibernate.annotations.Table(comment = "抄送信息表", appliesTo = "FF_CHAOSONG")
 public class ChaoSong implements Serializable {
 
     private static final long serialVersionUID = -4235779237483037821L;

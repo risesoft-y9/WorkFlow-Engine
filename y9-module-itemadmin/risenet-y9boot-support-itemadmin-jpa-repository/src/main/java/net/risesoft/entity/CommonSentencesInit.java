@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CommonSentencesInit")
-@org.hibernate.annotations.Table(comment = "个人常用语初始化表", appliesTo = "FF_CommonSentencesInit")
+@Table(name = "FF_COMMONSENTENCESINIT")
+@org.hibernate.annotations.Table(comment = "个人常用语初始化表", appliesTo = "FF_COMMONSENTENCESINIT")
 public class CommonSentencesInit implements Serializable {
 
     private static final long serialVersionUID = -1547137719113783741L;

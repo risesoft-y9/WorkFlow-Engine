@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_RejectReason")
-@org.hibernate.annotations.Table(comment = "退回收回原因表", appliesTo = "FF_RejectReason")
+@Table(name = "FF_REJECTREASON")
+@org.hibernate.annotations.Table(comment = "退回收回原因表", appliesTo = "FF_REJECTREASON")
 public class RejectReason implements Serializable {
 
     private static final long serialVersionUID = -9026235125209828600L;

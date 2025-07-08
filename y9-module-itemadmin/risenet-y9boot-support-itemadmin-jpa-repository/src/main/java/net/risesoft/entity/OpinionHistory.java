@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Opinion_History")
-@org.hibernate.annotations.Table(comment = "意见历史表", appliesTo = "FF_Opinion_History")
+@Table(name = "FF_OPINION_HISTORY")
+@org.hibernate.annotations.Table(comment = "意见历史表", appliesTo = "FF_OPINION_HISTORY")
 public class OpinionHistory implements Serializable {
 
     private static final long serialVersionUID = -611638086177612070L;

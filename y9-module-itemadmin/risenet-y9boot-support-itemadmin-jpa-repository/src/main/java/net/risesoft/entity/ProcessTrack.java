@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ProcessTrack")
-@org.hibernate.annotations.Table(comment = "历程信息表", appliesTo = "FF_ProcessTrack")
+@Table(name = "FF_PROCESSTRACK")
+@org.hibernate.annotations.Table(comment = "历程信息表", appliesTo = "FF_PROCESSTRACK")
 public class ProcessTrack implements Serializable {
 
     private static final long serialVersionUID = -4491937506668447623L;

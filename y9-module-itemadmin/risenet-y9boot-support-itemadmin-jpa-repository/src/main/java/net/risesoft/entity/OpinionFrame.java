@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_OpinionFrame")
-@org.hibernate.annotations.Table(comment = "意见框信息表", appliesTo = "FF_OpinionFrame")
+@Table(name = "FF_OPINIONFRAME")
+@org.hibernate.annotations.Table(comment = "意见框信息表", appliesTo = "FF_OPINIONFRAME")
 public class OpinionFrame implements Serializable {
 
     private static final long serialVersionUID = 743873889002635064L;

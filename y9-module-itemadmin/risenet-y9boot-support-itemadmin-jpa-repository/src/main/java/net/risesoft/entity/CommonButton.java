@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CommonButton")
-@org.hibernate.annotations.Table(comment = "按钮信息表", appliesTo = "FF_CommonButton")
+@Table(name = "FF_COMMONBUTTON")
+@org.hibernate.annotations.Table(comment = "按钮信息表", appliesTo = "FF_COMMONBUTTON")
 public class CommonButton implements Serializable {
 
     private static final long serialVersionUID = -4794987057156388177L;

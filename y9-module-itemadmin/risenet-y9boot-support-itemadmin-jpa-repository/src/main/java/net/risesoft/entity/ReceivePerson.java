@@ -28,8 +28,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@org.hibernate.annotations.Table(comment = "收发管理人员表", appliesTo = "FF_ReceivePerson")
-@Table(name = "FF_ReceivePerson")
+@org.hibernate.annotations.Table(comment = "收发管理人员表", appliesTo = "FF_RECEIVEPERSON")
+@Table(name = "FF_RECEIVEPERSON")
 public class ReceivePerson implements Serializable {
     private static final long serialVersionUID = -8497612611429902341L;
 
