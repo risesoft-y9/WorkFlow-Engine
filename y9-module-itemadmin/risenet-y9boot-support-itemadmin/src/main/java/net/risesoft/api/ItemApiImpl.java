@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemMappingConf;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -63,9 +63,9 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> findAll(@RequestParam String tenantId, @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<SpmApproveItem> list = spmApproveItemRepository.findAll(systemName);
+        List<Item> list = spmApproveItemRepository.findAll(systemName);
         List<ItemModel> itemModelList = new ArrayList<>();
-        for (SpmApproveItem item : list) {
+        for (Item item : list) {
             ItemModel itemModel = new ItemModel();
             Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
@@ -99,9 +99,9 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> getAllItem(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<SpmApproveItem> list = spmApproveItemRepository.findAll();
+        List<Item> list = spmApproveItemRepository.findAll();
         List<ItemModel> itemModelList = new ArrayList<>();
-        for (SpmApproveItem item : list) {
+        for (Item item : list) {
             ItemModel itemModel = new ItemModel();
             Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
@@ -119,9 +119,9 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> getAllItemList(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<SpmApproveItem> list = spmApproveItemService.list();
+        List<Item> list = spmApproveItemService.list();
         List<ItemModel> itemList = new ArrayList<>();
-        for (SpmApproveItem item : list) {
+        for (Item item : list) {
             ItemModel itemModel = new ItemModel();
             Y9BeanUtil.copyProperties(item, itemModel);
             itemList.add(itemModel);
@@ -140,7 +140,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<ItemModel> getByItemId(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        Item item = spmApproveItemService.findById(itemId);
         ItemModel itemModel = new ItemModel();
         if (item != null) {
             Y9BeanUtil.copyProperties(item, itemModel);

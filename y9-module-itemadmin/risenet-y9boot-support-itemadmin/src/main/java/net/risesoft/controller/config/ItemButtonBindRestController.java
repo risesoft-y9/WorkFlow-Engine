@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.button.CommonButton;
 import net.risesoft.entity.button.ItemButtonBind;
 import net.risesoft.entity.button.SendButton;
@@ -86,7 +86,7 @@ public class ItemButtonBindRestController {
         List<ItemButtonBind> ibbList = itemButtonBindService.listByButtonId(buttonId);
         List<Map<String, Object>> bindList = new ArrayList<>();
         Map<String, Object> map;
-        SpmApproveItem item;
+        Item item;
         for (ItemButtonBind bind : ibbList) {
             map = new HashMap<>(16);
             map.put("id", bind.getId());

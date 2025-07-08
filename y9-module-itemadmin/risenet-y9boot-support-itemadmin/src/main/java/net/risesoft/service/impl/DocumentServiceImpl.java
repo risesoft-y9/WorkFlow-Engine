@@ -48,11 +48,11 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ErrorLog;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SignDeptDetail;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.button.ItemButtonBind;
 import net.risesoft.entity.form.Y9Form;
@@ -235,7 +235,7 @@ public class DocumentServiceImpl implements DocumentService {
         String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
         OpenDataModel model = new OpenDataModel();
         if (StringUtils.isNotBlank(itemId)) {
-            SpmApproveItem item = spmApproveitemService.findById(itemId);
+            Item item = spmApproveitemService.findById(itemId);
             model.setItemId(itemId);
             model.setProcessDefinitionKey(item.getWorkflowGuid());
             String processDefinitionKey = item.getWorkflowGuid();
@@ -281,7 +281,7 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDetailModel addWithStartTaskDefKey(String itemId, String startTaskDefKey, boolean mobile) {
         String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
         DocumentDetailModel model = new DocumentDetailModel();
-        SpmApproveItem item = spmApproveitemService.findById(itemId);
+        Item item = spmApproveitemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
@@ -1066,7 +1066,7 @@ public class DocumentServiceImpl implements DocumentService {
                 model.setItemId(itemId);
                 model.setAppIcon("");
                 model.setTodoCount(0);
-                SpmApproveItem spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
+                Item spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
                 model.setName(r.getName());
                 model.setItemName(r.getName());
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
@@ -1109,7 +1109,7 @@ public class DocumentServiceImpl implements DocumentService {
                 model.setId(r.getId());
                 model.setItemId(itemId);
                 model.setAppIcon("");
-                SpmApproveItem spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
+                Item spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
                 model.setName(r.getName());
                 model.setItemName(r.getName());
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
@@ -1828,7 +1828,7 @@ public class DocumentServiceImpl implements DocumentService {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         try {
-            SpmApproveItem item = spmApproveitemService.findById(itemId);
+            Item item = spmApproveitemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinitionModel =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
@@ -2022,7 +2022,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> vars = new HashMap<>(16);
-            SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
@@ -2087,7 +2087,7 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             Map<String, Object> vars = new HashMap<>(16);
-            SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
@@ -2136,7 +2136,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> vars = new HashMap<>(16);
-            SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             vars.put(SysVariables.ROUTETOTASKID, startRouteToTaskId);
             assert item != null;
@@ -2178,7 +2178,7 @@ public class DocumentServiceImpl implements DocumentService {
             startTaskDefKey = StringUtils.isBlank(startTaskDefKey) ? itemStartNodeRoleService.getStartTaskDefKey(itemId)
                 : startTaskDefKey;
             Map<String, Object> vars = new HashMap<>(16);
-            SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             vars.put("routeToTaskId", startTaskDefKey);
             vars.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);

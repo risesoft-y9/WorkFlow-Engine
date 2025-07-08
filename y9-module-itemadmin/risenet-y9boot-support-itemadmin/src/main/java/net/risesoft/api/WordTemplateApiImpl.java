@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.template.ItemWordTemplateBind;
 import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
@@ -72,7 +72,7 @@ public class WordTemplateApiImpl implements WordTemplateApi {
         @RequestParam String wordType) {
         String y9FilePathId = null;
         Y9LoginUserHolder.setTenantId(tenantId);
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        Item item = spmApproveItemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();

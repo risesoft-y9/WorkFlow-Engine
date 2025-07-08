@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
@@ -317,14 +317,14 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Override
     public List<Map<String, Object>> listApps() {
         List<Map<String, Object>> tree = new ArrayList<>();
-        List<SpmApproveItem> list = approveItemRepository.findAll();
+        List<Item> list = approveItemRepository.findAll();
         Map<String, Object> pNode = new HashMap<>(16);
         String parentId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
         pNode.put("id", parentId);
         pNode.put("systemName", "");
         pNode.put("name", "系统列表");
         tree.add(pNode);
-        for (SpmApproveItem approveItem : list) {
+        for (Item approveItem : list) {
             pNode = new HashMap<>(16);
             String systemName = approveItem.getSystemName();
             String sysLevel = approveItem.getSysLevel();

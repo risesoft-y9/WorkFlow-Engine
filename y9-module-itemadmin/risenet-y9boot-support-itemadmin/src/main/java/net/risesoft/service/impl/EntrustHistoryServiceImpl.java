@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.EntrustHistoryRepository;
@@ -42,7 +42,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<EntrustHistory> ehList = entrustHistoryRepository.findByOwnerId(ownerId);
         Person pTemp = null;
-        SpmApproveItem itemTemp = null;
+        Item itemTemp = null;
         for (EntrustHistory eh : ehList) {
             pTemp = personApi.get(tenantId, eh.getAssigneeId()).getData();
             eh.setAssigneeName(pTemp.getName());
@@ -65,7 +65,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
         List<EntrustHistory> ehList = entrustHistoryRepository.findByOwnerIdAndItemId(ownerId, itemId);
         Person pTemp = null;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SpmApproveItem itemTemp = null;
+        Item itemTemp = null;
 
         String itemName = "此事项不存在";
         if (UtilConsts.ALL.equals(itemId)) {

@@ -25,8 +25,8 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.DocumentCopy;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.TaskRelated;
 import net.risesoft.entity.Todo3rd;
 import net.risesoft.enums.TaskRelatedEnum;
@@ -85,7 +85,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void addTodo3rd(ActRuDetail actRuDetail) {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(actRuDetail.getProcessSerialNumber());
-        SpmApproveItem item = itemService.findById(processParam.getItemId());
+        Item item = itemService.findById(processParam.getItemId());
         Todo3rd todo3rd = getTodo3rd(actRuDetail, processParam, 1);
         Map<String, Object> fwFormDataMap =
             formDataService.getData4TableAlias(actRuDetail.getProcessSerialNumber(), "fw").getData();
@@ -163,7 +163,7 @@ public class Todo3rdServiceImpl implements Todo3rdService {
         String url = "";
         if (add) {
             url = todo3rdUrl + ADDURL;
-            SpmApproveItem item = itemService.findById(processParam.getItemId());
+            Item item = itemService.findById(processParam.getItemId());
             Map<String, Object> fwFormDataMap =
                 formDataService.getData4TableAlias(documentCopy.getProcessSerialNumber(), "fw").getData();
             String lsh = (String)fwFormDataMap.getOrDefault("lsh", "暂无流水号");

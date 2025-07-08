@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.entity.interfaceinfo.ItemInterfaceBind;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.interfaceinfo.InterfaceInfo;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.InterfaceInfoRepository;
@@ -77,7 +77,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     public List<ItemInterfaceBind> listByInterfaceId(String interfaceId) {
         List<ItemInterfaceBind> list = itemInterfaceBindRepository.findByInterfaceIdOrderByCreateTimeDesc(interfaceId);
         for (ItemInterfaceBind bind : list) {
-            SpmApproveItem item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
+            Item item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
             bind.setItemName(item != null ? item.getName() : "事项不存在");
         }
         return list;

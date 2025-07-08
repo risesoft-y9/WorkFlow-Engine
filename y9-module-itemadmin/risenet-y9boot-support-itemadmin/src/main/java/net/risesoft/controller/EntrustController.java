@@ -21,7 +21,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.controller.vo.NodeTreeVO;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -162,21 +162,21 @@ public class EntrustController {
             if (entrust.getItemId().equals(Entrust.ITEMID4ALL)) {
                 entrust.setItemName(Entrust.ITEMNAME4ALL);
             } else {
-                SpmApproveItem item = spmApproveItemRepository.findById(entrust.getItemId()).orElse(null);
+                Item item = spmApproveItemRepository.findById(entrust.getItemId()).orElse(null);
                 entrust.setItemName(item != null ? item.getName() : "事项不存在");
             }
             map.put("entrust", entrust);
         }
-        List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
-        List<SpmApproveItem> list = new ArrayList<>();
+        List<Item> itemList = spmApproveItemRepository.findAll();
+        List<Item> list = new ArrayList<>();
         Integer count = entrustService.getCountByOwnerIdAndItemId(Y9LoginUserHolder.getPersonId(), Entrust.ITEMID4ALL);
         if (count == 0) {
-            SpmApproveItem item = new SpmApproveItem();
+            Item item = new Item();
             item.setId(Entrust.ITEMID4ALL);
             item.setName(Entrust.ITEMNAME4ALL);
             list.add(item);
         }
-        for (SpmApproveItem item : itemList) {
+        for (Item item : itemList) {
             Integer count1 = entrustService.getCountByOwnerIdAndItemId(Y9LoginUserHolder.getPersonId(), item.getId());
             if (count1 == 0) {
                 list.add(item);

@@ -19,8 +19,8 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.DraftEntity;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -111,7 +111,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     public OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OpenDataModel model = new OpenDataModel();
-        SpmApproveItem item = spmApproveitemService.findById(itemId);
+        Item item = spmApproveitemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
@@ -252,7 +252,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 if (StringUtils.isNotBlank(type)) {
                     draft.setType(type);
                 }
-                SpmApproveItem item = spmApproveitemService.findById(itemId);
+                Item item = spmApproveitemService.findById(itemId);
                 if (null != item) {
                     if (StringUtils.isBlank(type)) {
                         draft.setType(item.getSystemName());
@@ -297,7 +297,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     if (StringUtils.isNotBlank(type)) {
                         draft.setType(type);
                     }
-                    SpmApproveItem item = spmApproveitemService.findById(itemId);
+                    Item item = spmApproveitemService.findById(itemId);
                     if (null != item) {
                         if (StringUtils.isBlank(type)) {
                             draft.setType(item.getSystemName());

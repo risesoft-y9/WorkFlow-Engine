@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9FieldPerm;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormItemMobileBind;
@@ -147,7 +147,7 @@ public class Y9FieldPermController {
         if (StringUtils.isBlank(itemId)) {
             return Y9Result.failure("该表单未绑定事项!");
         }
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         if (null == item) {
             return Y9Result.failure("表单绑定的事项不存在!");
         }

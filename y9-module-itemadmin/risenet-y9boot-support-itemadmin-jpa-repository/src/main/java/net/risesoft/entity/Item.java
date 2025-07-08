@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_APPROVEITEM")
 @org.hibernate.annotations.Table(comment = "事项定义信息表", appliesTo = "FF_APPROVEITEM")
-public class SpmApproveItem implements Serializable {
+public class Item implements Serializable {
 
     private static final long serialVersionUID = -2923177835926495218L;
 

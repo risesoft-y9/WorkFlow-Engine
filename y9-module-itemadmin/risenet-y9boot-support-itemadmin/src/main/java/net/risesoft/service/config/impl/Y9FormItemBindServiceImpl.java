@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormItemMobileBind;
 import net.risesoft.id.IdType;
@@ -106,7 +106,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Transactional
     public void copyEform(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();

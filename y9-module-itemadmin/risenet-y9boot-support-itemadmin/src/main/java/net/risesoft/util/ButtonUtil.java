@@ -18,9 +18,9 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.CustomProcessInfo;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -100,7 +100,7 @@ public class ButtonUtil {
         String taskSenderId = "";
         List<String> varsUsers = new ArrayList<>();
         String multiInstance = "", varsSponsorGuid = "";
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         boolean customItem = false, showSubmitButton;
         if (null != item.getCustomItem()) {
             customItem = item.getCustomItem();
@@ -589,7 +589,7 @@ public class ButtonUtil {
     public List<ItemButtonModel> showButton4Add(String itemId) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.baoCun);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         boolean showSubmitButton = item.isShowSubmitButton();
         if (showSubmitButton) {
             buttonModelList.add(ItemButton.tiJiao);
@@ -695,7 +695,7 @@ public class ButtonUtil {
         String taskSenderId = "";
         List<String> varsUsers;
         String multiInstance = "", varsSponsorGuid = "";
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         boolean customItem = false, showSubmitButton;
         if (null != item.getCustomItem()) {
             customItem = item.getCustomItem();

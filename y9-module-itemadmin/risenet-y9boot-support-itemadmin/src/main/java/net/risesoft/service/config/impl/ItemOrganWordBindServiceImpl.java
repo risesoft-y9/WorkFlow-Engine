@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.organword.ItemOrganWordBind;
 import net.risesoft.entity.organword.ItemOrganWordRole;
 import net.risesoft.entity.organword.OrganWord;
@@ -63,7 +63,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();

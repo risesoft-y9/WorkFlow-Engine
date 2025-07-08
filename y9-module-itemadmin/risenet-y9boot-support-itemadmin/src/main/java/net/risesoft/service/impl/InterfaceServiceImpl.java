@@ -19,11 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.interfaceinfo.ItemInterfaceBind;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.interfaceinfo.InterfaceInfo;
 import net.risesoft.entity.interfaceinfo.InterfaceRequestParams;
 import net.risesoft.entity.interfaceinfo.InterfaceResponseParams;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.InterfaceInfoRepository;
@@ -84,7 +84,7 @@ public class InterfaceServiceImpl implements InterfaceService {
             }
         }, sort);
         for (ItemInterfaceBind bind : list) {
-            SpmApproveItem item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
+            Item item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
             bind.setItemName(item != null ? item.getName() : "事项不存在");
         }
         return list;
