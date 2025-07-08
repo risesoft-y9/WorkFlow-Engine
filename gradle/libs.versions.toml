@@ -1,5 +1,5 @@
 [versions]
-y9-plugin = "9.7.0-09"
+y9-plugin = "9.7.0-M3"
 y9-digitalbase = "9.7.0-SNAPSHOT"
 
 flowable-spring-boot = "7.1.0"
@@ -127,9 +127,7 @@ y9-docker = { id = "net.risesoft.y9.docker", version.ref = "y9-plugin" }
 y9-conventions-java = { id = "net.risesoft.y9.conventions-java", version.ref = "y9-plugin" }
 y9-conventions-war = { id = "net.risesoft.y9.conventions-war", version.ref = "y9-plugin" }
 y9-java-publish = { id = "net.risesoft.y9.java-publish", version.ref = "y9-plugin" }
-y9-java-publish-central = { id = "net.risesoft.y9.java-publish-central", version.ref = "y9-plugin" }
 y9-javaPlatform-publish = { id = "net.risesoft.y9.javaPlatform-publish", version.ref = "y9-plugin" }
-y9-javaPlatform-publish-central = { id = "net.risesoft.y9.javaPlatform-publish-central", version.ref = "y9-plugin" }
 y9-lombok = { id = "net.risesoft.y9.lombok", version.ref = "y9-plugin" }
 y9-repository = { id = "net.risesoft.y9.repository", version.ref = "y9-plugin" }
 y9-smart-doc = { id = "net.risesoft.y9.smart-doc", version.ref = "y9-plugin" }

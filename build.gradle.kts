@@ -8,9 +8,7 @@ plugins {
     alias(libs.plugins.y9.conventions.java) apply false
     alias(libs.plugins.y9.conventions.war) apply false
     alias(libs.plugins.y9.java.publish) apply false
-    alias(libs.plugins.y9.java.publish.central) apply false
     alias(libs.plugins.y9.javaPlatform.publish) apply false
-    alias(libs.plugins.y9.javaPlatform.publish.central) apply false
     alias(libs.plugins.y9.lombok) apply false
     alias(libs.plugins.y9.repository) apply false
     alias(libs.plugins.y9.smart.doc) apply false
