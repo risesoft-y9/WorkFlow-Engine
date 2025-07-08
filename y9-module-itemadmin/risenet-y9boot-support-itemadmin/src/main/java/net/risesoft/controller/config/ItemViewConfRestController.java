@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.ItemViewConf;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormField;
+import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9Table;
+import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;

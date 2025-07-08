@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.ItemOpinionFrameBind;
+import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 
 /**
  * @author qinman

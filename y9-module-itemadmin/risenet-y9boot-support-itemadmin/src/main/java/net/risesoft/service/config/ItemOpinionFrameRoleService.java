@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemOpinionFrameRole;
+import net.risesoft.entity.opinion.ItemOpinionFrameRole;
 
 /**
  * @author qinman

@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.button;
 
 import java.io.Serializable;
 
@@ -22,11 +22,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_COMMONBUTTON")
-@org.hibernate.annotations.Table(comment = "按钮信息表", appliesTo = "FF_COMMONBUTTON")
-public class CommonButton implements Serializable {
+@org.hibernate.annotations.Table(comment = "发送按钮表", appliesTo = "FF_SENDBUTTON")
+@Table(name = "FF_SENDBUTTON")
+public class SendButton implements Serializable {
 
-    private static final long serialVersionUID = -4794987057156388177L;
+    private static final long serialVersionUID = -2922336553325642059L;
 
     /**
      * 唯一标示
@@ -62,14 +62,14 @@ public class CommonButton implements Serializable {
     /**
      * 创建/修改人员的名称
      */
-    @Comment("创建人名称")
+    @Comment("人员名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
 
     /**
      * 创建/修改的人员的唯一标示
      */
-    @Comment("创建人id")
+    @Comment("人员id")
     @Column(name = "USERID", length = 50)
     private String userId;
 
@@ -83,7 +83,8 @@ public class CommonButton implements Serializable {
     /**
      * 生成时间
      */
-    @Comment("修改时间")
+    @Comment("生成时间")
     @Column(name = "UPDATETIME")
     private String updateTime;
+
 }

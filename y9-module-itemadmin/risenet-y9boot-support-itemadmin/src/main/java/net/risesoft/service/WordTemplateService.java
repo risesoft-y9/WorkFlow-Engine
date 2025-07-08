@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.entity.WordTemplate;
+import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.pojo.Y9Result;
 
 /**

@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.entity.ItemPrintTemplateBind;
-import net.risesoft.entity.PrintTemplate;
+import net.risesoft.entity.template.ItemPrintTemplateBind;
+import net.risesoft.entity.template.PrintTemplate;
 import net.risesoft.pojo.Y9Result;
 
 /**

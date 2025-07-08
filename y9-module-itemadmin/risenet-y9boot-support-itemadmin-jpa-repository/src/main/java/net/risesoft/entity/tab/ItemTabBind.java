@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.tab;
 
 import java.io.Serializable;
 
@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,11 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_TABENTITY")
-@org.hibernate.annotations.Table(comment = "自定义页签表", appliesTo = "FF_TABENTITY")
-public class TabEntity implements Serializable {
+@Table(name = "FF_ITEM_TABBIND")
+@org.hibernate.annotations.Table(comment = "页签与事项绑定表", appliesTo = "FF_ITEM_TABBIND")
+public class ItemTabBind implements Serializable {
 
-    private static final long serialVersionUID = -1231641987535504621L;
+    private static final long serialVersionUID = -1461950199809202921L;
 
     /**
      * 唯一标示
@@ -42,22 +43,41 @@ public class TabEntity implements Serializable {
      * 租户Id
      */
     @Comment("租户Id")
-    @Column(name = "TENANTID", length = 50)
+    @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
+
+    /**
+     * 页签唯一标示
+     */
+    @Comment("页签唯一标示")
+    @Column(name = "TABID", length = 38, nullable = false)
+    private String tabId;
 
     /**
      * 页签名称
      */
-    @Comment("页签名称")
-    @Column(name = "NAME", length = 50)
-    private String name;
+    @Transient
+    private String tabName;
 
     /**
-     * 页签对应的url
+     * 事项Id
      */
-    @Comment("页签对应的url")
-    @Column(name = "URL", length = 50)
-    private String url;
+    @Comment("事项Id")
+    @Column(name = "ITEMID", length = 100, nullable = false)
+    private String itemId;
+
+    /**
+     * 流程定义Id
+     */
+    @Comment("流程定义Id")
+    @Column(name = "PROCESSDEFINITIONID", length = 100, nullable = false)
+    private String processDefinitionId;
+
+    /**
+     * 页签url
+     */
+    @Transient
+    private String tabUrl;
 
     /**
      * 创建/修改人员的名称
@@ -74,6 +94,13 @@ public class TabEntity implements Serializable {
     private String userId;
 
     /**
+     * 序号
+     */
+    @Comment("序号")
+    @Column(name = "TABINDEX", length = 10)
+    private Integer tabIndex;
+
+    /**
      * 生成时间
      */
     @Comment("生成时间")
@@ -86,5 +113,4 @@ public class TabEntity implements Serializable {
     @Comment("更新时间")
     @Column(name = "UPDATETIME", length = 50)
     private String updateTime;
-
 }

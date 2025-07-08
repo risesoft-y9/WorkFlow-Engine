@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.template;
 
 import java.io.Serializable;
 import java.util.Date;

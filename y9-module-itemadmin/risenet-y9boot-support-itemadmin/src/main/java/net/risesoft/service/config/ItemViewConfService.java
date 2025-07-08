@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemViewConf;
+import net.risesoft.entity.view.ItemViewConf;
 
 /**
  * @author qinman

@@ -2,8 +2,8 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.Y9FormItemBind;
-import net.risesoft.entity.Y9FormItemMobileBind;
+import net.risesoft.entity.form.Y9FormItemBind;
+import net.risesoft.entity.form.Y9FormItemMobileBind;
 import net.risesoft.pojo.Y9Result;
 
 /**

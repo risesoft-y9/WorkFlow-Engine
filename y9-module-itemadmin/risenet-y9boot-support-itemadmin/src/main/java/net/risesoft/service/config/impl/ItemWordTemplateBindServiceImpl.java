@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.ItemWordTemplateBind;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.template.ItemWordTemplateBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-import net.risesoft.entity.SendButton;
+import net.risesoft.entity.button.SendButton;
 
 /**
  * @author qinman

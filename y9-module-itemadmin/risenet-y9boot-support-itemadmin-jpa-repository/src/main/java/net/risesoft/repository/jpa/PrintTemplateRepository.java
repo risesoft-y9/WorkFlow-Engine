@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.PrintTemplate;
+import net.risesoft.entity.template.PrintTemplate;
 
 /**
  * @author qinman

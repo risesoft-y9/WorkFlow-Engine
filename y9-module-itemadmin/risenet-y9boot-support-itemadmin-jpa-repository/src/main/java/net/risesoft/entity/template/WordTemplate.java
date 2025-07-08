@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.template;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -27,11 +27,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_PRINTTEMPLATE")
-@org.hibernate.annotations.Table(comment = "打印模板信息表", appliesTo = "FF_PRINTTEMPLATE")
-public class PrintTemplate implements Serializable {
+@Table(name = "FF_WORDTEMPLATE")
+@org.hibernate.annotations.Table(comment = "正文模板信息表", appliesTo = "FF_WORDTEMPLATE")
+public class WordTemplate implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7420288864269881175L;
 
     @Id
     @Comment("主键")
@@ -40,12 +40,9 @@ public class PrintTemplate implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    /**
-     * 租户Id
-     */
-    @Comment("租户Id")
-    @Column(name = "TENANTID", length = 50)
-    private String tenantId;
+    @Comment("委办局Id")
+    @Column(name = "BUREAUID", length = 50)
+    private String bureauId;
 
     /**
      * 文档名称
@@ -97,4 +94,5 @@ public class PrintTemplate implements Serializable {
     @Comment("文件描述")
     @Column(name = "DESCRIBES", length = 1000)
     private String describes;
+
 }

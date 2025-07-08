@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.button;
 
 import java.io.Serializable;
 import java.util.List;

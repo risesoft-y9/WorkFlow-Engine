@@ -1,6 +1,6 @@
 package net.risesoft.service.config;
 
-import net.risesoft.entity.Y9PreFormItemBind;
+import net.risesoft.entity.form.Y9PreFormItemBind;
 import net.risesoft.pojo.Y9Result;
 
 /**

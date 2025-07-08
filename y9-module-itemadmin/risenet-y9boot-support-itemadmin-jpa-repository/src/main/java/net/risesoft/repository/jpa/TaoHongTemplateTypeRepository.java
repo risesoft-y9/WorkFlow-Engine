@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.TaoHongTemplateType;
+import net.risesoft.entity.template.TaoHongTemplateType;
 
 /**
  * @author qinman

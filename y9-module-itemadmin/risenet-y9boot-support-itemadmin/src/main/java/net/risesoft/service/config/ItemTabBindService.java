@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemTabBind;
+import net.risesoft.entity.tab.ItemTabBind;
 
 /**
  * @author qinman

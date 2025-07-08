@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.ItemOpinionFrameRole;
+import net.risesoft.entity.opinion.ItemOpinionFrameRole;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
 

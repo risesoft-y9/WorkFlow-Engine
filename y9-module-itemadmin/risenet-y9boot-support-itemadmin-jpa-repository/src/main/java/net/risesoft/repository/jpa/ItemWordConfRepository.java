@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.ItemWordConf;
+import net.risesoft.entity.documentword.ItemWordConf;
 
 /**
  * @author qinman

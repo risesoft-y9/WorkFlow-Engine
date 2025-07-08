@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.entity.CommonButton;
-import net.risesoft.entity.ItemButtonBind;
-import net.risesoft.entity.SendButton;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.button.CommonButton;
+import net.risesoft.entity.button.ItemButtonBind;
+import net.risesoft.entity.button.SendButton;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;

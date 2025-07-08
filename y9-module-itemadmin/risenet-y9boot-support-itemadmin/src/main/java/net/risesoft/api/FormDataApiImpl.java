@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.Y9FormItemBind;
+import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;

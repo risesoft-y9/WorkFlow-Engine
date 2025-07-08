@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemWordTemplateBind;
+import net.risesoft.entity.template.ItemWordTemplateBind;
 import net.risesoft.pojo.Y9Result;
 
 /**

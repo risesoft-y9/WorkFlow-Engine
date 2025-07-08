@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.TransactionHistoryWord;
+import net.risesoft.entity.documentword.TransactionHistoryWord;
 
 /**
  * @author qinman

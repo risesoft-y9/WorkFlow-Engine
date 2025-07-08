@@ -9,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.WordTemplateApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.ItemWordTemplateBind;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.entity.WordTemplate;
+import net.risesoft.entity.template.ItemWordTemplateBind;
+import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemWordTemplateBindRepository;

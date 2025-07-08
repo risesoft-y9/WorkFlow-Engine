@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.interfaceinfo;
 
 import java.io.Serializable;
 

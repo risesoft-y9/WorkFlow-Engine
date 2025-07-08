@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemWordConf;
+import net.risesoft.entity.documentword.ItemWordConf;
 
 /**
  * @author qinman

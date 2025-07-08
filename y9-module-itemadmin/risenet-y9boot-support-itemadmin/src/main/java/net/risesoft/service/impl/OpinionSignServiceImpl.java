@@ -17,7 +17,7 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.entity.ItemOpinionFrameBind;
+import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.opinion.OpinionSign;

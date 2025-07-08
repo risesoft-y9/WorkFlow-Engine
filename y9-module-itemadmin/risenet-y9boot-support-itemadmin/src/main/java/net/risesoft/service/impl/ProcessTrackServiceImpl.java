@@ -31,7 +31,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.TaskRelated;
-import net.risesoft.entity.TransactionHistoryWord;
+import net.risesoft.entity.documentword.TransactionHistoryWord;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.enums.ProcessTrackStatusEnum;
 import net.risesoft.enums.TaskRelatedEnum;

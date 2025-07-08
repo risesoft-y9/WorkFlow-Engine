@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.opinion;
 
 import java.io.Serializable;
 
@@ -23,11 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ITEM_BUTTON_ROLE")
-@org.hibernate.annotations.Table(comment = "事项和按钮绑定关系对应的角色", appliesTo = "FF_ITEM_BUTTON_ROLE")
-public class ItemButtonRole implements Serializable {
+@Table(name = "FF_ITEM_OPINIONFRAME_ROLE")
+@org.hibernate.annotations.Table(comment = "事项和意见框绑定关系对应的角色", appliesTo = "FF_ITEM_OPINIONFRAME_ROLE")
+public class ItemOpinionFrameRole implements Serializable {
 
-    private static final long serialVersionUID = -7923438678429598970L;
+    private static final long serialVersionUID = 7079860101823150509L;
 
     @Comment("主键")
     @Id
@@ -36,9 +36,9 @@ public class ItemButtonRole implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @Comment("事项和按钮的绑定关系")
-    @Column(name = "ITEMBUTTONID", length = 50, nullable = false)
-    private String itemButtonId;
+    @Comment("事项和意见框的绑定关系")
+    @Column(name = "ITEMOPINIONFRAMEID", length = 50, nullable = false)
+    private String itemOpinionFrameId;
 
     @Comment("角色Id")
     @Column(name = "ROLEID", length = 50, nullable = false)

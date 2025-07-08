@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.ItemOpinionFrameBind;
+import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 
 /**
  * @author qinman

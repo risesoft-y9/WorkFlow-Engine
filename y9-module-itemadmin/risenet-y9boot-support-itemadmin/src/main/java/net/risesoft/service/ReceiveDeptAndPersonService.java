@@ -3,7 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.entity.ReceiveDepartment;
+import net.risesoft.entity.receive.ReceiveDepartment;
 import net.risesoft.pojo.Y9Result;
 
 /**

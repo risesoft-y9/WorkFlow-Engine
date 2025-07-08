@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.ItemInterfaceBind;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceBind;
 import net.risesoft.entity.interfaceinfo.InterfaceInfo;
 import net.risesoft.entity.interfaceinfo.InterfaceRequestParams;
 import net.risesoft.entity.interfaceinfo.InterfaceResponseParams;
