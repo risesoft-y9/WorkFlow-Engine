@@ -27,7 +27,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
+import net.risesoft.repository.receive.ReceiveDepartmentRepository;
 import net.risesoft.service.ReceiveDeptAndPersonService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

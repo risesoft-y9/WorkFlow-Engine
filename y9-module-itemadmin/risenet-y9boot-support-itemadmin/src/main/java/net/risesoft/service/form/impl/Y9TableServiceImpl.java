@@ -34,7 +34,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.ItemWorkDayService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
@@ -61,14 +61,14 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final TableManagerService tableManagerService;
 
-    private final SpmApproveItemRepository approveItemRepository;
+    private final ItemRepository approveItemRepository;
 
     private final ItemWorkDayService itemWorkDayService;
 
     public Y9TableServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository,
         Y9FormFieldRepository y9FormFieldRepository, TableManagerService tableManagerService,
-        SpmApproveItemRepository approveItemRepository, ItemWorkDayService itemWorkDayService) {
+        ItemRepository approveItemRepository, ItemWorkDayService itemWorkDayService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;

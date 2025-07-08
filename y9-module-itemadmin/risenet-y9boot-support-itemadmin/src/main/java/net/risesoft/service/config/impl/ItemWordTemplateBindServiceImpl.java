@@ -15,8 +15,8 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.ItemWordTemplateBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
+import net.risesoft.repository.template.ItemWordTemplateBindRepository;
 import net.risesoft.service.config.ItemWordTemplateBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -33,7 +33,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
 
     private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final RepositoryApi repositoryApi;
 
@@ -52,7 +52,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     public void copyBind(String itemId, String processDefinitionId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+            Item item = itemRepository.findById(itemId).orElse(null);
             String proDefKey = item.getWorkflowGuid();
             ProcessDefinitionModel latestpd =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();

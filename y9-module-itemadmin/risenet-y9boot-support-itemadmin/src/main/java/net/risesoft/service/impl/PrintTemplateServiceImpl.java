@@ -25,8 +25,8 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.PrintTemplateItemBindRepository;
-import net.risesoft.repository.jpa.PrintTemplateRepository;
+import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
+import net.risesoft.repository.template.PrintTemplateRepository;
 import net.risesoft.service.PrintTemplateService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -48,13 +48,13 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
 
     private final PrintTemplateRepository printTemplateRepository;
 
-    private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
+    private final ItemPrintTemplateBindRepository itemPrintTemplateBindRepository;
 
     @Override
     @Transactional(readOnly = false)
     public void copyBindInfo(String itemId, String newItemId) {
         try {
-            ItemPrintTemplateBind printTemplateItemBind = printTemplateItemBindRepository.findByItemId(itemId);
+            ItemPrintTemplateBind printTemplateItemBind = itemPrintTemplateBindRepository.findByItemId(itemId);
             if (null != printTemplateItemBind) {
                 ItemPrintTemplateBind newPrintTemplateItemBind = new ItemPrintTemplateBind();
                 newPrintTemplateItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -64,7 +64,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
                 newPrintTemplateItemBind.setTemplateName(printTemplateItemBind.getTemplateName());
                 newPrintTemplateItemBind.setTemplateUrl(printTemplateItemBind.getTemplateUrl());
                 newPrintTemplateItemBind.setTemplateType(printTemplateItemBind.getTemplateType());
-                printTemplateItemBindRepository.save(newPrintTemplateItemBind);
+                itemPrintTemplateBindRepository.save(newPrintTemplateItemBind);
             }
         } catch (Exception e) {
             LOGGER.error("复制绑定信息失败", e);
@@ -75,7 +75,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     @Transactional
     public void deleteBindInfo(String itemId) {
         try {
-            printTemplateItemBindRepository.deleteByItemId(itemId);
+            itemPrintTemplateBindRepository.deleteByItemId(itemId);
         } catch (Exception e) {
             LOGGER.error("删除绑定信息失败", e);
         }
@@ -85,9 +85,9 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     @Transactional(readOnly = false)
     public Y9Result<String> deleteBindPrintTemplate(String id) {
         try {
-            ItemPrintTemplateBind bindTemplate = printTemplateItemBindRepository.findById(id).orElse(null);
+            ItemPrintTemplateBind bindTemplate = itemPrintTemplateBindRepository.findById(id).orElse(null);
             if (bindTemplate != null && bindTemplate.getId() != null) {
-                printTemplateItemBindRepository.deleteById(bindTemplate.getId());
+                itemPrintTemplateBindRepository.deleteById(bindTemplate.getId());
             }
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
@@ -155,7 +155,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     public List<ItemPrintTemplateBind> listTemplateBindByItemId(String itemId) {
         List<ItemPrintTemplateBind> list = new ArrayList<>();
         try {
-            ItemPrintTemplateBind itemPrintTemplateBind = printTemplateItemBindRepository.findByItemId(itemId);
+            ItemPrintTemplateBind itemPrintTemplateBind = itemPrintTemplateBindRepository.findByItemId(itemId);
             if (itemPrintTemplateBind != null) {
                 list.add(itemPrintTemplateBind);
             }
@@ -170,7 +170,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     public Y9Result<String> saveBindTemplate(String itemId, String templateId, String templateName, String templateUrl,
         String templateType) {
         try {
-            ItemPrintTemplateBind printTemplateItemBind = printTemplateItemBindRepository.findByItemId(itemId);
+            ItemPrintTemplateBind printTemplateItemBind = itemPrintTemplateBindRepository.findByItemId(itemId);
             if (printTemplateItemBind == null) {
                 printTemplateItemBind = new ItemPrintTemplateBind();
                 printTemplateItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -180,14 +180,14 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
                 printTemplateItemBind.setTemplateName(templateName);
                 printTemplateItemBind.setTemplateUrl(templateUrl);
                 printTemplateItemBind.setTemplateType(templateType);
-                printTemplateItemBindRepository.save(printTemplateItemBind);
+                itemPrintTemplateBindRepository.save(printTemplateItemBind);
             } else {
                 printTemplateItemBind.setItemId(itemId);
                 printTemplateItemBind.setTemplateId(templateId);
                 printTemplateItemBind.setTemplateName(templateName);
                 printTemplateItemBind.setTemplateUrl(templateUrl);
                 printTemplateItemBind.setTemplateType(templateType);
-                printTemplateItemBindRepository.save(printTemplateItemBind);
+                itemPrintTemplateBindRepository.save(printTemplateItemBind);
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {

@@ -17,7 +17,7 @@ import net.risesoft.entity.documentword.DocumentHistoryWord;
 import net.risesoft.entity.documentword.DocumentWord;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.DocumentHistoryWordRepository;
+import net.risesoft.repository.documentword.DocumentHistoryWordRepository;
 import net.risesoft.service.DocumentHisWordService;
 import net.risesoft.service.DocumentWordService;
 import net.risesoft.service.config.ItemWordConfService;

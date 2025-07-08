@@ -21,8 +21,8 @@ import net.risesoft.model.itemadmin.ReceiveOrgUnit;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
-import net.risesoft.repository.jpa.ReceivePersonRepository;
+import net.risesoft.repository.receive.ReceiveDepartmentRepository;
+import net.risesoft.repository.receive.ReceivePersonRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

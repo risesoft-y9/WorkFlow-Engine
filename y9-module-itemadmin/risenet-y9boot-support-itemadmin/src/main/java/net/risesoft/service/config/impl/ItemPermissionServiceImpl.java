@@ -32,7 +32,7 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.ItemPermissionRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.config.ItemPermissionService;
@@ -61,7 +61,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -69,7 +69,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     @Transactional
     public void copyPerm(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();

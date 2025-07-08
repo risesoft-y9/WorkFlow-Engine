@@ -23,7 +23,7 @@ import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.OpinionRepository;
+import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;

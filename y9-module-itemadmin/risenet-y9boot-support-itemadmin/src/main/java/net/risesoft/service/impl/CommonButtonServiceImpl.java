@@ -14,7 +14,7 @@ import net.risesoft.entity.button.CommonButton;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.CommonButtonRepository;
+import net.risesoft.repository.button.CommonButtonRepository;
 import net.risesoft.service.CommonButtonService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

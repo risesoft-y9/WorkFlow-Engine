@@ -25,8 +25,8 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.jpa.ItemStartNodeRoleRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -49,7 +49,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
     private final PositionRoleApi positionRoleApi;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final RepositoryApi repositoryApi;
 
@@ -60,7 +60,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
@@ -151,7 +151,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public String getStartTaskDefKey(String itemId) {
         String startTaskDefKey = "", tenantId = Y9LoginUserHolder.getTenantId(),
             userId = Y9LoginUserHolder.getOrgUnitId();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
@@ -193,7 +193,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Override
     public List<ItemStartNodeRoleModel> getAllStartTaskDefKey(String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();

@@ -15,7 +15,7 @@ import net.risesoft.entity.documentword.TransactionWord;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.TransactionWordRepository;
+import net.risesoft.repository.documentword.TransactionWordRepository;
 import net.risesoft.service.TransactionWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;

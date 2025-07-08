@@ -14,7 +14,7 @@ import net.risesoft.entity.tab.TabEntity;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.TabEntityRepository;
+import net.risesoft.repository.tab.TabEntityRepository;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

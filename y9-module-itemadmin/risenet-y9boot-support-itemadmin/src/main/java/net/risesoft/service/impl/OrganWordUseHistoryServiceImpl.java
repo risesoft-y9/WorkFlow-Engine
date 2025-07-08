@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.organword.OrganWordUseHistory;
-import net.risesoft.repository.jpa.OrganWordUseHistoryRepository;
+import net.risesoft.repository.organword.OrganWordUseHistoryRepository;
 import net.risesoft.service.OrganWordUseHistoryService;
 
 /**

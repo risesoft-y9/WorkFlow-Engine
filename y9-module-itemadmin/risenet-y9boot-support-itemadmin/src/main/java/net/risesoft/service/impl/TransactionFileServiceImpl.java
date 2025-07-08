@@ -29,7 +29,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.TransactionFileRepository;
+import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -48,7 +48,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class TransactionFileServiceImpl implements TransactionFileService {
 
-    private final TransactionFileRepository transactionFileRepository;
+    private final AttachmentRepository attachmentRepository;
 
     private final Y9FileStoreService y9FileStoreService;
 
@@ -59,10 +59,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     @Override
     @Transactional
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
-        List<Attachment> list = transactionFileRepository.findByProcessSerialNumbers(processSerialNumbers);
+        List<Attachment> list = attachmentRepository.findByProcessSerialNumbers(processSerialNumbers);
         for (Attachment file : list) {
             try {
-                transactionFileRepository.delete(file);
+                attachmentRepository.delete(file);
                 y9FileStoreService.deleteFile(file.getFileStoreId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -75,8 +75,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     public void delFile(String ids) {
         String[] id = ids.split(",");
         for (String str : id) {
-            Attachment file = transactionFileRepository.findById(str).orElse(null);
-            transactionFileRepository.deleteById(str);
+            Attachment file = attachmentRepository.findById(str).orElse(null);
+            attachmentRepository.deleteById(str);
             assert file != null;
             y9FileStoreService.deleteFile(file.getFileStoreId());
         }
@@ -84,53 +84,52 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Override
     public Integer fileCounts(String processSerialNumber) {
-        return transactionFileRepository.fileCounts(processSerialNumber);
+        return attachmentRepository.fileCounts(processSerialNumber);
     }
 
     @Override
     @Transactional
     public Attachment findById(String id) {
-        Attachment attachment = transactionFileRepository.findById(id).orElse(null);
+        Attachment attachment = attachmentRepository.findById(id).orElse(null);
         return attachment;
     }
 
     @Override
     public Attachment getFileInfoByFileName(String fileName, String processSerialNumber) {
-        return transactionFileRepository.getFileInfoByFileName(fileName, processSerialNumber);
+        return attachmentRepository.getFileInfoByFileName(fileName, processSerialNumber);
     }
 
     @Override
     public Integer getTransactionFileCount(String processSerialNumber, String fileSource, String fileType) {
         if (StringUtils.isBlank(fileType)) {
-            return transactionFileRepository.getTransactionFileCount(processSerialNumber, fileSource);
+            return attachmentRepository.getTransactionFileCount(processSerialNumber, fileSource);
         } else {
-            return transactionFileRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource,
-                fileType);
+            return attachmentRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource, fileType);
         }
     }
 
     @Override
     public Attachment getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber) {
-        return transactionFileRepository.getUpFileInfoByTabIndexOrProcessSerialNumber(tabIndex, processSerialNumber);
+        return attachmentRepository.getUpFileInfoByTabIndexOrProcessSerialNumber(tabIndex, processSerialNumber);
     }
 
     @Override
     public List<Attachment> listByProcessSerialNumber(String processSerialNumber) {
-        return transactionFileRepository.findByProcessSerialNumber(processSerialNumber);
+        return attachmentRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
     public List<Attachment> listByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource) {
-        return transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
+        return attachmentRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
     }
 
     @Override
     public List<Attachment> listSearchByProcessSerialNumber(String processSerialNumber, String fileSource) {
         List<Attachment> attachmentList = new ArrayList<>();
         if (StringUtils.isBlank(fileSource)) {
-            attachmentList = transactionFileRepository.getAttachmentList(processSerialNumber);
+            attachmentList = attachmentRepository.getAttachmentList(processSerialNumber);
         } else {
-            attachmentList = transactionFileRepository.getAttachmentList(processSerialNumber, fileSource);
+            attachmentList = attachmentRepository.getAttachmentList(processSerialNumber, fileSource);
         }
         return attachmentList;
     }
@@ -147,10 +146,9 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
             Page<Attachment> transactionFileList = null;
             if (StringUtils.isBlank(fileSource)) {
-                transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber, pageable);
+                transactionFileList = attachmentRepository.getAttachmentList(processSerialNumber, pageable);
             } else {
-                transactionFileList =
-                    transactionFileRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
+                transactionFileList = attachmentRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
             }
             int number = (page - 1) * rows;
             for (Attachment attachment : transactionFileList) {
@@ -194,7 +192,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     @Override
     @Transactional
     public void save(Attachment file) {
-        transactionFileRepository.save(file);
+        attachmentRepository.save(file);
     }
 
     @SuppressWarnings("unchecked")
@@ -223,7 +221,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 file.setDeptName(department != null ? department.getName() : "");
                 file.setProcessSerialNumber(processSerialNumber);
                 file.setUploadTime(sdfymdhms.format(new Date()));
-                transactionFileRepository.save(file);
+                attachmentRepository.save(file);
                 checkSave = true;
             }
         } catch (Exception e) {
@@ -237,7 +235,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     @Override
     public void update(String processSerialNumber, String processInstanceId, String taskId) {
         try {
-            transactionFileRepository.update(processInstanceId, taskId, processSerialNumber);
+            attachmentRepository.update(processInstanceId, taskId, processSerialNumber);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -285,7 +283,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
             attachment.setDeptId(Y9LoginUserHolder.getDeptId());
             attachment.setDeptName(department != null ? department.getName() : "");
-            transactionFileRepository.save(attachment);
+            attachmentRepository.save(attachment);
             return Y9Result.success(y9FileStore.getId(), "上传附件成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -319,7 +317,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         attachment.setDeptName(department != null ? department.getName() : "");
         attachment.setFileStoreId(y9FileStoreId);
         attachment.setFileType(type);
-        transactionFileRepository.save(attachment);
+        attachmentRepository.save(attachment);
     }
 
     @Transactional
@@ -327,7 +325,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     public Attachment uploadRestModel(Attachment attachment) {
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         attachment.setUploadTime(sdfymdhms.format(new Date()));
-        transactionFileRepository.save(attachment);
+        attachmentRepository.save(attachment);
         return attachment;
     }
 }

@@ -30,7 +30,7 @@ import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Position;
-import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
+import net.risesoft.repository.receive.ReceiveDepartmentRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.RoleService;

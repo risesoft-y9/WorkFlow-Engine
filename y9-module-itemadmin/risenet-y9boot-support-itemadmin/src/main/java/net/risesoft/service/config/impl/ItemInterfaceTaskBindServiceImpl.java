@@ -17,7 +17,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
-import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
+import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.config.ItemInterfaceTaskBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

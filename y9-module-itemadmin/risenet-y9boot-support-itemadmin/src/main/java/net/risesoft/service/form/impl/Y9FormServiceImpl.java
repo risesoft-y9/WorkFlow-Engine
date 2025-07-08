@@ -35,7 +35,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
@@ -61,11 +61,11 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     private final Y9TableFieldRepository y9TableFieldRepository;
 
-    private final SpmApproveItemRepository approveItemRepository;
+    private final ItemRepository approveItemRepository;
 
     public Y9FormServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9FormRepository y9FormRepository, Y9TableService y9TableService, Y9FormFieldRepository y9FormFieldRepository,
-        Y9TableFieldRepository y9TableFieldRepository, SpmApproveItemRepository approveItemRepository) {
+        Y9TableFieldRepository y9TableFieldRepository, ItemRepository approveItemRepository) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9FormRepository = y9FormRepository;
         this.y9TableService = y9TableService;

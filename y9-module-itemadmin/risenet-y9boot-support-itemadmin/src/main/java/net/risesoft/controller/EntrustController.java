@@ -30,7 +30,7 @@ import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -47,7 +47,7 @@ public class EntrustController {
 
     private final EntrustService entrustService;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final PersonApi personApi;
 
@@ -162,12 +162,12 @@ public class EntrustController {
             if (entrust.getItemId().equals(Entrust.ITEMID4ALL)) {
                 entrust.setItemName(Entrust.ITEMNAME4ALL);
             } else {
-                Item item = spmApproveItemRepository.findById(entrust.getItemId()).orElse(null);
+                Item item = itemRepository.findById(entrust.getItemId()).orElse(null);
                 entrust.setItemName(item != null ? item.getName() : "事项不存在");
             }
             map.put("entrust", entrust);
         }
-        List<Item> itemList = spmApproveItemRepository.findAll();
+        List<Item> itemList = itemRepository.findAll();
         List<Item> list = new ArrayList<>();
         Integer count = entrustService.getCountByOwnerIdAndItemId(Y9LoginUserHolder.getPersonId(), Entrust.ITEMID4ALL);
         if (count == 0) {

@@ -25,13 +25,13 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.entity.BookMarkBind;
+import net.risesoft.entity.template.BookMarkBind;
 import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.WordTemplateRepository;
+import net.risesoft.repository.template.WordTemplateRepository;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.service.WordTemplateService;
 import net.risesoft.y9.Y9Context;

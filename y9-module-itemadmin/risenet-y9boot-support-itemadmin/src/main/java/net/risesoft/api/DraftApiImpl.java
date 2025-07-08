@@ -25,7 +25,7 @@ import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DraftEntityRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DraftEntityService;
 import net.risesoft.service.FormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -47,7 +47,7 @@ public class DraftApiImpl implements DraftApi {
 
     private final DraftEntityRepository draftEntityRepository;
 
-    private final SpmApproveItemRepository spmApproveitemRepository;
+    private final ItemRepository spmApproveitemRepository;
 
     private final FormDataService formDataService;
 

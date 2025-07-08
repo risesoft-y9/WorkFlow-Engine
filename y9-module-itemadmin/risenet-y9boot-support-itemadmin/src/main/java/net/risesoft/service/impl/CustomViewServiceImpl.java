@@ -19,7 +19,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.CustomViewModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
-import net.risesoft.repository.jpa.CustomViewRepository;
+import net.risesoft.repository.view.CustomViewRepository;
 import net.risesoft.service.CustomViewService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;

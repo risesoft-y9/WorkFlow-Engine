@@ -59,10 +59,10 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.repository.jpa.DraftEntityRepository;
-import net.risesoft.repository.jpa.OpinionHistoryRepository;
-import net.risesoft.repository.jpa.OpinionRepository;
 import net.risesoft.repository.jpa.ProcessTrackRepository;
 import net.risesoft.repository.jpa.TaskVariableRepository;
+import net.risesoft.repository.opinion.OpinionHistoryRepository;
+import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -731,7 +731,7 @@ public class AsyncHandleService {
     public void weiXinRemind(final String tenantId, final String userId, final String processSerialNumber,
         final List<ChaoSong> list) {
         Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
-        if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
+        if (weiXinSwitch == null || !weiXinSwitch) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
         }
@@ -784,7 +784,7 @@ public class AsyncHandleService {
     public void weiXinRemind4ChaoSongInfo(final String tenantId, final String userId, final String processSerialNumber,
         final List<ChaoSongInfo> list) {
         Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
-        if (weiXinSwitch == null || Boolean.FALSE.equals(weiXinSwitch)) {
+        if (weiXinSwitch == null || !weiXinSwitch) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
             return;
         }

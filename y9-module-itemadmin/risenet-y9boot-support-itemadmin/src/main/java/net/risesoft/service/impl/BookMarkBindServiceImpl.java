@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.BookMarkBind;
+import net.risesoft.entity.template.BookMarkBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.BookMarkBindRepository;
+import net.risesoft.repository.template.BookMarkBindRepository;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

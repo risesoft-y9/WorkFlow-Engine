@@ -23,7 +23,7 @@ import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -46,7 +46,7 @@ public class ItemApiImpl implements ItemApi {
 
     private final SpmApproveItemService spmApproveItemService;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -63,7 +63,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> findAll(@RequestParam String tenantId, @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Item> list = spmApproveItemRepository.findAll(systemName);
+        List<Item> list = itemRepository.findAll(systemName);
         List<ItemModel> itemModelList = new ArrayList<>();
         for (Item item : list) {
             ItemModel itemModel = new ItemModel();
@@ -99,7 +99,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> getAllItem(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Item> list = spmApproveItemRepository.findAll();
+        List<Item> list = itemRepository.findAll();
         List<ItemModel> itemModelList = new ArrayList<>();
         for (Item item : list) {
             ItemModel itemModel = new ItemModel();
@@ -235,7 +235,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemSystemListModel>> getItemSystem(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> list = spmApproveItemRepository.getItemSystem();
+        List<Map<String, Object>> list = itemRepository.getItemSystem();
         List<ItemSystemListModel> itemList = new ArrayList<>();
         for (Map<String, Object> map : list) {
             ItemSystemListModel itemSystemListModel = new ItemSystemListModel();

@@ -17,7 +17,7 @@ import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.AttachmentConfRepository;
+import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.service.AttachmentConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.documentword.DocumentWps;
-import net.risesoft.repository.jpa.DocumentWpsRepository;
+import net.risesoft.repository.documentword.DocumentWpsRepository;
 import net.risesoft.service.DocumentWpsService;
 
 /**

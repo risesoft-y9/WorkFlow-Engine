@@ -20,9 +20,9 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
-import net.risesoft.repository.jpa.Y9FormItemBindRepository;
-import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
+import net.risesoft.repository.form.Y9FormItemBindRepository;
+import net.risesoft.repository.form.Y9FormItemMobileBindRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
@@ -42,7 +42,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     private final Y9FormItemMobileBindRepository y9FormItemMobileBindRepository;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final ProcessDefinitionApi processDefinitionApi;
 
@@ -106,7 +106,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Transactional
     public void copyEform(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();

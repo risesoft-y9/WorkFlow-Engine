@@ -16,7 +16,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.model.platform.Person;
-import net.risesoft.repository.jpa.EntrustHistoryRepository;
+import net.risesoft.repository.entrust.EntrustHistoryRepository;
 import net.risesoft.service.EntrustHistoryService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;

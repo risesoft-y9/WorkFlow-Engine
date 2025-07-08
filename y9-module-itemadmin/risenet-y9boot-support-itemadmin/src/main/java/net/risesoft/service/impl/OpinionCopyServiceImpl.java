@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.opinion.OpinionCopy;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.OpinionCopyRepository;
+import net.risesoft.repository.opinion.OpinionCopyRepository;
 import net.risesoft.service.OpinionCopyService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

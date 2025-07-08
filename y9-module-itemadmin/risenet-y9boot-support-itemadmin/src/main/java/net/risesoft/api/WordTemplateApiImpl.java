@@ -14,7 +14,7 @@ import net.risesoft.entity.template.ItemWordTemplateBind;
 import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.ItemWordTemplateBindRepository;
+import net.risesoft.repository.template.ItemWordTemplateBindRepository;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.WordTemplateService;
 import net.risesoft.y9.Y9LoginUserHolder;

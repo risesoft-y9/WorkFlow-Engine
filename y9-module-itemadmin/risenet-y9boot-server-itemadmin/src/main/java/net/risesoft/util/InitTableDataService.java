@@ -26,17 +26,17 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.form.Y9FormFieldRepository;
+import net.risesoft.repository.form.Y9FormItemBindRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
 import net.risesoft.repository.jpa.DynamicRoleRepository;
-import net.risesoft.repository.jpa.ItemOpinionFrameBindRepository;
 import net.risesoft.repository.jpa.ItemPermissionRepository;
-import net.risesoft.repository.jpa.ItemViewConfRepository;
-import net.risesoft.repository.jpa.OpinionFrameRepository;
-import net.risesoft.repository.jpa.PrintTemplateItemBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
-import net.risesoft.repository.jpa.Y9FormItemBindRepository;
+import net.risesoft.repository.jpa.ItemRepository;
+import net.risesoft.repository.opinion.ItemOpinionFrameBindRepository;
+import net.risesoft.repository.opinion.OpinionFrameRepository;
+import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
+import net.risesoft.repository.view.ItemViewConfRepository;
 import net.risesoft.service.SyncYearTableService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -115,7 +115,7 @@ public class InitTableDataService {
 
     private final SyncYearTableService syncYearTableService;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final OpinionFrameRepository opinionFrameRepository;
 
@@ -135,7 +135,7 @@ public class InitTableDataService {
 
     private final ItemOpinionFrameBindRepository itemOpinionFrameBindRepository;
 
-    private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
+    private final ItemPrintTemplateBindRepository itemPrintTemplateBindRepository;
 
     private final ItemViewConfRepository itemViewConfRepository;
 
@@ -144,17 +144,17 @@ public class InitTableDataService {
     private final Y9Properties y9Config;
 
     public InitTableDataService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
-        SyncYearTableService syncYearTableService, SpmApproveItemRepository spmApproveItemRepository,
+        SyncYearTableService syncYearTableService, ItemRepository itemRepository,
         OpinionFrameRepository opinionFrameRepository, DynamicRoleRepository dynamicRoleRepository,
         Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository,
         Y9FormRepository y9FormRepository, Y9FormFieldRepository y9FormFieldRepository,
         Y9FormItemBindRepository y9FormItemBindRepository, ItemPermissionRepository itemPermissionRepository,
         ItemOpinionFrameBindRepository itemOpinionFrameBindRepository,
-        PrintTemplateItemBindRepository printTemplateItemBindRepository, ItemViewConfRepository itemViewConfRepository,
+        ItemPrintTemplateBindRepository itemPrintTemplateBindRepository, ItemViewConfRepository itemViewConfRepository,
         TableManagerService tableManagerService, Y9Properties y9Config) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.syncYearTableService = syncYearTableService;
-        this.spmApproveItemRepository = spmApproveItemRepository;
+        this.itemRepository = itemRepository;
         this.opinionFrameRepository = opinionFrameRepository;
         this.dynamicRoleRepository = dynamicRoleRepository;
         this.y9TableRepository = y9TableRepository;
@@ -164,7 +164,7 @@ public class InitTableDataService {
         this.y9FormItemBindRepository = y9FormItemBindRepository;
         this.itemPermissionRepository = itemPermissionRepository;
         this.itemOpinionFrameBindRepository = itemOpinionFrameBindRepository;
-        this.printTemplateItemBindRepository = printTemplateItemBindRepository;
+        this.itemPrintTemplateBindRepository = itemPrintTemplateBindRepository;
         this.itemViewConfRepository = itemViewConfRepository;
         this.tableManagerService = tableManagerService;
         this.y9Config = y9Config;
@@ -183,7 +183,7 @@ public class InitTableDataService {
     }
 
     private void createItem() {
-        Item item = spmApproveItemRepository.findById(ITEM_ID).orElse(null);
+        Item item = itemRepository.findById(ITEM_ID).orElse(null);
         if (null == item) {
             item = new Item();
             item.setId(ITEM_ID);
@@ -195,7 +195,7 @@ public class InitTableDataService {
             item.setCreateDate(new Date());
             item.setIsOnline("0");
             item.setTodoTaskUrlPrefix(y9Config.getCommon().getFlowableBaseUrl());
-            spmApproveItemRepository.save(item);
+            itemRepository.save(item);
         }
     }
 
@@ -256,7 +256,7 @@ public class InitTableDataService {
     }
 
     private void createItemPrintTemplate() {
-        ItemPrintTemplateBind printTemplateItemBind = printTemplateItemBindRepository.findByItemId(ITEM_ID);
+        ItemPrintTemplateBind printTemplateItemBind = itemPrintTemplateBindRepository.findByItemId(ITEM_ID);
         if (printTemplateItemBind == null) {
             printTemplateItemBind = new ItemPrintTemplateBind();
             printTemplateItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -265,7 +265,7 @@ public class InitTableDataService {
             printTemplateItemBind.setTemplateId(PRINT_FORM_ID);
             printTemplateItemBind.setTemplateName(PRINT_FORM_NAME);
             printTemplateItemBind.setTemplateType("2");
-            printTemplateItemBindRepository.save(printTemplateItemBind);
+            itemPrintTemplateBindRepository.save(printTemplateItemBind);
         }
     }
 

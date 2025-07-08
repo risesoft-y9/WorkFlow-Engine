@@ -12,7 +12,7 @@ import net.risesoft.entity.organword.ItemOrganWordRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;
-import net.risesoft.repository.jpa.ItemOrganWordRoleRepository;
+import net.risesoft.repository.organword.ItemOrganWordRoleRepository;
 import net.risesoft.service.config.ItemOrganWordRoleService;
 
 /**

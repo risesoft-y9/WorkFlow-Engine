@@ -26,8 +26,8 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.ItemButtonBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.button.ItemButtonBindRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.service.config.ItemButtonBindService;
@@ -54,7 +54,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
     private final ItemButtonRoleService itemButtonRoleService;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final RepositoryApi repositoryApi;
 
@@ -96,7 +96,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();

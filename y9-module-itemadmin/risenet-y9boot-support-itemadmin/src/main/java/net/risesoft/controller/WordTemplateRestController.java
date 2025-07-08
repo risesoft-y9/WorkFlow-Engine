@@ -20,9 +20,9 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.controller.vo.WordTemplateVO;
-import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
+import net.risesoft.entity.template.BookMarkBind;
 import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
