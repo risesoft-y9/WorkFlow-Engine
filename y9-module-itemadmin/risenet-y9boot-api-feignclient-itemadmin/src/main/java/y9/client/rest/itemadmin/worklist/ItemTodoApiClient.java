@@ -1,4 +1,4 @@
-package y9.client.rest.itemadmin;
+package y9.client.rest.itemadmin.worklist;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
