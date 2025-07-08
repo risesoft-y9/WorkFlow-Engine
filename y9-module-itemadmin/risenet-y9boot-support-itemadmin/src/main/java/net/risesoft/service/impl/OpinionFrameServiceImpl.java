@@ -26,7 +26,7 @@ import net.risesoft.entity.opinion.OpinionFrame;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.OpinionFrameRepository;
+import net.risesoft.repository.opinion.OpinionFrameRepository;
 import net.risesoft.service.OpinionFrameService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.y9.Y9LoginUserHolder;

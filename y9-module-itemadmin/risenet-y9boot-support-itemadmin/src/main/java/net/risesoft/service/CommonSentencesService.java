@@ -14,8 +14,8 @@ import net.risesoft.entity.commonsentences.CommonSentences;
 import net.risesoft.entity.commonsentences.CommonSentencesInit;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.CommonSentencesInitRepository;
-import net.risesoft.repository.jpa.CommonSentencesRepository;
+import net.risesoft.repository.commonsentences.CommonSentencesInitRepository;
+import net.risesoft.repository.commonsentences.CommonSentencesRepository;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 

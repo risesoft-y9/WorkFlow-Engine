@@ -29,8 +29,8 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.ItemOpinionFrameBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
+import net.risesoft.repository.opinion.ItemOpinionFrameBindRepository;
 import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
@@ -53,7 +53,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
     private final RoleApi roleApi;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final RepositoryApi repositoryApi;
 
@@ -77,7 +77,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();

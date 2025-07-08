@@ -21,7 +21,7 @@ import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.entity.interfaceinfo.ItemInterfaceParamsBind;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
+import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
 import net.risesoft.service.form.Y9TableFieldService;

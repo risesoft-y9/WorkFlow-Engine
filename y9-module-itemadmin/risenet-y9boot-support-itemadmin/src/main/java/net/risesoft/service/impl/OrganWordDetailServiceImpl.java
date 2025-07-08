@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.organword.OrganWordDetail;
-import net.risesoft.repository.jpa.OrganWordDetailRepository;
+import net.risesoft.repository.organword.OrganWordDetailRepository;
 import net.risesoft.service.OrganWordDetailService;
 
 /**

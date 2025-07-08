@@ -25,9 +25,9 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.ItemOrganWordBindRepository;
-import net.risesoft.repository.jpa.OrganWordRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
+import net.risesoft.repository.organword.ItemOrganWordBindRepository;
+import net.risesoft.repository.organword.OrganWordRepository;
 import net.risesoft.service.config.ItemOrganWordBindService;
 import net.risesoft.service.config.ItemOrganWordRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -49,7 +49,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
 
     private final OrganWordRepository organWordRepository;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final RepositoryApi repositoryApi;
 
@@ -63,7 +63,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();

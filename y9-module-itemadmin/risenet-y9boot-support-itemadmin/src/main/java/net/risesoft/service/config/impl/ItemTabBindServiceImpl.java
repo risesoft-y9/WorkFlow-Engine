@@ -17,7 +17,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.ItemTabBindRepository;
+import net.risesoft.repository.tab.ItemTabBindRepository;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.service.config.ItemTabBindService;
 import net.risesoft.util.SysVariables;

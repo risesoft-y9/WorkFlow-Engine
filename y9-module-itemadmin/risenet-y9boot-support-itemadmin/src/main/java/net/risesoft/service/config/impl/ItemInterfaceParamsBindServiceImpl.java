@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.interfaceinfo.ItemInterfaceParamsBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
+import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
 
 /**

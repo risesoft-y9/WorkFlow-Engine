@@ -100,10 +100,10 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9PageQuery;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.jpa.ItemTaskConfRepository;
-import net.risesoft.repository.jpa.PrintTemplateItemBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.repository.jpa.TaskVariableRepository;
+import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.DocumentService;
@@ -148,7 +148,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final SpmApproveItemService spmApproveitemService;
 
-    private final SpmApproveItemRepository spmApproveitemRepository;
+    private final ItemRepository spmApproveitemRepository;
 
     private final ItemTaskConfService taskConfService;
 
@@ -192,7 +192,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final ProcessTodoApi processTodoApi;
 
-    private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
+    private final ItemPrintTemplateBindRepository itemPrintTemplateBindRepository;
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
@@ -856,7 +856,7 @@ public class DocumentServiceImpl implements DocumentService {
         // 获取打印表单
         String printFormId = "";
         String printFormType = "";
-        ItemPrintTemplateBind bind = printTemplateItemBindRepository.findByItemId(itemId);
+        ItemPrintTemplateBind bind = itemPrintTemplateBindRepository.findByItemId(itemId);
         if (bind != null) {
             printFormId = bind.getTemplateId();
             printFormType = bind.getTemplateType();

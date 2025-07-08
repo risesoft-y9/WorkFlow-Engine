@@ -26,11 +26,11 @@ import net.risesoft.entity.interfaceinfo.InterfaceResponseParams;
 import net.risesoft.entity.interfaceinfo.ItemInterfaceBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.InterfaceInfoRepository;
-import net.risesoft.repository.jpa.InterfaceRequestParamsRepository;
-import net.risesoft.repository.jpa.InterfaceResponseParamsRepository;
-import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.interfaceinfo.InterfaceInfoRepository;
+import net.risesoft.repository.interfaceinfo.InterfaceRequestParamsRepository;
+import net.risesoft.repository.interfaceinfo.InterfaceResponseParamsRepository;
+import net.risesoft.repository.interfaceinfo.ItemInterfaceBindRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.InterfaceService;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -44,7 +44,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     private final InterfaceInfoRepository interfaceInfoRepository;
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
 
     private final ItemInterfaceBindRepository itemInterfaceBindRepository;
 
@@ -84,7 +84,7 @@ public class InterfaceServiceImpl implements InterfaceService {
             }
         }, sort);
         for (ItemInterfaceBind bind : list) {
-            Item item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
+            Item item = itemRepository.findById(bind.getItemId()).orElse(null);
             bind.setItemName(item != null ? item.getName() : "事项不存在");
         }
         return list;

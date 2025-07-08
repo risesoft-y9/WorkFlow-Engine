@@ -10,7 +10,7 @@ import net.risesoft.entity.form.Y9PreFormItemBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.Y9PreFormItemBindRepository;
+import net.risesoft.repository.form.Y9PreFormItemBindRepository;
 import net.risesoft.service.config.Y9PreFormItemBindService;
 
 /**

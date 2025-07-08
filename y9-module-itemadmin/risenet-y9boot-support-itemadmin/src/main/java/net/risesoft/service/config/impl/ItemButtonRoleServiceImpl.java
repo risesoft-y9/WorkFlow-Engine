@@ -12,7 +12,7 @@ import net.risesoft.entity.button.ItemButtonRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;
-import net.risesoft.repository.jpa.ItemButtonRoleRepository;
+import net.risesoft.repository.button.ItemButtonRoleRepository;
 import net.risesoft.service.config.ItemButtonRoleService;
 
 /**

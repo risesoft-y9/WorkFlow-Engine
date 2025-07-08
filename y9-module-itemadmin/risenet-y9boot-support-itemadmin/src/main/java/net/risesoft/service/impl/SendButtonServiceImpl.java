@@ -14,7 +14,7 @@ import net.risesoft.entity.button.SendButton;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.SendButtonRepository;
+import net.risesoft.repository.button.SendButtonRepository;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

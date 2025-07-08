@@ -32,7 +32,7 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
-import net.risesoft.repository.jpa.SpmApproveItemRepository;
+import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.PrintTemplateService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.config.ItemButtonBindService;
@@ -65,7 +65,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
-    private final SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemRepository itemRepository;
     private final SystemApi systemApi;
     private final AppApi appApi;
     private final ItemMappingConfRepository itemMappingConfRepository;
@@ -131,10 +131,10 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 String newItemId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                 newItem.setId(newItemId);
                 newItem.setCreateDate(new Date());
-                Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
+                Integer tabIndex = itemRepository.getMaxTabIndex();
                 newItem.setName(item.getName() + "副本");
                 newItem.setTabIndex(null != tabIndex ? tabIndex + 1 : 1);
-                spmApproveItemRepository.save(newItem);
+                itemRepository.save(newItem);
                 String proDefKey = item.getWorkflowGuid();
                 ProcessDefinitionModel latestpd =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -192,7 +192,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             if (StringUtils.isNotBlank(ids)) {
                 String[] id = ids.split(SysVariables.COMMA);
                 for (String s : id) {
-                    spmApproveItemRepository.deleteById(s);
+                    itemRepository.deleteById(s);
                     // 删除表单绑定信息
                     y9FormItemBindService.deleteBindInfo(s);
                     // 删除权限绑定信息
@@ -232,12 +232,12 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     public Item findById(String id) {
-        return spmApproveItemRepository.findById(id).orElse(null);
+        return itemRepository.findById(id).orElse(null);
     }
 
     @Override
     public Map<String, Object> findById(String itemId, Map<String, Object> map) {
-        Item spmApproveitem = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item spmApproveitem = itemRepository.findById(itemId).orElse(null);
         if (spmApproveitem != null) {
             map.put("processDefinitionKey", spmApproveitem.getWorkflowGuid());
             map.put("itemId", spmApproveitem.getId());
@@ -249,7 +249,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     @Override
     public ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
         ItemModel itemModel = new ItemModel();
-        Item sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
+        Item sa = itemRepository.findItemByKey(processDefinitionKey);
         if (null == sa) {
             return null;
         }
@@ -261,7 +261,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
         boolean hasKey = false;
         try {
-            Item sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
+            Item sa = itemRepository.findItemByKey(processDefinitionKey);
             if (null != sa) {
                 hasKey = true;
             }
@@ -273,23 +273,23 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     public List<Item> list() {
-        return spmApproveItemRepository.findAll();
+        return itemRepository.findAll();
     }
 
     @Override
     public List<Item> listByIdNotAndNameLike(String id, String name) {
-        return spmApproveItemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
+        return itemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
     }
 
     @Override
     public List<Item> listBySystemName(String systemName) {
-        return spmApproveItemRepository.findAll(systemName);
+        return itemRepository.findAll(systemName);
     }
 
     @Override
     public Page<Item> page(Integer page, Integer rows) {
         PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "createDate"));
-        return spmApproveItemRepository.findAll(pageable);
+        return itemRepository.findAll(pageable);
     }
 
     @Override
@@ -341,16 +341,16 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             if (StringUtils.isNotEmpty(item.getAppUrl())) {
                 item.setTodoTaskUrlPrefix(item.getAppUrl().split("\\?")[0]);
             }
-            Item olditem = spmApproveItemRepository.findById(item.getId()).orElse(null);
+            Item olditem = itemRepository.findById(item.getId()).orElse(null);
             if (olditem == null) {
-                Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
+                Integer tabIndex = itemRepository.getMaxTabIndex();
                 if (tabIndex == null) {
                     item.setTabIndex(1);
                 } else {
                     item.setTabIndex(tabIndex + 1);
                 }
             }
-            spmApproveItemRepository.save(item);
+            itemRepository.save(item);
             ItemMappingConf itemMappingConf =
                 itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "1");
             // 删除事项映射字段
@@ -383,7 +383,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
         try {
             for (String s : list) {
                 String[] arr = s.split(SysVariables.COLON);
-                spmApproveItemRepository.updateOrder(Integer.parseInt(arr[1]), arr[0]);
+                itemRepository.updateOrder(Integer.parseInt(arr[1]), arr[0]);
             }
         } catch (Exception e) {
             e.printStackTrace();

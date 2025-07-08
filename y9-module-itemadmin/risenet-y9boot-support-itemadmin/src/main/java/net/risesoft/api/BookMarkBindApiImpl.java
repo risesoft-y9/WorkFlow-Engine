@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.BookMarkBindApi;
-import net.risesoft.entity.BookMarkBind;
+import net.risesoft.entity.template.BookMarkBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.y9.Y9LoginUserHolder;

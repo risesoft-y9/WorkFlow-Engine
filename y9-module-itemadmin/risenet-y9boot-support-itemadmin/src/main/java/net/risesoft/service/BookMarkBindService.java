@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.BookMarkBind;
+import net.risesoft.entity.template.BookMarkBind;
 
 /**
  * @author qinman

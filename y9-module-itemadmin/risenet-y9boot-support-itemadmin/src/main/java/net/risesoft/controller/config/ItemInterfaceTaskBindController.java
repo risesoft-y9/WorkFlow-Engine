@@ -15,7 +15,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.interfaceinfo.ItemInterfaceTaskBind;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
+import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.config.ItemInterfaceTaskBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

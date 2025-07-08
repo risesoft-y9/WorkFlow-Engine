@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.PrintApi;
 import net.risesoft.entity.template.ItemPrintTemplateBind;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.PrintTemplateItemBindRepository;
+import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -25,7 +25,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/print", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PrintApiImpl implements PrintApi {
 
-    private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
+    private final ItemPrintTemplateBindRepository itemPrintTemplateBindRepository;
 
     /**
      * 获取打印模板文件存储ID（打开打印模板使用）
@@ -38,7 +38,7 @@ public class PrintApiImpl implements PrintApi {
     @Override
     public Y9Result<String> openDocument(@RequestParam String tenantId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        ItemPrintTemplateBind bind = printTemplateItemBindRepository.findByItemId(itemId);
+        ItemPrintTemplateBind bind = itemPrintTemplateBindRepository.findByItemId(itemId);
         String fileStoreId = bind.getTemplateUrl();
         return Y9Result.success(fileStoreId);
     }

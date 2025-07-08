@@ -41,7 +41,7 @@ import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.OrganWordRepository;
+import net.risesoft.repository.organword.OrganWordRepository;
 import net.risesoft.service.OrganWordDetailService;
 import net.risesoft.service.OrganWordPropertyService;
 import net.risesoft.service.OrganWordService;

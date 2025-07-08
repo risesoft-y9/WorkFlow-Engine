@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.entrust.EntrustDetail;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.EntrustDetailRepository;
+import net.risesoft.repository.entrust.EntrustDetailRepository;
 import net.risesoft.service.EntrustDetailService;
 
 /**

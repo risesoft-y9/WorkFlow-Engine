@@ -19,7 +19,7 @@ import net.risesoft.entity.opinion.OpinionFrameOneClickSet;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
-import net.risesoft.repository.jpa.OpinionFrameOneClickSetRepository;
+import net.risesoft.repository.opinion.OpinionFrameOneClickSetRepository;
 import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;

@@ -28,8 +28,8 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.AttachmentConfRepository;
-import net.risesoft.repository.jpa.TransactionFileRepository;
+import net.risesoft.repository.attachment.AttachmentConfRepository;
+import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -51,7 +51,7 @@ public class AttachmentApiImpl implements AttachmentApi {
 
     private final TransactionFileService transactionFileService;
 
-    private final TransactionFileRepository transactionFileRepository;
+    private final AttachmentRepository attachmentRepository;
 
     private final AttachmentConfRepository attachmentConfRepository;
 
@@ -192,7 +192,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @Override
     public Y9Result<AttachmentModel> getFile(@RequestParam String tenantId, @RequestParam String fileId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Attachment file = transactionFileRepository.findById(fileId).orElse(null);
+        Attachment file = attachmentRepository.findById(fileId).orElse(null);
         AttachmentModel model = null;
         if (file != null) {
             model = new AttachmentModel();
@@ -275,7 +275,7 @@ public class AttachmentApiImpl implements AttachmentApi {
                 attachment.setPersonId(orgUnitId);
                 attachment.setPersonName(orgUnit.getName());
                 attachment.setUploadTime(sdf.format(new Date()));
-                transactionFileRepository.save(attachment);
+                attachmentRepository.save(attachment);
             } else {
                 Attachment fileAttachment = new Attachment();
                 fileAttachment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -291,7 +291,7 @@ public class AttachmentApiImpl implements AttachmentApi {
                 fileAttachment.setTaskId(taskId);
                 fileAttachment.setFileSource(fileSource);
                 fileAttachment.setTabIndex(transactionFileService.fileCounts(processSerialNumber) + 1);
-                transactionFileRepository.save(fileAttachment);
+                attachmentRepository.save(fileAttachment);
             }
             msg = "success:true";
         } catch (Exception e) {
@@ -322,12 +322,12 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Attachment attachment = transactionFileRepository.findById(fileId).orElse(null);
+            Attachment attachment = attachmentRepository.findById(fileId).orElse(null);
             if (null != attachment) {
                 attachment.setFileStoreId(y9FileStoreId);
                 attachment.setFileSize(fileSize);
                 attachment.setUploadTime(sdf.format(new Date()));
-                transactionFileRepository.save(attachment);
+                attachmentRepository.save(attachment);
             }
             msg = "success:true";
         } catch (Exception e) {
