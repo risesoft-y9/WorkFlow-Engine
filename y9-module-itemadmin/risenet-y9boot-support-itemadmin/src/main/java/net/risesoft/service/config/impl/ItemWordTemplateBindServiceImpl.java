@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.template.ItemWordTemplateBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -52,7 +52,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     public void copyBind(String itemId, String processDefinitionId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+            Item item = spmApproveItemRepository.findById(itemId).orElse(null);
             String proDefKey = item.getWorkflowGuid();
             ProcessDefinitionModel latestpd =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();

@@ -20,8 +20,8 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.CalendarConfig;
 import net.risesoft.entity.DynamicRole;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemPermission;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.button.CommonButton;
 import net.risesoft.entity.button.ItemButtonBind;
 import net.risesoft.entity.button.ItemButtonRole;
@@ -227,7 +227,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
           3.1、先查找绑定关系
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
@@ -344,7 +344,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 3、 先查目标租户该事项是否有绑定表单，没有再复制授权
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
@@ -483,7 +483,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、在目标租户查找事项，不存在才继续复制
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        SpmApproveItem targetItem = itemService.findById(itemId);
+        Item targetItem = itemService.findById(itemId);
         if (null != targetItem) {
             return;
         }
@@ -491,7 +491,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 2、在源租户查找事项
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        SpmApproveItem sourceItem = itemService.findById(itemId);
+        Item sourceItem = itemService.findById(itemId);
 
         /*
          * 3、复制
@@ -545,7 +545,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 2、先判断目标租户的事项是否绑定了意见框，绑定了则不再复制
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
@@ -641,7 +641,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 3、复制绑定和授权到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
@@ -711,7 +711,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、先查目标租户该事项是否有授权，没有再复制授权
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
@@ -816,7 +816,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 3.1、先查找绑定关系
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel targetpd =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
@@ -901,7 +901,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 3、复制该事项源租户的页签和事项的绑定关系到目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel sourcepd =
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
@@ -970,7 +970,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 1、在源租户查找权限中绑定的租户的角色
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel sourcepd =
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
@@ -1041,7 +1041,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 3、复制该事项源租户的模板事项以及模板和书签的绑定关系到目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel sourcepd =
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
@@ -1079,7 +1079,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     public void dataCopy(String sourceTenantId, String targetTenantId, String itemId) throws Exception {
         /* 复制流程模型并部署 */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        SpmApproveItem item = itemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         Y9Result<Object> result = processDataCopyApi.copyModel(sourceTenantId, targetTenantId, item.getWorkflowGuid());
         if (result.isSuccess()) {
             LOGGER.error("复制流程模型数据失败");
@@ -1119,8 +1119,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
     @Override
     public void dataCopy4System(String sourceTenantId, String targetTenantId, String systemName) throws Exception {
-        List<SpmApproveItem> itemList = itemService.listBySystemName(systemName);
-        for (SpmApproveItem item : itemList) {
+        List<Item> itemList = itemService.listBySystemName(systemName);
+        for (Item item : itemList) {
             this.dataCopy(sourceTenantId, targetTenantId, item.getId());
         }
     }

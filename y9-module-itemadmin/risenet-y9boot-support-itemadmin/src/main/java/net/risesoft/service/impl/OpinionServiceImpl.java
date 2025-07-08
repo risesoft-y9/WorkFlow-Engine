@@ -25,10 +25,10 @@ import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.entity.opinion.ItemOpinionFrameBind;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.entity.opinion.OpinionHistory;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -357,7 +357,7 @@ public class OpinionServiceImpl implements OpinionService {
                  * 当前意见框,不存在意见，则判断是否可以签写意见
                  */
                 model.setAddable(false);
-                SpmApproveItem item = spmApproveItemService.findById(itemId);
+                Item item = spmApproveItemService.findById(itemId);
                 String proDefKey = item.getWorkflowGuid();
                 ProcessDefinitionModel latestpd =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();

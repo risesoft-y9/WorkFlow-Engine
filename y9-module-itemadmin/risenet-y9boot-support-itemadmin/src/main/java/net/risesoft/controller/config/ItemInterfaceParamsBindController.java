@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.interfaceinfo.ItemInterfaceParamsBind;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceParamsBind;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
@@ -57,7 +57,7 @@ public class ItemInterfaceParamsBindController {
     public Y9Result<Map<String, Object>> getBindInfo(@RequestParam(required = false) String id,
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        Item item = spmApproveItemService.findById(itemId);
         Y9Page<Y9Table> pageList = y9TableService.pageTables(item.getSystemName(), 1, 500);
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();

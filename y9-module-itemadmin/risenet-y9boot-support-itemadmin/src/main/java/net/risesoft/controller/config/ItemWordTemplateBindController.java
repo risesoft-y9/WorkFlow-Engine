@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.template.ItemWordTemplateBind;
 import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.exception.GlobalErrorCodeEnum;
@@ -92,7 +92,7 @@ public class ItemWordTemplateBindController {
         int rows) {
         try {
             List<Map<String, Object>> listMap = new ArrayList<>();
-            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            Item item = spmApproveItemService.findById(itemId);
             List<ItemWordTemplateBind> list = itemWordTemplateBindService.listByItemIdOrderByBindValueAsc(itemId);
             for (ItemWordTemplateBind itemWordTemplateBind : list) {
                 Map<String, Object> map = new HashMap<>();
@@ -126,7 +126,7 @@ public class ItemWordTemplateBindController {
     @GetMapping(value = "/getTemplateBind")
     public Y9Result<Map<String, Object>> getTemplateBind(@RequestParam String itemId) {
         Map<String, Object> map = new HashMap<>(16);
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        Item item = spmApproveItemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid(), tenantId = Y9LoginUserHolder.getTenantId();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();

@@ -16,8 +16,8 @@ import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemStartNodeRole;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
@@ -60,7 +60,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
-        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
@@ -151,7 +151,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public String getStartTaskDefKey(String itemId) {
         String startTaskDefKey = "", tenantId = Y9LoginUserHolder.getTenantId(),
             userId = Y9LoginUserHolder.getOrgUnitId();
-        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
@@ -193,7 +193,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Override
     public List<ItemStartNodeRoleModel> getAllStartTaskDefKey(String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
-        SpmApproveItem item = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item item = spmApproveItemRepository.findById(itemId).orElse(null);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();

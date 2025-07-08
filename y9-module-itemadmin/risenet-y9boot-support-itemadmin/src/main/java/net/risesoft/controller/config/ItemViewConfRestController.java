@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9Table;
@@ -89,7 +89,7 @@ public class ItemViewConfRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Y9FormField> list = new ArrayList<>();
         List<String> fieldNameList = new ArrayList<>();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        Item item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
@@ -121,7 +121,7 @@ public class ItemViewConfRestController {
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        Item item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();

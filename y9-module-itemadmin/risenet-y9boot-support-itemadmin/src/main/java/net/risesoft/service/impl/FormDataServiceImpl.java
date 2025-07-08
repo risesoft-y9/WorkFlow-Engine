@@ -20,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.form.Y9FieldPerm;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
@@ -111,7 +111,7 @@ public class FormDataServiceImpl implements FormDataService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(sourceProcessSerialNumber);
             String itemId = processParam.getItemId();
-            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            Item item = spmApproveItemService.findById(itemId);
             ProcessDefinitionModel processDefinition =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
             // 流程上绑定的表单
@@ -186,7 +186,7 @@ public class FormDataServiceImpl implements FormDataService {
     public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber) {
         Map<String, Object> retMap = new HashMap<>(16);
         try {
-            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            Item item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
@@ -323,7 +323,7 @@ public class FormDataServiceImpl implements FormDataService {
     public List<Y9FormFieldModel> listFormFieldByItemId(String itemId) {
         List<Y9FormFieldModel> list = new ArrayList<>();
         try {
-            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            Item item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition = repositoryApi
                 .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
@@ -403,7 +403,7 @@ public class FormDataServiceImpl implements FormDataService {
             }
 
             // 获取事项绑定主表信息
-            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            Item item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition = repositoryApi
                 .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();

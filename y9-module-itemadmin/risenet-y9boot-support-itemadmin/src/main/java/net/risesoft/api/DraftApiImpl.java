@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.entity.DraftEntity;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
@@ -179,7 +179,7 @@ public class DraftApiImpl implements DraftApi {
         ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
         for (DraftEntity draftEntity : pageList) {
             Map<String, Object> retMap = new HashMap<>(16);
-            Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
+            Optional<Item> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
             if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
                 retMap.put("itemName", spmApproveitem.get().getName());
             } else {
@@ -246,7 +246,7 @@ public class DraftApiImpl implements DraftApi {
         for (DraftEntity draftEntity : pageList) {
             DraftModel model = new DraftModel();
             Y9BeanUtil.copyProperties(draftEntity, model);
-            Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
+            Optional<Item> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
             if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
                 model.setItemName(spmApproveitem.get().getName());
             } else {

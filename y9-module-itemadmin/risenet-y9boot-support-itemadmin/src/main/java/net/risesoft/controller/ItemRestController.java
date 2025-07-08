@@ -24,7 +24,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.resource.AppIconApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.AppIcon;
@@ -140,9 +140,9 @@ public class ItemRestController {
      * @return
      */
     @GetMapping(value = "/getBindItemList")
-    public Y9Result<List<SpmApproveItem>> getBindItemList(@RequestParam(required = true) String itemId,
+    public Y9Result<List<Item>> getBindItemList(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String itemName) {
-        List<SpmApproveItem> itemList = spmApproveItemService.listByIdNotAndNameLike(itemId, itemName);
+        List<Item> itemList = spmApproveItemService.listByIdNotAndNameLike(itemId, itemName);
         return Y9Result.success(itemList, "获取成功");
     }
 
@@ -190,8 +190,8 @@ public class ItemRestController {
      * @return
      */
     @GetMapping(value = "/list")
-    public Y9Result<List<SpmApproveItem>> list() {
-        List<SpmApproveItem> list = spmApproveItemService.list();
+    public Y9Result<List<Item>> list() {
+        List<Item> list = spmApproveItemService.list();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -205,7 +205,7 @@ public class ItemRestController {
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SpmApproveItem item = new SpmApproveItem();
+        Item item = new Item();
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         List<OrgUnit> manager = new ArrayList<>();
         if (StringUtils.isNotBlank(id)) {
@@ -276,8 +276,8 @@ public class ItemRestController {
      * @return
      */
     @PostMapping(value = "/save")
-    public Y9Result<SpmApproveItem> save(String itemJson) {
-        SpmApproveItem item = Y9JsonUtil.readValue(itemJson, SpmApproveItem.class);
+    public Y9Result<Item> save(String itemJson) {
+        Item item = Y9JsonUtil.readValue(itemJson, Item.class);
         return spmApproveItemService.save(item);
     }
 

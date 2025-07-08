@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.entity.view.ViewType;
 import net.risesoft.pojo.Y9Page;
@@ -68,7 +68,7 @@ public class ViewTypeRestController {
             for (ItemViewConf ivc : ivcList) {
                 String itemId = ivc.getItemId();
                 if (!itemIds.toString().contains(itemId)) {
-                    SpmApproveItem item = spmApproveItemService.findById(itemId);
+                    Item item = spmApproveItemService.findById(itemId);
                     if (null != item) {
                         itemIds.append(itemId).append(";");
                         if (StringUtils.isEmpty(itemNames)) {

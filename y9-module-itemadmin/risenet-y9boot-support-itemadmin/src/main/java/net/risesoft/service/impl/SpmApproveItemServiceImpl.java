@@ -20,8 +20,8 @@ import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemMappingConf;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -123,10 +123,10 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     public Y9Result<String> copyItem(String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            SpmApproveItem item = this.findById(id);
+            Item item = this.findById(id);
             if (null != item) {
                 // 复制事项信息
-                SpmApproveItem newItem = new SpmApproveItem();
+                Item newItem = new Item();
                 Y9BeanUtil.copyProperties(item, newItem);
                 String newItemId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                 newItem.setId(newItemId);
@@ -231,13 +231,13 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    public SpmApproveItem findById(String id) {
+    public Item findById(String id) {
         return spmApproveItemRepository.findById(id).orElse(null);
     }
 
     @Override
     public Map<String, Object> findById(String itemId, Map<String, Object> map) {
-        SpmApproveItem spmApproveitem = spmApproveItemRepository.findById(itemId).orElse(null);
+        Item spmApproveitem = spmApproveItemRepository.findById(itemId).orElse(null);
         if (spmApproveitem != null) {
             map.put("processDefinitionKey", spmApproveitem.getWorkflowGuid());
             map.put("itemId", spmApproveitem.getId());
@@ -249,7 +249,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     @Override
     public ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
         ItemModel itemModel = new ItemModel();
-        SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
+        Item sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
         if (null == sa) {
             return null;
         }
@@ -261,7 +261,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
         boolean hasKey = false;
         try {
-            SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
+            Item sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
             if (null != sa) {
                 hasKey = true;
             }
@@ -272,22 +272,22 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    public List<SpmApproveItem> list() {
+    public List<Item> list() {
         return spmApproveItemRepository.findAll();
     }
 
     @Override
-    public List<SpmApproveItem> listByIdNotAndNameLike(String id, String name) {
+    public List<Item> listByIdNotAndNameLike(String id, String name) {
         return spmApproveItemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
     }
 
     @Override
-    public List<SpmApproveItem> listBySystemName(String systemName) {
+    public List<Item> listBySystemName(String systemName) {
         return spmApproveItemRepository.findAll(systemName);
     }
 
     @Override
-    public Page<SpmApproveItem> page(Integer page, Integer rows) {
+    public Page<Item> page(Integer page, Integer rows) {
         PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "createDate"));
         return spmApproveItemRepository.findAll(pageable);
     }
@@ -296,7 +296,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     @Transactional
     public Y9Result<String> publishToSystemApp(String itemId) {
         try {
-            SpmApproveItem item = this.findById(itemId);
+            Item item = this.findById(itemId);
             System system = systemApi.getByName(Y9Context.getSystemName()).getData();
             if (null == system) {
                 return Y9Result.failure("发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为["
@@ -332,7 +332,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     @Transactional
-    public Y9Result<SpmApproveItem> save(SpmApproveItem item) {
+    public Y9Result<Item> save(Item item) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             item.setCreateDate(new Date());
@@ -341,7 +341,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             if (StringUtils.isNotEmpty(item.getAppUrl())) {
                 item.setTodoTaskUrlPrefix(item.getAppUrl().split("\\?")[0]);
             }
-            SpmApproveItem olditem = spmApproveItemRepository.findById(item.getId()).orElse(null);
+            Item olditem = spmApproveItemRepository.findById(item.getId()).orElse(null);
             if (olditem == null) {
                 Integer tabIndex = spmApproveItemRepository.getMaxTabIndex();
                 if (tabIndex == null) {

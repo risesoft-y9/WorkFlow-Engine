@@ -11,8 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.entity.DynamicRole;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemPermission;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9FormItemBind;
@@ -183,9 +183,9 @@ public class InitTableDataService {
     }
 
     private void createItem() {
-        SpmApproveItem item = spmApproveItemRepository.findById(ITEM_ID).orElse(null);
+        Item item = spmApproveItemRepository.findById(ITEM_ID).orElse(null);
         if (null == item) {
-            item = new SpmApproveItem();
+            item = new Item();
             item.setId(ITEM_ID);
             item.setWorkflowGuid(PROCESSDEFINITIONKEY);
             item.setAppUrl(y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID);

@@ -17,7 +17,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.controller.vo.Y9FormItemBindVO;
 import net.risesoft.controller.vo.Y9FormVO;
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormItemMobileBind;
@@ -254,8 +254,8 @@ public class Y9FormItemBindRestController {
     public Y9Result<List<Y9FormVO>> listFormByItemId(@RequestParam String itemId,
         @RequestParam(required = false) String formName) {
         List<Y9FormVO> listmap = new ArrayList<>();
-        SpmApproveItem spmApproveItem = spmApproveItemService.findById(itemId);
-        List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(spmApproveItem.getSystemName(),
+        Item item = spmApproveItemService.findById(itemId);
+        List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(item.getSystemName(),
             StringUtils.isNotBlank(formName) ? "%" + formName + "%" : "%%");
         List<ItemPrintTemplateBind> bindList = printTemplateService.listTemplateBindByItemId(itemId);
         ItemPrintTemplateBind itemPrintTemplateBind = !bindList.isEmpty() ? bindList.get(0) : null;

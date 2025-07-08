@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessInstance;
 import net.risesoft.entity.ProcessInstanceDetails;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -117,9 +117,9 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     @Transactional
     public boolean save(ProcessInstanceDetailsModel model) {
         try {
-            SpmApproveItem spmApproveItem = spmApproveitemService.findById(model.getItemId());
-            model.setAppCnName(spmApproveItem != null ? spmApproveItem.getName() : "");
-            model.setAppName(spmApproveItem != null ? spmApproveItem.getSystemName() : "");
+            Item item = spmApproveitemService.findById(model.getItemId());
+            model.setAppCnName(item != null ? item.getName() : "");
+            model.setAppName(item != null ? item.getSystemName() : "");
 
             ProcessInstanceDetails details = new ProcessInstanceDetails();
             Y9BeanUtil.copyProperties(model, details);

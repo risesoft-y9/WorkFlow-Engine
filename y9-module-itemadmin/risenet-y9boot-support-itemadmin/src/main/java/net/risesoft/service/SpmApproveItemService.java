@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.entity.Item;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -47,7 +47,7 @@ public interface SpmApproveItemService {
      * @param id
      * @return
      */
-    SpmApproveItem findById(String id);
+    Item findById(String id);
 
     /**
      * Description:
@@ -80,7 +80,7 @@ public interface SpmApproveItemService {
      *
      * @return
      */
-    List<SpmApproveItem> list();
+    List<Item> list();
 
     /**
      * Description: 查询不包含当前事项id和事项name模糊匹配的事项列表
@@ -89,7 +89,7 @@ public interface SpmApproveItemService {
      * @param name
      * @return
      */
-    List<SpmApproveItem> listByIdNotAndNameLike(String id, String name);
+    List<Item> listByIdNotAndNameLike(String id, String name);
 
     /**
      * Description:
@@ -97,7 +97,7 @@ public interface SpmApproveItemService {
      * @param systemName
      * @return
      */
-    List<SpmApproveItem> listBySystemName(String systemName);
+    List<Item> listBySystemName(String systemName);
 
     /**
      * 分页获取事项列表
@@ -106,7 +106,7 @@ public interface SpmApproveItemService {
      * @param rows
      * @return
      */
-    Page<SpmApproveItem> page(Integer page, Integer rows);
+    Page<Item> page(Integer page, Integer rows);
 
     /**
      * 发布事项为应用
@@ -122,7 +122,7 @@ public interface SpmApproveItemService {
      * @param item
      * @return
      */
-    Y9Result<SpmApproveItem> save(SpmApproveItem item);
+    Y9Result<Item> save(Item item);
 
     /**
      * 更新事项排序

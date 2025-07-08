@@ -20,9 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.ItemOpinionFrameRole;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.opinion.OpinionFrameOneClickSet;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
@@ -136,7 +136,7 @@ public class ItemOpinionFrameBindRestController {
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.listByMark(mark);
         List<Map<String, Object>> bindList = new ArrayList<>();
         Map<String, Object> map;
-        SpmApproveItem item;
+        Item item;
         List<ItemOpinionFrameRole> roleList;
         for (ItemOpinionFrameBind bind : oftrbList) {
             map = new HashMap<>(16);

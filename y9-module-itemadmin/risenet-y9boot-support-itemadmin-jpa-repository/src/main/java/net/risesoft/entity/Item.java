@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_APPROVEITEM")
 @Comment("事项定义信息表")
-public class SpmApproveItem implements Serializable {
+public class Item implements Serializable {
 
     private static final long serialVersionUID = -2923177835926495218L;
 

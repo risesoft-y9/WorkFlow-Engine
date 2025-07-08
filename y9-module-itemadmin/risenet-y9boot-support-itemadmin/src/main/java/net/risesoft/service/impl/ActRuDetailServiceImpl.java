@@ -24,8 +24,8 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -107,7 +107,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         try {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(newProcessSerialNumber);
             String itemId = processParam.getItemId();
-            SpmApproveItem item = itemService.findById(itemId);
+            Item item = itemService.findById(itemId);
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(oldProcessSerialNumber);
             List<ActRuDetail> listTemp = new ArrayList<>();
             ActRuDetail ard;
