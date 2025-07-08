@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_SpeakInfo")
+@Table(name = "FF_SPEAKINFO")
 @Comment("沟通交流信息表")
 public class SpeakInfo implements Serializable {
 

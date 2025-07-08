@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_OrganWord_UseHistory")
+@Table(name = "FF_ORGANWORD_USEHISTORY")
 @Comment("公文编号使用历史表")
 public class OrganWordUseHistory implements Serializable {
 

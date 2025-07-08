@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CalendarConfig")
+@Table(name = "FF_CALENDARCONFIG")
 @Comment("日历配置表")
 public class CalendarConfig implements Serializable {
 

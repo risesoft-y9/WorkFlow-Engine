@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_OpinionFrame")
+@Table(name = "FF_OPINIONFRAME")
 @Comment("意见框信息表")
 public class OpinionFrame implements Serializable {
 

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Extended_Content")
+@Table(name = "FF_EXTENDED_CONTENT")
 @Comment("扩展内容")
 public class ExtendedContent implements Serializable {
 

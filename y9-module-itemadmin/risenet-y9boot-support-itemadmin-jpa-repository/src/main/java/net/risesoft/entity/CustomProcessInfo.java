@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CustomProcessInfo")
+@Table(name = "FF_CUSTOMPROCESSINFO")
 @Comment("定制流程信息表")
 public class CustomProcessInfo implements Serializable {
 

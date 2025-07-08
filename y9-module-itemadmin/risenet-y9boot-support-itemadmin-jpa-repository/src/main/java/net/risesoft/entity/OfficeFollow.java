@@ -21,7 +21,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "FF_Office_Follow")
+@Table(name = "FF_OFFICE_FOLLOW")
 @Comment("办件关注信息表")
 public class OfficeFollow implements Serializable {
     private static final long serialVersionUID = -2749619146231540189L;

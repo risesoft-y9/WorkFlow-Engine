@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ProcessTrack")
+@Table(name = "FF_PROCESSTRACK")
 @Comment("历程信息表")
 public class ProcessTrack implements Serializable {
 

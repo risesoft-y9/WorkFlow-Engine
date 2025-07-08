@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CommonButton")
+@Table(name = "FF_COMMONBUTTON")
 @Comment("按钮信息表")
 public class CommonButton implements Serializable {
 

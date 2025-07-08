@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_DocumentNumberDetail")
+@Table(name = "FF_DOCUMENTNUMBERDETAIL")
 @Comment("文号信息表")
 public class DocumentNumberDetail implements Serializable {
 

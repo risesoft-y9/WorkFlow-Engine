@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Reminder")
+@Table(name = "FF_REMINDER")
 @Comment("催办信息表")
 public class Reminder implements Serializable {
 

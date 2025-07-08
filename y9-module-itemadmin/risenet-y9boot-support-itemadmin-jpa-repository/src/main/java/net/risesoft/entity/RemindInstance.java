@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Remind_Instance")
+@Table(name = "FF_REMIND_INSTANCE")
 @Comment("消息提醒实例表")
 public class RemindInstance implements Serializable {
 

@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_AutoFormSequence")
+@Table(name = "FF_AUTOFORMSEQUENCE")
 @Comment("序列编号")
 public class AutoFormSequence implements Serializable {
 

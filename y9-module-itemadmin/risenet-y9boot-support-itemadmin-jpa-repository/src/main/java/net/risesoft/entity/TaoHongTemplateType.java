@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_TaoHongTemplateType")
+@Table(name = "FF_TAOHONGTEMPLATETYPE")
 @Comment("模板类型表")
 public class TaoHongTemplateType implements Serializable {
     private static final long serialVersionUID = 2748469136288159842L;

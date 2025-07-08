@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_RejectReason")
+@Table(name = "FF_REJECTREASON")
 @Comment("退回收回原因表")
 public class RejectReason implements Serializable {
 

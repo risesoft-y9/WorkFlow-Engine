@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_CommonSentences")
+@Table(name = "FF_COMMONSENTENCES")
 @Comment("常用语表")
 public class CommonSentences implements Serializable {
 

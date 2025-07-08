@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Comment("发送按钮表")
-@Table(name = "FF_SendButton")
+@Table(name = "FF_SENDBUTTON")
 public class SendButton implements Serializable {
 
     private static final long serialVersionUID = -2922336553325642059L;

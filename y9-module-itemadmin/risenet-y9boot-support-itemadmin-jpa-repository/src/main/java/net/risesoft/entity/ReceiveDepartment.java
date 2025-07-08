@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Comment("收发管理部门表")
-@Table(name = "FF_ReceiveDepartment")
+@Table(name = "FF_RECEIVEDEPARTMENT")
 public class ReceiveDepartment implements Serializable {
     private static final long serialVersionUID = -8497612611429902341L;
 

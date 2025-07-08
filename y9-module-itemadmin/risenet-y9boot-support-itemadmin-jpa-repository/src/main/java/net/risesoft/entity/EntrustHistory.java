@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_Entrust_History")
+@Table(name = "FF_ENTRUST_HISTORY")
 @Comment("出差委托历史表")
 public class EntrustHistory implements Serializable {
 

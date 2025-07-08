@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_DraftEntity")
+@Table(name = "FF_DRAFTENTITY")
 @Comment("草稿信息表")
 public class DraftEntity implements Serializable {
 

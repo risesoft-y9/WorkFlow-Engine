@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_TabEntity")
+@Table(name = "FF_TABENTITY")
 @Comment("自定义页签表")
 public class TabEntity implements Serializable {
 

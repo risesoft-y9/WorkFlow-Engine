@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_WordTemplate")
+@Table(name = "FF_WORDTEMPLATE")
 @Comment("正文模板信息表")
 public class WordTemplate implements Serializable {
 
