@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.ItemInterfaceTaskBind;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceTaskBind;
 
 /**
  * @author zhangchongjie

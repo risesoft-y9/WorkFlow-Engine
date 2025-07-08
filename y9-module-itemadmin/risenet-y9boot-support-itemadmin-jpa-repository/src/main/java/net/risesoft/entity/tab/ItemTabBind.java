@@ -1,7 +1,6 @@
-package net.risesoft.entity;
+package net.risesoft.entity.tab;
 
 import java.io.Serializable;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,11 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ITEM_BUTTONBIND")
-@Comment("事项按钮绑定表")
-public class ItemButtonBind implements Serializable {
+@Table(name = "FF_ITEM_TABBIND")
+@Comment("页签与事项绑定表")
+public class ItemTabBind implements Serializable {
 
-    private static final long serialVersionUID = 8492379510656608228L;
+    private static final long serialVersionUID = -1461950199809202921L;
 
     /**
      * 唯一标示
@@ -48,29 +47,17 @@ public class ItemButtonBind implements Serializable {
     private String tenantId;
 
     /**
-     * 按钮唯一标示
+     * 页签唯一标示
      */
-    @Comment("按钮id")
-    @Column(name = "BUTTONID", length = 38, nullable = false)
-    private String buttonId;
+    @Comment("页签唯一标示")
+    @Column(name = "TABID", length = 38, nullable = false)
+    private String tabId;
 
     /**
-     * 按钮类型 1为普通按钮，2为发送下面的按钮
+     * 页签名称
      */
-    @Comment("按钮类型")
-    @Column(name = "BUTTONTYPE", length = 2, nullable = false)
-    private Integer buttonType;
-
-    /**
-     * 按钮名称
-     */
-    @Comment("按钮名称")
     @Transient
-    private String buttonName;
-
-    @Comment("按钮标识")
-    @Transient
-    private String buttonCustomId;
+    private String tabName;
 
     /**
      * 事项Id
@@ -87,35 +74,22 @@ public class ItemButtonBind implements Serializable {
     private String processDefinitionId;
 
     /**
-     * 流程节点Key
-     */
-    @Comment("流程节点Key")
-    @Column(name = "TASKDEFKEY", length = 100, nullable = false)
-    private String taskDefKey;
-
-    /**
-     * 角色名称
+     * 页签url
      */
     @Transient
-    private String roleNames;
-
-    /**
-     * 角色Id
-     */
-    @Transient
-    private List<String> roleIds;
+    private String tabUrl;
 
     /**
      * 创建/修改人员的名称
      */
-    @Comment("创建人名称")
+    @Comment("人员名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
 
     /**
      * 创建/修改的人员的唯一标示
      */
-    @Comment("创建人id")
+    @Comment("人员id")
     @Column(name = "USERID", length = 50)
     private String userId;
 
@@ -123,7 +97,7 @@ public class ItemButtonBind implements Serializable {
      * 序号
      */
     @Comment("序号")
-    @Column(name = "TABINDEX", length = 3)
+    @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
 
     /**

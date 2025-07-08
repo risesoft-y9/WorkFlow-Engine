@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.ViewType;
+import net.risesoft.entity.view.ViewType;
 
 /**
  * @author qinman

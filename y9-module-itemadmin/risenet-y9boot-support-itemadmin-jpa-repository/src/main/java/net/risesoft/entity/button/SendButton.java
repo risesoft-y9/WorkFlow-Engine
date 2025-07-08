@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.button;
 
 import java.io.Serializable;
 
@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -23,11 +22,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ITEM_TABBIND")
-@Comment("页签与事项绑定表")
-public class ItemTabBind implements Serializable {
+@Comment("发送按钮表")
+@Table(name = "FF_SENDBUTTON")
+public class SendButton implements Serializable {
 
-    private static final long serialVersionUID = -1461950199809202921L;
+    private static final long serialVersionUID = -2922336553325642059L;
 
     /**
      * 唯一标示
@@ -40,6 +39,13 @@ public class ItemTabBind implements Serializable {
     private String id;
 
     /**
+     * 按钮名称
+     */
+    @Comment("按钮名称")
+    @Column(name = "NAME", length = 50, nullable = false)
+    private String name;
+
+    /**
      * 租户Id
      */
     @Comment("租户Id")
@@ -47,37 +53,11 @@ public class ItemTabBind implements Serializable {
     private String tenantId;
 
     /**
-     * 页签唯一标示
+     * 租户Id
      */
-    @Comment("页签唯一标示")
-    @Column(name = "TABID", length = 38, nullable = false)
-    private String tabId;
-
-    /**
-     * 页签名称
-     */
-    @Transient
-    private String tabName;
-
-    /**
-     * 事项Id
-     */
-    @Comment("事项Id")
-    @Column(name = "ITEMID", length = 100, nullable = false)
-    private String itemId;
-
-    /**
-     * 流程定义Id
-     */
-    @Comment("流程定义Id")
-    @Column(name = "PROCESSDEFINITIONID", length = 100, nullable = false)
-    private String processDefinitionId;
-
-    /**
-     * 页签url
-     */
-    @Transient
-    private String tabUrl;
+    @Comment("按钮标识")
+    @Column(name = "CUSTOMID", length = 50, nullable = false, unique = true)
+    private String customId;
 
     /**
      * 创建/修改人员的名称
@@ -94,23 +74,17 @@ public class ItemTabBind implements Serializable {
     private String userId;
 
     /**
-     * 序号
+     * 生成时间
      */
-    @Comment("序号")
-    @Column(name = "TABINDEX", length = 10)
-    private Integer tabIndex;
+    @Comment("创建时间")
+    @Column(name = "CREATETIME")
+    private String createTime;
 
     /**
      * 生成时间
      */
     @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
-    /**
-     * 更新时间
-     */
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 50)
+    @Column(name = "UPDATETIME")
     private String updateTime;
+
 }

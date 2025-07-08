@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.entity.ReceiveDepartment;
-import net.risesoft.entity.ReceivePerson;
+import net.risesoft.entity.receive.ReceiveDepartment;
+import net.risesoft.entity.receive.ReceivePerson;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;

@@ -19,7 +19,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.controller.vo.NodeTreeVO;
-import net.risesoft.entity.ReceiveDepartment;
+import net.risesoft.entity.receive.ReceiveDepartment;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.platform.Department;

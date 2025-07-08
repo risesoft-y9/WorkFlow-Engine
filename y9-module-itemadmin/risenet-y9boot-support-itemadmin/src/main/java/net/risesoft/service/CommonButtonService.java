@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.CommonButton;
+import net.risesoft.entity.button.CommonButton;
 
 /**
  * @author qinman

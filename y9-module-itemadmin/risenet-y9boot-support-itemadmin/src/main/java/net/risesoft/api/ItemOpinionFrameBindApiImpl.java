@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
-import net.risesoft.entity.ItemOpinionFrameBind;
+import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.OpinionFrame;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.pojo.Y9Result;

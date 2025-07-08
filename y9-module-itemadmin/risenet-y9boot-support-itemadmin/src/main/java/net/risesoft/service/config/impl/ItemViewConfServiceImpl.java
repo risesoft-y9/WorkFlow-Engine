@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.entity.ItemViewConf;
+import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;

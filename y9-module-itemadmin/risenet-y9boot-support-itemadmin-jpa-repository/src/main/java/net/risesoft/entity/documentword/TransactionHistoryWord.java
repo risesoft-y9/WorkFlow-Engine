@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.documentword;
 
 import java.io.Serializable;
 

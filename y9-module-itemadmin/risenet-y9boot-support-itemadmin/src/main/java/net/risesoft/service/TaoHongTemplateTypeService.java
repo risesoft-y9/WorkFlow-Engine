@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.TaoHongTemplateType;
+import net.risesoft.entity.template.TaoHongTemplateType;
 
 /**
  * @author qinman

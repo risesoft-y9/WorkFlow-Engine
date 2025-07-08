@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.TabEntity;
+import net.risesoft.entity.tab.TabEntity;
 
 /**
  * @author qinman

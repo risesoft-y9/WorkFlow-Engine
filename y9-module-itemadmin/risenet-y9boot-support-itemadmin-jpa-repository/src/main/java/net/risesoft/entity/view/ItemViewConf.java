@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.view;
 
 import java.io.Serializable;
 

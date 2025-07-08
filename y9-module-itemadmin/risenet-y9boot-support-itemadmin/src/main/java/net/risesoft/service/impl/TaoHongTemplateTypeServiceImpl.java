@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.entity.TaoHongTemplateType;
+import net.risesoft.entity.template.TaoHongTemplateType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.OrgUnit;

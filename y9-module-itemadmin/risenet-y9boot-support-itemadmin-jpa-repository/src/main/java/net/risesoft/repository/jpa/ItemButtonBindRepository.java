@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.ItemButtonBind;
+import net.risesoft.entity.button.ItemButtonBind;
 
 /**
  * @author qinman

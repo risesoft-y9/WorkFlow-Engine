@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.ItemInterfaceParamsBind;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceParamsBind;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;

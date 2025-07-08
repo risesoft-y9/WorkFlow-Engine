@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemButtonRole;
+import net.risesoft.entity.button.ItemButtonRole;
 
 /**
  * @author qinman

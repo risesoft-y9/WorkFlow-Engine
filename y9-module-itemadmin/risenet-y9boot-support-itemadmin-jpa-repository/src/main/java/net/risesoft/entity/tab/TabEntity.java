@@ -1,4 +1,4 @@
-package net.risesoft.entity;
+package net.risesoft.entity.tab;
 
 import java.io.Serializable;
 
@@ -22,11 +22,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Comment("发送按钮表")
-@Table(name = "FF_SENDBUTTON")
-public class SendButton implements Serializable {
+@Table(name = "FF_TABENTITY")
+@Comment("自定义页签表")
+public class TabEntity implements Serializable {
 
-    private static final long serialVersionUID = -2922336553325642059L;
+    private static final long serialVersionUID = -1231641987535504621L;
 
     /**
      * 唯一标示
@@ -39,25 +39,25 @@ public class SendButton implements Serializable {
     private String id;
 
     /**
-     * 按钮名称
-     */
-    @Comment("按钮名称")
-    @Column(name = "NAME", length = 50, nullable = false)
-    private String name;
-
-    /**
      * 租户Id
      */
     @Comment("租户Id")
-    @Column(name = "TENANTID", length = 50, nullable = false)
+    @Column(name = "TENANTID", length = 50)
     private String tenantId;
 
     /**
-     * 租户Id
+     * 页签名称
      */
-    @Comment("按钮标识")
-    @Column(name = "CUSTOMID", length = 50, nullable = false, unique = true)
-    private String customId;
+    @Comment("页签名称")
+    @Column(name = "NAME", length = 50)
+    private String name;
+
+    /**
+     * 页签对应的url
+     */
+    @Comment("页签对应的url")
+    @Column(name = "URL", length = 50)
+    private String url;
 
     /**
      * 创建/修改人员的名称
@@ -76,15 +76,15 @@ public class SendButton implements Serializable {
     /**
      * 生成时间
      */
-    @Comment("创建时间")
-    @Column(name = "CREATETIME")
+    @Comment("生成时间")
+    @Column(name = "CREATETIME", length = 50)
     private String createTime;
 
     /**
-     * 生成时间
+     * 更新时间
      */
-    @Comment("生成时间")
-    @Column(name = "UPDATETIME")
+    @Comment("更新时间")
+    @Column(name = "UPDATETIME", length = 50)
     private String updateTime;
 
 }

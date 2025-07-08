@@ -1,9 +1,10 @@
-package net.risesoft.entity;
+package net.risesoft.entity.receive;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,9 +28,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Comment("收发管理部门表")
-@Table(name = "FF_RECEIVEDEPARTMENT")
-public class ReceiveDepartment implements Serializable {
+@Comment("收发管理人员表")
+@Table(name = "FF_RECEIVEPERSON")
+public class ReceivePerson implements Serializable {
     private static final long serialVersionUID = -8497612611429902341L;
 
     /**
@@ -41,20 +42,6 @@ public class ReceiveDepartment implements Serializable {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
-
-    /**
-     * 委办局Id
-     */
-    @Comment("委办局Id")
-    @Column(name = "BUREAUID", length = 50)
-    private String bureauId;
-
-    /**
-     * 父节点Id
-     */
-    @Comment("父节点Id")
-    @Column(name = "PARENTID", length = 50)
-    private String parentId;
 
     /**
      * 收发部门Id
@@ -70,14 +57,30 @@ public class ReceiveDepartment implements Serializable {
     @Column(name = "DEPTNAME", length = 200, nullable = false)
     private String deptName;
 
+    /**
+     * 收发人员Id
+     */
+    @Comment("收发人员Id")
+    @Column(name = "PERSONID", length = 50)
+    private String personId;
+
+    @Comment("收发人员部门Id")
+    @Column(name = "PERSONDEPTID", length = 50)
+    private String personDeptId;
+
     @Comment("创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDATE")
     private Date createDate;
 
-    @Comment("x序号")
-    @Column(name = "TABINDEX", length = 11)
-    private Integer tabIndex;
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    @Comment("是否可以发送")
+    @Column(name = "SEND")
+    private boolean send = true;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    @Comment("是否可以接收")
+    @Column(name = "RECEIVE")
+    private boolean receive = true;
 }

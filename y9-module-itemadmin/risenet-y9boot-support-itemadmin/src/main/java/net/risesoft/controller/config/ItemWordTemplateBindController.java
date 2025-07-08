@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.ItemWordTemplateBind;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.entity.WordTemplate;
+import net.risesoft.entity.template.ItemWordTemplateBind;
+import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Page;

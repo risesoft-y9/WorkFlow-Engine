@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-import net.risesoft.entity.WordTemplate;
+import net.risesoft.entity.template.WordTemplate;
 
 /**
  * @author qinman

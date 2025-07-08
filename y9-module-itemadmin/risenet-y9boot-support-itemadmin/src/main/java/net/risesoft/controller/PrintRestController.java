@@ -20,9 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.ItemPrintTemplateBind;
-import net.risesoft.entity.PrintTemplate;
 import net.risesoft.entity.form.Y9Form;
+import net.risesoft.entity.template.ItemPrintTemplateBind;
+import net.risesoft.entity.template.PrintTemplate;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.service.PrintTemplateService;

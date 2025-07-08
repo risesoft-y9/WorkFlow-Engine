@@ -17,7 +17,7 @@ import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
-import net.risesoft.entity.ReceiveDepartment;
+import net.risesoft.entity.receive.ReceiveDepartment;
 import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;

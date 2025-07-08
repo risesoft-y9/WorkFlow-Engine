@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.entity.ItemTabBind;
-import net.risesoft.entity.TabEntity;
+import net.risesoft.entity.tab.ItemTabBind;
+import net.risesoft.entity.tab.TabEntity;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;

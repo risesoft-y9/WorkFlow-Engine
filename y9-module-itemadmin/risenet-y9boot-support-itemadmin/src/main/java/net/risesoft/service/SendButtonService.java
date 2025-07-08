@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.SendButton;
+import net.risesoft.entity.button.SendButton;
 
 /**
  * @author qinman

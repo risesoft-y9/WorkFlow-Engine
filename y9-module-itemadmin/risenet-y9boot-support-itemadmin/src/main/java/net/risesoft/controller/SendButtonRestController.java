@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.SendButton;
+import net.risesoft.entity.button.SendButton;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SendButtonService;
 

@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.entity.CustomView;
 import net.risesoft.entity.form.Y9FormField;
+import net.risesoft.entity.view.CustomView;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.CustomViewModel;

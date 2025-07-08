@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.entity.ItemInterfaceTaskBind;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceTaskBind;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;

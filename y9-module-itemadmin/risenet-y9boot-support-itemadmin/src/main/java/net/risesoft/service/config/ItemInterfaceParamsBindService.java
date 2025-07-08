@@ -2,7 +2,7 @@ package net.risesoft.service.config;
 
 import java.util.List;
 
-import net.risesoft.entity.ItemInterfaceParamsBind;
+import net.risesoft.entity.interfaceinfo.ItemInterfaceParamsBind;
 
 /**
  * @author zhangchongjie

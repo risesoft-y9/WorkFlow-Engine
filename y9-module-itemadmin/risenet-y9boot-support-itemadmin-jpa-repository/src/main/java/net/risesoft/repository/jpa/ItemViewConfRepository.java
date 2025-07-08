@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.entity.ItemViewConf;
+import net.risesoft.entity.view.ItemViewConf;
 
 /**
  * @author qinman

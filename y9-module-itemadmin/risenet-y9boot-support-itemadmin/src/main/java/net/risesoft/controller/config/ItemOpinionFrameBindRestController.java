@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.entity.ItemOpinionFrameBind;
-import net.risesoft.entity.ItemOpinionFrameRole;
+import net.risesoft.entity.opinion.ItemOpinionFrameBind;
+import net.risesoft.entity.opinion.ItemOpinionFrameRole;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.opinion.OpinionFrameOneClickSet;
 import net.risesoft.model.processadmin.TargetModel;

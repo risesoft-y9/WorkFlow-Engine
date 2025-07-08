@@ -2,7 +2,7 @@ package net.risesoft.service;
 
 import java.util.List;
 
-import net.risesoft.entity.TransactionWord;
+import net.risesoft.entity.documentword.TransactionWord;
 
 /**
  * @author qinman

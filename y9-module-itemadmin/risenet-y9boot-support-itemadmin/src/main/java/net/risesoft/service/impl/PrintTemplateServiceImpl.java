@@ -19,8 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.entity.ItemPrintTemplateBind;
-import net.risesoft.entity.PrintTemplate;
+import net.risesoft.entity.template.ItemPrintTemplateBind;
+import net.risesoft.entity.template.PrintTemplate;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;

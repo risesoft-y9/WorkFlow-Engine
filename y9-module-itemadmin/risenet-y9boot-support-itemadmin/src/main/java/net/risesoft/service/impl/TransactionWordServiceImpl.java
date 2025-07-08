@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.TransactionWord;
+import net.risesoft.entity.documentword.TransactionWord;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
