@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ItemViewConfApi;
+import net.risesoft.api.itemadmin.view.ItemViewConfApi;
 import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Result;

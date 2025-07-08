@@ -2,7 +2,7 @@ package y9.client.rest.itemadmin.worklist;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-import net.risesoft.api.itemadmin.ItemHaveDoneApi;
+import net.risesoft.api.itemadmin.worklist.ItemHaveDoneApi;
 
 /**
  * 已办（包含在办和办结）接口

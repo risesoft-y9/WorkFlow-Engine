@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.itemadmin.ItemRecycleApi;
+import net.risesoft.api.itemadmin.worklist.ItemRecycleApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;

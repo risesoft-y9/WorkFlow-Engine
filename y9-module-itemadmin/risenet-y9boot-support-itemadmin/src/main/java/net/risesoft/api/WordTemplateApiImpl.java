@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.WordTemplateApi;
+import net.risesoft.api.itemadmin.template.WordTemplateApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.template.ItemWordTemplateBind;

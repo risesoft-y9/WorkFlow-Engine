@@ -2,7 +2,7 @@ package y9.client.rest.itemadmin.worklist;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-import net.risesoft.api.itemadmin.ItemTodoApi;
+import net.risesoft.api.itemadmin.worklist.ItemTodoApi;
 
 /**
  * @author qinman

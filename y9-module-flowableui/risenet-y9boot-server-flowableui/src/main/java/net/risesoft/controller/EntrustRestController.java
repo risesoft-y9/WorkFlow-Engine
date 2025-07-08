@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.EntrustApi;
+import net.risesoft.api.itemadmin.entrust.EntrustApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;

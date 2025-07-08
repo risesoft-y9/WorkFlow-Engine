@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.OpinionCopyApi;
+import net.risesoft.api.itemadmin.opinion.OpinionCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.DocumentCopy;

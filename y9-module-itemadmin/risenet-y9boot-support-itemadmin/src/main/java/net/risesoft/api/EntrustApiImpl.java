@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.EntrustApi;
+import net.risesoft.api.itemadmin.entrust.EntrustApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
