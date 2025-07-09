@@ -44,6 +44,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 
 /**
  * 事项，统计相关
@@ -84,6 +85,8 @@ public class MainRestController {
 
     private final EntrustApi entrustApi;
 
+    private final Y9FlowableProperties y9FlowableProperties;
+
     /**
      * 获取所有事项集合（包含监控管理员权限）
      *
@@ -94,7 +97,9 @@ public class MainRestController {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> list = itemApi.getAllItemList(tenantId).getData();
-        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b = positionRoleApi
+            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .getData();
         map.put("monitorManage", b);
         map.put("itemList", list);
         return Y9Result.success(map, "获取成功");
@@ -241,11 +246,14 @@ public class MainRestController {
         ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
-        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b = positionRoleApi
+            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
-        boolean b1 = positionRoleApi.hasPublicRole(tenantId, "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b1 = positionRoleApi.hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
+            Y9LoginUserHolder.getPositionId()).getData();
         map.put("repositionrManage", b1);
         return Y9Result.success(map, "获取成功");
     }
@@ -261,13 +269,20 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> itemList = itemApi.findAll(tenantId, systemName).getData();
         Map<String, Object> map = new HashMap<>(16);
-        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b = positionRoleApi
+            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .getData();
         map.put("monitorManage", b);
-        boolean b1 = positionRoleApi.hasPublicRole(tenantId, "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b1 = positionRoleApi.hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
+            Y9LoginUserHolder.getPositionId()).getData();
         map.put("repositionrManage", b1);
-        boolean b2 = positionRoleApi.hasPublicRole(tenantId, "发文角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b2 = positionRoleApi
+            .hasPublicRole(tenantId, y9FlowableProperties.getFawenManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .getData();
         map.put("fawenManage", b2);
-        boolean b3 = positionRoleApi.hasPublicRole(tenantId, "收文角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b3 = positionRoleApi
+            .hasPublicRole(tenantId, y9FlowableProperties.getShouwenManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .getData();
         map.put("shouwenManage", b3);
         map.put("itemList", itemList);
         return Y9Result.success(map, "获取成功");
@@ -420,7 +435,9 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         map.put("tenantManager", person.isGlobalManager());
-        boolean b = positionRoleApi.hasPublicRole(tenantId, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        boolean b = positionRoleApi
+            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
