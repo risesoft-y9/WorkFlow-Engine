@@ -22,18 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.extend.DataCenterApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.util.Y9Util;
 
@@ -51,30 +47,16 @@ public class Process4CompleteUtilService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final DataCenterApi dataCenterApi;
-
-    private final OrgUnitApi orgUnitApi;
-
     private final ProcessParamApi processParamApi;
 
     private final ErrorLogApi errorLogApi;
 
-    private final Y9ProcessAdminProperties y9ProcessAdminProperties;
-
-    private final Process4MsgRemindService process4MsgRemindService;
-
     public Process4CompleteUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        OfficeDoneInfoApi officeDoneInfoApi, DataCenterApi dataCenterApi, OrgUnitApi orgUnitApi,
-        ProcessParamApi processParamApi, ErrorLogApi errorLogApi, Y9ProcessAdminProperties y9ProcessAdminProperties,
-        Process4MsgRemindService process4MsgRemindService) {
+        OfficeDoneInfoApi officeDoneInfoApi, ProcessParamApi processParamApi, ErrorLogApi errorLogApi) {
         this.officeDoneInfoApi = officeDoneInfoApi;
         this.jdbcTemplate = jdbcTemplate;
-        this.dataCenterApi = dataCenterApi;
-        this.orgUnitApi = orgUnitApi;
         this.processParamApi = processParamApi;
         this.errorLogApi = errorLogApi;
-        this.y9ProcessAdminProperties = y9ProcessAdminProperties;
-        this.process4MsgRemindService = process4MsgRemindService;
     }
 
     /**
@@ -106,7 +88,7 @@ public class Process4CompleteUtilService {
         jdbcTemplate.execute(sql3);
     }
 
-    private final String getActGeBytearraySql(String year, String processInstanceId) {
+    private String getActGeBytearraySql(String year, String processInstanceId) {
         String sql = "INSERT INTO ACT_GE_BYTEARRAY_" + year + " (" + "	ID_," + "	REV_," + "	NAME_,"
             + "	DEPLOYMENT_ID_," + "	BYTES_," + "	GENERATED_" + " ) SELECT " + "	b.ID_," + "	b.REV_,"
             + "	b.NAME_," + "	b.DEPLOYMENT_ID_," + "	b.BYTES_," + "	b.GENERATED_" + " FROM" + "	ACT_GE_BYTEARRAY b"
@@ -115,7 +97,7 @@ public class Process4CompleteUtilService {
         return sql;
     }
 
-    private final String getActHiActinstSql(String year, String processInstanceId) {
+    private String getActHiActinstSql(String year, String processInstanceId) {
         String sql3 = "INSERT INTO ACT_HI_ACTINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
             + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_,"
             + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_,"
@@ -127,7 +109,7 @@ public class Process4CompleteUtilService {
         return sql3;
     }
 
-    private final String getActHiIdentiyLinkSql(String year, String processInstanceId) {
+    private String getActHiIdentiyLinkSql(String year, String processInstanceId) {
         String sql3 = "INSERT INTO ACT_HI_IDENTITYLINK_" + year + " (" + "	ID_," + "	GROUP_ID_," + "	TYPE_,"
             + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
             + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_,"
@@ -137,7 +119,7 @@ public class Process4CompleteUtilService {
         return sql3;
     }
 
-    private final String getActHiProcinstSql(String year, String processInstanceId) {
+    private String getActHiProcinstSql(String year, String processInstanceId) {
         String sql = "INSERT INTO ACT_HI_PROCINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_INST_ID_,"
             + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_,"
             + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_,"
@@ -150,7 +132,7 @@ public class Process4CompleteUtilService {
         return sql;
     }
 
-    private final String getActHiTaskinstSql(String year, String processInstanceId) {
+    private String getActHiTaskinstSql(String year, String processInstanceId) {
         String sql = "INSERT INTO ACT_HI_TASKINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
             + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_,"
             + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_,"
@@ -166,7 +148,7 @@ public class Process4CompleteUtilService {
         return sql;
     }
 
-    private final String getActHiVarinstSql(String year, String processInstanceId) {
+    private String getActHiVarinstSql(String year, String processInstanceId) {
         String sql3 = "INSERT INTO ACT_HI_VARINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_INST_ID_,"
             + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
             + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_,"
@@ -180,7 +162,7 @@ public class Process4CompleteUtilService {
     }
 
     /**
-     * 保存数据到数据中心，截转年度数据
+     * 保存办结数据到数据中心，用于办结件列表查询，截转年度数据
      *
      * @param tenantId
      * @param year
@@ -204,9 +186,6 @@ public class Process4CompleteUtilService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // 消息提醒
-            process4MsgRemindService.processComplete(processParamModel, personName);
-
             String sql0 = "SELECT" + "	P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
                 + " TO_CHAR(P .END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_" + " FROM"
                 + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
@@ -223,28 +202,9 @@ public class Process4CompleteUtilService {
             String processDefinitionId = (String)map.get("PROC_DEF_ID_");
             String startTime = (String)map.get("START_TIME_");
             String endTime = map.get("END_TIME_") != null ? (String)map.get("END_TIME_") : sdf.format(new Date());
-            try {
-                Boolean dataCenterSwitch = y9ProcessAdminProperties.getDataCenterSwitch();
-                if (dataCenterSwitch != null && dataCenterSwitch) {
-                    Y9Result<Object> y9Result = dataCenterApi.saveToDataCenter(processInstanceId, tenantId, userId);
-                    if (y9Result.isSuccess()) {
-                        LOGGER
-                            .info("#################保存办结数据到数据中心成功：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
-                    } else {
-                        LOGGER
-                            .info("#################保存办结数据到数据中心失败：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
-                    }
-                } else {
-                    LOGGER.info("######################数据中心开关已关闭,如需保存数据到数据中心请更改配置文件######################");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
             /**********************************
              * 保存办结数据到数据中心，用于办结件列表查询
              *********************************************/
-
             OfficeDoneInfoModel officeDoneInfo =
                 officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfo == null) {

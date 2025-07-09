@@ -24,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.extend.ItemMsgRemindApi;
-import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -48,8 +46,6 @@ import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.itemadmin.ItemMsgRemindModel;
-import net.risesoft.model.itemadmin.TodoTaskModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
@@ -67,7 +63,6 @@ import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
-import net.risesoft.y9.util.Y9Util;
 
 /**
  * @author qinman
@@ -80,8 +75,6 @@ import net.risesoft.y9.util.Y9Util;
 @Slf4j
 @RequiredArgsConstructor
 public class AsyncHandleService {
-
-    private final ItemTodoTaskApi todotaskApi;
 
     private final TaskVariableRepository taskVariableRepository;
 
@@ -98,8 +91,6 @@ public class AsyncHandleService {
     private final PositionApi positionApi;
 
     private final ProcessParamService processParamService;
-
-    private final ItemMsgRemindApi itemMsgRemindApi;
 
     private final OpinionHistoryRepository opinionHistoryRepository;
 
@@ -164,7 +155,7 @@ public class AsyncHandleService {
                 String time = sdf.format(new Date());
 
                 // 发送失败,可能会出现统一待办已经保存成功,但任务没有在数据库产生,需要删除统一待办数据,只保存当前发送人的待办任务。
-                todotaskApi.deleteByProcessInstanceId4New(tenantId, taskId, processInstanceId);
+                // TODO-qinman todotaskApi.deleteByProcessInstanceId4New(tenantId, taskId, processInstanceId);
 
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();
@@ -407,7 +398,7 @@ public class AsyncHandleService {
      */
     @Async
     public void saveChaoSong4Todo(final String tenantId, final List<ChaoSongInfo> csList) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = "";
         String taskId = "";
         String id = "";
@@ -481,7 +472,7 @@ public class AsyncHandleService {
                 errorLog.setUpdateTime(time);
                 errorLogService.saveErrorLog(errorLog);
             }
-        }
+        }*/
     }
 
     /**
@@ -492,7 +483,7 @@ public class AsyncHandleService {
      */
     @Async
     public void saveChaoSongTodo(final String tenantId, final List<ChaoSong> csList) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = "";
         String taskId = "";
         String id = "";
@@ -526,7 +517,7 @@ public class AsyncHandleService {
                 } else if (level.equals("紧急")) {
                     urgency = "2";
                 }
-
+        
                 if ("普通".equals(level)) {
                     urgency = "0";
                 } else if ("急".equals(level)) {
@@ -534,7 +525,7 @@ public class AsyncHandleService {
                 } else if ("特急".equals(level)) {
                     urgency = "2";
                 }
-
+        
                 todo.setUrgency(urgency);
                 todo.setDocNumber(processParam.getCustomNumber());
                 todo.setProcessInstanceId(processInstanceId);
@@ -568,7 +559,7 @@ public class AsyncHandleService {
                 errorLog.setUpdateTime(time);
                 errorLogService.saveErrorLog(errorLog);
             }
-        }
+        }*/
     }
 
     /**
@@ -612,7 +603,7 @@ public class AsyncHandleService {
     @Async
     public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber,
         final String content) {
-        try {
+        /*try {
             Boolean msgSwitch = y9ItemAdminProperties.getMsgSwitch();
             if (msgSwitch == null || !msgSwitch) {
                 return;
@@ -635,37 +626,37 @@ public class AsyncHandleService {
                 OfficeDoneInfo officeDoneInfo =
                     officeDoneInfoService.findByProcessInstanceId(processParam.getProcessInstanceId());
                 for (String id : ids) {
-                    /**
-                     * 参与该件的人才提醒
-                     */
-                    if (officeDoneInfo != null && officeDoneInfo.getAllUserId().contains(id)) {
-                        if (!newPersonIds.contains(id)) {
-                            newPersonIds = Y9Util.genCustomStr(newPersonIds, id);
-                        }
-                    }
-                }
-                if (StringUtils.isNotBlank(newPersonIds)) {
-                    ItemMsgRemindModel info = new ItemMsgRemindModel();
-                    info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    info.setItemId(processParam.getItemId());
-                    info.setMsgType(ItemMsgRemindModel.MSG_TYPE_OPINION);
-                    info.setProcessInstanceId(processParam.getProcessInstanceId());
-                    info.setStartTime(sdf.format(date));
-                    info.setSystemName(processParam.getSystemName());
-                    info.setTitle(title);
-                    info.setTenantId(tenantId);
-                    info.setUrl(url);
-                    info.setUserName(orgUnit.getName());
-                    info.setTime(date.getTime());
-                    info.setReadUserId("");
-                    info.setAllUserId(newPersonIds);
-                    info.setContent(content);
-                    itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("*****sendMsgRemind发生异常*****", e);
-        }
+                    *//**
+                        * 参与该件的人才提醒
+                        *//*
+                          if (officeDoneInfo != null && officeDoneInfo.getAllUserId().contains(id)) {
+                           if (!newPersonIds.contains(id)) {
+                               newPersonIds = Y9Util.genCustomStr(newPersonIds, id);
+                           }
+                          }
+                          }
+                          if (StringUtils.isNotBlank(newPersonIds)) {
+                          ItemMsgRemindModel info = new ItemMsgRemindModel();
+                          info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                          info.setItemId(processParam.getItemId());
+                          info.setMsgType(ItemMsgRemindModel.MSG_TYPE_OPINION);
+                          info.setProcessInstanceId(processParam.getProcessInstanceId());
+                          info.setStartTime(sdf.format(date));
+                          info.setSystemName(processParam.getSystemName());
+                          info.setTitle(title);
+                          info.setTenantId(tenantId);
+                          info.setUrl(url);
+                          info.setUserName(orgUnit.getName());
+                          info.setTime(date.getTime());
+                          info.setReadUserId("");
+                          info.setAllUserId(newPersonIds);
+                          info.setContent(content);
+                          itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
+                          }
+                          }
+                          } catch (Exception e) {
+                          LOGGER.warn("*****sendMsgRemind发生异常*****", e);
+                          }*/
     }
 
     /**
