@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.service.Task4ActRuDetaillService;
 import net.risesoft.service.Task4ListenerService;
-import net.risesoft.service.TodoTaskService;
 import net.risesoft.y9.Y9Context;
 
 /**
@@ -70,17 +69,6 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             } else {
                 task4ActRuDetaillService.createTodo4Claim(task);
             }
-
-            /*
-             * 统一待办-新建这一步不使用异步方式保存
-             */
-            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey())
-                || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
-            if (b) {
-                TodoTaskService todoTaskService = Y9Context.getBean(TodoTaskService.class);
-                todoTaskService.saveTodoTask(task, variables);
-            }
-
             ///////////////// 异步处理,统一待办,微信提醒,消息推送提醒,短信提醒,协作状态
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
             task4ListenerService.task4CreateListener(task, variables, localVariables);

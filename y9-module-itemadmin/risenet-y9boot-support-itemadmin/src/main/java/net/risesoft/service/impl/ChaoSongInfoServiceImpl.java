@@ -31,8 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.extend.ItemSmsHttpApi;
-import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -99,8 +97,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final ItemSmsHttpApi smsHttpApi;
-
     private final OfficeDoneInfoService officeDoneInfoService;
 
     private final Y9ItemAdminProperties y9ItemAdminProperties;
@@ -112,8 +108,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     private final ErrorLogService errorLogService;
 
     private final ElasticsearchOperations elasticsearchOperations;
-
-    private final ItemTodoTaskApi todotaskApi;
 
     private final CustomGroupApi customGroupApi;
 
@@ -139,7 +133,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             chaoSong.setReadTime(sdf.format(new Date()));
             chaoSongInfoRepository.save(chaoSong);
             try {
-                todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
+                // TODO-qinman todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
                 LOGGER.error("删除待办任务失败", e);
             }
@@ -157,7 +151,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 chaoSongInfoRepository.save(chaoSong);
             }
             try {
-                todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
+                // TODO-qinman todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
                 LOGGER.error("删除待办任务失败", e);
             }
@@ -189,7 +183,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         for (String id : ids) {
             chaoSongInfoRepository.deleteById(id);
             try {
-                todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
+                // TODO-qinman todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
             } catch (Exception e) {
                 LOGGER.error("删除待办任务失败", e);
             }
@@ -800,13 +794,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 csList.add(cs);
             }
             this.save(csList);
-            asyncHandleService.saveChaoSong4Todo(tenantId, csList);
+            // TODO-qinman asyncHandleService.saveChaoSong4Todo(tenantId, csList);
             if (StringUtils.isNotBlank(isSendSms) && UtilConsts.TRUE.equals(isSendSms)) {
                 smsContent += "--" + Y9LoginUserHolder.getUserInfo().getName();
                 Boolean smsSwitch = y9ItemAdminProperties.getSmsSwitch();
                 if (Boolean.TRUE.equals(smsSwitch)) {
-                    smsHttpApi.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile, smsContent,
-                        systemName + "抄送");
+                    // TODO-qinman smsHttpApi.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile,
+                    // smsContent,systemName + "抄送");
                 } else {
                     LOGGER
                         .info("*********************y9.app.itemAdmin.smsSwitch开关未打开**********************************");

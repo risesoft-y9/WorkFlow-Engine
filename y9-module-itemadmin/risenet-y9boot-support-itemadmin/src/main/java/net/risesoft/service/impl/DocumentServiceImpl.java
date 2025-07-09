@@ -24,14 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.platform.permission.PositionResourceApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
-import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.processadmin.ConditionParserApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
@@ -158,8 +155,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final ItemButtonBindService buttonItemBindService;
 
-    private final ItemTodoTaskApi todoTaskApi;
-
     private final TaskApi taskApi;
 
     private final CustomGroupApi customGroupApi;
@@ -174,13 +169,9 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final PositionApi positionApi;
 
-    private final RoleApi roleApi;
-
     private final PositionRoleApi positionRoleApi;
 
     private final DepartmentApi departmentApi;
-
-    private final PositionResourceApi positionResourceApi;
 
     private final HistoricProcessApi historicProcessApi;
 
@@ -391,7 +382,7 @@ public class DocumentServiceImpl implements DocumentService {
                 task.setFormKey("0");
                 taskApi.saveTask(tenantId, task);
                 try {
-                    todoTaskApi.setIsNewTodo(tenantId, taskId, "0");
+                    // TODO-qinman todoTaskApi.setIsNewTodo(tenantId, taskId, "0");
                 } catch (Exception e) {
                     LOGGER.error("setIsNewTodo error", e);
                 }

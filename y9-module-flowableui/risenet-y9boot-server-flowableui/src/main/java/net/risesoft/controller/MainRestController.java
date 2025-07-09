@@ -23,7 +23,6 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.entrust.EntrustApi;
-import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -77,8 +76,6 @@ public class MainRestController {
     private final ChaoSongApi chaoSongApi;
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
-
-    private final ItemTodoTaskApi todotaskApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -288,14 +285,14 @@ public class MainRestController {
         int doneCount;
         try {
             // 统计统一待办
-            todoCount = todotaskApi.countByReceiverId(tenantId, positionId).getData();
+            // TODO-qinman todoCount = todotaskApi.countByReceiverId(tenantId, positionId).getData();
             // 统计流程在办件
             Y9Page<OfficeDoneInfoModel> y9Page =
                 officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
             doingCount = y9Page.getTotal();
             // 统计历史办结件
             doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
-            map.put("todoCount", todoCount);
+            // TODO-qinman map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);
             return Y9Result.success(map, "获取成功");
@@ -339,7 +336,7 @@ public class MainRestController {
                     allCount = allCount + todoCount;
                 } else {// 工作台获取所有待办数量
                     try {
-                        todoCount = todotaskApi.countByReceiverId(tenantId, p.getId()).getData();
+                        // TODO-qinman todoCount = todotaskApi.countByReceiverId(tenantId, p.getId()).getData();
                         allCount = allCount + todoCount;
                     } catch (Exception e) {
                         LOGGER.error("获取待办数量失败", e);
@@ -375,7 +372,8 @@ public class MainRestController {
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {
-                                    todoCount1 = todotaskApi.countByReceiverId(tenantId, orgUnit.getId()).getData();
+                                    // TODO-qinman todoCount1 = todotaskApi.countByReceiverId(tenantId,
+                                    // orgUnit.getId()).getData();
                                     allCount = allCount + todoCount1;
                                 } catch (Exception e) {
                                     LOGGER.error("获取待办数量失败", e);
@@ -448,7 +446,7 @@ public class MainRestController {
                         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
                         if (taskModel == null || taskModel.getId() == null) {
                             try {
-                                todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
+                                // TODO-qinman todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
                             } catch (Exception e) {
                                 LOGGER.error("删除待办任务失败", e);
                             }

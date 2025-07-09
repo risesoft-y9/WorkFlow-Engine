@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
-import net.risesoft.api.itemadmin.extend.ItemTodoTaskApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Result;
@@ -39,8 +38,6 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     private final CustomTaskService customTaskService;
 
-    private final ItemTodoTaskApi todoTaskApi;
-
     private final ProcessInstanceApi processInstanceApi;
 
     private final ChaoSongApi chaoSongApi;
@@ -61,16 +58,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         List<org.flowable.task.api.Task> list = customTaskService.listByProcessInstanceId(processInstanceId);
         boolean b = customHistoricProcessService.deleteProcessInstance(processInstanceId);
         if (b) {
-            if (list != null && !list.isEmpty()) {
-                for (org.flowable.task.api.Task task : list) {
-                    try {
-                        boolean msg1 = todoTaskApi.deleteTodoTaskByTaskId(tenantId, task.getId()).getData();
-                        LOGGER.error("##############################统一待办删除：{}#################################", msg1);
-                    } catch (Exception e) {
-                        LOGGER.error("##############################统一待办删除失败：{}#", e.getMessage());
-                    }
-                }
-            }
+            // TODO-qinman 统一待办删除
             try {
                 boolean msg3 = chaoSongApi.deleteByProcessInstanceId(tenantId, processInstanceId).isSuccess();
                 LOGGER.error("##############################抄送件删除：{}#################################", msg3);
@@ -175,18 +163,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        boolean b = customHistoricProcessService.recoveryProcessInstance(processInstanceId);
-        List<org.flowable.task.api.Task> list = customTaskService.listByProcessInstanceId(processInstanceId);
-        if (b && (list != null && !list.isEmpty())) {
-            for (org.flowable.task.api.Task task : list) {
-                try {
-                    boolean msg1 = todoTaskApi.recoveryTodoTaskByTaskId(tenantId, task.getId()).getData();
-                    LOGGER.info("##############################统一待办还原：{}#################################", msg1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        // TODO-qinman 统一待办恢复
         return Y9Result.success();
     }
 
