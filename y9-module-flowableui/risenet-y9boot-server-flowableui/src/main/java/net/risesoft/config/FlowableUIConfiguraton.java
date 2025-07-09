@@ -11,9 +11,10 @@ import net.risesoft.filter.CheckUserLoginFilter4Flowable;
 import net.risesoft.filter.MobileV1Filter;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 
 @Configuration
-@EnableConfigurationProperties(Y9Properties.class)
+@EnableConfigurationProperties({Y9Properties.class, Y9FlowableProperties.class})
 @Slf4j
 public class FlowableUIConfiguraton {
 
