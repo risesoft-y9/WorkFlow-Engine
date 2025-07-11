@@ -131,9 +131,10 @@ public class ConfigUtils {
         // 2:将加载的配置文件交给 YamlPropertiesFactoryBean
 
         if (activeProfiles != null && activeProfiles.length > 0) {
-            ClassPathResource[] resources = new ClassPathResource[activeProfiles.length];
-            for (int i = 0; i < activeProfiles.length; i++) {
-                resources[i] = new ClassPathResource("application-" + activeProfiles[i] + ".yml");
+            ClassPathResource[] resources = new ClassPathResource[activeProfiles.length + 1];
+            resources[0] = new ClassPathResource("application.yml");
+            for (int i = 1; i <= activeProfiles.length; i++) {
+                resources[i] = new ClassPathResource("application-" + activeProfiles[i - 1] + ".yml");
             }
             yamlPropertiesFactoryBean.setResources(resources);
         }
