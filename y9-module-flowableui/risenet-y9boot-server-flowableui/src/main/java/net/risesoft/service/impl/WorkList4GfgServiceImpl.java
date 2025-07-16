@@ -1,8 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +40,8 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.enums.FlwdjEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.enums.JjcdEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
-import net.risesoft.enums.TableColumnEnum;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -63,7 +58,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.WorkDayService;
 import net.risesoft.service.WorkList4GfgService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -856,15 +850,15 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
         try {
             List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
             // 督办时限：红绿灯,这里根据表单中的字段督办时限来判断
-            Object dbsx = formData.get(TableColumnEnum.DBSX.getValue());
-            if (ToolUtil.isObjectNotNullAndStringNotEmpty(dbsx)) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                TaskRelatedModel taskRelatedModel =
-                    workDayService.getLightColor(new Date(), sdf.parse(String.valueOf(dbsx)));
-                if (null != taskRelatedModel) {
-                    taskRelatedList.add(taskRelatedModel);
-                }
-            }
+            // Object dbsx = formData.get(TableColumnEnum.DBSX.getValue());
+            // if (ToolUtil.isObjectNotNullAndStringNotEmpty(dbsx)) {
+            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            // TaskRelatedModel taskRelatedModel =
+            // workDayService.getLightColor(new Date(), sdf.parse(String.valueOf(dbsx)));
+            // if (null != taskRelatedModel) {
+            // taskRelatedList.add(taskRelatedModel);
+            // }
+            // }
             return taskRelatedList;
         } catch (Exception e) {
             e.printStackTrace();
@@ -974,37 +968,37 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private List<TaskRelatedModel> getTaskRelated4Public(Map<String, Object> formData) {
         try {
             List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
-            // 条码号
-            Object thm = formData.get(TableColumnEnum.TMH.getValue());
-            if (ToolUtil.isObjectNotNullAndStringNotEmpty(thm)) {
-                taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.TMH.getValue(), String.valueOf(thm)));
-            }
-            // 紧急程度
-            Object jjcd = formData.get(TableColumnEnum.JJCD.getValue());
-            if (ToolUtil.isObjectNotNullAndStringNotEmpty(jjcd)) {
-                Integer jjcdInt = Integer.parseInt(String.valueOf(jjcd));
-                if (jjcdInt.equals(JjcdEnum.TEJI.getValue())) {
-                    taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.JJCD.getValue(), String.valueOf(jjcd)));
-                }
-            }
-            // 非联网登记
-            Object flwdj = formData.get(TableColumnEnum.FLWDJ.getValue());
-            if (ToolUtil.isObjectNotNullAndStringNotEmpty(flwdj)) {
-                if (String.valueOf(flwdj).equals(FlwdjEnum.YES.getValue())) {
-                    taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.FLWDJ.getValue(), ""));
-                }
-            }
-            // 发文文号
-            Object fwwh = formData.get(TableColumnEnum.FWWH.getValue());
-            if (ToolUtil.isObjectNotNullAndStringNotEmpty(fwwh)) {
-                taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.FWWH.getValue(), String.valueOf(fwwh)));
-            }
-            // 撤销发文文号
-            Object fwwh_delete = formData.get(TableColumnEnum.FWWH_DELETE.getValue());
-            if (ToolUtil.isObjectNotNullAndStringNotEmpty(fwwh_delete) && String.valueOf(fwwh_delete).equals("1")) {
-                taskRelatedList
-                    .add(new TaskRelatedModel(TaskRelatedEnum.FWWH_DELETE.getValue(), String.valueOf(fwwh_delete)));
-            }
+            // // 条码号
+            // Object thm = formData.get(TableColumnEnum.TMH.getValue());
+            // if (ToolUtil.isObjectNotNullAndStringNotEmpty(thm)) {
+            // taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.TMH.getValue(), String.valueOf(thm)));
+            // }
+            // // 紧急程度
+            // Object jjcd = formData.get(TableColumnEnum.JJCD.getValue());
+            // if (ToolUtil.isObjectNotNullAndStringNotEmpty(jjcd)) {
+            // Integer jjcdInt = Integer.parseInt(String.valueOf(jjcd));
+            // if (jjcdInt.equals(JjcdEnum.TEJI.getValue())) {
+            // taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.JJCD.getValue(), String.valueOf(jjcd)));
+            // }
+            // }
+            // // 非联网登记
+            // Object flwdj = formData.get(TableColumnEnum.FLWDJ.getValue());
+            // if (ToolUtil.isObjectNotNullAndStringNotEmpty(flwdj)) {
+            // if (String.valueOf(flwdj).equals(FlwdjEnum.YES.getValue())) {
+            // taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.FLWDJ.getValue(), ""));
+            // }
+            // }
+            // // 发文文号
+            // Object fwwh = formData.get(TableColumnEnum.FWWH.getValue());
+            // if (ToolUtil.isObjectNotNullAndStringNotEmpty(fwwh)) {
+            // taskRelatedList.add(new TaskRelatedModel(TaskRelatedEnum.FWWH.getValue(), String.valueOf(fwwh)));
+            // }
+            // // 撤销发文文号
+            // Object fwwh_delete = formData.get(TableColumnEnum.FWWH_DELETE.getValue());
+            // if (ToolUtil.isObjectNotNullAndStringNotEmpty(fwwh_delete) && String.valueOf(fwwh_delete).equals("1")) {
+            // taskRelatedList
+            // .add(new TaskRelatedModel(TaskRelatedEnum.FWWH_DELETE.getValue(), String.valueOf(fwwh_delete)));
+            // }
             return taskRelatedList;
         } catch (Exception e) {
             e.printStackTrace();
