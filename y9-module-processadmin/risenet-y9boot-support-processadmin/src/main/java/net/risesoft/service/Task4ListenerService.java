@@ -43,7 +43,7 @@ public class Task4ListenerService {
 
     private final ErrorLogApi errorLogApi;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @jakarta.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     /**
