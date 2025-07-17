@@ -16,19 +16,8 @@
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
-    <!--<dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${springboot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>-->
-
     <dependencies>
+
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-support-processadmin</artifactId>
@@ -47,6 +36,12 @@
                     <artifactId>logback-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-properties</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -72,18 +67,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-properties</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!-- <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-mongo-public</artifactId>
-            <version>${project.version}</version>
-        </dependency> -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -147,67 +130,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>javax.servlet</groupId>-->
-        <!--            <artifactId>jstl</artifactId>-->
-        <!--        </dependency>-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>javax.xml.bind</groupId>-->
-        <!--            <artifactId>jaxb-api</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.sun.xml.bind</groupId>-->
-        <!--            <artifactId>jaxb-impl</artifactId>-->
-        <!--            <version>2.3.1</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.sun.xml.bind</groupId>-->
-        <!--            <artifactId>jaxb-core</artifactId>-->
-        <!--            <version>2.3.0.1</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>javax.activation</groupId>-->
-        <!--            <artifactId>activation</artifactId>-->
-        <!--            <version>1.1.1</version>-->
-        <!--        </dependency>-->
-
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc11</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dameng</groupId>
-            <artifactId>DmDialect-for-hibernate5.6</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dameng</groupId>
-            <artifactId>DmJdbcDriver18</artifactId>
-        </dependency>
-
-        <!-- 人大金仓数据库 -->
-        <dependency>
-            <groupId>cn.com.kingbase</groupId>
-            <artifactId>kingbase8</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.com.kingbase</groupId>
-            <artifactId>hibernate-dialect</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.com.kingbase</groupId>
-            <artifactId>hibernate-jpa-api</artifactId>
         </dependency>
     </dependencies>
 

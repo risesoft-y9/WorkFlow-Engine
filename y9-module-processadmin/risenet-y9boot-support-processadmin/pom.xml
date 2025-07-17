@@ -121,12 +121,7 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>
-
+        
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -152,22 +147,11 @@
             <artifactId>spring-aspects</artifactId>
         </dependency>
 
-        <!-- <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-        </dependency> -->
-
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
-
-        <!-- <dependency>
-             <groupId>com.jxl</groupId>
-             <artifactId>jxl</artifactId>
-             <version>2.6</version>
-         </dependency>-->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
