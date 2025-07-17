@@ -1,5 +1,4 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -23,10 +22,10 @@
     </scm>
 
     <dependencies>
-
         <dependency>
-            <groupId>org.flowable</groupId>
-            <artifactId>flowable-spring-boot-starter-process</artifactId>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
@@ -40,7 +39,7 @@
             <groupId>org.flowable</groupId>
             <artifactId>flowable-groovy-script-static-engine</artifactId>
         </dependency>
-        
+
          <dependency>
       <groupId>org.apache.groovy</groupId>
       <artifactId>groovy-jsr223</artifactId>
@@ -56,6 +55,22 @@
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-kafka</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-json-converter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
 
         <dependency>
@@ -113,11 +128,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
@@ -147,25 +157,9 @@
             <artifactId>spring-aspects</artifactId>
         </dependency>
 
-        <!-- <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-        </dependency> -->
-
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-        </dependency>
-
-        <!-- <dependency>
-             <groupId>com.jxl</groupId>
-             <artifactId>jxl</artifactId>
-             <version>2.6</version>
-         </dependency>-->
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-file-jpa-repository</artifactId>
         </dependency>
 
         <dependency>

@@ -16,11 +16,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-api-feignclient-platform</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-support-processadmin</artifactId>
@@ -39,6 +35,12 @@
                     <artifactId>logback-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-properties</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -63,12 +65,6 @@
                     <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-properties</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -128,67 +124,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>jakarta.servlet.jsp.jstl</groupId>-->
-        <!--            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>-->
-        <!--        </dependency>-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>javax.xml.bind</groupId>-->
-        <!--            <artifactId>jaxb-api</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.sun.xml.bind</groupId>-->
-        <!--            <artifactId>jaxb-impl</artifactId>-->
-        <!--            <version>2.3.1</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.sun.xml.bind</groupId>-->
-        <!--            <artifactId>jaxb-core</artifactId>-->
-        <!--            <version>2.3.0.1</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>javax.activation</groupId>-->
-        <!--            <artifactId>activation</artifactId>-->
-        <!--            <version>1.1.1</version>-->
-        <!--        </dependency>-->
-
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc11</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dameng</groupId>
-            <artifactId>DmDialect-for-hibernate5.6</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dameng</groupId>
-            <artifactId>DmJdbcDriver18</artifactId>
-        </dependency>
-
-        <!-- 人大金仓数据库 -->
-        <dependency>
-            <groupId>cn.com.kingbase</groupId>
-            <artifactId>kingbase8</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.com.kingbase</groupId>
-            <artifactId>hibernate-dialect</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.com.kingbase</groupId>
-            <artifactId>hibernate-jpa-api</artifactId>
         </dependency>
     </dependencies>
 
