@@ -44,7 +44,7 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomRuntimeService;
-import net.risesoft.service.DeleteProcessUtilService;
+import net.risesoft.service.DeleteProcessService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
@@ -73,7 +73,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final ErrorLogApi errorLogApi;
 
-    private final DeleteProcessUtilService deleteProcessUtilService;
+    private final DeleteProcessService deleteProcessService;
 
     private final ActRuDetailApi actRuDetailApi;
 
@@ -85,7 +85,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,
         IdentityService identityService, ManagementService managementService,
         CustomProcessDefinitionService customProcessDefinitionService, OfficeDoneInfoApi officeDoneInfoApi,
-        ErrorLogApi errorLogApi, DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi,
+        ErrorLogApi errorLogApi, DeleteProcessService deleteProcessService, ActRuDetailApi actRuDetailApi,
         ProcessParamApi processParamApi) {
         this.runtimeService = runtimeService;
         this.historyService = historyService;
@@ -94,7 +94,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         this.customProcessDefinitionService = customProcessDefinitionService;
         this.officeDoneInfoApi = officeDoneInfoApi;
         this.errorLogApi = errorLogApi;
-        this.deleteProcessUtilService = deleteProcessUtilService;
+        this.deleteProcessService = deleteProcessService;
         this.actRuDetailApi = actRuDetailApi;
         this.processParamApi = processParamApi;
     }
@@ -445,7 +445,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 }
             }
             // 删除年度数据
-            deleteProcessUtilService.deleteYearData(Y9LoginUserHolder.getTenantId(), year, processInstanceId);
+            deleteProcessService.deleteYearData(Y9LoginUserHolder.getTenantId(), year, processInstanceId);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
