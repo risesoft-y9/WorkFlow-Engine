@@ -1,4 +1,4 @@
-package net.risesoft.service;
+package net.risesoft.service.impl;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -13,31 +13,33 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
-import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.service.DeleteProcessService;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
+ * 删除流程实例相关
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
 @EnableAsync
 @Slf4j
-@Service(value = "deleteProcessUtilService")
-public class DeleteProcessUtilService {
-
-    private final ProcessInstanceApi processInstanceApi;
+@RequiredArgsConstructor
+@Service(value = "deleteProcessService")
+public class DeleteProcessServiceImpl implements DeleteProcessService {
 
     private final ChaoSongApi chaoSongApi;
 
@@ -52,18 +54,8 @@ public class DeleteProcessUtilService {
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public DeleteProcessUtilService(ProcessInstanceApi processInstanceApi, ChaoSongApi chaoSongApi,
-        ProcessParamApi processParamApi, OfficeFollowApi officeFollowApi, ErrorLogApi errorLogApi,
-        ActRuDetailApi actRuDetailApi) {
-        this.processInstanceApi = processInstanceApi;
-        this.chaoSongApi = chaoSongApi;
-        this.processParamApi = processParamApi;
-        this.officeFollowApi = officeFollowApi;
-        this.errorLogApi = errorLogApi;
-        this.actRuDetailApi = actRuDetailApi;
-    }
-
     @Async
+    @Override
     public void deleteProcess(final String tenantId, final String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -71,11 +63,6 @@ public class DeleteProcessUtilService {
             processParamApi.deleteByPprocessInstanceId(tenantId, processInstanceId);
         } catch (Exception e3) {
             LOGGER.error("**********删除流程实例", e3);
-        }
-        try {
-            processInstanceApi.deleteProcessInstance(tenantId, processInstanceId);
-        } catch (Exception e1) {
-            LOGGER.error("************************************删除协作状态数据失败", e1);
         }
         try {
             chaoSongApi.deleteByProcessInstanceId(tenantId, processInstanceId);
@@ -102,6 +89,7 @@ public class DeleteProcessUtilService {
      * @param processInstanceId 流程实例ID
      */
     @Async
+    @Override
     public void deleteYearData(final String tenantId, final String year, final String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.DeleteProcessUtilService;
+import net.risesoft.service.DeleteProcessService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -38,7 +38,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final DeleteProcessUtilService deleteProcessUtilService;
+    private final DeleteProcessService deleteProcessService;
 
     @Override
     public boolean deleteProcessInstance(String processInstanceId) {
@@ -188,7 +188,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                     if (officeDoneInfoModel != null) {
                         year = officeDoneInfoModel.getStartTime().substring(0, 4);
                         // 删除年度数据
-                        deleteProcessUtilService.deleteYearData(tenantId, year, processInstanceId);
+                        deleteProcessService.deleteYearData(tenantId, year, processInstanceId);
                     }
                 } else {// 办结件
                     year = sdf.format(his.getStartTime());
@@ -200,7 +200,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             } catch (Exception e1) {
                 LOGGER.warn("************************************删除数据中心办结件数据失败", e1);
             }
-            deleteProcessUtilService.deleteProcess(tenantId, processInstanceId);
+            deleteProcessService.deleteProcess(tenantId, processInstanceId);
             return true;
         } catch (Exception e) {
             LOGGER.error("删除流程实例失败", e);
