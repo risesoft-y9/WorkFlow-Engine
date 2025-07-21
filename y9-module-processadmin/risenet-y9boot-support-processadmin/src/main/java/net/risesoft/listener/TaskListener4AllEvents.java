@@ -28,7 +28,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
         String eventName = task.getEventName();
         if (TaskListener.EVENTNAME_ASSIGNMENT.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
-            //////////////// 异步处理,自定义变量科室id保存，消息提醒
+            // 异步处理,自定义变量科室id保存
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
             task4ListenerService.task4AssignmentListener(task, variables);
             /*
@@ -69,10 +69,6 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             } else {
                 task4ActRuDetaillService.createTodo4Claim(task);
             }
-            ///////////////// 异步处理,统一待办,微信提醒,消息推送提醒,短信提醒,协作状态
-            Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
-            task4ListenerService.task4CreateListener(task, variables, localVariables);
-
         } else if (TaskListener.EVENTNAME_DELETE.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
             // 接口调用
@@ -83,7 +79,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
                 throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_DELETE");
             }
 
-            ///////////////// 异步处理,删除统一待办,更新协作状态,消息提醒
+            // 异步处理，记录岗位/人员名称
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
             task4ListenerService.task4DeleteListener(task, variables);
 

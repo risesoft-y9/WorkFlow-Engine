@@ -58,7 +58,7 @@ public class Task4ListenerService {
     }
 
     /**
-     * 异步处理,统一待办，微信提醒，消息推送提醒，短信提醒，协作状态
+     * 异步处理
      *
      * @param task 任务
      * @param variables 流程变量
@@ -68,19 +68,10 @@ public class Task4ListenerService {
     public void task4CreateListener(final DelegateTask task, final Map<String, Object> variables,
         final Map<String, Object> localVariables) {
 
-        /*
-         * 消息推送提醒
-         */
-        pushNormalToAndroidService.pushNormalToAndroid(task, variables);
-
-        /*
-         * 协作状态
-         */
-        processInstanceDetailsService.saveProcessInstanceDetails(task, variables);
     }
 
     /**
-     * 异步处理更新协作状态,消息提醒
+     * 异步处理，记录岗位/人员名称
      *
      * @param task 任务
      * @param variables 变量
@@ -128,9 +119,5 @@ public class Task4ListenerService {
             errorLogModel.setUpdateTime(time);
             errorLogApi.saveErrorLog(tenantId, errorLogModel);
         }
-        /*
-         * 更新协作状态
-         */
-        processInstanceDetailsService.updateProcessInstanceDetails(task, variables);
     }
 }
