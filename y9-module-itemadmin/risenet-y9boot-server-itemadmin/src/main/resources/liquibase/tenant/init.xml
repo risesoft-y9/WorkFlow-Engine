@@ -1528,66 +1528,6 @@
             <column name="TODOTASKURLPREFIX" remarks="统一待办url前缀" type="VARCHAR(200)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-53" author="mengjuhua" runOnChange="true">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="ff_processinstance"/>
-            </not>
-        </preConditions>
-        <createTable remarks="协作状态实例表" tableName="ff_processinstance">
-            <column name="ID" remarks="主键" type="VARCHAR(38)">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="APPCNNAME" remarks="应用中文名称" type="VARCHAR(100)"/>
-            <column name="APPNAME" remarks="应用名称" type="VARCHAR(50)"/>
-            <column name="ASSIGNEE" remarks="参与人id" type="LONGTEXT"/>
-            <column name="ENDTIME" remarks="结束时间" type="datetime"/>
-            <column name="ISDELETED" remarks="删除标记" type="INT"/>
-            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)"/>
-            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
-            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
-            <column name="SERIALNUMBER" remarks="编号" type="VARCHAR(50)"/>
-            <column name="STARTTIME" remarks="开始时间" type="datetime"/>
-            <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(100)"/>
-            <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(100)"/>
-            <column name="TITLE" remarks="文件标题" type="VARCHAR(1000)"/>
-            <column name="URL" remarks="详情链接" type="VARCHAR(200)"/>
-            <column name="USERNAME" remarks="发起人" type="VARCHAR(100)"/>
-        </createTable>
-    </changeSet>
-    <changeSet id="1704700547152-54" author="mengjuhua" runOnChange="true">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="ff_processinstance_details"/>
-            </not>
-        </preConditions>
-        <createTable remarks="协作状态详情表" tableName="ff_processinstance_details">
-            <column name="ID" remarks="主键" type="VARCHAR(38)">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="APPCNNAME" remarks="应用中文名称" type="VARCHAR(100)"/>
-            <column name="APPNAME" remarks="应用名称" type="VARCHAR(50)"/>
-            <column name="ASSIGNEEID" remarks="办理人id" type="VARCHAR(50)"/>
-            <column name="ASSIGNEENAME" remarks="办理人名称" type="VARCHAR(50)"/>
-            <column name="ENDTIME" remarks="结束时间" type="datetime"/>
-            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)"/>
-            <column name="ITEMBOX" remarks="办件状态" type="VARCHAR(20)"/>
-            <column name="OPINIONCONTENT" remarks="意见内容" type="VARCHAR(500)"/>
-            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
-            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
-            <column name="SENDERID" remarks="发送人id" type="VARCHAR(50)"/>
-            <column name="SENDERNAME" remarks="发送人名称" type="VARCHAR(50)"/>
-            <column name="SERIALNUMBER" remarks="编号" type="VARCHAR(50)"/>
-            <column name="STARTTIME" remarks="开始时间" type="datetime"/>
-            <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(100)"/>
-            <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(100)"/>
-            <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
-            <column name="TASKNAME" remarks="任务名称" type="VARCHAR(50)"/>
-            <column name="TITLE" remarks="文件标题" type="VARCHAR(1000)"/>
-            <column name="URL" remarks="详情链接" type="VARCHAR(200)"/>
-            <column name="USERNAME" remarks="发起人" type="VARCHAR(100)"/>
-        </createTable>
-    </changeSet>
     <changeSet id="1704700547152-55" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>

@@ -8,11 +8,11 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>risenet-y9boot-api-interface-itemadmin</artifactId>
+    <artifactId>risenet-y9boot-model-itemadmin</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
-    <name>risenet-y9boot-api-interface-itemadmin</name>
-    <description>RiseSoft/WorkFlow Engine itemadmin interface</description>
+    <name>risenet-y9boot-model-itemadmin</name>
+    <description>RiseSoft/WorkFlow Engine itemadmin model</description>
 
     <properties>
     </properties>
@@ -27,12 +27,6 @@
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-model-itemadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -12,6 +12,7 @@ import net.risesoft.api.itemadmin.ChaoSong4DataBaseApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ChaoSong;
+import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -173,7 +174,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
         model.setId(id);
         model.setStatus(status);
         ChaoSong chaoSong = chaoSongService.getById(id);
-        if (null != chaoSong && chaoSong.getStatus() != 1 && !Boolean.TRUE.equals(openNotRead)) {
+        if (null != chaoSong && chaoSong.getStatus() != ChaoSongStatusEnum.READ && !Boolean.TRUE.equals(openNotRead)) {
             chaoSongService.changeStatus(id);
         }
         return Y9Result.success(model);

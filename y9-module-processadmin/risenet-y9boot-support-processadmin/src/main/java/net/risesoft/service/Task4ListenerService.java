@@ -33,8 +33,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "task4ListenerService")
 public class Task4ListenerService {
 
-    private final ProcessInstanceDetailsService processInstanceDetailsService;
-
     private final PushNormalToAndroidService pushNormalToAndroidService;
 
     private final SetDeptIdUtilService setDeptIdUtilService;
