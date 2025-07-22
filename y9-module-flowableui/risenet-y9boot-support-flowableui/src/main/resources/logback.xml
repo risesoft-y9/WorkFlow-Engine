@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="y9.autoConfiguration" level="DEBUG"/>
+    <logger name="net.risesoft" level="DEBUG"/>
+    <logger name="org.mongodb" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.apache.catalina.startup.Catalina" level="INFO"/>
+
+    <property name="logback.logdir" value="${catalina.base}/logs/flowableUI"/>
+    <property name="logback.appname" value="flowableUI"/>
+    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logback.logdir}/${logback.appname}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 每天一归档 -->
+            <fileNamePattern>${logback.logdir}/${logback.appname}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--只保留最近10天的日志 -->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{36} [%file : %line] %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="fileInfoLog"/>
+    </root>
+</configuration>
