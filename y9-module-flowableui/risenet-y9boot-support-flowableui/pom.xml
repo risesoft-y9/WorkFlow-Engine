@@ -8,20 +8,14 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>risenet-y9boot-server-flowableui</artifactId>
-    <packaging>war</packaging>
+    <artifactId>risenet-y9boot-support-flowableui</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-flowableui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
@@ -39,12 +33,6 @@
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-security</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -152,10 +140,10 @@
             <artifactId>commons-codec</artifactId>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>commons-fileupload</groupId>-->
-        <!--            <artifactId>commons-fileupload</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
@@ -177,6 +165,7 @@
         <dependency>
             <groupId>com.belerweb</groupId>
             <artifactId>pinyin4j</artifactId>
+            <version>2.5.1</version>
         </dependency>
 
         <!-- <dependency>
@@ -192,28 +181,26 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
+            <version>5.2.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.deepoove</groupId>
             <artifactId>poi-tl</artifactId>
+            <version>1.12.1</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
+            <version>5.2.3</version>
         </dependency>
 
         <dependency>
             <groupId>cn.wps.yun</groupId>
             <artifactId>graph-java-client</artifactId>
+            <version>1.0.11</version>
             <scope>compile</scope>
         </dependency>
 
@@ -233,28 +220,7 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <finalName>server-flowableui</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
-        <profile>
-            <id>build-docker-image</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.google.cloud.tools</groupId>
-                        <artifactId>jib-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>build-api-doc</id>
             <build>

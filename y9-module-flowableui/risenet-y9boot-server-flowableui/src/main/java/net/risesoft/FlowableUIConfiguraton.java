@@ -1,4 +1,4 @@
-package net.risesoft.config;
+package net.risesoft;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
