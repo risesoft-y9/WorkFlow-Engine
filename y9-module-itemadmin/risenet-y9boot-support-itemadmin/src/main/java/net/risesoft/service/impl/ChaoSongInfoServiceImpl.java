@@ -37,9 +37,9 @@ import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
+import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
@@ -129,14 +129,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
         if (chaoSong != null) {
-            chaoSong.setStatus(1);
+            chaoSong.setStatus(ChaoSongStatusEnum.READ.getValue());
             chaoSong.setReadTime(sdf.format(new Date()));
             chaoSongInfoRepository.save(chaoSong);
-            try {
-                // TODO-qinman todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
-            } catch (Exception e) {
-                LOGGER.error("删除待办任务失败", e);
-            }
         }
     }
 
@@ -146,14 +141,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         for (String id : ids) {
             ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
             if (chaoSong != null) {
-                chaoSong.setStatus(1);
+                chaoSong.setStatus(ChaoSongStatusEnum.READ.getValue());
                 chaoSong.setReadTime(sdf.format(new Date()));
                 chaoSongInfoRepository.save(chaoSong);
-            }
-            try {
-                // TODO-qinman todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
-            } catch (Exception e) {
-                LOGGER.error("删除待办任务失败", e);
             }
         }
     }
@@ -182,11 +172,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     public void deleteByIds(String[] ids) {
         for (String id : ids) {
             chaoSongInfoRepository.deleteById(id);
-            try {
-                // TODO-qinman todotaskApi.deleteTodoTask(Y9LoginUserHolder.getTenantId(), id);
-            } catch (Exception e) {
-                LOGGER.error("删除待办任务失败", e);
-            }
         }
     }
 
@@ -485,7 +470,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(cs.getStatus());
+            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -559,7 +544,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setProcessInstanceId(processInstanceId);
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
-            model.setStatus(cs.getStatus());
+            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -625,7 +610,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(cs.getStatus());
+            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -689,7 +674,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(cs.getStatus());
+            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -794,20 +779,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 csList.add(cs);
             }
             this.save(csList);
-            // TODO-qinman asyncHandleService.saveChaoSong4Todo(tenantId, csList);
-            if (StringUtils.isNotBlank(isSendSms) && UtilConsts.TRUE.equals(isSendSms)) {
-                smsContent += "--" + Y9LoginUserHolder.getUserInfo().getName();
-                Boolean smsSwitch = y9ItemAdminProperties.getSmsSwitch();
-                if (Boolean.TRUE.equals(smsSwitch)) {
-                    // TODO-qinman smsHttpApi.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile,
-                    // smsContent,systemName + "抄送");
-                } else {
-                    LOGGER
-                        .info("*********************y9.app.itemAdmin.smsSwitch开关未打开**********************************");
-                }
-            }
-            asyncHandleService.weiXinRemind4ChaoSongInfo(tenantId, Y9LoginUserHolder.getPersonId(),
-                processParam.getProcessSerialNumber(), csList);
             return Y9Result.successMsg("抄送成功");
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -883,7 +854,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(cs.getStatus());
+            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -963,7 +934,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(cs.getStatus());
+            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);

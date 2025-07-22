@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import lombok.Data;
 
+import net.risesoft.enums.ChaoSongStatusEnum;
+
 /**
  * 抄送信息模型
  *
@@ -87,9 +89,9 @@ public class ChaoSongModel implements Serializable {
     private String sendDeptId;
 
     /**
-     * 传阅的状态,0未阅,1已阅,2新件
+     * 传阅的状态
      */
-    private Integer status = 0;
+    private ChaoSongStatusEnum status = ChaoSongStatusEnum.NEW;
 
     /**
      * 抄送时间

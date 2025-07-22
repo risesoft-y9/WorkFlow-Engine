@@ -81,19 +81,6 @@ public interface HistoricProcessApi {
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 恢复流程实例
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
-     * @since 9.6.6
-     */
-    @PostMapping("/recoveryProcess")
-    Y9Result<Object> recoveryProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processInstanceId") String processInstanceId);
-
-    /**
      * 彻底删除流程实例
      *
      * @param tenantId 租户id

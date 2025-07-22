@@ -3,7 +3,6 @@ package net.risesoft.service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,10 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -33,7 +28,6 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
@@ -48,12 +42,9 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
-import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.repository.jpa.ProcessTrackRepository;
 import net.risesoft.repository.jpa.TaskVariableRepository;
@@ -391,178 +382,6 @@ public class AsyncHandleService {
     }
 
     /**
-     * 保存抄送件到统一待办
-     *
-     * @param tenantId
-     * @param csList
-     */
-    @Async
-    public void saveChaoSong4Todo(final String tenantId, final List<ChaoSongInfo> csList) {
-        /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String processInstanceId = "";
-        String taskId = "";
-        String id = "";
-        Y9LoginUserHolder.setTenantId(tenantId);
-        for (ChaoSongInfo info : csList) {
-            try {
-                id = info.getId();
-                taskId = info.getTaskId();
-                processInstanceId = info.getProcessInstanceId();
-                TodoTaskModel todo = new TodoTaskModel();
-                todo.setTenantId(tenantId);
-                todo.setSystemName("阅件");
-                todo.setSystemCnName("阅件");
-                todo.setAppName("阅件");
-                todo.setAppCnName("阅件");
-                todo.setTitle(info.getTitle());
-                todo.setSenderId(info.getSenderId());
-                todo.setSenderName(info.getSenderName());
-                todo.setSenderDepartmentId(info.getSendDeptId());
-                todo.setSenderDepartmentName(info.getSendDeptName());
-                todo.setSendTime(sdf.parse(info.getCreateTime()));
-                todo.setIsNewTodo("1");
-                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                String level = processParam.getCustomLevel() == null ? "" : processParam.getCustomLevel();
-                String todoTaskUrlPrefix = processParam.getTodoTaskUrlPrefix();
-                String urgency = "0";
-                if (level.equals("一般")) {
-                    urgency = "0";
-                } else if (level.equals("重要")) {
-                    urgency = "1";
-                } else if (level.equals("紧急")) {
-                    urgency = "2";
-                }
-                if ("普通".equals(level)) {
-                    urgency = "0";
-                } else if ("急".equals(level)) {
-                    urgency = "1";
-                } else if ("特急".equals(level)) {
-                    urgency = "2";
-                }
-                todo.setUrgency(urgency);
-                todo.setDocNumber(processParam.getCustomNumber());
-                todo.setProcessInstanceId(processInstanceId);
-                String url = todoTaskUrlPrefix.replace("index", "readIndex") + "?id=" + info.getId() + "&itemId="
-                    + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
-                    + "&type=fromTodo&appName=chaoSong";
-                todo.setUrl(url);
-                todo.setTaskId(id);
-                todo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                todo.setReceiverId(info.getUserId());
-                todo.setReceiverName(info.getUserName());
-                todo.setReceiverDepartmentId(info.getUserDeptId());
-                todo.setReceiverDepartmentName(info.getUserDeptName());
-                todotaskApi.saveTodoTask(tenantId, todo);
-            } catch (Exception e) {
-                String time = sdf.format(new Date());
-                final Writer result = new StringWriter();
-                final PrintWriter print = new PrintWriter(result);
-                e.printStackTrace(print);
-                String msg = result.toString();
-                // 保存发送错误日志
-                ErrorLog errorLog = new ErrorLog();
-                errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                errorLog.setCreateTime(time);
-                errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_CHAOSONG);
-                errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
-                errorLog.setExtendField("阅件保存至统一待办失败，抄送id:" + id);
-                errorLog.setProcessInstanceId(processInstanceId);
-                errorLog.setTaskId(taskId);
-                errorLog.setText(msg);
-                errorLog.setUpdateTime(time);
-                errorLogService.saveErrorLog(errorLog);
-            }
-        }*/
-    }
-
-    /**
-     * 保存抄送件到统一待办
-     *
-     * @param tenantId
-     * @param csList
-     */
-    @Async
-    public void saveChaoSongTodo(final String tenantId, final List<ChaoSong> csList) {
-        /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String processInstanceId = "";
-        String taskId = "";
-        String id = "";
-        Y9LoginUserHolder.setTenantId(tenantId);
-        for (ChaoSong info : csList) {
-            try {
-                id = info.getId();
-                taskId = info.getTaskId();
-                processInstanceId = info.getProcessInstanceId();
-                TodoTaskModel todo = new TodoTaskModel();
-                todo.setTenantId(tenantId);
-                todo.setSystemName("阅件");
-                todo.setSystemCnName("阅件");
-                todo.setAppName("阅件");
-                todo.setAppCnName("阅件");
-                todo.setTitle(info.getTitle());
-                todo.setSenderId(info.getSenderId());
-                todo.setSenderName(info.getSenderName());
-                todo.setSenderDepartmentId(info.getSendDeptId());
-                todo.setSenderDepartmentName(info.getSendDeptName());
-                todo.setSendTime(sdf.parse(info.getCreateTime()));
-                todo.setIsNewTodo("1");
-                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                String level = processParam.getCustomLevel() == null ? "" : processParam.getCustomLevel();
-                String todoTaskUrlPrefix = processParam.getTodoTaskUrlPrefix();
-                String urgency = "0";
-                if (level.equals("一般")) {
-                    urgency = "0";
-                } else if (level.equals("重要")) {
-                    urgency = "1";
-                } else if (level.equals("紧急")) {
-                    urgency = "2";
-                }
-        
-                if ("普通".equals(level)) {
-                    urgency = "0";
-                } else if ("急".equals(level)) {
-                    urgency = "1";
-                } else if ("特急".equals(level)) {
-                    urgency = "2";
-                }
-        
-                todo.setUrgency(urgency);
-                todo.setDocNumber(processParam.getCustomNumber());
-                todo.setProcessInstanceId(processInstanceId);
-                String url = todoTaskUrlPrefix.replace("index", "readIndex") + "?id=" + info.getId() + "&itemId="
-                    + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
-                    + "&type=fromTodo&appName=chaoSong";
-                todo.setUrl(url);
-                todo.setTaskId(id);
-                todo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                todo.setReceiverId(info.getUserId());
-                todo.setReceiverName(info.getUserName());
-                todo.setReceiverDepartmentId(info.getUserDeptId());
-                todo.setReceiverDepartmentName(info.getUserDeptName());
-                todotaskApi.saveTodoTask(tenantId, todo);
-            } catch (Exception e) {
-                String time = sdf.format(new Date());
-                final Writer result = new StringWriter();
-                final PrintWriter print = new PrintWriter(result);
-                e.printStackTrace(print);
-                String msg = result.toString();
-                // 保存发送错误日志
-                ErrorLog errorLog = new ErrorLog();
-                errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                errorLog.setCreateTime(time);
-                errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_CHAOSONG);
-                errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
-                errorLog.setExtendField("阅件保存至统一待办失败，抄送id:" + id);
-                errorLog.setProcessInstanceId(processInstanceId);
-                errorLog.setTaskId(taskId);
-                errorLog.setText(msg);
-                errorLog.setUpdateTime(time);
-                errorLogService.saveErrorLog(errorLog);
-            }
-        }*/
-    }
-
-    /**
      * 保存意见历史记录
      *
      * @param oldOpinion
@@ -685,135 +504,6 @@ public class AsyncHandleService {
             draftEntityRepository.deleteByProcessSerialNumber(processSerialNumber);
         } catch (Exception e) {
             LOGGER.warn("*****startProcessSave发生异常*****", e);
-        }
-    }
-
-    /**
-     * 启动流程后数据处理
-     *
-     * @param processSerialNumber
-     * @param taskId
-     * @param processInstanceId
-     * @param searchTerm
-     */
-    @Async
-    public void startProcessHandle4Gfg(final String tenantId, final String processSerialNumber, final String taskId,
-        final String processInstanceId, final String searchTerm) {
-        try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            opinionRepository.update(processInstanceId, taskId, processSerialNumber);
-            transactionFileService.update(processSerialNumber, processInstanceId, taskId);
-            transactionHistoryWordService.update(taskId, processSerialNumber);
-        } catch (Exception e) {
-            LOGGER.warn("*****startProcessSave发生异常*****", e);
-        }
-    }
-
-    /**
-     * 异步抄送微信提醒
-     *
-     * @param tenantId
-     * @param userId
-     * @param processSerialNumber
-     * @param list
-     * @return
-     */
-    @Async
-    public void weiXinRemind(final String tenantId, final String userId, final String processSerialNumber,
-        final List<ChaoSong> list) {
-        Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
-        if (weiXinSwitch == null || !weiXinSwitch) {
-            LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
-            return;
-        }
-        try {
-            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-            String documentTitle = processParam.getTitle();
-            String itemId = processParam.getItemId();
-            String itemName = processParam.getItemName();
-            Person person = personApi.get(tenantId, userId).getData();
-            for (ChaoSong cs : list) {
-                String assignee = cs.getUserId();
-                HttpClient client = new HttpClient();
-                client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024 * 10);
-                client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
-                PostMethod method = new PostMethod();
-                method.addParameter("userId", assignee);
-                method.addParameter("title", documentTitle);
-                method.addParameter("taskSender", person.getName());
-                method.addParameter("taskName", itemName + "-阅件");
-                method.addParameter("processSerialNumber", processSerialNumber);
-                method.addParameter("processDefinitionKey", "processDefinitionKey");
-                method.addParameter("processInstanceId", cs.getProcessInstanceId());
-                method.addParameter("taskId", "");
-                method.addParameter("itemId", itemId);
-                String url = y9ItemAdminProperties.getWeiXinUrl();
-                method.setPath(url);
-                int code = client.executeMethod(method);
-                LOGGER.info("##########################微信接口状态：" + code + "##########################");
-                if (code == HttpStatus.SC_OK) {
-                    String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
-                        StandardCharsets.UTF_8);
-                    LOGGER.info("##########################返回状态：" + response + "##########################");
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("抄送微信提醒发生异常", e);
-        }
-    }
-
-    /**
-     * 异步抄送微信提醒
-     *
-     * @param tenantId
-     * @param userId
-     * @param processSerialNumber
-     * @param list
-     * @return
-     */
-    @Async
-    public void weiXinRemind4ChaoSongInfo(final String tenantId, final String userId, final String processSerialNumber,
-        final List<ChaoSongInfo> list) {
-        Boolean weiXinSwitch = y9ItemAdminProperties.getWeiXinSwitch();
-        if (weiXinSwitch == null || !weiXinSwitch) {
-            LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
-            return;
-        }
-        try {
-            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-            String documentTitle = processParam.getTitle();
-            String itemId = processParam.getItemId();
-            String itemName = processParam.getItemName();
-            Person person = personApi.get(tenantId, userId).getData();
-            OfficeDoneInfo officeDoneInfo =
-                officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
-            for (ChaoSongInfo cs : list) {
-                String assignee = cs.getUserId();
-                HttpClient client = new HttpClient();
-                client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024 * 10);
-                client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
-                PostMethod method = new PostMethod();
-                method.addParameter("userId", assignee);
-                method.addParameter("title", documentTitle);
-                method.addParameter("taskSender", person.getName());
-                method.addParameter("taskName", itemName + "-阅件");
-                method.addParameter("processSerialNumber", processSerialNumber);
-                method.addParameter("processDefinitionKey", officeDoneInfo.getProcessDefinitionKey());
-                method.addParameter("processInstanceId", cs.getProcessInstanceId());
-                method.addParameter("taskId", "");
-                method.addParameter("itemId", itemId);
-                String url = y9ItemAdminProperties.getWeiXinUrl();
-                method.setPath(url);
-                int code = client.executeMethod(method);
-                LOGGER.info("##########################微信接口状态：" + code + "##########################");
-                if (code == HttpStatus.SC_OK) {
-                    String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
-                        StandardCharsets.UTF_8);
-                    LOGGER.info("##########################返回状态：" + response + "##########################");
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("抄送微信提醒发生异常", e);
         }
     }
 }

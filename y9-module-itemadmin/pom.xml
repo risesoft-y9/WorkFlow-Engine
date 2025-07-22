@@ -22,6 +22,7 @@
         <developerConnection>${gitee.developerConnection}</developerConnection>
     </scm>
     <modules>
+        <module>risenet-y9boot-model-itemadmin</module>
         <module>risenet-y9boot-api-interface-itemadmin</module>
         <module>risenet-y9boot-api-feignclient-itemadmin</module>
         <module>risenet-y9boot-support-itemadmin-jpa-repository</module>

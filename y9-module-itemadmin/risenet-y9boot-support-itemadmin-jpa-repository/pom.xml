@@ -23,10 +23,16 @@
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-model-itemadmin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-jpa-tenant</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-elasticsearch</artifactId>

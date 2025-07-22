@@ -3,6 +3,7 @@ package net.risesoft.entity;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,6 +15,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.ChaoSongStatusEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  * @author qinman
@@ -131,11 +135,12 @@ public class ChaoSong implements Serializable {
     private String sendDeptId;
 
     /**
-     * 传阅的状态,2未阅,1已阅
+     * 传阅的状态
      */
     @Comment("传阅状态")
     @Column(name = "STATUS", length = 2)
-    private Integer status = 2;
+    @Convert(converter = ItemEnumConverter.ChaoSongStatusEnumConverter.class)
+    private ChaoSongStatusEnum status = ChaoSongStatusEnum.NEW;
 
     /**
      * 抄送时间
