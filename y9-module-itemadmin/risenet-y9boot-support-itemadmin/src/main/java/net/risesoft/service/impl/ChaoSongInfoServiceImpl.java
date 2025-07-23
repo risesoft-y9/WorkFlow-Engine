@@ -5,11 +5,13 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +28,6 @@ import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,8 +68,12 @@ import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.util.Y9EsIndexConst;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
+import net.risesoft.y9.pubsub.event.Y9EntityCreatedEvent;
+import net.risesoft.y9.pubsub.event.Y9EntityDeletedEvent;
+import net.risesoft.y9.pubsub.event.Y9EntityUpdatedEvent;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -112,7 +117,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     private final CustomGroupApi customGroupApi;
 
     @Override
-    @Transactional
     public void changeChaoSongState(String id, String type) {
         String opinionState = "";
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
@@ -129,22 +133,20 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
         if (chaoSong != null) {
+            ChaoSongInfo origin = new ChaoSongInfo();
+            Y9BeanUtil.copyProperties(chaoSong, origin);
             chaoSong.setStatus(ChaoSongStatusEnum.READ.getValue());
             chaoSong.setReadTime(sdf.format(new Date()));
             chaoSongInfoRepository.save(chaoSong);
+
+            Y9Context.publishEvent(new Y9EntityUpdatedEvent<>(origin, chaoSong));
         }
     }
 
     @Override
     public void changeStatus(String[] ids) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
-            ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
-            if (chaoSong != null) {
-                chaoSong.setStatus(ChaoSongStatusEnum.READ.getValue());
-                chaoSong.setReadTime(sdf.format(new Date()));
-                chaoSongInfoRepository.save(chaoSong);
-            }
+            changeStatus(id);
         }
     }
 
@@ -165,20 +167,22 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public void deleteById(String id) {
-        chaoSongInfoRepository.deleteById(id);
-    }
-
-    @Override
-    public void deleteByIds(String[] ids) {
-        for (String id : ids) {
-            chaoSongInfoRepository.deleteById(id);
+        Optional<ChaoSongInfo> chaoSongInfo = chaoSongInfoRepository.findById(id);
+        if (chaoSongInfo.isPresent()) {
+            chaoSongInfoRepository.delete(chaoSongInfo.get());
+            Y9Context.publishEvent(new Y9EntityDeletedEvent<>(chaoSongInfo.get()));
         }
     }
 
     @Override
-    @Transactional
+    public void deleteByIds(String[] ids) {
+        Arrays.stream(ids).forEach(this::deleteById);
+    }
+
+    @Override
     public boolean deleteByProcessInstanceId(String processInstanceId) {
-        chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+        List<ChaoSongInfo> list = chaoSongInfoRepository.findByProcessInstanceId(processInstanceId);
+        list.forEach(chaoSongInfo -> deleteById(chaoSongInfo.getId()));
         return true;
     }
 
@@ -444,7 +448,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(orgUnitId)
-            .and("status").is(1);
+            .and("status").is(ChaoSongStatusEnum.READ.getValue());
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
         }
@@ -705,16 +709,17 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public ChaoSongInfo save(ChaoSongInfo chaoSong) {
-        return chaoSongInfoRepository.save(chaoSong);
+        chaoSong = chaoSongInfoRepository.save(chaoSong);
+        Y9Context.publishEvent(new Y9EntityCreatedEvent<>(chaoSong));
+        return chaoSong;
     }
 
     @Override
     public void save(List<ChaoSongInfo> chaoSongList) {
-        chaoSongInfoRepository.saveAll(chaoSongList);
+        chaoSongList.forEach(this::save);
     }
 
     @Override
-    @Transactional
     public Y9Result<Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
         String smsContent, String smsPersonId) {
         try {
@@ -967,21 +972,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    @Transactional
     public void updateTitle(String processInstanceId, String documentTitle) {
-        try {
-            List<ChaoSongInfo> list = chaoSongInfoRepository.findByProcessInstanceId(processInstanceId);
-            List<ChaoSongInfo> newList = new ArrayList<>();
-            for (ChaoSongInfo info : list) {
-                info.setTitle(documentTitle);
-                newList.add(info);
-            }
-            if (!newList.isEmpty()) {
-                chaoSongInfoRepository.saveAll(newList);
-            }
-        } catch (Exception e) {
-            LOGGER.error("更新抄送标题失败", e);
-        }
-    }
+        List<ChaoSongInfo> list = chaoSongInfoRepository.findByProcessInstanceId(processInstanceId);
+        list.forEach(chaoSong -> {
+            ChaoSongInfo origin = new ChaoSongInfo();
+            Y9BeanUtil.copyProperties(chaoSong, origin);
+            chaoSong.setTitle(documentTitle);
+            chaoSongInfoRepository.save(chaoSong);
 
+            Y9Context.publishEvent(new Y9EntityUpdatedEvent<>(origin, chaoSong));
+        });
+    }
 }

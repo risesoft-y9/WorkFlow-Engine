@@ -19,13 +19,9 @@ public interface ChaoSongInfoRepository extends ElasticsearchRepository<ChaoSong
 
     int countByUserIdAndOpinionStateAndTenantId(String userId, String opinionState, String tenantId);
 
-    int countByUserIdAndProcessInstanceId(String userId, String processInstanceId);
-
     int countByUserIdAndStatus(String userId, Integer status);
 
     int countByUserIdAndTenantId(String userId, String tenantId);
-
-    void deleteByProcessInstanceIdAndTenantId(String processInstanceId, String tenantId);
 
     List<ChaoSongInfo> findByProcessInstanceId(String processInstanceId);
 }
