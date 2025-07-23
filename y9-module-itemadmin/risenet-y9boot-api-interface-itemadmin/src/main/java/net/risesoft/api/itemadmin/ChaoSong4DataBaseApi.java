@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.ChaoSong4DataBaseModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -157,11 +157,11 @@ public interface ChaoSong4DataBaseApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送已阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是抄送已阅件列表
      * @since 9.6.6
      */
     @GetMapping("/getDoneList")
-    Y9Page<ChaoSongModel> getDoneList(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> getDoneList(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
         @RequestParam("page") int page);
@@ -175,11 +175,11 @@ public interface ChaoSong4DataBaseApi {
      * @param userName 收件人
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是除当前人外的其他抄送件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是除当前人外的其他抄送件列表
      * @since 9.6.6
      */
     @GetMapping("/getListByProcessInstanceId")
-    Y9Page<ChaoSongModel> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam(value = "userName", required = false) String userName, @RequestParam("rows") int rows,
         @RequestParam("page") int page);
@@ -193,11 +193,11 @@ public interface ChaoSong4DataBaseApi {
      * @param userName 收件人
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是当前人的抄送件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是当前人的抄送件列表
      * @since 9.6.6
      */
     @GetMapping("/getListBySenderIdAndProcessInstanceId")
-    Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam(value = "userName", required = false) String userName, @RequestParam("rows") int rows,
         @RequestParam("page") int page);
@@ -210,11 +210,11 @@ public interface ChaoSong4DataBaseApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是批阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是批阅件列表
      * @since 9.6.6
      */
     @GetMapping("/getOpinionChaosongByUserId")
-    Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
         @RequestParam("page") int page);
@@ -239,11 +239,11 @@ public interface ChaoSong4DataBaseApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送未阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是抄送未阅件列表
      * @since 9.6.6
      */
     @GetMapping("/getTodoList")
-    Y9Page<ChaoSongModel> getTodoList(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> getTodoList(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
         @RequestParam("page") int page);
@@ -260,11 +260,11 @@ public interface ChaoSong4DataBaseApi {
      * @param year 年度
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是我的抄送列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是我的抄送列表
      * @since 9.6.6
      */
     @GetMapping("/myChaoSongList")
-    Y9Page<ChaoSongModel> myChaoSongList(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> myChaoSongList(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "searchName", required = false) String searchName,
         @RequestParam(value = "itemId", required = false) String itemId,
@@ -308,11 +308,11 @@ public interface ChaoSong4DataBaseApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是个人阅件搜索列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是个人阅件搜索列表
      * @since 9.6.6
      */
     @GetMapping("/searchAllByUserId")
-    Y9Page<ChaoSongModel> searchAllByUserId(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId,
         @RequestParam(value = "searchName", required = false) String searchName,
         @RequestParam(value = "itemId", required = false) String itemId,
@@ -333,11 +333,11 @@ public interface ChaoSong4DataBaseApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是监控阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是监控阅件列表
      * @since 9.6.6
      */
     @GetMapping("/searchAllList")
-    Y9Page<ChaoSongModel> searchAllList(@RequestParam("tenantId") String tenantId,
+    Y9Page<ChaoSong4DataBaseModel> searchAllList(@RequestParam("tenantId") String tenantId,
         @RequestParam(value = "searchName", required = false) String searchName,
         @RequestParam(value = "itemId", required = false) String itemId,
         @RequestParam(value = "senderName", required = false) String senderName,

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.ChaoSong;
-import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.ChaoSong4DataBaseModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -140,8 +140,8 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> pageByProcessInstanceIdAndUserName(String processInstanceId, String userName, int rows,
-        int page);
+    Y9Page<ChaoSong4DataBaseModel> pageByProcessInstanceIdAndUserName(String processInstanceId, String userName,
+        int rows, int page);
 
     /**
      *
@@ -154,8 +154,8 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> pageBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName,
-        int rows, int page);
+    Y9Page<ChaoSong4DataBaseModel> pageBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
+        String userName, int rows, int page);
 
     /**
      * 获取抄送所有件
@@ -178,7 +178,7 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> pageDoneList(String orgUnitId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSong4DataBaseModel> pageDoneList(String orgUnitId, String documentTitle, int rows, int page);
 
     /**
      * 我的抄送列表
@@ -192,7 +192,7 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> pageMyChaoSongList(String searchName, String itemId, String userName, String state,
+    Y9Page<ChaoSong4DataBaseModel> pageMyChaoSongList(String searchName, String itemId, String userName, String state,
         String year, int rows, int page);
 
     /**
@@ -204,7 +204,7 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSong4DataBaseModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page);
 
     /**
      * 获取抄送未阅件
@@ -215,7 +215,7 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSongModel> pageTodoList(String orgUnitId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSong4DataBaseModel> pageTodoList(String orgUnitId, String documentTitle, int rows, int page);
 
     /**
      * 保存抄送
@@ -261,7 +261,7 @@ public interface ChaoSongService {
      * @param rows
      * @return
      */
-    Y9Page<ChaoSongModel> searchAllByUserId(String searchName, String itemId, String userName, String state,
+    Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows);
 
     /**
@@ -277,7 +277,7 @@ public interface ChaoSongService {
      * @param rows
      * @return
      */
-    Y9Page<ChaoSongModel> searchAllList(String searchName, String itemId, String senderName, String userName,
+    Y9Page<ChaoSong4DataBaseModel> searchAllList(String searchName, String itemId, String senderName, String userName,
         String state, String year, Integer page, Integer rows);
 
     /**
