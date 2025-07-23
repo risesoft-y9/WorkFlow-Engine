@@ -14,12 +14,12 @@ import net.risesoft.enums.ChaoSongStatusEnum;
  * @date 2022/12/20
  */
 @Data
-public class ChaoSongModel extends ChaoSongBaseModel implements Serializable {
+public class ChaoSong4DataBaseModel extends ChaoSongBaseModel implements Serializable {
 
-    private static final long serialVersionUID = -4235779237483037821L;
+    private static final long serialVersionUID = -7436190610436168357L;
 
     /**
      * 传阅的状态
      */
-    private Integer status = ChaoSongStatusEnum.UNREAD.getValue();
+    private ChaoSongStatusEnum status = ChaoSongStatusEnum.NEW;
 }

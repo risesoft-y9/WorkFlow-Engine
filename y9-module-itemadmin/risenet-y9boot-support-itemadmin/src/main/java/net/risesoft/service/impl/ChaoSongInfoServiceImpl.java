@@ -470,7 +470,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
+            model.setStatus(cs.getStatus());
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -544,7 +544,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setProcessInstanceId(processInstanceId);
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
-            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
+            model.setStatus(cs.getStatus());
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -610,7 +610,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
+            model.setStatus(cs.getStatus());
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -674,7 +674,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
+            model.setStatus(cs.getStatus());
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -854,7 +854,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
+            model.setStatus(cs.getStatus());
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
@@ -934,7 +934,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setSenderName(cs.getSenderName());
             model.setSendDeptName(cs.getSendDeptName());
             model.setTitle(cs.getTitle());
-            model.setStatus(ChaoSongStatusEnum.fromStatus(cs.getStatus()));
+            model.setStatus(cs.getStatus());
             model.setItemId(cs.getItemId());
             model.setItemName(cs.getItemName());
             model.setBanjie(false);

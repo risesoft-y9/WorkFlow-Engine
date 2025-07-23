@@ -13,7 +13,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.enums.ChaoSongStatusEnum;
-import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.ChaoSong4DataBaseModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
@@ -219,11 +219,11 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送已阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是抄送已阅件列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getDoneList(@RequestParam String tenantId, @RequestParam String orgUnitId,
+    public Y9Page<ChaoSong4DataBaseModel> getDoneList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.pageDoneList(orgUnitId, documentTitle, rows, page);
@@ -238,11 +238,11 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param userName 收件人
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是除当前人外的其他抄送件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是除当前人外的其他抄送件列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getListByProcessInstanceId(@RequestParam String tenantId,
+    public Y9Page<ChaoSong4DataBaseModel> getListByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId, String userName, @RequestParam int rows,
         @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -259,11 +259,11 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param userName 收件人
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是当前人的抄送件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是当前人的抄送件列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(@RequestParam String tenantId,
+    public Y9Page<ChaoSong4DataBaseModel> getListBySenderIdAndProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String senderId, @RequestParam String processInstanceId, String userName, @RequestParam int rows,
         @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -278,11 +278,11 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是批阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是批阅件列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam String tenantId,
+    public Y9Page<ChaoSong4DataBaseModel> getOpinionChaosongByUserId(@RequestParam String tenantId,
         @RequestParam String orgUnitId, String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.pageOpinionChaosongByUserId(orgUnitId, documentTitle, rows, page);
@@ -311,11 +311,11 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是抄送未阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是抄送未阅件列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> getTodoList(@RequestParam String tenantId, @RequestParam String orgUnitId,
+    public Y9Page<ChaoSong4DataBaseModel> getTodoList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String documentTitle, @RequestParam int rows, @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.pageTodoList(orgUnitId, documentTitle, rows, page);
@@ -333,11 +333,11 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param year 年度
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是我的抄送列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是我的抄送列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> myChaoSongList(@RequestParam String tenantId, @RequestParam String orgUnitId,
+    public Y9Page<ChaoSong4DataBaseModel> myChaoSongList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String searchName, String itemId, String userName, String state, String year, @RequestParam int page,
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -384,13 +384,13 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是个人阅件综合搜索列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是个人阅件综合搜索列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> searchAllByUserId(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        String searchName, String itemId, String userName, String state, String year, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+    public Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(@RequestParam String tenantId,
+        @RequestParam String orgUnitId, String searchName, String itemId, String userName, String state, String year,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         return chaoSongService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
@@ -408,11 +408,11 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return {@code Y9Page<ChaoSongModel>} 通用分页请求返回对象 - rows是监控阅件列表
+     * @return {@code Y9Page<ChaoSong4DataBaseModel>} 通用分页请求返回对象 - rows是监控阅件列表
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ChaoSongModel> searchAllList(@RequestParam String tenantId, String searchName, String itemId,
+    public Y9Page<ChaoSong4DataBaseModel> searchAllList(@RequestParam String tenantId, String searchName, String itemId,
         String senderName, String userName, String state, String year, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);

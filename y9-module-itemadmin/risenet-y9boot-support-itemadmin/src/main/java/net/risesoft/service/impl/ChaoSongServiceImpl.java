@@ -41,7 +41,7 @@ import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.ChaoSong4DataBaseModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.CustomGroupMember;
@@ -268,11 +268,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> pageByProcessInstanceIdAndUserName(String processInstanceId, String userName, int rows,
-        int page) {
+    public Y9Page<ChaoSong4DataBaseModel> pageByProcessInstanceIdAndUserName(String processInstanceId, String userName,
+        int rows, int page) {
         String senderId = Y9LoginUserHolder.getOrgUnitId();
         List<ChaoSong> csList;
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         if (page < 1) {
             page = 1;
         }
@@ -297,7 +297,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
         for (ChaoSong info : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(info, model);
             model.setId(info.getId());
             model.setProcessInstanceId(processInstanceId);
@@ -324,9 +324,9 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> pageBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
+    public Y9Page<ChaoSong4DataBaseModel> pageBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
         String userName, int rows, int page) {
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
@@ -352,7 +352,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
         for (ChaoSong cs : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(cs, model);
             model.setId(cs.getId());
             model.setProcessInstanceId(processInstanceId);
@@ -446,7 +446,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> pageDoneList(String orgUnitId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSong4DataBaseModel> pageDoneList(String orgUnitId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ChaoSong> csList;
         if (page < 1) {
@@ -474,9 +474,9 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         for (ChaoSong cs : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
             model.setSerialNumber(num + 1);
@@ -515,10 +515,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> pageMyChaoSongList(String searchName, String itemId, String userName, String state,
-        String year, int rows, int page) {
+    public Y9Page<ChaoSong4DataBaseModel> pageMyChaoSongList(String searchName, String itemId, String userName,
+        String state, String year, int rows, int page) {
         String userId = Y9LoginUserHolder.getOrgUnitId();
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
@@ -556,7 +556,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         int num = (page - 1) * rows;
         OfficeDoneInfo hpi;
         for (ChaoSong cs : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
             model.setSerialNumber(num + 1);
@@ -596,13 +596,14 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSong4DataBaseModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows,
+        int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
         }
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
@@ -626,7 +627,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         ProcessParam processParam;
         int num = (page - 1) * rows;
         for (ChaoSong cs : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
             model.setSerialNumber(num + 1);
@@ -666,10 +667,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> pageTodoList(String orgUnitId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSong4DataBaseModel> pageTodoList(String orgUnitId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ChaoSong> csList;
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         if (page < 1) {
             page = 1;
         }
@@ -696,7 +697,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         for (ChaoSong cs : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
             model.setSerialNumber(num + 1);
@@ -839,11 +840,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> searchAllByUserId(String searchName, String itemId, String userName, String state,
-        String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(String searchName, String itemId, String userName,
+        String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
@@ -882,7 +883,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         for (ChaoSong cs : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
             model.setSerialNumber(num + 1);
@@ -922,10 +923,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Y9Page<ChaoSongModel> searchAllList(String searchName, String itemId, String senderName, String userName,
-        String state, String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSong4DataBaseModel> searchAllList(String searchName, String itemId, String senderName,
+        String userName, String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         List<ChaoSong> csList;
         if (page < 1) {
             page = 1;
@@ -966,7 +967,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         for (ChaoSong cs : csList) {
-            ChaoSongModel model = new ChaoSongModel();
+            ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
             Y9BeanUtil.copyProperties(cs, model);
             String processInstanceId = cs.getProcessInstanceId();
             model.setSerialNumber(num + 1);
