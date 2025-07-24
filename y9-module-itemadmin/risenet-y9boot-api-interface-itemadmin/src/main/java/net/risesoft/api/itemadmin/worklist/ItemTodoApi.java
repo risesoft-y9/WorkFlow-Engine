@@ -28,6 +28,17 @@ public interface ItemTodoApi {
      *
      * @param tenantId 租户id
      * @param userId 用户id
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
+     * @since 9.6.6
+     */
+    @GetMapping("/countByUserId")
+    Y9Result<Integer> countByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+
+    /**
+     * 根据用户id和系统名称查询待办数量
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param systemName 系统名称
      * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
      * @since 9.6.6

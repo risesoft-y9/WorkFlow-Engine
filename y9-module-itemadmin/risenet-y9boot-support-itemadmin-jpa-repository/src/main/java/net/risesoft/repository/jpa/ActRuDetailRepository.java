@@ -33,10 +33,14 @@ public interface ActRuDetailRepository
     int countBySystemNameAndAssigneeAndStatusAndCreateTimeAndDeletedFalse(String systemName, String assignee,
         int status, Date createTime);
 
+    int countByAssigneeAndStatusAndDeletedFalse(String assignee, int status);
+
     int countBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status);
 
     int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndCreateTimeAndDeletedFalse(String systemName,
         String assignee, int status, Date createTime);
+
+    int countByAssigneeAndStatusAndEndedFalseAndDeletedFalse(String assignee, int status);
 
     int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee,
         int status);

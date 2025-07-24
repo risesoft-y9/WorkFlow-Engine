@@ -137,6 +137,17 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
+    public int countByAssigneeAndStatus(String assignee, int status) {
+        int count;
+        if (ActRuDetailStatusEnum.TODO.getValue() == status) {
+            count = actRuDetailRepository.countByAssigneeAndStatusAndDeletedFalse(assignee, status);
+        } else {
+            count = actRuDetailRepository.countByAssigneeAndStatusAndEndedFalseAndDeletedFalse(assignee, status);
+        }
+        return count;
+    }
+
+    @Override
     public int countBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status) {
         int count;
         if (ActRuDetailStatusEnum.TODO.getValue() == status) {

@@ -37,9 +37,11 @@ import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.entity.opinion.OpinionHistory;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
+import net.risesoft.enums.TodoTaskEventActionEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.itemadmin.TodoTaskEventModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
@@ -51,7 +53,9 @@ import net.risesoft.repository.jpa.TaskVariableRepository;
 import net.risesoft.repository.opinion.OpinionHistoryRepository;
 import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.config.ItemTaskConfService;
+import net.risesoft.service.event.Y9TodoUpdateEvent;
 import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 
@@ -146,7 +150,8 @@ public class AsyncHandleService {
                 String time = sdf.format(new Date());
 
                 // 发送失败,可能会出现统一待办已经保存成功,但任务没有在数据库产生,需要删除统一待办数据,只保存当前发送人的待办任务。
-                // TODO-qinman todotaskApi.deleteByProcessInstanceId4New(tenantId, taskId, processInstanceId);
+                Y9Context.publishEvent(new Y9TodoUpdateEvent<>(new TodoTaskEventModel(
+                    TodoTaskEventActionEnum.DELETE_PROCESSINSTANCEID, tenantId, processInstanceId, taskId, "0")));
 
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();

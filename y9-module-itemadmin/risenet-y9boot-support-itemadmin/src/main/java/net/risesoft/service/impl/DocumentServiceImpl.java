@@ -62,6 +62,7 @@ import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.SignStatusEnum;
+import net.risesoft.enums.TodoTaskEventActionEnum;
 import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
@@ -76,6 +77,7 @@ import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
+import net.risesoft.model.itemadmin.TodoTaskEventModel;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.CustomGroup;
 import net.risesoft.model.platform.CustomGroupMember;
@@ -118,12 +120,14 @@ import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.config.Y9FormItemBindService;
+import net.risesoft.service.event.Y9TodoUpdateEvent;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.util.ButtonUtil;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
 import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -381,11 +385,10 @@ public class DocumentServiceImpl implements DocumentService {
             if (StringUtils.isBlank(task.getFormKey())) {
                 task.setFormKey("0");
                 taskApi.saveTask(tenantId, task);
-                try {
-                    // TODO-qinman todoTaskApi.setIsNewTodo(tenantId, taskId, "0");
-                } catch (Exception e) {
-                    LOGGER.error("setIsNewTodo error", e);
-                }
+
+                Y9Context
+                    .publishEvent(new Y9TodoUpdateEvent<>(new TodoTaskEventModel(TodoTaskEventActionEnum.SET_NEW_TODO,
+                        tenantId, processInstanceId, taskId, "0")));
             }
             // 获取第一节点任务key,可能多个
             String startTaskDefKey = "";
