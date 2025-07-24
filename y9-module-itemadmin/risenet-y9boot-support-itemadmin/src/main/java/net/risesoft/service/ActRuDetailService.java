@@ -37,6 +37,15 @@ public interface ActRuDetailService {
     /**
      * 查找个人待办，在办件数量
      *
+     * @param assignee
+     * @param status 0为待办，1位在办
+     * @return
+     */
+    int countByAssigneeAndStatus(String assignee, int status);
+
+    /**
+     * 查找个人待办，在办件数量
+     *
      * @param systemName
      * @param assignee
      * @param status 0为待办，1位在办

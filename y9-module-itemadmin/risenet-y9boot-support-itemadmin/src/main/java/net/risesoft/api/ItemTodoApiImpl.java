@@ -79,6 +79,20 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     /**
+     * 根据用户id查询待办数量
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Integer> countByUserId(@RequestParam String tenantId, @RequestParam String userId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return Y9Result.success(this.actRuDetailService.countByAssigneeAndStatus(userId, 0));
+    }
+
+    /**
      * 根据用户id和系统名称查询待办列表(以发送时间排序)
      *
      * @param tenantId 租户id

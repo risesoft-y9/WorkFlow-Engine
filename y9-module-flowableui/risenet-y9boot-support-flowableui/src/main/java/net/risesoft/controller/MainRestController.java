@@ -24,6 +24,7 @@ import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.entrust.EntrustApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
+import net.risesoft.api.itemadmin.worklist.ItemTodoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -37,7 +38,6 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
-import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.processadmin.Y9FlowableCountModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
@@ -83,6 +83,8 @@ public class MainRestController {
     private final EntrustApi entrustApi;
 
     private final Y9FlowableProperties y9FlowableProperties;
+
+    private final ItemTodoApi itemTodoApi;
 
     /**
      * 获取所有事项集合（包含监控管理员权限）
@@ -299,15 +301,14 @@ public class MainRestController {
         long doingCount;
         int doneCount;
         try {
-            // 统计统一待办
-            // TODO-qinman todoCount = todotaskApi.countByReceiverId(tenantId, positionId).getData();
+            todoCount = itemTodoApi.countByUserId(tenantId, positionId).getData();
             // 统计流程在办件
             Y9Page<OfficeDoneInfoModel> y9Page =
                 officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
             doingCount = y9Page.getTotal();
             // 统计历史办结件
             doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
-            // TODO-qinman map.put("todoCount", todoCount);
+            map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);
             return Y9Result.success(map, "获取成功");
@@ -351,7 +352,7 @@ public class MainRestController {
                     allCount = allCount + todoCount;
                 } else {// 工作台获取所有待办数量
                     try {
-                        // TODO-qinman todoCount = todotaskApi.countByReceiverId(tenantId, p.getId()).getData();
+                        todoCount = itemTodoApi.countByUserId(tenantId, p.getId()).getData();
                         allCount = allCount + todoCount;
                     } catch (Exception e) {
                         LOGGER.error("获取待办数量失败", e);
@@ -387,8 +388,7 @@ public class MainRestController {
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {
-                                    // TODO-qinman todoCount1 = todotaskApi.countByReceiverId(tenantId,
-                                    // orgUnit.getId()).getData();
+                                    todoCount1 = itemTodoApi.countByUserId(tenantId, orgUnit.getId()).getData();
                                     allCount = allCount + todoCount1;
                                 } catch (Exception e) {
                                     LOGGER.error("获取待办数量失败", e);
@@ -457,91 +457,22 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String processSerialNumber = "";
         try {
-            switch (type) {
-                case "fromTodo":
-                    try {
-                        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-                        if (taskModel == null || taskModel.getId() == null) {
-                            try {
-                                // TODO-qinman todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
-                            } catch (Exception e) {
-                                LOGGER.error("删除待办任务失败", e);
-                            }
-                            map.put("taskId", "");
-                        }
-                        if (taskModel != null) {
-                            processInstanceId = taskModel.getProcessInstanceId();
-                        }
-                        ProcessParamModel processParamModel =
-                            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        String itemId = processParamModel.getItemId();
-                        ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
-                        map.put("itemModel", itemModel);
-                        processSerialNumber = processParamModel.getProcessSerialNumber();
-                    } catch (Exception e) {
-                        LOGGER.error("获取待办任务信息失败", e);
-                    }
-                    break;
-                case "fromCplane": {
-                    taskId = "";// 等于空为办结件
-
-                    HistoricProcessInstanceModel hisProcess =
-                        historicProcessApi.getById(tenantId, processInstanceId).getData();
-                    ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    processSerialNumber = processParamModel.getProcessSerialNumber();
-                    String itemId = processParamModel.getItemId();
-                    ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
-                    map.put("itemModel", itemModel);
-                    // 办结件
-                    if (hisProcess == null || hisProcess.getId() == null) {
-                        // todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
-                        // model.addAttribute("type", "");
+            if (type.equals("fromHistory")) {
+                HistoricProcessInstanceModel processModel =
+                    historicProcessApi.getById(tenantId, processInstanceId).getData();
+                if (processModel == null || processModel.getId() == null) {
+                    OfficeDoneInfoModel officeDoneInfoModel =
+                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    if (officeDoneInfoModel == null) {
+                        processInstanceId = "";
                     } else {
-                        // 协作状态未办结
-                        if (hisProcess.getEndTime() == null) {
-                            List<TaskModel> list =
-                                taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                            boolean isTodo = false;
-                            if (list != null) {
-                                for (TaskModel task : list) {
-                                    // 待办件
-                                    if ((task.getAssignee() != null
-                                        && task.getAssignee().contains(Y9LoginUserHolder.getPositionId()))) {
-                                        taskId = task.getId();
-                                        isTodo = true;
-                                        break;
-                                    }
-                                }
-                                // 在办件
-                                if (!isTodo) {
-                                    taskId = list.get(0).getId();
-                                }
-                            }
-                            map.put("isTodo", isTodo);
-                        }
+                        processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
                     }
-                    map.put("taskId", taskId);
-                    break;
                 }
-                case "fromHistory": {
-                    HistoricProcessInstanceModel processModel =
-                        historicProcessApi.getById(tenantId, processInstanceId).getData();
-                    if (processModel == null || processModel.getId() == null) {
-                        OfficeDoneInfoModel officeDoneInfoModel =
-                            officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        if (officeDoneInfoModel == null) {
-                            processInstanceId = "";
-                        } else {
-                            processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
-                        }
-                    }
-                    ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    ItemModel itemModel = itemApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
-                    map.put("itemModel", itemModel);
-                    break;
-                }
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                ItemModel itemModel = itemApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
+                map.put("itemModel", itemModel);
             }
         } catch (Exception e) {
             LOGGER.error("获取待办任务信息失败", e);
