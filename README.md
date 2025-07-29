@@ -251,7 +251,8 @@ vue -- 前端工程
 | 23 | <a href="https://vue.youshengyun.com/files/workFlow/KingBase数据库适配文档.pdf" target="_blank">Kingbase数据库适配文档</a>     |
 | 24 | <a href="https://vue.youshengyun.com/files/workFlow/Mariadb数据库适配文档.pdf" target="_blank">Mariadb数据库适配文档</a>       |
 | 25 | <a href="https://vue.youshengyun.com/files/workFlow/OceanBase数据库适配文档.pdf" target="_blank">OceanBase数据库适配文档</a>   |
-| 26 | <a href="https://vue.youshengyun.com/files/workFlow/MySQL数据库适配文档.pdf" target="_blank">MySQL数据库适配文档</a>           | 
+| 26 | <a href="https://vue.youshengyun.com/files/workFlow/MySQL数据库适配文档.pdf" target="_blank">MySQL数据库适配文档</a>           
+| 27 | <a href="https://docs.youshengyun.com/digitalbase/backend/hole/holeInfo" target="_blank">安全扫描漏洞问题及解决方案文档</a>     | 
 
 ## 工作流引擎截图
 
