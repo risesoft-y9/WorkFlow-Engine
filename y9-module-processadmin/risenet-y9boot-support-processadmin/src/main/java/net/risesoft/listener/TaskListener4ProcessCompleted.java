@@ -16,10 +16,8 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -44,25 +42,21 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 FlowableEntityEventImpl entityEvent = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
                 String tenantId = (String)executionEntity.getVariable(SysVariables.TENANTID);
-                // 接口调用
+                // 1、接口调用
                 InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
                 try {
                     interfaceUtilService.interfaceCallByProcess(executionEntity, executionEntity.getVariables(), "办结");
                 } catch (Exception e) {
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_COMPLETED");
                 }
-                Process4CompleteUtilService process4CompleteUtilService =
-                    Y9Context.getBean(Process4CompleteUtilService.class);
-                process4CompleteUtilService.saveToDataCenter(tenantId, "", Y9LoginUserHolder.getOrgUnitId(),
-                    executionEntity.getProcessInstanceId(), Y9LoginUserHolder.getOrgUnit().getName());
-
+                // 2、标记流转详情为办结状态
                 Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
                     executionEntity.getProcessInstanceId());
                 break;
             case PROCESS_STARTED:
                 FlowableEntityEventImpl entityEventStart = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntityStart = (ExecutionEntityImpl)entityEventStart.getEntity();
-                // 接口调用
+                // 1、接口调用
                 InterfaceUtilService interfaceUtilService1 = Y9Context.getBean(InterfaceUtilService.class);
                 try {
                     interfaceUtilService1.interfaceCallByProcess(executionEntityStart,
@@ -70,10 +64,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 } catch (Exception e) {
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_STARTED");
                 }
-
-                /**
-                 * 启动人为空，则为子流程启动
-                 */
+                // 2、子流程启动,初始化callActivity的流程参数信息
                 ItemApi itemApi = Y9Context.getBean(ItemApi.class);
                 String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANTID);
                 ItemModel itemModel = itemApi
