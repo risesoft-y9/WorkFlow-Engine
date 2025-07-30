@@ -26,9 +26,6 @@ import lombok.NoArgsConstructor;
 @Comment("打印表单绑定表")
 public class ItemPrintTemplateBind implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 6829462901084070306L;
 
     @Id

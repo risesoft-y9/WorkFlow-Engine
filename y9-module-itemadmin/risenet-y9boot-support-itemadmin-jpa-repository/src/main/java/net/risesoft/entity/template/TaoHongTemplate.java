@@ -42,9 +42,6 @@ public class TaoHongTemplate implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String templateGuid;
 
-    /**
-     * 租户Id
-     */
     @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
