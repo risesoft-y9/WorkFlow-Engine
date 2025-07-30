@@ -26,9 +26,6 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "接口信息表", appliesTo = "FF_INTERFACE_INFO")
 public class InterfaceInfo implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 5724668342027403903L;
 
     @Id

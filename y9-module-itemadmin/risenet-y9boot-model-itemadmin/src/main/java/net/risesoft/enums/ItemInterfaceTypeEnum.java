@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ItemInterfaceTypeEnum {
+public enum ItemInterfaceTypeEnum implements ValuedEnum<String> {
 
     // 参数类型
     /** Params */

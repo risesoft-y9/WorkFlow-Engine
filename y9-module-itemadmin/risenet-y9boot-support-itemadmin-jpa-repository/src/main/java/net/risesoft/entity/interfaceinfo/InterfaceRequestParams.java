@@ -26,9 +26,6 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "接口请求参数信息表", appliesTo = "FF_INTERFACE_REQUEST_PARAMS")
 public class InterfaceRequestParams implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 8522345464974859818L;
 
     @Id

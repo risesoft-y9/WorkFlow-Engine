@@ -27,9 +27,6 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "事项接口任务绑定表", appliesTo = "FF_ITEM_INTERFACE_TASK_BIND")
 public class ItemInterfaceTaskBind implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 5824973042664138544L;
 
     @Comment("主键")
@@ -59,9 +56,6 @@ public class ItemInterfaceTaskBind implements Serializable {
     @Column(name = "EXECUTECONDITION", length = 100)
     private String executeCondition;
 
-    /**
-     * 生成时间
-     */
     @Comment("生成时间")
     @Column(name = "CREATETIME")
     private String createTime;
