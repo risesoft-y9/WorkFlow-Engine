@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ItemFormTypeEnum {
+public enum ItemFormTypeEnum implements ValuedEnum<Integer> {
     /** 主表单 */
     MAINFORM(1, "mainForm"),
     /** 前置表单 */

@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ItemFormTemplateTypeEnum {
+public enum ItemFormTemplateTypeEnum implements ValuedEnum<Integer> {
     /** html */
     HTML(1, "html"),
     /** word */
