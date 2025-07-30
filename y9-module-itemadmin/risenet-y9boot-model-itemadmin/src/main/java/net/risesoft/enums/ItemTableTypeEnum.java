@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ItemTableTypeEnum {
+public enum ItemTableTypeEnum implements ValuedEnum<Integer> {
     /** 主表 */
     MAIN(1, "主表"),
     /** 子表 */

@@ -194,7 +194,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == 1) {
+                if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
@@ -232,7 +232,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == 1) {
+                if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
@@ -287,7 +287,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     break;
                 }
             }
-            if (y9Table.getTableType() == 2) {// 子表查询
+            if (y9Table.getTableType() == ItemTableTypeEnum.SUB) {// 子表查询
                 StringBuilder sqlStr = new StringBuilder();
                 if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
@@ -335,7 +335,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == 1) {
+                if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
@@ -630,7 +630,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == 1) {// 排除主表
+                if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
                     continue;
                 }
                 String actionType = "0";
@@ -764,7 +764,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (isHaveField) {
                                     sqlStr.append(",");
                                 }
-                                sqlStr.append(fieldName + "=");
+                                sqlStr.append(fieldName).append("=");
                                 if (y9TableField.getFieldType().toLowerCase().contains("int")) {
                                     // sqlStr.append(keyValue.get(fieldName));
                                     sqlStr.append((keyValue.get(fieldName) != null

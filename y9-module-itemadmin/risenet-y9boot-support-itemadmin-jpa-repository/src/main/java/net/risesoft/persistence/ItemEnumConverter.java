@@ -4,6 +4,7 @@ import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.enums.ItemFormTemplateTypeEnum;
 import net.risesoft.enums.ItemFormTypeEnum;
+import net.risesoft.enums.ItemTableTypeEnum;
 
 /**
  * @author qinman
@@ -33,6 +34,12 @@ public class ItemEnumConverter {
     public static class ItemFormTemplateTypeEnumConverter extends AbstractEnumConverter<ItemFormTemplateTypeEnum, Integer> {
         public ItemFormTemplateTypeEnumConverter() {
             super(ItemFormTemplateTypeEnum.class);
+        }
+    }
+
+    public static class ItemTableTypeEnumConverter extends AbstractEnumConverter<ItemTableTypeEnum, Integer> {
+        public ItemTableTypeEnumConverter() {
+            super(ItemTableTypeEnum.class);
         }
     }
 }
