@@ -3,6 +3,7 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 
 import lombok.Data;
+import net.risesoft.enums.ItemInterfaceTypeEnum;
 
 /**
  * 接口信息
@@ -26,7 +27,7 @@ public class InterfaceParamsModel implements Serializable {
     /**
      * 参数类型
      */
-    private String parameterType;
+    private ItemInterfaceTypeEnum parameterType;
 
     /**
      * 是否文件
@@ -36,7 +37,8 @@ public class InterfaceParamsModel implements Serializable {
     /**
      * 绑定类型
      */
-    private String bindType;
+    private ItemInterfaceTypeEnum bindType;
+
     /**
      * 表名称
      */

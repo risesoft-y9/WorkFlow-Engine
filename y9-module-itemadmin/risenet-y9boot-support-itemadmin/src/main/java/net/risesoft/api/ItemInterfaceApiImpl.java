@@ -159,10 +159,10 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
             model.setTableName(bind.getTableName());
             model.setTableType(bind.getTableType());
             model.setFileType("");
-            if (ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue().equals(bind.getBindType())) {
+            if (ItemInterfaceTypeEnum.INTERFACE_RESPONSE.equals(bind.getBindType())) {
                 List<InterfaceResponseParams> plist =
                     interfaceResponseParamsRepository.findByParameterName(bind.getParameterName());
-                if (plist != null && plist.size() > 0) {
+                if (plist != null && !plist.isEmpty()) {
                     model.setFileType(plist.get(0).getFileType());
                 }
             }

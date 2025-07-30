@@ -27,9 +27,6 @@ import lombok.NoArgsConstructor;
 @Comment("事项接口绑定表")
 public class ItemInterfaceBind implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -7459152125523867706L;
 
     @Comment("主键")
@@ -47,9 +44,6 @@ public class ItemInterfaceBind implements Serializable {
     @Column(name = "INTERFACEID", length = 50)
     private String interfaceId;
 
-    /**
-     * 生成时间
-     */
     @Comment("生成时间")
     @Column(name = "CREATETIME")
     private String createTime;

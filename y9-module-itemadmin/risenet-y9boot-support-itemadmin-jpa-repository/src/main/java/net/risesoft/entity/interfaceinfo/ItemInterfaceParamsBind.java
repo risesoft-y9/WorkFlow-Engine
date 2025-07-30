@@ -3,11 +3,14 @@ package net.risesoft.entity.interfaceinfo;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import net.risesoft.enums.ItemInterfaceTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -26,9 +29,6 @@ import lombok.NoArgsConstructor;
 @Comment("事项接口参数绑定表")
 public class ItemInterfaceParamsBind implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -2886788624623913907L;
 
     @Comment("主键")
@@ -50,19 +50,15 @@ public class ItemInterfaceParamsBind implements Serializable {
     @Column(name = "parameterName", length = 255)
     private String parameterName;
 
-    /**
-     * {@link #ItemInterfaceTypeEnum}
-     */
-    @Comment("参数类型") // 请求参数Params,Headers,Body
+    @Comment("参数类型")
     @Column(name = "parameterType", length = 100)
-    private String parameterType;
+    @Convert(converter = ItemEnumConverter.ItemInterfaceTypeEnumConverter.class)
+    private ItemInterfaceTypeEnum parameterType = ItemInterfaceTypeEnum.PARAMS;
 
-    /**
-     * {@link #ItemInterfaceTypeEnum}
-     */
     @Comment("绑定类型") // 响应参数Response,请求参数Request
     @Column(name = "bindType", length = 50)
-    private String bindType;
+    @Convert(converter = ItemEnumConverter.ItemInterfaceTypeEnumConverter.class)
+    private ItemInterfaceTypeEnum bindType = ItemInterfaceTypeEnum.INTERFACE_REQUEST;
 
     @Comment("表名称")
     @Column(name = "TABLENAME", length = 50)
@@ -76,9 +72,6 @@ public class ItemInterfaceParamsBind implements Serializable {
     @Column(name = "COLUMNNAME", length = 100)
     private String columnName;
 
-    /**
-     * 生成时间
-     */
     @Comment("生成时间")
     @Column(name = "CREATETIME")
     private String createTime;

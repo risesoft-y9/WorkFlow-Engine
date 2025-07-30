@@ -26,9 +26,6 @@ import lombok.NoArgsConstructor;
 @Comment("接口请求参数信息表")
 public class InterfaceRequestParams implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 8522345464974859818L;
 
     @Id
