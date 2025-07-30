@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import net.risesoft.enums.ItemFormTemplateTypeEnum;
 import net.risesoft.enums.ItemFormTypeEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
@@ -49,8 +50,8 @@ public class Y9Form implements Serializable {
 
     @Column(name = "TEMPLATETYPE")
     @Comment("表单模板类型")
-    @Convert(converter = ItemEnumConverter.ItemFormTypeEnumConverter.class)
-    private ItemFormTypeEnum templateType = ItemFormTypeEnum.MAINFORM;
+    @Convert(converter = ItemEnumConverter.ItemFormTemplateTypeEnumConverter.class)
+    private ItemFormTemplateTypeEnum templateType = ItemFormTemplateTypeEnum.HTML;
 
     @Column(name = "FILENAME", length = 50)
     @Comment("模板文件名称")

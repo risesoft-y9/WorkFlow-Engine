@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.enums.ItemTableTypeEnum;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -643,7 +644,7 @@ public class InitTableDataService {
             y9Table.setSystemCnName(SYSTEMCNNAME);
             y9Table.setSystemName(SYSTEMNAME);
             y9Table.setTableName(Y9_TABLE_NAME);
-            y9Table.setTableType(1);
+            y9Table.setTableType(ItemTableTypeEnum.MAIN);
             y9Table.setTableCnName(Y9_TABLE_CNNAME);
             y9TableRepository.save(y9Table);
             List<DbColumn> dbcs = new ArrayList<>();

@@ -29,9 +29,6 @@ import lombok.NoArgsConstructor;
 @Comment("Y9前置表单与事项流程任务绑定表")
 public class Y9PreFormItemBind implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 6523220184234477595L;
 
     @Id

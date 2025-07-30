@@ -3,10 +3,13 @@ package net.risesoft.entity.form;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import net.risesoft.enums.ItemTableTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
 
 import lombok.Data;
@@ -50,12 +53,10 @@ public class Y9Table implements Serializable {
     @Comment("表备注")
     private String tableMemo;
 
-    /**
-     * {@link net.risesoft.enums.ItemTableTypeEnum}
-     */
     @Column(name = "TABLETYPE")
     @Comment("表类型")
-    private Integer tableType = 1;
+    @Convert(converter = ItemEnumConverter.ItemTableTypeEnumConverter.class)
+    private ItemTableTypeEnum tableType = ItemTableTypeEnum.MAIN;
 
     @Column(name = "SYSTEMNAME", length = 50)
     @Comment("系统名称")
