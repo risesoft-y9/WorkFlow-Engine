@@ -5,6 +5,8 @@ import java.util.List;
 
 import lombok.Data;
 
+import net.risesoft.enums.ItemInterfaceTypeEnum;
+
 /**
  * 接口信息
  *
@@ -34,7 +36,7 @@ public class InterfaceModel implements Serializable {
     /**
      * 请求方式
      */
-    private String requestType;
+    private ItemInterfaceTypeEnum requestType;
 
     // 是否异步调用
     private String asyn;

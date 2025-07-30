@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ActRuDetailSignStatusEnum {
+public enum ActRuDetailSignStatusEnum implements ValuedEnum<Integer> {
     /** 拒绝签收 */
     REFUSE(-2, "拒绝签收"),
     /** 不需要签收 */

@@ -125,7 +125,7 @@ public class ExportServiceImpl implements ExportService {
                         break;
                     case "all":
                     case "all4Org":
-                        if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
+                        if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO)) {
                             mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
                         } else {
                             if (!ardModel.isEnded()) {
@@ -263,7 +263,7 @@ public class ExportServiceImpl implements ExportService {
                         break;
                     case "all":
                     case "all4Org":
-                        if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
+                        if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO)) {
                             mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
                         } else {
                             if (!ardModel.isEnded()) {

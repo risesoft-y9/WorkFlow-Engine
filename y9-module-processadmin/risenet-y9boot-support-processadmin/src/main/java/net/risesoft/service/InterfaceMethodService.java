@@ -100,7 +100,7 @@ public class InterfaceMethodService {
             try {
                 List<Map<String, Object>> tableList = new ArrayList<>();
                 for (InterfaceParamsModel model : paramsList) {
-                    if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
+                    if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)) {
                         Map<String, Object> tableMap = new HashMap<>();
                         tableMap.put("tableName", model.getTableName());
                         tableMap.put("tableType", model.getTableType());
@@ -137,7 +137,7 @@ public class InterfaceMethodService {
                     boolean isHaveField = false;
                     for (InterfaceParamsModel model : paramsList) {
                         // 找对应表的响应参数
-                        if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())
+                        if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)
                             && model.getTableName().equals(tableName)) {
                             String fieldName = model.getColumnName();
                             String parameterName = model.getParameterName();
@@ -215,10 +215,10 @@ public class InterfaceMethodService {
                 List<Map<String, Object>> list =
                     getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info, loopCounter);
                 for (InterfaceParamsModel model : y9Result.getData()) {
-                    if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST.getValue())) {
+                    if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
                         // 请求参数
-                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS.getValue())
-                            || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY.getValue())) {
+                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS)
+                            || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 String tableName = map.get("tableName").toString();
@@ -254,7 +254,7 @@ public class InterfaceMethodService {
                             nameValuePairs.add(new NameValuePair(model.getParameterName(), parameterValue));
                         }
                         // 请求头
-                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS.getValue())) {
+                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 String tableName = map.get("tableName").toString();
@@ -345,7 +345,7 @@ public class InterfaceMethodService {
         try {
             List<Map<String, Object>> tableList = new ArrayList<>();
             for (InterfaceParamsModel model : list) {
-                if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST.getValue())) {
+                if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("tableName", model.getTableName());
                     map.put("tableType", model.getTableType());
@@ -426,7 +426,7 @@ public class InterfaceMethodService {
         StringBuilder sqlStr1 = new StringBuilder(") values (");
         boolean isHaveField = false;
         for (InterfaceParamsModel model : paramsList) {
-            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE.getValue())) {
+            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)) {
                 String fieldName = model.getColumnName();
                 String parameterName = model.getParameterName();
                 String value = "";
@@ -508,10 +508,10 @@ public class InterfaceMethodService {
                     getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info, loopCounter);
                 Map<String, Object> paramsMap = new HashMap<>();
                 for (InterfaceParamsModel model : y9Result.getData()) {
-                    if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST.getValue())) {
+                    if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
                         // 请求参数
-                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS.getValue())
-                            || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY.getValue())) {
+                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS)
+                            || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 String tableName = map.get("tableName").toString();
@@ -547,7 +547,7 @@ public class InterfaceMethodService {
                             paramsMap.put(model.getParameterName(), parameterValue);
                         }
                         // 请求头
-                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS.getValue())) {
+                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 String tableName = map.get("tableName").toString();

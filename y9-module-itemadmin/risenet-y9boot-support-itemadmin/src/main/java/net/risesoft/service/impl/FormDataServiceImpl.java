@@ -128,7 +128,7 @@ public class FormDataServiceImpl implements FormDataService {
             // 复制数据
             allTableNameList.forEach(tableName -> {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN.getValue())) {
+                if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
                     try {
                         Map<String, Object> map = jdbcTemplate.queryForMap(
                             "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", sourceProcessSerialNumber);
@@ -196,7 +196,7 @@ public class FormDataServiceImpl implements FormDataService {
                 List<String> tableNameList = y9FormRepository.findBindTableName(formId);
                 tableNameList.forEach(tableName -> {
                     Y9Table y9Table = y9TableService.findByTableName(tableName);
-                    if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN.getValue())) {
+                    if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
                         List<Map<String, Object>> list = jdbcTemplate.queryForList(
                             "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", processSerialNumber);
                         if (!list.isEmpty()) {

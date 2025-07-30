@@ -221,11 +221,11 @@ public class InterfaceUtilService {
     public void syncInterface(final String processSerialNumber, final String itemId, final InterfaceModel info,
         final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
         final Integer loopCounter) throws Exception {
-        if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
+        if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET)) {
             interfaceMethodService.getMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId,
                 taskId, taskKey, loopCounter);
 
-        } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST.getValue())) {
+        } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST)) {
             interfaceMethodService.postMethod(processSerialNumber, itemId, info, processInstanceId, processDefinitionId,
                 taskId, taskKey, loopCounter);
         }

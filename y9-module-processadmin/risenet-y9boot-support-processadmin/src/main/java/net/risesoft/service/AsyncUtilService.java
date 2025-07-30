@@ -47,11 +47,11 @@ public class AsyncUtilService {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
         try {
-            if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
+            if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET)) {
                 interfaceMethodService.getMethod(processSerialNumber, itemId, info, processInstanceId,
                     processDefinitionId, taskId, taskKey, loopCounter);
 
-            } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST.getValue())) {
+            } else if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_POST)) {
                 interfaceMethodService.postMethod(processSerialNumber, itemId, info, processInstanceId,
                     processDefinitionId, taskId, taskKey, loopCounter);
             }

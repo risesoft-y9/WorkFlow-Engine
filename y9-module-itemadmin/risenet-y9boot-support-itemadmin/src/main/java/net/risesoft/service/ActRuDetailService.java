@@ -1,12 +1,12 @@
 package net.risesoft.service;
 
-import java.util.List;
-
+import net.risesoft.entity.ActRuDetail;
+import net.risesoft.enums.ActRuDetailStatusEnum;
+import net.risesoft.pojo.Y9Result;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import net.risesoft.entity.ActRuDetail;
-import net.risesoft.pojo.Y9Result;
+import java.util.List;
 
 /**
  * @author qinman
@@ -16,7 +16,6 @@ import net.risesoft.pojo.Y9Result;
 public interface ActRuDetailService {
 
     /**
-     *
      * Description: 复制当前流程的参与人信息到新流程，并且设置为在办信息
      *
      * @param oldProcessSerialNumber
@@ -38,20 +37,20 @@ public interface ActRuDetailService {
      * 查找个人待办，在办件数量
      *
      * @param assignee
-     * @param status 0为待办，1位在办
+     * @param status   0为待办，1位在办
      * @return
      */
-    int countByAssigneeAndStatus(String assignee, int status);
+    int countByAssigneeAndStatus(String assignee, ActRuDetailStatusEnum status);
 
     /**
      * 查找个人待办，在办件数量
      *
      * @param systemName
      * @param assignee
-     * @param status 0为待办，1位在办
+     * @param status     0为待办，1位在办
      * @return
      */
-    int countBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status);
+    int countBySystemNameAndAssigneeAndStatus(String systemName, String assignee, ActRuDetailStatusEnum status);
 
     /**
      * 删除流程的办理详情
@@ -97,7 +96,7 @@ public interface ActRuDetailService {
 
     /**
      * 根据任务Id和办理人查找
-     * 
+     *
      * @param taskId
      * @param assignee
      * @return
@@ -116,10 +115,10 @@ public interface ActRuDetailService {
      * 根据流程实例Id和状态查找
      *
      * @param processInstanceId
-     * @param status 0位待办，1位在办
+     * @param status            0位待办，1位在办
      * @return
      */
-    List<ActRuDetail> listByProcessInstanceIdAndStatus(String processInstanceId, int status);
+    List<ActRuDetail> listByProcessInstanceIdAndStatus(String processInstanceId, ActRuDetailStatusEnum status);
 
     /**
      * 根据流程实例Id和办理人查找
@@ -130,7 +129,6 @@ public interface ActRuDetailService {
     List<ActRuDetail> listByProcessSerialNumber(String processSerialNumber);
 
     /**
-     *
      * Description: 根据流程编号和是否结束查找
      *
      * @param processSerialNumber
@@ -143,10 +141,10 @@ public interface ActRuDetailService {
      * 根据流程实例Id和状态查找
      *
      * @param processSerialNumber
-     * @param status 0位待办，1位在办
+     * @param status              0位待办，1位在办
      * @return
      */
-    List<ActRuDetail> listByProcessSerialNumberAndStatus(String processSerialNumber, int status);
+    List<ActRuDetail> listByProcessSerialNumberAndStatus(String processSerialNumber, ActRuDetailStatusEnum status);
 
     /**
      * 查找个人办结列表
@@ -159,7 +157,7 @@ public interface ActRuDetailService {
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndEnded(String systemName, String assignee, boolean ended, int rows,
-        int page, Sort sort);
+                                                          int page, Sort sort);
 
     /**
      * 查找系统在办、办结列表
@@ -183,7 +181,7 @@ public interface ActRuDetailService {
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee, int rows, int page,
-        Sort sort);
+                                                                Sort sort);
 
     /**
      * 查找系统删除列表
@@ -208,62 +206,62 @@ public interface ActRuDetailService {
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId, boolean isBureau,
-        int rows, int page, Sort sort);
+                                                              int rows, int page, Sort sort);
 
     /**
      * 查找个人待办，在办列表
      *
      * @param assignee
-     * @param status 0为待办，1位在办
+     * @param status   0为待办，1位在办
      * @param rows
      * @param page
      * @param sort
      * @return
      */
-    Page<ActRuDetail> pageByAssigneeAndStatus(String assignee, int status, int rows, int page, Sort sort);
+    Page<ActRuDetail> pageByAssigneeAndStatus(String assignee, ActRuDetailStatusEnum status, int rows, int page, Sort sort);
 
     /**
      * 查找个人待办，在办列表
      *
      * @param systemName
      * @param assignee
-     * @param status 0为待办，1位在办
+     * @param status     0为待办，1位在办
      * @param rows
      * @param page
      * @param sort
      * @return
      */
-    Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
-        int page, Sort sort);
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatus(String systemName, String assignee, ActRuDetailStatusEnum status, int rows,
+                                                           int page, Sort sort);
 
     /**
      * 查找个人待办，在办列表
      *
      * @param systemName
      * @param assignee
-     * @param status 0为待办，1位在办
+     * @param status     0为待办，1位在办
      * @param taskDefKey 任务key
      * @param rows
      * @param page
      * @param sort
      * @return
      */
-    Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(String systemName, String assignee, int status,
-        String taskDefKey, int rows, int page, Sort sort);
+    Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(String systemName, String assignee, ActRuDetailStatusEnum status,
+                                                                        String taskDefKey, int rows, int page, Sort sort);
 
     /**
      * 查找科室在办，办结列表
      *
      * @param systemName
      * @param deptId
-     * @param ended 是否办结
+     * @param ended      是否办结
      * @param rows
      * @param page
      * @param sort
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndDeptIdAndEnded(String systemName, String deptId, boolean isBureau,
-        boolean ended, int rows, int page, Sort sort);
+                                                        boolean ended, int rows, int page, Sort sort);
 
     /**
      * 查找个人所有件列表（不包含回收站）
@@ -299,7 +297,7 @@ public interface ActRuDetailService {
      * @return
      */
     Page<ActRuDetail> pageBySystemNameAndAssigneeAndStatusEquals1(String systemName, String assignee, int rows,
-        int page, Sort sort);
+                                                                  int page, Sort sort);
 
     /**
      * 标记流程为归档
@@ -350,7 +348,6 @@ public interface ActRuDetailService {
     boolean removeByProcessSerialNumber(String processSerialNumber);
 
     /**
-     *
      * Description: 标记流程为归档
      *
      * @param processSerialNumber
@@ -370,7 +367,7 @@ public interface ActRuDetailService {
     /**
      * 签收
      *
-     * @param taskId 任务id
+     * @param taskId   任务id
      * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.8
@@ -389,7 +386,7 @@ public interface ActRuDetailService {
     /**
      * 签收
      *
-     * @param taskId 任务id
+     * @param taskId   任务id
      * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.8

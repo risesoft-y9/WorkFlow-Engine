@@ -1,5 +1,7 @@
 package net.risesoft.persistence;
 
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
+import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.enums.ItemFormTemplateTypeEnum;
@@ -47,6 +49,18 @@ public class ItemEnumConverter {
     public static class ItemInterfaceTypeEnumConverter extends AbstractEnumConverter<ItemInterfaceTypeEnum, String> {
         public ItemInterfaceTypeEnumConverter() {
             super(ItemInterfaceTypeEnum.class);
+        }
+    }
+
+    public static class ActRuDetailStatusEnumConverter extends AbstractEnumConverter<ActRuDetailStatusEnum, Integer> {
+        public ActRuDetailStatusEnumConverter() {
+            super(ActRuDetailStatusEnum.class);
+        }
+    }
+
+    public static class ActRuDetailSignStatusEnumConverter extends AbstractEnumConverter<ActRuDetailSignStatusEnum, Integer> {
+        public ActRuDetailSignStatusEnumConverter() {
+            super(ActRuDetailSignStatusEnum.class);
         }
     }
 }

@@ -3,6 +3,8 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 import java.util.Date;
 
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
+import net.risesoft.enums.ActRuDetailStatusEnum;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -82,15 +84,9 @@ public class ActRuDetailModel implements Serializable {
      */
     private String systemName;
 
-    /**
-     * @see net.risesoft.enums.ActRuDetailStatusEnum
-     */
-    private Integer status;
+    private ActRuDetailStatusEnum status;
 
-    /**
-     * @see net.risesoft.enums.ActRuDetailSignStatusEnum
-     */
-    private Integer signStatus;
+    private ActRuDetailSignStatusEnum signStatus;
 
     /**
      * 办理人Id
