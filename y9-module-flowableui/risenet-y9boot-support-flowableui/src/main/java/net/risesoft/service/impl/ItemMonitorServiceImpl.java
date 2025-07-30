@@ -123,7 +123,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formData);
 
-                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue())) {
+                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO)) {
                         mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                     } else {
                         mapTemp.put(SysVariables.ITEMBOX, StringUtils.isBlank(processParam.getCompleter())

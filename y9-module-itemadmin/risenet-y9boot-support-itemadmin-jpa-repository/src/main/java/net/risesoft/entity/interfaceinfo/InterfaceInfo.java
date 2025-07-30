@@ -3,6 +3,7 @@ package net.risesoft.entity.interfaceinfo;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,6 +14,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.ItemInterfaceTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  *
@@ -45,7 +49,8 @@ public class InterfaceInfo implements Serializable {
 
     @Comment("请求类型")
     @Column(name = "requestType", length = 20)
-    private String requestType;
+    @Convert(converter = ItemEnumConverter.ItemInterfaceTypeEnumConverter.class)
+    private ItemInterfaceTypeEnum requestType = ItemInterfaceTypeEnum.METHOD_GET;
 
     @Comment("是否异步调用接口")
     @Column(name = "asyn", length = 10)

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.enums.ActRuDetailStatusEnum;
 
 /**
  * @author qinman
@@ -30,19 +31,20 @@ public interface ActRuDetailRepository
     int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee);
 
     int countBySystemNameAndAssigneeAndStatusAndCreateTimeAndDeletedFalse(String systemName, String assignee,
-        int status, String createTime);
+        ActRuDetailStatusEnum status, String createTime);
 
-    int countByAssigneeAndStatusAndDeletedFalse(String assignee, int status);
+    int countByAssigneeAndStatusAndDeletedFalse(String assignee, ActRuDetailStatusEnum status);
 
-    int countBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status);
+    int countBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
+        ActRuDetailStatusEnum status);
 
     int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndCreateTimeAndDeletedFalse(String systemName,
-        String assignee, int status, String createTime);
+        String assignee, ActRuDetailStatusEnum status, String createTime);
 
-    int countByAssigneeAndStatusAndEndedFalseAndDeletedFalse(String assignee, int status);
+    int countByAssigneeAndStatusAndEndedFalseAndDeletedFalse(String assignee, ActRuDetailStatusEnum status);
 
     int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee,
-        int status);
+        ActRuDetailStatusEnum status);
 
     int countBySystemNameAndDeletedTrue(String systemName);
 
@@ -58,24 +60,27 @@ public interface ActRuDetailRepository
 
     List<ActRuDetail> findByProcessInstanceId(String processInstanceId);
 
-    ActRuDetail findByProcessInstanceIdAndAssigneeAndStatus(String processInstanceId, String assignee, int status);
+    ActRuDetail findByProcessInstanceIdAndAssigneeAndStatus(String processInstanceId, String assignee,
+        ActRuDetailStatusEnum status);
 
     ActRuDetail findByTaskIdAndAssignee(String taskId, String assignee);
 
     List<ActRuDetail> findByTaskId(String taskId);
 
-    List<ActRuDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeAsc(String processInstanceId, int status);
+    List<ActRuDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeAsc(String processInstanceId,
+        ActRuDetailStatusEnum status);
 
     List<ActRuDetail> findByProcessSerialNumber(String processSerialNumber);
 
     ActRuDetail findByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee);
 
     List<ActRuDetail> findByProcessSerialNumberAndAssigneeAndStatus(String processSerialNumber, String assignee,
-        int status);
+        ActRuDetailStatusEnum status);
 
     List<ActRuDetail> findByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended);
 
-    List<ActRuDetail> findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(String processSerialNumber, int status);
+    List<ActRuDetail> findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(String processSerialNumber,
+        ActRuDetailStatusEnum status);
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalse(String systemName, String assignee, Pageable pageable);
 
@@ -86,7 +91,7 @@ public interface ActRuDetailRepository
 
     /**
      * 某个系统标识的在办、办结件
-     * 
+     *
      * @param systemName 系统名称
      * @param ended 是否办结
      * @param pageable 分页信息
@@ -152,30 +157,32 @@ public interface ActRuDetailRepository
     Page<ActRuDetail> findBySystemNameAndBureauIdAndDeletedTrue(String systemName, String bureauId, Pageable pageable);
 
     List<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
-        int status);
+        ActRuDetailStatusEnum status);
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
-        int status, Pageable pageable);
+        ActRuDetailStatusEnum status, Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameAndTaskDefKeyAndAssigneeAndStatusAndDeletedFalse(String systemName,
-        String taskDefKey, String assignee, int status, Pageable pageable);
+        String taskDefKey, String assignee, ActRuDetailStatusEnum status, Pageable pageable);
 
-    Page<ActRuDetail> findByAssigneeAndStatusAndDeletedFalse(String assignee, int status, Pageable pageable);
-
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName,
-        String assignee, int status, Pageable pageable);
-
-    Page<ActRuDetail> findByAssigneeAndStatusAndEndedFalseAndDeletedFalse(String assignee, int status,
+    Page<ActRuDetail> findByAssigneeAndStatusAndDeletedFalse(String assignee, ActRuDetailStatusEnum status,
         Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameAndStatusAndEndedFalse(String systemName, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName,
+        String assignee, ActRuDetailStatusEnum status, Pageable pageable);
+
+    Page<ActRuDetail> findByAssigneeAndStatusAndEndedFalseAndDeletedFalse(String assignee, ActRuDetailStatusEnum status,
+        Pageable pageable);
+
+    Page<ActRuDetail> findBySystemNameAndStatusAndEndedFalse(String systemName, ActRuDetailStatusEnum status,
+        Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameInAndAssigneeAndStatusAndDeletedFalse(List<String> systemNameList,
-        String assignee, int status, Pageable pageable);
+        String assignee, ActRuDetailStatusEnum status, Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
-        int status, Pageable pageable);
+        ActRuDetailStatusEnum status, Pageable pageable);
 
     List<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalseOrderByCreateTimeDesc(String systemName,
-        String assignee, int status);
+        String assignee, ActRuDetailStatusEnum status);
 }

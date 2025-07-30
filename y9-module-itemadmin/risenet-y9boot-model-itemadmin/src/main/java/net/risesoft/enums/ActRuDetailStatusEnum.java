@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ActRuDetailStatusEnum {
+public enum ActRuDetailStatusEnum implements ValuedEnum<Integer> {
     /** 待办 */
     TODO(0, "待办"),
     /** 在办 */

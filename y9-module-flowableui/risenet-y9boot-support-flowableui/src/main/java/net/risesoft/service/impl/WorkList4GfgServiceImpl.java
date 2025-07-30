@@ -150,7 +150,7 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                     List<UrgeInfoModel> urgeInfoList =
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<TaskRelatedModel> taskRelatedList;
-                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO.getValue()) && !isOrg) {
+                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO) && !isOrg) {
                         mapTemp.put(SysVariables.ITEMBOX, ItemBoxTypeEnum.TODO.getValue());
                         taskRelatedList = getTaskRelated4Todo(ardModel, formData);
                         mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));

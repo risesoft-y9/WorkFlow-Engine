@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,6 +12,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
+import net.risesoft.enums.ActRuDetailStatusEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -87,19 +91,15 @@ public class ActRuDetail implements Serializable {
     @Column(name = "STARTTIME", length = 50)
     private String startTime;
 
-    /**
-     * @see net.risesoft.enums.ActRuDetailStatusEnum
-     */
     @Comment("状态")
     @Column(name = "STATUS", length = 100)
-    private Integer status;
+    @Convert(converter = ItemEnumConverter.ActRuDetailStatusEnumConverter.class)
+    private ActRuDetailStatusEnum status = ActRuDetailStatusEnum.TODO;
 
-    /**
-     * @see net.risesoft.enums.ActRuDetailSignStatusEnum
-     */
     @Comment("签收状态")
     @Column(name = "SIGNSTATUS", length = 100)
-    private Integer signStatus;
+    @Convert(converter = ItemEnumConverter.ActRuDetailSignStatusEnumConverter.class)
+    private ActRuDetailSignStatusEnum signStatus = ActRuDetailSignStatusEnum.TODO;
 
     @Comment("办理人")
     @Column(name = "ASSIGNEE", length = 50)

@@ -287,7 +287,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     break;
                 }
             }
-            if (y9Table.getTableType() == ItemTableTypeEnum.SUB) {// 子表查询
+            if (y9Table.getTableType() == ItemTableTypeEnum.SUB) {
                 StringBuilder sqlStr = new StringBuilder();
                 if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
@@ -841,7 +841,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<String> list = y9FormRepository.findBindTableName(formId);
             for (String tableName : list) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType().equals(ItemTableTypeEnum.SUB.getValue())) {
+                if (y9Table.getTableType().equals(ItemTableTypeEnum.SUB)) {
                     continue;
                 }
                 String actionType;
