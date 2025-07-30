@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ItemButtonTypeEnum {
+public enum ItemButtonTypeEnum implements ValuedEnum<Integer> {
     /** 普通按钮 */
     COMMON(1, "普通按钮"),
     /** 发送按钮 */

@@ -3,6 +3,7 @@ package net.risesoft.service.config;
 import java.util.List;
 
 import net.risesoft.entity.button.ItemButtonBind;
+import net.risesoft.enums.ItemButtonTypeEnum;
 
 /**
  * @author qinman
@@ -22,7 +23,7 @@ public interface ItemButtonBindService {
      * @return
      */
     ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
-        Integer buttonType);
+                              ItemButtonTypeEnum buttonType);
 
     /**
      * Description: 复制当前事项绑定的流程定义上一个版本的流程定义绑定的按钮
@@ -72,7 +73,7 @@ public interface ItemButtonBindService {
      * @param processDefinitionId
      * @return
      */
-    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId, Integer buttonType,
+    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId, ItemButtonTypeEnum buttonType,
         String processDefinitionId);
 
     /**
@@ -84,7 +85,7 @@ public interface ItemButtonBindService {
      * @param taskDefKey
      * @return
      */
-    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId, Integer buttonType,
+    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId, ItemButtonTypeEnum buttonType,
         String processDefinitionId, String taskDefKey);
 
     /**
@@ -97,7 +98,7 @@ public interface ItemButtonBindService {
      * @param taskDefineKey
      * @return
      */
-    List<ItemButtonBind> listContainRole(String itemId, Integer buttonType, String processDefinitionId,
+    List<ItemButtonBind> listContainRole(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
         String taskDefineKey);
 
     /**
@@ -109,7 +110,7 @@ public interface ItemButtonBindService {
      * @param taskDefineKey
      * @return
      */
-    List<ItemButtonBind> listContainRoleId(String itemId, Integer buttonType, String processDefinitionId,
+    List<ItemButtonBind> listContainRoleId(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
         String taskDefineKey);
 
     /**
@@ -121,7 +122,7 @@ public interface ItemButtonBindService {
      * @param taskDefineKey
      * @return
      */
-    List<ItemButtonBind> listExtra(String itemId, Integer buttonType, String processDefinitionId, String taskDefineKey);
+    List<ItemButtonBind> listExtra(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefineKey);
 
     /**
      * Description: 删除绑定关系

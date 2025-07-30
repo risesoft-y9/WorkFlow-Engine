@@ -2,6 +2,7 @@ package net.risesoft.repository.button;
 
 import java.util.List;
 
+import net.risesoft.enums.ItemButtonTypeEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -24,13 +25,13 @@ public interface ItemButtonBindRepository
 
     @Query("from ItemButtonBind t where t.itemId=?1 and t.buttonType=?2 and t.processDefinitionId=?3 and (t.taskDefKey is null or t.taskDefKey='') order by t.tabIndex ASC")
     List<ItemButtonBind> findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(
-        String itemId, Integer buttonType, String processDefinitionId);
+        String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(String itemId,
-        Integer buttonType, String processDefinitionId, String taskDefKey);
+                                                                                                        ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(String itemId,
-        Integer buttonType, String processDefinitionId);
+                                                                                           ItemButtonTypeEnum buttonType, String processDefinitionId);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndTaskDefKeyOrderByTabIndexAsc(String itemId, int i, String string);
 
@@ -52,5 +53,5 @@ public interface ItemButtonBindRepository
         String processDefinitionId);
 
     @Query("select max(t.tabIndex) from ItemButtonBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 and t.buttonType=?4")
-    Integer getMaxTabIndex(String itemId, String processDefinitionId, String taskDefKey, Integer buttonType);
+    Integer getMaxTabIndex(String itemId, String processDefinitionId, String taskDefKey, ItemButtonTypeEnum buttonType);
 }
