@@ -1149,7 +1149,7 @@ public class DocumentServiceImpl implements DocumentService {
              * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
              */
             if (k == 0 && isButtonShow[0]) {
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON,
                     processDefinitionId, taskDefKey);
                 for (ItemButtonBind bind : bibList) {
                     String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
@@ -1189,7 +1189,7 @@ public class DocumentServiceImpl implements DocumentService {
                  * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
                  */
                 boolean haveSendButton = false;
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON,
                     processDefinitionId, taskDefKey);
                 bibFor:
                 for (ItemButtonBind bib : bibList) {
@@ -1252,7 +1252,7 @@ public class DocumentServiceImpl implements DocumentService {
                     /*
                      * 添加自定义按钮到发送
                      */
-                    bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
+                    bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND,
                         processDefinitionId, taskDefKey);
                     for (ItemButtonBind bind : bibList) {
                         List<String> roleIds = bind.getRoleIds();
@@ -1345,7 +1345,7 @@ public class DocumentServiceImpl implements DocumentService {
          * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
          */
         if (buttonList.contains(ItemButton.baoCun)) {
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON,
                 processDefinitionId, taskDefKey);
             for (ItemButtonBind bind : bibList) {
                 String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
@@ -1353,7 +1353,7 @@ public class DocumentServiceImpl implements DocumentService {
                 if (roleIds.isEmpty() || roleIds.stream()
                     .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
                     buttonList
-                        .add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON.getValue()));
+                        .add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON));
                 }
             }
         }
@@ -1370,20 +1370,20 @@ public class DocumentServiceImpl implements DocumentService {
                 // 退回、路由网关不显示在发送下面
                 if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
                     buttonList.add(
-                        new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND.getValue()));
+                        new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND));
                 }
             }
             /*
              * 添加自定义按钮到发送
              */
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND,
                 processDefinitionId, taskDefKey);
             for (ItemButtonBind bind : bibList) {
                 List<String> roleIds = bind.getRoleIds();
                 String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
                 if (roleIds.isEmpty() || roleIds.stream()
                     .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND.getValue()));
+                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND));
                 }
             }
         }
@@ -1448,14 +1448,14 @@ public class DocumentServiceImpl implements DocumentService {
         List<ItemButtonModel> buttonList = buttonUtil.showButton4Todo(itemId, taskId, model);
         List<ItemButtonBind> bibList;
         if (buttonList.contains(ItemButton.baoCun)) {
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON,
                 processDefinitionId, taskDefKey);
             bibList.stream().filter(bind -> !"发送".equals(bind.getButtonName())).forEach(bind -> {
                 List<String> roleIds = bind.getRoleIds();
                 if (roleIds.isEmpty() || roleIds.stream()
                     .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
                     buttonList.add(new ItemButtonModel(bind.getButtonCustomId(), bind.getButtonName(),
-                        ItemButtonTypeEnum.COMMON.getValue()));
+                        ItemButtonTypeEnum.COMMON));
                 }
             });
         }
@@ -1465,14 +1465,14 @@ public class DocumentServiceImpl implements DocumentService {
              * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
              */
             AtomicBoolean haveSendButton = new AtomicBoolean(false);
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON,
                 processDefinitionId, taskDefKey);
             bibList.stream().filter(bib -> "发送".equals(bib.getButtonName())).forEach(bib -> {
                 List<String> roleIds = bib.getRoleIds();
                 if (roleIds.isEmpty() || roleIds.stream()
                     .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
                     buttonList.add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(),
-                        ItemButtonTypeEnum.COMMON.getValue()));
+                        ItemButtonTypeEnum.COMMON));
                     haveSendButton.set(true);
                 }
             });
@@ -1486,19 +1486,19 @@ public class DocumentServiceImpl implements DocumentService {
                     .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
                     .forEach(m -> {
                         buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(),
-                            ItemButtonTypeEnum.SEND.getValue()));
+                            ItemButtonTypeEnum.SEND));
                     });
                 /*
                  * 添加自定义按钮到发送
                  */
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
+                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND,
                     processDefinitionId, taskDefKey);
                 bibList.forEach(bind -> {
                     List<String> roleIds = bind.getRoleIds();
                     if (roleIds.isEmpty() || roleIds.stream()
                         .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
                         buttonList.add(new ItemButtonModel(bind.getButtonCustomId(), bind.getButtonName(),
-                            ItemButtonTypeEnum.SEND.getValue()));
+                            ItemButtonTypeEnum.SEND));
                     }
                 });
             }
@@ -1520,7 +1520,7 @@ public class DocumentServiceImpl implements DocumentService {
                         }
                         taskName = MessageFormat.format(taskName, null == position ? "无" : position.getName());
                         ItemButtonModel itemButtonModel = new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
-                            ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(r.getAssignee()), "", null);
+                            ItemButtonTypeEnum.ROLLBACK, List.of(r.getAssignee()), "", null);
                         if (!buttonList.contains(itemButtonModel)) {
                             buttonList.add(itemButtonModel);
                         }
@@ -1548,7 +1548,7 @@ public class DocumentServiceImpl implements DocumentService {
                                 personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
                             ItemButtonModel itemButtonModel =
                                 new ItemButtonModel(hisTask.getTaskDefinitionKey(), taskName,
-                                    ItemButtonTypeEnum.ROLLBACK.getValue(), List.of(hisTask.getAssignee()), "", null);
+                                    ItemButtonTypeEnum.ROLLBACK, List.of(hisTask.getAssignee()), "", null);
                             if (!buttonList.contains(itemButtonModel)) {
                                 buttonList.add(itemButtonModel);
                             }
@@ -1556,10 +1556,9 @@ public class DocumentServiceImpl implements DocumentService {
                     });
 
             }
-            if (buttonList.stream().noneMatch(
-                itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK.getValue()))) {
-                buttonList.remove(ItemButton.tuiHui);
-            }
+            buttonList.stream().noneMatch(
+                    itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK.getValue()));
+            buttonList.remove(ItemButton.tuiHui);
         }
         model.setButtonList(buttonList);
         return model;

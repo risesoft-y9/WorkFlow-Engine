@@ -4,12 +4,15 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import net.risesoft.enums.ItemButtonTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -54,12 +57,10 @@ public class ItemButtonBind implements Serializable {
     @Column(name = "BUTTONID", length = 38, nullable = false)
     private String buttonId;
 
-    /**
-     * 按钮类型 1为普通按钮，2为发送下面的按钮
-     */
     @Comment("按钮类型")
     @Column(name = "BUTTONTYPE", length = 2, nullable = false)
-    private Integer buttonType;
+    @Convert(converter = ItemEnumConverter.ItemButtonTypeEnumConverter.class)
+    private ItemButtonTypeEnum buttonType = ItemButtonTypeEnum.COMMON;
 
     /**
      * 按钮名称

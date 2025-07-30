@@ -234,7 +234,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         String targetpdId = targetpd.getId();
 
         List<ItemButtonBind> targetBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON.getValue(), targetpdId);
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON, targetpdId);
         if (!targetBindList.isEmpty()) {
             return;
         }
@@ -243,7 +243,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemButtonBind> sourceBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON.getValue(), sourcepdId);
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON, sourcepdId);
         if (sourceBindList.isEmpty()) {
             return;
         }
@@ -823,7 +823,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         String targetpdId = targetpd.getId();
 
         List<ItemButtonBind> targetBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND.getValue(), targetpdId);
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND, targetpdId);
         if (!targetBindList.isEmpty()) {
             return;
         }
@@ -832,7 +832,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemButtonBind> sourceBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND.getValue(), sourcepdId);
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND, sourcepdId);
         if (sourceBindList.isEmpty()) {
             return;
         }

@@ -63,7 +63,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     @Transactional
     public ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
-        Integer buttonType) {
+                                     ItemButtonTypeEnum buttonType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -243,14 +243,14 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId, Integer buttonType,
+    public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId, ItemButtonTypeEnum buttonType,
         String processDefinitionId) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
         List<ItemButtonBind> bibList = buttonItemBindRepository
             .findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(itemId, buttonType, processDefinitionId);
         for (ItemButtonBind bib : bibList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+            if (buttonType == ItemButtonTypeEnum.COMMON) {
                 CommonButton cb = commonButtonService.getById(bib.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();
@@ -271,14 +271,14 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
     @Override
     public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId,
-        Integer buttonType, String processDefinitionId, String taskDefKey) {
+                                                                                             ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
         List<ItemButtonBind> bibList =
             buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
                 itemId, buttonType, processDefinitionId, taskDefKey);
         for (ItemButtonBind bib : bibList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+            if (buttonType == ItemButtonTypeEnum.COMMON) {
                 CommonButton cb = commonButtonService.getById(bib.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();
@@ -298,7 +298,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> listContainRole(String itemId, Integer buttonType, String processDefinitionId,
+    public List<ItemButtonBind> listContainRole(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
         String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
@@ -306,7 +306,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
                 itemId, buttonType, processDefinitionId, taskDefineKey);
         for (ItemButtonBind bind : bindList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+            if (buttonType == ItemButtonTypeEnum.COMMON) {
                 CommonButton cb = commonButtonService.getById(bind.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();
@@ -341,7 +341,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> listContainRoleId(String itemId, Integer buttonType, String processDefinitionId,
+    public List<ItemButtonBind> listContainRoleId(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
         String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
@@ -381,7 +381,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> listExtra(String itemId, Integer buttonType, String processDefinitionId,
+    public List<ItemButtonBind> listExtra(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
         String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
@@ -394,7 +394,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     itemId, buttonType, processDefinitionId, "");
         }
         for (ItemButtonBind bib : bibList) {
-            if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
+            if (buttonType == ItemButtonTypeEnum.COMMON) {
                 CommonButton cb = commonButtonService.getById(bib.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();

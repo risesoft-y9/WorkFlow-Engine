@@ -1,6 +1,7 @@
 package net.risesoft.persistence;
 
 import net.risesoft.enums.ChaoSongStatusEnum;
+import net.risesoft.enums.ItemButtonTypeEnum;
 
 /**
  * @author qinman
@@ -12,6 +13,12 @@ public class ItemEnumConverter {
     public static class ChaoSongStatusEnumConverter extends AbstractEnumConverter<ChaoSongStatusEnum, Integer> {
         public ChaoSongStatusEnumConverter() {
             super(ChaoSongStatusEnum.class);
+        }
+    }
+
+    public static class ItemButtonTypeEnumConverter extends AbstractEnumConverter<ItemButtonTypeEnum, Integer> {
+        public ItemButtonTypeEnumConverter() {
+            super(ItemButtonTypeEnum.class);
         }
     }
 

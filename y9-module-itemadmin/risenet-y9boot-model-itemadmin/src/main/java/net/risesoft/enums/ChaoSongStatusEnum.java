@@ -15,13 +15,4 @@ public enum ChaoSongStatusEnum implements ValuedEnum<Integer> {
 
     private final Integer value;
     private final String description;
-
-    public static ChaoSongStatusEnum fromStatus(int status) {
-        for (ChaoSongStatusEnum value : ChaoSongStatusEnum.values()) {
-            if (value.getValue() == status) {
-                return value;
-            }
-        }
-        return ChaoSongStatusEnum.NEW;
-    }
 }
