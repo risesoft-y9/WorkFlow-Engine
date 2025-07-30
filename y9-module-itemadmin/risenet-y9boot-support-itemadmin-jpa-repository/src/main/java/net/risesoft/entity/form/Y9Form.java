@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -11,6 +12,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import net.risesoft.enums.ItemFormTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -39,19 +42,15 @@ public class Y9Form implements Serializable {
     @Comment("表单名称")
     private String formName;
 
-    /**
-     * {@link #ItemFormTypeEnum}
-     */
     @Column(name = "FORMTYPE")
     @Comment("表单类型")
-    private Integer formType = 1;
+    @Convert(converter = ItemEnumConverter.ItemFormTypeEnumConverter.class)
+    private ItemFormTypeEnum formType = ItemFormTypeEnum.MAINFORM;
 
-    /**
-     * {@link #ItemFormTemplateTypeEnum}
-     */
     @Column(name = "TEMPLATETYPE")
     @Comment("表单模板类型")
-    private Integer templateType = 1;
+    @Convert(converter = ItemEnumConverter.ItemFormTypeEnumConverter.class)
+    private ItemFormTypeEnum templateType = ItemFormTypeEnum.MAINFORM;
 
     @Column(name = "FILENAME", length = 50)
     @Comment("模板文件名称")

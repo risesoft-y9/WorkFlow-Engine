@@ -2,6 +2,8 @@ package net.risesoft.persistence;
 
 import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
+import net.risesoft.enums.ItemFormTemplateTypeEnum;
+import net.risesoft.enums.ItemFormTypeEnum;
 
 /**
  * @author qinman
@@ -22,4 +24,15 @@ public class ItemEnumConverter {
         }
     }
 
+    public static class ItemFormTypeEnumConverter extends AbstractEnumConverter<ItemFormTypeEnum, Integer> {
+        public ItemFormTypeEnumConverter() {
+            super(ItemFormTypeEnum.class);
+        }
+    }
+
+    public static class ItemFormTemplateTypeEnumConverter extends AbstractEnumConverter<ItemFormTemplateTypeEnum, Integer> {
+        public ItemFormTemplateTypeEnumConverter() {
+            super(ItemFormTemplateTypeEnum.class);
+        }
+    }
 }
