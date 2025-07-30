@@ -26,9 +26,6 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "打印表单绑定表", appliesTo = "FF_ITEM_PRINTTEMPLATE_BIND")
 public class ItemPrintTemplateBind implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 6829462901084070306L;
 
     @Id

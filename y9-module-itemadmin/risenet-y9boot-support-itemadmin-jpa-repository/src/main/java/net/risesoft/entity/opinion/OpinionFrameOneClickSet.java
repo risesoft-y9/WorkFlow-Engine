@@ -43,11 +43,11 @@ public class OpinionFrameOneClickSet implements Serializable {
 
     @Comment("一键设置类型名称")
     @Column(name = "ONESETTYPE_NAME", length = 100)
-    private String oneSetTypeName; // 一键设置类型名称
+    private String oneSetTypeName;
 
     @Comment("对应执行动作名称")
     @Column(name = "EXECUTEACTION_NAME", length = 100)
-    private String executeActionName;// 对应执行动作名称
+    private String executeActionName;
 
     @Comment("一键设置描述")
     @Column(name = "ONESET_DESCRIPTION", length = 300)

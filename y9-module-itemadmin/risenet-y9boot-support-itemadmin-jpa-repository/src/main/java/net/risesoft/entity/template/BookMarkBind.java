@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "FF_BOOKMARKBIND")
 @org.hibernate.annotations.Table(comment = "正文模板书签绑定数据库表字段信息", appliesTo = "FF_BOOKMARKBIND")
 public class BookMarkBind implements Serializable {
+
     private static final long serialVersionUID = 3758496712029777467L;
 
     @Id

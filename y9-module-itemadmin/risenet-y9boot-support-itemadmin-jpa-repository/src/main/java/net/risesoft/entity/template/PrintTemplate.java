@@ -54,46 +54,28 @@ public class PrintTemplate implements Serializable {
     @Column(name = "FILENAME", length = 50)
     private String fileName;
 
-    /**
-     * 文档路径
-     */
     @Comment("文档路径")
     @Column(name = "FILEPATH", length = 2000)
     private String filePath;
 
-    /**
-     * 文件字节数
-     */
     @Comment("文件大小")
     @Column(name = "FILESIZE", length = 20)
     private String fileSize;
 
-    /**
-     * 上传时间
-     */
     @Comment("上传时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "UPLOADTIME")
     private Date uploadTime;
 
-    /**
-     * 上传人Id
-     */
     @Comment("上传人Id")
     @Column(name = "PERSONID", length = 50)
     private String personId;
 
-    /**
-     * 上传人
-     */
     @Comment("上传人")
     @Column(name = "PERSONNAME", length = 100)
     private String personName;
 
-    /**
-     * 文件描述
-     */
     @Comment("文件描述")
     @Column(name = "DESCRIBES", length = 1000)
     private String describes;
