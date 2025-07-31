@@ -37,11 +37,9 @@ import net.risesoft.service.RoleService;
 import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
-/*
+/**
  * @author qinman
- *
  * @author zhangchongjie
- *
  * @date 2022/12/20
  */
 @Service
@@ -78,7 +76,7 @@ public class RoleServiceImpl implements RoleService {
                 model.setName(position.getName());
                 model.setIsParent(false);
                 model.setOrgType(position.getOrgType().getValue());
-                model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                model.setPrincipalType(ItemPermissionEnum.POSITION);
                 model.setPerson("6:" + position.getId());
                 model.setOrderedPath(position.getOrderedPath());
                 model.setGuidPath(position.getGuidPath());
@@ -116,7 +114,7 @@ public class RoleServiceImpl implements RoleService {
                 StringUtils.isNotBlank(department.getAliasName()) ? department.getAliasName() : department.getName());
             parentModel.setIsParent(true);
             parentModel.setOrgType(parent.getOrgType().getValue());
-            parentModel.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+            parentModel.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
             parentModel.setGuidPath(department.getGuidPath());
             if (!itemList.contains(parentModel)) {
                 itemList.add(parentModel);
@@ -144,26 +142,26 @@ public class RoleServiceImpl implements RoleService {
                 List<Position> positionList = new ArrayList<>();
                 for (ItemPermission o : list) {
                     // 授权部门,加入部门集合
-                    if (o.getRoleType().equals(ItemPermissionEnum.DEPARTMENT.getValue()) && d) {
+                    if (o.getRoleType().equals(ItemPermissionEnum.DEPARTMENT) && d) {
                         deptList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                     }
                     // 授权角色,获取角色下所有岗位加入岗位集合
-                    if (o.getRoleType().equals(ItemPermissionEnum.ROLE.getValue()) && p) {
+                    if (o.getRoleType().equals(ItemPermissionEnum.ROLE) && p) {
                         positionList.addAll(positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData());
                     }
                     // 授权岗位,加入岗位集合
-                    if (o.getRoleType().equals(ItemPermissionEnum.POSITION.getValue()) && p) {
+                    if (o.getRoleType().equals(ItemPermissionEnum.POSITION) && p) {
                         positionList.add((Position)orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                     }
                     // 授权动态角色,根据动态角色种类区分
-                    if (o.getRoleType().equals(ItemPermissionEnum.DYNAMICROLE.getValue())) {
+                    if (o.getRoleType().equals(ItemPermissionEnum.ROLE_DYNAMIC)) {
                         DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                         List<Position> pList = new ArrayList<>();
                         if (dynamicRole.getClassPath().contains("4SubProcess")) {// 针对岗位,加入岗位集合
                             pList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
                         } else {
                             if (null == dynamicRole.getKinds()
-                                || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+                                || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
                                 // 动态角色种类为【无】或null时，针对岗位或部门
                                 List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
                                     .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
@@ -180,9 +178,7 @@ public class RoleServiceImpl implements RoleService {
                                     .listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                             }
                         }
-                        for (Position position : pList) {
-                            positionList.add(position);
-                        }
+                        positionList.addAll(pList);
                     }
                 }
                 // 遍历岗位集合
@@ -194,7 +190,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setIsParent(false);
                     model.setOrgType(position.getOrgType().getValue());
                     model.setOrderedPath(position.getOrderedPath());
-                    model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                    model.setPrincipalType(ItemPermissionEnum.POSITION);
                     model.setPerson("6:" + position.getId());
                     model.setGuidPath(position.getGuidPath());
                     if (itemList.contains(model)) {
@@ -234,7 +230,7 @@ public class RoleServiceImpl implements RoleService {
                             model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                             model.setOrgType(orgUnit.getOrgType().getValue());
                             model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                                ? ItemPermissionEnum.DEPARTMENT.getValue() : ItemPermissionEnum.POSITION.getValue());
+                                ? ItemPermissionEnum.DEPARTMENT : ItemPermissionEnum.POSITION);
                             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                                 model.setPerson("6:" + orgUnit.getId());
 
@@ -253,7 +249,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setIsParent(true);
                         model.setGuidPath(org.getGuidPath());
                         model.setOrgType(org.getOrgType().getValue());
-                        model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                        model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
                         if (allItemList.contains(model)) {
                             continue;// 去重
                         }
@@ -266,19 +262,19 @@ public class RoleServiceImpl implements RoleService {
                     orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                 for (OrgUnit orgunit : orgList) {
                     ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                    String orgunitId = orgunit.getId();
-                    model.setId(orgunitId);
+                    String orgUnitId = orgunit.getId();
+                    model.setId(orgUnitId);
                     model.setParentId(id);
                     model.setName(orgunit.getName());
                     model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                     model.setOrgType(orgunit.getOrgType().getValue());
                     model.setGuidPath(orgunit.getGuidPath());
                     if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                        model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                        model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
                         model.setName(StringUtils.isNotBlank(((Department)orgunit).getAliasName())
                             ? ((Department)orgunit).getAliasName() : orgunit.getName());
                     } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
-                        model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                        model.setPrincipalType(ItemPermissionEnum.POSITION);
                         model.setPerson("6:" + orgunit.getId());
 
                     }
@@ -315,7 +311,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                         model.setOrgType(orgUnit.getOrgType().getValue());
                         model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                            ? ItemPermissionEnum.DEPARTMENT.getValue() : ItemPermissionEnum.POSITION.getValue());
+                            ? ItemPermissionEnum.DEPARTMENT : ItemPermissionEnum.POSITION);
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                             model.setPerson("6:" + orgUnit.getId());
                         }
@@ -330,7 +326,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setName(customGroup.getGroupName());
                         model.setIsParent(true);
                         model.setOrgType("customGroup");
-                        model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                        model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                         if (item.contains(model)) {
                             continue;// 去重
                         }
@@ -343,16 +339,16 @@ public class RoleServiceImpl implements RoleService {
                         orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgunit : orgList) {
                         ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                        String orgunitId = orgunit.getId();
-                        model.setId(orgunitId);
+                        String orgUnitId = orgunit.getId();
+                        model.setId(orgUnitId);
                         model.setParentId(id);
                         model.setName(orgunit.getName());
                         model.setOrgType(orgunit.getOrgType().getValue());
                         model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                         if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
                         } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
-                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.POSITION);
                             model.setPerson("6:" + orgunit.getId());
                         }
                         if (item.contains(model)) {
@@ -376,7 +372,7 @@ public class RoleServiceImpl implements RoleService {
                                 model.setIsParent(false);
                                 model.setOrgType(user.getOrgType().getValue());
                                 model.setPerson("6:" + user.getId() + ":" + user.getParentId());
-                                model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                                model.setPrincipalType(ItemPermissionEnum.POSITION);
                                 if (item.contains(model)) {
                                     continue;// 去重
                                 }
@@ -411,7 +407,7 @@ public class RoleServiceImpl implements RoleService {
                 model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                 model.setOrgType(orgUnit.getOrgType().getValue());
                 model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                    ? ItemPermissionEnum.DEPARTMENT.getValue() : ItemPermissionEnum.POSITION.getValue());
+                    ? ItemPermissionEnum.DEPARTMENT : ItemPermissionEnum.POSITION);
                 if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                     model.setPerson("6:" + orgUnit.getId());
                 }
@@ -478,7 +474,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setParentId("");
                     model.setName(customGroup.getGroupName());
                     model.setOrgType("customGroup");
-                    model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                    model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                     model.setIsParent(true);
                     if (item.contains(model)) {
                         continue;// 去重
@@ -497,7 +493,7 @@ public class RoleServiceImpl implements RoleService {
                                 model0.setPerson("6:" + user.getId() + ":" + user.getParentId());
                                 model0.setId(customGroupMember.getMemberId());
                                 model0.setOrgType(user.getOrgType().getValue());
-                                model0.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                                model0.setPrincipalType(ItemPermissionEnum.POSITION);
                                 model0.setName(user.getName());
                                 model0.setParentId(customGroup.getId());
                                 if (item.contains(model0)) {
@@ -538,24 +534,24 @@ public class RoleServiceImpl implements RoleService {
                     List<Position> positionList = new ArrayList<>();
                     for (ItemPermission o : list) {
                         // 授权部门,加入部门集合
-                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue()) && d) {
+                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT) && d) {
                             deptList.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                         }
                         // 授权角色,获取角色下所有岗位加入岗位集合
-                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue()) && p) {
+                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE) && p) {
                             positionList
                                 .addAll(positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData());
                         }
                         // 授权岗位,加入岗位集合
-                        if (o.getRoleType().equals(ItemPermissionEnum.POSITION.getValue()) && p) {
+                        if (o.getRoleType().equals(ItemPermissionEnum.POSITION) && p) {
                             positionList.add((Position)orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                         }
                         // 授权动态角色,根据动态角色种类区分
-                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
+                        if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
                             DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                             List<Position> pList = new ArrayList<>();
                             if (null == dynamicRole.getKinds()
-                                || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+                                || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
                                 // 动态角色种类为【无】或null时，针对岗位或部门
                                 List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
                                     .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
@@ -571,9 +567,7 @@ public class RoleServiceImpl implements RoleService {
                                 pList = dynamicRoleMemberService
                                     .listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                             }
-                            for (Position position : pList) {
-                                positionList.add(position);
-                            }
+                            positionList.addAll(pList);
                         }
                     }
                     // 遍历岗位集合
@@ -585,7 +579,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setIsParent(false);
                         model.setOrgType(position.getOrgType().getValue());
                         model.setOrderedPath(position.getOrderedPath());
-                        model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                        model.setPrincipalType(ItemPermissionEnum.POSITION);
                         model.setPerson("6:" + position.getId());
                         model.setGuidPath(position.getGuidPath());
                         if (itemList.contains(model)) {
@@ -625,8 +619,7 @@ public class RoleServiceImpl implements RoleService {
                                 model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                                 model.setOrgType(orgUnit.getOrgType().getValue());
                                 model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                                    ? ItemPermissionEnum.DEPARTMENT.getValue()
-                                    : ItemPermissionEnum.POSITION.getValue());
+                                    ? ItemPermissionEnum.DEPARTMENT : ItemPermissionEnum.POSITION);
                                 if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                                     model.setPerson("6:" + orgUnit.getId());
                                 }
@@ -644,7 +637,7 @@ public class RoleServiceImpl implements RoleService {
                             model.setIsParent(true);
                             model.setOrgType(org.getOrgType().getValue());
                             model.setGuidPath(org.getGuidPath());
-                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
                             if (allItemList.contains(model)) {
                                 continue;// 去重
                             }
@@ -665,9 +658,9 @@ public class RoleServiceImpl implements RoleService {
                         model.setOrgType(orgunit.getOrgType().getValue());
                         model.setGuidPath(orgunit.getGuidPath());
                         if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
                         } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
-                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.POSITION);
                             model.setPerson("6:" + orgunit.getId());
                         }
                         if (allItemList.contains(model)) {
@@ -688,7 +681,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setName(customGroup.getGroupName());
                         model.setIsParent(true);
                         model.setOrgType("customGroup");
-                        model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                        model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                         if (allItemList.contains(model)) {
                             continue;// 去重
                         }
@@ -711,7 +704,7 @@ public class RoleServiceImpl implements RoleService {
                                 model.setOrgType(user.getOrgType().getValue());
                                 model.setPerson("6:" + user.getId());
                                 model.setGuidPath(user.getGuidPath());
-                                model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                                model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                                 if (allItemList.contains(model)) {
                                     continue;// 去重
                                 }
@@ -740,7 +733,7 @@ public class RoleServiceImpl implements RoleService {
                 /*
                  * 1获取角色中的岗位
                  */
-                if (o.getRoleType() == 1) {
+                if (o.getRoleType() == ItemPermissionEnum.ROLE) {
                     orgListTemp.addAll(positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData());
                 }
                 /*
@@ -752,11 +745,10 @@ public class RoleServiceImpl implements RoleService {
                 /*
                  * 4暂时只解析动态角色里面的岗位
                  */
-                if (o.getRoleType() == 4) {
+                if (o.getRoleType() == ItemPermissionEnum.ROLE_DYNAMIC) {
                     DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                     List<Position> pList = new ArrayList<>();
-                    if (null == dynamicRole.getKinds()
-                        || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+                    if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
                         // 动态角色种类为【无】或null时，针对岗位或部门
                         List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
                             .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
@@ -780,7 +772,7 @@ public class RoleServiceImpl implements RoleService {
                 /*
                  * 6岗位
                  */
-                if (o.getRoleType() == 6) {
+                if (o.getRoleType() == ItemPermissionEnum.POSITION) {
                     orgListTemp.add(orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                 }
             }
@@ -812,26 +804,25 @@ public class RoleServiceImpl implements RoleService {
             List<Position> positionList = new ArrayList<>();
             for (ItemPermission o : list) {
                 // 授权角色,获取角色下所有岗位加入岗位集合
-                if (o.getRoleType() == 1 && p) {
+                if (o.getRoleType() == ItemPermissionEnum.ROLE && p) {
                     positionList.addAll(positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData());
                 }
                 // 授权岗位,加入岗位集合
-                if (o.getRoleType().equals(ItemPermissionEnum.POSITION.getValue()) && p) {
+                if (o.getRoleType().equals(ItemPermissionEnum.POSITION) && p) {
                     positionList.add((Position)orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
                 }
                 // 授权部门,加入部门集合
-                if (o.getRoleType() == 2 && d) {
+                if (o.getRoleType() == ItemPermissionEnum.DEPARTMENT && d) {
                     Department dept = departmentApi.get(tenantId, o.getRoleId()).getData();
                     if (dept != null) {
                         deptList.add(dept);
                     }
                 }
                 // 授权动态角色,根据动态角色种类区分
-                if (o.getRoleType() == 4) {
+                if (o.getRoleType() == ItemPermissionEnum.ROLE_DYNAMIC) {
                     DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
                     List<Position> pList = new ArrayList<>();
-                    if (null == dynamicRole.getKinds()
-                        || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+                    if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
                         // 动态角色种类为【无】或null时，针对岗位或部门
                         List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
                             .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
@@ -847,9 +838,7 @@ public class RoleServiceImpl implements RoleService {
                         pList = dynamicRoleMemberService.listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole,
                             processInstanceId);
                     }
-                    for (Position position : pList) {
-                        positionList.add(position);
-                    }
+                    positionList.addAll(pList);
                 }
             }
 
@@ -862,7 +851,7 @@ public class RoleServiceImpl implements RoleService {
                 model.setIsParent(false);
                 model.setOrgType(position.getOrgType().getValue());
                 model.setOrderedPath(position.getOrderedPath());
-                model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                model.setPrincipalType(ItemPermissionEnum.POSITION);
                 model.setPerson("6:" + position.getId());
                 model.setGuidPath(position.getGuidPath());
                 if (!position.getName().contains(name)) {
@@ -921,7 +910,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setName(customGroup.getGroupName());
                     model.setOrgType("customGroup");
                     model.setParentId("");
-                    model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                    model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                     model.setIsParent(true);
                     if (allItemList.contains(model)) {
                         continue;// 去重
@@ -941,7 +930,7 @@ public class RoleServiceImpl implements RoleService {
                                 model1.setOrgType(user.getOrgType().getValue());
                                 model1.setParentId(customGroup.getId());
                                 model1.setPerson("6:" + user.getId() + ":" + user.getParentId());
-                                model1.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                                model1.setPrincipalType(ItemPermissionEnum.POSITION);
                                 model1.setIsParent(false);
                                 model.setGuidPath(user.getGuidPath());
                                 if (allItemList.contains(model1)) {
@@ -980,7 +969,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setName(department.getName());
                     model.setOrgType(OrgTypeEnum.DEPARTMENT.getEnName());
                     model.setParentId(receiveDepartment.getParentId());
-                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
                     model.setIsParent(count > 0);
                     item.add(model);
@@ -997,7 +986,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setName(department.getName());
                     model.setOrgType(OrgTypeEnum.DEPARTMENT.getEnName());
                     model.setParentId(receiveDepartment.getParentId());
-                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
                     model.setIsParent(count > 0);
                     item.add(model);

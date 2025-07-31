@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.entity.DocumentCopy;
+import net.risesoft.enums.DocumentCopyStatusEnum;
 
 /**
  * @author : qinman
@@ -19,13 +20,13 @@ import net.risesoft.entity.DocumentCopy;
 public interface DocumentCopyRepository
     extends JpaRepository<DocumentCopy, String>, JpaSpecificationExecutor<DocumentCopy> {
 
-    Page<DocumentCopy> findByUserIdAndStatusLessThan(String userId, Integer status, Pageable pageable);
+    Page<DocumentCopy> findByUserIdAndStatusLessThan(String userId, DocumentCopyStatusEnum status, Pageable pageable);
 
     List<DocumentCopy> findByProcessSerialNumberAndSenderIdOrderByCreateTimeAsc(String processSerialNumber,
         String senderId);
 
     List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
-        Integer status);
+        DocumentCopyStatusEnum status);
 
     List<DocumentCopy> findByProcessSerialNumberAndUserId(String processSerialNumber, String userId);
 

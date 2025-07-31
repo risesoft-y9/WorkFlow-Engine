@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.enums.ItemTableTypeEnum;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,8 @@ import net.risesoft.entity.opinion.OpinionFrame;
 import net.risesoft.entity.template.ItemPrintTemplateBind;
 import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.ItemTableTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.form.Y9FormFieldRepository;
@@ -243,16 +244,16 @@ public class InitTableDataService {
         List<ItemPermission> list =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(ITEM_ID, processDefinitionId);
         if (list.isEmpty()) {
-            ItemPermission newip = new ItemPermission();
-            newip.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newip.setItemId(ITEM_ID);
-            newip.setProcessDefinitionId(processDefinitionId);
-            newip.setRoleId(DYNAMIC_ROLE_ID);
-            newip.setRoleType(4);
-            newip.setTaskDefKey("");
-            newip.setTenantId(Y9LoginUserHolder.getTenantId());
-            newip.setCreatDate(sdf.format(new Date()));
-            itemPermissionRepository.save(newip);
+            ItemPermission newIp = new ItemPermission();
+            newIp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newIp.setItemId(ITEM_ID);
+            newIp.setProcessDefinitionId(processDefinitionId);
+            newIp.setRoleId(DYNAMIC_ROLE_ID);
+            newIp.setRoleType(ItemPermissionEnum.ROLE_DYNAMIC);
+            newIp.setTaskDefKey("");
+            newIp.setTenantId(Y9LoginUserHolder.getTenantId());
+            newIp.setCreatDate(sdf.format(new Date()));
+            itemPermissionRepository.save(newIp);
         }
     }
 

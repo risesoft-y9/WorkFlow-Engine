@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.entity.ItemPermission;
+import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemPermissionService;
@@ -154,7 +155,7 @@ public class ItemPermissionRestController {
     @PostMapping(value = "/saveBind")
     public Y9Result<String> save(@RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam String roleId,
-        @RequestParam Integer roleType) {
+        @RequestParam ItemPermissionEnum roleType) {
         if (roleId.contains(PunctuationConsts.SEMICOLON)) {
             String[] roleIds = roleId.split(";");
             for (String roleIdTemp : roleIds) {

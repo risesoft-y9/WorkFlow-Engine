@@ -17,6 +17,10 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.enums.DynamicRoleKindsEnum;
+import net.risesoft.enums.DynamicRoleRangesEnum;
+import net.risesoft.persistence.ItemEnumConverter;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -46,16 +50,15 @@ public class DynamicRole implements Serializable {
     @Column(name = "NAME", length = 255)
     private String name;
 
-    /**
-     * @see DynamicRoleKindsEnum
-     */
     @Comment("动态角色种类")
     @Column(name = "KINDS", length = 2)
-    private Integer kinds;
+    @Convert(converter = ItemEnumConverter.DynamicRoleKindsEnumConverter.class)
+    private DynamicRoleKindsEnum kinds = DynamicRoleKindsEnum.NONE;
 
     @Comment("权限范围")
     @Column(name = "RANGES", length = 2)
-    private Integer ranges;
+    @Convert(converter = ItemEnumConverter.DynamicRoleRangesEnumConverter.class)
+    private DynamicRoleRangesEnum ranges = DynamicRoleRangesEnum.NONE;
 
     @Comment("角色ID")
     @Column(name = "ROLEID", length = 50)

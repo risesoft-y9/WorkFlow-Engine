@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import lombok.Data;
 
+import net.risesoft.enums.DocumentCopyStatusEnum;
+
 /**
  * @author qinman
  * @date 2025/02/10
@@ -51,7 +53,7 @@ public class DocumentCopyModel implements Serializable {
     /**
      * 传阅状态 1:待填写意见,2:已填写意见,8:取消,9:删除
      */
-    private Integer status = 1;
+    private DocumentCopyStatusEnum status = DocumentCopyStatusEnum.TODO_SIGN;
 
     /**
      * 系统英文名称

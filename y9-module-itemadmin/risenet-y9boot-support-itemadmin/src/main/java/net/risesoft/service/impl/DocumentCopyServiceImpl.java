@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.DocumentCopy;
+import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.repository.jpa.DocumentCopyRepository;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.event.Y9TodoCreatedEvent;
@@ -33,8 +34,8 @@ public class DocumentCopyServiceImpl implements DocumentCopyService {
     private final DocumentCopyRepository documentCopyRepository;
 
     @Override
-    public Page<DocumentCopy> findByUserIdAndStatusLessThan(String assignee, Integer status, int rows, int page,
-        Sort sort) {
+    public Page<DocumentCopy> findByUserIdAndStatusLessThan(String assignee, DocumentCopyStatusEnum status, int rows,
+        int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return documentCopyRepository.findByUserIdAndStatusLessThan(assignee, status, pageable);
     }
@@ -52,7 +53,7 @@ public class DocumentCopyServiceImpl implements DocumentCopyService {
 
     @Override
     public List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
-        Integer status) {
+        DocumentCopyStatusEnum status) {
         return documentCopyRepository.findByProcessSerialNumberAndUserIdAndStatus(processSerialNumber, userId, status);
     }
 
@@ -76,7 +77,7 @@ public class DocumentCopyServiceImpl implements DocumentCopyService {
     }
 
     private void publishEvent(DocumentCopy documentCopy) {
-        switch (documentCopy.getStatus()) {
+        switch (documentCopy.getStatus().getValue()) {
             case 1:
                 Y9Context.publishEvent(new Y9TodoCreatedEvent<>(documentCopy));
                 break;

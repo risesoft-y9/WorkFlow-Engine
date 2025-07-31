@@ -726,20 +726,20 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 2、查找源租户该事项最新流程定义的权限
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd =
+        ProcessDefinitionModel source =
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
+        String sourceId = source.getId();
         List<ItemPermission> sourceipList =
-            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
-        int roleType = 0;
+            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourceId);
+        ItemPermissionEnum roleType;
         for (ItemPermission itemPermission : sourceipList) {
             roleType = itemPermission.getRoleType();
-            if (roleType == ItemPermissionEnum.DYNAMICROLE.getValue()) {
+            if (roleType == ItemPermissionEnum.ROLE_DYNAMIC) {
                 itemPermission.setTenantId(targetTenantId);
                 itemPermission.setProcessDefinitionId(targetpdId);
                 targetipList.add(itemPermission);
             }
-            if (roleType == ItemPermissionEnum.ROLE.getValue()) {
+            if (roleType == ItemPermissionEnum.ROLE) {
                 itemPermission.setRoleId(roleIdMap.get(itemPermission.getRoleId()));
                 itemPermission.setTenantId(targetTenantId);
                 itemPermission.setProcessDefinitionId(targetpdId);
@@ -972,16 +972,16 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel sourcepd =
+        ProcessDefinitionModel source =
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
+        String sourceId = source.getId();
         List<ItemPermission> sourceipList =
-            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
-        int roleType = 0;
+            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourceId);
+        ItemPermissionEnum roleType;
         List<String> roleIdList = new ArrayList<>();
         for (ItemPermission itemPermission : sourceipList) {
             roleType = itemPermission.getRoleType();
-            if (roleType == ItemPermissionEnum.ROLE.getValue()) {
+            if (roleType == ItemPermissionEnum.ROLE) {
                 roleIdList.add(itemPermission.getRoleId());
             }
         }

@@ -62,7 +62,7 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
             if (opinionCopy.isSend()) {
                 List<DocumentCopy> dcList = documentCopyService.findByOpinionCopyId(opinionCopy.getId());
                 StringBuffer userNames = new StringBuffer();
-                dcList.stream().filter(dc -> dc.getStatus() < DocumentCopyStatusEnum.CANCEL.getValue())
+                dcList.stream().filter(dc -> dc.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
                     .collect(Collectors.toList()).forEach(dc -> {
                         if (userNames.toString().isEmpty()) {
                             userNames.append(dc.getUserName());
@@ -90,10 +90,10 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
         Optional<OpinionCopy> optional = opinionCopyService.saveOrUpdate(opinionCopy);
         if (optional.isPresent()) {
             List<DocumentCopy> dcList = documentCopyService.findByProcessSerialNumberAndUserIdAndStatus(
-                opinionCopy.getProcessSerialNumber(), orgUnitId, DocumentCopyStatusEnum.TODO_SIGN.getValue());
+                opinionCopy.getProcessSerialNumber(), orgUnitId, DocumentCopyStatusEnum.TODO_SIGN);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             dcList.forEach(dc -> {
-                dc.setStatus(DocumentCopyStatusEnum.SIGN.getValue());
+                dc.setStatus(DocumentCopyStatusEnum.SIGN);
                 dc.setUpdateTime(sdf.format(new Date()));
                 documentCopyService.save(dc);
             });

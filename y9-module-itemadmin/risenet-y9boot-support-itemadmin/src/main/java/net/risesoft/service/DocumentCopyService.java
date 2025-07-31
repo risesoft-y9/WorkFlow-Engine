@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import net.risesoft.entity.DocumentCopy;
+import net.risesoft.enums.DocumentCopyStatusEnum;
 
 /**
  * @author : qinman
@@ -15,14 +16,15 @@ import net.risesoft.entity.DocumentCopy;
  **/
 public interface DocumentCopyService {
 
-    Page<DocumentCopy> findByUserIdAndStatusLessThan(String assignee, Integer status, int rows, int page, Sort sort);
+    Page<DocumentCopy> findByUserIdAndStatusLessThan(String assignee, DocumentCopyStatusEnum status, int rows, int page,
+        Sort sort);
 
     List<DocumentCopy> findByProcessSerialNumberAndSenderId(String processSerialNumber, String senderId);
 
     List<DocumentCopy> findByOpinionCopyId(String opinionCopyId);
 
     List<DocumentCopy> findByProcessSerialNumberAndUserIdAndStatus(String processSerialNumber, String userId,
-        Integer status);
+        DocumentCopyStatusEnum status);
 
     List<DocumentCopy> findByProcessSerialNumberAndUserId(String processSerialNumber, String userId);
 

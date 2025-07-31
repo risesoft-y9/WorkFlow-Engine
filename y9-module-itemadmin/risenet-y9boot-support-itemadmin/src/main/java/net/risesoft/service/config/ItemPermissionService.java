@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.ItemPermission;
+import net.risesoft.enums.ItemPermissionEnum;
 
 /**
  * @author qinman
@@ -101,5 +102,6 @@ public interface ItemPermissionService {
      * @param roleType
      * @return
      */
-    ItemPermission save(String itemId, String processDefinitionId, String taskdefKey, String roleId, Integer roleType);
+    ItemPermission save(String itemId, String processDefinitionId, String taskdefKey, String roleId,
+        ItemPermissionEnum roleType);
 }

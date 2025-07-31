@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import lombok.Data;
 
+import net.risesoft.enums.ItemPermissionEnum;
+
 /**
  * 发送选人组织架构模型
  *
@@ -42,7 +44,7 @@ public class ItemRoleOrgUnitModel implements Serializable, Comparable<ItemRoleOr
     /**
      * 选项类型
      */
-    private Integer principalType;
+    private ItemPermissionEnum principalType;
 
     /**
      * 选项id

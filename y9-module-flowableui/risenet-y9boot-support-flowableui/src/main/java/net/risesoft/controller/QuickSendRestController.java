@@ -81,7 +81,7 @@ public class QuickSendRestController {
                     map.put("name", dept.getName());
                     map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());
                     list.add(map);
-                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
+                } else if (principalType == ItemPermissionEnum.GROUP_CUSTOM.getValue()) {
                     CustomGroup customGroup =
                         customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
                     map.put("id", customGroup.getId());
