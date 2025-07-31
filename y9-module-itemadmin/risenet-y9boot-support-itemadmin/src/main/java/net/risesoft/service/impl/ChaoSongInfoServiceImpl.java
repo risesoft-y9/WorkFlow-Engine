@@ -744,7 +744,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     }
                 } else if (Objects.equals(ItemPermissionEnum.POSITION.getValue(), type)) {
                     userIdListAdd.add(orgUnitId);
-                } else if (type.equals(ItemPermissionEnum.CUSTOMGROUP.getValue())) {
+                } else if (type.equals(ItemPermissionEnum.GROUP_CUSTOM.getValue())) {
                     List<CustomGroupMember> list0 = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
                         Y9LoginUserHolder.getPersonId(), orgUnitId, OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list0) {

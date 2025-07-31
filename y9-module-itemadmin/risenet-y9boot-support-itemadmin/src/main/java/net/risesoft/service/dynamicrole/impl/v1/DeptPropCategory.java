@@ -45,7 +45,7 @@ public class DeptPropCategory extends AbstractDynamicRoleMember {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
             userId = processInstance.getStartUserId();
         }
-        boolean isInherit = !dynamicRole.getRanges().equals(DynamicRoleRangesEnum.DEPT.getValue());
+        boolean isInherit = !dynamicRole.getRanges().equals(DynamicRoleRangesEnum.DEPT);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
         List<OrgUnit> orgUnitList = departmentApi
             .listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(), dynamicRole.getDeptPropCategory(), isInherit)

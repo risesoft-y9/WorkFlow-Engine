@@ -54,7 +54,7 @@ public class DynamicRoleRestController {
             optionValueApi.listByType(Y9LoginUserHolder.getTenantId(), "departmentPropCategory").getData();
         List<Role> roleList = roleApi.listRoleByParentId(InitDataConsts.TOP_PUBLIC_ROLE_ID).getData();
         drList.stream().filter(dynamicRole -> null != dynamicRole.getKinds()).forEach(dynamicRole -> {
-            if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.DEPT_PROP_CATEGORY.getValue())) {
+            if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.DEPT_PROP_CATEGORY)) {
                 List<OptionValue> dpcListFilter = dpcList.stream()
                     .filter(dpc -> dpc.getCode().equals(String.valueOf(dynamicRole.getDeptPropCategory())))
                     .collect(Collectors.toList());
@@ -63,7 +63,7 @@ public class DynamicRoleRestController {
                 } else {
                     dynamicRole.setDeptPropCategoryName(dpcListFilter.get(0).getName());
                 }
-            } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.ROLE.getValue())) {
+            } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.ROLE)) {
                 List<Role> roleListFilter = roleList.stream()
                     .filter(role -> role.getId().equals(dynamicRole.getRoleId())).collect(Collectors.toList());
                 if (roleListFilter.isEmpty()) {

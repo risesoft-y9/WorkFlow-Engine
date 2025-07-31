@@ -31,9 +31,6 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "关联流程表", appliesTo = "FF_ASSOCIATEDFILE")
 public class AssociatedFile implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -7634277136028658011L;
 
     /**

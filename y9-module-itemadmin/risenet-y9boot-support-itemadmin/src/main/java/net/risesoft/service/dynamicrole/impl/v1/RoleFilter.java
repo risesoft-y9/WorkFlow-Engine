@@ -50,7 +50,7 @@ public class RoleFilter extends AbstractDynamicRoleMember {
         String roleId = dynamicRole.getRoleId();
         List<Position> orgUnitList =
             positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
-        Integer ranges = dynamicRole.getRanges();
+        Integer ranges = dynamicRole.getRanges().getValue();
         switch (ranges) {
             case 1:
                 // 和[当前人或者流程启动人]同部门

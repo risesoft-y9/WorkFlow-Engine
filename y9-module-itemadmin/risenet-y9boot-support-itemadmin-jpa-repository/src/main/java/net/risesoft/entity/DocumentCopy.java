@@ -3,6 +3,7 @@ package net.risesoft.entity;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,6 +15,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.DocumentCopyStatusEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  * @author qinman
@@ -65,12 +69,10 @@ public class DocumentCopy implements Serializable {
     @Column(name = "SENDERID", length = 100)
     private String senderId;
 
-    /**
-     * 1:待填写意见,2:已填写意见,8:已取消,9:已删除
-     */
     @Comment("传阅状态")
     @Column(name = "STATUS", length = 2)
-    private Integer status = 1;
+    @Convert(converter = ItemEnumConverter.DocumentCopyStatusEnumConverter.class)
+    private DocumentCopyStatusEnum status = DocumentCopyStatusEnum.TODO_SIGN;
 
     @Comment("系统英文名称")
     @Column(name = "SYSTEMNAME", length = 50, nullable = false)

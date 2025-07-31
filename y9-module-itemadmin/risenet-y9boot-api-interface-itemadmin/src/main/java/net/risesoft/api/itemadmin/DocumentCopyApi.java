@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
@@ -47,7 +48,7 @@ public interface DocumentCopyApi {
     @PostMapping("/setStatus")
     Y9Result<Object> setStatus(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("id") String id,
-        @RequestParam(value = "status") Integer status);
+        @RequestParam(value = "status") DocumentCopyStatusEnum status);
 
     @PostMapping("/deleteByProcessSerialNumber")
     Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("tenantId") String tenantId,

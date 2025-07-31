@@ -234,7 +234,7 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 documentCopy.setUserId(nameAndId[1]);
                 documentCopy.setSenderId(orgUnitId);
                 documentCopy.setSenderName(orgUnit.getName());
-                documentCopy.setStatus(DocumentCopyStatusEnum.TODO_SIGN.getValue());
+                documentCopy.setStatus(DocumentCopyStatusEnum.TODO_SIGN);
                 documentCopy.setSystemName(processParam.getSystemName());
                 documentCopy.setCreateTime(sdf.format(new Date()));
                 documentCopy.setUpdateTime(sdf.format(new Date()));
@@ -248,7 +248,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     }
 
     @Override
-    public Y9Result<Object> setStatus(String tenantId, String userId, String orgUnitId, String id, Integer status) {
+    public Y9Result<Object> setStatus(String tenantId, String userId, String orgUnitId, String id,
+        DocumentCopyStatusEnum status) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Optional<DocumentCopy> optional = documentCopyService.findById(id);
@@ -269,9 +270,10 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<DocumentCopy> dcList =
             documentCopyService.findByProcessSerialNumberAndUserId(processSerialNumber, orgUnitId);
-        dcList.stream().filter(documentCopy -> documentCopy.getStatus() < DocumentCopyStatusEnum.CANCEL.getValue())
+        dcList.stream()
+            .filter(documentCopy -> documentCopy.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
             .forEach(documentCopy -> {
-                documentCopy.setStatus(DocumentCopyStatusEnum.DELETE.getValue());
+                documentCopy.setStatus(DocumentCopyStatusEnum.DELETE);
                 documentCopy.setUpdateTime(sdf.format(new Date()));
                 documentCopyService.save(documentCopy);
             });

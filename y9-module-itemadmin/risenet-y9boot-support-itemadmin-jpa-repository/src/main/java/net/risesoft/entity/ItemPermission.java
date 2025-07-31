@@ -3,6 +3,7 @@ package net.risesoft.entity;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,6 +15,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  * @author qinman
@@ -35,25 +39,19 @@ public class ItemPermission implements Serializable {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
-    /**
-     * 租户Id
-     */
+
     @Comment("租户Id")
     @Column(name = "TENANTID", length = 50)
     private String tenantId;
-    /**
-     * 角色Id
-     */
+
     @Comment("角色Id")
     @Column(name = "ROLEID")
     private String roleId;
 
-    /**
-     * @see net.risesoft.enums.ItemPermissionEnum
-     */
     @Comment("角色类型")
     @Column(name = "ROLETYPE")
-    private Integer roleType;
+    @Convert(converter = ItemEnumConverter.ItemPermissionEnumConverter.class)
+    private ItemPermissionEnum roleType = ItemPermissionEnum.ROLE;
 
     @Comment("事项Id")
     @Column(name = "ITEMID", length = 55, nullable = false)

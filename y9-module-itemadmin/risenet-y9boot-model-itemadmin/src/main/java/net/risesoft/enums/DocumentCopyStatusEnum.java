@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum DocumentCopyStatusEnum {
+public enum DocumentCopyStatusEnum implements ValuedEnum<Integer> {
     /** 待填写意见 */
     TODO_SIGN(1, "待填写意见"),
     /** 已填写意见 */

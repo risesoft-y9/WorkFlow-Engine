@@ -35,7 +35,7 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
         AbstractDynamicRoleMember dynamicRoleMemberService =
             (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
         List<OrgUnit> orgUnitList;
-        if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE.getValue())) {
+        if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
             if (dynamicRole.isUseProcessInstanceId()) {
                 orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId);
             } else {

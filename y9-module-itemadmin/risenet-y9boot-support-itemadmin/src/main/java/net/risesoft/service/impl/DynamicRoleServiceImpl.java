@@ -50,18 +50,18 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
     public DynamicRole saveOrUpdate(DynamicRole dynamicRole) {
         String id = dynamicRole.getId();
         if (StringUtils.isNotEmpty(id)) {
-            DynamicRole olddr = dynamicRoleRepository.findById(id).orElse(null);
-            if (null != olddr) {
-                olddr.setName(dynamicRole.getName());
-                olddr.setDescription(dynamicRole.getDescription());
-                olddr.setClassPath(dynamicRole.getClassPath());
-                olddr.setUseProcessInstanceId(dynamicRole.isUseProcessInstanceId());
-                olddr.setKinds(dynamicRole.getKinds());
-                olddr.setRanges(dynamicRole.getRanges());
-                olddr.setRoleId(dynamicRole.getRoleId());
-                olddr.setDeptPropCategory(dynamicRole.getDeptPropCategory());
-                dynamicRoleRepository.save(olddr);
-                return olddr;
+            DynamicRole older = dynamicRoleRepository.findById(id).orElse(null);
+            if (null != older) {
+                older.setName(dynamicRole.getName());
+                older.setDescription(dynamicRole.getDescription());
+                older.setClassPath(dynamicRole.getClassPath());
+                older.setUseProcessInstanceId(dynamicRole.isUseProcessInstanceId());
+                older.setKinds(dynamicRole.getKinds());
+                older.setRanges(dynamicRole.getRanges());
+                older.setRoleId(dynamicRole.getRoleId());
+                older.setDeptPropCategory(dynamicRole.getDeptPropCategory());
+                dynamicRoleRepository.save(older);
+                return older;
             } else {
                 return dynamicRoleRepository.save(dynamicRole);
             }

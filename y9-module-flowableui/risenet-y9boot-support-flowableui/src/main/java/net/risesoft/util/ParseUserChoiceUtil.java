@@ -65,7 +65,7 @@ public class ParseUserChoiceUtil {
                     for (Position pTemp : employeeList) {
                         users = addUserId(users, pTemp.getId());
                     }
-                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
+                } else if (principalType == ItemPermissionEnum.GROUP_CUSTOM.getValue()) {
                     List<CustomGroupMember> list =
                         Y9Context.getBean(CustomGroupApi.class).listCustomGroupMemberByGroupIdAndMemberType(tenantId,
                             Y9LoginUserHolder.getPersonId(), userIdTemp, OrgTypeEnum.POSITION).getData();

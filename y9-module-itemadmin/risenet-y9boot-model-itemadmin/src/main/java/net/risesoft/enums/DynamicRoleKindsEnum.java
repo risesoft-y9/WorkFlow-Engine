@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 事项表单类型
+ * 动态角色种类
  * 
  * @author qinman
  * @date 2022/12/20
  */
 @Getter
 @AllArgsConstructor
-public enum DynamicRoleKindsEnum {
+public enum DynamicRoleKindsEnum implements ValuedEnum<Integer> {
     /** 无 */
     NONE(0, "无"),
     /** 人员 */

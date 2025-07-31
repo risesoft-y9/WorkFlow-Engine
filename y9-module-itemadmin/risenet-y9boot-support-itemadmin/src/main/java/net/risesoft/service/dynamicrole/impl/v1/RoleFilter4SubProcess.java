@@ -64,7 +64,7 @@ public class RoleFilter4SubProcess extends AbstractDynamicRoleMember {
             userId = assignee;
         }
         OrgUnit personOrPosition = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        Integer ranges = dynamicRole.getRanges();
+        Integer ranges = dynamicRole.getRanges().getValue();
         switch (ranges) {
             case 1:
                 // 和[当前人或者子流程启动人]同部门
