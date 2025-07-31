@@ -9,6 +9,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.enums.SignDeptDetailStatusEnum;
+
 /**
  * 会签部门详情
  * 
@@ -91,9 +93,9 @@ public class SignDeptDetailModel implements Serializable {
     private String deptManager;
 
     /**
-     * 状态:1是在办、2是正常办结、3是退回办结、4是减签、5是减签后的特殊办结
+     * 状态
      */
-    private Integer status;
+    private SignDeptDetailStatusEnum status = SignDeptDetailStatusEnum.DOING;
 
     /**
      * 是否是新的
