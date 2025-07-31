@@ -27,6 +27,7 @@ import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.SignDeptDetail;
@@ -59,7 +60,6 @@ import net.risesoft.service.ProcessTrackService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.TaskRelatedService;
 import net.risesoft.service.TransactionHistoryWordService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -310,7 +310,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     HistoricVariableInstanceModel zhuBan = null;
                     try {
                         zhuBan = this.historicVariableApi
-                            .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLELSPONSOR, year)
+                            .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
                             .getData();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -398,7 +398,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 HistoricVariableInstanceModel zhuBan = null;
                 try {
                     zhuBan = this.historicVariableApi
-                        .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
+                        .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLEL_SPONSOR, year).getData();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -466,7 +466,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 model.setDescription(description);
                 if (description.contains("Delete MI execution")) {
                     HistoricVariableInstanceModel taskSenderModel = this.historicVariableApi
-                        .getByTaskIdAndVariableName(tenantId, hai.getId(), SysVariables.TASKSENDER, year).getData();
+                        .getByTaskIdAndVariableName(tenantId, hai.getId(), SysVariables.TASK_SENDER, year).getData();
                     if (taskSenderModel != null) {
                         String taskSender =
                             taskSenderModel.getValue() == null ? "" : (String)taskSenderModel.getValue();
@@ -638,7 +638,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 }
                 history.setAssigneeId(assignee);
                 HistoricVariableInstanceModel zhuBan = this.historicVariableApi
-                    .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year).getData();
+                    .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLEL_SPONSOR, year).getData();
                 if (zhuBan != null) {
                     history.setAssignee(employeeName + "(主办)");
                 } else {

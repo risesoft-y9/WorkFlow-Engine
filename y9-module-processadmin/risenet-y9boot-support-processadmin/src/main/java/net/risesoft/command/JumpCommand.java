@@ -30,7 +30,7 @@ import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.flowable.variable.service.VariableService;
 
-import net.risesoft.util.SysVariables;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -72,7 +72,7 @@ public class JumpCommand implements Command<Void> {
         TaskService taskService = CommandContextUtil.getTaskService();
         IdentityLinkService identityLinkService = CommandContextUtil.getIdentityLinkService();
         VariableService variableService = CommandContextUtil.getVariableService();
-        /**
+        /*
          * 根据taskId获取执行实例信息
          */
         TaskEntity taskEntity = taskService.getTask(taskId);
@@ -164,9 +164,9 @@ public class JumpCommand implements Command<Void> {
          */
         String user = null;
         Map<String, Object> vars = new HashMap<>(16);
-        vars.put(SysVariables.TASKSENDER, Y9LoginUserHolder.getOrgUnit().getName());
-        vars.put(SysVariables.TASKSENDERID, Y9LoginUserHolder.getOrgUnitId());
-        vars.put(SysVariables.TASKSENDERPOSITIONID, Y9LoginUserHolder.getOrgUnitId());
+        vars.put(SysVariables.TASK_SENDER, Y9LoginUserHolder.getOrgUnit().getName());
+        vars.put(SysVariables.TASK_SENDER_ID, Y9LoginUserHolder.getOrgUnitId());
+        vars.put(SysVariables.TASK_SENDER_POSITION_ID, Y9LoginUserHolder.getOrgUnitId());
         if (users.size() == 1) {
             user = users.get(0);
         }

@@ -21,7 +21,7 @@ public enum ItemBoxTypeEnum {
     /** 在办 */
     DOING("doing", "在办"),
     /** 在办 */
-    HAVEDONE("haveDone", "已办"),
+    HAVE_DONE("haveDone", "已办"),
     /** 办结 */
     DONE("done", "办结"),
     /** 办结 */
@@ -41,7 +41,7 @@ public enum ItemBoxTypeEnum {
     /** 监控回收站 */
     MONITOR_RECYCLE("monitorRecycle", "监控回收站"),
     /** 阅件 */
-    YUEJIAN("yuejian", "阅件");
+    YUE_JIAN("yuejian", "阅件");
 
     private final String value;
     private final String name;

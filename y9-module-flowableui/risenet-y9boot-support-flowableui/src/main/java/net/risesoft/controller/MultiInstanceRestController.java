@@ -23,12 +23,12 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.MultiInstanceService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -182,7 +182,7 @@ public class MultiInstanceRestController {
         String sponsorTaskId = "";
         for (TaskModel task : list) {
             String parallelSponsor =
-                variableApi.getVariableLocal(tenantId, task.getId(), SysVariables.PARALLELSPONSOR).getData();
+                variableApi.getVariableLocal(tenantId, task.getId(), SysVariables.PARALLEL_SPONSOR).getData();
             if (parallelSponsor != null) {
                 sponsorTaskId = task.getId();
                 break;
@@ -190,13 +190,13 @@ public class MultiInstanceRestController {
         }
         if (StringUtils.isNotBlank(sponsorTaskId)) {
             // 删除任务变量
-            variableApi.deleteVariableLocal(tenantId, sponsorTaskId, SysVariables.PARALLELSPONSOR);
+            variableApi.deleteVariableLocal(tenantId, sponsorTaskId, SysVariables.PARALLEL_SPONSOR);
         }
 
         // 重设任务变量
         Map<String, Object> val = new HashMap<>();
         val.put("val", taskModel.getAssignee());
-        variableApi.setVariableLocal(tenantId, taskId, SysVariables.PARALLELSPONSOR, val);
+        variableApi.setVariableLocal(tenantId, taskId, SysVariables.PARALLEL_SPONSOR, val);
 
         // 修改自定义变量主办人字段
         ProcessParamModel processParam =

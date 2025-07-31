@@ -10,6 +10,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.itemadmin.opinion.ItemOpinionFrameBindApi;
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionListModel;

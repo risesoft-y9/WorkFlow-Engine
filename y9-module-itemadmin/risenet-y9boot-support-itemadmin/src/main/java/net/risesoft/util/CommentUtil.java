@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.hibernate.annotations.Comment;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.y9.Y9Context;
 
 /**

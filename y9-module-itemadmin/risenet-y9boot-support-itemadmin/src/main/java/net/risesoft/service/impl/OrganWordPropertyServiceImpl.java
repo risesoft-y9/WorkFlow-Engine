@@ -10,12 +10,12 @@ import com.google.common.collect.Lists;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.organword.OrganWordProperty;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.organword.OrganWordPropertyRepository;
 import net.risesoft.service.OrganWordPropertyService;
-import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman

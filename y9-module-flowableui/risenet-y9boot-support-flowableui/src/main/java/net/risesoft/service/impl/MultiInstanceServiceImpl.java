@@ -19,13 +19,13 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -146,10 +146,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
         // 改变多实例的标量
         int nrOfInstances = Integer.parseInt(
-            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES).getData());
+            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NR_OF_INSTANCES).getData());
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances + userChoiceArr.length);
-        runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);
+        runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);
     }
 
     @Override
@@ -267,9 +267,9 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
         // 改变多实例的标量
         int nrOfInstances = Integer.parseInt(
-            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES).getData());
+            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NR_OF_INSTANCES).getData());
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances - 1);
-        runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);
+        runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);
     }
 }

@@ -19,11 +19,11 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -75,7 +75,7 @@ public class ProcessParamRestController {
             Map<String, Object> vars = new HashMap<>();
             vars.put("val", actionName);
             variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
-                SysVariables.ACTIONNAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
+                SysVariables.ACTION_NAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
         }
         return Y9Result.success(null);
     }

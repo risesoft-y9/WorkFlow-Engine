@@ -27,6 +27,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -35,7 +36,6 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -125,7 +125,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         String mainSenderId =
-            variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAINSENDERID).getData();
+            variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAIN_SENDER_ID).getData();
         if (StringUtils.isBlank(mainSenderId)) {
             return Y9Result.failure("办结失败：缺少主流程的发送人！");
         }
@@ -253,7 +253,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             Map<String, Object> vars = new HashMap<>();
             vars.put("val", desc);
             variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
-                SysVariables.ACTIONNAME + ":" + positionId, vars);
+                SysVariables.ACTION_NAME + ":" + positionId, vars);
             // 3、重定位，谁激活就重定位给谁
             buttonOperationApi.reposition(tenantId, positionId, hisTaskModel.getId(),
                 hisTaskModel.getTaskDefinitionKey(), List.of(positionId), desc, "");

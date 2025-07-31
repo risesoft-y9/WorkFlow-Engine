@@ -25,12 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.GatewayModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman
@@ -52,7 +52,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         flowElementModel.setElementName(flowElement.getName() + (isSub ? "[子]" : ""));
         Object obj = null;
         if (flowElement instanceof UserTask) {
-            flowElementModel.setType(SysVariables.USERTASK);
+            flowElementModel.setType(SysVariables.USER_TASK);
             UserTask userTask = (UserTask)flowElement;
             obj = userTask.getBehavior();
         } else if (flowElement instanceof SubProcess) {
@@ -62,7 +62,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             obj = subProcess.getBehavior();
         } else if (flowElement instanceof CallActivity) {
             flowElementModel.setElementName(flowElement.getName() + "【子】");
-            flowElementModel.setType(SysVariables.CALLACTIVITY);
+            flowElementModel.setType(SysVariables.CALL_ACTIVITY);
             CallActivity callActivity = (CallActivity)flowElement;
             obj = callActivity.getBehavior();
         }
@@ -91,7 +91,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             targetModel.setTaskDefName(fe.getName());
         }
         if (fe instanceof UserTask) {
-            targetModel.setType(SysVariables.USERTASK);
+            targetModel.setType(SysVariables.USER_TASK);
             UserTask userTask = (UserTask)fe;
             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                 targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
@@ -114,7 +114,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 targetModel.setMultiInstance(SysVariables.COMMON);
             }
         } else if (fe instanceof EndEvent) {
-            targetModel.setType(SysVariables.ENDEVENT);
+            targetModel.setType(SysVariables.END_EVENT);
             if (StringUtils.isBlank(targetModel.getTaskDefName())) {
                 targetModel.setTaskDefName("办结");
             }
@@ -127,7 +127,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         targetModel.setTaskDefKey(flowElement.getId());
         targetModel.setTaskDefName(flowElement.getName() + (isSub ? "[子]" : ""));
         if (flowElement instanceof UserTask) {
-            targetModel.setType(SysVariables.USERTASK);
+            targetModel.setType(SysVariables.USER_TASK);
             UserTask userTask = ((UserTask)flowElement);
             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                 targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
@@ -148,7 +148,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 targetModel.setMultiInstance(SysVariables.COMMON);
             }
         } else if (flowElement instanceof EndEvent) {
-            targetModel.setType(SysVariables.ENDEVENT);
+            targetModel.setType(SysVariables.END_EVENT);
         }
         return targetModel;
     }

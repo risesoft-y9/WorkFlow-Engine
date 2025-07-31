@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.OfficeFollow;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.RemindInstance;
@@ -31,7 +32,6 @@ import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.RemindInstanceService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.template.TaoHongTemplateType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -16,7 +17,6 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.template.TaoHongTemplateTypeRepository;
 import net.risesoft.service.TaoHongTemplateTypeService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

@@ -35,6 +35,7 @@ import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.command.RecoveryTodoCommand;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -45,7 +46,6 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.DeleteProcessService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 
@@ -285,8 +285,8 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 for (HistoricVariableInstance pVar : pVarList) {
                     String key = pVar.getVariableName();
                     Object val = pVar.getValue();
-                    if (key.equals(SysVariables.ELEMENTUSER) || key.equals(SysVariables.LOOPCOUNTER)
-                        || key.equals(SysVariables.ROUTETOTASKID) || key.equals(SysVariables.USER)
+                    if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
+                        || key.equals(SysVariables.ROUTE_TO_TASK_ID) || key.equals(SysVariables.USER)
                         || key.equals(SysVariables.USERS)) {
                         continue;
                     }
@@ -295,16 +295,16 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 List<String> usersList = new ArrayList<>();
                 usersList.add(orgUnitId);
                 pVarMap.put(SysVariables.USERS, usersList);
-                pVarMap.put(SysVariables.NROFINSTANCES, 1);
-                pVarMap.put(SysVariables.NROFCOMPLETEDINSTANCES, 0);
-                pVarMap.put(SysVariables.NROFACTIVEINSTANCES, 1);
-                pVarMap.put(SysVariables.LOOPCOUNTER, 0);
+                pVarMap.put(SysVariables.NR_OF_INSTANCES, 1);
+                pVarMap.put(SysVariables.NR_OF_COMPLETED_INSTANCES, 0);
+                pVarMap.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
+                pVarMap.put(SysVariables.LOOP_COUNTER, 0);
             } else if (nodeType.equals(SysVariables.PARALLEL)) {
                 for (HistoricVariableInstance pVar : pVarList) {
                     String key = pVar.getVariableName();
                     Object val = pVar.getValue();
-                    if (key.equals(SysVariables.ELEMENTUSER) || key.equals(SysVariables.LOOPCOUNTER)
-                        || key.equals(SysVariables.ROUTETOTASKID) || key.equals(SysVariables.USER)) {
+                    if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
+                        || key.equals(SysVariables.ROUTE_TO_TASK_ID) || key.equals(SysVariables.USER)) {
                         continue;
                     }
                     pVarMap.put(key, val);
@@ -312,16 +312,16 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 List<String> usersList = new ArrayList<>();
                 usersList.add(orgUnitId);
                 pVarMap.put(SysVariables.USERS, usersList);
-                pVarMap.put(SysVariables.NROFINSTANCES, 1);
-                pVarMap.put(SysVariables.NROFCOMPLETEDINSTANCES, 0);
-                pVarMap.put(SysVariables.NROFACTIVEINSTANCES, 1);
-                pVarMap.put(SysVariables.LOOPCOUNTER, 0);
+                pVarMap.put(SysVariables.NR_OF_INSTANCES, 1);
+                pVarMap.put(SysVariables.NR_OF_COMPLETED_INSTANCES, 0);
+                pVarMap.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
+                pVarMap.put(SysVariables.LOOP_COUNTER, 0);
             } else {
                 for (HistoricVariableInstance pVar : pVarList) {
                     String key = pVar.getVariableName();
                     Object val = pVar.getValue();
-                    if (key.equals(SysVariables.ELEMENTUSER) || key.equals(SysVariables.LOOPCOUNTER)
-                        || key.equals(SysVariables.ROUTETOTASKID)) {
+                    if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
+                        || key.equals(SysVariables.ROUTE_TO_TASK_ID)) {
                         continue;
                     }
                     pVarMap.put(key, val);
@@ -367,7 +367,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             List<HistoricActivityInstance> hisActivityList = historyService.createHistoricActivityInstanceQuery()
                 .processInstanceId(processInstanceId).orderByHistoricActivityInstanceEndTime().desc().list();
             for (HistoricActivityInstance hisActivity : hisActivityList) {
-                if (hisActivity.getActivityType().equals(SysVariables.USERTASK)) {
+                if (hisActivity.getActivityType().equals(SysVariables.USER_TASK)) {
                     String sql2 =
                         "UPDATE ACT_HI_ACTINST SET END_TIME_=NULL,DURATION_=NULL,DELETE_REASON_=NULL WHERE ID_ = #{ID_}";
                     runtimeService.createNativeExecutionQuery().sql(sql2).parameter("ID_", hisActivity.getId()).list();

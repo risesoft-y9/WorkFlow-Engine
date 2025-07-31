@@ -11,6 +11,7 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.y9.Y9Context;
 
 /**
@@ -72,8 +73,8 @@ public class WorkflowUtils {
         Map<String, String> types = new HashMap<String, String>(16);
         types.put("userTask", "用户任务");
         types.put("serviceTask", "系统任务");
-        types.put(SysVariables.STARTEVENT, "开始节点");
-        types.put(SysVariables.ENDEVENT, "结束节点");
+        types.put(SysVariables.START_EVENT, "开始节点");
+        types.put(SysVariables.END_EVENT, "结束节点");
         types.put("exclusiveGateway", "条件判断节点(系统自动根据条件处理)");
         types.put("inclusiveGateway", "并行处理任务");
         types.put("callActivity", "子流程");

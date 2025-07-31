@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.controller.vo.ProcessInstanceVO;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
@@ -30,7 +31,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.CustomVariableService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -267,7 +267,7 @@ public class VariableVueController {
             } else {
                 return Y9Result.failure(key + "中[" + userTemp + "]对应的人员不存在。");
             }
-        } else if (SysVariables.USER.equals(key) || SysVariables.TASKSENDERID.equals(key)) {
+        } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
             if (null != orgUnit && null != orgUnit.getId()) {
                 runtimeService.setVariable(processInstanceId, key, value);
@@ -320,7 +320,7 @@ public class VariableVueController {
             } else {
                 return Y9Result.failure(key + "中[" + userTemp + "]对应的人员不存在。");
             }
-        } else if (SysVariables.USER.equals(key) || SysVariables.TASKSENDERID.equals(key)) {
+        } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
             if (null != orgUnit && null != orgUnit.getId()) {
                 customVariableService.setVariableLocal(taskId, key, value);

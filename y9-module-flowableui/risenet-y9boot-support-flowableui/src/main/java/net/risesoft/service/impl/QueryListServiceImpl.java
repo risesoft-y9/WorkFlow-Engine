@@ -23,6 +23,7 @@ import net.risesoft.api.itemadmin.worklist.QueryListApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -32,7 +33,6 @@ import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.QueryListService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -156,7 +156,7 @@ public class QueryListServiceImpl implements QueryListService {
                     OfficeDoneInfoModel officeDoneInfo =
                         officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String startTime = officeDoneInfo.getStartTime().substring(0, 16);
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);

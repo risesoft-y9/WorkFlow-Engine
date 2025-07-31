@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

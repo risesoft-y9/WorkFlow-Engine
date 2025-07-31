@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Reminder;
 import net.risesoft.enums.ItemUrgeTypeEnum;
 import net.risesoft.id.IdType;
@@ -30,7 +31,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.ReminderRepository;
 import net.risesoft.service.ReminderService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

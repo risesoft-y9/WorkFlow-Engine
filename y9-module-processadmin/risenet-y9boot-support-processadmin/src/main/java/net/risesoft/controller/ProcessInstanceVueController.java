@@ -30,6 +30,7 @@ import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -40,7 +41,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomIdentityService;
 import net.risesoft.service.CustomTaskService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -217,8 +217,8 @@ public class ProcessInstanceVueController {
                     String number = officeDoneInfoModel.getDocNumber();
                     String completer = officeDoneInfoModel.getUserComplete();
                     mapTemp.put("itemName", officeDoneInfoModel.getItemName());
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                    mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("processDefinitionKey", officeDoneInfoModel.getProcessDefinitionKey());

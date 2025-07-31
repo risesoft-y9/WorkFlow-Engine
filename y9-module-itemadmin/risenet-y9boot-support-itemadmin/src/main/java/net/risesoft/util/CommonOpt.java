@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.processadmin.FlowElementModel;
 
 /**
@@ -39,17 +40,17 @@ public class CommonOpt {
             user = users.get(0);
         }
         Map<String, Object> varMap = new HashMap<>(16);
-        varMap.put(SysVariables.TASKSENDERID, taskSenderId);
-        varMap.put(SysVariables.TASKSENDER, taskSender);
+        varMap.put(SysVariables.TASK_SENDER_ID, taskSenderId);
+        varMap.put(SysVariables.TASK_SENDER, taskSender);
         if (StringUtils.isNotBlank(routeToTaskId)) {
-            varMap.put(SysVariables.ROUTETOTASKID, routeToTaskId);
+            varMap.put(SysVariables.ROUTE_TO_TASK_ID, routeToTaskId);
         }
         varMap.put(SysVariables.USER, user);
         varMap.put(SysVariables.USERS, users);
         if (null != flowElementModel && (flowElementModel.getType().equals(SysVariables.SUBPROCESS)
-            || flowElementModel.getType().equals(SysVariables.CALLACTIVITY))) {
-            varMap.put(SysVariables.MAINSENDERID, taskSenderId);
-            varMap.put(SysVariables.MAINSENDER, taskSender);
+            || flowElementModel.getType().equals(SysVariables.CALL_ACTIVITY))) {
+            varMap.put(SysVariables.MAIN_SENDER_ID, taskSenderId);
+            varMap.put(SysVariables.MAIN_SENDER, taskSender);
         }
         return varMap;
     }
@@ -65,7 +66,7 @@ public class CommonOpt {
      */
     public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId,
         List<String> users, String processSerialNumber, FlowElementModel flowElementModel, Map<String, Object> map) {
-        map.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+        map.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
         map.putAll(setVariables(taskSenderId, taskSender, routeToTaskId, users, flowElementModel));
         return map;
     }
@@ -91,13 +92,13 @@ public class CommonOpt {
             }
         }
         Map<String, Object> varMap = new HashMap<>(16);
-        varMap.put(SysVariables.TASKSENDERID, taskSenderId);
-        varMap.put(SysVariables.TASKSENDER, taskSender);
+        varMap.put(SysVariables.TASK_SENDER_ID, taskSenderId);
+        varMap.put(SysVariables.TASK_SENDER, taskSender);
         if (StringUtils.isNotBlank(routeToTaskId)) {
-            varMap.put(SysVariables.ROUTETOTASKID, routeToTaskId);
+            varMap.put(SysVariables.ROUTE_TO_TASK_ID, routeToTaskId);
         }
         varMap.put(SysVariables.USERS, users);
-        varMap.put(SysVariables.DOCUMENTTITLE, documentTitle);
+        varMap.put(SysVariables.DOCUMENT_TITLE, documentTitle);
         return varMap;
     }
 }

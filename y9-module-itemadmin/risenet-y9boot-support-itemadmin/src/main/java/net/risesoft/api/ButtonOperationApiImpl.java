@@ -21,6 +21,7 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.FlowElementModel;
@@ -32,7 +33,6 @@ import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.DocumentService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.CommonOpt;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -177,8 +177,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             Map<String, Object> variables = CommonOpt.setVariables(orgUnitId, orgUnit.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();
-            val.put("val", SysVariables.REFUSECLAIMROLLBACK);
-            variableApi.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
+            val.put("val", SysVariables.REFUSE_CLAIM_ROLLBACK);
+            variableApi.setVariableLocal(tenantId, taskId, SysVariables.REFUSE_CLAIM_ROLLBACK, val);
             taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
             /*
              * 如果上一任务是并行，则回退时设置主办人
@@ -189,7 +189,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
                 for (TaskModel taskModelNext : taskNextList1) {
                     Map<String, Object> val1 = new HashMap<>();
                     val1.put("val", assignee.split(SysVariables.COLON)[0]);
-                    variableApi.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLELSPONSOR, val1);
+                    variableApi.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLEL_SPONSOR, val1);
                 }
             }
         } catch (Exception e) {
