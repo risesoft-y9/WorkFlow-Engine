@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,6 +18,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.SignDeptDetailStatusEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  * @author qinman
@@ -91,10 +95,10 @@ public class SignDeptDetail implements Serializable {
     @Column(name = "DEPTMANAGER", length = 50)
     private String deptManager;
 
-    /** 1是在办、2是正常办结、3是退回办结、4是减签 */
     @Comment("状态")
     @Column(name = "STATUS", length = 2)
-    private Integer status;
+    @Convert(converter = ItemEnumConverter.SignDeptDetailStatusEnumConverter.class)
+    private SignDeptDetailStatusEnum status = SignDeptDetailStatusEnum.DOING;
 
     @Comment("是否是新的")
     @Column(name = "NEWED", length = 2)

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -87,7 +88,8 @@ public interface SignDeptDetailApi {
      */
     @GetMapping(value = "/findByProcessSerialNumberAndStatus")
     Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("status") int status);
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("status") SignDeptDetailStatusEnum status);
 
     /**
      * 保存会签信息

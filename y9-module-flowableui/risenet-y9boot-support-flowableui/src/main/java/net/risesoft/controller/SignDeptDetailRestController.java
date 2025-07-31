@@ -203,7 +203,7 @@ public class SignDeptDetailRestController {
         @RequestParam(required = false) String signDepIdtDetailId) {
         if (StringUtils.isBlank(signDepIdtDetailId)) {
             return signDeptDetailApi.findByProcessSerialNumberAndStatus(Y9LoginUserHolder.getTenantId(),
-                processSerialNumber, SignDeptDetailStatusEnum.DONE.getValue());
+                processSerialNumber, SignDeptDetailStatusEnum.DONE);
         }
         return Y9Result.success(Collections
             .singletonList(signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDepIdtDetailId).getData()));

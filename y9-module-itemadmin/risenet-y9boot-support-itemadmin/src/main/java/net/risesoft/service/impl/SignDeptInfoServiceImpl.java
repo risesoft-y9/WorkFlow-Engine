@@ -94,8 +94,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         if (sdiOptional.isPresent()) {
             SignDeptInfo sdi = sdiOptional.get();
             if ("0".equals(sdi.getDeptType())) {
-                List<SignDeptDetail> doneList = signDeptDetailService.findByProcessSerialNumberAndStatus(
-                    sdi.getProcessSerialNumber(), SignDeptDetailStatusEnum.DONE.getValue());
+                List<SignDeptDetail> doneList = signDeptDetailService
+                    .findByProcessSerialNumberAndStatus(sdi.getProcessSerialNumber(), SignDeptDetailStatusEnum.DONE);
                 boolean match = doneList.stream().anyMatch(detail -> detail.getDeptId().equals(sdi.getDeptId()));
                 if (!match) {
                     signDeptInfoRepository.deleteById(id);
@@ -136,7 +136,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         List<String> deptIdList = Arrays.asList(deptIdArr);
         if ("0".equals(deptType)) {
             List<SignDeptDetail> doneList = signDeptDetailService
-                .findByProcessSerialNumberAndStatus(processSerialNumber, SignDeptDetailStatusEnum.DONE.getValue());
+                .findByProcessSerialNumberAndStatus(processSerialNumber, SignDeptDetailStatusEnum.DONE);
             doneList.forEach(detail -> {
                 if (!deptIdList.contains(detail.getDeptId())) {
                     deptIdList.add(detail.getDeptId());

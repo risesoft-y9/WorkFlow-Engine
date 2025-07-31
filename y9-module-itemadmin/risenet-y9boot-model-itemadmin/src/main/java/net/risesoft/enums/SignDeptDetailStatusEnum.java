@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum SignDeptDetailStatusEnum {
+public enum SignDeptDetailStatusEnum implements ValuedEnum<Integer> {
     /** 在办 */
     DOING(1, "在办"),
     /** 正常办结 */

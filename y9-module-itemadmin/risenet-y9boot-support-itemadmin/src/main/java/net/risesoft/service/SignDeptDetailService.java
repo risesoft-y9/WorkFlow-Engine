@@ -3,6 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 
 import net.risesoft.entity.SignDeptDetail;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 
 /**
  * @author qinman
@@ -21,7 +22,8 @@ public interface SignDeptDetailService {
 
     SignDeptDetail findByProcessSerialNumberAndDeptId4Latest(String processSerialNumber, String deptId);
 
-    List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processSerialNumber, int status);
+    List<SignDeptDetail> findByProcessSerialNumberAndStatus(String processSerialNumber,
+        SignDeptDetailStatusEnum status);
 
     List<SignDeptDetail> findByTaskId(String processInstanceId, String taskId);
 
