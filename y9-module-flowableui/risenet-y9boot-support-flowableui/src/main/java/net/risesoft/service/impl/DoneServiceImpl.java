@@ -23,6 +23,7 @@ import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.itemadmin.worklist.ItemDoneApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -30,7 +31,6 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoneService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @RequiredArgsConstructor
@@ -79,8 +79,8 @@ public class DoneServiceImpl implements DoneService {
                 String number = hpim.getDocNumber();
                 String completer = StringUtils.isBlank(hpim.getUserComplete()) ? "无" : hpim.getUserComplete();
                 mapTemp.put("itemName", itemName);
-                mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
+                mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                 mapTemp.put("processInstanceId", processInstanceId);
                 mapTemp.put("processDefinitionId", processDefinitionId);
                 mapTemp.put("processDefinitionKey", processDefinitionKey);
@@ -133,8 +133,8 @@ public class DoneServiceImpl implements DoneService {
                 String number = hpim.getDocNumber();
                 String completer = StringUtils.isBlank(hpim.getUserComplete()) ? "无" : hpim.getUserComplete();
                 mapTemp.put("itemName", itemName);
-                mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
+                mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                 mapTemp.put("processDefinitionId", processDefinitionId);
                 mapTemp.put("processDefinitionKey", processDefinitionKey);
                 mapTemp.put("startTime", startTime);
@@ -201,7 +201,7 @@ public class DoneServiceImpl implements DoneService {
                 processInstanceId = hpim.getProcessInstanceId();
                 String processSerialNumber = hpim.getProcessSerialNumber();
                 try {
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("itemId", itemId);
                     mapTemp.put("itemName", itemName);
                     // String processDefinitionId = hpim.getProcessDefinitionId();

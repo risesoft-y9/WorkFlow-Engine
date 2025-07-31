@@ -16,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman

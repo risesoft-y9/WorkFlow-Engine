@@ -15,12 +15,12 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.PushNormalToAndroidService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
@@ -54,7 +54,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
         try {
             LOGGER.info("##########################消息推送提醒##########################");
             String assignee = task.getAssignee();
-            String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
+            String processSerialNumber = (String)map.get(SysVariables.PROCESS_SERIAL_NUMBER);
             String tenantId = (String)map.get("tenantId");
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();

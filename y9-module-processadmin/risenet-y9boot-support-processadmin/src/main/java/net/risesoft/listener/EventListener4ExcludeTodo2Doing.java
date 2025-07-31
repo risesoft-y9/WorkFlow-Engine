@@ -17,13 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
 
 /**
@@ -60,12 +60,12 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 Map<String, Object> mapTemp = new HashMap<>(16);
                 String user = (String)taskEntity.getVariable(SysVariables.USER);
                 List<String> users = (List<String>)taskEntity.getVariable(SysVariables.USERS);
-                String taskSender = (String)taskEntity.getVariable(SysVariables.TASKSENDER);
-                String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASKSENDERID);
-                String tenantId = (String)taskEntity.getVariable(SysVariables.TENANTID);
-                String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
+                String taskSender = (String)taskEntity.getVariable(SysVariables.TASK_SENDER);
+                String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASK_SENDER_ID);
+                String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
+                String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
                 Integer priority = (Integer)taskEntity.getVariable(SysVariables.PRIORITY);
-                Object actionName = taskEntity.getVariable(SysVariables.ACTIONNAME + ":" + taskSenderId);
+                Object actionName = taskEntity.getVariable(SysVariables.ACTION_NAME + ":" + taskSenderId);
 
                 if (null != user) {
                     mapTemp.put(SysVariables.USER, user);
@@ -76,10 +76,10 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 }
 
                 if (StringUtils.isNotBlank(taskSender)) {
-                    mapTemp.put(SysVariables.TASKSENDER, taskSender);
+                    mapTemp.put(SysVariables.TASK_SENDER, taskSender);
                 }
                 if (StringUtils.isNotBlank(taskSenderId)) {
-                    mapTemp.put(SysVariables.TASKSENDERID, taskSenderId);
+                    mapTemp.put(SysVariables.TASK_SENDER_ID, taskSenderId);
                 }
                 if (null != priority) {
                     Integer p = taskEntity.getPriority();

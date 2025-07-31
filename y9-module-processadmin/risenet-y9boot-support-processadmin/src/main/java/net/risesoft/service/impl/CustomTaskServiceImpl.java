@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.command.JumpSubProcessCommand;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
@@ -37,7 +38,6 @@ import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.FlowableModelConvertUtil;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -123,7 +123,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 // 成功备份数据才办结
                 String endNodeKey = customProcessDefinitionService.getEndNode(taskId).getData().getTaskDefKey();
                 Map<String, Object> vars = new HashMap<>(16);
-                vars.put(SysVariables.ROUTETOTASKID, endNodeKey);
+                vars.put(SysVariables.ROUTE_TO_TASK_ID, endNodeKey);
                 this.completeWithVariables(taskId, vars);
                 // 保存到数据中心，在流程办结监听执行
                 // process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year, position.getId(),
@@ -177,12 +177,12 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             }
             Map<String, Object> variables = new HashMap<>();
             String endNodeKey = customProcessDefinitionService.getEndNode(taskId).getData().getTaskDefKey();
-            variables.put(SysVariables.ROUTETOTASKID, endNodeKey);
+            variables.put(SysVariables.ROUTE_TO_TASK_ID, endNodeKey);
             if (userList.size() == 1) {
                 variables.put(SysVariables.USER, userList.stream().findFirst().get());
             }
             variables.put(SysVariables.USERS, userList);
-            variables.put(SysVariables.ACTIONNAME + ":" + Y9LoginUserHolder.getOrgUnitId(), "结束会签");
+            variables.put(SysVariables.ACTION_NAME + ":" + Y9LoginUserHolder.getOrgUnitId(), "结束会签");
             this.completeWithVariables(taskId, variables);
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -220,12 +220,12 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             .listParallelGateway(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
         String routeToTaskId = parallelGatewayList.get(0).getTaskDefKey();
         Map<String, Object> vars = new HashMap<>(16);
-        vars.put(SysVariables.ROUTETOTASKID, routeToTaskId);
+        vars.put(SysVariables.ROUTE_TO_TASK_ID, routeToTaskId);
         for (Task t : taskList) {
             if (StringUtils.isEmpty(t.getAssignee())) {
                 taskService.complete(t.getId(), vars);
             } else {
-                taskService.setVariableLocal(t.getId(), SysVariables.ISPARALLEGATEWAYTASK, true);
+                taskService.setVariableLocal(t.getId(), SysVariables.IS_PARALLEL_GATEWAY_TASK, true);
             }
         }
     }

@@ -28,6 +28,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
@@ -54,7 +55,6 @@ import net.risesoft.repository.opinion.OpinionHistoryRepository;
 import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
@@ -324,14 +324,14 @@ public class AsyncHandleService {
             List<SignDeptDetail> detailList = new ArrayList<>();
             for (TaskModel taskNext : nextTaskList) {
                 Map<String, Object> vars = new HashMap<>(16);
-                vars.put(SysVariables.TASKSENDER, orgUnit.getName());
-                vars.put(SysVariables.TASKSENDERID, orgUnitId);
+                vars.put(SysVariables.TASK_SENDER, orgUnit.getName());
+                vars.put(SysVariables.TASK_SENDER_ID, orgUnitId);
                 /**
                  * 并行状态且区分主协办情况下，如果受让人是主办人，则将主办人guid设为任务变量
                  */
                 if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {
                     if (taskNext.getAssignee().equals(sponsorGuid)) {
-                        vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
+                        vars.put(SysVariables.PARALLEL_SPONSOR, sponsorGuid);
                     }
                 }
                 Boolean isSubProcessChildNode = processDefinitionApi

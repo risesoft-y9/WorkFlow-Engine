@@ -1,27 +1,30 @@
 package net.risesoft.service;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.enums.ActRuDetailSignStatusEnum;
-import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
+import net.risesoft.enums.ActRuDetailStatusEnum;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.y9.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -43,7 +46,7 @@ public class Task4ActRuDetaillService {
 
     public void todo2doing(DelegateTask taskEntity) {
         try {
-            String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
+            String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -51,30 +54,30 @@ public class Task4ActRuDetaillService {
             }
         } catch (Exception e) {
             LOGGER.warn(
-                    "##########################Task4ActRuDetaillService:todo2doing待办-->在办失败-taskId:{}##########################",
-                    taskEntity.getId(), e);
+                "##########################Task4ActRuDetaillService:todo2doing待办-->在办失败-taskId:{}##########################",
+                taskEntity.getId(), e);
         }
     }
 
     public void createTodo(DelegateTask taskEntity) {
         try {
-            String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
+            String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
-                String processSerialNumber = (String) taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
+                String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
                 actRuDetailApi.saveOrUpdate(tenantId,
-                        getModel(tenantId, processSerialNumber, taskEntity, taskEntity.getAssignee()));
+                    getModel(tenantId, processSerialNumber, taskEntity, taskEntity.getAssignee()));
             }
         } catch (Exception e) {
             LOGGER.warn(
-                    "##########################Task4ActRuDetaillService:createTodo保存待办信息失败-taskId:{}##########################",
-                    taskEntity.getId(), e);
+                "##########################Task4ActRuDetaillService:createTodo保存待办信息失败-taskId:{}##########################",
+                taskEntity.getId(), e);
         }
     }
 
     private ActRuDetailModel getModel(String tenantId, String processSerialNumber, DelegateTask taskEntity,
-                                      String assignee) {
+        String assignee) {
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
         ActRuDetailModel model = new ActRuDetailModel();
         model.setCreateTime(taskEntity.getCreateTime());
@@ -97,7 +100,7 @@ public class Task4ActRuDetaillService {
         model.setStartTime(getStartTime(taskEntity.getProcessInstanceId()));
         model.setSignStatus(ActRuDetailSignStatusEnum.NONE);
 
-        String taskSenderId = (String) taskEntity.getVariable(SysVariables.TASKSENDERID);
+        String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASK_SENDER_ID);
         OrgUnit sendUser = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskSenderId).getData();
         model.setSendUserId(taskSenderId);
         model.setSendUserName(sendUser.getName());
@@ -108,8 +111,8 @@ public class Task4ActRuDetaillService {
     private String getStartTime(String processInstanceId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String sql0 =
-                "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
-                        + processInstanceId + "'";
+            "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
+                + processInstanceId + "'";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
         return list.isEmpty() ? sdf.format(new Date()) : list.get(0).get("START_TIME_").toString();
     }
@@ -121,7 +124,7 @@ public class Task4ActRuDetaillService {
      */
     public void claim(DelegateTask taskEntity) {
         try {
-            String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
+            String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -129,8 +132,8 @@ public class Task4ActRuDetaillService {
             }
         } catch (Exception e) {
             LOGGER.warn(
-                    "##########################saveOrUpdate4DoSign抢占式节点-保存流程流转信息失败-taskId:{}##########################",
-                    taskEntity.getId(), e);
+                "##########################saveOrUpdate4DoSign抢占式节点-保存流程流转信息失败-taskId:{}##########################",
+                taskEntity.getId(), e);
         }
     }
 
@@ -141,7 +144,7 @@ public class Task4ActRuDetaillService {
      */
     public void todo2doing4Jump(DelegateTask taskEntity) {
         try {
-            String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
+            String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -152,8 +155,8 @@ public class Task4ActRuDetaillService {
             }
         } catch (Exception e) {
             LOGGER.warn(
-                    "##########################saveOrUpdate4Reposition抢占式节点-保存流程流转信息失败-taskId:{}##########################",
-                    taskEntity.getId());
+                "##########################saveOrUpdate4Reposition抢占式节点-保存流程流转信息失败-taskId:{}##########################",
+                taskEntity.getId());
         }
     }
 
@@ -164,7 +167,7 @@ public class Task4ActRuDetaillService {
      */
     public void unClaim(DelegateTask taskEntity) {
         try {
-            String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
+            String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
@@ -172,7 +175,7 @@ public class Task4ActRuDetaillService {
             }
         } catch (Exception e) {
             LOGGER.warn("##########################unClaim抢占式节点-保存流程流转信息失败-taskId:{}##########################",
-                    taskEntity.getId());
+                taskEntity.getId());
         }
     }
 
@@ -183,11 +186,11 @@ public class Task4ActRuDetaillService {
      */
     public void createTodo4Claim(DelegateTask taskEntity) {
         try {
-            String tenantId = (String) taskEntity.getVariable(SysVariables.TENANTID);
+            String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
-                String processSerialNumber = (String) taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
+                String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
                 StringBuffer names = new StringBuffer();
                 taskEntity.getCandidates().forEach(link -> {
                     OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, link.getUserId()).getData();
@@ -206,7 +209,7 @@ public class Task4ActRuDetaillService {
             }
         } catch (Exception e) {
             LOGGER.error("##########################createTodo4Claim抢占式节点-保存待办失败-taskId:{}##########################",
-                    taskEntity.getId());
+                taskEntity.getId());
             e.printStackTrace();
         }
     }

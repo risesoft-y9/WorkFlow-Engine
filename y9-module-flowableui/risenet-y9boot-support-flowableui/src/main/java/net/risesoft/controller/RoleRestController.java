@@ -20,6 +20,7 @@ import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
@@ -27,7 +28,6 @@ import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

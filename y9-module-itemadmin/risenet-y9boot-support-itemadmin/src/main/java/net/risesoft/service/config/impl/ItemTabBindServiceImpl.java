@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.tab.ItemTabBind;
 import net.risesoft.entity.tab.TabEntity;
 import net.risesoft.id.IdType;
@@ -20,7 +21,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.tab.ItemTabBindRepository;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.service.config.ItemTabBindService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

@@ -37,6 +37,7 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
@@ -54,7 +55,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -183,7 +183,7 @@ public class ButtonOperationRestController {
                 CustomProcessInfoModel customProcessInfo =
                     customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber).getData();
                 if (customProcessInfo != null) {
-                    if (customProcessInfo.getTaskType().equals(SysVariables.ENDEVENT)) {// 办结
+                    if (customProcessInfo.getTaskType().equals(SysVariables.END_EVENT)) {// 办结
                         try {
                             buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
                             // 办结成功后更新当前运行节点
@@ -234,15 +234,15 @@ public class ButtonOperationRestController {
                 } else if (multiInstance.equals(SysVariables.SEQUENTIAL)) {// 串行处理
                     TaskModel task = taskApi.findById(tenantId, taskId).getData();
                     Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
-                    vars.put(SysVariables.TASKSENDER, position.getName());
-                    vars.put(SysVariables.TASKSENDERID, position.getId());
+                    vars.put(SysVariables.TASK_SENDER, position.getName());
+                    vars.put(SysVariables.TASK_SENDER_ID, position.getId());
                     taskApi.completeWithVariables(tenantId, taskId, positionId, vars);
                     List<TaskModel> taskNextList =
                         taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
                     for (TaskModel taskNext : taskNextList) {
                         Map<String, Object> mapTemp = new HashMap<>(16);
-                        mapTemp.put(SysVariables.TASKSENDER, position.getName());
-                        mapTemp.put(SysVariables.TASKSENDERID, position.getId());
+                        mapTemp.put(SysVariables.TASK_SENDER, position.getName());
+                        mapTemp.put(SysVariables.TASK_SENDER_ID, position.getId());
                         variableApi.setVariables(tenantId, taskNext.getId(), mapTemp);
                     }
                     process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
@@ -868,7 +868,7 @@ public class ButtonOperationRestController {
                 Map<String, Object> vars = new HashMap<>();
                 vars.put("val", actionName);
                 variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), task.getProcessInstanceId(),
-                    SysVariables.ACTIONNAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
+                    SysVariables.ACTION_NAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
                 Y9Result<Object> result = buttonOperationApi.rollbackToStartor(tenantId,
                     Y9LoginUserHolder.getPosition().getId(), task.getId(), "无");
                 if (result.isSuccess()) {
@@ -971,7 +971,7 @@ public class ButtonOperationRestController {
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             Map<String, Object> variables = new HashMap<>(16);
 
-            String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID).getData();
+            String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASK_SENDER_ID).getData();
             String userChoice = "6:" + user;
 
             String multiInstance =

@@ -32,6 +32,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.command.JumpCommand;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.TaskRelatedEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -47,7 +48,6 @@ import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.CustomVariableService;
 import net.risesoft.service.OperationService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -121,7 +121,7 @@ public class OperationServiceImpl implements OperationService {
                 // task.getId());
                 // if (StringUtils.isBlank(ownerId)) {
                 if (task.getAssignee().equals(sponsorGuid)) {
-                    vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
+                    vars.put(SysVariables.PARALLEL_SPONSOR, sponsorGuid);
                     ProcessParamModel processParam = this.processParamApi
                         .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
                     processParam.setSponsorGuid(sponsorGuid);
@@ -130,7 +130,7 @@ public class OperationServiceImpl implements OperationService {
                 // } else {
                 // // 出差委托更换主办人
                 // if (ownerId.contains(sponsorGuid)) {
-                // vars.put(SysVariables.PARALLELSPONSOR, task.getAssignee().split(SysVariables.COLON)[0]);
+                // vars.put(SysVariables.PARALLEL_SPONSOR, task.getAssignee().split(SysVariables.COLON)[0]);
                 // ProcessParamModel processParam =
                 // processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
                 // processParam.setSponsorGuid(task.getAssignee().split(SysVariables.COLON)[0]);
@@ -150,7 +150,7 @@ public class OperationServiceImpl implements OperationService {
         Task currentTask = this.customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
         String processSerialNumber =
-            (String)this.customVariableService.getVariable(taskId, SysVariables.PROCESSSERIALNUMBER);
+            (String)this.customVariableService.getVariable(taskId, SysVariables.PROCESS_SERIAL_NUMBER);
         String reasonTemp =
             "该任务已由" + position.getName() + "多步退回" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reasonTemp));
@@ -187,12 +187,12 @@ public class OperationServiceImpl implements OperationService {
         /*
          * 设置任务的完成动作
          */
-        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTIONNAME, SysVariables.ROLLBACK);
+        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTION_NAME, SysVariables.ROLLBACK);
         /*
          * 把taskId对应的任务的发送岗位作为接受的岗位
          */
         HistoricVariableInstance taskSenderIdObject =
-            this.customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASKSENDERID, "");
+            this.customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASK_SENDER_ID, "");
         String user = taskSenderIdObject != null ? taskSenderIdObject.getValue().toString() : "";
         List<String> users = new ArrayList<>();
         users.add(user);
@@ -209,7 +209,7 @@ public class OperationServiceImpl implements OperationService {
         HistoricTaskInstance thePreviousTask = this.customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey();
 
-        Object taskSenderIdObject = this.customVariableService.getVariableLocal(taskId, SysVariables.TASKSENDERID);
+        Object taskSenderIdObject = this.customVariableService.getVariableLocal(taskId, SysVariables.TASK_SENDER_ID);
         String user = (String)taskSenderIdObject;
         List<String> users = new ArrayList<>();
         users.add(user);
@@ -317,7 +317,7 @@ public class OperationServiceImpl implements OperationService {
         /*
          * 设置任务的完成动作
          */
-        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTIONNAME, SysVariables.TAKEBACK);
+        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTION_NAME, SysVariables.TAKEBACK);
         String user = Y9LoginUserHolder.getOrgUnitId();
         List<String> users = new ArrayList<>();
         users.add(user);
@@ -338,7 +338,7 @@ public class OperationServiceImpl implements OperationService {
         /*
          * 设置任务的完成动作
          */
-        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTIONNAME, SysVariables.TAKEBACK);
+        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTION_NAME, SysVariables.TAKEBACK);
         String user = Y9LoginUserHolder.getOrgUnitId();
         List<String> users = new ArrayList<>();
         users.add(user);

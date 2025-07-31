@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.util.SysVariables;
+import net.risesoft.consts.processadmin.SysVariables;
 
 /**
  * @author qinman
@@ -159,7 +159,7 @@ public class WorkflowTaskService {
                                         // 得到当前任务的前一个任务节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
                                         Map<String, Object> localMap = historicTaskInstance.getTaskLocalVariables();
                                         // 前一个任务节点如果是并行，则要获取主办人的guid，如果主办人的guid不为空，则返回historicTaskInstance，如果不是并行，则直接返回historicTaskInstance
-                                        String parallelSponsor = (String)localMap.get(SysVariables.PARALLELSPONSOR);
+                                        String parallelSponsor = (String)localMap.get(SysVariables.PARALLEL_SPONSOR);
                                         if (StringUtils.isNotBlank(parallelSponsor)) {
                                             return historicTaskInstance;
                                         }
@@ -208,7 +208,7 @@ public class WorkflowTaskService {
                                 // 前一个任务节点如果是并行，则要获取主办人的guid，如果主办人的guid不为空，则返回historicTaskInstance，如果不是并行，则直接返回historicTaskInstance
                                 if (multiInstance.equals(SysVariables.PARALLEL)) {
                                     Map<String, Object> localMap = historicTaskInstance.getTaskLocalVariables();
-                                    String parallelSponsor = (String)localMap.get(SysVariables.PARALLELSPONSOR);
+                                    String parallelSponsor = (String)localMap.get(SysVariables.PARALLEL_SPONSOR);
                                     if (StringUtils.isNotBlank(parallelSponsor)) {
                                         return historicTaskInstance;
                                     }

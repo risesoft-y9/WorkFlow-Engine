@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.button.CommonButton;
 import net.risesoft.entity.button.ItemButtonBind;
@@ -32,7 +33,6 @@ import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemButtonRoleService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -63,7 +63,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     @Transactional
     public ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
-                                     ItemButtonTypeEnum buttonType) {
+        ItemButtonTypeEnum buttonType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -243,8 +243,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId, ItemButtonTypeEnum buttonType,
-        String processDefinitionId) {
+    public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId,
+        ItemButtonTypeEnum buttonType, String processDefinitionId) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
         List<ItemButtonBind> bibList = buttonItemBindRepository
@@ -271,7 +271,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
     @Override
     public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId,
-                                                                                             ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey) {
+        ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
         List<ItemButtonBind> bibList =
@@ -298,8 +298,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> listContainRole(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
-        String taskDefineKey) {
+    public List<ItemButtonBind> listContainRole(String itemId, ItemButtonTypeEnum buttonType,
+        String processDefinitionId, String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
         List<ItemButtonBind> bindList =
@@ -341,8 +341,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> listContainRoleId(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
-        String taskDefineKey) {
+    public List<ItemButtonBind> listContainRoleId(String itemId, ItemButtonTypeEnum buttonType,
+        String processDefinitionId, String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
         List<ItemButtonBind> bindList =

@@ -33,6 +33,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -43,7 +44,6 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.TodoService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -119,9 +119,9 @@ public class TodoServiceImpl implements TodoService {
                     String taskName = task.getName();
                     int priority = task.getPriority();
                     keys = new ArrayList<>();
-                    keys.add(SysVariables.TASKSENDER);
+                    keys.add(SysVariables.TASK_SENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASK_SENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     // 催办的时候任务的优先级+5
                     Boolean isReminder = String.valueOf(priority).contains("8");
@@ -135,7 +135,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("itemName", itemName);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionKey", processDefinitionKey);
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("description", description);
@@ -143,10 +143,10 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("taskName", taskName);
                     mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
                     mapTemp.put("taskAssignee", taskAssignee);
-                    mapTemp.put(SysVariables.TASKSENDER, taskSender);
-                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
-                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
-                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
+                    mapTemp.put(SysVariables.TASK_SENDER, taskSender);
+                    mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
+                    mapTemp.put(SysVariables.IS_NEW_TODO, isNewTodo);
+                    mapTemp.put(SysVariables.IS_REMINDER, isReminder);
                     mapTemp.put(SysVariables.LEVEL, level);
                     mapTemp.put(SysVariables.NUMBER, number);
                     String multiInstance = processDefinitionApi
@@ -161,7 +161,7 @@ public class TodoServiceImpl implements TodoService {
                             }
                         }
                         String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(),
-                            SysVariables.NROFACTIVEINSTANCES).getData();
+                            SysVariables.NR_OF_ACTIVE_INSTANCES).getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
@@ -231,9 +231,9 @@ public class TodoServiceImpl implements TodoService {
                     String taskName = task.getName();
                     int priority = task.getPriority();
                     keys = new ArrayList<>();
-                    keys.add(SysVariables.TASKSENDER);
+                    keys.add(SysVariables.TASK_SENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASK_SENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -243,7 +243,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("itemId", itemId);
                     mapTemp.put("itemName", itemName);
                     mapTemp.put("processDefinitionKey", processDefinitionKey);
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("description", description);
@@ -251,9 +251,9 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("taskName", taskName);
                     mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
                     mapTemp.put("taskAssignee", taskAssignee);
-                    mapTemp.put(SysVariables.TASKSENDER, taskSender);
-                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
-                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
+                    mapTemp.put(SysVariables.TASK_SENDER, taskSender);
+                    mapTemp.put(SysVariables.IS_NEW_TODO, isNewTodo);
+                    mapTemp.put(SysVariables.IS_REMINDER, isReminder);
                     mapTemp.put(SysVariables.NUMBER, number);
                     String multiInstance = processDefinitionApi
                         .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
@@ -267,7 +267,7 @@ public class TodoServiceImpl implements TodoService {
                             }
                         }
                         String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(),
-                            SysVariables.NROFACTIVEINSTANCES).getData();
+                            SysVariables.NR_OF_ACTIVE_INSTANCES).getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
@@ -375,7 +375,7 @@ public class TodoServiceImpl implements TodoService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     Date taskCreateTime = ardModel.getCreateTime();
-                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("itemId", itemId);
                     mapTemp.put("itemName", itemName);
                     mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
@@ -387,9 +387,9 @@ public class TodoServiceImpl implements TodoService {
                     String taskName = task.getName();
                     int priority = task.getPriority();
                     keys = new ArrayList<>();
-                    keys.add(SysVariables.TASKSENDER);
+                    keys.add(SysVariables.TASK_SENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASK_SENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -399,9 +399,9 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("taskDefinitionKey", taskDefinitionKey);
                     mapTemp.put("taskName", taskName);
                     mapTemp.put("taskAssignee", taskAssignee);
-                    mapTemp.put(SysVariables.TASKSENDER, taskSender);
-                    mapTemp.put(SysVariables.ISNEWTODO, isNewTodo);
-                    mapTemp.put(SysVariables.ISREMINDER, isReminder);
+                    mapTemp.put(SysVariables.TASK_SENDER, taskSender);
+                    mapTemp.put(SysVariables.IS_NEW_TODO, isNewTodo);
+                    mapTemp.put(SysVariables.IS_REMINDER, isReminder);
                     String multiInstance = processDefinitionApi
                         .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
                     mapTemp.put("isZhuBan", "");
@@ -414,7 +414,7 @@ public class TodoServiceImpl implements TodoService {
                             }
                         }
                         String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(),
-                            SysVariables.NROFACTIVEINSTANCES).getData();
+                            SysVariables.NR_OF_ACTIVE_INSTANCES).getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");

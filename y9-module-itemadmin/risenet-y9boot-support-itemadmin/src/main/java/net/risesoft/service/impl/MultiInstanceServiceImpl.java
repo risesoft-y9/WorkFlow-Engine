@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.MultiInstanceService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -55,10 +55,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
         // 加签后,活动实例数需修改+1
         // Object nrOfActiveInstances = variableApi.getVariable(tenantId, taskId,
-        // SysVariables.NROFACTIVEINSTANCES);
+        // SysVariables.NR_OF_ACTIVE_INSTANCES);
         // if(nrOfActiveInstances != null) {
         // variableApi.setVariable(tenantId, taskId,
-        // SysVariables.NROFACTIVEINSTANCES, (int)nrOfActiveInstances + 1);
+        // SysVariables.NR_OF_ACTIVE_INSTANCES, (int)nrOfActiveInstances + 1);
         // }
     }
 

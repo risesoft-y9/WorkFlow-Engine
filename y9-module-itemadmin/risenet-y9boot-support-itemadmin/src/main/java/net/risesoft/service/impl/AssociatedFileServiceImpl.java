@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.AssociatedFile;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
@@ -27,7 +28,6 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.repository.jpa.AssociatedFileRepository;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.service.OfficeDoneInfoService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 

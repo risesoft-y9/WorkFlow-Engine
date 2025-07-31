@@ -13,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
 
 /**
@@ -41,7 +41,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
             case PROCESS_COMPLETED:
                 FlowableEntityEventImpl entityEvent = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
-                String tenantId = (String)executionEntity.getVariable(SysVariables.TENANTID);
+                String tenantId = (String)executionEntity.getVariable(SysVariables.TENANT_ID);
                 // 1、接口调用
                 InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
                 try {
@@ -66,14 +66,14 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 }
                 // 2、子流程启动,初始化callActivity的流程参数信息
                 ItemApi itemApi = Y9Context.getBean(ItemApi.class);
-                String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANTID);
+                String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
                 ItemModel itemModel = itemApi
                     .findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey()).getData();
                 if (StringUtils.isNotEmpty(itemModel.getType()) && "sub".equals(itemModel.getType())) {
                     String processSerialNumber =
-                        (String)executionEntityStart.getVariable(SysVariables.PROCESSSERIALNUMBER);
+                        (String)executionEntityStart.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
                     String subProcessSerialNumber = Y9IdGenerator.genId();
-                    executionEntityStart.setVariable(SysVariables.PROCESSSERIALNUMBER, subProcessSerialNumber);
+                    executionEntityStart.setVariable(SysVariables.PROCESS_SERIAL_NUMBER, subProcessSerialNumber);
 
                     ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
                     processParamApi.initCallActivity(tenantIdTemp, processSerialNumber, subProcessSerialNumber,

@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkflowProcessDefinitionService;
-import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman
@@ -115,7 +115,7 @@ public class ProcessDefinitionController {
         taskMap.put("", "--");
         if (StringUtils.isNotBlank(processDefinitionId)) {
             List<String> filterList = new ArrayList<>();
-            filterList.add(SysVariables.STARTEVENT);
+            filterList.add(SysVariables.START_EVENT);
             List<FlowElement> list =
                 workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId, filterList);
             for (FlowElement activity : list) {

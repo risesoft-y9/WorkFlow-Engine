@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.util.SysVariables;
+import net.risesoft.consts.processadmin.SysVariables;
 
 /**
  * @author qinman

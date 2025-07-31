@@ -19,12 +19,12 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.ProcessTaskRelatedService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -57,7 +57,7 @@ public class ProcessTaskRelatedServiceImpl implements ProcessTaskRelatedService 
     public void execute(final DelegateTask task, final Map<String, Object> map, final Map<String, Object> local) {
         try {
             String tenantId = (String)map.get("tenantId");
-            String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
+            String processSerialNumber = (String)map.get(SysVariables.PROCESS_SERIAL_NUMBER);
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String documentTitle = processParamModel.getTitle();
@@ -68,7 +68,7 @@ public class ProcessTaskRelatedServiceImpl implements ProcessTaskRelatedService 
                 return;
             }
             String assignee = task.getAssignee();
-            String userId = map.get(SysVariables.TASKSENDERID).toString();
+            String userId = map.get(SysVariables.TASK_SENDER_ID).toString();
             String send = processParamModel.getSended();
             // 第一步新建产生的任务，不发送提醒
             if (StringUtils.isBlank(send) || UtilConsts.FALSE.equals(send)) {

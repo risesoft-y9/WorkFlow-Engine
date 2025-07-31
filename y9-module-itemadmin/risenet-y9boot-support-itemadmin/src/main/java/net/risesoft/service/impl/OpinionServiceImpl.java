@@ -25,6 +25,7 @@ import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
@@ -56,7 +57,6 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.util.CommentUtil;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -573,7 +573,7 @@ public class OpinionServiceImpl implements OpinionService {
                     model0.setEditable(false);
                     resList.add(model0);
                 }
-            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.YUEJIAN.getValue())) {
+            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.YUE_JIAN.getValue())) {
                 // 是否已办结
                 boolean isEnd = false;
                 try {
@@ -582,8 +582,8 @@ public class OpinionServiceImpl implements OpinionService {
                     if (processParam != null) {
                         HistoricProcessInstanceModel historicProcessInstanceModel =
                             historicProcessApi.getById(tenantId, processParam.getProcessInstanceId()).getData();
-                        boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null
-                            && historicProcessInstanceModel.getEndTime() != null);
+                        boolean b =
+                            historicProcessInstanceModel == null || historicProcessInstanceModel.getEndTime() != null;
                         if (b) {
                             model.setAddable(false);
                             isEnd = true;

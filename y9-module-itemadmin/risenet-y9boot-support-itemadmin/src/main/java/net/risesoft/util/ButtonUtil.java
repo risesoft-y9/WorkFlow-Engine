@@ -17,6 +17,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemTaskConf;
@@ -110,8 +111,8 @@ public class ButtonUtil {
             vars = variableApi.getVariables(tenantId, taskId).getData();
             varsUsers = (List<String>)vars.get(SysVariables.USERS);
             varsUser = String.valueOf(vars.get(SysVariables.USER));
-            varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLELSPONSOR));
-            taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
+            varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLEL_SPONSOR));
+            taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
             multiInstance = processDefinitionApi
                 .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
         }
@@ -135,10 +136,10 @@ public class ButtonUtil {
             // 在串行状态下且不是users里面的最后一个用户，isSequential为true
             if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
                 isSequential = true;
-                nrOfInstances = (Integer)vars.get(SysVariables.NROFINSTANCES);
-                nrOfActiveInstances = (Integer)vars.get(SysVariables.NROFACTIVEINSTANCES);
-                nrOfCompletedInstances = (Integer)vars.get(SysVariables.NROFCOMPLETEDINSTANCES);
-                loopCounter = (Integer)vars.get(SysVariables.LOOPCOUNTER);
+                nrOfInstances = (Integer)vars.get(SysVariables.NR_OF_INSTANCES);
+                nrOfActiveInstances = (Integer)vars.get(SysVariables.NR_OF_ACTIVE_INSTANCES);
+                nrOfCompletedInstances = (Integer)vars.get(SysVariables.NR_OF_COMPLETED_INSTANCES);
+                loopCounter = (Integer)vars.get(SysVariables.LOOP_COUNTER);
                 int usersSize = varsUsers.size();
                 // users可能没有用户，或者只有一个用户，因此需要进行判断，对于没有用户，或者只有一个用户，都应显示发送按钮，送下一人按钮不显示
                 if (usersSize > 1) {
@@ -155,10 +156,10 @@ public class ButtonUtil {
                         nrOfCompletedInstances = finishedCount;
                         loopCounter = finishedCount;
                         Map<String, Object> varMapTemp = new HashMap<>(16);
-                        varMapTemp.put(SysVariables.NROFINSTANCES, usersSize);
-                        varMapTemp.put(SysVariables.NROFCOMPLETEDINSTANCES, finishedCount);
-                        varMapTemp.put(SysVariables.LOOPCOUNTER, finishedCount);
-                        varMapTemp.put(SysVariables.NROFACTIVEINSTANCES, 1);
+                        varMapTemp.put(SysVariables.NR_OF_INSTANCES, usersSize);
+                        varMapTemp.put(SysVariables.NR_OF_COMPLETED_INSTANCES, finishedCount);
+                        varMapTemp.put(SysVariables.LOOP_COUNTER, finishedCount);
+                        varMapTemp.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
                         runtimeApi.setVariables(tenantId, task.getExecutionId(), varMapTemp);
                     }
                     if (nrOfInstances == (nrOfCompletedInstances + 1)
@@ -185,9 +186,9 @@ public class ButtonUtil {
                 if (StringUtils.isNotBlank(varsSponsorGuid) && orgUnitId.equals(varsSponsorGuid)) {
                     isParallelSponsor = true;
                 }
-                nrOfInstances = (Integer)vars.get(SysVariables.NROFINSTANCES);
-                nrOfActiveInstances = (Integer)vars.get(SysVariables.NROFACTIVEINSTANCES);
-                nrOfCompletedInstances = (Integer)vars.get(SysVariables.NROFCOMPLETEDINSTANCES);
+                nrOfInstances = (Integer)vars.get(SysVariables.NR_OF_INSTANCES);
+                nrOfActiveInstances = (Integer)vars.get(SysVariables.NR_OF_ACTIVE_INSTANCES);
+                nrOfCompletedInstances = (Integer)vars.get(SysVariables.NR_OF_COMPLETED_INSTANCES);
                 if (nrOfInstances > 0) {
                     // 如果只有一个人办理，那么他就是最后一个人
                     if (nrOfInstances == 1) {
@@ -480,9 +481,9 @@ public class ButtonUtil {
                     if (customItem) {
                         // 定制流程处理,办结按钮处理**************************************************
                         CustomProcessInfo info = customProcessInfoService
-                            .getCurrentTaskNextNode((String)vars.get(SysVariables.PROCESSSERIALNUMBER));
+                            .getCurrentTaskNextNode((String)vars.get(SysVariables.PROCESS_SERIAL_NUMBER));
                         // 如果当前运行任务的下一个节点是办结,且显示办结按钮,则隐藏办理完成按钮
-                        if (info.getTaskType().equals(SysVariables.ENDEVENT)) {
+                        if (info.getTaskType().equals(SysVariables.END_EVENT)) {
                             boolean isButtonShow11 = isButtonShow[11];
                             if (isButtonShow11) {
                                 // 办理完成按钮隐藏
@@ -616,7 +617,7 @@ public class ButtonUtil {
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         if (task != null) {
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
-            String taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
+            String taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
             String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
             String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
             String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
@@ -704,8 +705,8 @@ public class ButtonUtil {
         vars = variableApi.getVariables(tenantId, taskId).getData();
         varsUsers = (List<String>)vars.get(SysVariables.USERS);
         varsUser = String.valueOf(vars.get(SysVariables.USER));
-        varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLELSPONSOR));
-        taskSenderId = String.valueOf(vars.get(SysVariables.TASKSENDERID));
+        varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLEL_SPONSOR));
+        taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
         multiInstance = processDefinitionApi
             .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
         // 并行任务的总个数
@@ -725,10 +726,10 @@ public class ButtonUtil {
         // 在串行状态下且不是users里面的最后一个用户，isSequential为true
         if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
             isSequential = true;
-            nrOfInstances = (Integer)vars.get(SysVariables.NROFINSTANCES);
-            nrOfActiveInstances = (Integer)vars.get(SysVariables.NROFACTIVEINSTANCES);
-            nrOfCompletedInstances = (Integer)vars.get(SysVariables.NROFCOMPLETEDINSTANCES);
-            loopCounter = (Integer)vars.get(SysVariables.LOOPCOUNTER);
+            nrOfInstances = (Integer)vars.get(SysVariables.NR_OF_INSTANCES);
+            nrOfActiveInstances = (Integer)vars.get(SysVariables.NR_OF_ACTIVE_INSTANCES);
+            nrOfCompletedInstances = (Integer)vars.get(SysVariables.NR_OF_COMPLETED_INSTANCES);
+            loopCounter = (Integer)vars.get(SysVariables.LOOP_COUNTER);
             int usersSize = varsUsers.size();
             // users可能没有用户，或者只有一个用户，因此需要进行判断，对于没有用户，或者只有一个用户，都应显示发送按钮，送下一人按钮不显示
             if (usersSize > 1) {
@@ -744,10 +745,10 @@ public class ButtonUtil {
                     nrOfCompletedInstances = finishedCount;
                     loopCounter = finishedCount;
                     Map<String, Object> varMapTemp = new HashMap<>(16);
-                    varMapTemp.put(SysVariables.NROFINSTANCES, usersSize);
-                    varMapTemp.put(SysVariables.NROFCOMPLETEDINSTANCES, finishedCount);
-                    varMapTemp.put(SysVariables.LOOPCOUNTER, finishedCount);
-                    varMapTemp.put(SysVariables.NROFACTIVEINSTANCES, 1);
+                    varMapTemp.put(SysVariables.NR_OF_INSTANCES, usersSize);
+                    varMapTemp.put(SysVariables.NR_OF_COMPLETED_INSTANCES, finishedCount);
+                    varMapTemp.put(SysVariables.LOOP_COUNTER, finishedCount);
+                    varMapTemp.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
                     runtimeApi.setVariables(tenantId, task.getExecutionId(), varMapTemp);
                 }
                 if (nrOfInstances == (nrOfCompletedInstances + 1)
@@ -774,9 +775,9 @@ public class ButtonUtil {
             if (StringUtils.isNotBlank(varsSponsorGuid) && orgUnitId.equals(varsSponsorGuid)) {
                 isParallelSponsor = true;
             }
-            nrOfInstances = (Integer)vars.get(SysVariables.NROFINSTANCES);
-            nrOfActiveInstances = (Integer)vars.get(SysVariables.NROFACTIVEINSTANCES);
-            nrOfCompletedInstances = (Integer)vars.get(SysVariables.NROFCOMPLETEDINSTANCES);
+            nrOfInstances = (Integer)vars.get(SysVariables.NR_OF_INSTANCES);
+            nrOfActiveInstances = (Integer)vars.get(SysVariables.NR_OF_ACTIVE_INSTANCES);
+            nrOfCompletedInstances = (Integer)vars.get(SysVariables.NR_OF_COMPLETED_INSTANCES);
             if (nrOfInstances > 0) {
                 // 如果只有一个人办理，那么他就是最后一个人
                 if (nrOfInstances == 1) {
@@ -983,10 +984,10 @@ public class ButtonUtil {
             }
             if (customItem) {
                 // 定制流程处理,办结按钮处理**************************************************
-                CustomProcessInfo info =
-                    customProcessInfoService.getCurrentTaskNextNode((String)vars.get(SysVariables.PROCESSSERIALNUMBER));
+                CustomProcessInfo info = customProcessInfoService
+                    .getCurrentTaskNextNode((String)vars.get(SysVariables.PROCESS_SERIAL_NUMBER));
                 // 如果当前运行任务的下一个节点是办结,且显示办结按钮,则隐藏办理完成按钮
-                if (info.getTaskType().equals(SysVariables.ENDEVENT)) {
+                if (info.getTaskType().equals(SysVariables.END_EVENT)) {
                     if (buttonList.stream().anyMatch(button -> button.getKey().equals(ItemButton.banJie.getKey()))) {
                         // 办理完成按钮隐藏
                         buttonList.removeIf(button -> button.getKey().equals(ItemButton.banLiWanCheng.getKey()));

@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
@@ -37,7 +38,6 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.service.TransactionWordService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 

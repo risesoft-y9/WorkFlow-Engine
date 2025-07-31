@@ -42,6 +42,7 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ErrorLog;
@@ -126,7 +127,6 @@ import net.risesoft.util.ButtonUtil;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -1733,7 +1733,7 @@ public class DocumentServiceImpl implements DocumentService {
                 // 重定位后设置新的主办人
                 Map<String, Object> val = new HashMap<>();
                 val.put("val", userChoice.split(SysVariables.COLON)[0]);
-                variableApi.setVariableLocal(tenantId, task1.getId(), SysVariables.PARALLELSPONSOR, val);
+                variableApi.setVariableLocal(tenantId, task1.getId(), SysVariables.PARALLEL_SPONSOR, val);
             } else if (SysVariables.SEQUENTIAL.equals(multiInstance)) {
                 // 串行
                 task.setAssignee(userChoice);
@@ -2127,7 +2127,7 @@ public class DocumentServiceImpl implements DocumentService {
             Map<String, Object> vars = new HashMap<>(16);
             Item item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
-            vars.put(SysVariables.ROUTETOTASKID, startRouteToTaskId);
+            vars.put(SysVariables.ROUTE_TO_TASK_ID, startRouteToTaskId);
             assert item != null;
             TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey,
                 item.getSystemName(), startOrgUnitIdList, vars);

@@ -16,6 +16,7 @@ import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemStartNodeRole;
 import net.risesoft.id.IdType;
@@ -28,7 +29,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.jpa.ItemStartNodeRoleRepository;
 import net.risesoft.service.config.ItemStartNodeRoleService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

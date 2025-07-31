@@ -65,6 +65,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.BpmnModelApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -80,7 +81,6 @@ import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomHistoricVariableService;
 import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -365,10 +365,10 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 String id = his.getId();
                 String taskId = his.getTaskId();
                 String type = his.getActivityType();
-                if (type.contains(SysVariables.STARTEVENT) || type.contains("Flow")) {
+                if (type.contains(SysVariables.START_EVENT) || type.contains("Flow")) {
                     continue;
                 }
-                if (type.contains(SysVariables.ENDEVENT)) {
+                if (type.contains(SysVariables.END_EVENT)) {
                     num += 1;
                     String completer = listMap.get(listMap.size() - 1).getTitle();
                     if (completer.contains("主办")) {
@@ -394,7 +394,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 if ("".equals(activityId) || activityId.equals(his.getActivityId())) {
 
                     HistoricVariableInstance historicVariableInstance = customHistoricVariableService
-                        .getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
+                        .getByTaskIdAndVariableName(taskId, SysVariables.PARALLEL_SPONSOR, year);
                     Y9FlowChartModel flowChart = new Y9FlowChartModel();
                     flowChart.setId(taskId);
                     flowChart.setName(his.getActivityName());
@@ -413,7 +413,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     num += 1;
                     activityId = his.getActivityId();
                     HistoricVariableInstance historicVariableInstance = customHistoricVariableService
-                        .getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
+                        .getByTaskIdAndVariableName(taskId, SysVariables.PARALLEL_SPONSOR, year);
                     Y9FlowChartModel flowChart = new Y9FlowChartModel();
                     flowChart.setId(taskId);
                     flowChart.setName(his.getActivityName());

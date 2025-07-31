@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.SignOutDept;
 import net.risesoft.entity.SignOutDeptType;
 import net.risesoft.id.IdType;
@@ -26,7 +27,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.SignOutDeptRepository;
 import net.risesoft.repository.jpa.SignOutDeptTypeRepository;
 import net.risesoft.service.SignDeptOutService;
-import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman

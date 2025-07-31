@@ -15,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.DeleteProcessService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -88,19 +88,19 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
     @Override
     public int getRecycleCount(String title) {
         return (int)historyService.createHistoricProcessInstanceQuery()
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").or().deleted().count();
+            .variableValueLike(SysVariables.DOCUMENT_TITLE, "%" + title + "%").or().deleted().count();
     }
 
     @Override
     public int getRecycleCountByItemId(String itemId, String title) {
         return (int)historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId)
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").or().deleted().count();
+            .variableValueLike(SysVariables.DOCUMENT_TITLE, "%" + title + "%").or().deleted().count();
     }
 
     @Override
     public int getRecycleCountByUserId(String title, String userId) {
         return (int)historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").or().deleted().count();
+            .variableValueLike(SysVariables.DOCUMENT_TITLE, "%" + title + "%").or().deleted().count();
     }
 
     @Override
@@ -123,21 +123,21 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
     @Override
     public List<HistoricProcessInstance> listRecycleAll(String title, Integer page, Integer rows) {
         return historyService.createHistoricProcessInstanceQuery().deleted()
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
+            .variableValueLike(SysVariables.DOCUMENT_TITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
             .listPage((page - 1) * rows, rows);
     }
 
     @Override
     public List<HistoricProcessInstance> listRecycleByItemId(String itemId, String title, Integer page, Integer rows) {
         return historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId).deleted()
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
+            .variableValueLike(SysVariables.DOCUMENT_TITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
             .listPage((page - 1) * rows, rows);
     }
 
     @Override
     public List<HistoricProcessInstance> listRecycleByUserId(String title, String userId, Integer page, Integer rows) {
         return historyService.createHistoricProcessInstanceQuery().involvedUser(userId).deleted()
-            .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
+            .variableValueLike(SysVariables.DOCUMENT_TITLE, "%" + title + "%").orderByProcessInstanceStartTime().desc()
             .listPage((page - 1) * rows, rows);
     }
 

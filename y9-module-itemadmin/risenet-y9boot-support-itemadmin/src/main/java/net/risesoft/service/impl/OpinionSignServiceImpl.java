@@ -17,6 +17,7 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.opinion.ItemOpinionFrameBind;
@@ -38,7 +39,6 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.util.CommentUtil;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

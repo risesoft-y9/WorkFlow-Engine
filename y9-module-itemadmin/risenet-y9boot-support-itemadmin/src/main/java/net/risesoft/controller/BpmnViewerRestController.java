@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
@@ -25,7 +26,6 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.OfficeDoneInfoService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -80,7 +80,7 @@ public class BpmnViewerRestController {
                     HistoricVariableInstanceModel zhuBan = null;
                     try {
                         zhuBan = historicVariableApi
-                            .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLELSPONSOR, year)
+                            .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
                             .getData();
                     } catch (Exception e) {
                         LOGGER.error("获取主办人失败", e);

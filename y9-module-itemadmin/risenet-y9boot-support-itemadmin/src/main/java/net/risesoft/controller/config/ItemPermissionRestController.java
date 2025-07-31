@@ -17,12 +17,12 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.consts.PunctuationConsts;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemPermissionService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 
@@ -84,7 +84,7 @@ public class ItemPermissionRestController {
          */
         if (processDefinitionId.startsWith(freeFlowKey)) {
             TargetModel targetModel = new TargetModel();
-            targetModel.setTaskDefKey(SysVariables.FREEFLOWENDROLE);
+            targetModel.setTaskDefKey(SysVariables.FREE_FLOW_END_ROLE);
             targetModel.setTaskDefName("办结");
             list.add(targetModel);
         }

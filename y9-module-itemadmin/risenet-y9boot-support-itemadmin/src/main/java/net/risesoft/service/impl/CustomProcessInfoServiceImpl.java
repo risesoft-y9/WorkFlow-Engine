@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.CustomProcessInfoRepository;
 import net.risesoft.service.CustomProcessInfoService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -66,7 +66,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
             info.setTaskKey((String)map.get("taskKey"));
             info.setTaskName((String)map.get("taskName"));
             info.setTaskType(
-                StringUtils.isBlank((String)map.get("type")) ? SysVariables.USERTASK : (String)map.get("type"));
+                StringUtils.isBlank((String)map.get("type")) ? SysVariables.USER_TASK : (String)map.get("type"));
             info.setTabIndex(i);
             List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
             String orgId = "";
