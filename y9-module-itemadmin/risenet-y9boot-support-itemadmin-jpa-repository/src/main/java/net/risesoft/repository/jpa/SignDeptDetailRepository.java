@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import net.risesoft.entity.SignDeptDetail;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 
 /**
  * @author qinman
@@ -19,14 +20,15 @@ public interface SignDeptDetailRepository
     List<SignDeptDetail> findByProcessSerialNumber(String processSerialNumber, Sort sort);
 
     List<SignDeptDetail> findByProcessSerialNumberAndStatusOrderByCreateTimeDesc(String processSerialNumber,
-        int status);
+        SignDeptDetailStatusEnum status);
 
-    List<SignDeptDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeDesc(String processInstanceId, int status);
+    List<SignDeptDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeDesc(String processInstanceId,
+        SignDeptDetailStatusEnum status);
 
     List<SignDeptDetail> findByTaskIdOrderByCreateTimeAsc(String taskId);
 
     SignDeptDetail findByExecutionIdAndDeptId(String executionId, String deptId);
 
     List<SignDeptDetail> findByProcessSerialNumberAndDeptIdAndStatusOrderByCreateTimeDesc(String processSerialNumber,
-        String deptId, int status);
+        String deptId, SignDeptDetailStatusEnum status);
 }

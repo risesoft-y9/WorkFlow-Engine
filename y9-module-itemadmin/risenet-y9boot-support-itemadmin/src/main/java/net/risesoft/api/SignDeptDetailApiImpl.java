@@ -15,6 +15,7 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.opinion.OpinionSign;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -139,7 +140,7 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
      */
     @Override
     public Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam int status) {
+        @RequestParam String processSerialNumber, @RequestParam SignDeptDetailStatusEnum status) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SignDeptDetail> list =
             signDeptDetailService.findByProcessSerialNumberAndStatus(processSerialNumber, status);

@@ -12,6 +12,7 @@ import net.risesoft.enums.ItemFormTypeEnum;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemTableTypeEnum;
+import net.risesoft.enums.SignDeptDetailStatusEnum;
 
 /**
  * @author qinman
@@ -123,6 +124,13 @@ public class ItemEnumConverter {
     public static class ItemPermissionEnumConverter extends AbstractEnumConverter<ItemPermissionEnum, Integer> {
         public ItemPermissionEnumConverter() {
             super(ItemPermissionEnum.class);
+        }
+    }
+
+    public static class SignDeptDetailStatusEnumConverter
+        extends AbstractEnumConverter<SignDeptDetailStatusEnum, Integer> {
+        public SignDeptDetailStatusEnumConverter() {
+            super(SignDeptDetailStatusEnum.class);
         }
     }
 }
