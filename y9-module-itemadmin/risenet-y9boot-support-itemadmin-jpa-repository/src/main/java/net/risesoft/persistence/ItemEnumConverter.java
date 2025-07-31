@@ -80,11 +80,43 @@ public class ItemEnumConverter {
         public DynamicRoleKindsEnumConverter() {
             super(DynamicRoleKindsEnum.class);
         }
+
+        @Override
+        public Integer convertToDatabaseColumn(DynamicRoleKindsEnum attribute) {
+            if (attribute == null) {
+                return DynamicRoleKindsEnum.NONE.getValue();
+            }
+            return super.convertToDatabaseColumn(attribute);
+        }
+
+        @Override
+        public DynamicRoleKindsEnum convertToEntityAttribute(Integer dbData) {
+            if (dbData == null) {
+                return DynamicRoleKindsEnum.NONE;
+            }
+            return super.convertToEntityAttribute(dbData);
+        }
     }
 
     public static class DynamicRoleRangesEnumConverter extends AbstractEnumConverter<DynamicRoleRangesEnum, Integer> {
         public DynamicRoleRangesEnumConverter() {
             super(DynamicRoleRangesEnum.class);
+        }
+
+        @Override
+        public Integer convertToDatabaseColumn(DynamicRoleRangesEnum attribute) {
+            if (attribute == null) {
+                return DynamicRoleRangesEnum.NONE.getValue();
+            }
+            return super.convertToDatabaseColumn(attribute);
+        }
+
+        @Override
+        public DynamicRoleRangesEnum convertToEntityAttribute(Integer dbData) {
+            if (dbData == null) {
+                return DynamicRoleRangesEnum.NONE;
+            }
+            return super.convertToEntityAttribute(dbData);
         }
     }
 
