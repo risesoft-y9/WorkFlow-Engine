@@ -1,4 +1,4 @@
-package net.risesoft.service;
+package net.risesoft.service.util;
 
 import java.util.ArrayList;
 import java.util.List;
