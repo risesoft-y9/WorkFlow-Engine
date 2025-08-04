@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2022/12/30
  */
-@EnableAsync
 @Slf4j
 @RequiredArgsConstructor
 @Service(value = "deleteProcessService")

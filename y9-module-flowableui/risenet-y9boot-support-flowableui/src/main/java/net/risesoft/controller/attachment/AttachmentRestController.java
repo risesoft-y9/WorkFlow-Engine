@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.attachment;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;

@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.word;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
