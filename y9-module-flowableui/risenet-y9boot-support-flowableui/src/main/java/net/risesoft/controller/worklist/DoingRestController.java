@@ -92,7 +92,7 @@ public class DoingRestController {
      * @param itemId 事项id
      * @return Y9Result<List < ItemViewConfModel>>
      */
-    @GetMapping(value = "/doingViewConf")
+    @GetMapping(value = "/viewConf")
     public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam String itemId) {
         List<ItemViewConfModel> itemViewConfList = itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue())

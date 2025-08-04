@@ -36,7 +36,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/todo/gfg", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/vue/todo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TodoRestController {
 
     private final WorkList4GfgService workList4GfgService;
@@ -88,8 +88,8 @@ public class TodoRestController {
      * @param itemId 事项id
      * @return Y9Result<List < ItemViewConfModel>>
      */
-    @GetMapping(value = "/todoViewConf")
-    public Y9Result<List<ItemViewConfModel>> todoViewConf(@RequestParam String itemId) {
+    @GetMapping(value = "/viewConf")
+    public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId) {
         List<ItemViewConfModel> itemViewConfList = itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue())
             .getData();
