@@ -9,13 +9,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import net.risesoft.enums.ItemInterfaceTypeEnum;
-import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.ItemInterfaceTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  *

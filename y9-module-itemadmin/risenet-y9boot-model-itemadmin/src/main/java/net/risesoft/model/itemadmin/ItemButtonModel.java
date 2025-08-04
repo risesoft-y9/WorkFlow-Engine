@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import net.risesoft.enums.ItemButtonTypeEnum;
 
 /**
@@ -34,7 +35,7 @@ public class ItemButtonModel implements Serializable {
     /**
      * 按钮类型
      */
-    private ItemButtonTypeEnum buttonType  =ItemButtonTypeEnum.COMMON;
+    private ItemButtonTypeEnum buttonType = ItemButtonTypeEnum.COMMON;
 
     /**
      * 组织id

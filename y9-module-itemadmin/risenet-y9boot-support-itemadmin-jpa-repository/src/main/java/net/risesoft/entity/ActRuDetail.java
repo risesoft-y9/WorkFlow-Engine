@@ -12,9 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import net.risesoft.enums.ActRuDetailSignStatusEnum;
-import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,6 +22,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
+import net.risesoft.enums.ActRuDetailStatusEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  * @author qinman

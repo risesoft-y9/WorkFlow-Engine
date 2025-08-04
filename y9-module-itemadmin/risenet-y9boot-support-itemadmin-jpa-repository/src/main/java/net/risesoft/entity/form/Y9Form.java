@@ -12,14 +12,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import net.risesoft.enums.ItemFormTemplateTypeEnum;
-import net.risesoft.enums.ItemFormTypeEnum;
-import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.ItemFormTemplateTypeEnum;
+import net.risesoft.enums.ItemFormTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  * @author qinman

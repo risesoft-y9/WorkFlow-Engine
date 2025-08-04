@@ -8,12 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import net.risesoft.enums.ItemTableTypeEnum;
-import net.risesoft.persistence.ItemEnumConverter;
 import org.hibernate.annotations.Comment;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.enums.ItemTableTypeEnum;
+import net.risesoft.persistence.ItemEnumConverter;
 
 /**
  * @author qinman
