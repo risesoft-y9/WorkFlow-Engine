@@ -27,10 +27,10 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Department;
 import net.risesoft.repository.jpa.SignDeptInfoRepository;
 import net.risesoft.repository.jpa.SignOutDeptRepository;
-import net.risesoft.service.FormDataService;
-import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.SignDeptInfoService;
+import net.risesoft.service.core.ProcessParamService;
+import net.risesoft.service.form.FormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 

@@ -16,7 +16,7 @@ import net.risesoft.model.itemadmin.OrganWordModel;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.OrganWordService;
+import net.risesoft.service.organword.OrganWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

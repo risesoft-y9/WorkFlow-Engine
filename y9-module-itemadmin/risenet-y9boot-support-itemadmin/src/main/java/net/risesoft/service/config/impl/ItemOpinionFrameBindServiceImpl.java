@@ -31,9 +31,9 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.opinion.ItemOpinionFrameBindRepository;
-import net.risesoft.service.OpinionFrameOneClickSetService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
+import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

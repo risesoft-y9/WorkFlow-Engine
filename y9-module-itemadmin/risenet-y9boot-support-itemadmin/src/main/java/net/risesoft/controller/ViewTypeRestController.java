@@ -18,9 +18,9 @@ import net.risesoft.entity.view.ItemViewConf;
 import net.risesoft.entity.view.ViewType;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemService;
-import net.risesoft.service.ViewTypeService;
 import net.risesoft.service.config.ItemViewConfService;
+import net.risesoft.service.core.ItemService;
+import net.risesoft.service.view.ViewTypeService;
 
 /**
  * @author qinman

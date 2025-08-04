@@ -24,8 +24,8 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
-import net.risesoft.service.DocumentService;
-import net.risesoft.service.ItemService;
+import net.risesoft.service.core.DocumentService;
+import net.risesoft.service.core.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

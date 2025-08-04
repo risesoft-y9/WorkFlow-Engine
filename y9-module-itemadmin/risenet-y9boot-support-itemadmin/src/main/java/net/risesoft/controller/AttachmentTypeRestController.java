@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.attachment.AttachmentType;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AttachmentTypeService;
+import net.risesoft.service.attachment.AttachmentTypeService;
 
 @RestController
 @RequiredArgsConstructor

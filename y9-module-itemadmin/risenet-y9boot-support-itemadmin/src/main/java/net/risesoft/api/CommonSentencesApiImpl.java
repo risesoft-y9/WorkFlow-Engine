@@ -16,7 +16,7 @@ import net.risesoft.entity.commonsentences.CommonSentences;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.CommonSentencesService;
+import net.risesoft.service.opinion.CommonSentencesService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

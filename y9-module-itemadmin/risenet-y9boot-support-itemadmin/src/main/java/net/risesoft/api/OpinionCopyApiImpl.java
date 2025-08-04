@@ -27,7 +27,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
-import net.risesoft.service.OpinionCopyService;
+import net.risesoft.service.opinion.OpinionCopyService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

@@ -19,7 +19,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ChaoSongService;
+import net.risesoft.service.chaosong.ChaoSongService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

@@ -26,7 +26,7 @@ import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ActRuDetailService;
+import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.service.util.ItemPageService;
 import net.risesoft.y9.Y9LoginUserHolder;

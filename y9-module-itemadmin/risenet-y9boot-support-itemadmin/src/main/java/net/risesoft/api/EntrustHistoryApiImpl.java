@@ -13,7 +13,7 @@ import net.risesoft.api.itemadmin.entrust.EntrustHistoryApi;
 import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.model.itemadmin.EntrustHistoryModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.EntrustHistoryService;
+import net.risesoft.service.entrust.EntrustHistoryService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 

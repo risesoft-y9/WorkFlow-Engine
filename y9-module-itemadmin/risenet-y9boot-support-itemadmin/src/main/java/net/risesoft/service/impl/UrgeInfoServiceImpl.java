@@ -15,8 +15,8 @@ import net.risesoft.entity.UrgeInfo;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.UrgeInfoRepository;
-import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.UrgeInfoService;
+import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AttachmentConfService;
+import net.risesoft.service.attachment.AttachmentConfService;
 import net.risesoft.util.CommentUtil;
 
 @RestController

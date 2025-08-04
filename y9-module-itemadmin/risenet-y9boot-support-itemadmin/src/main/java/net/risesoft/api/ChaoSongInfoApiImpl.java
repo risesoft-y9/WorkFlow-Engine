@@ -18,7 +18,7 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ChaoSongInfoService;
+import net.risesoft.service.chaosong.ChaoSongInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

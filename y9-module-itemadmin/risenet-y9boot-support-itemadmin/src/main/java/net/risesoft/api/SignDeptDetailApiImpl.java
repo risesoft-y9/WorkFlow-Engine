@@ -20,8 +20,8 @@ import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.OpinionSignService;
 import net.risesoft.service.SignDeptDetailService;
+import net.risesoft.service.opinion.OpinionSignService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

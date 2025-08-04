@@ -16,7 +16,7 @@ import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.EntrustService;
+import net.risesoft.service.entrust.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

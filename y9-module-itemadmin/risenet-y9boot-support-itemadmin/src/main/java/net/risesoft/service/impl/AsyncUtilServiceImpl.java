@@ -29,9 +29,9 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
-import net.risesoft.service.DocumentService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.config.TaskTimeConfService;
+import net.risesoft.service.core.DocumentService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
