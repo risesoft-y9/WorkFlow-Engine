@@ -2,13 +2,13 @@ package net.risesoft.repository.button;
 
 import java.util.List;
 
-import net.risesoft.enums.ItemButtonTypeEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.entity.button.ItemButtonBind;
+import net.risesoft.enums.ItemButtonTypeEnum;
 
 /**
  * @author qinman
@@ -28,10 +28,10 @@ public interface ItemButtonBindRepository
         String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(String itemId,
-                                                                                                        ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey);
+        ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(String itemId,
-                                                                                           ItemButtonTypeEnum buttonType, String processDefinitionId);
+        ItemButtonTypeEnum buttonType, String processDefinitionId);
 
     List<ItemButtonBind> findByItemIdAndButtonTypeAndTaskDefKeyOrderByTabIndexAsc(String itemId, int i, String string);
 

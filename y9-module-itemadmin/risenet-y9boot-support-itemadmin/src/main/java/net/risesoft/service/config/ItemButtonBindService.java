@@ -23,7 +23,7 @@ public interface ItemButtonBindService {
      * @return
      */
     ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
-                              ItemButtonTypeEnum buttonType);
+        ItemButtonTypeEnum buttonType);
 
     /**
      * Description: 复制当前事项绑定的流程定义上一个版本的流程定义绑定的按钮
@@ -85,8 +85,8 @@ public interface ItemButtonBindService {
      * @param taskDefKey
      * @return
      */
-    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId, ItemButtonTypeEnum buttonType,
-        String processDefinitionId, String taskDefKey);
+    List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey);
 
     /**
      *
@@ -122,7 +122,8 @@ public interface ItemButtonBindService {
      * @param taskDefineKey
      * @return
      */
-    List<ItemButtonBind> listExtra(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefineKey);
+    List<ItemButtonBind> listExtra(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
+        String taskDefineKey);
 
     /**
      * Description: 删除绑定关系

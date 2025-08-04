@@ -3,13 +3,14 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 import java.util.Date;
 
-import net.risesoft.enums.ActRuDetailSignStatusEnum;
-import net.risesoft.enums.ActRuDetailStatusEnum;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
+
+import net.risesoft.enums.ActRuDetailSignStatusEnum;
+import net.risesoft.enums.ActRuDetailStatusEnum;
 
 /**
  * 流转详细信息
