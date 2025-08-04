@@ -22,7 +22,11 @@
     </scm>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-process</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-idm-spring</artifactId>
@@ -36,17 +40,6 @@
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-groovy-script-static-engine</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.flowable</groupId>
-            <artifactId>flowable-json-converter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-core</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

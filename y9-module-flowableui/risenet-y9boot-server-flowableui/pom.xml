@@ -152,10 +152,6 @@
             <artifactId>commons-codec</artifactId>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>commons-fileupload</groupId>-->
-        <!--            <artifactId>commons-fileupload</artifactId>-->
-        <!--        </dependency>-->
 
         <dependency>
             <groupId>commons-io</groupId>
@@ -167,28 +163,12 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-        <!--  <dependency>
-              <groupId>com.jxl</groupId>
-              <artifactId>jxl</artifactId>
-              <version>2.6</version>
-          </dependency>
-        -->
         <!-- https://mvnrepository.com/artifact/com.belerweb/pinyin4j -->
         <dependency>
             <groupId>com.belerweb</groupId>
             <artifactId>pinyin4j</artifactId>
         </dependency>
-
-        <!-- <dependency>
-             <groupId>cn.songxinqiang</groupId>
-             <artifactId>com.baidu.ueditor</artifactId>
-             <version>1.1.2-offical</version>
-         </dependency>-->
-        <!-- <dependency>
-             <groupId>net.coobird</groupId>
-             <artifactId>thumbnailator</artifactId>
-             <version>0.4.20</version>
-         </dependency>-->
+ 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
