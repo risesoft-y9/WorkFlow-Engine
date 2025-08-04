@@ -27,9 +27,9 @@ import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.BookMarkBindService;
-import net.risesoft.service.WordTemplateService;
 import net.risesoft.service.form.Y9TableFieldService;
 import net.risesoft.service.form.Y9TableService;
+import net.risesoft.service.template.WordTemplateService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

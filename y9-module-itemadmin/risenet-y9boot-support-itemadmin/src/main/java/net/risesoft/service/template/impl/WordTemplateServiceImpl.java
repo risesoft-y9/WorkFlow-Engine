@@ -1,4 +1,4 @@
-package net.risesoft.service.impl;
+package net.risesoft.service.template.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -33,7 +33,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.template.WordTemplateRepository;
 import net.risesoft.service.BookMarkBindService;
-import net.risesoft.service.WordTemplateService;
+import net.risesoft.service.template.WordTemplateService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.word.Y9WordTool4Doc;

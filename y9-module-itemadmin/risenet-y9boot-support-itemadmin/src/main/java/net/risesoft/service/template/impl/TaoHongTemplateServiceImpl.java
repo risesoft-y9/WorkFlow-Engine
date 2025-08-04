@@ -1,4 +1,4 @@
-package net.risesoft.service.impl;
+package net.risesoft.service.template.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +14,7 @@ import net.risesoft.entity.template.TaoHongTemplate;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.template.TaoHongTemplateRepository;
-import net.risesoft.service.TaoHongTemplateService;
+import net.risesoft.service.template.TaoHongTemplateService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
