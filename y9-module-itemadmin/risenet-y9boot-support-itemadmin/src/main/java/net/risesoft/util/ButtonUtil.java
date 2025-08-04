@@ -427,7 +427,7 @@ public class ButtonUtil {
                     // 判断当前流程实例经过的任务节点数和当前流程实例是否存在父流程实例
                     // 如果任务节点数为1且存在父流程实例，则是流程调用，此时显示拒签按钮
                     // 否则是流程中发给多人等情况，不显示拒签按钮
-                    Integer count =
+                    int count =
                         historictaskApi.getByProcessInstanceId(tenantId, currentProcInstanceId, "").getData().size();
                     if (count == 1) {
                         String superProcessInstanceId =

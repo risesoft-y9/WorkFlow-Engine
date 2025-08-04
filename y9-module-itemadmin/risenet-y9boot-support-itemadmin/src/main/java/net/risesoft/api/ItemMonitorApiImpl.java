@@ -17,7 +17,7 @@ import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ActRuDetailService;
-import net.risesoft.service.ItemPageService;
+import net.risesoft.service.util.ItemPageService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

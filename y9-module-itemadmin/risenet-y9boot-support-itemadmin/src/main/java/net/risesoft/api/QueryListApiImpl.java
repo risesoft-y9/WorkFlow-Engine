@@ -19,7 +19,7 @@ import net.risesoft.api.itemadmin.worklist.QueryListApi;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.pojo.Y9Page;
-import net.risesoft.service.ItemPageService;
+import net.risesoft.service.util.ItemPageService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
