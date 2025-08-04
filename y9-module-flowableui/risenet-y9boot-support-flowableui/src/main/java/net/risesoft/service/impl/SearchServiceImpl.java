@@ -185,8 +185,6 @@ public class SearchServiceImpl implements SearchService {
                     int countFollow =
                         officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
-                    // ddyjs上会功能
-                    mapTemp.put("meeting", hpim.getMeeting() != null && hpim.getMeeting().equals("1"));
                 } catch (Exception e) {
                     LOGGER.error("获取任务信息失败" + processInstanceId, e);
                 }
