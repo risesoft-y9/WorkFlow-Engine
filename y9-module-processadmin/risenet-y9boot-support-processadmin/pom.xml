@@ -22,39 +22,20 @@
     </scm>
 
     <dependencies>
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-idm-spring</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-idm-spring-configurator</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-groovy-script-static-engine</artifactId>
-        </dependency>
-
-         <dependency>
-      <groupId>org.apache.groovy</groupId>
-      <artifactId>groovy-jsr223</artifactId>
-    </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-kafka</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -69,8 +50,20 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-starter-kafka</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -125,6 +118,11 @@
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-properties</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
 
         <dependency>
