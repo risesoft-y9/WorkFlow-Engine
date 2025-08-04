@@ -92,8 +92,8 @@ public class DoneRestController {
      * @param itemId 事项id
      * @return Y9Result<List < ItemViewConfModel>>
      */
-    @GetMapping(value = "/doneViewConf")
-    public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam String itemId) {
+    @GetMapping(value = "/viewConf")
+    public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId) {
         List<ItemViewConfModel> itemViewConfList = itemViewConfApi
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue())
             .getData();

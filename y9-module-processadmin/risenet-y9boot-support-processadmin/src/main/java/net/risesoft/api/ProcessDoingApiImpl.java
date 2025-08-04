@@ -107,14 +107,16 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
         int totalCount;
         // 已办件，以办理时间排序，即发送出去的时间
         List<HistoricTaskInstance> htiList;
-        String sql = "SELECT p.* from (" + " SELECT" + "	t.*" + " FROM" + "	ACT_HI_TASKINST t"
-            + " LEFT JOIN ACT_HI_PROCINST p ON t.PROC_INST_ID_ = p.PROC_INST_ID_" + " WHERE"
-            + "	t.PROC_DEF_ID_ LIKE '" + processDefinitionKey + "%'" + " AND p.END_TIME_ IS NULL"
-            + " AND t.END_TIME_ IS NOT NULL" + " AND p.DELETE_REASON_ IS NULL" + " AND (" + "	t.ASSIGNEE_ = '"
-            + userId + "'" + "	OR t.OWNER_ = '" + userId + "'" + " )" + " AND NOT EXISTS (" + "	SELECT" + "		ID_"
-            + "	FROM" + "		ACT_HI_VARINST" + "	WHERE" + "		NAME_ = '" + userId + "'"
-            + "	AND t.PROC_INST_ID_ = PROC_INST_ID_" + " )" + " ORDER BY t.END_TIME_ desc LIMIT 1000000" + " ) p"
-            + " GROUP BY p.PROC_INST_ID_ ORDER BY p.END_TIME_ desc";
+        // 从现有模式中移除 ONLY_FULL_GROUP_BY，否则会报错
+        // SET sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+        // TODO sql优化
+        String sql =
+            "SELECT p.* from ( SELECT t.* FROM ACT_HI_TASKINST t LEFT JOIN ACT_HI_PROCINST p ON t.PROC_INST_ID_ = p.PROC_INST_ID_"
+                + " WHERE t.PROC_DEF_ID_ LIKE '" + processDefinitionKey + "%' AND p.END_TIME_ IS NULL"
+                + " AND t.END_TIME_ IS NOT NULL AND p.DELETE_REASON_ IS NULL AND ( t.ASSIGNEE_ = '" + userId + "'"
+                + "	OR t.OWNER_ = '" + userId + "')AND NOT EXISTS (SELECT ID_ FROM ACT_HI_VARINST WHERE NAME_ = '"
+                + userId + "' AND t.PROC_INST_ID_ = PROC_INST_ID_) ORDER BY t.END_TIME_ desc LIMIT 1000000"
+                + " ) p GROUP BY p.PROC_INST_ID_ ORDER BY p.END_TIME_ desc";
         htiList = historyService.createNativeHistoricTaskInstanceQuery().sql(sql).listPage((page - 1) * rows, rows);
         ProcessInstanceModel piModel;
         for (HistoricTaskInstance hpi : htiList) {

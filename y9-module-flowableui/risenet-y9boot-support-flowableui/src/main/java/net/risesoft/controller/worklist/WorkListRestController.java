@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.view.ItemViewConfApi;
-import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -64,20 +63,6 @@ public class WorkListRestController {
     }
 
     /**
-     * 获取在办列表视图配置
-     *
-     * @param itemId 事项id
-     * @return Y9Result<List < ItemViewConfModel>>
-     */
-    @GetMapping(value = "/doingViewConf")
-    public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue())
-            .getData();
-        return Y9Result.success(itemViewConfList, "获取成功");
-    }
-
-    /**
      * 获取办结件列表
      *
      * @param itemId 事项id
@@ -90,20 +75,6 @@ public class WorkListRestController {
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.doneService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
-    }
-
-    /**
-     * 获取办结列表视图配置
-     *
-     * @param itemId 事项id
-     * @return Y9Result<List < ItemViewConfModel>>
-     */
-    @GetMapping(value = "/doneViewConf")
-    public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue())
-            .getData();
-        return Y9Result.success(itemViewConfList, "获取成功");
     }
 
     /**
@@ -188,20 +159,6 @@ public class WorkListRestController {
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return this.todoService.pageNewByItemIdAndSearchTerm(itemId, searchTerm, page, rows);
-    }
-
-    /**
-     * 获取待办列表视图配置
-     *
-     * @param itemId 事项id
-     * @return Y9Result<List < ItemViewConfModel>>
-     */
-    @GetMapping(value = "/todoViewConf")
-    public Y9Result<List<ItemViewConfModel>> todoViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue())
-            .getData();
-        return Y9Result.success(itemViewConfList, "获取成功");
     }
 
     /**
