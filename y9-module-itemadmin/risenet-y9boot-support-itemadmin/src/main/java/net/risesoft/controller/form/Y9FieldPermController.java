@@ -29,7 +29,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.form.Y9FormItemBindRepository;
 import net.risesoft.repository.form.Y9FormItemMobileBindRepository;
-import net.risesoft.service.ItemService;
+import net.risesoft.service.core.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

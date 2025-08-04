@@ -29,9 +29,9 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ActRuDetailService;
-import net.risesoft.service.DocumentService;
 import net.risesoft.service.MultiInstanceService;
+import net.risesoft.service.core.ActRuDetailService;
+import net.risesoft.service.core.DocumentService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.y9.Y9LoginUserHolder;
 

@@ -54,12 +54,12 @@ import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.Process4SearchService;
-import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SignDeptDetailService;
-import net.risesoft.service.TransactionFileService;
-import net.risesoft.service.TransactionHistoryWordService;
+import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.service.config.ItemTaskConfService;
+import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
+import net.risesoft.service.word.TransactionHistoryWordService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -90,7 +90,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     private final TransactionHistoryWordService transactionHistoryWordService;
 
-    private final TransactionFileService transactionFileService;
+    private final AttachmentService transactionFileService;
 
     private final OpinionRepository opinionRepository;
 

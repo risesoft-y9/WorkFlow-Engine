@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.organword.OrganWord;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.OrganWordService;
+import net.risesoft.service.organword.OrganWordService;
 
 /**
  * @author qinman

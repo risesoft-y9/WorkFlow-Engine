@@ -15,8 +15,8 @@ import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.OpinionFrame;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.OpinionFrameService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
+import net.risesoft.service.opinion.OpinionFrameService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

@@ -26,7 +26,7 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemDataTransferService;
-import net.risesoft.service.ProcessParamService;
+import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 

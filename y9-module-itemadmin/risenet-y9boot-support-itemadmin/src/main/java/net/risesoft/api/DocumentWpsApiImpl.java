@@ -12,7 +12,7 @@ import net.risesoft.api.itemadmin.documentword.DocumentWpsApi;
 import net.risesoft.entity.documentword.DocumentWps;
 import net.risesoft.model.itemadmin.DocumentWpsModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.DocumentWpsService;
+import net.risesoft.service.word.DocumentWpsService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 

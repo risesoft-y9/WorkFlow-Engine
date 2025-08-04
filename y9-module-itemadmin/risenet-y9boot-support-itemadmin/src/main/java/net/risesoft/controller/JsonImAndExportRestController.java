@@ -44,11 +44,11 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.InterfaceService;
-import net.risesoft.service.OpinionFrameService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
 import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.service.form.Y9FormOptionClassService;
+import net.risesoft.service.opinion.OpinionFrameService;
 
 /**
  * 接口信息

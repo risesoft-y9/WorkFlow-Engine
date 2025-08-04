@@ -18,8 +18,8 @@ import net.risesoft.entity.organword.ItemOrganWordBind;
 import net.risesoft.entity.organword.OrganWord;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.OrganWordService;
 import net.risesoft.service.config.ItemOrganWordBindService;
+import net.risesoft.service.organword.OrganWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

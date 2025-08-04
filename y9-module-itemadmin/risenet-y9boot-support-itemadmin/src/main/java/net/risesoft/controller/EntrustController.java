@@ -31,7 +31,7 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemRepository;
-import net.risesoft.service.EntrustService;
+import net.risesoft.service.entrust.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**

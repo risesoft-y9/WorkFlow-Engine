@@ -30,7 +30,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.repository.attachment.AttachmentRepository;
-import net.risesoft.service.TransactionFileService;
+import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -49,7 +49,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/attachment", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AttachmentApiImpl implements AttachmentApi {
 
-    private final TransactionFileService transactionFileService;
+    private final AttachmentService transactionFileService;
 
     private final AttachmentRepository attachmentRepository;
 
