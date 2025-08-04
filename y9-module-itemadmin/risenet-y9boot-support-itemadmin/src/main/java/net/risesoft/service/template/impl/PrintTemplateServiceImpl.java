@@ -1,4 +1,4 @@
-package net.risesoft.service.impl;
+package net.risesoft.service.template.impl;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +27,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
 import net.risesoft.repository.template.PrintTemplateRepository;
-import net.risesoft.service.PrintTemplateService;
+import net.risesoft.service.template.PrintTemplateService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;

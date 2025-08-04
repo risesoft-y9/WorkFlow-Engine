@@ -25,7 +25,7 @@ import net.risesoft.entity.template.ItemPrintTemplateBind;
 import net.risesoft.entity.template.PrintTemplate;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
-import net.risesoft.service.PrintTemplateService;
+import net.risesoft.service.template.PrintTemplateService;
 
 /**
  * @author qinman

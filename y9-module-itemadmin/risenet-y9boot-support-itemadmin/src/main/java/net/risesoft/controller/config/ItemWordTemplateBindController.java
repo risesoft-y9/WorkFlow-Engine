@@ -25,9 +25,9 @@ import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.WordTemplateService;
 import net.risesoft.service.config.ItemWordTemplateBindService;
 import net.risesoft.service.core.ItemService;
+import net.risesoft.service.template.WordTemplateService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
