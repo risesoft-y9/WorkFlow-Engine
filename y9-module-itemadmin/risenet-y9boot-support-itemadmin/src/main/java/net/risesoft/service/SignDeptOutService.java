@@ -14,8 +14,9 @@ public interface SignDeptOutService {
 
     /**
      * 禁用委外会签部门
-     *
-     * @param id
+     * 
+     * @param ids
+     * @param status
      */
     void disableDept(String[] ids, Integer status);
 

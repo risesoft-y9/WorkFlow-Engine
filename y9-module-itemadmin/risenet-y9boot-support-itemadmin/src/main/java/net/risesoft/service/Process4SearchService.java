@@ -15,7 +15,6 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,6 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@EnableAsync
 @Service(value = "process4SearchService")
 @Slf4j
 @RequiredArgsConstructor

@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +63,6 @@ import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@EnableAsync
 @Service(value = "asyncHandleService")
 @Transactional(value = "rsTenantTransactionManager", rollbackFor = Exception.class)
 @Slf4j

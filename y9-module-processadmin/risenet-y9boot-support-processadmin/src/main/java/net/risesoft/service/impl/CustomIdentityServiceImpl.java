@@ -7,7 +7,6 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.identitylink.api.IdentityLink;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ import net.risesoft.y9.FlowableTenantInfoHolder;
  * @date 2022/12/30
  */
 @Slf4j
-@EnableAsync
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customIdentityService")

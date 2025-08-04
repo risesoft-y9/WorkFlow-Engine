@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * @author qinman
@@ -14,8 +15,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
  * @date 2023/01/03
  */
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, IdmEngineServicesAutoConfiguration.class,
-    FlowableSecurityAutoConfiguration.class, EventRegistryServicesAutoConfiguration.class,
-    OAuth2ClientAutoConfiguration.class})
+    FlowableSecurityAutoConfiguration.class, EventRegistryServicesAutoConfiguration.class, OAuth2ClientAutoConfiguration.class})
+@EnableAsync
 public class ProcessAdminApplication {
     public static void main(String[] args) {
         SpringApplication.run(ProcessAdminApplication.class, args);

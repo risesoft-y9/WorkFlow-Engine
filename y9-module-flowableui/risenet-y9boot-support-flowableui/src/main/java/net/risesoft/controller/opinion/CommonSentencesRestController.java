@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.opinion;
 
 import java.util.List;
 

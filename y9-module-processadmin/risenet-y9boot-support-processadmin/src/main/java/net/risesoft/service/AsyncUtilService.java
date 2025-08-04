@@ -4,7 +4,6 @@ import java.util.concurrent.Future;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
-@EnableAsync
 @Service(value = "asyncUtilService")
 @RequiredArgsConstructor
 public class AsyncUtilService {

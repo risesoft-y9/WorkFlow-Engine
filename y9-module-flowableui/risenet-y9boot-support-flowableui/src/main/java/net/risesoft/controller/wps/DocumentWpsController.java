@@ -40,7 +40,7 @@ import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.service.TaoHongService;
+import net.risesoft.service.impl.TaoHongServiceImpl;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -133,7 +133,7 @@ public class DocumentWpsController {
     public static void main(String[] args) throws Exception {
         String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
         String content = "C:\\Users\\10858\\Desktop\\工作流相关文档.docx";
-        TaoHongService taoHongService = new TaoHongService();
+        TaoHongServiceImpl taoHongService = new TaoHongServiceImpl();
         taoHongService.word2RedDocument(content, destDocx);
     }
 
