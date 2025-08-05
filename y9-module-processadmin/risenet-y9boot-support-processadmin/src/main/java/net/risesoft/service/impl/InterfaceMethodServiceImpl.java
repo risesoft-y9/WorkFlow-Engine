@@ -74,7 +74,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     private final ItemInterfaceApi itemInterfaceApi;
     private final Y9FileStoreService y9FileStoreService;
     private final Y9Properties y9Config;
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @jakarta.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     public InterfaceMethodServiceImpl(ItemInterfaceApi itemInterfaceApi, Y9FileStoreService y9FileStoreService,
