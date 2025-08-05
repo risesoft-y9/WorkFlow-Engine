@@ -119,20 +119,22 @@ public class InterfaceMethodService {
                         guid = processSerialNumber + "_loopCounter_" + loopCounter;
                         StringBuilder sqlStr = getSqlStr(dialect, tableName);
                         List<Map<String, Object>> res_list = jdbcTemplate.queryForList(sqlStr.toString(), guid);
-                        if (res_list.size() == 0) {// 新增数据
+                        if (res_list.isEmpty()) {
+                            // 新增数据
                             this.insertData(tableName, processSerialNumber, map, paramsList, guid);
                             continue;
                         }
                     }
                     StringBuilder sqlStr = new StringBuilder();
-                    if ("oracle".equals(dialect)) {
-                        sqlStr.append("update \"").append(tableName).append("\" set ");
-                    } else if ("dm".equals(dialect)) {
-                        sqlStr.append("update \"").append(tableName).append("\" set ");
-                    } else if ("mysql".equals(dialect)) {
-                        sqlStr.append("update ").append(tableName).append(" set ");
-                    } else if ("kingbase".equals(dialect)) {
-                        sqlStr.append("update \"").append(tableName).append("\" set ");
+                    switch (dialect) {
+                        case "oracle":
+                        case "dm":
+                        case "kingbase":
+                            sqlStr.append("update \"").append(tableName).append("\" set ");
+                            break;
+                        default:
+                            sqlStr.append("update ").append(tableName).append(" set ");
+                            break;
                     }
                     boolean isHaveField = false;
                     for (InterfaceParamsModel model : paramsList) {
