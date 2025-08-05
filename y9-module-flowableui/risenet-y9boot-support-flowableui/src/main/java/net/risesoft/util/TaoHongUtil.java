@@ -92,7 +92,6 @@ public class TaoHongUtil {
 
     /**
      * @param content 公文地址
-     * @param data 需要填写的参数
      * @param destDocx 保存的文件地址
      */
     public void word2RedDocument(String content, String destDocx) {
@@ -111,7 +110,7 @@ public class TaoHongUtil {
             String filePath = "";
             try {
                 byte[] result = null;
-                result = jodd.util.Base64.decode(contentStr);
+                result = java.util.Base64.getDecoder().decode(contentStr);
                 filePath =
                     Y9Context.getWebRootRealPath() + "static" + File.separator + "word" + File.separator + "1111.docx";
                 File file = null;
