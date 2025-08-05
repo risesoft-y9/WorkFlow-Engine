@@ -53,9 +53,9 @@ import liquibase.integration.spring.SpringLiquibase;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties({Y9Properties.class, Y9ProcessAdminProperties.class})
-@ImportResource({"classpath:/springconfigs/flowable.cfg.xml"})
+@ImportResource({"classpath:/spring-configs/flowable.cfg.xml"})
 @ComponentScan(basePackages = {"net.risesoft", "org.flowable.ui"})
-public class ProcessAdminConfiguraton implements WebMvcConfigurer {
+public class ProcessAdminConfiguration implements WebMvcConfigurer {
 
     private final Environment environment;
 
