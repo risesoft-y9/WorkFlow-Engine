@@ -16,34 +16,9 @@
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-log-flowable</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-properties</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-security</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-apisix</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-log</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -55,13 +30,19 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-jpa-dedicated</artifactId>
+            <artifactId>risenet-y9boot-starter-jpa-tenant</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-jpa-tenant</artifactId>
+            <artifactId>risenet-y9boot-starter-log</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-starter-log-flowable</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -74,12 +55,6 @@
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-support-file-service-ftp</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-sso-oauth2-resource</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -108,27 +83,27 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-web</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-common-nacos</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!--  <dependency>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-tomcat</artifactId>
+              <scope>provided</scope>
+          </dependency>-->
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -141,11 +116,6 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -155,12 +125,6 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-        <!--  <dependency>
-              <groupId>com.jxl</groupId>
-              <artifactId>jxl</artifactId>
-              <version>2.6</version>
-          </dependency>
-        -->
         <!-- https://mvnrepository.com/artifact/com.belerweb/pinyin4j -->
         <dependency>
             <groupId>com.belerweb</groupId>
@@ -168,16 +132,6 @@
             <version>2.5.1</version>
         </dependency>
 
-        <!-- <dependency>
-             <groupId>cn.songxinqiang</groupId>
-             <artifactId>com.baidu.ueditor</artifactId>
-             <version>1.1.2-offical</version>
-         </dependency>-->
-        <!-- <dependency>
-             <groupId>net.coobird</groupId>
-             <artifactId>thumbnailator</artifactId>
-             <version>0.4.20</version>
-         </dependency>-->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>

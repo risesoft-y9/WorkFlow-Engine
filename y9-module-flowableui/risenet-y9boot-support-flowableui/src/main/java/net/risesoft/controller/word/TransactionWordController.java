@@ -406,7 +406,7 @@ public class TransactionWordController {
         try {
             byte[] result;
             out = response.getOutputStream();
-            result = jodd.util.Base64.decode(content);
+            result = java.util.Base64.getDecoder().decode(content);
             ByteArrayInputStream bin = new ByteArrayInputStream(result);
             int b;
             byte[] by = new byte[1024];
