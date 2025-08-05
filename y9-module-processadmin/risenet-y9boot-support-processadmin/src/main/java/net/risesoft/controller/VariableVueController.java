@@ -8,9 +8,7 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.flowable.engine.RuntimeService;
-import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,10 +22,8 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.processadmin.SysVariables;
-import net.risesoft.controller.vo.ProcessInstanceVO;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.CustomVariableService;
@@ -77,50 +73,6 @@ public class VariableVueController {
     public Y9Result<String> deleteTaskVar(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String key) {
         customVariableService.removeVariableLocal(taskId, key);
         return Y9Result.successMsg("删除成功");
-    }
-
-    /**
-     * 获取流程实例变量
-     *
-     * @param processInstanceId 流程实例id
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @GetMapping(value = "/getAllVariable")
-    public Y9Page<ProcessInstanceVO> getAllVariable(@RequestParam(required = false) String processInstanceId,
-        @RequestParam int page, @RequestParam int rows) {
-        List<ProcessInstanceVO> items = new ArrayList<>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        long totalCount;
-        List<ProcessInstance> list;
-        if (StringUtils.isBlank(processInstanceId)) {
-            totalCount = runtimeService.createProcessInstanceQuery().count();
-            list =
-                runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
-        } else {
-            totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime()
-                .desc().listPage((page - 1) * rows, rows);
-        }
-        OrgUnit orgUnit;
-        OrgUnit parent;
-        for (ProcessInstance processInstance : list) {
-            ProcessInstanceVO process = new ProcessInstanceVO();
-            process.setBusinessKey(processInstance.getBusinessKey());
-            process.setProcessInstanceId(processInstance.getId());
-            process.setProcessDefName(processInstance.getProcessDefinitionName());
-            process.setSuspended(processInstance.isSuspended());
-            process.setStartTime(DateFormatUtils.format(processInstance.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
-            process.setStartUserName("无");
-            if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
-                orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, processInstance.getStartUserId()).getData();
-                process.setStartUserName(orgUnit.getName() + "(" + orgUnit.getName() + ")");
-            }
-            items.add(process);
-        }
-        int totalPages = (int)totalCount / rows + 1;
-        return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");
     }
 
     /**

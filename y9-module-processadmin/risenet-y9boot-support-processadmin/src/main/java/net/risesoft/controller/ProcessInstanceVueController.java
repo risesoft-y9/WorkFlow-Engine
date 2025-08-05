@@ -273,7 +273,7 @@ public class ProcessInstanceVueController {
      * @return Y9Page<Map < String, Object>>
      */
     @GetMapping(value = "/runningList")
-    public Y9Page<Map<String, Object>> pageRunningList(@RequestParam(required = false) String processInstanceId,
+    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId,
         @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();

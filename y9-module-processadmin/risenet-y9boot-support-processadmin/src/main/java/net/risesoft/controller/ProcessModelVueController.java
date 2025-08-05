@@ -233,7 +233,6 @@ public class ProcessModelVueController {
     public Y9Result<Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
@@ -283,7 +282,7 @@ public class ProcessModelVueController {
             newModel.setModelEditorJson(modelNode.toString());
             newModel.setLastUpdated(Calendar.getInstance().getTime());
             newModel.setLastUpdatedBy(userInfo.getName());
-            newModel.setTenantId(tenantId);
+            newModel.setTenantId(Y9LoginUserHolder.getTenantId());
             String createdBy = SecurityUtils.getCurrentUserId();
             modelService.createModel(newModel, createdBy);
             return Y9Result.successMsg("导入成功");
@@ -304,7 +303,6 @@ public class ProcessModelVueController {
     @RequestMapping(value = "/saveModelXml")
     public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
         try {
-            UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
@@ -350,11 +348,11 @@ public class ProcessModelVueController {
             newModel.setKey(model.getKey());
             newModel.setModelType(model.getModelType());
             newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(userInfo.getName());
+            newModel.setCreatedBy(Y9LoginUserHolder.getUserInfo().getName());
             newModel.setDescription(model.getDescription());
             newModel.setModelEditorJson(modelNode.toString());
             newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(userInfo.getName());
+            newModel.setLastUpdatedBy(Y9LoginUserHolder.getUserInfo().getName());
             newModel.setTenantId(tenantId);
             String createdBy = SecurityUtils.getCurrentUserId();
             modelService.createModel(newModel, createdBy);
