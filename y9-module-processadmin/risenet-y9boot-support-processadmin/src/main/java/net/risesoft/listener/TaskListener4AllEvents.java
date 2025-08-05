@@ -9,7 +9,7 @@ import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.service.Task4ActRuDetaillService;
+import net.risesoft.service.Task4ActRuDetailService;
 import net.risesoft.service.Task4ListenerService;
 import net.risesoft.y9.Y9Context;
 
@@ -33,7 +33,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             task4ListenerService.task4AssignmentListener(task, variables);
             // 2、签收和撤销签收的时候保存待办详情
             if (task.getCandidates().size() > 1) {
-                Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
+                Task4ActRuDetailService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetailService.class);
                 if (StringUtils.isNotEmpty(task.getAssignee())) {
                     // 签收
                     task4ActRuDetaillService.claim(task);
@@ -52,7 +52,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
                 throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_CREATE");
             }
             // 2、保存待办详情
-            Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
+            Task4ActRuDetailService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetailService.class);
             if (null != task.getAssignee()) {
                 task4ActRuDetaillService.createTodo(task);
             } else {
@@ -78,7 +78,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             /*
              * 3、任务删除的时候，待办-->在办
              */
-            Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
+            Task4ActRuDetailService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetailService.class);
             if (null != task.getAssignee()) {
                 task4ActRuDetaillService.todo2doing(task);
             } else {

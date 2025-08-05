@@ -1,4 +1,4 @@
-package net.risesoft.service;
+package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,6 +23,7 @@ import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.service.Task4ActRuDetailService;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -31,19 +32,20 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  */
 @Slf4j
-@Service(value = "task4ActRuDetaillService")
-public class Task4ActRuDetaillService {
+@Service
+public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
 
     private final ActRuDetailApi actRuDetailApi;
     private final OrgUnitApi orgUnitApi;
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public Task4ActRuDetaillService(ActRuDetailApi actRuDetailApi, OrgUnitApi orgUnitApi) {
+    public Task4ActRuDetailServiceImpl(ActRuDetailApi actRuDetailApi, OrgUnitApi orgUnitApi) {
         this.actRuDetailApi = actRuDetailApi;
         this.orgUnitApi = orgUnitApi;
     }
 
+    @Override
     public void todo2doing(DelegateTask taskEntity) {
         try {
             String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
@@ -54,11 +56,12 @@ public class Task4ActRuDetaillService {
             }
         } catch (Exception e) {
             LOGGER.warn(
-                "##########################Task4ActRuDetaillService:todo2doing待办-->在办失败-taskId:{}##########################",
+                "##########################Task4ActRuDetailService:todo2doing待办-->在办失败-taskId:{}##########################",
                 taskEntity.getId(), e);
         }
     }
 
+    @Override
     public void createTodo(DelegateTask taskEntity) {
         try {
             String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
@@ -117,11 +120,7 @@ public class Task4ActRuDetaillService {
         return list.isEmpty() ? sdf.format(new Date()) : list.get(0).get("START_TIME_").toString();
     }
 
-    /**
-     * 单任务节点签收时，当前任务的办理人的待办保留，其他人的待办改为在办
-     *
-     * @param taskEntity 任务实体
-     */
+    @Override
     public void claim(DelegateTask taskEntity) {
         try {
             String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
@@ -137,11 +136,7 @@ public class Task4ActRuDetaillService {
         }
     }
 
-    /**
-     * <签收节点还没有签收的时候,如果被重定向/收回,则把待签收人都设置为在办>
-     *
-     * @param taskEntity 任务实体
-     */
+    @Override
     public void todo2doing4Jump(DelegateTask taskEntity) {
         try {
             String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
@@ -160,11 +155,7 @@ public class Task4ActRuDetaillService {
         }
     }
 
-    /**
-     * 单任务节点选择多个人发送时，只会产生create事件，所以这里把所有候选人都生成待办
-     *
-     * @param taskEntity 任务实体
-     */
+    @Override
     public void unClaim(DelegateTask taskEntity) {
         try {
             String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
@@ -179,11 +170,7 @@ public class Task4ActRuDetaillService {
         }
     }
 
-    /**
-     * 单任务节点选择多个人发送时，只会产生create事件，所以这里把所有候选人都生成待办
-     *
-     * @param taskEntity 任务实体
-     */
+    @Override
     public void createTodo4Claim(DelegateTask taskEntity) {
         try {
             String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
@@ -208,9 +195,8 @@ public class Task4ActRuDetaillService {
                 });
             }
         } catch (Exception e) {
-            LOGGER.error("##########################createTodo4Claim抢占式节点-保存待办失败-taskId:{}##########################",
-                taskEntity.getId());
-            e.printStackTrace();
+            LOGGER.error("########createTodo4Claim抢占式节点-保存待办失败-taskId:{}########", taskEntity.getId());
+            LOGGER.error(e.getMessage());
         }
     }
 }

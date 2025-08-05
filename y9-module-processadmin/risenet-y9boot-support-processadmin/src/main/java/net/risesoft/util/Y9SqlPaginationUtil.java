@@ -23,54 +23,41 @@ public class Y9SqlPaginationUtil {
     private static String dbType;
     private static int dbVersion;
 
-    public static String generatePagedSql(DataSource ds, String sql, int start, int limit) throws Exception {
-        String rSql = "";
+    public static String generatePagedSql(DataSource ds, String sql, int start, int limit) {
+        String rSql;
         if (limit == 0) {
             limit = Integer.MAX_VALUE;
         }
-
         if (dbType == null) {
-            Connection connection = null;
             String microsoft = "microsoft";
-            try {
-                connection = ds.getConnection();
-                DatabaseMetaData dbmd = connection.getMetaData();
-                String databaseName = dbmd.getDatabaseProductName().toLowerCase();
-                if (databaseName.indexOf(DialectEnum.MYSQL.getValue()) > -1) {
+            try (Connection connection = ds.getConnection()) {
+                DatabaseMetaData dmd = connection.getMetaData();
+                String databaseName = dmd.getDatabaseProductName().toLowerCase();
+                if (databaseName.contains(DialectEnum.MYSQL.getValue())) {
                     dbType = "mysql";
-                } else if (databaseName.indexOf(DialectEnum.ORACLE.getValue()) > -1) {
+                } else if (databaseName.contains(DialectEnum.ORACLE.getValue())) {
                     dbType = "oracle";
-                } else if (databaseName.indexOf(microsoft) > -1) {
+                } else if (databaseName.contains(microsoft)) {
                     dbType = "mssql";
-                } else if (databaseName.indexOf(DialectEnum.KINGBASE.getValue()) > -1) {
+                } else if (databaseName.contains(DialectEnum.KINGBASE.getValue())) {
                     dbType = "kingbase";
                 } else {
                     dbType = "oracle";
                 }
-
-                dbVersion = dbmd.getDatabaseMajorVersion();
+                dbVersion = dmd.getDatabaseMajorVersion();
             } catch (SQLException e) {
                 log.error(e.getMessage());
-            } finally {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error(e.getMessage());
-                }
             }
         }
-
         rSql = generatePagedSql(dbType, dbVersion, sql, start, limit);
         return rSql;
     }
 
-    public static String generatePagedSql(String databaseType, int databaseVersion, String sql, int start, int limit)
-        throws Exception {
+    public static String generatePagedSql(String databaseType, int databaseVersion, String sql, int start, int limit) {
         String rSql = "";
         if (limit == 0) {
             limit = Integer.MAX_VALUE;
         }
-
         if (DialectEnum.MYSQL.getValue().equalsIgnoreCase(databaseType)) {
             rSql = sql + " limit " + start + "," + limit;
         } else if (DialectEnum.MSSQL.getValue().equalsIgnoreCase(databaseType)) {
@@ -97,8 +84,6 @@ public class Y9SqlPaginationUtil {
             rSql = "select * from (select mytable.*,rownum as my_rownum from (" + sql + ") mytable) where my_rownum<="
                 + (start + limit) + " and my_rownum>" + start;
         }
-
         return rSql;
     }
-
 }
