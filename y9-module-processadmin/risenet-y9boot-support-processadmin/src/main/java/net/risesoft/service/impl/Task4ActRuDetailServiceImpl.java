@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.Task4ActRuDetailService;
 import net.risesoft.y9.FlowableTenantInfoHolder;

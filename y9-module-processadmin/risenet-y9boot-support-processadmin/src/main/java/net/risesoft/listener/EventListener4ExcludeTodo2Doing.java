@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.TaskRelatedEnum;
-import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.InterfaceUtilService;

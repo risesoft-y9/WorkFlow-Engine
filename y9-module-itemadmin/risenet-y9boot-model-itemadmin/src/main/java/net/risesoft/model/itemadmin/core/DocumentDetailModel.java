@@ -1,10 +1,14 @@
-package net.risesoft.model.itemadmin;
+package net.risesoft.model.itemadmin.core;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
+
+import net.risesoft.model.itemadmin.ItemButtonModel;
+import net.risesoft.model.itemadmin.ItemFormModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 
 /**
  * 流程详情数据

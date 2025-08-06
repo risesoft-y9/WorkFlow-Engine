@@ -25,7 +25,7 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;

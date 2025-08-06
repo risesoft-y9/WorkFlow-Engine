@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.Item;
-import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Result;
 
 /**

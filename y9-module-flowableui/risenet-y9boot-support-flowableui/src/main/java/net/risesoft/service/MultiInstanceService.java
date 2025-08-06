@@ -3,7 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 
 public interface MultiInstanceService {
 

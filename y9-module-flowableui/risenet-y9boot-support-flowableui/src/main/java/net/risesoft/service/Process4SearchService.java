@@ -1,6 +1,6 @@
 package net.risesoft.service;
 
-import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 
 /**
  * 流程数据进入数据中心，用于综合搜索

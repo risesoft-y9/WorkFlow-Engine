@@ -23,7 +23,7 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.itemadmin.DocumentDetailModel;
+import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;

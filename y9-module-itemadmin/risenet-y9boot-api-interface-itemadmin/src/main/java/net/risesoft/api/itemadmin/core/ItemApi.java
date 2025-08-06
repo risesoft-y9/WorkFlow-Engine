@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin;
+package net.risesoft.api.itemadmin.core;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
-import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
+import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Result;
 
 /**

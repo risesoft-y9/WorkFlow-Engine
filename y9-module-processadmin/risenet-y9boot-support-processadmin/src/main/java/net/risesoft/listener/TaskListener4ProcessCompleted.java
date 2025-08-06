@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.itemadmin.ItemApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.core.ActRuDetailApi;
+import net.risesoft.api.itemadmin.core.ItemApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.y9.Y9Context;

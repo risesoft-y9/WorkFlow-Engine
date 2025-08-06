@@ -26,7 +26,7 @@ import com.alibaba.ttl.threadpool.TtlExecutors;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.log.aop.FlowableLogAdvice;
 import net.risesoft.log.aop.FlowableLogAdvisor;
 import net.risesoft.log.service.FlowableAccessLogReporter;

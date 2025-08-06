@@ -1,4 +1,4 @@
-package net.risesoft.model.itemadmin;
+package net.risesoft.model.itemadmin.core;
 
 import java.io.Serializable;
 
