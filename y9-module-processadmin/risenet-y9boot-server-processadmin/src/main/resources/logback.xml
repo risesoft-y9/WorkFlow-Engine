@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="net.risesoft" level="DEBUG"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="y9.autoconfiguration" level="INFO"/>
+    <logger name="org.apache.catalina.startup.Catalina" level="INFO"/>
+    <logger name="net.javacrumbs.shedlock" level="DEBUG"/>
+    <logger name="org.flowable" level="WARN"/>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
