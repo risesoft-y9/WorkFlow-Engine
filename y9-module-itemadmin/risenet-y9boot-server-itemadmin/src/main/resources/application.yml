@@ -52,81 +52,40 @@ spring:
         elasticsearch:
             repositories:
                 enabled: true
+        redis:
+            database: 8
+            host: localhost
+            port: 6379
+            username: default
+            password: '111111'
+            ssl:
+                enabled: false
+            lettuce:
+                pool:
+                    max-active: 8
+                    max-idle: 8
+                    max-wait: -1
+                    min-idle: 1
+            repositories:
+                enabled: false
     datasource:
-        type: com.alibaba.druid.pool.DruidDataSource
-        druid:
-            #driver-class-name: com.kingbase8.Driver
-            filter:
-                stat:
-                    log-slow-sql: true
-                    mergeSql: true
-                    slow-sql-millis: 3000
-                wall:
-                    config:
-                        drop-table-allow: false
-                    enabled: true #使用人大金仓数据库要设为false
-            stat-view-servlet:
-                enabled: false
-                url-pattern: /druid/*
-                login-username: admin
-                login-password: admin
-                reset-enable: false
-                allow: 127.0.0.1
-            web-stat-filter:
-                enabled: false
-                url-pattern: /*
-                exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/static/*'
-            tenantDefault: spring.datasource.druid.flowable
-            y9-public:
-                #driver-class-name: oracle.jdbc.OracleDriver
-                #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
-                #username: Y9_PUBLIC
-                #password: '111111'
-                
-                #driverClassName: com.kingbase8.Driver
-                #url: jdbc:kingbase8://127.0.0.1:54321/risesoft?currentSchema=y9_public
-                #username: y9_public
-                #password: 111111
-                
-                driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-                username: root
-                password: 111111
-                initialSize: 1
-                maxActive: 20
-                maxPoolPreparedStatementPerConnectionSize: 100
-                maxWait: 60000
-                minEvictableIdleTimeMillis: 300000
-                minIdle: 1
-                poolPreparedStatements: true
-                testOnBorrow: false
-                testOnReturn: false
-                testWhileIdle: true
-                timeBetweenEvictionRunsMillis: 60000
-                useGlobalDataSourceStat: true
-                validationQuery: SELECT 1 FROM DUAL
-            flowable:
-                #driverClassName: com.kingbase8.Driver
-                #url: jdbc:kingbase8://127.0.0.1:54321/risesoft?currentSchema=y9_flowable
-                #username: y9_flowable
-                #password: 111111
-                driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://localhost:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-                username: root
-                password: 111111
-                initialSize: 1
-                maxActive: 20
-                maxPoolPreparedStatementPerConnectionSize: 100
-                maxWait: 60000
-                minEvictableIdleTimeMillis: 300000
-                minIdle: 1
-                poolPreparedStatements: true
-                testOnBorrow: false
-                testOnReturn: false
-                testWhileIdle: true
-                timeBetweenEvictionRunsMillis: 60000
-                useGlobalDataSourceStat: true
-                validationQuery: SELECT 1 FROM DUAL
+        datasource:
+            hikari:
+                tenantDefault: spring.datasource.hikari.flowable
+                y9-public:
+                    driverClassName: com.mysql.cj.jdbc.Driver
+                    jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                    username: root
+                    password: '111111'
+                    maximumPoolSize: 20
+                    minimumIdle: 1
+                flowable:
+                    driverClassName: com.mysql.cj.jdbc.Driver
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                    username: root
+                    password: '111111'
+                    maximumPoolSize: 20
+                    minimumIdle: 1
     elasticsearch:
         uris: localhost:9200
         username: elastic
@@ -164,20 +123,6 @@ spring:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
-    redis:
-        database: 8
-        host: localhost
-        password: 111111
-        port: 6379
-        lettuce:
-            pool:
-                max-active: 8
-                max-idle: 8
-                max-wait: -1
-                min-idle: 0
-            shutdown-timeout: 100ms
-        ssl: false
-        timeout: 10000
     servlet:
         multipart:
             max-file-size: 200MB
