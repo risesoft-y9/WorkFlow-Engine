@@ -78,7 +78,6 @@ import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -125,8 +124,6 @@ public class DocumentRestController {
 
     private final OfficeFollowApi officeFollowApi;
 
-    private final Y9Properties y9Config;
-
     private final ProcessTodoApi processTodoApi;
 
     private final ProcessParamService processParamService;
@@ -153,11 +150,11 @@ public class DocumentRestController {
     @GetMapping(value = "/add")
     public Y9Result<Map<String, Object>> add(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map;
         try {
             OpenDataModel model = documentApi.add(tenantId, Y9LoginUserHolder.getPositionId(), itemId, false).getData();
             String str = Y9JsonUtil.writeValueAsString(model);
-            map = Y9JsonUtil.readHashMap(str);
+            Map<String, Object> map = Y9JsonUtil.readHashMap(str);
+            assert map != null;
             map.put("tenantId", tenantId);
             map.put("userId", Y9LoginUserHolder.getPositionId());
             map.put("userName", Y9LoginUserHolder.getPosition().getName());

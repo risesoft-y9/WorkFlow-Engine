@@ -1,6 +1,5 @@
 package net.risesoft.controller.worklist;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,13 +127,10 @@ public class DraftRestController {
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String draftRecycle) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        Map<String, Object> map = new HashMap<>(16);
-        OpenDataModel model = null;
-        if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
-            model = draftApi.openDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
-        }
+        OpenDataModel model = draftApi.openDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
         String str = Y9JsonUtil.writeValueAsString(model);
-        map = Y9JsonUtil.readHashMap(str);
+        Map<String, Object> map = Y9JsonUtil.readHashMap(str);
+        assert map != null;
         map.put("currentUser", Y9LoginUserHolder.getPosition().getName());
         map.put("draftRecycle", draftRecycle);
         map.put("tenantId", tenantId);
