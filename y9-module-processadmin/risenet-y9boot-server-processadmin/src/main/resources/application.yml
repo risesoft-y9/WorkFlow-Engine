@@ -14,8 +14,6 @@ hibernate:
         mssql: org.hibernate.dialect.SQLServer2012Dialect
         mysql: org.hibernate.dialect.MySQL8Dialect
         oracle: org.hibernate.dialect.Oracle10gDialect
-logging:
-    config: classpath:log4j2.xml
 management:
     endpoints:
         web:
