@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.core.ActRuDetailApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
-import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;

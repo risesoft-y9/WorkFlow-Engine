@@ -30,10 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.core.ActRuDetailApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.command.RecoveryTodoCommand;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
@@ -41,7 +41,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomRuntimeService;

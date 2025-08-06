@@ -23,7 +23,7 @@ import net.risesoft.api.itemadmin.worklist.ItemTodoApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;

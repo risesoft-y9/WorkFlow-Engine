@@ -26,8 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.documentword.DocumentWpsApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -37,7 +37,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWpsModel;
 import net.risesoft.model.itemadmin.DraftModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.impl.TaoHongServiceImpl;

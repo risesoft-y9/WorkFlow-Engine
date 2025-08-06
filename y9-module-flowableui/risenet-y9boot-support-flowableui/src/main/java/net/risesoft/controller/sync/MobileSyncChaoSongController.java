@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;

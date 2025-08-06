@@ -20,13 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.y9.Y9LoginUserHolder;

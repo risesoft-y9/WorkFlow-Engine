@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemListModel;
-import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SearchService;

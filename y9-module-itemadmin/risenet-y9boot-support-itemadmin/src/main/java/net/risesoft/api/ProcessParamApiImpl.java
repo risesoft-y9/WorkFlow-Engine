@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;

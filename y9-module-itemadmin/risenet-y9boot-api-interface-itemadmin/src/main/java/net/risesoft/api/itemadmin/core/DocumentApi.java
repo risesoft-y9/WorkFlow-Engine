@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin;
+package net.risesoft.api.itemadmin.core;
 
 import java.util.List;
 import java.util.Map;
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
-import net.risesoft.model.itemadmin.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
+import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.pojo.Y9Result;
 
 /**

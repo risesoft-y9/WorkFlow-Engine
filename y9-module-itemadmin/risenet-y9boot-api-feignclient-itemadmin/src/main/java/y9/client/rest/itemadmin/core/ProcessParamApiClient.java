@@ -1,8 +1,8 @@
-package y9.client.rest.itemadmin;
+package y9.client.rest.itemadmin.core;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.core.ProcessParamApi;
 
 /**
  * @author qinman

@@ -69,7 +69,7 @@ import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
-import net.risesoft.model.itemadmin.DocumentDetailModel;
+import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.itemadmin.ItemFormModel;

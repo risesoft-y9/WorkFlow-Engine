@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ItemApi;
+import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
-import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
+import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;

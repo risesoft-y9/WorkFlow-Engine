@@ -1,4 +1,4 @@
-package net.risesoft.api.itemadmin;
+package net.risesoft.api.itemadmin.core;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Result;
 
 /**

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.y9.Y9LoginUserHolder;
