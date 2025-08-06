@@ -127,10 +127,20 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
             + "	ACT_HI_TASKINST T WHERE T.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
+    private String getActHiVarinstSql(String year, String processInstanceId) {
+        return "INSERT INTO ACT_HI_VARINST_" + year + " (ID_,REV_,PROC_INST_ID_,EXECUTION_ID_,TASK_ID_,"
+            + "	NAME_,VAR_TYPE_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,DOUBLE_,LONG_,TEXT_,TEXT2_,"
+            + "	CREATE_TIME_,LAST_UPDATED_TIME_ ) SELECT ID_, REV_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_,"
+            + "	NAME_, VAR_TYPE_, SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,"
+            + "	DOUBLE_,LONG_,TEXT_,TEXT2_,CREATE_TIME_,LAST_UPDATED_TIME_" + " FROM ACT_HI_VARINST v" + " WHERE"
+            + "	v.PROC_INST_ID_ = '" + processInstanceId
+            + "' and v.NAME_ not in ('nrOfActiveInstances','nrOfCompletedInstances','nrOfInstances','loopCounter','elementUser')";
+    }
+
     @Async
     @Override
-    public void saveToDataCenter(final String tenantId, final String year, final String userId,
-        final String processInstanceId, final String personName) {
+    public void saveToEs(final String tenantId, final String year, final String userId, final String processInstanceId,
+        final String personName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -247,16 +257,6 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
             }
             LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
         }
-    }
-
-    private String getActHiVarinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_VARINST_" + year + " (ID_,REV_,PROC_INST_ID_,EXECUTION_ID_,TASK_ID_,"
-            + "	NAME_,VAR_TYPE_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,DOUBLE_,LONG_,TEXT_,TEXT2_,"
-            + "	CREATE_TIME_,LAST_UPDATED_TIME_ ) SELECT ID_, REV_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_,"
-            + "	NAME_, VAR_TYPE_, SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,"
-            + "	DOUBLE_,LONG_,TEXT_,TEXT2_,CREATE_TIME_,LAST_UPDATED_TIME_" + " FROM ACT_HI_VARINST v" + " WHERE"
-            + "	v.PROC_INST_ID_ = '" + processInstanceId
-            + "' and v.NAME_ not in ('nrOfActiveInstances','nrOfCompletedInstances','nrOfInstances','loopCounter','elementUser')";
     }
 
     @Override
