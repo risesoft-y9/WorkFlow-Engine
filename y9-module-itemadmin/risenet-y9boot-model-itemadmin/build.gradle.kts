@@ -6,11 +6,9 @@ plugins {
 dependencies {
     api(platform(libs.y9.digitalbase.bom))
     api(platform(libs.y9.digitalbase.dependencies))
-
-    api(project(":y9-module-itemadmin:risenet-y9boot-model-itemadmin"))
     api("net.risesoft:risenet-y9boot-common-model")
     api("org.springframework:spring-web")
     api("org.springframework.boot:spring-boot-starter-validation")
 }
 
-description = "risenet-y9boot-api-interface-itemadmin"
+description = "risenet-y9boot-model-itemadmin"

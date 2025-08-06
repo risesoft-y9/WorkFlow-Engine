@@ -6,6 +6,8 @@ plugins {
 dependencies {
     api(platform(libs.y9.digitalbase.bom))
     api(platform(libs.y9.digitalbase.dependencies))
+
+    api(project(":y9-module-itemadmin:risenet-y9boot-model-itemadmin"))
     api("net.risesoft:risenet-y9boot-starter-jpa-public")
     api("net.risesoft:risenet-y9boot-starter-elasticsearch")
     api("net.risesoft:risenet-y9boot-support-history")

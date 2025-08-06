@@ -20,7 +20,7 @@ pdf417 = "1.0"
 
 # for jodconverter
 org-jodconverter-jodconverter-local = "4.4.8"
-org-apache-poi-poi = "5.2.3"
+org-apache-poi-poi = "5.4.1"
 fr-opensagres-xdocreport = "1.0.6"
 com-thoughtworks-xstream-xstream = "1.4.20"
 com-github-junrar-junrar = "7.5.5"
@@ -47,7 +47,6 @@ commons-net-commons-net = "3.11.1"
 
 cn-idev-excel-fastexcel = "1.1.0"
 javax-media-jai-core = "1.1.3"
-javax-ws-rs = "2.1.1"
 
 [libraries]
 y9-digitalbase-bom = { module = "net.risesoft:y9-digitalbase-bom", version.ref = "y9-digitalbase" }
@@ -67,7 +66,6 @@ fastjson = { module = "com.alibaba:fastjson", version.ref = "com-alibaba-fastjso
 jodd-mail = { module = "org.jodd:jodd-mail", version.ref = "org-jodd-jodd-mail" }
 pinyin4j = { module = "com.belerweb:pinyin4j", version.ref = "com-belerweb-pinyin4j" }
 poi-tl = { module = "com.deepoove:poi-tl", version.ref = "com-deepoove-poi-tl" }
-javax-ws-rs-api = { module = "javax.ws.rs:javax.ws.rs-api", version.ref = "javax-ws-rs" }
 
 
 # jodconverter
