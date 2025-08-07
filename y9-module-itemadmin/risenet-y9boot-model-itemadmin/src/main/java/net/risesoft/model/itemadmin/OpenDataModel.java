@@ -15,10 +15,12 @@ import lombok.Data;
 @Data
 public class OpenDataModel implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -6568094638872948247L;
+
+    /**
+     * 租户id
+     */
+    private String tenantId;
 
     /**
      * 事项Id

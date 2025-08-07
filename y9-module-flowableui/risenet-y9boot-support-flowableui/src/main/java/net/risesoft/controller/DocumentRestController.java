@@ -148,21 +148,8 @@ public class DocumentRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/add")
-    public Y9Result<Map<String, Object>> add(@RequestParam @NotBlank String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            OpenDataModel model = documentApi.add(tenantId, Y9LoginUserHolder.getPositionId(), itemId, false).getData();
-            String str = Y9JsonUtil.writeValueAsString(model);
-            Map<String, Object> map = Y9JsonUtil.readHashMap(str);
-            assert map != null;
-            map.put("tenantId", tenantId);
-            map.put("userId", Y9LoginUserHolder.getPositionId());
-            map.put("userName", Y9LoginUserHolder.getPosition().getName());
-            return Y9Result.success(map, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取新建办件数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
+    public Y9Result<OpenDataModel> add(@RequestParam @NotBlank String itemId) {
+        return documentApi.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, false);
     }
 
     /**
