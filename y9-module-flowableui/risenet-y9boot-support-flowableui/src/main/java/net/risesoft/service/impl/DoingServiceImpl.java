@@ -213,7 +213,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
                     } catch (Exception e) {
-                        LOGGER.error("获取待办列表失败", e);
+                        LOGGER.error("获取在办列表失败", e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -266,7 +266,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
                     } catch (Exception e) {
-                        LOGGER.error("获取待办列表失败", e);
+                        LOGGER.error("获取在办列表失败", e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -275,7 +275,7 @@ public class DoingServiceImpl implements DoingService {
             }
             return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败", e);
+            LOGGER.error("获取在办列表失败", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
@@ -369,7 +369,7 @@ public class DoingServiceImpl implements DoingService {
                             .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("follow", countFollow > 0);
                     } catch (Exception e) {
-                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                        LOGGER.error("获取在办列表失败{}", processInstanceId, e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -430,7 +430,7 @@ public class DoingServiceImpl implements DoingService {
                             .getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
                         mapTemp.put("speakInfoNum", speakInfoNum);
                     } catch (Exception e) {
-                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                        LOGGER.error("获取在办列表失败" + processInstanceId, e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -439,7 +439,7 @@ public class DoingServiceImpl implements DoingService {
             }
             return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败", e);
+            LOGGER.error("获取在办列表失败", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
@@ -522,7 +522,7 @@ public class DoingServiceImpl implements DoingService {
                         .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取在办列表失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -530,7 +530,7 @@ public class DoingServiceImpl implements DoingService {
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败", e);
+            LOGGER.error("获取在办列表失败", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }

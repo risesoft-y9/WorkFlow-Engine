@@ -69,7 +69,6 @@ import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
-import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.itemadmin.ItemFormModel;
@@ -79,6 +78,7 @@ import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.itemadmin.TodoTaskEventModel;
+import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.CustomGroup;
 import net.risesoft.model.platform.CustomGroupMember;
@@ -232,6 +232,7 @@ public class DocumentServiceImpl implements DocumentService {
         OpenDataModel model = new OpenDataModel();
         if (StringUtils.isNotBlank(itemId)) {
             Item item = spmApproveitemService.findById(itemId);
+            model.setTenantId(tenantId);
             model.setItemId(itemId);
             model.setProcessDefinitionKey(item.getWorkflowGuid());
             String processDefinitionKey = item.getWorkflowGuid();
