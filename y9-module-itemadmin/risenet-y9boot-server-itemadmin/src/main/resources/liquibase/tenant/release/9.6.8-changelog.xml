@@ -660,4 +660,15 @@
             <column name="FULLDEPTNAME" remarks="单位总称" type="VARCHAR(50)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-56" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="Y9FORM_FIELD" columnName="CONTENT_USED_FOR"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="Y9FORM_FIELD">
+            <column name="CONTENT_USED_FOR" remarks="字段内容作为，title：文件标题，number：文件编号，level：紧急程度" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
