@@ -55,4 +55,9 @@ public class FormFieldDefineModel implements Serializable {
      */
     private String querySign;
 
+    /**
+     * 字段内容作为，title：文件标题，number：文件编号，level：紧急程度
+     */
+    private String contentUsedFor;
+
 }

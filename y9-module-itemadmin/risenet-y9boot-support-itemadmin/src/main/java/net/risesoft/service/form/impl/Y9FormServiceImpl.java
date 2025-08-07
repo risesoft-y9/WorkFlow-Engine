@@ -1076,6 +1076,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 formField.setQuerySign((String)map.get("querySign"));
                 formField.setQueryType((String)map.get("queryType"));
                 formField.setOptionValue((String)map.get("optionValue"));
+                formField.setContentUsedFor(map.get("contentUsedFor") != null ? (String)map.get("contentUsedFor") : "");
                 y9FormFieldRepository.save(formField);
             }
             return Y9Result.successMsg("保存字段成功");

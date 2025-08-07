@@ -295,6 +295,47 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    @Transactional
+    public Y9Result<String> insertFormData(String tableName, String guid, String formData) {
+        try {
+            Map<String, Object> formDataMap = Y9JsonUtil.readHashMap(formData);
+            assert formDataMap != null;
+            Y9Table y9Table = y9TableService.findByTableName(tableName);
+            if (null == y9Table) {
+                return Y9Result.failure("表不存在：{}", tableName);
+            }
+            List<Map<String, Object>> list =
+                jdbcTemplate.queryForList("SELECT * FROM " + tableName + " WHERE GUID ='" + guid + "'");
+            if (!list.isEmpty()) {
+                return Y9Result.failure("主键已存在：{}", guid);
+            }
+            StringBuilder columns = new StringBuilder();
+            StringBuilder values = new StringBuilder();
+            for (Map.Entry<String, Object> entry : formDataMap.entrySet()) {
+                String column = entry.getKey();
+                Object value = entry.getValue();
+                if (value != null) {
+                    columns.append(column).append(",");
+                    values.append("'").append(value).append("',");
+                }
+            }
+            if (columns.length() > 0) {
+                columns.deleteCharAt(columns.length() - 1);
+            }
+            if (values.length() > 0) {
+                values.deleteCharAt(values.length() - 1);
+            }
+            String insertSql = String.format("INSERT INTO " + tableName + " (%s) VALUES (%s)", columns, values);
+            jdbcTemplate.execute(insertSql);
+            return Y9Result.success("操作成功");
+        } catch (Exception e) {
+            LOGGER.error("****************************[insertFormData]插入表单数据异常：{}，表单数据：{}", e, formData);
+            e.printStackTrace();
+        }
+        return Y9Result.failure("发生异常");
+    }
+
+    @Override
     public List<FieldPermModel> listAllFieldPerm(String formId, String taskDefKey, String processDefinitionId) {
         List<String> list = y9FieldPermRepository.findByFormId(formId);
         List<FieldPermModel> listMap = new ArrayList<>();
@@ -361,6 +402,7 @@ public class FormDataServiceImpl implements FormDataService {
                 model.setTableName(formElement.getTableName());
                 model.setId(formElement.getId());
                 model.setFormId(formElement.getFormId());
+                model.setContentUsedFor(formElement.getContentUsedFor());
                 if (!list.contains(model)) {
                     list.add(model);
                 }
@@ -567,47 +609,6 @@ public class FormDataServiceImpl implements FormDataService {
             return Y9Result.success("操作成功");
         } catch (Exception e) {
             LOGGER.error("****************************[updateFormData]更新表单数据异常，表单数据：{}", formData);
-        }
-        return Y9Result.failure("发生异常");
-    }
-
-    @Override
-    @Transactional
-    public Y9Result<String> insertFormData(String tableName, String guid, String formData) {
-        try {
-            Map<String, Object> formDataMap = Y9JsonUtil.readHashMap(formData);
-            assert formDataMap != null;
-            Y9Table y9Table = y9TableService.findByTableName(tableName);
-            if (null == y9Table) {
-                return Y9Result.failure("表不存在：{}", tableName);
-            }
-            List<Map<String, Object>> list =
-                jdbcTemplate.queryForList("SELECT * FROM " + tableName + " WHERE GUID ='" + guid + "'");
-            if (!list.isEmpty()) {
-                return Y9Result.failure("主键已存在：{}", guid);
-            }
-            StringBuilder columns = new StringBuilder();
-            StringBuilder values = new StringBuilder();
-            for (Map.Entry<String, Object> entry : formDataMap.entrySet()) {
-                String column = entry.getKey();
-                Object value = entry.getValue();
-                if (value != null) {
-                    columns.append(column).append(",");
-                    values.append("'").append(value).append("',");
-                }
-            }
-            if (columns.length() > 0) {
-                columns.deleteCharAt(columns.length() - 1);
-            }
-            if (values.length() > 0) {
-                values.deleteCharAt(values.length() - 1);
-            }
-            String insertSql = String.format("INSERT INTO " + tableName + " (%s) VALUES (%s)", columns, values);
-            jdbcTemplate.execute(insertSql);
-            return Y9Result.success("操作成功");
-        } catch (Exception e) {
-            LOGGER.error("****************************[insertFormData]插入表单数据异常：{}，表单数据：{}", e, formData);
-            e.printStackTrace();
         }
         return Y9Result.failure("发生异常");
     }

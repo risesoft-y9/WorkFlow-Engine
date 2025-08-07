@@ -68,4 +68,9 @@ public class Y9FormField implements Serializable {
     @Comment("选项值") // 多选框，单选框选项值
     private String optionValue;
 
+    // 字段内容作为，title：文件标题，number：文件编号，level：紧急程度
+    @Column(name = "CONTENT_USED_FOR", length = 50)
+    @Comment("字段内容作为，title：文件标题，number：文件编号，level：紧急程度")
+    private String contentUsedFor;
+
 }
