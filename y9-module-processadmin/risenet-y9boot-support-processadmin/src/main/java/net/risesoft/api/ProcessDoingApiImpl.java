@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.flowable.engine.HistoryService;
-import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.engine.history.HistoricProcessInstance;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,23 +106,21 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
         List<ProcessInstanceModel> resList = new ArrayList<>();
         int totalCount;
         // 已办件，以办理时间排序，即发送出去的时间
-        List<HistoricTaskInstance> htiList;
-        // 从现有模式中移除 ONLY_FULL_GROUP_BY，否则会报错
-        // SET sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
-        // TODO sql优化
+        List<HistoricProcessInstance> hpiList;
         String sql =
-            "SELECT p.* from ( SELECT t.* FROM ACT_HI_TASKINST t LEFT JOIN ACT_HI_PROCINST p ON t.PROC_INST_ID_ = p.PROC_INST_ID_"
+            "SELECT A.* from ( SELECT p.* FROM ACT_HI_PROCINST p INNER JOIN ACT_HI_TASKINST t ON t.PROC_INST_ID_ = p.PROC_INST_ID_"
                 + " WHERE t.PROC_DEF_ID_ LIKE '" + processDefinitionKey + "%' AND p.END_TIME_ IS NULL"
                 + " AND t.END_TIME_ IS NOT NULL AND p.DELETE_REASON_ IS NULL AND ( t.ASSIGNEE_ = '" + userId + "'"
                 + "	OR t.OWNER_ = '" + userId + "')AND NOT EXISTS (SELECT ID_ FROM ACT_HI_VARINST WHERE NAME_ = '"
-                + userId + "' AND t.PROC_INST_ID_ = PROC_INST_ID_) ORDER BY t.END_TIME_ desc LIMIT 1000000"
-                + " ) p GROUP BY p.PROC_INST_ID_ ORDER BY p.END_TIME_ desc";
-        htiList = historyService.createNativeHistoricTaskInstanceQuery().sql(sql).listPage((page - 1) * rows, rows);
+                + userId + "' AND t.PROC_INST_ID_ = PROC_INST_ID_) LIMIT 1000000"
+                + " ) A GROUP BY A.ID_ ORDER BY A.START_TIME_ desc";
+        hpiList = historyService.createNativeHistoricProcessInstanceQuery().sql(sql).listPage((page - 1) * rows, rows);
         ProcessInstanceModel piModel;
-        for (HistoricTaskInstance hpi : htiList) {
+        for (HistoricProcessInstance hpi : hpiList) {
             piModel = new ProcessInstanceModel();
-            piModel.setId(hpi.getProcessInstanceId());
+            piModel.setId(hpi.getId());
             piModel.setProcessDefinitionId(hpi.getProcessDefinitionId());
+            piModel.setStartTime(hpi.getStartTime());
             piModel.setEndTime(hpi.getEndTime());
             resList.add(piModel);
         }
