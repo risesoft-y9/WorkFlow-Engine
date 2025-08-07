@@ -107,13 +107,14 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
         int totalCount;
         // 已办件，以办理时间排序，即发送出去的时间
         List<HistoricProcessInstance> hpiList;
-        String sql = "SELECT A.* from ( "
-            + "SELECT p.*,ROW_NUMBER() OVER (PARTITION BY p.ID_) AS RN FROM ACT_HI_PROCINST p INNER JOIN ACT_HI_TASKINST t ON t.PROC_INST_ID_ = p.PROC_INST_ID_"
-            + " WHERE t.PROC_DEF_ID_ LIKE '" + processDefinitionKey + "%' AND p.END_TIME_ IS NULL"
-            + " AND t.END_TIME_ IS NOT NULL AND p.DELETE_REASON_ IS NULL AND ( t.ASSIGNEE_ = '" + userId + "'"
-            + "	OR t.OWNER_ = '" + userId + "')AND NOT EXISTS (SELECT ID_ FROM ACT_HI_VARINST WHERE NAME_ = '" + userId
-            + "' AND t.PROC_INST_ID_ = PROC_INST_ID_) LIMIT 1000000 ) A WHERE RN = 1 ORDER BY A.START_TIME_ desc";
-        hpiList = historyService.createNativeHistoricProcessInstanceQuery().sql(sql).listPage((page - 1) * rows, rows);
+        String sql =
+            "SELECT A.* from ( SELECT p.*,ROW_NUMBER() OVER (PARTITION BY p.ID_) AS RN FROM ACT_HI_PROCINST p INNER JOIN ACT_HI_TASKINST t ON t.PROC_INST_ID_ = p.PROC_INST_ID_ "
+                + "WHERE t.PROC_DEF_ID_ LIKE #{processDefinitionKey} AND p.END_TIME_ IS NULL AND t.END_TIME_ IS NOT NULL AND p.DELETE_REASON_ IS NULL AND ( t.ASSIGNEE_ = #{USER_ID_} OR t.OWNER_ = #{USER_ID_})"
+                + "AND NOT EXISTS (SELECT ID_ FROM ACT_HI_VARINST WHERE NAME_ = #{USER_ID_} AND t.PROC_INST_ID_ = PROC_INST_ID_)"
+                + ") A WHERE RN = 1 ORDER BY A.START_TIME_ desc";
+        hpiList = historyService.createNativeHistoricProcessInstanceQuery().sql(sql)
+            .parameter("processDefinitionKey", processDefinitionKey + "%").parameter("USER_ID_", userId)
+            .listPage((page - 1) * rows, rows);
         ProcessInstanceModel piModel;
         for (HistoricProcessInstance hpi : hpiList) {
             piModel = new ProcessInstanceModel();
