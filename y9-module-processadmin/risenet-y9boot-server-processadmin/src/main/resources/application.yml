@@ -21,6 +21,9 @@ management:
                 include: '*'
 mybatis:
     mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
+logging:
+    level:
+        org.flowable: "debug"
 server:
     port: 8080
     servlet:
