@@ -30,15 +30,14 @@ public class CommentUtil {
 
     public static String replaceEnter2Br(String oldStr) {
         Matcher matcher = pattern.matcher(oldStr);
-        String newstr = matcher.replaceAll("<br>");
-        return newstr;
+        return matcher.replaceAll("<br>");
     }
 
     public static String unicodeToCn(String unicodeStr) {
         if (unicodeStr == null) {
             return null;
         }
-        StringBuffer retBuf = new StringBuffer();
+        StringBuilder retBuf = new StringBuilder();
         int maxLoop = unicodeStr.length();
         for (int i = 0; i < maxLoop; i++) {
             if (unicodeStr.charAt(i) == '\\') {

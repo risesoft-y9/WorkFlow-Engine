@@ -1,4 +1,4 @@
-package net.risesoft.service.word.impl;
+package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -130,7 +130,8 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         model.setCustomItem(processParam.getCustomItem());
 
-        model = documentService.genDocumentModel(itemId, processDefinitionKey, "", taskDefKey, mobile, model);
+        model = documentService.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, mobile,
+            model);
         model = documentService.menuControl(itemId, processDefinitionId, taskDefKey, "", model,
             ItemBoxTypeEnum.DRAFT.getValue());
 
