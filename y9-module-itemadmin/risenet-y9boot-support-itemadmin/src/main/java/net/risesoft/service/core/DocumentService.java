@@ -204,14 +204,10 @@ public interface DocumentService {
     /**
      * Description: 获取菜单
      *
-     * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey
      * @param model
      * @return
      */
-    DocumentDetailModel menuControl4Add(String itemId, String processDefinitionId, String taskDefKey,
-        DocumentDetailModel model);
+    DocumentDetailModel menuControl4Add(DocumentDetailModel model);
 
     /**
      * Description: 获取菜单
