@@ -34,7 +34,6 @@ import net.risesoft.api.processadmin.ConditionParserApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -222,8 +221,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final SignDeptDetailService signDeptDetailService;
 
-    private final IdentityApi identityApi;
-
     private final AppApi appApi;
 
     private final ButtonService buttonService;
@@ -288,8 +285,6 @@ public class DocumentServiceImpl implements DocumentService {
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         model.setItembox(ItemBoxTypeEnum.ADD.getValue());
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, startTaskDefKey, false, model);
-        model = menuControl4Add(itemId, processDefinitionId, startTaskDefKey, model);
         model.setProcessDefinitionId(processDefinitionId);
         model.setTaskDefKey(startTaskDefKey);
         model.setActivitiUser(userId);
@@ -297,6 +292,9 @@ public class DocumentServiceImpl implements DocumentService {
         model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
         model.setProcessSerialNumber(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         model.setProcessInstanceId("");
+
+        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, startTaskDefKey, false, model);
+        model = menuControl4Add(model);
         return model;
     }
 
@@ -1329,9 +1327,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel menuControl4Add(String itemId, String processDefinitionId, String taskDefKey,
-        DocumentDetailModel model) {
+    public DocumentDetailModel menuControl4Add(DocumentDetailModel model) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
+            taskDefKey = model.getTaskDefKey();
         List<ItemButtonModel> buttonList = buttonService.showButton4Add(itemId);
         List<ItemButtonBind> bibList;
         /*

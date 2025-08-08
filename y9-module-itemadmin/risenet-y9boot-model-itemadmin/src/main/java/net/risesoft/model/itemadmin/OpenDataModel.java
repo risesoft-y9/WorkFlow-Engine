@@ -155,6 +155,11 @@ public class OpenDataModel implements Serializable {
     private String menuKey;
 
     /**
+     * 菜单按钮选项
+     */
+    private List<ItemButtonModel> buttonList;
+
+    /**
      * 是否主办办理
      */
     private String sponsorHandle;
