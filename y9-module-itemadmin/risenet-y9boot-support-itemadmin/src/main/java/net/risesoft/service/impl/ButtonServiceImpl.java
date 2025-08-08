@@ -1,4 +1,4 @@
-package net.risesoft.util;
+package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.api.DelegationState;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -23,29 +26,32 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
+import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.service.ButtonService;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.ProcInstanceRelationshipService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.core.ProcessParamService;
-import net.risesoft.y9.Y9Context;
+import net.risesoft.util.ItemButton;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
  * @author zhangchongjie
- * @date 2022/12/20
+ * @date 2025/08/08
  */
-public class ButtonUtil {
+@Service
+@RequiredArgsConstructor
+public class ButtonServiceImpl implements ButtonService {
 
     private final ProcInstanceRelationshipService procInstanceRelationshipService;
     private final TaskApi taskApi;
@@ -59,28 +65,11 @@ public class ButtonUtil {
     private final ItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
     private final DocumentCopyService documentCopyService;
-
     private final ProcessParamService processParamService;
-
     private List<TargetModel> nodeList = new ArrayList<>();
 
-    public ButtonUtil() {
-        this.procInstanceRelationshipService = Y9Context.getBean(ProcInstanceRelationshipService.class);
-        this.taskApi = Y9Context.getBean(TaskApi.class);
-        this.variableApi = Y9Context.getBean(VariableApi.class);
-        this.runtimeApi = Y9Context.getBean(RuntimeApi.class);
-        this.processDefinitionApi = Y9Context.getBean(ProcessDefinitionApi.class);
-        this.identityApi = Y9Context.getBean(IdentityApi.class);
-        this.historictaskApi = Y9Context.getBean(HistoricTaskApi.class);
-        this.customProcessInfoService = Y9Context.getBean(CustomProcessInfoService.class);
-        this.itemService = Y9Context.getBean(ItemService.class);
-        this.itemTaskConfService = Y9Context.getBean(ItemTaskConfService.class);
-        this.orgUnitApi = Y9Context.getBean(OrgUnitApi.class);
-        this.documentCopyService = Y9Context.getBean(DocumentCopyService.class);
-        this.processParamService = Y9Context.getBean(ProcessParamService.class);
-    }
-
-    public Map<String, Object> showButton(String itemId, String taskId, String itembox) {
+    @Override
+    public Map<String, Object> showButton(String itemId, String taskId, String itemBox) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Map<String, Object> map = new HashMap<>(16);
         String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
@@ -93,7 +82,7 @@ public class ButtonUtil {
             isButtonShow[i] = false;
         }
         TaskModel task = null;
-        if (ItemBoxTypeEnum.TODO.getValue().equals(itembox) || ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
+        if (ItemBoxTypeEnum.TODO.getValue().equals(itemBox) || ItemBoxTypeEnum.DOING.getValue().equals(itemBox)) {
             task = taskApi.findById(tenantId, taskId).getData();
         }
         Map<String, Object> vars = new HashMap<>(16);
@@ -113,12 +102,13 @@ public class ButtonUtil {
             varsUser = String.valueOf(vars.get(SysVariables.USER));
             varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLEL_SPONSOR));
             taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
-            multiInstance = processDefinitionApi
-                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            multiInstance =
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
         }
 
-        //// 在待办件列表中打开公文显示按钮(itembox==todo表示在待办件列表)，在在办件列表和办结件列表里打开公文不显示任何按钮
-        if (ItemBoxTypeEnum.TODO.getValue().equals(itembox)) {
+        //// 在待办件列表中打开公文显示按钮(itemBox==todo表示在待办件列表)，在在办件列表和办结件列表里打开公文不显示任何按钮
+        if (ItemBoxTypeEnum.TODO.getValue().equals(itemBox)) {
             // 并行任务的总个数
             int nrOfInstances = -1;
             // 当前还没有完成的并行任务个数，对应vars中的nrOfActiveInstances变量
@@ -517,7 +507,7 @@ public class ButtonUtil {
                 isButtonShow[18] = true;
             }
             // 上面是加减签按钮
-        } else if (ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
+        } else if (ItemBoxTypeEnum.DOING.getValue().equals(itemBox)) {
             // 在办情况下，显示返回按钮
             isButtonShow[2] = true;
             // 在办情况下，收回按钮默认为不显示，当配置了收回按钮时，且当前节点的下一个节点满足回收的条件时才显示回收按钮
@@ -549,10 +539,10 @@ public class ButtonUtil {
                 // 特殊办结
                 isButtonShow[14] = true;
             }
-        } else if (ItemBoxTypeEnum.DONE.getValue().equals(itembox)) {
+        } else if (ItemBoxTypeEnum.DONE.getValue().equals(itemBox)) {
             isButtonShow[2] = true;
             isButtonShow[19] = true;
-        } else if (ItemBoxTypeEnum.ADD.getValue().equals(itembox)) {
+        } else if (ItemBoxTypeEnum.ADD.getValue().equals(itemBox)) {
             isButtonShow[0] = true;
             if (showSubmitButton) {
                 isButtonShow[20] = true;
@@ -561,7 +551,7 @@ public class ButtonUtil {
             }
             // 新建可抄送
             isButtonShow[17] = true;
-        } else if (ItemBoxTypeEnum.DRAFT.getValue().equals(itembox)) {
+        } else if (ItemBoxTypeEnum.DRAFT.getValue().equals(itemBox)) {
             isButtonShow[0] = true;
             if (showSubmitButton) {
                 isButtonShow[20] = true;
@@ -570,11 +560,11 @@ public class ButtonUtil {
             }
             isButtonShow[2] = true;
             isButtonShow[17] = true;
-        } else if (ItemBoxTypeEnum.MONITOR_DOING.getValue().equals(itembox)) {
+        } else if (ItemBoxTypeEnum.MONITOR_DOING.getValue().equals(itemBox)) {
             isButtonShow[15] = true;
             isButtonShow[14] = true;
             isButtonShow[2] = true;
-        } else if (SysVariables.PAUSE.equals(itembox)) {
+        } else if (SysVariables.PAUSE.equals(itemBox)) {
             isButtonShow[2] = true;
         }
         // 打印
@@ -587,6 +577,7 @@ public class ButtonUtil {
         return map;
     }
 
+    @Override
     public List<ItemButtonModel> showButton4Add(String itemId) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.baoCun);
@@ -600,16 +591,19 @@ public class ButtonUtil {
         return buttonModelList;
     }
 
+    @Override
     public List<ItemButtonModel> showButton4Copy() {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.siNeiChuanQian);
         buttonModelList.add(ItemButton.chuanQianJiLu);
         buttonModelList.add(ItemButton.chuanQianYiJian);
         buttonModelList.add(ItemButton.shanChuChuanQianJian);
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
     }
 
+    @Override
     public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
@@ -638,8 +632,10 @@ public class ButtonUtil {
                         historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
                     if (!hisTaskList.isEmpty()) {
                         Boolean isSubProcess4Send =
-                            processDefinitionApi.isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
-                                hisTaskList.stream().findFirst().get().getTaskDefinitionKey()).getData();
+                            processDefinitionApi
+                                .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
+                                    hisTaskList.stream().findFirst().get().getTaskDefinitionKey())
+                                .getData();
                         if (!isSubProcess4Send) {
                             buttonModelList.add(ItemButton.shouHui);
                         }
@@ -647,10 +643,12 @@ public class ButtonUtil {
                 }
             }
         }
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
     }
 
+    @Override
     public List<ItemButtonModel> showButton4Done(DocumentDetailModel model) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         ItemBoxTypeEnum itemBox = ItemBoxTypeEnum.fromString(model.getItembox());
@@ -660,8 +658,10 @@ public class ButtonUtil {
                     processParamService.findByProcessSerialNumber(model.getProcessSerialNumber());
                 String year = processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
                 List<HistoricTaskInstanceModel> list =
-                    historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
-                        model.getProcessInstanceId(), year).getData();
+                    historictaskApi
+                        .getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
+                            model.getProcessInstanceId(), year)
+                        .getData();
                 HistoricTaskInstanceModel hisTaskModelTemp = list != null && list.size() > 0 ? list.get(0) : null;
                 if (hisTaskModelTemp != null
                     && hisTaskModelTemp.getAssignee().equals(Y9LoginUserHolder.getOrgUnit().getId())) {
@@ -675,18 +675,22 @@ public class ButtonUtil {
         /*buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
         buttonModelList.add(ItemButton.fanHui);*/
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
     }
 
+    @Override
     public List<ItemButtonModel> showButton4Recycle() {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.huiFu);
         buttonModelList.add(ItemButton.cheDiShanChu);
-        return buttonModelList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
     }
 
+    @Override
     public List<ItemButtonModel> showButton4Todo(String itemId, String taskId, DocumentDetailModel model) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonList = new ArrayList<>();
@@ -707,8 +711,9 @@ public class ButtonUtil {
         varsUser = String.valueOf(vars.get(SysVariables.USER));
         varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLEL_SPONSOR));
         taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
-        multiInstance = processDefinitionApi
-            .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+        multiInstance =
+            processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                .getData();
         // 并行任务的总个数
         int nrOfInstances = -1;
         // 当前还没有完成的并行任务个数，对应vars中的nrOfActiveInstances变量
@@ -946,8 +951,11 @@ public class ButtonUtil {
                 List<HistoricTaskInstanceModel> hisTaskList =
                     historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
                 if (!hisTaskList.isEmpty()) {
-                    Boolean isSubProcess4Send = processDefinitionApi.isSubProcessChildNode(tenantId,
-                        processDefinitionId, hisTaskList.stream().findFirst().get().getTaskDefinitionKey()).getData();
+                    Boolean isSubProcess4Send =
+                        processDefinitionApi
+                            .isSubProcessChildNode(tenantId, processDefinitionId,
+                                hisTaskList.stream().findFirst().get().getTaskDefinitionKey())
+                            .getData();
                     if (!isSubProcess4Send) {
                         buttonList.add(ItemButton.tuiHui);
                     }
@@ -999,8 +1007,9 @@ public class ButtonUtil {
         // 下面是放入回收站按钮
         if (isAssignee) {
             if (nodeList.isEmpty()) {
-                String startNode = processDefinitionApi
-                    .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
+                String startNode =
+                    processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId())
+                        .getData();
                 nodeList =
                     processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode).getData();
             }
@@ -1011,8 +1020,9 @@ public class ButtonUtil {
             }
         }
         // 上面是放入回收站按钮
-        if (isAssignee && !documentCopyService
-            .findByProcessSerialNumberAndSenderId(model.getProcessSerialNumber(), orgUnitId).isEmpty()) {
+        if (isAssignee
+            && !documentCopyService.findByProcessSerialNumberAndSenderId(model.getProcessSerialNumber(), orgUnitId)
+                .isEmpty()) {
             buttonList.add(ItemButton.chuanQianJiLu);
             buttonList.add(ItemButton.chuanQianYiJian);
         }

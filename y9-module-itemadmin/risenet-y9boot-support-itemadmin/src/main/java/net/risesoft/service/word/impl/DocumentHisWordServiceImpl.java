@@ -1,4 +1,4 @@
-package net.risesoft.service.impl;
+package net.risesoft.service.word.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
