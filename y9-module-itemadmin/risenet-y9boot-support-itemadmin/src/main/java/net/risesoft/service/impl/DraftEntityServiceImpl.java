@@ -129,12 +129,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         model.setCustomItem(processParam.getCustomItem());
-
-        model = documentService.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, mobile,
-            model);
-        model = documentService.menuControl(itemId, processDefinitionId, taskDefKey, "", model,
-            ItemBoxTypeEnum.DRAFT.getValue());
-
         model.setProcessDefinitionId(processDefinitionId);
         model.setProcessInstanceId("");
         model.setProcessSerialNumber(processSerialNumber);
@@ -142,6 +136,9 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         model.setTitle(draft.getTitle());
         model.setActivitiUser(orgUnitId);
         model.setItembox(ItemBoxTypeEnum.DRAFT.getValue());
+        model = documentService.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, mobile,
+            model);
+        model = documentService.menuControl(model);
         return model;
     }
 
