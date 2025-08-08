@@ -248,9 +248,10 @@ public class DocumentServiceImpl implements DocumentService {
         model.setItembox(ItemBoxTypeEnum.ADD.getValue());
         model.setProcessSerialNumber(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         model.setProcessInstanceId("");
+        model.setTaskId("");
 
         model = genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, mobile, model);
-        model = menuControl(itemId, processDefinitionId, taskDefKey, "", model, ItemBoxTypeEnum.ADD.getValue());
+        model = menuControl(model);
         return model;
     }
 
@@ -448,15 +449,15 @@ public class DocumentServiceImpl implements DocumentService {
         model.setItemId(itemId);
 
         model = genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
-        model = menuControl(itemId, processDefinitionId, taskDefinitionKey, taskId, model, itemboxStr);
+        model = menuControl(model);
         return model;
     }
 
     @Override
     public DocumentDetailModel editCopy(String processSerialNumber, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
-        String processInstanceId = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activitiUser = "", itemId = "";
+        String processInstanceId, processDefinitionId, taskDefinitionKey = "", processDefinitionKey, activitiUser = "",
+            itemId;
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
@@ -1117,8 +1118,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public OpenDataModel menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId,
-        OpenDataModel model, String itemBox) {
+    public OpenDataModel menuControl(OpenDataModel model) {
+        String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
+            taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId(), itemBox = model.getItembox();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         Map<String, Object> map = buttonService.showButton(itemId, taskId, itemBox);
         String[] buttonIds = (String[])map.get("buttonIds");

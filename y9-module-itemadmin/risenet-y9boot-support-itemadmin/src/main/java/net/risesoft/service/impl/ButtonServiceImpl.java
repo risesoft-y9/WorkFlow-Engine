@@ -581,6 +581,7 @@ public class ButtonServiceImpl implements ButtonService {
     public List<ItemButtonModel> showButton4Add(String itemId) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.baoCun);
+        buttonModelList.add(ItemButton.chaoSong);
         Item item = itemService.findById(itemId);
         boolean showSubmitButton = item.isShowSubmitButton();
         if (showSubmitButton) {

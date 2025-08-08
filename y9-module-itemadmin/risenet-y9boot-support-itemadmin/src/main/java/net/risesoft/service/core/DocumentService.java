@@ -196,16 +196,10 @@ public interface DocumentService {
     /**
      * Description: 获取菜单
      *
-     * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey
-     * @param taskId 任务id
      * @param model
-     * @param itemBox
      * @return
      */
-    OpenDataModel menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId,
-        OpenDataModel model, String itemBox);
+    OpenDataModel menuControl(OpenDataModel model);
 
     /**
      * Description: 获取菜单
