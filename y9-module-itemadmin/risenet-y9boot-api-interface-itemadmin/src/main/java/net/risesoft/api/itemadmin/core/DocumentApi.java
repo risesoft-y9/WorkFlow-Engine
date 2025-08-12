@@ -34,13 +34,27 @@ public interface DocumentApi {
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
-     * @param mobile 是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
      * @since 9.6.6
      */
     @GetMapping("/add")
-    Y9Result<OpenDataModel> add(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
+    Y9Result<DocumentDetailModel> add(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId);
+
+    /**
+     * 新建
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
+     * @since 9.6.6
+     */
+    @GetMapping("/add4Old")
+    Y9Result<OpenDataModel> add4Old(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
+        @RequestParam("mobile") boolean mobile);
 
     /**
      * 新建 用于一个开始节点经过排他网关到达多个任务节点的情况，具体到达哪个任务节点开始，需要由用户选择
@@ -130,6 +144,22 @@ public interface DocumentApi {
         @RequestParam("mobile") boolean mobile);
 
     /**
+     * 编辑草稿
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data 是流程详情数据
+     * @since 9.6.6
+     */
+    @GetMapping("/editDraft")
+    Y9Result<DocumentDetailModel> editDraft(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("mobile") boolean mobile);
+
+    /**
      * 编辑文档
      *
      * @param tenantId 租户id
@@ -141,8 +171,8 @@ public interface DocumentApi {
      */
     @GetMapping("/editTodo")
     Y9Result<DocumentDetailModel> editTodo(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam("mobile") boolean mobile);
+        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
+        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("mobile") boolean mobile);
 
     /**
      * 获取按钮

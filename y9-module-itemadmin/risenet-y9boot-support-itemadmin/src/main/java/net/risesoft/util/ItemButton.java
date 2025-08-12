@@ -16,6 +16,7 @@ public class ItemButton {
     public static ItemButtonModel teShuBanJie = new ItemButtonModel("15", "特殊办结", ItemButtonTypeEnum.COMMON, 2);
     public static ItemButtonModel qianShou = new ItemButtonModel("10", "签收", ItemButtonTypeEnum.COMMON, 3);
     public static ItemButtonModel tuiQian = new ItemButtonModel("11", "退签", ItemButtonTypeEnum.COMMON, 4);
+    public static ItemButtonModel baoCun = new ItemButtonModel("01", "保存", ItemButtonTypeEnum.COMMON, 5);
     public static ItemButtonModel faSong = new ItemButtonModel("02", "发送", ItemButtonTypeEnum.COMMON, 6);
     public static ItemButtonModel tiJiao = new ItemButtonModel("21", "提交", ItemButtonTypeEnum.COMMON, 7);
     public static ItemButtonModel tuiHui = new ItemButtonModel("04", "退回", ItemButtonTypeEnum.COMMON, 8);
@@ -37,8 +38,6 @@ public class ItemButton {
         new ItemButtonModel("cheDiShanChu", "彻底删除", ItemButtonTypeEnum.COMMON, 23);
     public static ItemButtonModel fangRuHuiShouZhan =
         new ItemButtonModel("fangRuHuiShouZhan", "放入回收站", ItemButtonTypeEnum.COMMON, 24);
-
-    public static ItemButtonModel baoCun = new ItemButtonModel("01", "保存", ItemButtonTypeEnum.COMMON, 25);
 
     public static ItemButtonModel siNeiChuanQian =
         new ItemButtonModel("common_siNeiChuanQian", "司内传签", ItemButtonTypeEnum.COMMON, 26);

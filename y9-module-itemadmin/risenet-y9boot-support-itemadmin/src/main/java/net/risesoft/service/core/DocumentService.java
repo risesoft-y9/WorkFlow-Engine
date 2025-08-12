@@ -24,10 +24,18 @@ public interface DocumentService {
      * Description: 事项新建公文
      *
      * @param itemId 事项id
+     * @return OpenDataModel
+     */
+    DocumentDetailModel add(String itemId);
+
+    /**
+     * Description: 事项新建公文
+     *
+     * @param itemId 事项id
      * @param mobile 是否是移动端
      * @return OpenDataModel
      */
-    OpenDataModel add(String itemId, boolean mobile);
+    OpenDataModel add4Old(String itemId, boolean mobile);
 
     /**
      * Description: 事项新建公文 用于一个开始节点经过排他网关到达多个任务节点的情况，具体到达哪个任务节点开始，需要由用户选择
@@ -80,6 +88,17 @@ public interface DocumentService {
      * @return
      */
     OpenDataModel edit(String itembox, String taskId, String processInstanceId, String itemId, boolean mobile);
+
+    /**
+     *
+     * Description: 打开草稿
+     *
+     * @param processSerialNumber
+     * @param itemId
+     * @param mobile
+     * @return
+     */
+    DocumentDetailModel editDraft(String processSerialNumber, String itemId, boolean mobile);
 
     /**
      * Description: 办件办理
@@ -156,6 +175,19 @@ public interface DocumentService {
      * @param processDefinitionKey 流程定义key
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务节点key
+     * @param model
+     * @return
+     */
+    DocumentDetailModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
+        String taskDefinitionKey, DocumentDetailModel model);
+
+    /**
+     * Description: 获取绑定表单
+     *
+     * @param itemId 事项id
+     * @param processDefinitionKey 流程定义key
+     * @param processDefinitionId 流程定义id
+     * @param taskDefinitionKey 任务节点key
      * @param isAdmin 是否是管理员
      * @param model
      * @return
@@ -208,6 +240,14 @@ public interface DocumentService {
      * @return
      */
     DocumentDetailModel menuControl4Add(DocumentDetailModel model);
+
+    /**
+     * Description: 获取菜单
+     *
+     * @param model
+     * @return
+     */
+    DocumentDetailModel menuControl4Draft(DocumentDetailModel model);
 
     /**
      * Description: 获取菜单

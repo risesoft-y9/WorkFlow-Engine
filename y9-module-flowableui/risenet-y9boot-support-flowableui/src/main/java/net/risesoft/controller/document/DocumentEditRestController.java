@@ -61,6 +61,22 @@ public class DocumentEditRestController {
     private final OfficeFollowApi officeFollowApi;
 
     /**
+     * 获取草稿详细信息（打开草稿时调用）
+     *
+     * @param processSerialNumber 流程编号
+     * @param itemId 事项id
+     * @return Y9Result<DocumentDetailModel>
+     */
+    @RequestMapping("/draft")
+    public Y9Result<DocumentDetailModel> draft(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String itemId) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        DocumentDetailModel model =
+            documentApi.editDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
+        return Y9Result.success(model, "获取成功");
+    }
+
+    /**
      * 获取编辑办件数据
      *
      * @param itembox 办件状态
@@ -75,7 +91,6 @@ public class DocumentEditRestController {
         @RequestParam @NotBlank String itemId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
-        String monitor = itembox;
         if (itembox.equals("monitorDone") || itembox.equals("monitorRecycle")) {
             itembox = ItemBoxTypeEnum.DONE.getValue();
         }
@@ -98,18 +113,14 @@ public class DocumentEditRestController {
             }
             int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, userId, processInstanceId).getData();
             int associatedFileNum = associatedFileApi.countAssociatedFile(tenantId, processSerialNumber).getData();
-            map.put("speakInfoNum", speakInfoNum);
-            map.put("associatedFileNum", associatedFileNum);
-            map.put("docNum", docNum);
-            map.put("monitor", monitor);
-            map.put("fileNum", fileNum);
-            map.put("userName", Y9LoginUserHolder.getPosition().getName());
-            map.put("tenantId", tenantId);
-            map.put("userId", userId);
             int follow =
                 officeFollowApi.countByProcessInstanceId(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId)
                     .getData();
             map.put("follow", follow > 0);
+            map.put("speakInfoNum", speakInfoNum);
+            map.put("associatedFileNum", associatedFileNum);
+            map.put("docNum", docNum);
+            map.put("fileNum", fileNum);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -121,7 +132,7 @@ public class DocumentEditRestController {
      * 获取传签件办件数据
      *
      * @param processSerialNumber 流程序列号
-     * @return
+     * @return Y9Result<DocumentDetailModel>
      */
     @FlowableLog(operationName = "传签件详情")
     @GetMapping(value = "/copy")
@@ -140,15 +151,16 @@ public class DocumentEditRestController {
     }
 
     /**
-     * 获取编辑办件数据
-     *
+     * 获取编辑在办件数据
+     * 
+     * @param documentId 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
      * @param processInstanceId 流程实例id
-     * @return Y9Result<Map < String, Object>>
+     * @return Y9Result<DocumentDetailModel>
      */
     @FlowableLog(operationName = "在办详情")
     @GetMapping(value = "/doing")
-    public Y9Result<DocumentDetailModel> doing(@RequestParam @NotBlank String processInstanceId,
-        @RequestParam @NotBlank String documentId) {
+    public Y9Result<DocumentDetailModel> doing(@RequestParam @NotBlank String documentId,
+        @RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
                 .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
@@ -191,8 +203,8 @@ public class DocumentEditRestController {
      */
     @FlowableLog(operationName = "办结详情")
     @GetMapping(value = "/done")
-    public Y9Result<DocumentDetailModel> done(@RequestParam @NotBlank String processInstanceId,
-        @RequestParam @NotBlank String documentId) {
+    public Y9Result<DocumentDetailModel> done(@RequestParam @NotBlank String documentId,
+        @RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
                 .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
@@ -264,7 +276,9 @@ public class DocumentEditRestController {
                 return Y9Result.failure("当前待办已处理！");
             }
             DocumentDetailModel model =
-                documentApi.editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId, false)
+                documentApi
+                    .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+                        Y9LoginUserHolder.getPositionId(), taskId, false)
                     .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
