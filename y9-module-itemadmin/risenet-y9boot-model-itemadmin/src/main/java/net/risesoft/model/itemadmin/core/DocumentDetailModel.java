@@ -22,6 +22,11 @@ public class DocumentDetailModel implements Serializable {
     private static final long serialVersionUID = 4115564591151087066L;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
      */
     private String documentId;
@@ -164,4 +169,39 @@ public class DocumentDetailModel implements Serializable {
      * 是否自定义事项
      */
     private boolean customItem;
+
+    /**
+     * 打印表单类型
+     */
+    private String printFormType;
+
+    /**
+     * 打印表单id
+     */
+    private String printFormId;
+
+    /**
+     * 关联文件数
+     */
+    private Integer associatedFileNum;
+
+    /**
+     * 正文数
+     */
+    private Integer docNum;
+
+    /**
+     * 附件数
+     */
+    private Integer fileNum;
+
+    /**
+     * 沟通交流数
+     */
+    private Integer speakInfoNum;
+
+    /**
+     * 关注
+     */
+    private Boolean follow;
 }

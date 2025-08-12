@@ -67,17 +67,36 @@ public class DocumentApiImpl implements DocumentApi {
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<DocumentDetailModel> add(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String itemId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        DocumentDetailModel model = documentService.add(itemId);
+        return Y9Result.success(model);
+    }
+
+    /**
+     * 新建办件
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
      * @param mobile 是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> add(@RequestParam String tenantId, @RequestParam String orgUnitId,
+    public Y9Result<OpenDataModel> add4Old(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        OpenDataModel model = documentService.add(itemId, mobile);
+        OpenDataModel model = documentService.add4Old(itemId, mobile);
         return Y9Result.success(model);
     }
 
@@ -198,6 +217,27 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
+     * 编辑草稿
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data 是流程详情数据
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<DocumentDetailModel> editDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String itemId, @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9LoginUserHolder.setOrgUnit(orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData());
+        DocumentDetailModel model = documentService.editDraft(processSerialNumber, itemId, mobile);
+        return Y9Result.success(model);
+    }
+
+    /**
      * 编辑办件
      *
      * @param tenantId 租户id
@@ -223,7 +263,7 @@ public class DocumentApiImpl implements DocumentApi {
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
-     * @param documentId
+     * @param documentId 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
      * @since 9.6.6
      */
@@ -289,11 +329,12 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<DocumentDetailModel> editTodo(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String taskId, @RequestParam boolean mobile) {
+    public Y9Result<DocumentDetailModel> editTodo(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String orgUnitId, @RequestParam String taskId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
         DocumentDetailModel model = documentService.editTodo(taskId, mobile);
         return Y9Result.success(model);
     }
@@ -509,7 +550,6 @@ public class DocumentApiImpl implements DocumentApi {
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
-     * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
@@ -532,7 +572,6 @@ public class DocumentApiImpl implements DocumentApi {
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
-     * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
@@ -558,7 +597,6 @@ public class DocumentApiImpl implements DocumentApi {
      * @param processDefinitionKey 流程定义key
      * @param userIds 人员、岗位ids
      * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
-     * @throws Exception Exception
      * @since 9.6.6
      */
     @Override

@@ -27,7 +27,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DraftEntityRepository;
@@ -39,7 +38,6 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.word.TransactionWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
 
 import jodd.util.StringUtil;
 
@@ -118,14 +116,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         String processDefinitionId =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
-        List<TargetModel> routeToTasks =
-            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-        String taskDefKeyList = "";
-        String taskDefNameList = "";
-        for (TargetModel targetModel : routeToTasks) {
-            taskDefKeyList = Y9Util.genCustomStr(taskDefKeyList, targetModel.getTaskDefKey());
-            taskDefNameList = Y9Util.genCustomStr(taskDefNameList, targetModel.getTaskDefName());
-        }
         DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         model.setCustomItem(processParam.getCustomItem());

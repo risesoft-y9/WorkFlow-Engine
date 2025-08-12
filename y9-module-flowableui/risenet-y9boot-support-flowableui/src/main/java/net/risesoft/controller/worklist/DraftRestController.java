@@ -23,14 +23,10 @@ import net.risesoft.api.itemadmin.view.ItemViewConfApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
-import net.risesoft.model.itemadmin.OpenDataModel;
-import net.risesoft.model.itemadmin.TransactionWordModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 草稿箱
@@ -112,46 +108,6 @@ public class DraftRestController {
             .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue())
             .getData();
         return Y9Result.success(itemViewConfList, "获取成功");
-    }
-
-    /**
-     * 获取草稿详细信息（打开草稿时调用）
-     *
-     * @param processSerialNumber 流程编号
-     * @param itemId 事项id
-     * @param draftRecycle 草稿标识
-     * @return Y9Result<Map < String, Object>>
-     */
-    @RequestMapping("/openDraft")
-    public Y9Result<Map<String, Object>> openDraft(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String itemId, @RequestParam(required = false) String draftRecycle) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        OpenDataModel model = draftApi.openDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
-        String str = Y9JsonUtil.writeValueAsString(model);
-        Map<String, Object> map = Y9JsonUtil.readHashMap(str);
-        assert map != null;
-        map.put("currentUser", Y9LoginUserHolder.getPosition().getName());
-        map.put("draftRecycle", draftRecycle);
-        map.put("tenantId", tenantId);
-        map.put("userId", positionId);
-        map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
-        map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
-        map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
-        map.put("userName", person.getName());
-        Integer fileNum = attachmentApi.fileCounts(tenantId, processSerialNumber).getData();
-        int docNum = 0;
-        // 是否正文正常
-        TransactionWordModel wordMap =
-            transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
-        if (wordMap != null && wordMap.getId() != null) {
-            docNum = 1;
-        }
-        int associatedFileNum = associatedFileApi.countAssociatedFile(tenantId, processSerialNumber).getData();
-        map.put("associatedFileNum", associatedFileNum);
-        map.put("docNum", docNum);
-        map.put("fileNum", fileNum);
-        return Y9Result.success(map, "获取成功");
     }
 
     /**

@@ -17,6 +17,8 @@ public interface ButtonService {
 
     List<ItemButtonModel> showButton4Add(String itemId);
 
+    List<ItemButtonModel> showButton4Draft(String itemId);
+
     List<ItemButtonModel> showButton4Copy();
 
     List<ItemButtonModel> showButton4Doing(String itemId, String taskId);

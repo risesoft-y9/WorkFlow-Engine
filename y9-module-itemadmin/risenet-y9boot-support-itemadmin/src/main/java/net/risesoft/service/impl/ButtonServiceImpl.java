@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.model.itemadmin.ItemButtonModel;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -282,7 +284,6 @@ public class ButtonServiceImpl implements ButtonService {
                             map.put("nextNode", true);
                         }
                     }
-
                     // 没有发送按钮的时候，串并行显示加减签按钮
                     boolean b =
                         (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
@@ -589,7 +590,27 @@ public class ButtonServiceImpl implements ButtonService {
         } else {
             buttonModelList.add(ItemButton.faSong);
         }
-        return buttonModelList;
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ItemButtonModel> showButton4Draft(String itemId) {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(ItemButton.baoCun);
+        buttonModelList.add(ItemButton.chaoSong);
+        buttonModelList.add(ItemButton.fanHui);
+        Item item = itemService.findById(itemId);
+        boolean showSubmitButton = item.isShowSubmitButton();
+        if (showSubmitButton) {
+            buttonModelList.add(ItemButton.tiJiao);
+        } else {
+            buttonModelList.add(ItemButton.faSong);
+        }
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -608,6 +629,9 @@ public class ButtonServiceImpl implements ButtonService {
     public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(ItemButton.fanHui);
+        buttonModelList.add(ItemButton.chaoSong);
+        buttonModelList.add(ItemButton.daYin);
 
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         if (task != null) {
@@ -616,6 +640,30 @@ public class ButtonServiceImpl implements ButtonService {
             String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
             String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
             String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            // 下面是加减签按钮
+            String multiInstance =
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
+            boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
+                && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId);
+            if (b) {
+                buttonModelList.add(ItemButton.jiaJianQian);
+            }
+            // 重定向按钮
+            buttonModelList.add(ItemButton.chongDingWei);
+            List<TargetModel> taskNodes =
+                processDefinitionApi.getNodes(tenantId, task.getProcessDefinitionId()).getData();
+            AtomicInteger index = new AtomicInteger(100);
+            taskNodes.stream()
+                .filter(node -> StringUtils.isNotBlank(node.getTaskDefKey()))
+                .forEach(node -> buttonModelList.add(new ItemButtonModel(node.getTaskDefKey(), node.getTaskDefName(),
+                    ItemButtonTypeEnum.REPOSITION, index.getAndIncrement())));
+            // 特殊办结
+            ProcessInstanceModel processInstanceModel =
+                runtimeApi.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
+            if (orgUnitId.equals(processInstanceModel.getStartUserId())) {
+                buttonModelList.add(ItemButton.teShuBanJie);
+            }
             // 下面是收回按钮
             if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
                 && rollbackObj == null && repositionObj == null) {
@@ -673,9 +721,9 @@ public class ButtonServiceImpl implements ButtonService {
                 buttonModelList.add(ItemButton.huiFuDaiBan);
                 break;
         }
-        /*buttonModelList.add(ItemButton.chaoSong);
+        buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
-        buttonModelList.add(ItemButton.fanHui);*/
+        buttonModelList.add(ItemButton.fanHui);
         return buttonModelList.stream()
             .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
@@ -862,6 +910,12 @@ public class ButtonServiceImpl implements ButtonService {
                 buttonList.add(ItemButton.banLiWanCheng);
                 buttonList.removeIf(button -> button.getKey().equals(ItemButton.faSong.getKey()));
             }
+            // 没有发送按钮的时候，串并行显示加减签按钮
+            boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
+                && !buttonList.contains(ItemButton.faSong);
+            if (b) {
+                buttonList.add(ItemButton.jiaJianQian);
+            }
         }
         /*----- 上面是可以打开选人界面的发送按钮的设置 -----*/
 
@@ -1014,11 +1068,11 @@ public class ButtonServiceImpl implements ButtonService {
                 nodeList =
                     processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode).getData();
             }
-            boolean canDelete =
+            /*boolean canDelete =
                 nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
             if (canDelete) {
                 buttonList.add(ItemButton.fangRuHuiShouZhan);
-            }
+            }*/
         }
         // 上面是放入回收站按钮
         if (isAssignee
@@ -1027,6 +1081,7 @@ public class ButtonServiceImpl implements ButtonService {
             buttonList.add(ItemButton.chuanQianJiLu);
             buttonList.add(ItemButton.chuanQianYiJian);
         }
+        buttonList.add(ItemButton.fanHui);
         buttonList =
             buttonList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
         return buttonList;

@@ -138,8 +138,9 @@ public class ChaoSongRestController {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
-            OpenDataModel model = chaoSongApi
-                .detail(person.getTenantId(), positionId, id, processInstanceId, status, openNotRead, false).getData();
+            OpenDataModel model =
+                chaoSongApi.detail(person.getTenantId(), positionId, id, processInstanceId, status, openNotRead, false)
+                    .getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             map = Y9JsonUtil.readHashMap(str);
             map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
@@ -218,7 +219,7 @@ public class ChaoSongRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @PostMapping(value = "/save")
-    public Y9Result<Map<String, Object>> save(@RequestParam @NotBlank String processInstanceId,
+    public Y9Result<Map<String, Object>> save(@RequestParam(required = false) String processInstanceId,
         @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms,
         @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent,
         @RequestParam(required = false) String smsPersonId, @RequestParam(required = false) String itemId,

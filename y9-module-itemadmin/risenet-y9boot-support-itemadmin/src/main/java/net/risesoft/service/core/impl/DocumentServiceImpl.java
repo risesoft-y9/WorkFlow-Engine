@@ -52,6 +52,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.button.ItemButtonBind;
+import net.risesoft.entity.documentword.TransactionWord;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormItemMobileBind;
@@ -103,15 +104,19 @@ import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.jpa.ItemTaskConfRepository;
 import net.risesoft.repository.jpa.TaskVariableRepository;
 import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
+import net.risesoft.service.AssociatedFileService;
 import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.ButtonService;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
+import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.service.RoleService;
 import net.risesoft.service.SignDeptDetailService;
+import net.risesoft.service.SpeakInfoService;
+import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
@@ -124,6 +129,7 @@ import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.impl.ActivitiOptServiceImpl;
+import net.risesoft.service.word.TransactionWordService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
@@ -225,8 +231,43 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final ButtonService buttonService;
 
+    private final AttachmentService attachmentService;
+
+    private final TransactionWordService transactionWordService;
+
+    private final AssociatedFileService associatedFileService;
+    private final SpeakInfoService speakInfoService;
+    private final OfficeFollowService officeFollowService;
+
     @Override
-    public OpenDataModel add(String itemId, boolean mobile) {
+    public DocumentDetailModel add(String itemId) {
+        String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
+        DocumentDetailModel model = new DocumentDetailModel();
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        model.setTenantId(tenantId);
+        model.setItemId(itemId);
+        model.setProcessDefinitionKey(processDefinitionKey);
+        ProcessDefinitionModel pdModel =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        String processDefinitionId = pdModel.getId();
+        String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setTaskDefKey(taskDefKey);
+        model.setActivitiUser(userId);
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+        model.setItembox(ItemBoxTypeEnum.ADD.getValue());
+        model.setProcessSerialNumber(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        model.setProcessInstanceId("");
+        model.setTaskId("");
+
+        model = genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, model);
+        model = menuControl4Add(model);
+        return model;
+    }
+
+    @Override
+    public OpenDataModel add4Old(String itemId, boolean mobile) {
         String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
         OpenDataModel model = new OpenDataModel();
         Item item = itemService.findById(itemId);
@@ -361,7 +402,6 @@ public class DocumentServiceImpl implements DocumentService {
         OpenDataModel model = new OpenDataModel();
         String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
             activitiUser = "";
-        String itemboxStr = itembox;
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (ItemBoxTypeEnum.MONITOR_DOING.getValue().equals(itembox)) {
@@ -452,6 +492,34 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public DocumentDetailModel editDraft(String processSerialNumber, String itemId, boolean mobile) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        DocumentDetailModel model = new DocumentDetailModel();
+        Item item = itemService.findById(itemId);
+        model.setItemId(itemId);
+        model.setProcessDefinitionKey(item.getWorkflowGuid());
+        String processDefinitionKey = item.getWorkflowGuid();
+        String processDefinitionId =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
+        String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+        model.setCustomItem(processParam.getCustomItem());
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId("");
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setTaskDefKey(taskDefKey);
+        model.setTitle(processParam.getTitle());
+        model.setActivitiUser(orgUnitId);
+        model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
+        model.setItembox(ItemBoxTypeEnum.DRAFT.getValue());
+
+        this.setNum(model);
+        this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, model);
+        this.menuControl4Draft(model);
+        return model;
+    }
+
+    @Override
     public DocumentDetailModel editCopy(String processSerialNumber, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
         String processInstanceId, processDefinitionId, taskDefinitionKey = "", processDefinitionKey, activitiUser = "",
@@ -494,8 +562,8 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDetailModel editDoing(String processInstanceId, String documentId, boolean isAdmin,
         ItemBoxTypeEnum itemBox) {
         DocumentDetailModel model = new DocumentDetailModel();
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activitiUser = "", itemId = "", taskId = "";
+        String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
+            activitiUser = "", itemId, taskId = "";
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
         model.setMeeting(false);
@@ -541,8 +609,10 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTaskId(taskId);
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
-        model = menuControl4Doing(itemId, taskId, model);
+
+        this.setNum(model);
+        this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
+        this.menuControl4Doing(itemId, taskId, model);
         return model;
     }
 
@@ -581,8 +651,9 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(activityUser);
         model.setItemId(itemId);
 
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
-        model = menuControl4Done(itemId, processDefinitionId, taskDefinitionKey, model);
+        this.setNum(model);
+        this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
+        this.menuControl4Done(itemId, processDefinitionId, taskDefinitionKey, model);
         return model;
     }
 
@@ -670,8 +741,26 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
         model.setItembox(ItemBoxTypeEnum.TODO.getValue());
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, false, model);
-        model = menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
+
+        this.setNum(model);
+        this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, false, model);
+        this.menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
+        return model;
+    }
+
+    private DocumentDetailModel setNum(DocumentDetailModel model) {
+        Integer fileNum = attachmentService.fileCounts(model.getProcessSerialNumber());
+        TransactionWord transactionWord =
+            transactionWordService.getByProcessSerialNumber(model.getProcessSerialNumber());
+        int speakInfoNum =
+            speakInfoService.getNotReadCount(Y9LoginUserHolder.getPersonId(), model.getProcessInstanceId());
+        int associatedFileNum = associatedFileService.countAssociatedFile(model.getProcessSerialNumber());
+        int follow = officeFollowService.countByProcessInstanceId(model.getProcessSerialNumber());
+        model.setFileNum(fileNum);
+        model.setAssociatedFileNum(associatedFileNum);
+        model.setDocNum(transactionWord != null && transactionWord.getId() != null ? 1 : 0);
+        model.setFollow(follow > 0);
+        model.setSpeakInfoNum(speakInfoNum);
         return model;
     }
 
@@ -845,6 +934,38 @@ public class DocumentServiceImpl implements DocumentService {
         model.setFormNames(formNames);
         model.setShowOtherFlag(showOtherFlag);
         // 获取打印表单
+        ItemPrintTemplateBind bind = itemPrintTemplateBindRepository.findByItemId(itemId);
+        if (bind != null) {
+            model.setPrintFormId(bind.getTemplateId());
+            model.setPrintFormType(bind.getTemplateType());
+        }
+        return model;
+    }
+
+    @Override
+    public DocumentDetailModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
+        String taskDefinitionKey, DocumentDetailModel model) {
+        List<Y9FormItemBind> y9FormTaskBinds =
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
+        String showOtherFlag = "";
+        List<ItemFormModel> list = new ArrayList<>();
+        if (!y9FormTaskBinds.isEmpty()) {
+            ItemFormModel itemFormModel;
+            for (Y9FormItemBind fib : y9FormTaskBinds) {
+                itemFormModel = new ItemFormModel();
+                String formName = fib.getFormName();
+                if (formName.contains("(")) {
+                    formName = formName.substring(0, formName.indexOf("("));
+                }
+                itemFormModel.setFormId(fib.getFormId());
+                itemFormModel.setFormName(formName);
+                list.add(itemFormModel);
+            }
+            showOtherFlag = y9FormItemBindService.getShowOther(y9FormTaskBinds);
+        }
+        model.setFormList(list);
+        model.setShowOtherFlag(showOtherFlag);
+        // 打印表单
         ItemPrintTemplateBind bind = itemPrintTemplateBindRepository.findByItemId(itemId);
         if (bind != null) {
             model.setPrintFormId(bind.getTemplateId());
@@ -1382,6 +1503,61 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public DocumentDetailModel menuControl4Draft(DocumentDetailModel model) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
+            taskDefKey = model.getTaskDefKey();
+        List<ItemButtonModel> buttonList = buttonService.showButton4Draft(itemId);
+        List<ItemButtonBind> bibList;
+        /*
+         * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
+         */
+        if (buttonList.contains(ItemButton.baoCun)) {
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId,
+                taskDefKey);
+            for (ItemButtonBind bind : bibList) {
+                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+                List<String> roleIds = bind.getRoleIds();
+                if (roleIds.isEmpty() || roleIds.stream()
+                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
+                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON));
+                }
+            }
+        }
+        /*
+         * 假如发送按钮显示的话，去获取发送下面的路由
+         */
+        if (buttonList.contains(ItemButton.faSong)) {
+            /*
+             * 添加发送下面的路由
+             */
+            List<TargetModel> routeToTasks =
+                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+            for (TargetModel m : routeToTasks) {
+                // 退回、路由网关不显示在发送下面
+                if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
+                    buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND));
+                }
+            }
+            /*
+             * 添加自定义按钮到发送
+             */
+            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId,
+                taskDefKey);
+            for (ItemButtonBind bind : bibList) {
+                List<String> roleIds = bind.getRoleIds();
+                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+                if (roleIds.isEmpty() || roleIds.stream()
+                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
+                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND));
+                }
+            }
+        }
+        model.setButtonList(buttonList);
+        return model;
+    }
+
+    @Override
     public DocumentDetailModel menuControl4Copy(String itemId, String processDefinitionId, String taskDefKey,
         DocumentDetailModel model) {
         List<ItemButtonModel> buttonList = buttonService.showButton4Copy();
@@ -1400,7 +1576,7 @@ public class DocumentServiceImpl implements DocumentService {
                 buttonList.add(ItemButton.chongDingWei);
             } else {
                 SignDeptDetail signDeptDetail = signDeptDetailService.findById(documentId);
-                if (signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())) {
+                if (signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DOING)) {
                     buttonList.add(ItemButton.chongDingWei);
                 }
 
@@ -1544,7 +1720,6 @@ public class DocumentServiceImpl implements DocumentService {
             buttonList.stream()
                 .noneMatch(
                     itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK.getValue()));
-            buttonList.remove(ItemButton.tuiHui);
         }
         model.setButtonList(buttonList);
         return model;

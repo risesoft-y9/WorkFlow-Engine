@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.core.DocumentApi;
-import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -40,8 +39,19 @@ public class DocumentAddRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "")
-    public Y9Result<OpenDataModel> add(@RequestParam @NotBlank String itemId) {
-        return documentApi.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, false);
+    public Y9Result<DocumentDetailModel> add(@RequestParam @NotBlank String itemId) {
+        return documentApi.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId);
+    }
+
+    /**
+     * 获取新建办件初始化数据
+     *
+     * @param itemId 事项id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/old")
+    public Y9Result<DocumentDetailModel> old(@RequestParam @NotBlank String itemId) {
+        return documentApi.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId);
     }
 
     /**
