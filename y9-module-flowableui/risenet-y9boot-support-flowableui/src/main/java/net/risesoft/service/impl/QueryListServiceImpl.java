@@ -88,8 +88,9 @@ public class QueryListServiceImpl implements QueryListService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser = orgUnitApi
-                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser =
+                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                        .getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -148,24 +149,24 @@ public class QueryListServiceImpl implements QueryListService {
             Map<String, Object> mapTemp;
             Map<String, Object> formDataMap;
             String processInstanceId;
-            for (ActRuDetailModel hpim : hpiModelList) {
+            for (ActRuDetailModel actRuDetail : hpiModelList) {
                 mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
-                String processSerialNumber = hpim.getProcessSerialNumber();
+                processInstanceId = actRuDetail.getProcessInstanceId();
+                String processSerialNumber = actRuDetail.getProcessSerialNumber();
                 try {
                     OfficeDoneInfoModel officeDoneInfo =
                         officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String startTime = officeDoneInfo.getStartTime().substring(0, 16);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("processDefinitionKey", actRuDetail.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
                     mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--"
                         : officeDoneInfo.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", officeDoneInfo.getUserComplete());
                     mapTemp.put("creatUserName", officeDoneInfo.getCreatUserName());
-                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("itemId", actRuDetail.getItemId());
                     String level = officeDoneInfo.getUrgency();
                     String number = officeDoneInfo.getDocNumber();
                     mapTemp.put("level", level == null ? "" : level);
