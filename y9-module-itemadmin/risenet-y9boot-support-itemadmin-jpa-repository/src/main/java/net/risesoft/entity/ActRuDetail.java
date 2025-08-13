@@ -100,7 +100,7 @@ public class ActRuDetail implements Serializable {
     @Comment("签收状态")
     @Column(name = "SIGNSTATUS", length = 100)
     @Convert(converter = ItemEnumConverter.ActRuDetailSignStatusEnumConverter.class)
-    private ActRuDetailSignStatusEnum signStatus = ActRuDetailSignStatusEnum.TODO;
+    private ActRuDetailSignStatusEnum signStatus = ActRuDetailSignStatusEnum.NONE;
 
     @Comment("办理人")
     @Column(name = "ASSIGNEE", length = 50)

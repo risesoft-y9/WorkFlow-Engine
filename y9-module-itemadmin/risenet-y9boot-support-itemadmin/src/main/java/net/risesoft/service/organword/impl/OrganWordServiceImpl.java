@@ -255,8 +255,8 @@ public class OrganWordServiceImpl implements OrganWordService {
                 /**
                  * 4如果之前的编号的数字等于使用详情的最大使用数字，则把使用详情的数字减一（因为会使用最新的编号，需要把之前占的号释放）
                  */
-                if (null != organWordDetail
-                    && oldowuh.getNumberString().equals(characterValue + PunctuationConsts.LEFTHEXBRACKETS + year
+                if (null != organWordDetail && oldowuh.getNumberString()
+                    .equals(characterValue + PunctuationConsts.LEFTHEXBRACKETS + year
                         + PunctuationConsts.RIGHTHEXBRACKETS + organWordDetail.getNumber())) {
                     organWordDetail.setNumber(organWordDetail.getNumber() - 1);
                     organWordDetailService.save(organWordDetail);
@@ -573,7 +573,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrganWord organWord = this.findByCustom(custom);
             if (null != organWord) {
                 String numberType = organWord.getNumberType();
-                if (numberType.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
+                if (numberType.equals(ItemOrganWordEnum.PURE_NUMBER.getValue())) {
                     Integer oldNumber = organWordDetailService.getMaxNumber(custom, itemId);
                     if (null != oldNumber) {
                         number = oldNumber + 1;
@@ -623,10 +623,10 @@ public class OrganWordServiceImpl implements OrganWordService {
                 return Collections.emptyList();
             } else {
                 List<OrganWordPropertyModel> retList = new ArrayList<>();
-                if (custom.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
+                if (custom.equals(ItemOrganWordEnum.PURE_NUMBER.getValue())) {
                     OrganWordPropertyModel editMap = new OrganWordPropertyModel();
                     editMap.setHasPermission(true);
-                    editMap.setName(ItemOrganWordEnum.PURENUMBER.getName());
+                    editMap.setName(ItemOrganWordEnum.PURE_NUMBER.getName());
                     editMap.setCustom(custom);
                     retList.add(editMap);
                 } else {
@@ -744,7 +744,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             if (null == hisNumber) {
                 OrganWord organWord = this.findByCustom(custom);
                 String numberType = organWord.getNumberType();
-                if (numberType.equals(ItemOrganWordEnum.PURENUMBER.getValue())) {
+                if (numberType.equals(ItemOrganWordEnum.PURE_NUMBER.getValue())) {
                     OrganWordDetail oldDetail = organWordDetailService.findByCustomAndItemId(custom, itemId);
                     if (null == oldDetail) {
                         OrganWordDetail detail = new OrganWordDetail();
@@ -761,7 +761,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                         oldDetail.setNumber(oldDetail.getNumber() + 1);
                         organWordDetailService.save(oldDetail);
                     }
-                } else if (numberType.equals(ItemOrganWordEnum.BUREAUAREANUMBER.getValue())) {
+                } else if (numberType.equals(ItemOrganWordEnum.BUREAU_AREA_NUMBER.getValue())) {
                     String characterValue = numberString.substring(0, 2);
                     String str = numberString.substring(2);
                     Pattern pattern = Pattern.compile("(?<=\\d{2})(\\d+)"); // 定义正则表达式模式
