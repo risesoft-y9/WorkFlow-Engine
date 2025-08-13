@@ -1,5 +1,7 @@
 package net.risesoft.persistence;
 
+import java.util.Arrays;
+
 import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ChaoSongStatusEnum;
@@ -68,6 +70,25 @@ public class ItemEnumConverter {
         extends AbstractEnumConverter<ActRuDetailSignStatusEnum, Integer> {
         public ActRuDetailSignStatusEnumConverter() {
             super(ActRuDetailSignStatusEnum.class);
+        }
+
+        @Override
+        public Integer convertToDatabaseColumn(ActRuDetailSignStatusEnum attribute) {
+            return attribute != null ? attribute.getValue() : ActRuDetailSignStatusEnum.NONE.getValue();
+        }
+
+        @Override
+        public ActRuDetailSignStatusEnum convertToEntityAttribute(Integer dbData) {
+            if (dbData == null || dbData == -1) {
+                return ActRuDetailSignStatusEnum.NONE;
+            }
+            if (dbData == -2) {
+                return ActRuDetailSignStatusEnum.REFUSE;
+            }
+            return Arrays.stream(ActRuDetailSignStatusEnum.values())
+                .filter(e -> e.getValue().equals(dbData))
+                .findFirst()
+                .orElse(ActRuDetailSignStatusEnum.NONE);
         }
     }
 

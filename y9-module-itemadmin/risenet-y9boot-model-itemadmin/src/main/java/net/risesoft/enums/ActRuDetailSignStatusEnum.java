@@ -12,14 +12,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ActRuDetailSignStatusEnum implements ValuedEnum<Integer> {
-    /** 拒绝签收 */
-    REFUSE(-2, "拒绝签收"),
     /** 不需要签收 */
-    NONE(-1, "不需要签收"),
+    NONE(0, "不需要签收"),
     /** 待签收 */
-    TODO(0, "待签收"),
+    TODO(1, "待签收"),
     /** 已签收 */
-    DONE(1, "已签收");
+    DONE(2, "已签收"),
+    /** 拒绝签收 */
+    REFUSE(3, "拒绝签收");
 
     private final Integer value;
     private final String name;
