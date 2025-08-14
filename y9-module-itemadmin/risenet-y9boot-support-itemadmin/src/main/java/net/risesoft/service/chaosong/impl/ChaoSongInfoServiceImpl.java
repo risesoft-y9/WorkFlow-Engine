@@ -129,24 +129,23 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public void changeStatus(String id) {
+    public void setRead(String id) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
-        if (chaoSong != null) {
+        if (chaoSong != null && !ChaoSongStatusEnum.READ.getValue().equals(chaoSong.getStatus())) {
             ChaoSongInfo origin = new ChaoSongInfo();
             Y9BeanUtil.copyProperties(chaoSong, origin);
             chaoSong.setStatus(ChaoSongStatusEnum.READ.getValue());
             chaoSong.setReadTime(sdf.format(new Date()));
             chaoSongInfoRepository.save(chaoSong);
-
             Y9Context.publishEvent(new Y9EntityUpdatedEvent<>(origin, chaoSong));
         }
     }
 
     @Override
-    public void changeStatus(String[] ids) {
+    public void setRead(String[] ids) {
         for (String id : ids) {
-            changeStatus(id);
+            setRead(id);
         }
     }
 
@@ -336,8 +335,11 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(senderId)
-            .and("processInstanceId").is(processInstanceId);
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+            .and("senderId")
+            .is(senderId)
+            .and("processInstanceId")
+            .is(processInstanceId);
         if (StringUtils.isNotBlank(userName)) {
             criteria.subCriteria(new Criteria("userName").contains(userName));
         }
@@ -447,8 +449,11 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(orgUnitId)
-            .and("status").is(ChaoSongStatusEnum.READ.getValue());
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+            .and("userId")
+            .is(orgUnitId)
+            .and("status")
+            .is(ChaoSongStatusEnum.READ.getValue());
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
         }
@@ -588,8 +593,11 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         List<ChaoSongModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId)
-            .and("opinionState").is("1");
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+            .and("userId")
+            .is(userId)
+            .and("opinionState")
+            .is("1");
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
         }
@@ -652,8 +660,11 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(orgUnitId)
-            .and("status").is(2);
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+            .and("userId")
+            .is(orgUnitId)
+            .and("status")
+            .is(2);
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
         }
@@ -745,8 +756,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 } else if (Objects.equals(ItemPermissionEnum.POSITION.getValue(), type)) {
                     userIdListAdd.add(orgUnitId);
                 } else if (type.equals(ItemPermissionEnum.GROUP_CUSTOM.getValue())) {
-                    List<CustomGroupMember> list0 = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), orgUnitId, OrgTypeEnum.POSITION).getData();
+                    List<CustomGroupMember> list0 = customGroupApi
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(),
+                            orgUnitId, OrgTypeEnum.POSITION)
+                        .getData();
                     for (CustomGroupMember pTemp : list0) {
                         OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
                         if (user != null && StringUtils.isNotBlank(user.getId())) {

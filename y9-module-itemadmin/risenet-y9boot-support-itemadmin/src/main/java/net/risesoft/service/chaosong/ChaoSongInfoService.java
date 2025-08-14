@@ -29,14 +29,14 @@ public interface ChaoSongInfoService {
      *
      * @param id
      */
-    void changeStatus(String id);
+    void setRead(String id);
 
     /**
      * 批量已阅
      *
      * @param ids
      */
-    void changeStatus(String[] ids);
+    void setRead(String[] ids);
 
     /**
      * 获取个人抄送件计数

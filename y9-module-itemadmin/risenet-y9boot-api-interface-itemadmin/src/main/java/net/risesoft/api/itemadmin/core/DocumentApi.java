@@ -193,7 +193,7 @@ public interface DocumentApi {
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
-     * @param documentId
+     * @param documentId 文档id
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
      * @since 9.6.6
      */
@@ -248,6 +248,22 @@ public interface DocumentApi {
     Y9Result<DocumentDetailModel> editCopy(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("mobile") boolean mobile);
+
+    /**
+     * 获取抄送件详情
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param id 抄送id
+     * @param processInstanceId 抄送的流程实例id
+     * @param mobile 是否为移动端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是送件对象
+     * @since 9.6.6
+     */
+    @GetMapping("/editChaoSong")
+    Y9Result<DocumentDetailModel> editChaoSong(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("id") String id,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("mobile") boolean mobile);
 
     /**
      * 解析用户

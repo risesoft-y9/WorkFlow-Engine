@@ -30,6 +30,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
+import net.risesoft.service.chaosong.ChaoSongInfoService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.service.core.DocumentService;
 import net.risesoft.service.core.ProcessParamService;
@@ -60,6 +61,8 @@ public class DocumentApiImpl implements DocumentApi {
     private final ProcessParamService processParamService;
 
     private final ItemStartNodeRoleService itemStartNodeRoleService;
+
+    private final ChaoSongInfoService chaoSongInfoService;
 
     /**
      * 新建办件
@@ -315,6 +318,27 @@ public class DocumentApiImpl implements DocumentApi {
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         DocumentDetailModel model = documentService.editCopy(processSerialNumber, mobile);
+        return Y9Result.success(model);
+    }
+
+    /**
+     * 抄送件详情
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param id 抄送id
+     * @param processInstanceId 抄送的流程实例id
+     * @param mobile 是否为移动端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是送件对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<DocumentDetailModel> editChaoSong(@RequestParam String tenantId, @RequestParam String orgUnitId,
+        @RequestParam String id, @RequestParam String processInstanceId, @RequestParam boolean mobile) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        DocumentDetailModel model = documentService.editChaoSong(id, processInstanceId, mobile);
+        chaoSongInfoService.setRead(id);
         return Y9Result.success(model);
     }
 

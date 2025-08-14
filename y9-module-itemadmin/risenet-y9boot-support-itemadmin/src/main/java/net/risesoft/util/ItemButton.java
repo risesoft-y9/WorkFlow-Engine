@@ -23,6 +23,7 @@ public class ItemButton {
     public static ItemButtonModel weiTuo = new ItemButtonModel("05", "委托", ItemButtonTypeEnum.COMMON, 9);
     public static ItemButtonModel xieShang = new ItemButtonModel("06", "协商", ItemButtonTypeEnum.COMMON, 10);
     public static ItemButtonModel wanCheng = new ItemButtonModel("07", "完成", ItemButtonTypeEnum.COMMON, 11);
+    public static ItemButtonModel follow = new ItemButtonModel("follow", "关注", ItemButtonTypeEnum.COMMON, 11);
     public static ItemButtonModel songXiaYiRen = new ItemButtonModel("08", "送下一人", ItemButtonTypeEnum.COMMON, 12);
     public static ItemButtonModel banLiWanCheng = new ItemButtonModel("09", "办理完成", ItemButtonTypeEnum.COMMON, 13);
     public static ItemButtonModel banJie = new ItemButtonModel("12", "办结", ItemButtonTypeEnum.COMMON, 14);
@@ -38,7 +39,6 @@ public class ItemButton {
         new ItemButtonModel("cheDiShanChu", "彻底删除", ItemButtonTypeEnum.COMMON, 23);
     public static ItemButtonModel fangRuHuiShouZhan =
         new ItemButtonModel("fangRuHuiShouZhan", "放入回收站", ItemButtonTypeEnum.COMMON, 24);
-
     public static ItemButtonModel siNeiChuanQian =
         new ItemButtonModel("common_siNeiChuanQian", "司内传签", ItemButtonTypeEnum.COMMON, 26);
     public static ItemButtonModel chuanQianJiLu =
