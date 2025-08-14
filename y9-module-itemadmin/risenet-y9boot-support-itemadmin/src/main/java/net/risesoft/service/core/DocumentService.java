@@ -150,7 +150,7 @@ public interface DocumentService {
      * @param mobile
      * @return
      */
-    DocumentDetailModel editChaoSong(String id, String processInstanceId, boolean mobile);
+    DocumentDetailModel editChaoSong(String id, String processInstanceId, boolean mobile, String itembox);
 
     /**
      * Description: 发送
@@ -276,12 +276,9 @@ public interface DocumentService {
     /**
      * Description: 获取菜单
      *
-     * @param itemId 事项id
-     * @param taskId 任务id
      * @param model
-     * @return
      */
-    DocumentDetailModel menuControl4Doing(String itemId, String taskId, DocumentDetailModel model);
+    void menuControl4Doing(DocumentDetailModel model);
 
     /**
      * Description: 获取菜单
@@ -323,9 +320,8 @@ public interface DocumentService {
      * Description: 获取菜单
      *
      * @param model
-     * @return
      */
-    DocumentDetailModel menuControl4ChaoSong(DocumentDetailModel model);
+    void menuControl4ChaoSong(DocumentDetailModel model);
 
     /**
      * Description: 解析工作流发送时用户选取的人员

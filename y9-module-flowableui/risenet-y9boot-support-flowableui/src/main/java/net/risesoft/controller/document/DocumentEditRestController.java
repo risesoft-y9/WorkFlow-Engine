@@ -95,8 +95,11 @@ public class DocumentEditRestController {
             itembox = ItemBoxTypeEnum.DONE.getValue();
         }
         try {
-            OpenDataModel model = documentApi.edit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                itembox, taskId, processInstanceId, itemId, false).getData();
+            OpenDataModel model =
+                documentApi
+                    .edit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itembox, taskId,
+                        processInstanceId, itemId, false)
+                    .getData();
             String str = Y9JsonUtil.writeValueAsString(model);
             Map<String, Object> map = Y9JsonUtil.readHashMap(str);
             String processSerialNumber = model.getProcessSerialNumber();
@@ -110,8 +113,10 @@ public class DocumentEditRestController {
             }
             int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, userId, processInstanceId).getData();
             int associatedFileNum = associatedFileApi.countAssociatedFile(tenantId, processSerialNumber).getData();
-            int follow = officeFollowApi
-                .countByProcessInstanceId(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
+            int follow =
+                officeFollowApi.countByProcessInstanceId(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId)
+                    .getData();
+            assert map != null;
             map.put("follow", follow > 0);
             map.put("speakInfoNum", speakInfoNum);
             map.put("associatedFileNum", associatedFileNum);
@@ -134,8 +139,11 @@ public class DocumentEditRestController {
     @GetMapping(value = "/copy")
     public Y9Result<DocumentDetailModel> copy(@RequestParam @NotBlank String processSerialNumber) {
         try {
-            DocumentDetailModel model = documentApi.editCopy(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPositionId(), processSerialNumber, false).getData();
+            DocumentDetailModel model =
+                documentApi
+                    .editCopy(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processSerialNumber,
+                        false)
+                    .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -155,9 +163,10 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> doing(@RequestParam @NotBlank String documentId,
         @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model =
-                documentApi.editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, documentId, false, ItemBoxTypeEnum.DOING).getData();
+            DocumentDetailModel model = documentApi
+                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    documentId, false, ItemBoxTypeEnum.DOING)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -173,12 +182,13 @@ public class DocumentEditRestController {
      */
     @FlowableLog(operationName = "监控在办件详情", logLevel = FlowableLogLevelEnum.ADMIN)
     @GetMapping(value = "/doingAdmin")
-    public Y9Result<DocumentDetailModel> doingAdmin(@RequestParam @NotBlank String processInstanceId,
-        @RequestParam @NotBlank String documentId) {
+    public Y9Result<DocumentDetailModel> doingAdmin(@RequestParam @NotBlank String documentId,
+        @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model =
-                documentApi.editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, documentId, true, ItemBoxTypeEnum.MONITOR_DOING).getData();
+            DocumentDetailModel model = documentApi
+                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    documentId, true, ItemBoxTypeEnum.MONITOR_DOING)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -197,9 +207,10 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> done(@RequestParam @NotBlank String documentId,
         @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model =
-                documentApi.editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, documentId, false, ItemBoxTypeEnum.DONE).getData();
+            DocumentDetailModel model = documentApi
+                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    documentId, false, ItemBoxTypeEnum.DONE)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -215,12 +226,13 @@ public class DocumentEditRestController {
      */
     @FlowableLog(operationName = "监控办结详情", logLevel = FlowableLogLevelEnum.ADMIN)
     @GetMapping(value = "/doneAdmin")
-    public Y9Result<DocumentDetailModel> doneAdmin(@RequestParam @NotBlank String processInstanceId,
-        @RequestParam @NotBlank String documentId, @RequestParam @NotBlank String itemBox) {
+    public Y9Result<DocumentDetailModel> doneAdmin(@RequestParam @NotBlank String documentId,
+        @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model =
-                documentApi.editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, documentId, true, ItemBoxTypeEnum.fromString(itemBox)).getData();
+            DocumentDetailModel model = documentApi
+                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    documentId, true, ItemBoxTypeEnum.MONITOR_DONE)
+                .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -238,8 +250,11 @@ public class DocumentEditRestController {
     @GetMapping(value = "/recycle")
     public Y9Result<DocumentDetailModel> recycle(@RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model = documentApi.editRecycle(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPositionId(), processInstanceId, false).getData();
+            DocumentDetailModel model =
+                documentApi
+                    .editRecycle(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                        false)
+                    .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -261,8 +276,11 @@ public class DocumentEditRestController {
             if (null == task) {
                 return Y9Result.failure("当前待办已处理！");
             }
-            DocumentDetailModel model = documentApi.editTodo(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), taskId, false).getData();
+            DocumentDetailModel model =
+                documentApi
+                    .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+                        Y9LoginUserHolder.getPositionId(), taskId, false)
+                    .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);
@@ -279,12 +297,38 @@ public class DocumentEditRestController {
      */
     @GetMapping(value = "/chaoSong")
     public Y9Result<DocumentDetailModel> chaoSong(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String itembox) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        try {
+            DocumentDetailModel model =
+                documentApi.editChaoSong(person.getTenantId(), positionId, id, processInstanceId, false, itembox)
+                    .getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("detail error", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取抄送件详情数据
+     *
+     * @param id 抄送id
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/chaoSongAdmin")
+    public Y9Result<DocumentDetailModel> chaoSongAdmin(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String positionId = Y9LoginUserHolder.getPositionId();
         try {
             DocumentDetailModel model =
-                documentApi.editChaoSong(person.getTenantId(), positionId, id, processInstanceId, false).getData();
+                documentApi
+                    .editChaoSong(person.getTenantId(), positionId, id, processInstanceId, false,
+                        ItemBoxTypeEnum.MONITOR_CHAOSONG.getValue())
+                    .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("detail error", e);

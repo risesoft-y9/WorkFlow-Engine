@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.view.ItemViewConfApi;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoingService;
 import net.risesoft.service.DoneService;
@@ -38,8 +37,6 @@ public class WorkListRestController {
     private final DoingService doingService;
 
     private final DoneService doneService;
-
-    private final ItemViewConfApi itemViewConfApi;
 
     private final QueryListService queryListService;
 

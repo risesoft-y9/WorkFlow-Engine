@@ -263,7 +263,8 @@ public interface DocumentApi {
     @GetMapping("/editChaoSong")
     Y9Result<DocumentDetailModel> editChaoSong(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("id") String id,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("mobile") boolean mobile);
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("mobile") boolean mobile,
+        @RequestParam("itembox") String itembox);
 
     /**
      * 解析用户
