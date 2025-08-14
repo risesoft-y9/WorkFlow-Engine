@@ -967,8 +967,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setLevel(processParam.getCustomLevel());
                 model.setProcessSerialNumber(processParam.getProcessSerialNumber());
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
-                boolean banjie = hpi == null || hpi.getEndTime() != null;
-                if (banjie) {
+                boolean banJie = hpi == null || hpi.getEndTime() != null;
+                if (banJie) {
                     model.setBanjie(true);
                 }
                 OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);

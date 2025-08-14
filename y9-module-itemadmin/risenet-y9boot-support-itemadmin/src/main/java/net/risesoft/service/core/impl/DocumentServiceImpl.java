@@ -139,11 +139,9 @@ import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
 
-/*
+/**
  * @author qinman
- *
  * @author zhangchongjie
- *
  * @date 2022/12/20
  */
 @Slf4j
@@ -559,15 +557,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel editChaoSong(String id, String processInstanceId, boolean mobile) {
+    public DocumentDetailModel editChaoSong(String id, String processInstanceId, boolean mobile, String itembox) {
         DocumentDetailModel model = new DocumentDetailModel();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        String taskId = "";
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        if (taskList.isEmpty()) {
-            itembox = ItemBoxTypeEnum.DONE.getValue();
-        }
-        if (ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
+        if (!taskList.isEmpty()) {
             taskId = taskList.get(0).getId();
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             processInstanceId = task.getProcessInstanceId();
@@ -659,6 +654,7 @@ public class DocumentServiceImpl implements DocumentService {
             List<HistoricActivityInstanceModel> haiList =
                 historicActivityApi.getByProcessInstanceId(tenantId, processInstanceId).getData();
             HistoricActivityInstanceModel last = haiList.stream().reduce((first, second) -> second).orElse(null);
+            assert last != null;
             taskDefinitionKey = last.getActivityId();
         }
         model.setTitle(processParam.getTitle());
@@ -676,7 +672,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         this.setNum(model);
         this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
-        this.menuControl4Doing(itemId, taskId, model);
+        this.menuControl4Doing(model);
         return model;
     }
 
@@ -684,8 +680,8 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDetailModel editDone(String processInstanceId, String documentId, boolean isAdmin,
         ItemBoxTypeEnum itemBox) {
         DocumentDetailModel model = new DocumentDetailModel();
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activityUser = "", itemId = "";
+        String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
+            activityUser = "", itemId;
         String starter;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -724,8 +720,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDetailModel editRecycle(String processInstanceId, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activitiUser = "", itemId = "";
+        String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
+            activitiUser = "", itemId;
         String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -1154,11 +1150,11 @@ public class DocumentServiceImpl implements DocumentService {
             repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey)
                 .getData()
                 .getId();
-        List<Y9FormItemBind> eformTaskBinds =
+        List<Y9FormItemBind> binds =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
-        if (!eformTaskBinds.isEmpty()) {
-            for (Y9FormItemBind eftb : eformTaskBinds) {
-                formIds = Y9Util.genCustomStr(formIds, eftb.getFormId());
+        if (!binds.isEmpty()) {
+            for (Y9FormItemBind bind : binds) {
+                formIds = Y9Util.genCustomStr(formIds, bind.getFormId());
             }
         }
         return formIds;
@@ -1171,17 +1167,17 @@ public class DocumentServiceImpl implements DocumentService {
             processDefinitionId, taskDefinitionKey);
         List<OrgUnit> orgUnitList = new ArrayList<>();
         for (ItemPermission o : list) {
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())
-                || Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())
-                || Objects.equals(o.getRoleType(), ItemPermissionEnum.USER.getValue())) {
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT)
+                || Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION)
+                || Objects.equals(o.getRoleType(), ItemPermissionEnum.USER)) {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     orgUnitList.add(orgUnit);
                 }
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
+            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE)) {
                 List<Position> positionList = positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData();
                 orgUnitList.addAll(positionList);
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC.getValue())) {
+            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
                 // 部门集合
                 List<OrgUnit> deptList = new ArrayList<>();
                 // 岗位集合
@@ -1202,12 +1198,8 @@ public class DocumentServiceImpl implements DocumentService {
                     positionList = dynamicRoleMemberService.listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole,
                         processInstanceId);
                 }
-                for (OrgUnit orgUnit : positionList) {
-                    orgUnitList.add(orgUnit);
-                }
-                for (OrgUnit orgUnit : deptList) {
-                    orgUnitList.add(orgUnit);
-                }
+                orgUnitList.addAll(positionList);
+                orgUnitList.addAll(deptList);
             }
         }
         return orgUnitList;
@@ -1627,18 +1619,16 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel menuControl4ChaoSong(DocumentDetailModel model) {
-        List<ItemButtonModel> buttonList = buttonService.showButton4ChaoSong();
+    public void menuControl4ChaoSong(DocumentDetailModel model) {
+        List<ItemButtonModel> buttonList = buttonService.showButton4ChaoSong(model);
         model.setButtonList(buttonList);
-        return model;
     }
 
     @Override
-    public DocumentDetailModel menuControl4Doing(String itemId, String taskId, DocumentDetailModel model) {
-        List<ItemButtonModel> buttonList = new ArrayList<>();
-        if (model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())) {
-            buttonList = buttonService.showButton4Doing(itemId, taskId);
-        } else if (model.getItembox().equals(ItemBoxTypeEnum.MONITOR_DOING.getValue())) {
+    public void menuControl4Doing(DocumentDetailModel model) {
+        String itemId = model.getItemId(), taskId = model.getTaskId();
+        List<ItemButtonModel> buttonList = buttonService.showButton4Doing(itemId, taskId);
+        if (model.getItembox().equals(ItemBoxTypeEnum.MONITOR_DOING.getValue())) {
             String documentId = model.getDocumentId();
             if (documentId.equals(model.getProcessSerialNumber())) {
                 buttonList.add(ItemButton.chongDingWei);
@@ -1647,11 +1637,9 @@ public class DocumentServiceImpl implements DocumentService {
                 if (signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DOING)) {
                     buttonList.add(ItemButton.chongDingWei);
                 }
-
             }
         }
         model.setButtonList(buttonList);
-        return model;
     }
 
     @Override
@@ -1785,8 +1773,6 @@ public class DocumentServiceImpl implements DocumentService {
                     });
 
             }
-            buttonList.stream()
-                .noneMatch(itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK));
         }
         model.setButtonList(buttonList);
         return model;
@@ -1853,10 +1839,10 @@ public class DocumentServiceImpl implements DocumentService {
                 result.setSuccess(true);
                 return result;
             }
-            List<Y9FormItemBind> eformTaskBinds =
+            List<Y9FormItemBind> binds =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
             Map<String, Object> variables =
-                y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+                y9FormService.getFormData4Var(binds.get(0).getFormId(), processSerialNumber);
             List<TargetModel> targetNodesTemp = new ArrayList<>();
             for (TargetModel targetNode : targetNodes) {
                 for (String columnName : variables.keySet()) {
@@ -1864,10 +1850,10 @@ public class DocumentServiceImpl implements DocumentService {
                     // 是数值
                     if (StringUtils.isNumeric(str)) {
                         if (variables.get(columnName).toString().contains(".")) {
-                            LOGGER.info("*************************Double:" + variables.get(columnName).toString());
+                            LOGGER.info("*************************Double:{}", variables.get(columnName).toString());
                             variables.put(columnName, Double.valueOf(variables.get(columnName).toString()));
                         } else {
-                            LOGGER.info("*************************Integer:" + variables.get(columnName).toString());
+                            LOGGER.info("*************************Integer:{}", variables.get(columnName).toString());
                             variables.put(columnName, Integer.parseInt(variables.get(columnName).toString()));
                         }
                     }
@@ -2015,7 +2001,7 @@ public class DocumentServiceImpl implements DocumentService {
                     processDefinitionApi.getNodeType(tenantId, model.getProcessDefinitionId(), routeToTaskId).getData();
                 if (SysVariables.PARALLEL.equals(type)) {// 并行节点才执行
                     String userId = userList.get(0);
-                    Integer subProcessNum = Integer.parseInt(variables.get("subProcessNum").toString());
+                    int subProcessNum = Integer.parseInt(variables.get("subProcessNum").toString());
                     if (subProcessNum > 1 && userList.size() == 1) {
                         for (int i = 1; i < subProcessNum; i++) {
                             userList.add(userId);
@@ -2257,10 +2243,10 @@ public class DocumentServiceImpl implements DocumentService {
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-                List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService
-                    .listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
+                List<Y9FormItemBind> binds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
+                    processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
-                    y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+                    y9FormService.getFormData4Var(binds.get(0).getFormId(), processSerialNumber);
                 for (String columnName : variables.keySet()) {
                     String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
                     if (StringUtils.isNumeric(str)) {// 是数值
@@ -2318,7 +2304,7 @@ public class DocumentServiceImpl implements DocumentService {
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
 
-            vars = CommonOpt.setVariables(orgUnit.getId(), orgUnit.getName(), "", Arrays.asList(userIds.split(",")),
+            CommonOpt.setVariables(orgUnit.getId(), orgUnit.getName(), "", Arrays.asList(userIds.split(",")),
                 processSerialNumber, null, vars);
             assert item != null;
             ProcessInstanceModel piModel = runtimeApi
@@ -2412,10 +2398,10 @@ public class DocumentServiceImpl implements DocumentService {
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-                List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService
-                    .listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
+                List<Y9FormItemBind> binds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
+                    processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
-                    y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+                    y9FormService.getFormData4Var(binds.get(0).getFormId(), processSerialNumber);
                 for (String columnName : variables.keySet()) {
                     String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
                     if (StringUtils.isNumeric(str)) {// 是数值
@@ -2489,7 +2475,7 @@ public class DocumentServiceImpl implements DocumentService {
             if (subProcessStr != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
                 if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {// 并行节点才执行
                     String userChoice = userList.get(0);
-                    Integer subProcessNum = Integer.parseInt(subProcessStr);
+                    int subProcessNum = Integer.parseInt(subProcessStr);
                     if (subProcessNum > 1 && userList.size() == 1) {
                         for (int i = 1; i < subProcessNum; i++) {
                             userList.add(userChoice);

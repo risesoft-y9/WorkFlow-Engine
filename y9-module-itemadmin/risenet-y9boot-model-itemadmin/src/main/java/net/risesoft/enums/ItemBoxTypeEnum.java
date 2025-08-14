@@ -41,7 +41,13 @@ public enum ItemBoxTypeEnum {
     /** 监控回收站 */
     MONITOR_RECYCLE("monitorRecycle", "监控回收站"),
     /** 阅件 */
-    YUE_JIAN("yuejian", "阅件");
+    YUE_JIAN("yuejian", "阅件"),
+
+    TODO_CHAOSONG("todoChaosong", "监控阅件"),
+
+    DONE_CHAOSONG("doneChaosong", "监控阅件"),
+
+    MONITOR_CHAOSONG("monitorChaosong", "监控阅件");
 
     private final String value;
     private final String name;

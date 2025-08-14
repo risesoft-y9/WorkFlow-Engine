@@ -626,12 +626,14 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public List<ItemButtonModel> showButton4ChaoSong() {
+    public List<ItemButtonModel> showButton4ChaoSong(DocumentDetailModel model) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.daYin);
-        buttonModelList.add(ItemButton.chaoSong);
-        buttonModelList.add(ItemButton.follow);
         buttonModelList.add(ItemButton.fanHui);
+        if (!ItemBoxTypeEnum.MONITOR_CHAOSONG.equals(ItemBoxTypeEnum.fromString(model.getItembox()))) {
+            buttonModelList.add(ItemButton.chaoSong);
+            buttonModelList.add(ItemButton.follow);
+        }
         return buttonModelList.stream()
             .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
@@ -723,7 +725,7 @@ public class ButtonServiceImpl implements ButtonService {
                         .getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
                             model.getProcessInstanceId(), year)
                         .getData();
-                HistoricTaskInstanceModel hisTaskModelTemp = list != null && list.size() > 0 ? list.get(0) : null;
+                HistoricTaskInstanceModel hisTaskModelTemp = list != null && !list.isEmpty() ? list.get(0) : null;
                 if (hisTaskModelTemp != null
                     && hisTaskModelTemp.getAssignee().equals(Y9LoginUserHolder.getOrgUnit().getId())) {
                     buttonModelList.add(ItemButton.huiFuDaiBan);

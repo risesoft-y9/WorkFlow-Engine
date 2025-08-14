@@ -334,10 +334,11 @@ public class DocumentApiImpl implements DocumentApi {
      */
     @Override
     public Y9Result<DocumentDetailModel> editChaoSong(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String id, @RequestParam String processInstanceId, @RequestParam boolean mobile) {
+        @RequestParam String id, @RequestParam String processInstanceId, @RequestParam boolean mobile,
+        @RequestParam String itembox) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
-        DocumentDetailModel model = documentService.editChaoSong(id, processInstanceId, mobile);
+        DocumentDetailModel model = documentService.editChaoSong(id, processInstanceId, mobile, itembox);
         chaoSongInfoService.setRead(id);
         return Y9Result.success(model);
     }
