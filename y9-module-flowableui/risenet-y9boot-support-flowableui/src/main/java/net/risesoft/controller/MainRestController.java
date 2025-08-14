@@ -30,8 +30,8 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
-import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.itemadmin.EntrustModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
@@ -55,7 +55,7 @@ import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(value = "/vue/mian", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/vue/main", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MainRestController {
 
     private final ItemApi itemApi;
@@ -63,8 +63,6 @@ public class MainRestController {
     private final HistoricProcessApi historicProcessApi;
 
     private final PositionRoleApi positionRoleApi;
-
-    private final TaskApi taskApi;
 
     private final PositionApi positionApi;
 
@@ -87,21 +85,13 @@ public class MainRestController {
     private final ItemTodoApi itemTodoApi;
 
     /**
-     * 获取所有事项集合（包含监控管理员权限）
+     * 获取所有事项信息
      *
-     * @return Y9Result<Map < String, Object>>
+     * @return Y9Result<List < ItemModel>>
      */
-    @GetMapping(value = "/geAllItemList")
-    public Y9Result<Map<String, Object>> geAllItemList() {
-        Map<String, Object> map = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> list = itemApi.getAllItemList(tenantId).getData();
-        boolean b = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
-            .getData();
-        map.put("monitorManage", b);
-        map.put("itemList", list);
-        return Y9Result.success(map, "获取成功");
+    @GetMapping(value = "/getAllItemList")
+    public Y9Result<List<ItemModel>> getAllItemList() {
+        return itemApi.getAllItemList(Y9LoginUserHolder.getTenantId());
     }
 
     /**
@@ -142,8 +132,9 @@ public class MainRestController {
                 map.put("processDefinitionKey", processDefinitionKey);
                 draftCount = draftApi.getDraftCount(tenantId, positionId, itemId).getData();
                 draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, itemId).getData();
-                Y9FlowableCountModel flowableCountModel = processTodoApi
-                    .getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey).getData();
+                Y9FlowableCountModel flowableCountModel =
+                    processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
+                        .getData();
                 todoCount = flowableCountModel.getTodoCount();
                 doingCount = flowableCountModel.getDoingCount();
                 try {
@@ -251,8 +242,11 @@ public class MainRestController {
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
-        boolean b1 = positionRoleApi.hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
-            Y9LoginUserHolder.getPositionId()).getData();
+        boolean b1 =
+            positionRoleApi
+                .hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
+                    Y9LoginUserHolder.getPositionId())
+                .getData();
         map.put("repositionrManage", b1);
         return Y9Result.success(map, "获取成功");
     }
@@ -272,8 +266,11 @@ public class MainRestController {
             .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
             .getData();
         map.put("monitorManage", b);
-        boolean b1 = positionRoleApi.hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
-            Y9LoginUserHolder.getPositionId()).getData();
+        boolean b1 =
+            positionRoleApi
+                .hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
+                    Y9LoginUserHolder.getPositionId())
+                .getData();
         map.put("repositionrManage", b1);
         boolean b2 = positionRoleApi
             .hasPublicRole(tenantId, y9FlowableProperties.getFawenManageRoleName(), Y9LoginUserHolder.getPositionId())
@@ -378,13 +375,17 @@ public class MainRestController {
                             if (StringUtils.isNotBlank(itemId)) {
                                 // 单个事项获取待办数量
                                 ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
-                                todoCount1 = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId,
-                                    orgUnit.getId(), itemModel.getWorkflowGuid()).getData();
+                                todoCount1 =
+                                    processTodoApi
+                                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, orgUnit.getId(),
+                                            itemModel.getWorkflowGuid())
+                                        .getData();
                                 allCount = allCount + todoCount1;
                             } else if (StringUtils.isNotBlank(systemName)) {
                                 // 单个事项获取待办数量
                                 todoCount1 = processTodoApi
-                                    .getTodoCountByUserIdAndSystemName(tenantId, orgUnit.getId(), systemName).getData();
+                                    .getTodoCountByUserIdAndSystemName(tenantId, orgUnit.getId(), systemName)
+                                    .getData();
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {
@@ -483,4 +484,15 @@ public class MainRestController {
         return Y9Result.success(map, "获取成功");
     }
 
+    /**
+     * 获取当前人有权限的事项列表
+     *
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @GetMapping(value = "/getMyItemList")
+    public Y9Result<List<ItemListModel>> getMyItemList() {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getPersonId();
+        return itemApi.getMyItemList(tenantId, userId);
+    }
 }

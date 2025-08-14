@@ -1382,8 +1382,8 @@ public class DocumentServiceImpl implements DocumentService {
                             break;
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasrole) {
+                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                                if (hasRole) {
                                     Map<String, Object> mapTemp = new HashMap<>(16);
                                     mapTemp.put("menuName", bib.getButtonName());
                                     mapTemp.put("menuKey", bib.getButtonCustomId());

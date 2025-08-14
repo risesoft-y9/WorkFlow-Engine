@@ -292,7 +292,6 @@ public class DocumentEditRestController {
      *
      * @param id 抄送id
      * @param processInstanceId 流程实例id
-     * @param openNotRead 是否打开不已阅
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/chaoSong")
