@@ -142,6 +142,17 @@ public interface DocumentService {
     DocumentDetailModel editCopy(String processSerialNumber, boolean mobile);
 
     /**
+     *
+     * Description: 查看抄送件详情
+     *
+     * @param id
+     * @param processInstanceId
+     * @param mobile
+     * @return
+     */
+    DocumentDetailModel editChaoSong(String id, String processInstanceId, boolean mobile);
+
+    /**
      * Description: 发送
      *
      * @param taskId 任务id
@@ -307,6 +318,14 @@ public interface DocumentService {
      */
     DocumentDetailModel menuControl4Copy(String itemId, String processDefinitionId, String taskDefKey,
         DocumentDetailModel model);
+
+    /**
+     * Description: 获取菜单
+     *
+     * @param model
+     * @return
+     */
+    DocumentDetailModel menuControl4ChaoSong(DocumentDetailModel model);
 
     /**
      * Description: 解析工作流发送时用户选取的人员

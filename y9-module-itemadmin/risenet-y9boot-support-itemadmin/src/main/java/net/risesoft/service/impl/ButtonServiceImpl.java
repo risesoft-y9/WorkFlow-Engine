@@ -626,6 +626,18 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
+    public List<ItemButtonModel> showButton4ChaoSong() {
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(ItemButton.daYin);
+        buttonModelList.add(ItemButton.chaoSong);
+        buttonModelList.add(ItemButton.follow);
+        buttonModelList.add(ItemButton.fanHui);
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
@@ -1082,8 +1094,10 @@ public class ButtonServiceImpl implements ButtonService {
             buttonList.add(ItemButton.chuanQianYiJian);
         }
         buttonList.add(ItemButton.fanHui);
-        buttonList =
-            buttonList.stream().sorted(Comparator.comparing(ItemButtonModel::getTabIndex)).collect(Collectors.toList());
-        return buttonList;
+        buttonList.add(ItemButton.chaoSong);
+        buttonList.add(ItemButton.daYin);
+        return buttonList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
     }
 }

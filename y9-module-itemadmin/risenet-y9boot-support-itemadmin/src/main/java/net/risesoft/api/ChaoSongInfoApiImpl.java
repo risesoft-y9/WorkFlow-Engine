@@ -66,7 +66,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Object> changeStatus(@RequestParam String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.changeStatus(ids);
+        chaoSongInfoService.setRead(ids);
         return Y9Result.success();
     }
 
@@ -81,7 +81,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
     @Override
     public Y9Result<Object> changeStatus2read(@RequestParam String tenantId, @RequestParam String chaoSongId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        chaoSongInfoService.changeStatus(chaoSongId);
+        chaoSongInfoService.setRead(chaoSongId);
         return Y9Result.success();
     }
 
@@ -174,7 +174,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongApi {
         model.setStatus(status);
         ChaoSongInfo chaoSong = chaoSongInfoService.getById(id);
         if (null != chaoSong && chaoSong.getStatus() != 1 && !Boolean.TRUE.equals(openNotRead)) {
-            chaoSongInfoService.changeStatus(id);
+            chaoSongInfoService.setRead(id);
         }
         return Y9Result.success(model);
     }

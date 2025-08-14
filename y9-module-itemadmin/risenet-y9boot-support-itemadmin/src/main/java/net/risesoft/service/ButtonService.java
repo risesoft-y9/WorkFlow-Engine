@@ -21,6 +21,8 @@ public interface ButtonService {
 
     List<ItemButtonModel> showButton4Copy();
 
+    List<ItemButtonModel> showButton4ChaoSong();
+
     List<ItemButtonModel> showButton4Doing(String itemId, String taskId);
 
     List<ItemButtonModel> showButton4Done(DocumentDetailModel model);

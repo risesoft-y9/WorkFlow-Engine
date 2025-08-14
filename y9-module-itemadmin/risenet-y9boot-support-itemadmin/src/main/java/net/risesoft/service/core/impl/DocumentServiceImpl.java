@@ -155,7 +155,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final ItemService itemService;
 
-    private final ItemRepository spmApproveitemRepository;
+    private final ItemRepository itemRepository;
 
     private final ItemTaskConfService taskConfService;
 
@@ -559,6 +559,70 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public DocumentDetailModel editChaoSong(String id, String processInstanceId, boolean mobile) {
+        DocumentDetailModel model = new DocumentDetailModel();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        if (taskList.isEmpty()) {
+            itembox = ItemBoxTypeEnum.DONE.getValue();
+        }
+        if (ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
+            taskId = taskList.get(0).getId();
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            processInstanceId = task.getProcessInstanceId();
+        }
+        String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
+            activitiUser = "", startor;
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        if (hpi == null) {
+            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+            if (officeDoneInfo == null) {
+                String year = processParam.getCreateTime().substring(0, 4);
+                hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+                processDefinitionId = hpi.getProcessDefinitionId();
+                processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+            } else {
+                processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+                processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
+            }
+        } else {
+            processDefinitionId = hpi.getProcessDefinitionId();
+            processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+        }
+        startor = processParam.getStartor();
+        processSerialNumber = processParam.getProcessSerialNumber();
+        if (StringUtils.isNotEmpty(taskId)) {
+            if (taskId.contains(SysVariables.COMMA)) {
+                taskId = taskId.split(SysVariables.COMMA)[0];
+            }
+            TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
+            taskDefinitionKey = taskTemp.getTaskDefinitionKey();
+        }
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+        model.setId(id);
+        model.setTitle(processParam.getTitle());
+        model.setStartor(startor);
+        model.setItembox(itembox);
+        model.setCurrentUser(orgUnit.getName());
+        model.setProcessDefinitionKey(processDefinitionKey);
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId(processInstanceId);
+        model.setTaskDefKey(taskDefinitionKey);
+        model.setTaskId(taskId);
+        model.setActivitiUser(activitiUser);
+        model.setItemId(processParam.getItemId());
+
+        this.setNum(model);
+        this.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey,
+            model);
+        this.menuControl4ChaoSong(model);
+        return model;
+    }
+
+    @Override
     public DocumentDetailModel editDoing(String processInstanceId, String documentId, boolean isAdmin,
         ItemBoxTypeEnum itemBox) {
         DocumentDetailModel model = new DocumentDetailModel();
@@ -748,20 +812,19 @@ public class DocumentServiceImpl implements DocumentService {
         return model;
     }
 
-    private DocumentDetailModel setNum(DocumentDetailModel model) {
+    private void setNum(DocumentDetailModel model) {
         Integer fileNum = attachmentService.fileCounts(model.getProcessSerialNumber());
         TransactionWord transactionWord =
             transactionWordService.getByProcessSerialNumber(model.getProcessSerialNumber());
         int speakInfoNum =
             speakInfoService.getNotReadCount(Y9LoginUserHolder.getPersonId(), model.getProcessInstanceId());
         int associatedFileNum = associatedFileService.countAssociatedFile(model.getProcessSerialNumber());
-        int follow = officeFollowService.countByProcessInstanceId(model.getProcessSerialNumber());
+        int follow = officeFollowService.countByProcessInstanceId(model.getProcessInstanceId());
         model.setFileNum(fileNum);
         model.setAssociatedFileNum(associatedFileNum);
         model.setDocNum(transactionWord != null && transactionWord.getId() != null ? 1 : 0);
         model.setFollow(follow > 0);
         model.setSpeakInfoNum(speakInfoNum);
-        return model;
     }
 
     /*
@@ -1025,7 +1088,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setSignStatus(signStatus);
         // 会签意见汇总页签
         List<SignDeptDetailModel> modelList = new ArrayList<>();
-        signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue())).forEach(sdd -> {
+        signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE)).forEach(sdd -> {
             SignDeptDetailModel ssdModel = new SignDeptDetailModel();
             Y9BeanUtil.copyProperties(sdd, ssdModel);
             modelList.add(ssdModel);
@@ -1175,19 +1238,18 @@ public class DocumentServiceImpl implements DocumentService {
                 model.setItemId(itemId);
                 model.setAppIcon("");
                 model.setTodoCount(0);
-                Item spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
+                Item item = itemRepository.findById(itemId).orElse(null);
                 model.setName(r.getName());
                 model.setItemName(r.getName());
-                if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                    model.setName(spmApproveitem.getName());
-                    model.setItemName(spmApproveitem.getName());
+                if (item != null && item.getId() != null) {
+                    model.setName(item.getName());
+                    model.setItemName(item.getName());
                     todoCount = processTodoApi
-                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, spmApproveitem.getWorkflowGuid())
+                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, item.getWorkflowGuid())
                         .getData();
                     model.setTodoCount((int)todoCount);
-                    model.setAppIcon(
-                        StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
-                    model.setProcessDefinitionKey(spmApproveitem.getWorkflowGuid());
+                    model.setAppIcon(StringUtils.isBlank(item.getIconData()) ? "" : item.getIconData());
+                    model.setProcessDefinitionKey(item.getWorkflowGuid());
                     listMap.add(model);
                 }
             }
@@ -1218,15 +1280,14 @@ public class DocumentServiceImpl implements DocumentService {
                 model.setId(r.getId());
                 model.setItemId(itemId);
                 model.setAppIcon("");
-                Item spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
+                Item item = itemRepository.findById(itemId).orElse(null);
                 model.setName(r.getName());
                 model.setItemName(r.getName());
-                if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                    model.setName(spmApproveitem.getName());
-                    model.setItemName(spmApproveitem.getName());
-                    model.setAppIcon(
-                        StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
-                    model.setProcessDefinitionKey(spmApproveitem.getWorkflowGuid());
+                if (item != null && item.getId() != null) {
+                    model.setName(item.getName());
+                    model.setItemName(item.getName());
+                    model.setAppIcon(StringUtils.isBlank(item.getIconData()) ? "" : item.getIconData());
+                    model.setProcessDefinitionKey(item.getWorkflowGuid());
                     listMap.add(model);
                 }
             }
@@ -1566,6 +1627,13 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public DocumentDetailModel menuControl4ChaoSong(DocumentDetailModel model) {
+        List<ItemButtonModel> buttonList = buttonService.showButton4ChaoSong();
+        model.setButtonList(buttonList);
+        return model;
+    }
+
+    @Override
     public DocumentDetailModel menuControl4Doing(String itemId, String taskId, DocumentDetailModel model) {
         List<ItemButtonModel> buttonList = new ArrayList<>();
         if (model.getItembox().equals(ItemBoxTypeEnum.DOING.getValue())) {
@@ -1718,8 +1786,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             }
             buttonList.stream()
-                .noneMatch(
-                    itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK.getValue()));
+                .noneMatch(itemButtonModel -> itemButtonModel.getButtonType().equals(ItemButtonTypeEnum.ROLLBACK));
         }
         model.setButtonList(buttonList);
         return model;
@@ -2181,7 +2248,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> vars = new HashMap<>(16);
-            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = itemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
@@ -2246,7 +2313,7 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             Map<String, Object> vars = new HashMap<>(16);
-            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = itemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
@@ -2295,7 +2362,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> vars = new HashMap<>(16);
-            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = itemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             vars.put(SysVariables.ROUTE_TO_TASK_ID, startRouteToTaskId);
             assert item != null;
@@ -2337,7 +2404,7 @@ public class DocumentServiceImpl implements DocumentService {
             startTaskDefKey = StringUtils.isBlank(startTaskDefKey) ? itemStartNodeRoleService.getStartTaskDefKey(itemId)
                 : startTaskDefKey;
             Map<String, Object> vars = new HashMap<>(16);
-            Item item = spmApproveitemRepository.findById(itemId).orElse(null);
+            Item item = itemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             vars.put("routeToTaskId", startTaskDefKey);
             vars.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);

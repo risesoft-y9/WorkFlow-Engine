@@ -286,4 +286,27 @@ public class DocumentEditRestController {
         }
         return Y9Result.failure("获取失败");
     }
+
+    /**
+     * 获取抄送件详情数据
+     *
+     * @param id 抄送id
+     * @param processInstanceId 流程实例id
+     * @param openNotRead 是否打开不已阅
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/chaoSong")
+    public Y9Result<DocumentDetailModel> chaoSong(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String processInstanceId) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        try {
+            DocumentDetailModel model =
+                documentApi.editChaoSong(person.getTenantId(), positionId, id, processInstanceId, false).getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("detail error", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
 }
