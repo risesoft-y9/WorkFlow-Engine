@@ -20,12 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.ChaoSongModel;
-import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -55,8 +53,6 @@ public class MonitorRestController {
 
     private final ProcessParamApi processParamApi;
 
-    private final ItemApi itemApi;
-
     /**
      * 获取单位所有件列表
      *
@@ -78,17 +74,6 @@ public class MonitorRestController {
     }
 
     /**
-     * 获取所有事项信息
-     *
-     * @return Y9Result<List < ItemModel>>
-     */
-    @GetMapping(value = "/getAllItemList")
-    public Y9Result<List<ItemModel>> getAllItemList() {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return itemApi.getAllItemList(tenantId);
-    }
-
-    /**
      * 获取监控办件列表
      *
      * @param searchName 搜索词
@@ -100,8 +85,8 @@ public class MonitorRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @GetMapping(value = "/monitorBanjianList")
-    public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam(required = false) String searchName,
+    @GetMapping(value = "/list")
+    public Y9Page<Map<String, Object>> list(@RequestParam(required = false) String searchName,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
@@ -121,8 +106,8 @@ public class MonitorRestController {
      * @param rows 条数
      * @return Y9Page<ChaoSongModel>
      */
-    @GetMapping(value = "/monitorChaosongList")
-    public Y9Page<ChaoSongModel> monitorChaosongList(@RequestParam(required = false) String searchName,
+    @GetMapping(value = "/chaoSongList")
+    public Y9Page<ChaoSongModel> chaoSongList(@RequestParam(required = false) String searchName,
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName,
         @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
         @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows) {
