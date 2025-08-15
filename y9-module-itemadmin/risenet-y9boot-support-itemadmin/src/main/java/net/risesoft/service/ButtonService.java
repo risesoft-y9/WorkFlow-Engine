@@ -21,11 +21,13 @@ public interface ButtonService {
 
     List<ItemButtonModel> showButton4ChaoSong(DocumentDetailModel model);
 
-    List<ItemButtonModel> showButton4Doing(String itemId, String taskId);
+    List<ItemButtonModel> showButton4Doing(DocumentDetailModel model);
+
+    List<ItemButtonModel> showButton4DoingAdmin(DocumentDetailModel model);
 
     List<ItemButtonModel> showButton4Done(DocumentDetailModel model);
 
     List<ItemButtonModel> showButton4Recycle();
 
-    List<ItemButtonModel> showButton4Todo(String itemId, String taskId, DocumentDetailModel model);
+    List<ItemButtonModel> showButton4Todo(DocumentDetailModel model);
 }

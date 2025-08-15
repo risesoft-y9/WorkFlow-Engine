@@ -614,12 +614,12 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
+    public List<ItemButtonModel> showButton4Doing(DocumentDetailModel model) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String itemId = model.getItemId(), taskId = model.getTaskId();
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
-
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         if (task != null) {
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
@@ -685,6 +685,36 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
+    public List<ItemButtonModel> showButton4DoingAdmin(DocumentDetailModel model) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), taskId = model.getTaskId();
+        List<ItemButtonModel> buttonModelList = new ArrayList<>();
+        buttonModelList.add(ItemButton.chaoSong);
+        buttonModelList.add(ItemButton.daYin);
+        buttonModelList.add(ItemButton.teShuBanJie);
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        if (task != null) {
+            String multiInstance =
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
+            boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL));
+            if (b) {
+                buttonModelList.add(ItemButton.jiaJianQian);
+            }
+            buttonModelList.add(ItemButton.chongDingWei);
+            List<TargetModel> taskNodes =
+                processDefinitionApi.getNodes(tenantId, task.getProcessDefinitionId()).getData();
+            AtomicInteger index = new AtomicInteger(100);
+            taskNodes.stream()
+                .filter(node -> StringUtils.isNotBlank(node.getTaskDefKey()))
+                .forEach(node -> buttonModelList.add(new ItemButtonModel(node.getTaskDefKey(), node.getTaskDefName(),
+                    ItemButtonTypeEnum.REPOSITION, index.getAndIncrement())));
+        }
+        return buttonModelList.stream()
+            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ItemButtonModel> showButton4Done(DocumentDetailModel model) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         ItemBoxTypeEnum itemBox = ItemBoxTypeEnum.fromString(model.getItembox());
@@ -726,7 +756,8 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public List<ItemButtonModel> showButton4Todo(String itemId, String taskId, DocumentDetailModel model) {
+    public List<ItemButtonModel> showButton4Todo(DocumentDetailModel model) {
+        String itemId = model.getItemId(), taskId = model.getTaskId();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonList = new ArrayList<>();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();

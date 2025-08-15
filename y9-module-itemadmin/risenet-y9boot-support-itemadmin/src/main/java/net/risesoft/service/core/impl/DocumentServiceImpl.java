@@ -633,7 +633,11 @@ public class DocumentServiceImpl implements DocumentService {
 
         this.setNum(model);
         this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
-        this.menuControl4Doing(model);
+        if (!isAdmin) {
+            this.menuControl4Doing(model);
+        } else {
+            this.menuControl4DoingAdmin(model);
+        }
         return model;
     }
 
@@ -674,7 +678,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         this.setNum(model);
         this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
-        this.menuControl4Done(itemId, processDefinitionId, taskDefinitionKey, model);
+        this.menuControl4Done(model);
         return model;
     }
 
@@ -712,7 +716,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setItemId(itemId);
 
         model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
-        model = menuControl4Recycle(itemId, processDefinitionId, taskDefinitionKey, model);
+        model = menuControl4Recycle(model);
         return model;
     }
 
@@ -765,7 +769,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         this.setNum(model);
         this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, false, model);
-        this.menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
+        this.menuControl4Todo(model);
         return model;
     }
 
@@ -1076,9 +1080,13 @@ public class DocumentServiceImpl implements DocumentService {
         itemId = processParam.getItemId();
         processDefinitionId = task.getProcessDefinitionId();
         taskDefinitionKey = task.getTaskDefinitionKey();
-        model.setProcessSerialNumber(processParam.getProcessSerialNumber());
+        model.setItemId(itemId);
         model.setProcessInstanceId(processInstanceId);
-        model = menuControl4Todo(itemId, processDefinitionId, taskDefinitionKey, taskId, model);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setTaskDefKey(taskDefinitionKey);
+        model.setTaskId(taskId);
+        model.setProcessSerialNumber(processParam.getProcessSerialNumber());
+        this.menuControl4Todo(model);
         return model.getButtonList();
     }
 
@@ -1579,8 +1587,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public void menuControl4Doing(DocumentDetailModel model) {
-        String itemId = model.getItemId(), taskId = model.getTaskId();
-        List<ItemButtonModel> buttonList = buttonService.showButton4Doing(itemId, taskId);
+        List<ItemButtonModel> buttonList = buttonService.showButton4Doing(model);
         if (model.getItembox().equals(ItemBoxTypeEnum.MONITOR_DOING.getValue())) {
             String documentId = model.getDocumentId();
             if (documentId.equals(model.getProcessSerialNumber())) {
@@ -1596,26 +1603,30 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey,
-        DocumentDetailModel model) {
+    public void menuControl4DoingAdmin(DocumentDetailModel model) {
+        model.setButtonList(buttonService.showButton4DoingAdmin(model));
+    }
+
+    @Override
+    public DocumentDetailModel menuControl4Done(DocumentDetailModel model) {
         List<ItemButtonModel> buttonList = buttonService.showButton4Done(model);
         model.setButtonList(buttonList);
         return model;
     }
 
     @Override
-    public DocumentDetailModel menuControl4Recycle(String itemId, String processDefinitionId, String taskDefKey,
-        DocumentDetailModel model) {
+    public DocumentDetailModel menuControl4Recycle(DocumentDetailModel model) {
         List<ItemButtonModel> buttonList = buttonService.showButton4Recycle();
         model.setButtonList(buttonList);
         return model;
     }
 
     @Override
-    public DocumentDetailModel menuControl4Todo(String itemId, String processDefinitionId, String taskDefKey,
-        String taskId, DocumentDetailModel model) {
+    public DocumentDetailModel menuControl4Todo(DocumentDetailModel model) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        List<ItemButtonModel> buttonList = buttonService.showButton4Todo(itemId, taskId, model);
+        String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
+            taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId();
+        List<ItemButtonModel> buttonList = buttonService.showButton4Todo(model);
         List<ItemButtonBind> bibList;
         if (buttonList.contains(ItemButton.baoCun)) {
             bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId,

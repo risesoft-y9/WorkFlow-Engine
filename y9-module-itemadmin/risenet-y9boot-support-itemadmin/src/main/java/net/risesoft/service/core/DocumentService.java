@@ -261,15 +261,10 @@ public interface DocumentService {
     /**
      * Description: 获取菜单
      *
-     * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey
-     * @param taskId 任务id
      * @param model
      * @return
      */
-    DocumentDetailModel menuControl4Todo(String itemId, String processDefinitionId, String taskDefKey, String taskId,
-        DocumentDetailModel model);
+    DocumentDetailModel menuControl4Todo(DocumentDetailModel model);
 
     /**
      * Description: 获取菜单
@@ -281,26 +276,25 @@ public interface DocumentService {
     /**
      * Description: 获取菜单
      *
-     * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey
      * @param model
-     * @return
      */
-    DocumentDetailModel menuControl4Done(String itemId, String processDefinitionId, String taskDefKey,
-        DocumentDetailModel model);
+    void menuControl4DoingAdmin(DocumentDetailModel model);
 
     /**
      * Description: 获取菜单
      *
-     * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey
      * @param model
      * @return
      */
-    DocumentDetailModel menuControl4Recycle(String itemId, String processDefinitionId, String taskDefKey,
-        DocumentDetailModel model);
+    DocumentDetailModel menuControl4Done(DocumentDetailModel model);
+
+    /**
+     * Description: 获取菜单
+     *
+     * @param model
+     * @return
+     */
+    DocumentDetailModel menuControl4Recycle(DocumentDetailModel model);
 
     /**
      * Description: 获取菜单
