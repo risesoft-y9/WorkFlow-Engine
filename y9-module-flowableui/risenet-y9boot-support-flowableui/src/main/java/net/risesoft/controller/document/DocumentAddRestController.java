@@ -47,17 +47,6 @@ public class DocumentAddRestController {
      * 获取新建办件初始化数据
      *
      * @param itemId 事项id
-     * @return Y9Result<Map < String, Object>>
-     */
-    @GetMapping(value = "/old")
-    public Y9Result<DocumentDetailModel> old(@RequestParam @NotBlank String itemId) {
-        return documentApi.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId);
-    }
-
-    /**
-     * 获取新建办件初始化数据
-     *
-     * @param itemId 事项id
      * @param startTaskDefKey 开始节点定义key
      * @return Y9Result<DocumentDetailModel>
      */
