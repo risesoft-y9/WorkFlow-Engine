@@ -139,8 +139,6 @@ public interface DocumentService {
      */
     DocumentDetailModel editRecycle(String processInstanceId, boolean mobile);
 
-    DocumentDetailModel editCopy(String processSerialNumber, boolean mobile);
-
     /**
      *
      * Description: 查看抄送件详情
@@ -302,18 +300,6 @@ public interface DocumentService {
      * @return
      */
     DocumentDetailModel menuControl4Recycle(String itemId, String processDefinitionId, String taskDefKey,
-        DocumentDetailModel model);
-
-    /**
-     * Description: 获取菜单
-     *
-     * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefKey
-     * @param model
-     * @return
-     */
-    DocumentDetailModel menuControl4Copy(String itemId, String processDefinitionId, String taskDefKey,
         DocumentDetailModel model);
 
     /**

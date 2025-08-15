@@ -38,7 +38,6 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ButtonService;
 import net.risesoft.service.CustomProcessInfoService;
-import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.ProcInstanceRelationshipService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.core.ItemService;
@@ -66,7 +65,6 @@ public class ButtonServiceImpl implements ButtonService {
     private final CustomProcessInfoService customProcessInfoService;
     private final ItemService itemService;
     private final ItemTaskConfService itemTaskConfService;
-    private final DocumentCopyService documentCopyService;
     private final ProcessParamService processParamService;
     private List<TargetModel> nodeList = new ArrayList<>();
 
@@ -88,7 +86,6 @@ public class ButtonServiceImpl implements ButtonService {
             task = taskApi.findById(tenantId, taskId).getData();
         }
         Map<String, Object> vars = new HashMap<>(16);
-        String varsUser = "";
         String taskSenderId = "";
         List<String> varsUsers = new ArrayList<>();
         String multiInstance = "", varsSponsorGuid = "";
@@ -101,30 +98,25 @@ public class ButtonServiceImpl implements ButtonService {
         if (task != null) {
             vars = variableApi.getVariables(tenantId, taskId).getData();
             varsUsers = (List<String>)vars.get(SysVariables.USERS);
-            varsUser = String.valueOf(vars.get(SysVariables.USER));
             varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLEL_SPONSOR));
             taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
             multiInstance =
                 processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
                     .getData();
         }
-
-        //// 在待办件列表中打开公文显示按钮(itemBox==todo表示在待办件列表)，在在办件列表和办结件列表里打开公文不显示任何按钮
         if (ItemBoxTypeEnum.TODO.getValue().equals(itemBox)) {
             // 并行任务的总个数
-            int nrOfInstances = -1;
+            int nrOfInstances;
             // 当前还没有完成的并行任务个数，对应vars中的nrOfActiveInstances变量
-            int nrOfActiveInstances = -1;
+            int nrOfActiveInstances;
             // 已经完成的并行任务个数
-            long nrOfCompletedInstances = -1;
+            long nrOfCompletedInstances;
             // 已经循环的次数
-            long loopCounter = -1;
+            long loopCounter;
             // 用来表示当前任务节点在串行状态下，当前用户是否显示发送按钮和送下一人按钮，当为true时，不显示发送按钮，显示的是送下一人按钮
             boolean isSequential = false;
             // 串行时是否是最后一个人员
             boolean isLastSequential = false;
-            // 拒签时是否是最后一个人员
-            boolean isLastPerson4RefuseClaim = false;
             // 在串行状态下且不是users里面的最后一个用户，isSequential为true
             if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
                 isSequential = true;
@@ -136,17 +128,16 @@ public class ButtonServiceImpl implements ButtonService {
                 // users可能没有用户，或者只有一个用户，因此需要进行判断，对于没有用户，或者只有一个用户，都应显示发送按钮，送下一人按钮不显示
                 if (usersSize > 1) {
                     // 串行处理时，当存在多个用户时，如果当前用户是users里面的最后一个，此时isLastSequential应为true
-                    /**
+                    /*
                      * 判断 1、实际的用户数和nrOfInstances是否一致 2、nrOfCompletedInstances和loopCounter 3、nrOfActiveInstances等于1
                      * 有一个不成立说明加减签有问题，调整变量，且以users中的用户为准
                      */
-                    long finishedCount = 0;
+                    long finishedCount;
                     if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter
                         || 1 != nrOfActiveInstances) {
                         finishedCount =
                             historictaskApi.getFinishedCountByExecutionId(tenantId, task.getExecutionId()).getData();
                         nrOfCompletedInstances = finishedCount;
-                        loopCounter = finishedCount;
                         Map<String, Object> varMapTemp = new HashMap<>(16);
                         varMapTemp.put(SysVariables.NR_OF_INSTANCES, usersSize);
                         varMapTemp.put(SysVariables.NR_OF_COMPLETED_INSTANCES, finishedCount);
@@ -179,7 +170,6 @@ public class ButtonServiceImpl implements ButtonService {
                     isParallelSponsor = true;
                 }
                 nrOfInstances = (Integer)vars.get(SysVariables.NR_OF_INSTANCES);
-                nrOfActiveInstances = (Integer)vars.get(SysVariables.NR_OF_ACTIVE_INSTANCES);
                 nrOfCompletedInstances = (Integer)vars.get(SysVariables.NR_OF_COMPLETED_INSTANCES);
                 if (nrOfInstances > 0) {
                     // 如果只有一个人办理，那么他就是最后一个人
@@ -201,9 +191,7 @@ public class ButtonServiceImpl implements ButtonService {
             if (task != null) {
                 String assignee = task.getAssignee();
                 String currentProcInstanceId = task.getProcessInstanceId();
-                /**
-                 * 是否签收，true表示签收了，false表示没有签收 如果未签收了，除了签收、拒签、返回按钮都不显示 因此下面每个按钮都需要判断isAssignee为true还是false
-                 */
+                // 是否签收，true表示签收了，false表示没有签收 如果未签收了，除了签收、拒签、返回按钮都不显示 因此下面每个按钮都需要判断isAssignee为true还是false
                 boolean isAssignee = StringUtils.isNotBlank(assignee);
                 Boolean isContainEndEvent = processDefinitionApi.isContainEndEvent(tenantId, taskId).getData();
                 // 获取某个节点除去end节点的所有的输出线路的个数
@@ -499,7 +487,6 @@ public class ButtonServiceImpl implements ButtonService {
             }
             // 抄送
             isButtonShow[17] = true;
-
             // 下面是加减签按钮,待办件，自己发的件，可加减签，主办可加减签。
             boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
                 && !customItem && StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId)
@@ -530,6 +517,7 @@ public class ButtonServiceImpl implements ButtonService {
             }
             // 抄送
             isButtonShow[17] = true;
+            assert task != null;
             ProcessInstanceModel processInstanceModel =
                 runtimeApi.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
             // 重定向按钮
@@ -600,7 +588,6 @@ public class ButtonServiceImpl implements ButtonService {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.baoCun);
         buttonModelList.add(ItemButton.chaoSong);
-        buttonModelList.add(ItemButton.fanHui);
         Item item = itemService.findById(itemId);
         boolean showSubmitButton = item.isShowSubmitButton();
         if (showSubmitButton) {
@@ -614,22 +601,9 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public List<ItemButtonModel> showButton4Copy() {
-        List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(ItemButton.siNeiChuanQian);
-        buttonModelList.add(ItemButton.chuanQianJiLu);
-        buttonModelList.add(ItemButton.chuanQianYiJian);
-        buttonModelList.add(ItemButton.shanChuChuanQianJian);
-        return buttonModelList.stream()
-            .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
-            .collect(Collectors.toList());
-    }
-
-    @Override
     public List<ItemButtonModel> showButton4ChaoSong(DocumentDetailModel model) {
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.daYin);
-        buttonModelList.add(ItemButton.fanHui);
         if (!ItemBoxTypeEnum.MONITOR_CHAOSONG.equals(ItemBoxTypeEnum.fromString(model.getItembox()))) {
             buttonModelList.add(ItemButton.chaoSong);
             buttonModelList.add(ItemButton.follow);
@@ -643,7 +617,6 @@ public class ButtonServiceImpl implements ButtonService {
     public List<ItemButtonModel> showButton4Doing(String itemId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
-        buttonModelList.add(ItemButton.fanHui);
         buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
 
@@ -737,7 +710,6 @@ public class ButtonServiceImpl implements ButtonService {
         }
         buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
-        buttonModelList.add(ItemButton.fanHui);
         return buttonModelList.stream()
             .sorted(Comparator.comparing(ItemButtonModel::getTabIndex))
             .collect(Collectors.toList());
@@ -759,10 +731,9 @@ public class ButtonServiceImpl implements ButtonService {
         List<ItemButtonModel> buttonList = new ArrayList<>();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         Map<String, Object> vars;
-        String varsUser = "";
-        String taskSenderId = "";
+        String taskSenderId;
         List<String> varsUsers;
-        String multiInstance = "", varsSponsorGuid = "";
+        String multiInstance, varsSponsorGuid;
         Item item = itemService.findById(itemId);
         boolean customItem = false, showSubmitButton;
         if (null != item.getCustomItem()) {
@@ -771,26 +742,23 @@ public class ButtonServiceImpl implements ButtonService {
         showSubmitButton = item.isShowSubmitButton();
         vars = variableApi.getVariables(tenantId, taskId).getData();
         varsUsers = (List<String>)vars.get(SysVariables.USERS);
-        varsUser = String.valueOf(vars.get(SysVariables.USER));
         varsSponsorGuid = String.valueOf(vars.get(SysVariables.PARALLEL_SPONSOR));
         taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
         multiInstance =
             processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
                 .getData();
         // 并行任务的总个数
-        int nrOfInstances = -1;
+        int nrOfInstances;
         // 当前还没有完成的并行任务个数，对应vars中的nrOfActiveInstances变量
-        int nrOfActiveInstances = -1;
+        int nrOfActiveInstances;
         // 已经完成的并行任务个数
-        long nrOfCompletedInstances = -1;
+        long nrOfCompletedInstances;
         // 已经循环的次数
-        long loopCounter = -1;
+        long loopCounter;
         // 用来表示当前任务节点在串行状态下，当前用户是否显示发送按钮和送下一人按钮，当为true时，不显示发送按钮，显示的是送下一人按钮
         boolean isSequential = false;
         // 串行时是否是最后一个人员
         boolean isLastSequential = false;
-        // 拒签时是否是最后一个人员
-        boolean isLastPerson4RefuseClaim = false;
         // 在串行状态下且不是users里面的最后一个用户，isSequential为true
         if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
             isSequential = true;
@@ -802,16 +770,15 @@ public class ButtonServiceImpl implements ButtonService {
             // users可能没有用户，或者只有一个用户，因此需要进行判断，对于没有用户，或者只有一个用户，都应显示发送按钮，送下一人按钮不显示
             if (usersSize > 1) {
                 // 串行处理时，当存在多个用户时，如果当前用户是users里面的最后一个，此时isLastSequential应为true
-                /**
+                /*
                  * 判断 1、实际的用户数和nrOfInstances是否一致 2、nrOfCompletedInstances和loopCounter 3、nrOfActiveInstances等于1
                  * 有一个不成立说明加减签有问题，调整变量，且以users中的用户为准
                  */
-                long finishedCount = 0;
+                long finishedCount;
                 if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter || 1 != nrOfActiveInstances) {
                     finishedCount =
                         historictaskApi.getFinishedCountByExecutionId(tenantId, task.getExecutionId()).getData();
                     nrOfCompletedInstances = finishedCount;
-                    loopCounter = finishedCount;
                     Map<String, Object> varMapTemp = new HashMap<>(16);
                     varMapTemp.put(SysVariables.NR_OF_INSTANCES, usersSize);
                     varMapTemp.put(SysVariables.NR_OF_COMPLETED_INSTANCES, finishedCount);
@@ -844,7 +811,6 @@ public class ButtonServiceImpl implements ButtonService {
                 isParallelSponsor = true;
             }
             nrOfInstances = (Integer)vars.get(SysVariables.NR_OF_INSTANCES);
-            nrOfActiveInstances = (Integer)vars.get(SysVariables.NR_OF_ACTIVE_INSTANCES);
             nrOfCompletedInstances = (Integer)vars.get(SysVariables.NR_OF_COMPLETED_INSTANCES);
             if (nrOfInstances > 0) {
                 // 如果只有一个人办理，那么他就是最后一个人
@@ -861,9 +827,7 @@ public class ButtonServiceImpl implements ButtonService {
         }
         String assignee = task.getAssignee();
         String currentProcInstanceId = task.getProcessInstanceId();
-        /**
-         * 是否签收，true表示签收了，false表示没有签收 如果未签收了，除了签收、拒签、返回按钮都不显示 因此下面每个按钮都需要判断isAssignee为true还是false
-         */
+        // 是否签收，true表示签收了，false表示没有签收 如果未签收了，除了签收、拒签、返回按钮都不显示 因此下面每个按钮都需要判断isAssignee为true还是false
         boolean isAssignee = StringUtils.isNotBlank(assignee);
         TargetModel endNode = processDefinitionApi.getEndNode(tenantId, taskId).getData();
         // 获取某个节点除去end节点的所有的输出线路的个数
@@ -1089,13 +1053,6 @@ public class ButtonServiceImpl implements ButtonService {
             }*/
         }
         // 上面是放入回收站按钮
-        if (isAssignee
-            && !documentCopyService.findByProcessSerialNumberAndSenderId(model.getProcessSerialNumber(), orgUnitId)
-                .isEmpty()) {
-            buttonList.add(ItemButton.chuanQianJiLu);
-            buttonList.add(ItemButton.chuanQianYiJian);
-        }
-        buttonList.add(ItemButton.fanHui);
         buttonList.add(ItemButton.chaoSong);
         buttonList.add(ItemButton.daYin);
         return buttonList.stream()
