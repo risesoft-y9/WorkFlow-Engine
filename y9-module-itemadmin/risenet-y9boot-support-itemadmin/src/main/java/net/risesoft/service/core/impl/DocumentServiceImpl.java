@@ -1822,7 +1822,7 @@ public class DocumentServiceImpl implements DocumentService {
                         }
                     }
                 }
-                LOGGER.info("*************************Y9JsonUtil:" + Y9JsonUtil.writeValueAsString(variables));
+                LOGGER.info("*************************Y9JsonUtil:{}", Y9JsonUtil.writeValueAsString(variables));
                 boolean b =
                     conditionParserApi.parser(tenantId, targetNode.getConditionExpression(), variables).getData();
                 if (b) {
