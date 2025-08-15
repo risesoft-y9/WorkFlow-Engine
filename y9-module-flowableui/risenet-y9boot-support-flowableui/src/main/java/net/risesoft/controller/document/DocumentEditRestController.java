@@ -130,28 +130,6 @@ public class DocumentEditRestController {
     }
 
     /**
-     * 获取传签件办件数据
-     *
-     * @param processSerialNumber 流程序列号
-     * @return Y9Result<DocumentDetailModel>
-     */
-    @FlowableLog(operationName = "传签件详情")
-    @GetMapping(value = "/copy")
-    public Y9Result<DocumentDetailModel> copy(@RequestParam @NotBlank String processSerialNumber) {
-        try {
-            DocumentDetailModel model =
-                documentApi
-                    .editCopy(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processSerialNumber,
-                        false)
-                    .getData();
-            return Y9Result.success(model, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取编辑办件数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
-    }
-
-    /**
      * 获取编辑在办件数据
      * 
      * @param documentId 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
