@@ -295,9 +295,7 @@ public class OpinionServiceImpl implements OpinionService {
             String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
             OpinionListModel model = new OpinionListModel();
             List<OpinionFrameOneClickSetModel> oneClickSetList = new ArrayList<>();
-            // 代录意见权限
             model.setAddable(true);
-            model.setAddAgent(false);
             model.setOpinionFrameMark(opinionFrameMark);
             model.setOneClickSetList(oneClickSetList);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -340,15 +338,6 @@ public class OpinionServiceImpl implements OpinionService {
                         opinionModel.setSign(personExt != null ? personExt.getSign() : null);
                         model0.setOpinion(opinionModel);
                         resList.add(model0);
-                    }
-                    boolean addable = model.getAddable();
-                    if (!addable) {
-                        // 没有意见框编辑权限时，增加代录权限
-                        // boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
-                        // "代录意见角色", person.getPersonId()).getData();
-                        // if (hasRole1) {
-                        // addableMap.put("addAgent", true);
-                        // }
                     }
                     resList.add(model);
                     return resList;
@@ -527,19 +516,6 @@ public class OpinionServiceImpl implements OpinionService {
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-                // 代录权限控制
-                if (StringUtils.isNotBlank(taskId)) {
-                    boolean hasRole = personRoleApi
-                        .hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId())
-                        .getData();
-                    if (hasRole) {
-                        // 没有意见框编辑权限时，增加代录权限
-                        Boolean addable = model.getAddable();
-                        if (!addable) {
-                            model.setAddAgent(true);
                         }
                     }
                 }

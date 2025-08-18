@@ -252,11 +252,11 @@ public class DocumentApiImpl implements DocumentApi {
     @Override
     public Y9Result<DocumentDetailModel> editDoing(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceId, @RequestParam String documentId, @RequestParam boolean isAdmin,
-        @RequestParam ItemBoxTypeEnum itemBox) {
+        @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        DocumentDetailModel model = documentService.editDoing(processInstanceId, documentId, isAdmin, itemBox);
+        DocumentDetailModel model = documentService.editDoing(processInstanceId, documentId, isAdmin, itemBox, mobile);
         return Y9Result.success(model);
     }
 
@@ -273,11 +273,11 @@ public class DocumentApiImpl implements DocumentApi {
     @Override
     public Y9Result<DocumentDetailModel> editDone(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceId, @RequestParam String documentId, @RequestParam boolean isAdmin,
-        @RequestParam ItemBoxTypeEnum itemBox) {
+        @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        DocumentDetailModel model = documentService.editDone(processInstanceId, documentId, isAdmin, itemBox);
+        DocumentDetailModel model = documentService.editDone(processInstanceId, documentId, isAdmin, itemBox, mobile);
         return Y9Result.success(model);
     }
 

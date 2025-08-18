@@ -201,7 +201,7 @@ public interface DocumentApi {
     Y9Result<DocumentDetailModel> editDoing(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam("documentId") String documentId, @RequestParam("isAdmin") boolean isAdmin,
-        @RequestParam("itemBox") ItemBoxTypeEnum itemBox);
+        @RequestParam("itemBox") ItemBoxTypeEnum itemBox, @RequestParam boolean mobile);
 
     /**
      * 编辑文档
@@ -217,7 +217,7 @@ public interface DocumentApi {
     Y9Result<DocumentDetailModel> editDone(@RequestParam("tenantId") String tenantId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam("documentId") String documentId, @RequestParam("isAdmin") boolean isAdmin,
-        @RequestParam("itemBox") ItemBoxTypeEnum itemBox);
+        @RequestParam("itemBox") ItemBoxTypeEnum itemBox, @RequestParam("mobile") boolean mobile);
 
     /**
      * 编辑文档

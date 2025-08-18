@@ -240,13 +240,13 @@ public class TransactionWordApiImpl implements TransactionWordApi {
 
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, transactionWord.getUserId()).getData();
                 word.setUserName(orgUnit.getName());
-
+                return Y9Result.success(word);
             }
         } catch (Exception e) {
             LOGGER.error("获取正文文件信息失败", e);
             return Y9Result.failure("获取正文文件信息失败");
         }
-        return Y9Result.success(word);
+        return Y9Result.success(null);
     }
 
     private TransactionWordModel getTransactionWord(TransactionWord transactionWord) {
@@ -338,8 +338,9 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             if (StringUtils.isNotBlank(bindValue)) {
                 ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository
                     .findByItemIdAndProcessDefinitionIdAndBindValue(itemId, processDefinitionId, bindValue);
-                WordTemplate wordTemplate = wordTemplateRepository
-                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                WordTemplate wordTemplate =
+                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
+                        .orElse(null);
                 if (wordTemplate != null && wordTemplate.getId() != null) {
                     return Y9Result.success(wordTemplate.getFilePath());
                 } else {
@@ -351,8 +352,9 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             } else {
                 ItemWordTemplateBind wordTemplateBind =
                     wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-                WordTemplate wordTemplate = wordTemplateRepository
-                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                WordTemplate wordTemplate =
+                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
+                        .orElse(null);
                 if (wordTemplate != null && wordTemplate.getId() != null) {
                     return Y9Result.success(wordTemplate.getFilePath());
                 } else {
@@ -676,8 +678,9 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             if (StringUtils.isNotBlank(bindValue)) {
                 ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository
                     .findByItemIdAndProcessDefinitionIdAndBindValue(itemId, processDefinitionId, bindValue);
-                WordTemplate wordTemplate = wordTemplateRepository
-                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                WordTemplate wordTemplate =
+                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
+                        .orElse(null);
                 if (wordTemplate != null && wordTemplate.getId() != null) {
                     fileDocumentId = wordTemplate.getId();
                     openWordOrPdf = "openWordTemplate";
@@ -690,8 +693,9 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             } else {
                 ItemWordTemplateBind wordTemplateBind =
                     wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-                WordTemplate wordTemplate = wordTemplateRepository
-                    .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+                WordTemplate wordTemplate =
+                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
+                        .orElse(null);
                 if (wordTemplate != null && wordTemplate.getId() != null) {
                     fileDocumentId = wordTemplate.getId();
                     openWordOrPdf = "openWordTemplate";

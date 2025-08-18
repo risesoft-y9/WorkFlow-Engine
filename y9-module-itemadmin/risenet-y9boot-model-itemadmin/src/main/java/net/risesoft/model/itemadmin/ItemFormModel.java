@@ -1,6 +1,7 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import lombok.Data;
 
@@ -29,4 +30,9 @@ public class ItemFormModel implements Serializable {
      * 表单json数据(手机端需要)
      */
     private String formJson;
+
+    /**
+     * 表单业务数据(手机端需要)
+     */
+    private Map<String, Object> formData;
 }
