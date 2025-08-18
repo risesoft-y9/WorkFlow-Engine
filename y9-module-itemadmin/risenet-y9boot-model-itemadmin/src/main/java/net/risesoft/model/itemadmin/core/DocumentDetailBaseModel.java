@@ -1,25 +1,34 @@
-package net.risesoft.model.itemadmin;
+package net.risesoft.model.itemadmin.core;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import lombok.Data;
+
+import net.risesoft.model.itemadmin.ItemButtonModel;
+import net.risesoft.model.itemadmin.ItemFormModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 
 /**
  * 流程详情数据
  *
- * @author zhangchongjie
- * @date 2024/06/25
+ * @author qinman
+ * @date 2024/11/01
  */
 @Data
-public class OpenDataV1Model implements Serializable {
+public class DocumentDetailBaseModel implements Serializable {
+
+    private static final long serialVersionUID = 4115564591151087066L;
 
     /**
      * 租户id
      */
     private String tenantId;
 
+    /**
+     * 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
+     */
+    private String documentId;
     /**
      * 事项Id
      */
@@ -71,86 +80,24 @@ public class OpenDataV1Model implements Serializable {
     private String itembox;
 
     /**
-     * 手机端表单id
-     */
-    private String formId;
-
-    /**
-     * 手机端表单名称
-     */
-    private String formName;
-
-    /**
-     * 手机端表单json数据
-     */
-    private String formJson;
-
-    /**
      * 表单列表
      */
-    private List<Map<String, String>> formList;
-    /**
-     * 表单ids
-     */
-    private String formIds;
-    /**
-     * 表单names
-     */
-    private String formNames;
+    private List<ItemFormModel> formList;
+
     /**
      * 附件，正文，沟通交流页签显示
      */
     private String showOtherFlag;
 
     /**
-     * 打印表单id
+     * 会签状态
      */
-    private String printFormId;
+    private int signStatus;
 
     /**
-     * 打印表单类型
+     * 会签部门
      */
-    private String printFormType;
-
-    /**
-     * 重定位选项
-     */
-    private List<Map<String, Object>> repositionMap;
-
-    /**
-     * 重定位选项json数据
-     */
-    private String taskDefNameJson;
-
-    /**
-     * 发送按钮选项
-     */
-    private List<Map<String, Object>> sendMap;
-
-    /**
-     * 发送按钮选项名称
-     */
-    private String sendName;
-
-    /**
-     * 发送按钮选项key
-     */
-    private String sendKey;
-
-    /**
-     * 菜单按钮选项
-     */
-    private List<Map<String, Object>> menuMap;
-
-    /**
-     * 菜单按钮选项名称
-     */
-    private String menuName;
-
-    /**
-     * 菜单按钮选项key
-     */
-    private String menuKey;
+    private List<SignDeptDetailModel> signDeptDetailList;
 
     /**
      * 菜单按钮选项
@@ -211,4 +158,19 @@ public class OpenDataV1Model implements Serializable {
      * 是否自定义事项
      */
     private boolean customItem;
+
+    /**
+     * 打印表单类型
+     */
+    private String printFormType;
+
+    /**
+     * 打印表单id
+     */
+    private String printFormId;
+
+    /**
+     * 是否移动端
+     */
+    private boolean mobile = false;
 }

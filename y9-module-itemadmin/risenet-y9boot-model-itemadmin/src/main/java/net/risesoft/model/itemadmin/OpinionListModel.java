@@ -33,11 +33,6 @@ public class OpinionListModel implements Serializable {
     private Boolean editable;
 
     /**
-     * 是否可新增代录意见
-     */
-    private Boolean addAgent;
-
-    /**
      * 是否可新增意见
      */
     private Boolean addable;

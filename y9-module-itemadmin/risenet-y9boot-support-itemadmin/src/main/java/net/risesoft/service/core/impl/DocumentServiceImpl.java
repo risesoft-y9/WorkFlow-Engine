@@ -331,9 +331,10 @@ public class DocumentServiceImpl implements DocumentService {
         model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
         model.setProcessSerialNumber(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         model.setProcessInstanceId("");
+        model.setMobile(mobile);
 
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, startTaskDefKey, false, model);
-        model = menuControl4Add(model);
+        this.genTabModel(itemId, processDefinitionKey, processDefinitionId, startTaskDefKey, false, model);
+        this.menuControl4Add(model);
         return model;
     }
 
@@ -570,6 +571,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTaskId(taskId);
         model.setActivitiUser(activitiUser);
         model.setItemId(processParam.getItemId());
+        model.setMobile(mobile);
 
         this.setNum(model);
         this.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey,
@@ -580,7 +582,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel editDoing(String processInstanceId, String documentId, boolean isAdmin,
-        ItemBoxTypeEnum itemBox) {
+        ItemBoxTypeEnum itemBox, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activitiUser = "", itemId, taskId = "";
@@ -630,6 +632,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTaskId(taskId);
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
+        model.setMobile(mobile);
 
         this.setNum(model);
         this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
@@ -643,7 +646,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel editDone(String processInstanceId, String documentId, boolean isAdmin,
-        ItemBoxTypeEnum itemBox) {
+        ItemBoxTypeEnum itemBox, boolean mobile) {
         DocumentDetailModel model = new DocumentDetailModel();
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activityUser = "", itemId;
@@ -675,6 +678,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setProcessInstanceId(processInstanceId);
         model.setActivitiUser(activityUser);
         model.setItemId(itemId);
+        model.setMobile(mobile);
 
         this.setNum(model);
         this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, isAdmin, model);
@@ -714,9 +718,10 @@ public class DocumentServiceImpl implements DocumentService {
         model.setProcessInstanceId(processInstanceId);
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
+        model.setMobile(mobile);
 
-        model = genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
-        model = menuControl4Recycle(model);
+        this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        this.menuControl4Recycle(model);
         return model;
     }
 
@@ -766,6 +771,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(activitiUser);
         model.setItemId(itemId);
         model.setItembox(ItemBoxTypeEnum.TODO.getValue());
+        model.setMobile(mobile);
 
         this.setNum(model);
         this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, false, model);
@@ -1015,6 +1021,12 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 itemFormModel.setFormId(fib.getFormId());
                 itemFormModel.setFormName(formName);
+                if (model.isMobile()) {
+                    Optional<Y9Form> y9Form = y9FormRepository.findById(fib.getFormId());
+                    if (y9Form.isPresent()) {
+                        itemFormModel.setFormJson(y9Form.get().getFormJson());
+                    }
+                }
                 list.add(itemFormModel);
             }
             showOtherFlag = y9FormItemBindService.getShowOther(y9FormTaskBinds);

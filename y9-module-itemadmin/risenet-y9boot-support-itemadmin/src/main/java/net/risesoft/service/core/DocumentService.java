@@ -118,8 +118,8 @@ public interface DocumentService {
      * @param documentId
      * @return
      */
-    DocumentDetailModel editDoing(String processInstanceId, String documentId, boolean isAdmin,
-        ItemBoxTypeEnum itemBox);
+    DocumentDetailModel editDoing(String processInstanceId, String documentId, boolean isAdmin, ItemBoxTypeEnum itemBox,
+        boolean mobile);
 
     /**
      * Description: 办件办理
@@ -128,7 +128,8 @@ public interface DocumentService {
      * @param documentId
      * @return
      */
-    DocumentDetailModel editDone(String processInstanceId, String documentId, boolean isAdmin, ItemBoxTypeEnum itemBox);
+    DocumentDetailModel editDone(String processInstanceId, String documentId, boolean isAdmin, ItemBoxTypeEnum itemBox,
+        boolean mobile);
 
     /**
      * Description: 办件办理

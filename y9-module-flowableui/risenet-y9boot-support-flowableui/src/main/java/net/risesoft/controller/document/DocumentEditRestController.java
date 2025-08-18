@@ -143,7 +143,7 @@ public class DocumentEditRestController {
         try {
             DocumentDetailModel model = documentApi
                 .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId, false, ItemBoxTypeEnum.DOING)
+                    documentId, false, ItemBoxTypeEnum.DOING, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
@@ -165,7 +165,7 @@ public class DocumentEditRestController {
         try {
             DocumentDetailModel model = documentApi
                 .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId, true, ItemBoxTypeEnum.MONITOR_DOING)
+                    documentId, true, ItemBoxTypeEnum.MONITOR_DOING, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
@@ -187,7 +187,7 @@ public class DocumentEditRestController {
         try {
             DocumentDetailModel model = documentApi
                 .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId, false, ItemBoxTypeEnum.DONE)
+                    documentId, false, ItemBoxTypeEnum.DONE, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
@@ -209,7 +209,7 @@ public class DocumentEditRestController {
         try {
             DocumentDetailModel model = documentApi
                 .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    documentId, true, ItemBoxTypeEnum.MONITOR_DONE)
+                    documentId, true, ItemBoxTypeEnum.MONITOR_DONE, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
