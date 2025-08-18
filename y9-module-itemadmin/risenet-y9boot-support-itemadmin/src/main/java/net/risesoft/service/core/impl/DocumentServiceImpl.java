@@ -1008,27 +1008,31 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
         String taskDefinitionKey, boolean isAdmin, DocumentDetailModel model) {
         String showOtherFlag = "";
-        List<Y9FormItemBind> y9FormTaskBinds =
-            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
         List<ItemFormModel> list = new ArrayList<>();
-        if (!y9FormTaskBinds.isEmpty()) {
-            ItemFormModel itemFormModel;
-            for (Y9FormItemBind fib : y9FormTaskBinds) {
-                itemFormModel = new ItemFormModel();
-                String formName = fib.getFormName();
-                if (formName.contains("(")) {
-                    formName = formName.substring(0, formName.indexOf("("));
-                }
+        if (model.isMobile()) {
+            List<Y9FormItemMobileBind> y9FormTaskBinds = y9FormItemBindService
+                .listByItemIdAndProcDefIdAndTaskDefKey4Mobile(itemId, processDefinitionId, taskDefinitionKey);
+            y9FormTaskBinds.forEach(fib -> {
+                ItemFormModel itemFormModel = new ItemFormModel();
+                String formName = fib.getFormName().contains("(")
+                    ? fib.getFormName().substring(0, fib.getFormName().indexOf("(")) : fib.getFormName();
                 itemFormModel.setFormId(fib.getFormId());
                 itemFormModel.setFormName(formName);
-                if (model.isMobile()) {
-                    Optional<Y9Form> y9Form = y9FormRepository.findById(fib.getFormId());
-                    if (y9Form.isPresent()) {
-                        itemFormModel.setFormJson(y9Form.get().getFormJson());
-                    }
-                }
+                Optional<Y9Form> y9Form = y9FormRepository.findById(fib.getFormId());
+                y9Form.ifPresent(form -> itemFormModel.setFormJson(form.getFormJson()));
                 list.add(itemFormModel);
-            }
+            });
+        } else {
+            List<Y9FormItemBind> y9FormTaskBinds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
+                processDefinitionId, taskDefinitionKey);
+            y9FormTaskBinds.forEach(fib -> {
+                ItemFormModel itemFormModel = new ItemFormModel();
+                String formName = fib.getFormName().contains("(")
+                    ? fib.getFormName().substring(0, fib.getFormName().indexOf("(")) : fib.getFormName();
+                itemFormModel.setFormId(fib.getFormId());
+                itemFormModel.setFormName(formName);
+                list.add(itemFormModel);
+            });
             showOtherFlag = y9FormItemBindService.getShowOther(y9FormTaskBinds);
         }
         model.setFormList(list);
@@ -1677,10 +1681,8 @@ public class DocumentServiceImpl implements DocumentService {
                     processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
                 routeToTasks.stream()
                     .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
-                    .forEach(m -> {
-                        buttonList
-                            .add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND));
-                    });
+                    .forEach(m -> buttonList
+                        .add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND)));
                 /*
                  * 添加自定义按钮到发送
                  */
