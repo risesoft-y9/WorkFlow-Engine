@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.customgroup.CustomGroupApi;
+import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -39,15 +39,15 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ChaoSong4DataBaseModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
-import net.risesoft.model.platform.CustomGroupMember;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.CustomGroupMember;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
@@ -773,8 +773,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 } else if (Objects.equals(ItemPermissionEnum.POSITION.getValue(), type)) {
                     userIdListAdd.add(orgUnitId);
                 } else if (type.equals(ItemPermissionEnum.GROUP_CUSTOM.getValue())) {
-                    List<CustomGroupMember> list0 = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), orgUnitId, OrgTypeEnum.POSITION).getData();
+                    List<CustomGroupMember> list0 = customGroupApi
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(),
+                            orgUnitId, OrgTypeEnum.POSITION)
+                        .getData();
                     for (CustomGroupMember pTemp : list0) {
                         OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
                         if (user != null && StringUtils.isNotBlank(user.getId())) {

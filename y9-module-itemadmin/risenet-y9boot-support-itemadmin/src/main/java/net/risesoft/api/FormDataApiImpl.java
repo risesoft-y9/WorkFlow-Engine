@@ -21,7 +21,7 @@ import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.form.FormDataService;

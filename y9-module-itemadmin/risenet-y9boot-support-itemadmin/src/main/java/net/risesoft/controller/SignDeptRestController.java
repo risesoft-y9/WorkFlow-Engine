@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.SignOutDept;
 import net.risesoft.entity.SignOutDeptType;
-import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.org.Department;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SignDeptOutService;
 

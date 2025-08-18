@@ -9,17 +9,17 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import net.risesoft.api.platform.customgroup.CustomGroupApi;
+import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemPermissionEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.model.platform.CustomGroupMember;
-import net.risesoft.model.platform.Department;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.enums.platform.org.OrgTypeEnum;
+import net.risesoft.model.platform.org.CustomGroupMember;
+import net.risesoft.model.platform.org.Department;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
@@ -67,12 +67,14 @@ public class ParseUserChoiceUtil {
                         users = addUserId(users, pTemp.getId());
                     }
                 } else if (principalType == ItemPermissionEnum.GROUP_CUSTOM.getValue()) {
-                    List<CustomGroupMember> list =
-                        Y9Context.getBean(CustomGroupApi.class).listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                            Y9LoginUserHolder.getPersonId(), userIdTemp, OrgTypeEnum.POSITION).getData();
+                    List<CustomGroupMember> list = Y9Context.getBean(CustomGroupApi.class)
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(),
+                            userIdTemp, OrgTypeEnum.POSITION)
+                        .getData();
                     for (CustomGroupMember pTemp : list) {
                         OrgUnit orgUnit = Y9Context.getBean(OrgUnitApi.class)
-                            .getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
+                            .getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId())
+                            .getData();
                         if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
                             users = addUserId(users, orgUnit.getId());
                         }

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Item;
@@ -84,11 +84,19 @@ public class FormDataServiceImpl implements FormDataService {
 
     private final ProcessParamService processParamService;
 
-    public FormDataServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, ItemService itemService,
-        Y9FormItemBindService y9FormItemBindService, Y9PreFormItemBindService y9PreFormItemBindService,
-        Y9FormFieldService y9FormFieldService, Y9FormService y9FormService, Y9FormRepository y9FormRepository,
-        RepositoryApi repositoryApi, Y9FieldPermRepository y9FieldPermRepository, PositionRoleApi positionRoleApi,
-        Y9TableService y9TableService, ProcessParamService processParamService) {
+    public FormDataServiceImpl(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        ItemService itemService,
+        Y9FormItemBindService y9FormItemBindService,
+        Y9PreFormItemBindService y9PreFormItemBindService,
+        Y9FormFieldService y9FormFieldService,
+        Y9FormService y9FormService,
+        Y9FormRepository y9FormRepository,
+        RepositoryApi repositoryApi,
+        Y9FieldPermRepository y9FieldPermRepository,
+        PositionRoleApi positionRoleApi,
+        Y9TableService y9TableService,
+        ProcessParamService processParamService) {
         this.jdbcTemplate = jdbcTemplate;
         this.itemService = itemService;
         this.y9FormItemBindService = y9FormItemBindService;
@@ -133,7 +141,9 @@ public class FormDataServiceImpl implements FormDataService {
                         Map<String, Object> map = jdbcTemplate.queryForMap(
                             "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", sourceProcessSerialNumber);
                         StringBuilder columnSql = new StringBuilder();
-                        map.entrySet().stream().filter(entry -> !"guid".equalsIgnoreCase(entry.getKey()))
+                        map.entrySet()
+                            .stream()
+                            .filter(entry -> !"guid".equalsIgnoreCase(entry.getKey()))
                             .forEach(entry -> columnSql.append(",").append(entry.getKey()));
                         String sql = "INSERT INTO " + tableName + " (guid" + columnSql + ") " + "SELECT ?" + columnSql
                             + " FROM " + tableName + " WHERE guid = ?";
@@ -365,8 +375,9 @@ public class FormDataServiceImpl implements FormDataService {
         try {
             Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition = repositoryApi
-                .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
+            ProcessDefinitionModel processDefinition =
+                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
+                    .getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             for (Y9FormItemBind form : formList) {
@@ -446,8 +457,9 @@ public class FormDataServiceImpl implements FormDataService {
             // 获取事项绑定主表信息
             Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition = repositoryApi
-                .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
+            ProcessDefinitionModel processDefinition =
+                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
+                    .getData();
             List<Y9FormItemBind> list =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             String bindFormId = "";
@@ -593,7 +605,10 @@ public class FormDataServiceImpl implements FormDataService {
             tableList.forEach(table -> {
                 StringBuilder updateSql = new StringBuilder();
                 StringBuilder sql = new StringBuilder();
-                updateSql.append("UPDATE ").append(table.getTableName()).append(" ").append(table.getTableAlias())
+                updateSql.append("UPDATE ")
+                    .append(table.getTableName())
+                    .append(" ")
+                    .append(table.getTableAlias())
                     .append("  SET ");
                 for (String key : dataMap.keySet()) {
                     if (key.contains(table.getTableAlias() + ".")) {

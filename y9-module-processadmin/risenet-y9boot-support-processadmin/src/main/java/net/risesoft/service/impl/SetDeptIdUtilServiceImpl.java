@@ -13,7 +13,7 @@ import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.SetDeptIdUtilService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;

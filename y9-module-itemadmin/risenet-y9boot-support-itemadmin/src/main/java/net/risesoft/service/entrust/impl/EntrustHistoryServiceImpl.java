@@ -15,7 +15,7 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.entrust.EntrustHistory;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.org.Person;
 import net.risesoft.repository.entrust.EntrustHistoryRepository;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.entrust.EntrustHistoryService;

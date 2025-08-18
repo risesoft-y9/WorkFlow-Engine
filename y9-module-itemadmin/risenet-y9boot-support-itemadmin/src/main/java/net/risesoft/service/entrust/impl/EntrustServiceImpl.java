@@ -21,7 +21,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.EntrustItemModel;
 import net.risesoft.model.itemadmin.EntrustModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.repository.entrust.EntrustHistoryRepository;
 import net.risesoft.repository.entrust.EntrustRepository;
 import net.risesoft.service.core.ItemService;

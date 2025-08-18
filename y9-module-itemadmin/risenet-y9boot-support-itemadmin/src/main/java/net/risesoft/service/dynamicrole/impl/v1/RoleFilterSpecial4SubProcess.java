@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -59,7 +59,8 @@ public class RoleFilterSpecial4SubProcess extends AbstractDynamicRoleMember {
                 if (match) {
                     // 和[当前人]同委办局
                     OrgUnit bureau = orgUnitApi.getBureau(tenantId, currentOrgUnitId).getData();
-                    orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
+                    orgUnitList = orgUnitList.stream()
+                        .filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
                         .collect(Collectors.toList());
                 } else {
                     // 和[当前人]同部门
@@ -81,9 +82,9 @@ public class RoleFilterSpecial4SubProcess extends AbstractDynamicRoleMember {
                     }
                 }
                 OrgUnit subStartBureau = orgUnitApi.getBureau(tenantId, subStartUserId).getData();
-                orgUnitList =
-                    orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(subStartBureau.getId()))
-                        .collect(Collectors.toList());
+                orgUnitList = orgUnitList.stream()
+                    .filter(orgUnit -> orgUnit.getGuidPath().contains(subStartBureau.getId()))
+                    .collect(Collectors.toList());
             }
             return orgUnitList;
         }

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.org.Person;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;

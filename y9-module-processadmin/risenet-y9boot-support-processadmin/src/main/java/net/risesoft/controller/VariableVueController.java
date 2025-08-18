@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.CustomVariableService;

@@ -17,7 +17,7 @@ import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.SignDeptModel;
-import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.org.Department;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 

@@ -42,7 +42,7 @@ import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9Context;

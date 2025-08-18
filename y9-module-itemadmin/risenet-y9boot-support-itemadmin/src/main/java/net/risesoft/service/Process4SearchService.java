@@ -3,7 +3,7 @@ package net.risesoft.service;
 import org.springframework.scheduling.annotation.Async;
 
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 
 /**
  * @author qinman

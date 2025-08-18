@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.customgroup.CustomGroupApi;
+import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
@@ -21,15 +21,15 @@ import net.risesoft.entity.receive.ReceiveDepartment;
 import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
-import net.risesoft.enums.platform.OrgTreeTypeEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
+import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
-import net.risesoft.model.platform.CustomGroup;
-import net.risesoft.model.platform.CustomGroupMember;
-import net.risesoft.model.platform.Department;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Organization;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.CustomGroup;
+import net.risesoft.model.platform.org.CustomGroupMember;
+import net.risesoft.model.platform.org.Department;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Organization;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.repository.receive.ReceiveDepartmentRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
@@ -301,8 +301,9 @@ public class RoleServiceImpl implements RoleService {
             if (StringUtils.isBlank(id) || UtilConsts.NULL.equals(id)) {
                 if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
                     Organization organization = orgUnitApi.getOrganization(tenantId, userId).getData();
-                    List<OrgUnit> orgUnitList = orgUnitApi
-                        .getSubTree(tenantId, organization.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+                    List<OrgUnit> orgUnitList =
+                        orgUnitApi.getSubTree(tenantId, organization.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION)
+                            .getData();
                     for (OrgUnit orgUnit : orgUnitList) {
                         ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                         model.setId(orgUnit.getId());
@@ -362,8 +363,9 @@ public class RoleServiceImpl implements RoleService {
                         .getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            OrgUnit user = orgUnitApi
-                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                            OrgUnit user =
+                                orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId())
+                                    .getData();
                             if (user != null && !user.getDisabled()) {
                                 ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                                 model.setId(customGroupMember.getMemberId());
@@ -481,12 +483,15 @@ public class RoleServiceImpl implements RoleService {
                     }
                     boolean b = false;
                     List<CustomGroupMember> customGroupMemberList =
-                        customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId, userId,
-                            customGroup.getId(), OrgTypeEnum.POSITION).getData();
+                        customGroupApi
+                            .listCustomGroupMemberByGroupIdAndMemberType(tenantId, userId, customGroup.getId(),
+                                OrgTypeEnum.POSITION)
+                            .getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            OrgUnit user = orgUnitApi
-                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                            OrgUnit user =
+                                orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId())
+                                    .getData();
                             if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                                 ItemRoleOrgUnitModel model0 = new ItemRoleOrgUnitModel();
                                 model0.setIsParent(false);
@@ -603,8 +608,9 @@ public class RoleServiceImpl implements RoleService {
                     // 添加授权的部门
                     for (OrgUnit org : deptList) {
                         if (org.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-                            List<OrgUnit> orgList = orgUnitApi
-                                .getSubTree(tenantId, org.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
+                            List<OrgUnit> orgList =
+                                orgUnitApi.getSubTree(tenantId, org.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION)
+                                    .getData();
                             for (OrgUnit orgUnit : orgList) {
                                 ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                                 model.setId(orgUnit.getId());
@@ -689,12 +695,15 @@ public class RoleServiceImpl implements RoleService {
                     }
                 } else {
                     List<CustomGroupMember> customGroupMemberList =
-                        customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                            Y9LoginUserHolder.getPersonId(), id, OrgTypeEnum.POSITION).getData();
+                        customGroupApi
+                            .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(), id,
+                                OrgTypeEnum.POSITION)
+                            .getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            OrgUnit user = orgUnitApi
-                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                            OrgUnit user =
+                                orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId())
+                                    .getData();
                             if (user != null && !user.getDisabled()) {
                                 ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                                 model.setId(customGroupMember.getMemberId());
@@ -877,8 +886,9 @@ public class RoleServiceImpl implements RoleService {
 
             for (OrgUnit org : deptList) {
                 List<OrgUnit> orgUnitList = new ArrayList<>();
-                orgUnitList.addAll(orgUnitApi
-                    .treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, org.getDn()).getData());
+                orgUnitList.addAll(
+                    orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, org.getDn())
+                        .getData());
                 for (OrgUnit orgUnitTemp : orgUnitList) {
                     ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                     model.setId(orgUnitTemp.getId());
@@ -916,13 +926,15 @@ public class RoleServiceImpl implements RoleService {
                         continue;// 去重
                     }
                     boolean b = false;
-                    List<CustomGroupMember> customGroupMemberList =
-                        customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                            Y9LoginUserHolder.getPersonId(), customGroup.getId(), OrgTypeEnum.POSITION).getData();
+                    List<CustomGroupMember> customGroupMemberList = customGroupApi
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(),
+                            customGroup.getId(), OrgTypeEnum.POSITION)
+                        .getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            OrgUnit user = orgUnitApi
-                                .getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                            OrgUnit user =
+                                orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId())
+                                    .getData();
                             if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                                 ItemRoleOrgUnitModel model1 = new ItemRoleOrgUnitModel();
                                 model1.setId(customGroupMember.getMemberId());

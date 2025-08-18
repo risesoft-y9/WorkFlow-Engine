@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.RejectReasonApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.org.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.RejectReasonService;
 import net.risesoft.y9.Y9LoginUserHolder;

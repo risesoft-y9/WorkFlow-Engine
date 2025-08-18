@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.SignDeptModel;
-import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.org.Department;
 import net.risesoft.pojo.Y9Result;
 
 /**

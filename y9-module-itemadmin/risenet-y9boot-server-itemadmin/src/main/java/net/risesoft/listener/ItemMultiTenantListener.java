@@ -13,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.api.platform.tenant.TenantApi;
-import net.risesoft.enums.platform.ManagerLevelEnum;
+import net.risesoft.enums.platform.org.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.init.TenantDataInitializer;
-import net.risesoft.model.platform.App;
-import net.risesoft.model.platform.System;
-import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.platform.resource.App;
+import net.risesoft.model.platform.resource.System;
+import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.util.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -49,8 +49,13 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
 
     private final Y9Properties y9Config;
 
-    public ItemMultiTenantListener(@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate, TenantApi tenantApi,
-        SystemApi systemApi, InitTableDataService initTableDataService, AppApi appApi, Y9Properties y9Config) {
+    public ItemMultiTenantListener(
+        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate,
+        TenantApi tenantApi,
+        SystemApi systemApi,
+        InitTableDataService initTableDataService,
+        AppApi appApi,
+        Y9Properties y9Config) {
         this.jdbcTemplate = jdbcTemplate;
         this.tenantApi = tenantApi;
         this.systemApi = systemApi;

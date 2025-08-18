@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -52,7 +52,8 @@ public class RoleFilter4SubProcess extends AbstractDynamicRoleMember {
         if (StringUtils.isNotBlank(taskId)) {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<HistoricTaskInstanceModel> hisTaskList = historicTaskApi
-                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "").getData();
+                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "")
+                .getData();
             for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                 if (hisTask.getExecutionId().equals(task.getExecutionId())) {
                     assignee = hisTask.getAssignee();
@@ -68,14 +69,15 @@ public class RoleFilter4SubProcess extends AbstractDynamicRoleMember {
         switch (ranges) {
             case 1:
                 // 和[当前人或者子流程启动人]同部门
-                orgUnitList =
-                    orgUnitList.stream().filter(orgUnit -> orgUnit.getParentId().equals(personOrPosition.getParentId()))
-                        .collect(Collectors.toList());
+                orgUnitList = orgUnitList.stream()
+                    .filter(orgUnit -> orgUnit.getParentId().equals(personOrPosition.getParentId()))
+                    .collect(Collectors.toList());
                 break;
             case 2:
                 // 和[当前人或者子流程启动人]同委办局
                 OrgUnit bureau = orgUnitApi.getBureau(tenantId, userId).getData();
-                orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
+                orgUnitList = orgUnitList.stream()
+                    .filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
                     .collect(Collectors.toList());
                 break;
             default:

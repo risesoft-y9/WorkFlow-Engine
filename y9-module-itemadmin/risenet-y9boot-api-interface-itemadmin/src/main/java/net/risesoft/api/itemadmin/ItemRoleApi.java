@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import net.risesoft.enums.platform.OrgTreeTypeEnum;
+import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
 import net.risesoft.pojo.Y9Result;
 

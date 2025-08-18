@@ -25,7 +25,7 @@ import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.org.Person;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;

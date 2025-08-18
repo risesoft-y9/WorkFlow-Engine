@@ -19,8 +19,8 @@ import net.risesoft.consts.InitDataConsts;
 import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.enums.DynamicRoleKindsEnum;
-import net.risesoft.model.platform.OptionValue;
 import net.risesoft.model.platform.Role;
+import net.risesoft.model.platform.dictionary.OptionValue;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.util.PackageClassFinder;
@@ -65,7 +65,8 @@ public class DynamicRoleRestController {
                 }
             } else if (dynamicRole.getKinds().equals(DynamicRoleKindsEnum.ROLE)) {
                 List<Role> roleListFilter = roleList.stream()
-                    .filter(role -> role.getId().equals(dynamicRole.getRoleId())).collect(Collectors.toList());
+                    .filter(role -> role.getId().equals(dynamicRole.getRoleId()))
+                    .collect(Collectors.toList());
                 if (roleListFilter.isEmpty()) {
                     dynamicRole.setRoleName("已删除");
                 } else {

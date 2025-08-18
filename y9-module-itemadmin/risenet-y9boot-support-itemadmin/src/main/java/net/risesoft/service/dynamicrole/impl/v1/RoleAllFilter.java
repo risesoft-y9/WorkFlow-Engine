@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -46,7 +46,8 @@ public class RoleAllFilter extends AbstractDynamicRoleMember {
         List<Position> orgUnitList =
             positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
         // List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
-        orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
+        orgUnitList = orgUnitList.stream()
+            .filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
             .collect(Collectors.toList());
         return orgUnitList;
     }

@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.opinion.Opinion;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TaskModel;
 

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.AssociatedFileApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9LoginUserHolder;

@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.SignDeptInfo;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.SignDeptInfoService;
@@ -54,7 +54,8 @@ public class SignDeptSecretary extends AbstractDynamicRoleMember {
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
             // 排除本司局
             List<Position> orgUnitListFilter = orgUnitList.stream()
-                .filter(orgUnit -> !orgUnit.getGuidPath().contains(bureau.getId())).collect(Collectors.toList());
+                .filter(orgUnit -> !orgUnit.getGuidPath().contains(bureau.getId()))
+                .collect(Collectors.toList());
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(officeDoneInfo.getProcessSerialNumber(), "0");
             // 获取会签司局

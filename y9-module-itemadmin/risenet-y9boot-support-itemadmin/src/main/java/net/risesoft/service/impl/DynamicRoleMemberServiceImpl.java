@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.enums.DynamicRoleKindsEnum;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.util.BeanFactory;

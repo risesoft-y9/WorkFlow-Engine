@@ -14,7 +14,7 @@ import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.SpeakInfo;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.org.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
