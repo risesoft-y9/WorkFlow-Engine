@@ -370,15 +370,6 @@ public class OpinionServiceImpl implements OpinionService {
                         model.setAddable(true);
                     }
                 }
-                boolean addable = model.getAddable();
-                if (!addable) {
-                    // 没有意见框编辑权限时，增加代录权限
-                    // boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
-                    // "代录意见角色", person.getPersonId()).getData();
-                    // if (hasRole1) {
-                    // addableMap.put("addAgent", true);
-                    // }
-                }
             } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
                 /**
                  * 用户未签收前打开公文时(办理人为空)，只读所有意见
@@ -484,36 +475,10 @@ public class OpinionServiceImpl implements OpinionService {
                             model.setAddable(true);
                         } else {
                             for (String roleId : roleIds) {
-                                Boolean hasRole = false;
-                                /**
-                                 * 处理todo时，当前任务为委托产生时的情况-开始
-                                 */
-                                if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
-                                    /*boolean isEntrust = entrustDetailService.haveEntrustDetailByTaskId(taskId);
-                                    if (isEntrust) {
-                                        EntrustDetail entrustDetail = entrustDetailService.findByTaskId(taskId);
-                                        String ownerId = entrustDetail.getOwnerId();
-                                        *//**
-                                            * 把当前人换为委托改任务的人，委托人有意见签写意见，当前人就有签写意见的权限
-                                            *//*
-                                              hasRole = positionRoleApi.hasRole(tenantId, roleId, ownerId);
-                                              if (hasRole) {
-                                               addableMap.put("addable", true);
-                                               continue;
-                                              }
-                                              } else {*/
-                                    hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                                    if (Boolean.TRUE.equals(hasRole)) {
-                                        model.setAddable(true);
-                                        continue;
-                                    }
-                                    // }
-                                } else {
-                                    hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                                    if (Boolean.TRUE.equals(hasRole)) {
-                                        model.setAddable(true);
-                                        continue;
-                                    }
+                                Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
+                                if (Boolean.TRUE.equals(hasRole)) {
+                                    model.setAddable(true);
+                                    break;
                                 }
                             }
                         }
