@@ -20,7 +20,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.SetDeptIdUtilService;
 import net.risesoft.service.Task4ListenerService;
 import net.risesoft.y9.FlowableTenantInfoHolder;

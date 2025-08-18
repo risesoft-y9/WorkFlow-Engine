@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 
 import lombok.Data;
 
-import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.org.Person;
 
 /**
  * 历程信息

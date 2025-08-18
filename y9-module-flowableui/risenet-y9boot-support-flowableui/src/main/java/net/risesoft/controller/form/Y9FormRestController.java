@@ -31,8 +31,8 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
-import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.org.DepartmentPropCategoryEnum;
+import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.BindFormModel;
@@ -41,13 +41,13 @@ import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.itemadmin.Y9FormOptionValueModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
-import net.risesoft.model.platform.Department;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Organization;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.PersonExt;
-import net.risesoft.model.platform.Position;
-import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.platform.org.Department;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Organization;
+import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.platform.org.PersonExt;
+import net.risesoft.model.platform.org.Position;
+import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -352,8 +352,11 @@ public class Y9FormRestController {
         if (personExt != null && personExt.getSign() != null) {
             map.put("sign", personExt.getSign());// 签名
         }
-        List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(Y9LoginUserHolder.getTenantId(), dept.getId(),
-            DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
+        List<OrgUnit> leaders =
+            departmentApi
+                .listDepartmentPropOrgUnits(Y9LoginUserHolder.getTenantId(), dept.getId(),
+                    DepartmentPropCategoryEnum.LEADER.getValue(), false)
+                .getData();
         map.put("deptLeader", "未配置");// 岗位所在部门领导
         if (!leaders.isEmpty()) {
             List<Person> personLeaders =
@@ -376,8 +379,11 @@ public class Y9FormRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if ("fwsj".equals(type)) {
             Position position = Y9LoginUserHolder.getPosition();
-            List<Organization> orgList = organizationApi.list(tenantId).getData().stream()
-                .filter(org -> position.getGuidPath().contains(org.getId())).collect(Collectors.toList());
+            List<Organization> orgList = organizationApi.list(tenantId)
+                .getData()
+                .stream()
+                .filter(org -> position.getGuidPath().contains(org.getId()))
+                .collect(Collectors.toList());
             List<Department> bureaus = organizationApi.listAllBureaus(tenantId, orgList.get(0).getId()).getData();
             List<Y9FormOptionValueModel> list = new ArrayList<>();
             Y9FormOptionValueModel none = new Y9FormOptionValueModel();

@@ -3,8 +3,8 @@ package net.risesoft.service;
 import java.util.List;
 
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 
 /**
  * @author qinman

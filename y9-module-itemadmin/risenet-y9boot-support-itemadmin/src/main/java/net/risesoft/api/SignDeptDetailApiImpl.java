@@ -18,7 +18,7 @@ import net.risesoft.entity.opinion.OpinionSign;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.opinion.OpinionSignService;

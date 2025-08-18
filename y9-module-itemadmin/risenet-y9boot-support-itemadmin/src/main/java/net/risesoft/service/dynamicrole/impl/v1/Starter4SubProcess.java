@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -44,7 +44,8 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
         if (StringUtils.isNotBlank(taskId)) {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<HistoricTaskInstanceModel> hisTaskList = historicTaskApi
-                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "").getData();
+                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "")
+                .getData();
             String assignee = "";
             for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                 if (hisTask.getExecutionId().equals(task.getExecutionId())) {

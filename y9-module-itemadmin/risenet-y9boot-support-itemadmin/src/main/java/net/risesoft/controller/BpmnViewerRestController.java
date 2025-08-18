@@ -19,7 +19,7 @@ import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.opinion.Opinion;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;

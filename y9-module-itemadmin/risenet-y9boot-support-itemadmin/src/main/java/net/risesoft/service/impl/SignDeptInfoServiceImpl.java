@@ -24,7 +24,7 @@ import net.risesoft.entity.SignOutDept;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.org.Department;
 import net.risesoft.repository.jpa.SignDeptInfoRepository;
 import net.risesoft.repository.jpa.SignOutDeptRepository;
 import net.risesoft.service.SignDeptDetailService;

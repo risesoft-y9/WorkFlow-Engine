@@ -17,10 +17,10 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.enums.platform.ManagerLevelEnum;
+import net.risesoft.enums.platform.org.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.util.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -50,8 +50,10 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     private final Y9Properties y9Config;
 
-    public OnApplicationReady(@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate,
-        Y9TenantDataSourceLookup y9TenantDataSourceLookup, InitTableDataService initTableDataService,
+    public OnApplicationReady(
+        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate,
+        Y9TenantDataSourceLookup y9TenantDataSourceLookup,
+        InitTableDataService initTableDataService,
         Y9Properties y9Config) {
         this.jdbcTemplate = jdbcTemplate;
         this.y9TenantDataSourceLookup = y9TenantDataSourceLookup;

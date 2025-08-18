@@ -69,7 +69,7 @@ import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowNodeModel;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.model.processadmin.LinkNodeModel;

@@ -42,7 +42,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.DeleteProcessService;

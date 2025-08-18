@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.configuration.MultiTenantProcessEngineConfiguration;
 import net.risesoft.init.TenantDataInitializer;
-import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -39,7 +39,9 @@ public class FlowableMultiTenantListener implements TenantDataInitializer {
             Y9LoginUserHolder.setTenantId(tenantId);
             FlowableTenantInfoHolder.setTenantId(tenantId);
             ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey("ziyouliucheng").latestVersion().singleResult();
+                .processDefinitionKey("ziyouliucheng")
+                .latestVersion()
+                .singleResult();
             if (null == processDefinition) {
                 String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
                     + File.separator + "ziyouliucheng.bpmn";

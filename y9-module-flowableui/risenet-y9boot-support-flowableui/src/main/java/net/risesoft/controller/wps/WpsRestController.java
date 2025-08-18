@@ -31,7 +31,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9Context;

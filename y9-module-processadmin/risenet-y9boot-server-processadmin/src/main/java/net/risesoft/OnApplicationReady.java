@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.tenant.TenantApi;
-import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -43,13 +43,16 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                 FlowableTenantInfoHolder.setTenantId(tenant.getId());
                 try {
                     ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-                        .processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
+                        .processDefinitionKey(processDefinitionKey)
+                        .latestVersion()
+                        .singleResult();
                     if (null == processDefinition) {
                         String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
                             + File.separator + "ziyouliucheng.bpmn";
                         File file = new File(xmlPath);
                         InputStream fileInputStream = new FileInputStream(file);
-                        repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream)
+                        repositoryService.createDeployment()
+                            .addInputStream("ziyouliucheng.bpmn", fileInputStream)
                             .deploy();
                     }
                 } catch (Exception e) {

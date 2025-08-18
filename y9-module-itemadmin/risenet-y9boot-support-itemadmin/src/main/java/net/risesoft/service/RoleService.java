@@ -3,7 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 
 /**
  * @author qinman

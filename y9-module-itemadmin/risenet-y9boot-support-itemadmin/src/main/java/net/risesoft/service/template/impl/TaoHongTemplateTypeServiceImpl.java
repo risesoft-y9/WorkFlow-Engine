@@ -13,7 +13,7 @@ import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.template.TaoHongTemplateType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.template.TaoHongTemplateTypeRepository;
 import net.risesoft.service.template.TaoHongTemplateTypeService;

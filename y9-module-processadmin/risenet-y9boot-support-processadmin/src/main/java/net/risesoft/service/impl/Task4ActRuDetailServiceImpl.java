@@ -22,7 +22,7 @@ import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ActRuDetailSignStatusEnum;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.Task4ActRuDetailService;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;

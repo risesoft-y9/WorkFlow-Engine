@@ -40,7 +40,7 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomHistoricVariableService;
 import net.risesoft.service.CustomProcessDefinitionService;

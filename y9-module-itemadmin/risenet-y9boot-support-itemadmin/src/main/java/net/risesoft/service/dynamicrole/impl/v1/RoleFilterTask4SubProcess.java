@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -60,14 +60,15 @@ public class RoleFilterTask4SubProcess extends AbstractDynamicRoleMember {
         switch (ranges) {
             case 1:
                 // 和[当前人或者子流程启动人]同部门
-                orgUnitList =
-                    orgUnitList.stream().filter(orgUnit -> orgUnit.getParentId().equals(personOrPosition.getParentId()))
-                        .collect(Collectors.toList());
+                orgUnitList = orgUnitList.stream()
+                    .filter(orgUnit -> orgUnit.getParentId().equals(personOrPosition.getParentId()))
+                    .collect(Collectors.toList());
                 break;
             case 2:
                 // 和[当前人或者子流程启动人]同委办局
                 OrgUnit bureau = orgUnitApi.getBureau(tenantId, userId).getData();
-                orgUnitList = orgUnitList.stream().filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
+                orgUnitList = orgUnitList.stream()
+                    .filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
                     .collect(Collectors.toList());
                 break;
             default:
