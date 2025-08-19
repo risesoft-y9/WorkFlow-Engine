@@ -82,11 +82,6 @@ public class OpinionModel implements Serializable {
     private String modifyDate;
 
     /**
-     * 自定义历程id
-     */
-    private String processTrackId;
-
-    /**
      * 岗位id,必填
      */
     private String positionId;
@@ -97,7 +92,17 @@ public class OpinionModel implements Serializable {
     private String positionName;
 
     /**
+     * 自定义历程id
+     */
+    private String processTrackId;
+
+    /**
      * 个人签名图片
      */
     private byte[] sign;
+
+    /**
+     * 排序字段
+     */
+    private String orderStr;
 }
