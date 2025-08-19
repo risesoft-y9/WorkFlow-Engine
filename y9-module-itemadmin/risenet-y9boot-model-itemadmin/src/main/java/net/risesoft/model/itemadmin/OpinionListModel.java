@@ -23,11 +23,6 @@ public class OpinionListModel implements Serializable {
     private String opinionFrameMark;
 
     /**
-     * 意见是否编辑过
-     */
-    private Boolean isEdit;
-
-    /**
      * 意见是否可编辑
      */
     private Boolean editable;

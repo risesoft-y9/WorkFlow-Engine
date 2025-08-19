@@ -121,9 +121,6 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                     for (OpinionSign opinionSign : list) {
                         OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
                         opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                        if (!opinionSign.getCreateDate().equals(opinionSign.getModifyDate())) {
-                            opinionSignListModel.setIsEdit(true);
-                        }
                         opinionSign.setModifyDate(sdf1.format(sdf.parse(opinionSign.getModifyDate())));
                         opinionSign.setCreateDate(sdf1.format(sdf.parse(opinionSign.getCreateDate())));
                         opinionSignListModel.setEditable(false);
@@ -139,9 +136,6 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                 for (OpinionSign opinionSign : list) {
                     OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
                     opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                    if (!opinionSign.getCreateDate().equals(opinionSign.getModifyDate())) {
-                        opinionSignListModel.setIsEdit(true);
-                    }
                     opinionSign.setModifyDate(sdf1.format(sdf.parse(opinionSign.getModifyDate())));
                     opinionSign.setCreateDate(sdf1.format(sdf.parse(opinionSign.getCreateDate())));
                     OpinionSignModel opinionModel = new OpinionSignModel();
@@ -193,8 +187,11 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                         /*
                          * 处长
                          */
-                        List<DepartmentProp> leaders = departmentApi.listDepartmentPropByOrgUnitIdAndCategory(tenantId,
-                            person.getParentId(), DepartmentPropCategoryEnum.LEADER).getData();
+                        List<DepartmentProp> leaders =
+                            departmentApi
+                                .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
+                                    DepartmentPropCategoryEnum.LEADER)
+                                .getData();
                         boolean isLeader =
                             leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
                         if (isLeader) {
@@ -205,8 +202,11 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                         /*
                          * 司长
                          */
-                        List<DepartmentProp> managers = departmentApi.listDepartmentPropByOrgUnitIdAndCategory(tenantId,
-                            person.getParentId(), DepartmentPropCategoryEnum.MANAGER).getData();
+                        List<DepartmentProp> managers =
+                            departmentApi
+                                .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
+                                    DepartmentPropCategoryEnum.MANAGER)
+                                .getData();
                         boolean isManager = managers.stream()
                             .anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
                         if (isManager) {
@@ -225,9 +225,6 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                 for (OpinionSign opinionSign : list) {
                     OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
                     opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                    if (!opinionSign.getCreateDate().equals(opinionSign.getModifyDate())) {
-                        opinionSignListModel.setIsEdit(true);
-                    }
                     opinionSign.setModifyDate(sdf1.format(sdf.parse(opinionSign.getModifyDate())));
                     opinionSign.setCreateDate(sdf1.format(sdf.parse(opinionSign.getCreateDate())));
                     OpinionSignModel opinionSignModel = new OpinionSignModel();
