@@ -233,19 +233,17 @@ public class OpinionRestController {
      * @param opinionFrameMark 意见框标识
      * @param itemId 事项id
      * @param taskDefinitionKey 任务key
-     * @param activitiUser 办理人
      * @return Y9Result<List < OpinionListModel>>
      */
     @GetMapping(value = "/personCommentList")
     public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
         @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String orderByUser) {
+        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String orderByUser) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         return opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark,
-            itemId, taskDefinitionKey, activitiUser, orderByUser);
+            itemId, taskDefinitionKey, orderByUser);
     }
 
     /**

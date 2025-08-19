@@ -123,7 +123,6 @@ public interface OpinionApi {
         @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
         @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
         @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey,
-        @RequestParam(value = "activitiUser", required = false) String activitiUser,
         @RequestParam(value = "orderByUser", required = false) String orderByUser);
 
     /**

@@ -14,23 +14,23 @@ import net.risesoft.model.itemadmin.OpinionListModel;
 public interface OpinionService {
 
     /**
-     * Description: 检查当前taskId任务节点是否已经签写意见
+     * 检查当前taskId任务节点是否已经签写意见
      *
-     * @param processSerialNumber
-     * @param taskId
-     * @return
+     * @param processSerialNumber 流程实例编号
+     * @param taskId 任务ID
+     * @return Boolean
      */
     Boolean checkSignOpinion(String processSerialNumber, String taskId);
 
     /**
-     * Description: 把老的意见框里面的意见复制到新的意见框里面去,如果老的意见框Id等于all,则把老的流程的所有的意见框的意见按照时间升序复制到新流程的制定的意见框中能
+     * 把老的意见框里面的意见复制到新的意见框里面去,如果老的意见框Id等于all,则把老的流程的所有的意见框的意见按照时间升序复制到新流程的制定的意见框中能
      *
-     * @param oldProcessSerialNumber
-     * @param oldOpinionFrameMark
-     * @param newProcessSerialNumber
-     * @param newOpinionFrameMark
-     * @param newProcessInstanceId
-     * @param newTaskId
+     * @param oldProcessSerialNumber 源流程的流程编号
+     * @param oldOpinionFrameMark 源流程的意见框标识
+     * @param newProcessSerialNumber 新流程的流程编号
+     * @param newOpinionFrameMark 新流程的意见框标识
+     * @param newProcessInstanceId 新流程的流程实例ID
+     * @param newTaskId 新流程的流程任务ID
      * @throws Exception
      */
     void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
@@ -39,67 +39,33 @@ public interface OpinionService {
     /**
      * 获取意见历史记录数量
      *
-     * @param processSerialNumber
-     * @param opinionFrameMark
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @param opinionFrameMark 意见框标识
+     * @return int
      */
     int countOpinionHistory(String processSerialNumber, String opinionFrameMark);
 
     /**
      * 根据id删除意见
      *
-     * @param id
+     * @param id 意见id
      */
     void delete(String id);
 
     /**
      * 根据processSerialNumber查找意见，用于未启动流程发送前的是否填写意见校验
      *
-     * @param processSerialNumber
+     * @param processSerialNumber 流程序列号
      * @return
      */
     int findByProcSerialNumber(String processSerialNumber);
 
     /**
-     * Description:
      *
-     * @param processSerialNumber
-     * @param taskId
-     * @param opinionFrameId
-     * @param userId
-     * @return
-     */
-    Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId,
-        String userId);
-
-    /**
-     * Description:
-     *
-     * @param id
+     * @param id 意见id
      * @return
      */
     Opinion getById(String id);
-
-    /**
-     * Description:
-     *
-     * @param processSerialNumber
-     * @param category
-     * @param userId
-     * @return
-     */
-    Integer getCount4Personal(String processSerialNumber, String category, String userId);
-
-    /**
-     * Description:
-     *
-     * @param processSerialNumber
-     * @param taskId
-     * @param category
-     * @param userId
-     * @return
-     */
-    Integer getCount4Personal(String processSerialNumber, String taskId, String category, String userId);
 
     /**
      * 根据taskId获取意见数量
@@ -112,8 +78,8 @@ public interface OpinionService {
     /**
      * 根据processSerialNumber查找所有意见
      *
-     * @param processSerialNumber
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @return List<Opinion>
      */
     List<Opinion> listByProcessSerialNumber(String processSerialNumber);
 
@@ -128,7 +94,7 @@ public interface OpinionService {
     List<Opinion> listByTaskIdAndPositionIdAndProcessTrackIdIsNull(String taskId, String positionId);
 
     /**
-     * Description: 获取自定义历程意见
+     * 获取自定义历程意见
      *
      * @param taskId
      * @param processTrackId
@@ -137,25 +103,16 @@ public interface OpinionService {
     List<Opinion> listByTaskIdAndProcessTrackId(String taskId, String processTrackId);
 
     /**
-     * 历程时显示的意见,显示的是当前taskId的个人意见和领导意见，暂时不现实部门意见。
-     *
-     * @param taskId
-     * @param userId
-     * @return
-     */
-    List<Opinion> listByTaskIdAndUserIdAndProcessTrackIdIsNull(String taskId, String userId);
-
-    /**
      * 获取意见历史记录
      *
      * @param processSerialNumber
      * @param opinionFrameMark
-     * @return
+     * @return List<OpinionHistoryModel>
      */
     List<OpinionHistoryModel> listOpinionHistory(String processSerialNumber, String opinionFrameMark);
 
     /**
-     * Description:
+     * 
      *
      * @param processSerialNumber
      * @param taskId
@@ -163,31 +120,30 @@ public interface OpinionService {
      * @param opinionFrameMark
      * @param itemId
      * @param taskDefinitionKey
-     * @param activitiUser
      * @return
      */
     List<OpinionListModel> listPersonComment(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser);
+        String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser);
 
     /**
      * 保存多条意见
      *
-     * @param entities
+     * @param entities 待保存的实体
      */
     void save(List<Opinion> entities);
 
     /**
      * 保存意见
      *
-     * @param entity
+     * @param entity 待保存的实体
      */
     void save(Opinion entity);
 
     /**
-     * Description: 保存意见
+     * 保存意见
      *
-     * @param entity
-     * @return
+     * @param entity 待保存的实体
+     * @return Opinion
      */
     Opinion saveOrUpdate(Opinion entity);
 
@@ -195,14 +151,14 @@ public interface OpinionService {
      * 如果用户在启动流程之前先保存了意见，这时意见数据表中之前保存的数据的taskId和processInstanceId仍为空，
      * 此时需要根据processSerialNumber查询数据并给taskId和processInstanceId赋值 注意，该方法只用于启动流程时
      *
-     * @param processSerialNumber
-     * @param processInstanceId
-     * @param taskId
+     * @param processSerialNumber 流程序列号
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
      */
     void update(String processSerialNumber, String processInstanceId, String taskId);
 
     /**
-     * Description:更新意见
+     * 更新意见
      *
      * @param id 意见id
      * @param content 意见内容
