@@ -126,7 +126,7 @@ public class Opinion implements Serializable, Comparable<Opinion> {
     private String modifyDate;
 
     @Comment("岗位id")
-    @Column(name = "POSITIONID", length = 38, nullable = true)
+    @Column(name = "POSITIONID", length = 38)
     private String positionId;
 
     /**
@@ -142,9 +142,6 @@ public class Opinion implements Serializable, Comparable<Opinion> {
     @Comment("自定义历程id")
     @Column(name = "PROCESSTRACKID", length = 50)
     private String processTrackId;
-
-    @Transient
-    private byte[] sign;
 
     @Transient
     private String orderStr;

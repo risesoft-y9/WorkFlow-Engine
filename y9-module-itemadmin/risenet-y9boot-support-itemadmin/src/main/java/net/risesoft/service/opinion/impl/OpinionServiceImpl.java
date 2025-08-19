@@ -310,8 +310,6 @@ public class OpinionServiceImpl implements OpinionService {
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<OpinionListModel> resList = new ArrayList<>();
         if (!opinionList.isEmpty()) {
-            opinionListModel
-                .setAddable(opinionList.stream().noneMatch(opinion -> opinion.getUserId().equals(personId)));
             for (Opinion opinion : opinionList) {
                 this.format(opinion);
                 OpinionListModel modelTemp = new OpinionListModel();
@@ -319,6 +317,8 @@ public class OpinionServiceImpl implements OpinionService {
                 modelTemp.setOpinion(this.getOpinionModel(opinion));
                 resList.add(modelTemp);
             }
+            opinionListModel
+                .setAddable(opinionList.stream().noneMatch(opinion -> opinion.getUserId().equals(personId)));
             resList.add(opinionListModel);
             return resList;
         }
@@ -365,7 +365,6 @@ public class OpinionServiceImpl implements OpinionService {
                 this.format(opinion);
                 OpinionListModel modelTemp = new OpinionListModel();
                 modelTemp.setEditable(false);
-                modelTemp.setIsEdit(!opinion.getCreateDate().equals(opinion.getModifyDate()));
                 modelTemp.setOpinion(this.getOpinionModel(opinion));
                 resList.add(modelTemp);
             }
@@ -378,7 +377,6 @@ public class OpinionServiceImpl implements OpinionService {
         for (Opinion opinion : opinionList) {
             this.format(opinion);
             OpinionListModel modelTemp = new OpinionListModel();
-            modelTemp.setIsEdit(!opinion.getCreateDate().equals(opinion.getModifyDate()));
             modelTemp.setOpinion(this.getOpinionModel(opinion));
             modelTemp.setEditable(false);
             if (taskId.equals(opinion.getTaskId())) {
@@ -487,7 +485,6 @@ public class OpinionServiceImpl implements OpinionService {
         for (Opinion opinion : opinionList) {
             this.format(opinion);
             OpinionListModel modelTemp = new OpinionListModel();
-            modelTemp.setIsEdit(!opinion.getCreateDate().equals(opinion.getModifyDate()));
             modelTemp.setOpinion(this.getOpinionModel(opinion));
             modelTemp.setEditable(false);
             if (personId.equals(opinion.getUserId()) && !isEnd) {
@@ -540,7 +537,6 @@ public class OpinionServiceImpl implements OpinionService {
             this.format(opinion);
             OpinionListModel modelTemp = new OpinionListModel();
             modelTemp.setEditable(false);
-            modelTemp.setIsEdit(!opinion.getCreateDate().equals(opinion.getModifyDate()));
             modelTemp.setOpinion(this.getOpinionModel(opinion));
             resList.add(modelTemp);
         }
@@ -624,6 +620,7 @@ public class OpinionServiceImpl implements OpinionService {
         Opinion opinion = opinionRepository.findById(id).orElse(null);
         Opinion oldOpinion = new Opinion();
         Y9BeanUtil.copyProperties(opinion, oldOpinion);
+        assert opinion != null;
         opinion.setUserId(person.getPersonId());
         opinion.setUserName(userName);
         opinion.setTaskId(entity.getTaskId());

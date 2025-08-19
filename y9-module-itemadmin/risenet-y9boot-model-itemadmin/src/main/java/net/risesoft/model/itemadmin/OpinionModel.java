@@ -100,9 +100,4 @@ public class OpinionModel implements Serializable {
      * 个人签名图片
      */
     private byte[] sign;
-
-    /**
-     * 排序字段
-     */
-    private String orderStr;
 }
