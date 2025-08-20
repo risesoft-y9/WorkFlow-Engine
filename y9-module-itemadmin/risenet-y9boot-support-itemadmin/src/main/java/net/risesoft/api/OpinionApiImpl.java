@@ -16,6 +16,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
@@ -184,6 +185,34 @@ public class OpinionApiImpl implements OpinionApi {
         List<OpinionListModel> opinionList = opinionService.listPersonComment(processSerialNumber, taskId, itembox,
             opinionFrameMark, itemId, taskDefinitionKey, orderByUser);
         return Y9Result.success(opinionList);
+    }
+
+    /**
+     * 获取个人意见列表
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param processSerialNumber 流程编号
+     * @param taskId 任务id
+     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
+     * @param opinionFrameMark 意见框标识
+     * @param itemId 事项id
+     * @param taskDefinitionKey 任务定义key
+     * @param orderByUser 是否根据岗位排序 1：按岗位排序号排序
+     * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<OpinionFrameModel> personCommentListNew(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber, String taskId, @RequestParam String itembox,
+        @RequestParam String opinionFrameMark, @RequestParam String itemId, String taskDefinitionKey,
+        String orderByUser) {
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPerson(person);
+        OpinionFrameModel opinionFrameModel = opinionService.listPersonCommentNew(processSerialNumber, taskId, itembox,
+            opinionFrameMark, itemId, taskDefinitionKey, orderByUser);
+        return Y9Result.success(opinionFrameModel);
     }
 
     /**

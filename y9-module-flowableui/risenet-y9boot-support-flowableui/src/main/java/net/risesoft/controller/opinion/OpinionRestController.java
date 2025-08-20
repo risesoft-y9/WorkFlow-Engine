@@ -27,8 +27,8 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
-import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Person;
@@ -233,16 +233,16 @@ public class OpinionRestController {
      * @param opinionFrameMark 意见框标识
      * @param itemId 事项id
      * @param taskDefinitionKey 任务key
-     * @return Y9Result<List < OpinionListModel>>
+     * @return Y9Result<OpinionFrameModel>
      */
     @GetMapping(value = "/personCommentList")
-    public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
+    public Y9Result<OpinionFrameModel> personCommentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
         @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String orderByUser) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
-        return opinionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark,
+        return opinionApi.personCommentListNew(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark,
             itemId, taskDefinitionKey, orderByUser);
     }
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
@@ -112,13 +113,35 @@ public interface OpinionApi {
      * @param opinionFrameMark 意见框标识
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
-     * @param activitiUser 人员id
      * @param orderByUser 是否根据人员排序
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
     @GetMapping("/personCommentList")
     Y9Result<List<OpinionListModel>> personCommentList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
+        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
+        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey,
+        @RequestParam(value = "orderByUser", required = false) String orderByUser);
+
+    /**
+     * 获取个人意见列表
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param processSerialNumber 流程编号
+     * @param taskId 任务id
+     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
+     * @param opinionFrameMark 意见框标识
+     * @param itemId 事项id
+     * @param taskDefinitionKey 任务定义key
+     * @param orderByUser 是否根据人员排序
+     * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
+     * @since 9.6.6
+     */
+    @GetMapping("/personCommentListNew")
+    Y9Result<OpinionFrameModel> personCommentListNew(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
         @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,

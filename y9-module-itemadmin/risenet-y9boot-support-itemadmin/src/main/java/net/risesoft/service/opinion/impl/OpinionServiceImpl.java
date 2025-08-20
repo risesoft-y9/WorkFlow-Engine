@@ -3,8 +3,6 @@ package net.risesoft.service.opinion.impl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +35,7 @@ import net.risesoft.entity.opinion.OpinionHistory;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
@@ -127,24 +126,6 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional
-    public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
-        String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
-        try {
-            List<Opinion> oldOpinionList = this.listByProcessSerialNumber(oldProcessSerialNumber);
-            for (Opinion oldOpinion : oldOpinionList) {
-                oldOpinion.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                oldOpinion.setOpinionFrameMark(newOpinionFrameMark);
-                oldOpinion.setProcessSerialNumber(newProcessSerialNumber);
-                this.save(oldOpinion);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    @Override
     public int countOpinionHistory(String processSerialNumber, String opinionFrameMark) {
         return opinionHistoryRepository.countByProcessSerialNumberAndOpinionFrameMark(processSerialNumber,
             opinionFrameMark);
@@ -228,40 +209,39 @@ public class OpinionServiceImpl implements OpinionService {
                 resList.add(history);
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Collections.sort(resList, new Comparator<OpinionHistoryModel>() {
-                @Override
-                public int compare(OpinionHistoryModel o1, OpinionHistoryModel o2) {
-                    try {
-                        String startTime1 = o1.getCreateDate();
-                        String startTime2 = o2.getCreateDate();
-                        long time1 = sdf.parse(startTime1).getTime();
-                        long time2 = sdf.parse(startTime2).getTime();
-                        if (time1 > time2) {
+            resList.sort((o1, o2) -> {
+                try {
+                    String startTime1 = o1.getCreateDate();
+                    String startTime2 = o2.getCreateDate();
+                    long time1 = sdf.parse(startTime1).getTime();
+                    long time2 = sdf.parse(startTime2).getTime();
+                    if (time1 > time2) {
+                        return 1;
+                    } else if (time1 == time2) {
+                        String modifyDate1 = o1.getModifyDate();
+                        String modifyDate2 = o2.getModifyDate();
+                        if (StringUtils.isBlank(modifyDate1)) {
+                            return -1;
+                        } else if (StringUtils.isBlank(modifyDate2)) {
                             return 1;
-                        } else if (time1 == time2) {
-                            String modifyDate1 = o1.getModifyDate();
-                            String modifyDate2 = o2.getModifyDate();
-                            if (StringUtils.isBlank(modifyDate1)) {
-                                return -1;
-                            } else if (StringUtils.isBlank(modifyDate2)) {
+                        } else if (modifyDate1.equals(modifyDate2)) {
+                            return 0;
+                        } else {
+                            long time11 = sdf.parse(modifyDate1).getTime();
+                            long time22 = sdf.parse(modifyDate2).getTime();
+                            if (time11 > time22) {
                                 return 1;
                             } else {
-                                long time11 = sdf.parse(modifyDate1).getTime();
-                                long time22 = sdf.parse(modifyDate2).getTime();
-                                if (time11 > time22) {
-                                    return 1;
-                                } else {
-                                    return -1;
-                                }
+                                return -1;
                             }
-                        } else {
-                            return -1;
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } else {
+                        return -1;
                     }
-                    return -1;
+                } catch (Exception e) {
+                    LOGGER.error("意见的CreateDate或者ModifyDate格式化错误！", e);
                 }
+                return -1;
             });
         } catch (BeansException e) {
             e.printStackTrace();
@@ -304,6 +284,36 @@ public class OpinionServiceImpl implements OpinionService {
         }
     }
 
+    @Override
+    public OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
+        String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser) {
+        OpinionFrameModel opinionFrameModel = new OpinionFrameModel();
+        opinionFrameModel.setAddable(true);
+        opinionFrameModel.setMark(opinionFrameMark);
+        opinionFrameModel.setOneClickSetList(new ArrayList<>());
+        List<Opinion> opinionList =
+            opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+        switch (ItemBoxTypeEnum.fromString(itembox)) {
+            case DRAFT:
+            case ADD:
+                this.listPersonComment4AddOrDraftNew(itemId, opinionFrameModel, opinionList, opinionFrameMark,
+                    taskDefinitionKey, orderByUser);
+                break;
+            case TODO:
+                this.listPersonComment4TodoNew(itemId, opinionFrameModel, opinionList, opinionFrameMark, taskId,
+                    orderByUser);
+                break;
+            case YUE_JIAN:
+                this.listPersonComment4ChaoSongNew(processSerialNumber, itemId, opinionFrameModel, opinionList,
+                    opinionFrameMark, taskId, taskDefinitionKey, orderByUser);
+                break;
+            default:
+                this.listPersonComment4OtherNew(opinionFrameModel, opinionList, orderByUser);
+                break;
+        }
+        return opinionFrameModel;
+    }
+
     private List<OpinionListModel> listPersonComment4AddOrDraft(String itemId, OpinionListModel opinionListModel,
         List<Opinion> opinionList, String opinionFrameMark, String taskDefKey) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -336,6 +346,51 @@ public class OpinionServiceImpl implements OpinionService {
         this.setAddable(opinionListModel, itemOpinionFrameBind);
         resList.add(opinionListModel);
         return resList;
+    }
+
+    private void listPersonComment4AddOrDraftNew(String itemId, OpinionFrameModel opinionFrameModel,
+        List<Opinion> opinionList, String opinionFrameMark, String taskDefKey, String orderByUser) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        if (!opinionList.isEmpty()) {
+            List<OpinionModel> modelList = new ArrayList<>();
+            for (Opinion opinion : opinionList) {
+                this.format(opinion);
+                OpinionModel model = new OpinionModel();
+                model.setEditable(opinion.getUserId().equals(personId));
+                modelList.add(this.getOpinionModelNew(opinion, model));
+            }
+            modelList = this.order(modelList, orderByUser);
+            opinionFrameModel.setOpinionList(modelList);
+            opinionFrameModel.setAddable(modelList.stream().noneMatch(model -> model.getUserId().equals(personId)));
+        } else {
+            /*
+             * 当前意见框,不存在意见，则判断是否可以签写意见
+             */
+            Item item = itemService.findById(itemId);
+            String proDefKey = item.getWorkflowGuid();
+            ProcessDefinitionModel processDefinition =
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+            String processDefinitionId = processDefinition.getId();
+            ItemOpinionFrameBind itemOpinionFrameBind =
+                itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
+                    processDefinitionId, taskDefKey, opinionFrameMark);
+            this.setAddableNew(opinionFrameModel, itemOpinionFrameBind);
+        }
+    }
+
+    private List<OpinionModel> order(List<OpinionModel> modelList, String orderByUser) {
+        // 按岗位排序号排序
+        if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && modelList.size() > 1) {
+            for (OpinionModel model : modelList) {
+                String positionId = model.getPositionId();
+                Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), positionId).getData();
+                model.setOrderStr(
+                    (position != null && position.getOrderedPath() != null) ? position.getOrderedPath() : "");
+            }
+            modelList = modelList.stream().sorted().collect(Collectors.toList());
+        }
+        return modelList;
     }
 
     private void format(Opinion opinion) {
@@ -419,6 +474,73 @@ public class OpinionServiceImpl implements OpinionService {
         return resList;
     }
 
+    private void listPersonComment4TodoNew(String itemId, OpinionFrameModel opinionFrameModel,
+        List<Opinion> opinionList, String opinionFrameMark, String taskId, String orderByUser) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        List<OpinionModel> modelList = new ArrayList<>();
+        /*
+         * 用户未签收前打开公文时(办理人为空)，只读所有意见
+         */
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        if (StringUtils.isBlank(task.getAssignee())) {
+            opinionFrameModel.setAddable(false);
+            for (Opinion opinion : opinionList) {
+                this.format(opinion);
+                OpinionModel model = new OpinionModel();
+                model.setEditable(false);
+                modelList.add(this.getOpinionModelNew(opinion, model));
+            }
+            modelList = this.order(modelList, orderByUser);
+            opinionFrameModel.setOpinionList(modelList);
+        } else {
+            opinionFrameModel.setAddable(true);
+            String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+            List<HistoricTaskInstanceModel> hisTaskList = new ArrayList<>();
+            for (Opinion opinion : opinionList) {
+                this.format(opinion);
+                OpinionModel model = new OpinionModel();
+                if (taskId.equals(opinion.getTaskId())) {
+                    if (personId.equals(opinion.getUserId())) {
+                        model.setEditable(true);
+                        opinionFrameModel.setAddable(false);
+                    }
+                } else {
+                    // 收回件可编辑意见
+                    if (Boolean.parseBoolean(takeBack) && personId.equals(opinion.getUserId())) {
+                        if (hisTaskList.isEmpty()) {
+                            hisTaskList = historicTaskApi
+                                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
+                                .getData();
+                        }
+                        for (int i = hisTaskList.size() - 1; i >= 0; i--) {
+                            HistoricTaskInstanceModel htiModel = hisTaskList.get(i);
+                            if (htiModel.getEndTime() != null && htiModel.getId().equals(opinion.getTaskId())) {// 找到收回前的上一个任务
+                                model.setEditable(true);
+                                opinionFrameModel.setAddable(false);
+                                break;
+                            }
+                        }
+                    }
+                }
+                modelList.add(this.getOpinionModelNew(opinion, model));
+            }
+            ItemOpinionFrameBind itemOpinionFrameBind =
+                itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
+                    task.getProcessDefinitionId(), task.getTaskDefinitionKey(), opinionFrameMark);
+            if (null != itemOpinionFrameBind) {
+                List<OpinionFrameOneClickSetModel> oneClickSetList =
+                    opinionFrameOneClickSetService.findByBindIdModel(itemOpinionFrameBind.getId());
+                if (null != oneClickSetList && !oneClickSetList.isEmpty()) {
+                    opinionFrameModel.setOneClickSetList(oneClickSetList);
+                }
+            }
+            this.setAddableNew(opinionFrameModel, itemOpinionFrameBind);
+            modelList = this.order(modelList, orderByUser);
+            opinionFrameModel.setOpinionList(modelList);
+        }
+    }
+
     private void setAddable(OpinionListModel opinionListModel, ItemOpinionFrameBind itemOpinionFrameBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
@@ -446,6 +568,33 @@ public class OpinionServiceImpl implements OpinionService {
         }
     }
 
+    private void setAddableNew(OpinionFrameModel opinionFrameModel, ItemOpinionFrameBind itemOpinionFrameBind) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        /*
+         * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
+         */
+        if (opinionFrameModel.getAddable()) {
+            opinionFrameModel.setAddable(false);
+            if (null != itemOpinionFrameBind) {
+                // 是否必填意见，与addable一起判定，都为true时提示必填。
+                opinionFrameModel.setSignOpinion(itemOpinionFrameBind.isSignOpinion());
+                List<String> roleIds = itemOpinionFrameBind.getRoleIds();
+                if (roleIds.isEmpty()) {
+                    opinionFrameModel.setAddable(true);
+                } else {
+                    for (String roleId : roleIds) {
+                        Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
+                        if (Boolean.TRUE.equals(hasRole)) {
+                            opinionFrameModel.setAddable(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private OpinionModel getOpinionModel(Opinion opinion) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         OpinionModel opinionModel = new OpinionModel();
@@ -457,6 +606,75 @@ public class OpinionServiceImpl implements OpinionService {
         PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
         opinionModel.setSign(personExt != null ? personExt.getSign() : null);
         return opinionModel;
+    }
+
+    private OpinionModel getOpinionModelNew(Opinion opinion, OpinionModel opinionModel) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        Y9BeanUtil.copyProperties(opinion, opinionModel);
+        if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
+            OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+            opinionModel.setPositionName(user != null ? user.getName() : "");
+        }
+        PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
+        opinionModel.setSign(personExt != null ? personExt.getSign() : null);
+        return opinionModel;
+    }
+
+    private void listPersonComment4ChaoSongNew(String processSerialNumber, String itemId,
+        OpinionFrameModel opinionFrameModel, List<Opinion> opinionList, String opinionFrameMark, String taskId,
+        String taskDefinitionKey, String orderByUser) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        List<OpinionModel> modelList = new ArrayList<>();
+        // 是否已办结
+        boolean isEnd = false;
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+        // 办结件，阅件不可填写意见
+        if (processParam != null) {
+            HistoricProcessInstanceModel historicProcessInstanceModel =
+                historicProcessApi.getById(tenantId, processParam.getProcessInstanceId()).getData();
+            boolean b = historicProcessInstanceModel == null || historicProcessInstanceModel.getEndTime() != null;
+            if (b) {
+                opinionFrameModel.setAddable(false);
+                isEnd = true;
+            }
+        }
+        for (Opinion opinion : opinionList) {
+            this.format(opinion);
+            OpinionModel model = new OpinionModel();
+            if (personId.equals(opinion.getUserId()) && !isEnd) {
+                model.setEditable(true);
+                opinionFrameModel.setAddable(false);
+            }
+            modelList.add(this.getOpinionModelNew(opinion, model));
+        }
+        modelList = this.order(modelList, orderByUser);
+        opinionFrameModel.setOpinionList(modelList);
+        /*
+         * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
+         */
+        if (Boolean.TRUE.equals(opinionFrameModel.getAddable())) {
+            opinionFrameModel.setAddable(false);
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            ItemOpinionFrameBind bind =
+                itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
+                    task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
+            if (null != bind) {
+                List<String> roleIds = bind.getRoleIds();
+                if (roleIds.isEmpty()) {
+                    opinionFrameModel.setAddable(true);
+                } else {
+                    for (String roleId : roleIds) {
+                        Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
+                        if (Boolean.TRUE.equals(hasRole)) {
+                            opinionFrameModel.setAddable(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private List<OpinionListModel> listPersonComment4ChaoSong(String processSerialNumber, String itemId,
@@ -542,6 +760,20 @@ public class OpinionServiceImpl implements OpinionService {
         }
         resList.add(opinionListModel);
         return resList;
+    }
+
+    private void listPersonComment4OtherNew(OpinionFrameModel opinionFrameModel, List<Opinion> opinionList,
+        String orderByUser) {
+        List<OpinionModel> modelList = new ArrayList<>();
+        opinionFrameModel.setAddable(false);
+        for (Opinion opinion : opinionList) {
+            this.format(opinion);
+            OpinionModel model = new OpinionModel();
+            model.setEditable(false);
+            modelList.add(this.getOpinionModelNew(opinion, model));
+        }
+        modelList = this.order(modelList, orderByUser);
+        opinionFrameModel.setOpinionList(modelList);
     }
 
     @Override
