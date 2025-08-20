@@ -65,17 +65,17 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
-        String latestpdId = latestpd.getId();
+        ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        String latestPdId = latestPd.getId();
         String previouspdId = processDefinitionId;
-        if (processDefinitionId.equals(latestpdId)) {
-            if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
-                previouspdId = previouspd.getId();
+        if (processDefinitionId.equals(latestPdId)) {
+            if (latestPd.getVersion() > 1) {
+                ProcessDefinitionModel previousPd =
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestPdId).getData();
+                previouspdId = previousPd.getId();
             }
         }
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestPdId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             List<ItemOrganWordBind> bindList = itemOrganWordBindRepository
@@ -83,30 +83,30 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             for (ItemOrganWordBind bind : bindList) {
                 ItemOrganWordBind oldBind =
                     itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(
-                        itemId, latestpdId, currentTaskDefKey, bind.getOrganWordCustom());
+                        itemId, latestPdId, currentTaskDefKey, bind.getOrganWordCustom());
                 if (null == oldBind) {
-                    String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldbindId = bind.getId();
+                    String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldBindId = bind.getId();
                     /*
                      * 保存意见框绑定
                      */
-                    ItemOrganWordBind newbind = new ItemOrganWordBind();
-                    newbind.setId(newbindId);
-                    newbind.setItemId(itemId);
-                    newbind.setCreateDate(sdf.format(new Date()));
-                    newbind.setModifyDate(sdf.format(new Date()));
-                    newbind.setOrganWordCustom(bind.getOrganWordCustom());
-                    newbind.setProcessDefinitionId(latestpdId);
-                    newbind.setTaskDefKey(currentTaskDefKey);
-                    newbind.setUserId(userId);
-                    newbind.setUserName(userName);
+                    ItemOrganWordBind newBind = new ItemOrganWordBind();
+                    newBind.setId(newBindId);
+                    newBind.setItemId(itemId);
+                    newBind.setCreateDate(sdf.format(new Date()));
+                    newBind.setModifyDate(sdf.format(new Date()));
+                    newBind.setOrganWordCustom(bind.getOrganWordCustom());
+                    newBind.setProcessDefinitionId(latestPdId);
+                    newBind.setTaskDefKey(currentTaskDefKey);
+                    newBind.setUserId(userId);
+                    newBind.setUserName(userName);
 
-                    itemOrganWordBindRepository.save(newbind);
+                    itemOrganWordBindRepository.save(newBind);
                     /*
                      * 保存编号的授权
                      */
-                    List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(oldbindId);
+                    List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(oldBindId);
                     for (ItemOrganWordRole role : roleList) {
-                        itemOrganWordRoleService.saveOrUpdate(newbindId, role.getRoleId());
+                        itemOrganWordRoleService.saveOrUpdate(newBindId, role.getRoleId());
                     }
                 }
             }

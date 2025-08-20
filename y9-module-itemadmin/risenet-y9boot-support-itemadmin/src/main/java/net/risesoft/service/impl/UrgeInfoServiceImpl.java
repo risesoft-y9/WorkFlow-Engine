@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.UrgeInfo;
 import net.risesoft.id.Y9IdGenerator;
@@ -32,10 +30,6 @@ public class UrgeInfoServiceImpl implements UrgeInfoService {
     private final UrgeInfoRepository urgeInfoRepository;
 
     private final ProcessParamService processParamService;
-
-    private final TaskApi taskApi;
-
-    private final ProcessDefinitionApi processDefinitionApi;
 
     @Override
     public List<UrgeInfo> findByProcessSerialNumber(String processSerialNumber) {

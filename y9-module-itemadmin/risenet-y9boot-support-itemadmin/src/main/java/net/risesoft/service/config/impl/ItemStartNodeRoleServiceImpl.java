@@ -104,7 +104,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                         String oldRoleIds = oldisnr.getRoleIds();
                         String newRoleIds = StringUtils.isNotBlank(isnr.getRoleIds()) ? isnr.getRoleIds() : "";
                         String[] newRoleIdArr = newRoleIds.split(";");
-                        Role role = null;
+                        Role role;
                         for (String newRoleId : newRoleIdArr) {
                             if (StringUtils.isBlank(oldRoleIds)) {
                                 oldRoleIds = newRoleId;
@@ -131,7 +131,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         try {
             itemStartNodeRoleRepository.deleteByItemId(itemId);
         } catch (Exception e) {
-            LOGGER.error("删除路由配置信息失败", e.getMessage());
+            LOGGER.error("删除路由配置信息失败{}", e.getMessage());
         }
     }
 
@@ -267,7 +267,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         if (null != isnr && StringUtils.isNotEmpty(isnr.getRoleIds())) {
             String roleIds = isnr.getRoleIds();
             String[] roleIdArr = roleIds.split(";");
-            Role role = null;
+            Role role;
             for (String roleId : roleIdArr) {
                 role = roleApi.getRole(roleId).getData();
                 if (null != role) {

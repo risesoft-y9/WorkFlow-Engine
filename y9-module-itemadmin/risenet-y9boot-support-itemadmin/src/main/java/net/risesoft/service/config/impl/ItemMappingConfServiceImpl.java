@@ -61,5 +61,4 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
             itemMappingConfRepository.save(itemMappingConf);
         }
     }
-
 }

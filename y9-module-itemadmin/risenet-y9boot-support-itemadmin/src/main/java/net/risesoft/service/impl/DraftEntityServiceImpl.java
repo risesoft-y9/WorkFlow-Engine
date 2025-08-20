@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.DraftEntity;
@@ -57,8 +56,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     private final ItemService spmApproveitemService;
 
     private final DocumentService documentService;
-
-    private final ProcessDefinitionApi processDefinitionApi;
 
     private final RepositoryApi repositoryApi;
 

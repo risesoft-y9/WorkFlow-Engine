@@ -77,13 +77,13 @@ public class DocumentCopyServiceImpl implements DocumentCopyService {
     }
 
     private void publishEvent(DocumentCopy documentCopy) {
-        switch (documentCopy.getStatus().getValue()) {
-            case 1:
+        switch (documentCopy.getStatus()) {
+            case TODO_SIGN:
                 Y9Context.publishEvent(new Y9TodoCreatedEvent<>(documentCopy));
                 break;
-            case 2:
-            case 8:
-            case 9:
+            case SIGN:
+            case CANCEL:
+            case DELETE:
                 Y9Context.publishEvent(new Y9TodoDeletedEvent<>(documentCopy));
                 break;
         }

@@ -29,7 +29,7 @@ public class AttachmentConfRestController {
      * 根据唯一标示查找附件配置
      *
      * @param attachmentType 唯一标示
-     * @return
+     * @return Y9Result<List<AttachmentConf>>
      */
     @GetMapping(value = "/listByAttachmentType")
     public Y9Result<List<AttachmentConf>> listByAttachmentType(@RequestParam String attachmentType,

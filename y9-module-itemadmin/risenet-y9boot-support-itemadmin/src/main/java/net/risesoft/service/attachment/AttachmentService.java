@@ -2,12 +2,9 @@ package net.risesoft.service.attachment;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -121,15 +118,6 @@ public interface AttachmentService {
     void save(Attachment file);
 
     /**
-     * Description: 保存附件信息
-     *
-     * @param attachjson
-     * @param processSerialNumber
-     * @return
-     */
-    Boolean saveAttachment(String attachjson, String processSerialNumber);
-
-    /**
      * 更新附件
      *
      * @param processSerialNumber
@@ -137,20 +125,6 @@ public interface AttachmentService {
      * @param taskId
      */
     void update(String processSerialNumber, String processInstanceId, String taskId);
-
-    /**
-     * Description: 上传附件
-     *
-     * @param filename
-     * @param processInstanceId
-     * @param taskId
-     * @param processSerialNumber
-     * @param describes
-     * @param fileSource
-     * @return
-     */
-    Y9Result<Object> upload(MultipartFile filename, String processInstanceId, String taskId, String processSerialNumber,
-        String describes, String fileSource);
 
     /**
      * Description: 上传附件

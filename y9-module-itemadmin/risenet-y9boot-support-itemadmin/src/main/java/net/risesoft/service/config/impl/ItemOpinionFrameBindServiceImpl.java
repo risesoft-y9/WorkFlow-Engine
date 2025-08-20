@@ -325,8 +325,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     /**
-     * Description:
-     *
      * @param opinionFrameNameAndMarks
      * @param itemId
      * @param processDefinitionId
@@ -345,22 +343,22 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                 String name = opinionFrameNameAndMark[0];
                 String mark = opinionFrameNameAndMark[1];
 
-                ItemOpinionFrameBind newoftrb = new ItemOpinionFrameBind();
-                newoftrb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newoftrb.setCreateDate(sdf.format(new Date()));
-                newoftrb.setModifyDate(sdf.format(new Date()));
-                newoftrb.setOpinionFrameMark(mark);
-                newoftrb.setOpinionFrameName(name);
-                newoftrb.setItemId(itemId);
-                newoftrb.setTaskDefKey(taskDefKey);
-                newoftrb.setTenantId(tenantId);
-                newoftrb.setUserId(person.getPersonId());
-                newoftrb.setUserName(person.getName());
-                newoftrb.setProcessDefinitionId(processDefinitionId);
-                newoftrb.setSignOpinion(true);
+                ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
+                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                newBind.setCreateDate(sdf.format(new Date()));
+                newBind.setModifyDate(sdf.format(new Date()));
+                newBind.setOpinionFrameMark(mark);
+                newBind.setOpinionFrameName(name);
+                newBind.setItemId(itemId);
+                newBind.setTaskDefKey(taskDefKey);
+                newBind.setTenantId(tenantId);
+                newBind.setUserId(person.getPersonId());
+                newBind.setUserName(person.getName());
+                newBind.setProcessDefinitionId(processDefinitionId);
+                newBind.setSignOpinion(true);
 
-                this.save(newoftrb);
-                resList.add(newoftrb);
+                this.save(newBind);
+                resList.add(newBind);
             } else {
                 String[] strings = opinionFrameNameAndMarks.split(";");
                 for (String string : strings) {

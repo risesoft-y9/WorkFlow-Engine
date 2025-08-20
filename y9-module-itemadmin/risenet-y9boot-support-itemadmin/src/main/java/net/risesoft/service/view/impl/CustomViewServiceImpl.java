@@ -56,11 +56,11 @@ public class CustomViewServiceImpl implements CustomViewService {
             List<Y9FormField> y9FormFieldList =
                 y9FormFieldRepository.findByFormIdAndFieldName(customView.getFormId(), customView.getFieldName());
             customViewModelTemp
-                .setColumnName(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getFieldName() : "bucunzai");
+                .setColumnName(!y9FormFieldList.isEmpty() ? y9FormFieldList.get(0).getFieldName() : "bucunzai");
             customViewModelTemp
-                .setDisPlayName(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getFieldCnName() : "该列不存在");
-            customViewModelTemp.setFormId(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getFormId() : "");
-            customViewModelTemp.setFieldId(y9FormFieldList.size() > 0 ? y9FormFieldList.get(0).getId() : "bucunzai");
+                .setDisPlayName(!y9FormFieldList.isEmpty() ? y9FormFieldList.get(0).getFieldCnName() : "该列不存在");
+            customViewModelTemp.setFormId(!y9FormFieldList.isEmpty() ? y9FormFieldList.get(0).getFormId() : "");
+            customViewModelTemp.setFieldId(!y9FormFieldList.isEmpty() ? y9FormFieldList.get(0).getId() : "bucunzai");
             listCustomViewModel.add(customViewModelTemp);
         }
         return Y9Result.success(listCustomViewModel);

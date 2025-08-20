@@ -17,10 +17,8 @@ import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.service.attachment.AttachmentConfService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +56,6 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
     @Override
     @Transactional
     public void saveOrUpdate(AttachmentConf attachmentConf) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = attachmentConf.getId();
         if (StringUtils.isNotBlank(id)) {

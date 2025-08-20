@@ -9,7 +9,7 @@ import net.risesoft.entity.attachment.AttachmentType;
 public interface AttachmentTypeService {
 
     /**
-     * Description:获取附件类型信息
+     * 获取附件类型信息
      *
      * @param id
      * @return
@@ -17,22 +17,14 @@ public interface AttachmentTypeService {
     AttachmentType getById(String id);
 
     /**
-     * Description:根据标识获取附件类型信息
-     *
-     * @param mark
-     * @return
-     */
-    AttachmentType getByMark(String mark);
-
-    /**
-     * Description:获取所有附件类型信息
+     * 获取所有附件类型信息
      *
      * @return
      */
     List<AttachmentType> listAll();
 
     /**
-     * Description:获取分页的附件类型信息
+     * 获取分页的附件类型信息
      *
      * @param page
      * @param rows
@@ -41,14 +33,14 @@ public interface AttachmentTypeService {
     Page<AttachmentType> pageAll(int page, int rows);
 
     /**
-     * Description:移除附件类型信息
+     * 移除附件类型信息
      *
      * @param id
      */
     void remove(String id);
 
     /**
-     * Description:保存附件类型信息
+     * 保存附件类型信息
      *
      * @param AttachmentType
      * @return
@@ -56,7 +48,7 @@ public interface AttachmentTypeService {
     AttachmentType save(AttachmentType AttachmentType);
 
     /**
-     * Description:保存或更新附件类型信息
+     * 保存或更新附件类型信息
      *
      * @param AttachmentType
      * @return

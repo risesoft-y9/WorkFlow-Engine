@@ -68,7 +68,6 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
             role.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             role.setItemButtonId(itemButtonId);
             role.setRoleId(roleId);
-
             itemButtonRoleRepository.save(role);
         }
     }
