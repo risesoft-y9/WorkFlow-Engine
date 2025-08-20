@@ -120,7 +120,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     itemId, previouspdId, currentTaskDefKey);
             }
             for (ItemButtonBind bind : bindList) {
-                ItemButtonBind oldBind = null;
+                ItemButtonBind oldBind;
                 if (StringUtils.isBlank(currentTaskDefKey)) {
                     oldBind = buttonItemBindRepository
                         .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullAndButtonIdOrderByTabIndexAsc(itemId,
@@ -132,33 +132,33 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                 }
                 if (null == oldBind) {
                     String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldbindId = bind.getId();
-                    /**
+                    /*
                      * 保存按钮的绑定
                      */
-                    ItemButtonBind newbind = new ItemButtonBind();
-                    newbind.setId(newbindId);
-                    newbind.setButtonId(bind.getButtonId());
-                    newbind.setButtonType(bind.getButtonType());
-                    newbind.setItemId(itemId);
-                    newbind.setProcessDefinitionId(latestpdId);
-                    newbind.setTaskDefKey(currentTaskDefKey);
-                    newbind.setTenantId(tenantId);
-                    newbind.setTenantId(tenantId);
-                    newbind.setCreateTime(sdf.format(new Date()));
-                    newbind.setUpdateTime(sdf.format(new Date()));
-                    newbind.setUserId(userId);
-                    newbind.setUserName(userName);
+                    ItemButtonBind newBind = new ItemButtonBind();
+                    newBind.setId(newbindId);
+                    newBind.setButtonId(bind.getButtonId());
+                    newBind.setButtonType(bind.getButtonType());
+                    newBind.setItemId(itemId);
+                    newBind.setProcessDefinitionId(latestpdId);
+                    newBind.setTaskDefKey(currentTaskDefKey);
+                    newBind.setTenantId(tenantId);
+                    newBind.setTenantId(tenantId);
+                    newBind.setCreateTime(sdf.format(new Date()));
+                    newBind.setUpdateTime(sdf.format(new Date()));
+                    newBind.setUserId(userId);
+                    newBind.setUserName(userName);
 
                     Integer index = buttonItemBindRepository.getMaxTabIndex(itemId, latestpdId, currentTaskDefKey,
                         bind.getButtonType());
                     if (index == null) {
-                        newbind.setTabIndex(1);
+                        newBind.setTabIndex(1);
                     } else {
-                        newbind.setTabIndex(index + 1);
+                        newBind.setTabIndex(index + 1);
                     }
 
-                    buttonItemBindRepository.save(newbind);
-                    /**
+                    buttonItemBindRepository.save(newBind);
+                    /*
                      * 保存按钮的授权
                      */
                     List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonId(oldbindId);
@@ -181,20 +181,20 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                 buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
             if (null != bindList && !bindList.isEmpty()) {
                 for (ItemButtonBind bind : bindList) {
-                    ItemButtonBind newbind = new ItemButtonBind();
-                    newbind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newbind.setButtonId(bind.getButtonId());
-                    newbind.setButtonType(bind.getButtonType());
-                    newbind.setItemId(newItemId);
-                    newbind.setProcessDefinitionId(lastVersionPid);
-                    newbind.setTaskDefKey(bind.getTaskDefKey());
-                    newbind.setTenantId(tenantId);
-                    newbind.setCreateTime(sdf.format(new Date()));
-                    newbind.setUpdateTime(sdf.format(new Date()));
-                    newbind.setUserId(userId);
-                    newbind.setUserName(userName);
-                    newbind.setTabIndex(bind.getTabIndex());
-                    buttonItemBindRepository.save(newbind);
+                    ItemButtonBind newBind = new ItemButtonBind();
+                    newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                    newBind.setButtonId(bind.getButtonId());
+                    newBind.setButtonType(bind.getButtonType());
+                    newBind.setItemId(newItemId);
+                    newBind.setProcessDefinitionId(lastVersionPid);
+                    newBind.setTaskDefKey(bind.getTaskDefKey());
+                    newBind.setTenantId(tenantId);
+                    newBind.setCreateTime(sdf.format(new Date()));
+                    newBind.setUpdateTime(sdf.format(new Date()));
+                    newBind.setUserId(userId);
+                    newBind.setUserName(userName);
+                    newBind.setTabIndex(bind.getTabIndex());
+                    buttonItemBindRepository.save(newBind);
                 }
             }
         } catch (Exception e) {
@@ -354,7 +354,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     buttonType, processDefinitionId);
         }
         for (ItemButtonBind bind : bindList) {
-            if (buttonType.equals(ItemButtonTypeEnum.COMMON.getValue())) {
+            if (buttonType.equals(ItemButtonTypeEnum.COMMON)) {
                 CommonButton cb = commonButtonService.getById(bind.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();
@@ -438,7 +438,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
             String buttonName = "按钮不存在";
             String buttonCustomId = "";
-            if (Objects.equals(ItemButtonTypeEnum.COMMON.getValue(), oldbib.getButtonType())) {
+            if (Objects.equals(ItemButtonTypeEnum.COMMON, oldbib.getButtonType())) {
                 CommonButton cb = commonButtonService.getById(oldbib.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();

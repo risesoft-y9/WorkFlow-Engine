@@ -44,11 +44,6 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
     }
 
     @Override
-    public AttachmentType getByMark(String mark) {
-        return attachmentTypeRepository.findByMark(mark);
-    }
-
-    @Override
     public List<AttachmentType> listAll() {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         return attachmentTypeRepository.findAll(sort);
@@ -72,7 +67,7 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String id) {
         AttachmentType AttachmentType = this.getById(id);
         if (AttachmentType != null) {
@@ -85,13 +80,13 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public AttachmentType save(AttachmentType AttachmentType) {
         return attachmentTypeRepository.save(AttachmentType);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public AttachmentType saveOrUpdate(AttachmentType AttachmentType) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

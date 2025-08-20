@@ -60,7 +60,6 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.nosql.elastic.repository.ChaoSongInfoRepository;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
@@ -70,7 +69,6 @@ import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 import net.risesoft.y9.pubsub.event.Y9EntityCreatedEvent;
 import net.risesoft.y9.pubsub.event.Y9EntityDeletedEvent;
 import net.risesoft.y9.pubsub.event.Y9EntityUpdatedEvent;
@@ -104,11 +102,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
-    private final Y9ItemAdminProperties y9ItemAdminProperties;
-
     private final OfficeFollowService officeFollowService;
-
-    private final AsyncHandleService asyncHandleService;
 
     private final ErrorLogService errorLogService;
 
@@ -147,11 +141,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         for (String id : ids) {
             setRead(id);
         }
-    }
-
-    @Override
-    public int countAllByUserId(String userId) {
-        return chaoSongInfoRepository.countByUserIdAndTenantId(userId, Y9LoginUserHolder.getTenantId());
     }
 
     @Override
@@ -741,7 +730,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             OrgUnit currOrgUnit = Y9LoginUserHolder.getOrgUnit();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String title = processParam.getTitle(), itemId = processParam.getItemId(),
-                itemName = processParam.getItemName(), systemName = processParam.getSystemName();
+                itemName = processParam.getItemName();
             String[] orgUnitList = users.split(";");
             List<ChaoSongInfo> csList = new ArrayList<>();
             List<String> userIdListAdd = new ArrayList<>();
@@ -775,7 +764,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             if (null == dept || null == dept.getId()) {
                 dept = organizationApi.get(tenantId, currOrgUnit.getParentId()).getData();
             }
-            List<String> mobile = new ArrayList<>();
             for (String userId : userIdListAdd) {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 ChaoSongInfo cs = new ChaoSongInfo();

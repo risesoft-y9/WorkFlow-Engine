@@ -39,14 +39,6 @@ public interface ChaoSongInfoService {
     void setRead(String[] ids);
 
     /**
-     * 获取个人抄送件计数
-     *
-     * @param userId
-     * @return
-     */
-    int countAllByUserId(String userId);
-
-    /**
      *
      * Description: 根据流程实例id统计除当前人外是否有抄送件
      *
