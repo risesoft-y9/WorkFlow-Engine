@@ -3,6 +3,7 @@ package net.risesoft.service.opinion;
 import java.util.List;
 
 import net.risesoft.entity.opinion.Opinion;
+import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 
@@ -21,20 +22,6 @@ public interface OpinionService {
      * @return Boolean
      */
     Boolean checkSignOpinion(String processSerialNumber, String taskId);
-
-    /**
-     * 把老的意见框里面的意见复制到新的意见框里面去,如果老的意见框Id等于all,则把老的流程的所有的意见框的意见按照时间升序复制到新流程的制定的意见框中能
-     *
-     * @param oldProcessSerialNumber 源流程的流程编号
-     * @param oldOpinionFrameMark 源流程的意见框标识
-     * @param newProcessSerialNumber 新流程的流程编号
-     * @param newOpinionFrameMark 新流程的意见框标识
-     * @param newProcessInstanceId 新流程的流程实例ID
-     * @param newTaskId 新流程的流程任务ID
-     * @throws Exception
-     */
-    void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
-        String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception;
 
     /**
      * 获取意见历史记录数量
@@ -123,6 +110,20 @@ public interface OpinionService {
      * @return
      */
     List<OpinionListModel> listPersonComment(String processSerialNumber, String taskId, String itembox,
+        String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser);
+
+    /**
+     *
+     *
+     * @param processSerialNumber
+     * @param taskId
+     * @param itembox
+     * @param opinionFrameMark
+     * @param itemId
+     * @param taskDefinitionKey
+     * @return
+     */
+    OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
         String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser);
 
     /**

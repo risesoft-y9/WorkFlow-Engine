@@ -12,7 +12,7 @@ import lombok.Data;
  * @date 2022/12/20
  */
 @Data
-public class OpinionModel implements Serializable {
+public class OpinionModel implements Serializable, Comparable<OpinionModel> {
 
     private static final long serialVersionUID = 3543969481530895802L;
 
@@ -100,4 +100,16 @@ public class OpinionModel implements Serializable {
      * 个人签名图片
      */
     private byte[] sign;
+
+    /**
+     * 意见是否可编辑
+     */
+    private Boolean editable;
+
+    private String orderStr;
+
+    @Override
+    public int compareTo(OpinionModel o) {
+        return this.orderStr.compareTo(o.getOrderStr());
+    }
 }

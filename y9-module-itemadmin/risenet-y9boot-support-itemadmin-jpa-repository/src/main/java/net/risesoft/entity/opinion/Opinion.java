@@ -144,6 +144,7 @@ public class Opinion implements Serializable, Comparable<Opinion> {
     private String processTrackId;
 
     @Transient
+    @Deprecated
     private String orderStr;
 
     @Override
