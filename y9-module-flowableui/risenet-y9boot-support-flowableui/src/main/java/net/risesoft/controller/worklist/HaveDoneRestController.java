@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.pojo.Y9Page;
-import net.risesoft.service.WorkList4GfgService;
+import net.risesoft.service.WorkListService;
 
 /**
  * 已办件
@@ -29,7 +29,7 @@ import net.risesoft.service.WorkList4GfgService;
 @RequestMapping(value = "/vue/haveDone", produces = MediaType.APPLICATION_JSON_VALUE)
 public class HaveDoneRestController {
 
-    private final WorkList4GfgService workList4GfgService;
+    private final WorkListService workListService;
 
     /**
      * 获取已办（包括在办、办结）列表
@@ -44,6 +44,6 @@ public class HaveDoneRestController {
     @PostMapping(value = "/list")
     public Y9Page<Map<String, Object>> list(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.haveDoneList(itemId, searchMapStr, page, rows);
+        return this.workListService.haveDoneList(itemId, searchMapStr, page, rows);
     }
 }

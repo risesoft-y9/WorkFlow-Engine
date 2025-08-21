@@ -8,7 +8,7 @@ import net.risesoft.pojo.Y9Page;
 /**
  * @author qinman
  */
-public interface WorkList4GfgService {
+public interface WorkListService {
 
     /**
      * 获取待办列表

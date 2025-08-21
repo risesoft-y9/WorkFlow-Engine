@@ -164,7 +164,7 @@ public class DoneServiceImpl implements DoneService {
                     officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("follow", countFollow > 0);
             } catch (Exception e) {
-                LOGGER.error("获取列表失败" + processInstanceId, e);
+                LOGGER.error("获取列表失败{}", processInstanceId, e);
             }
             mapTemp.put("serialNumber", serialNumber + 1);
             serialNumber += 1;
@@ -236,7 +236,7 @@ public class DoneServiceImpl implements DoneService {
                         officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
-                    LOGGER.error("获取列表失败" + processInstanceId, e);
+                    LOGGER.error("获取列表失败{}", processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
