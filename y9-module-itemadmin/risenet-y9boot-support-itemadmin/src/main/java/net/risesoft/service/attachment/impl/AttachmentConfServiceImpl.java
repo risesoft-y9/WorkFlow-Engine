@@ -73,11 +73,10 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
                 oldConf.setSpanWidth(attachmentConf.getSpanWidth());
                 oldConf.setIsRequired(attachmentConf.getIsRequired());
                 attachmentConfRepository.save(oldConf);
-                return;
             } else {
                 attachmentConfRepository.save(attachmentConf);
-                return;
             }
+            return;
         }
 
         AttachmentConf newConf = new AttachmentConf();
@@ -109,13 +108,10 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
     @Transactional
     public void updateOrder(String[] idAndTabIndexs) {
         List<String> list = Lists.newArrayList(idAndTabIndexs);
-        try {
-            for (String s : list) {
-                String[] arr = s.split(SysVariables.COLON);
-                attachmentConfRepository.updateOrder(Integer.parseInt(arr[1]), arr[0]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (String s : list) {
+            String[] arr = s.split(SysVariables.COLON);
+            attachmentConfRepository.updateOrder(Integer.parseInt(arr[1]), arr[0]);
         }
+
     }
 }

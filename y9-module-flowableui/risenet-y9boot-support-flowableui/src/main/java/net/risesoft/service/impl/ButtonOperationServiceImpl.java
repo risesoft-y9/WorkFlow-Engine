@@ -41,7 +41,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "buttonOperationService")
+@Service
 public class ButtonOperationServiceImpl implements ButtonOperationService {
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -153,8 +153,11 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> multipleResumeTodo(String[] processInstanceIds, String desc) {
-        boolean haveDoing = Arrays.stream(processInstanceIds).anyMatch(processInstanceId -> runtimeApi
-            .getProcessInstance(Y9LoginUserHolder.getTenantId(), processInstanceId).isSuccess());
+        boolean haveDoing =
+            Arrays.stream(processInstanceIds)
+                .anyMatch(processInstanceId -> runtimeApi
+                    .getProcessInstance(Y9LoginUserHolder.getTenantId(), processInstanceId)
+                    .isSuccess());
         if (haveDoing) {
             return Y9Result.failure("存在正在运行的流程，请刷新列表！");
         }
@@ -192,8 +195,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
-            HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi
-                .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
+            HistoricTaskInstanceModel hisTaskModelTemp =
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
+                    .getData()
+                    .get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
 
             /*
@@ -246,8 +251,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
-            HistoricTaskInstanceModel hisTaskModel = historictaskApi
-                .getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).getData().get(0);
+            HistoricTaskInstanceModel hisTaskModel =
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
+                    .getData()
+                    .get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             // 2、添加动作名称
             Map<String, Object> vars = new HashMap<>();
@@ -281,7 +288,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 }
                 if (nodeList.isEmpty()) {
                     String startNode = processDefinitionApi
-                        .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId()).getData();
+                        .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId())
+                        .getData();
                     nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode)
                         .getData();
                 }

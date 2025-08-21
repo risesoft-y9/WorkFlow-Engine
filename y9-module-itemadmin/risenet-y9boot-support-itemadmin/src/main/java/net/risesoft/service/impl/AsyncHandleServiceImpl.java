@@ -90,7 +90,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     private final TransactionHistoryWordService transactionHistoryWordService;
 
-    private final AttachmentService transactionFileService;
+    private final AttachmentService attachmentService;
 
     private final OpinionRepository opinionRepository;
 
@@ -508,7 +508,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 e.printStackTrace();
             }
             opinionRepository.update(processInstanceId, taskId, processSerialNumber);
-            transactionFileService.update(processSerialNumber, processInstanceId, taskId);
+            attachmentService.update(processSerialNumber, processInstanceId, taskId);
             transactionHistoryWordService.update(taskId, processSerialNumber);
             draftEntityRepository.deleteByProcessSerialNumber(processSerialNumber);
         } catch (Exception e) {

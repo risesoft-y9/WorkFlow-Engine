@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.attachment.Attachment;
@@ -33,6 +34,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -55,7 +57,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                 attachmentRepository.delete(file);
                 y9FileStoreService.deleteFile(file.getFileStoreId());
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("删除文件失败", e);
             }
         }
     }
@@ -89,11 +91,11 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Integer getTransactionFileCount(String processSerialNumber, String fileSource, String fileType) {
+    public Integer getAttachmentCount(String processSerialNumber, String fileSource, String fileType) {
         if (StringUtils.isBlank(fileType)) {
-            return attachmentRepository.getTransactionFileCount(processSerialNumber, fileSource);
+            return attachmentRepository.getAttachmentCount(processSerialNumber, fileSource);
         } else {
-            return attachmentRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource, fileType);
+            return attachmentRepository.getAttachmentCountByFileType(processSerialNumber, fileSource, fileType);
         }
     }
 
@@ -129,18 +131,18 @@ public class AttachmentServiceImpl implements AttachmentService {
         int rows) {
         List<AttachmentModel> item = new ArrayList<>();
         try {
-            SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat sdfymdhm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            SimpleDateFormat source = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat target = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             PageRequest pageable =
                 PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
-            Page<Attachment> transactionFileList;
+            Page<Attachment> attachmentList;
             if (StringUtils.isBlank(fileSource)) {
-                transactionFileList = attachmentRepository.getAttachmentList(processSerialNumber, pageable);
+                attachmentList = attachmentRepository.getAttachmentList(processSerialNumber, pageable);
             } else {
-                transactionFileList = attachmentRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
+                attachmentList = attachmentRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
             }
             int number = (page - 1) * rows;
-            for (Attachment attachment : transactionFileList) {
+            for (Attachment attachment : attachmentList) {
                 AttachmentModel model = new AttachmentModel();
                 model.setSerialNumber(number + 1);
                 model.setName(attachment.getName());
@@ -156,7 +158,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                 model.setDeptId(attachment.getDeptId());
                 model.setDeptName(attachment.getDeptName());
                 model.setDescribes(attachment.getDescribes());
-                model.setUploadTime(sdfymdhm.format(sdfymdhms.parse(attachment.getUploadTime())));
+                model.setUploadTime(target.format(source.parse(attachment.getUploadTime())));
                 model.setFileType(attachment.getFileType());
                 model.setFileSource(attachment.getFileSource());
                 model.setFileStoreId(attachment.getFileStoreId());
@@ -171,10 +173,9 @@ public class AttachmentServiceImpl implements AttachmentService {
                 item.add(model);
                 number += 1;
             }
-            return Y9Page.success(page, transactionFileList.getTotalPages(), transactionFileList.getTotalElements(),
-                item);
+            return Y9Page.success(page, attachmentList.getTotalPages(), attachmentList.getTotalElements(), item);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return Y9Page.failure(page, 0, 0, new ArrayList<>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
     }
@@ -191,7 +192,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         try {
             attachmentRepository.update(processInstanceId, taskId, processSerialNumber);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -201,7 +202,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
         String[] types = fileName.split("\\.");
         String type = types[types.length - 1].toLowerCase();
-        SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Attachment attachment = new Attachment();
         attachment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         attachment.setName(fileName);
@@ -210,7 +211,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         attachment.setProcessInstanceId(processInstanceId);
         attachment.setProcessSerialNumber(processSerialNumber);
         attachment.setTaskId(taskId);
-        attachment.setUploadTime(sdfymdhms.format(new Date()));
+        attachment.setUploadTime(sdf.format(new Date()));
         attachment.setDescribes(describes);
         attachment.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
         attachment.setPersonId(Y9LoginUserHolder.getPersonId());

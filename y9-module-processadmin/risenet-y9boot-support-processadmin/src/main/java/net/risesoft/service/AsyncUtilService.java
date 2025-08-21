@@ -21,7 +21,7 @@ public interface AsyncUtilService {
      * @param loopCounter 循环次数
      * @return Future<Boolean>
      */
-    Future<Boolean> asynInterface(final String tenantId, final String orgUnitId, final String processSerialNumber,
+    Future<Boolean> asyncInterface(final String tenantId, final String orgUnitId, final String processSerialNumber,
         final String itemId, final InterfaceModel info, final String processInstanceId,
         final String processDefinitionId, final String taskId, final String taskKey, final Integer loopCounter);
 }

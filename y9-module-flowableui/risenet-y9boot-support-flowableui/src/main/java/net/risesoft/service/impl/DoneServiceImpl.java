@@ -32,7 +32,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 @RequiredArgsConstructor
 @Slf4j
-@Service(value = "doneService")
+@Service
 @Transactional(readOnly = true)
 public class DoneServiceImpl implements DoneService {
 

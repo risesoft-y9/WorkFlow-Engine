@@ -29,10 +29,8 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
-import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Position;
-import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
@@ -42,7 +40,7 @@ import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "monitorService")
+@Service
 @Transactional(readOnly = true)
 public class MonitorServiceImpl implements MonitorService {
 
@@ -91,8 +89,9 @@ public class MonitorServiceImpl implements MonitorService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser = orgUnitApi
-                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser =
+                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                        .getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -176,8 +175,9 @@ public class MonitorServiceImpl implements MonitorService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser = orgUnitApi
-                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser =
+                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                        .getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -501,65 +501,4 @@ public class MonitorServiceImpl implements MonitorService {
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
-
-    @Override
-    public Map<String, Object> pageMonitorRecycleList(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-            Y9Page<HistoricProcessInstanceModel> hpiPage;
-            if (StringUtils.isBlank(searchTerm)) {
-                hpiPage = monitorApi.getRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, page, rows);
-            } else {
-                hpiPage = monitorApi.searchRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, searchTerm,
-                    page, rows);
-            }
-            List<Map<String, Object>> items = new ArrayList<>();
-            List<HistoricProcessInstanceModel> hpiModelList = hpiPage.getRows();
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            ProcessParamModel processParam;
-            String processInstanceId;
-            for (HistoricProcessInstanceModel hpim : hpiModelList) {
-                mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getId();
-                processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
-                String level = processParam.getCustomLevel();
-                String number = processParam.getCustomNumber();
-                String completer = StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
-                mapTemp.put("itemName", itemName);
-                mapTemp.put("processInstanceId", processInstanceId);
-                mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
-                mapTemp.put("level", level == null ? "" : level);
-                mapTemp.put("number", number == null ? "" : number);
-                mapTemp.put("itemId", itemId);
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                mapTemp.put("taskCreateTime", sdf.format(hpim.getStartTime()));
-                if (hpim.getEndTime() != null) {
-                    mapTemp.put("taskName", "已办结");
-                    mapTemp.put("taskAssignee", completer);
-                } else {
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    String assigneeNames = listTemp.get(2);
-                    mapTemp.put("taskName", taskList.get(0).getName());
-                    mapTemp.put("taskAssignee", assigneeNames);
-                }
-                items.add(mapTemp);
-            }
-            retMap.put("rows", items);
-            retMap.put("currpage", page);
-            retMap.put("totalpages", hpiPage.getTotalPages());
-            retMap.put("total", hpiPage.getTotal());
-        } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
-        }
-        return retMap;
-    }
-
 }

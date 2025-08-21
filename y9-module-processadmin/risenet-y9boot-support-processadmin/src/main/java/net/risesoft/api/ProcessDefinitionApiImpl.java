@@ -185,7 +185,7 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
-     * 根据流程定义key获取最新版本的流程定义的启动节点的taskdefineKey
+     * 根据流程定义key获取最新版本的流程定义的启动节点的taskDefineKey
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key

@@ -47,7 +47,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "todoService")
+@Service
 @Transactional(readOnly = true)
 public class TodoServiceImpl implements TodoService {
 

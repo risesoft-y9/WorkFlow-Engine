@@ -142,11 +142,11 @@ public interface ProcessDefinitionApi {
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
-     * 根据流程定义key获取最新版本的流程定义的启动节点的taskdefineKey
+     * 根据流程定义key获取最新版本的流程定义的启动节点的taskDefineKey
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return {@code Y9Result<String>} 通用请求返回对象 - data taskdefineKey
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data taskDefineKey
      * @since 9.6.6
      */
     @GetMapping(value = "/getStartNodeKeyByProcessDefinitionKey")

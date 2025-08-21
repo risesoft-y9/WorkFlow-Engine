@@ -41,7 +41,7 @@ import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "doingService")
+@Service
 @Transactional(readOnly = true)
 public class DoingServiceImpl implements DoingService {
 

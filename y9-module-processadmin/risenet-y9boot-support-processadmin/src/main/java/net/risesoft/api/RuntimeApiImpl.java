@@ -210,9 +210,11 @@ public class RuntimeApiImpl implements RuntimeApi {
         @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         long totalCount = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId).count();
-        List<ProcessInstance> list =
-            runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId)
-                .orderBy(HistoricProcessInstanceQueryProperty.START_TIME).desc().listPage((page - 1) * rows, rows);
+        List<ProcessInstance> list = runtimeService.createProcessInstanceQuery()
+            .processDefinitionId(processDefinitionId)
+            .orderBy(HistoricProcessInstanceQueryProperty.START_TIME)
+            .desc()
+            .listPage((page - 1) * rows, rows);
         List<ProcessInstanceModel> hpiModelList = FlowableModelConvertUtil.processInstanceList2ModelList(list);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, hpiModelList);
     }
@@ -293,8 +295,11 @@ public class RuntimeApiImpl implements RuntimeApi {
                 runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
         } else {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
-                .orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .orderByStartTime()
+                .desc()
+                .listPage((page - 1) * rows, rows);
         }
         OrgUnit orgUnit;
         ProcessInstanceModel piModel;
@@ -306,9 +311,13 @@ public class RuntimeApiImpl implements RuntimeApi {
             piModel.setProcessDefinitionName(processInstance.getProcessDefinitionName());
             piModel.setStartTime(processInstance.getStartTime());
             try {
-                piModel
-                    .setActivityName(runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId)
-                        .orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
+                piModel.setActivityName(runtimeService.createActivityInstanceQuery()
+                    .processInstanceId(processInstanceId)
+                    .orderByActivityInstanceStartTime()
+                    .desc()
+                    .list()
+                    .get(0)
+                    .getActivityName());
                 piModel.setSuspended(processInstance.isSuspended());
                 piModel.setStartUserName("无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
@@ -318,7 +327,7 @@ public class RuntimeApiImpl implements RuntimeApi {
                     piModel.setStartUserName(orgUnit.getName() + "(" + parent.getName() + ")");
                 }
             } catch (Exception e) {
-                LOGGER.error("获取流程实例[" + processInstanceId + "]的活动节点名称失败", e);
+                LOGGER.error("获取流程实例[{}]的活动节点名称失败", processInstanceId, e);
             }
             items.add(piModel);
         }
@@ -412,8 +421,10 @@ public class RuntimeApiImpl implements RuntimeApi {
     public Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
-            .singleResult().isSuspended());
+        return Y9Result.success(runtimeService.createProcessInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .singleResult()
+            .isSuspended());
     }
 
     /**

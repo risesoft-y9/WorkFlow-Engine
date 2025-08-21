@@ -9,38 +9,38 @@ public interface AttachmentConfService {
     /**
      * 根据唯一标示查找附件配置
      *
-     * @param id
-     * @return
+     * @param id 唯一标示
+     * @return AttachmentConf
      */
     AttachmentConf findById(String id);
 
     /**
-     * Description:根据附件类型查找附件配置
+     * 根据附件类型查找附件配置
      *
-     * @param attachmentType
-     * @param configType
-     * @return
+     * @param attachmentType 附件类型
+     * @param configType 配置类型
+     * @return List<AttachmentConf>
      */
     List<AttachmentConf> listByAttachmentType(String attachmentType, Integer configType);
 
     /**
-     * Description:移除指定附件类型的所有附件配置
+     * 移除指定附件类型的所有附件配置
      *
-     * @param attachmentType
+     * @param attachmentType 附件类型
      */
     void removeByAttachmentType(String attachmentType);
 
     /**
      * 根据附件配置唯一标示数据删除附件配置
      *
-     * @param attachmentConfIds
+     * @param attachmentConfIds 附件配置唯一标示数据
      */
     void removeAttachmentConfs(String[] attachmentConfIds);
 
     /**
      * 保存或更新附件配置
      *
-     * @param attachmentConf
+     * @param attachmentConf 附件配置
      */
     void saveOrUpdate(AttachmentConf attachmentConf);
 

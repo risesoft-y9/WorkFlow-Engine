@@ -61,7 +61,7 @@ public interface AttachmentService {
      * @param fileType
      * @return
      */
-    Integer getTransactionFileCount(String processSerialNumber, String fileSource, String fileType);
+    Integer getAttachmentCount(String processSerialNumber, String fileSource, String fileType);
 
     /**
      * (软航附件控件) 获取下一个附件控件

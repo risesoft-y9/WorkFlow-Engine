@@ -34,7 +34,7 @@ import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "searchService")
+@Service
 public class SearchServiceImpl implements SearchService {
 
     private final ChaoSongApi chaoSongApi;
@@ -84,8 +84,9 @@ public class SearchServiceImpl implements SearchService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser = orgUnitApi
-                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser =
+                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                        .getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);

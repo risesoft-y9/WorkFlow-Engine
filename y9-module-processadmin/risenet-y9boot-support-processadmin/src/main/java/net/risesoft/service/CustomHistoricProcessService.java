@@ -14,134 +14,57 @@ public interface CustomHistoricProcessService {
     /**
      * 删除流程实例，在办件暂停，办结件加删除标识
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例Id
+     * @return boolean
      */
     boolean deleteProcessInstance(String processInstanceId);
 
     /**
      * 根据流程实例Id获取历史流程实例
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例Id
+     * @return HistoricProcessInstance
      */
     HistoricProcessInstance getById(String processInstanceId);
 
     /**
-     * Description:
+     * 
      *
-     * @param processInstanceId
-     * @param year
-     * @return
+     * @param processInstanceId 流程实例Id
+     * @param year 年份
+     * @return HistoricProcessInstance
      */
     HistoricProcessInstance getByIdAndYear(String processInstanceId, String year);
 
     /**
-     * 获取所有回收站统计
-     *
-     * @param title
-     * @return
-     */
-    int getRecycleCount(String title);
-
-    /**
-     * 获取回收站统计
-     *
-     * @param itemId
-     * @param title
-     * @return
-     */
-    int getRecycleCountByItemId(String itemId, String title);
-
-    /**
-     * 根据人员id获取回收站统计
-     *
-     * @param title
-     * @param userId
-     * @return
-     */
-    int getRecycleCountByUserId(String title, String userId);
-
-    /**
      * 根据流程实例获取父流程实例
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例Id
+     * @return HistoricProcessInstance
      */
     HistoricProcessInstance getSuperProcessInstanceById(String processInstanceId);
 
     /**
      * 根据父流程实例获取所有历史子流程实例
      *
-     * @param superProcessInstanceId
-     * @return
+     * @param superProcessInstanceId 子流程实例Id
+     * @return List<HistoricProcessInstance>
      */
     List<HistoricProcessInstance> listBySuperProcessInstanceId(String superProcessInstanceId);
 
     /**
-     * 获取删除实例列表
-     *
-     * @param itemId
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> listDeleteProByItemId(String itemId, Integer page, Integer rows);
-
-    /**
-     * 获取所有回收站列表
-     *
-     * @param title
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> listRecycleAll(String title, Integer page, Integer rows);
-
-    /**
-     * 获取回收站列表
-     *
-     * @param itemId
-     * @param title
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> listRecycleByItemId(String itemId, String title, Integer page, Integer rows);
-
-    /**
-     * 根据人员id获取回收站列表
-     *
-     * @param title
-     * @param userId
-     * @param page
-     * @param rows
-     * @return
-     */
-    List<HistoricProcessInstance> listRecycleByUserId(String title, String userId, Integer page, Integer rows);
-
-    /**
-     * 恢复，激活流程实例
-     *
-     * @param processInstanceId
-     * @return
-     */
-    boolean recoveryProcessInstance(String processInstanceId);
-
-    /**
      * 彻底删除流程实例，岗位
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例Id
+     * @return boolean
      */
     boolean removeProcess(String processInstanceId);
 
     /**
-     * Description:
-     *
-     * @param processInstanceId
-     * @param priority
-     * @throws Exception
+     * 
+     * @param processInstanceId 流程实例Id
+     * @param priority 优先级
+     * @throws Exception 抛出异常
      */
     void setPriority(String processInstanceId, String priority) throws Exception;
 }

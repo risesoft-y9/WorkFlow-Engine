@@ -38,7 +38,7 @@ import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "queryListService")
+@Service
 @Transactional(readOnly = true)
 public class QueryListServiceImpl implements QueryListService {
 

@@ -1,7 +1,6 @@
 package net.risesoft.service.attachment.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,21 +48,11 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
         return attachmentTypeRepository.findAll(sort);
     }
 
-    @SuppressWarnings("serial")
     @Override
     public Page<AttachmentType> pageAll(int page, int rows) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return attachmentTypeRepository.findAll(new Specification<AttachmentType>() {
-
-            @Override
-            public Predicate toPredicate(Root<AttachmentType> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
-                Predicate[] predicates = new Predicate[list.size()];
-                list.toArray(predicates);
-                return builder.and(predicates);
-            }
-        }, pageable);
+        return attachmentTypeRepository.findAll(pageable);
     }
 
     @Override
