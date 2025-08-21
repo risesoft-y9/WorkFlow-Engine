@@ -23,7 +23,7 @@ import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.WorkList4GfgService;
+import net.risesoft.service.WorkListService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -39,7 +39,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/todo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TodoRestController {
 
-    private final WorkList4GfgService workList4GfgService;
+    private final WorkListService workListService;
 
     private final ItemViewConfApi itemViewConfApi;
 
@@ -56,14 +56,14 @@ public class TodoRestController {
     @PostMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.todoList(itemId, searchMapStr, page, rows);
+        return workListService.todoList(itemId, searchMapStr, page, rows);
     }
 
     @FlowableLog(operationName = "待办列表-其他")
     @PostMapping(value = "/todoList4Other")
     public Y9Page<Map<String, Object>> todoList4Other(@RequestParam String itemId, @RequestParam String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.todoList4Other(itemId, searchMapStr, page, rows);
+        return workListService.todoList4Other(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -79,7 +79,7 @@ public class TodoRestController {
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(@RequestParam String itemId,
         @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.todoList4TaskDefKey(itemId, taskDefKey, searchMapStr, page, rows);
+        return workListService.todoList4TaskDefKey(itemId, taskDefKey, searchMapStr, page, rows);
     }
 
     /**
@@ -105,6 +105,6 @@ public class TodoRestController {
     @FlowableLog(operationName = "我的待办")
     @GetMapping(value = "/allTodoList")
     public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
-        return workList4GfgService.allTodoList(queryParamModel);
+        return workListService.allTodoList(queryParamModel);
     }
 }

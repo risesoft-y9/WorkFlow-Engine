@@ -34,11 +34,8 @@ import net.risesoft.api.itemadmin.worklist.ItemRecycleApi;
 import net.risesoft.api.itemadmin.worklist.ItemTodoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.tenant.TenantApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -56,8 +53,7 @@ import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
-import net.risesoft.service.WorkDayService;
-import net.risesoft.service.WorkList4GfgService;
+import net.risesoft.service.WorkListService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -69,14 +65,11 @@ import net.risesoft.y9.util.Y9Util;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class WorkList4GfgServiceImpl implements WorkList4GfgService {
+public class WorkListServiceImpl implements WorkListService {
 
     private static final Map<String, Object> map = new HashMap<>();
     private final ItemApi itemApi;
-    private final VariableApi variableApi;
-    private final HistoricTaskApi historicTaskApi;
     private final ProcessParamApi processParamApi;
-    private final ProcessDefinitionApi processDefinitionApi;
     private final FormDataApi formDataApi;
     private final ItemTodoApi itemTodoApi;
     private final ItemDoingApi itemDoingApi;
@@ -88,7 +81,6 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private final OrgUnitApi orgUnitApi;
     private final IdentityApi identityApi;
     private final TaskRelatedApi taskRelatedApi;
-    private final WorkDayService workDayService;
     private final SignDeptDetailApi signDeptDetailApi;
     private final UrgeInfoApi urgeInfoApi;
     private final OptionClassApi optionClassApi;
@@ -650,8 +642,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         int j = 0;
                         for (IdentityLinkModel identityLink : iList) {
                             String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = orgUnitApi
-                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                            OrgUnit ownerUser =
+                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                    .getData();
                             if (j < 5) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                             } else {
@@ -737,10 +730,10 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
     private Map<String, Object> getTaskNameAndUserName4Doing(ProcessParamModel processParam, List<TaskModel> taskList,
         List<SignDeptDetailModel> signDeptDetailList) {
         String tenantId = Y9LoginUserHolder.getTenantId(), processInstanceId = processParam.getProcessInstanceId();
-        String userName = "--", taskName = "--";
+        String userName, taskName;
         Map<String, Object> map = new HashMap<>();
-        boolean isSign = signDeptDetailList.stream()
-            .anyMatch(sdd -> sdd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue()));
+        boolean isSign =
+            signDeptDetailList.stream().anyMatch(sdd -> sdd.getStatus().equals(SignDeptDetailStatusEnum.DOING));
         // 当前节点如果是子流程的节点
         if (isSign) {
             taskName = signDeptDetailList.get(0).getTaskName();
@@ -797,8 +790,9 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
                         int j = 0;
                         for (IdentityLinkModel identityLink : iList) {
                             String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = orgUnitApi
-                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                            OrgUnit ownerUser =
+                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                    .getData();
                             if (j < 5) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                             } else {
@@ -1046,7 +1040,8 @@ public class WorkList4GfgServiceImpl implements WorkList4GfgService {
             List<TaskRelatedModel> processRelatedList =
                 taskRelatedApi.findByProcessSerialNumber(tenantId, ardModel.getProcessSerialNumber()).getData();
             List<TaskRelatedModel> taskRelatedList = processRelatedList.stream()
-                .filter(prl -> prl.getTaskId().equals(ardModel.getTaskId())).collect(Collectors.toList());
+                .filter(prl -> prl.getTaskId().equals(ardModel.getTaskId()))
+                .collect(Collectors.toList());
             // 7、多步退回 8、办文说明
             taskRelatedList = taskRelatedList.stream()
                 .filter(

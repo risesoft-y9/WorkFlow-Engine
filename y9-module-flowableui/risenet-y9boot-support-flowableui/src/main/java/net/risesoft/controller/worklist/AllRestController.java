@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.pojo.Y9Page;
-import net.risesoft.service.WorkList4GfgService;
+import net.risesoft.service.WorkListService;
 
 /**
  * 所有件
@@ -30,7 +30,7 @@ import net.risesoft.service.WorkList4GfgService;
 @RequestMapping(value = "/vue/all", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AllRestController {
 
-    private final WorkList4GfgService workList4GfgService;
+    private final WorkListService workListService;
 
     /**
      * 获取所有本人经手件的列表
@@ -45,7 +45,7 @@ public class AllRestController {
     @PostMapping(value = "/allList")
     public Y9Page<Map<String, Object>> allList(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.allList(itemId, searchMapStr, false, page, rows);
+        return this.workListService.allList(itemId, searchMapStr, false, page, rows);
     }
 
     /**
@@ -61,6 +61,6 @@ public class AllRestController {
     @PostMapping(value = "/allList4Org")
     public Y9Page<Map<String, Object>> allList4Org(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workList4GfgService.allList(itemId, searchMapStr, true, page, rows);
+        return this.workListService.allList(itemId, searchMapStr, true, page, rows);
     }
 }

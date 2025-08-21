@@ -21,7 +21,7 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.WorkList4GfgService;
+import net.risesoft.service.WorkListService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -37,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/doing", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DoingRestController {
 
-    private final WorkList4GfgService workList4GfgService;
+    private final WorkListService workListService;
 
     private final ItemViewConfApi itemViewConfApi;
 
@@ -53,7 +53,7 @@ public class DoingRestController {
     @PostMapping(value = "/doingList4DuBan")
     public Y9Page<Map<String, Object>> doingList4DuBan(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doingList4DuBan(itemId, searchMapStr, page, rows);
+        return workListService.doingList4DuBan(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -68,7 +68,7 @@ public class DoingRestController {
     @PostMapping(value = "/doingList4Dept")
     public Y9Page<Map<String, Object>> doingList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doingList4Dept(itemId, isBureau, searchMapStr, page, rows);
+        return workListService.doingList4Dept(itemId, isBureau, searchMapStr, page, rows);
     }
 
     /**
@@ -83,7 +83,7 @@ public class DoingRestController {
     @PostMapping(value = "/doingList4All")
     public Y9Page<Map<String, Object>> doingList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workList4GfgService.doingList4All(itemId, searchMapStr, page, rows);
+        return workListService.doingList4All(itemId, searchMapStr, page, rows);
     }
 
     /**
