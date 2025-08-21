@@ -32,8 +32,12 @@ public class CustomHistoricActivityServiceImpl implements CustomHistoricActivity
         String executionId, String year) {
         List<HistoricActivityInstance> hisActivityList;
         if (StringUtils.isBlank(year)) {
-            hisActivityList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
-                .executionId(executionId).orderByHistoricActivityInstanceStartTime().asc().list();
+            hisActivityList = historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .executionId(executionId)
+                .orderByHistoricActivityInstanceStartTime()
+                .asc()
+                .list();
         } else {
             String sql = "select RES.* from ACT_HI_ACTINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '"
                 + processInstanceId + "' and RES.EXECUTION_ID_ = '" + executionId + "' order by START_TIME_ asc";
@@ -46,22 +50,21 @@ public class CustomHistoricActivityServiceImpl implements CustomHistoricActivity
 
     @Override
     public List<HistoricActivityInstance> listByProcessInstanceId(String processInstanceId) {
-        return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
-            .orderByHistoricActivityInstanceStartTime().asc().list();
-    }
-
-    @Override
-    public List<HistoricActivityInstance> listByProcessInstanceIdAndActivityType(String processInstanceId,
-        String activityType) {
-        return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
-            .activityType(activityType).list();
+        return historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .orderByHistoricActivityInstanceStartTime()
+            .asc()
+            .list();
     }
 
     @Override
     public List<HistoricActivityInstance> listByProcessInstanceIdAndYear(String processInstanceId, String year) {
         if (StringUtils.isBlank(year)) {
-            return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
-                .orderByHistoricActivityInstanceStartTime().asc().list();
+            return historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .orderByHistoricActivityInstanceStartTime()
+                .asc()
+                .list();
         } else {
             String sql = "select RES.* from ACT_HI_ACTINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '"
                 + processInstanceId + "' order by START_TIME_ asc";

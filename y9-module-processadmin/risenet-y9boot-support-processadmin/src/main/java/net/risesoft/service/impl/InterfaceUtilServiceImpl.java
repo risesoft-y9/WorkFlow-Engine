@@ -75,7 +75,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asyncUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
+                    asyncUtilService.asyncInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
                         processInstanceId, processDefinitionId, "", "", null);
 
                 } else if (info.getAsyn().equals("0")) {
@@ -127,7 +127,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asyncUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
+                    asyncUtilService.asyncInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
                         processInstanceId, processDefinitionId, flow.getId(), taskDefinitionKey, null);
 
                 } else if (info.getAsyn().equals("0")) {
@@ -175,7 +175,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asyncUtilService.asynInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
+                    asyncUtilService.asyncInterface(tenantId, orgUnitId, processSerialNumber, itemId, info,
                         task.getProcessInstanceId(), processDefinitionId, task.getId(), task.getTaskDefinitionKey(),
                         loopCounter);
 

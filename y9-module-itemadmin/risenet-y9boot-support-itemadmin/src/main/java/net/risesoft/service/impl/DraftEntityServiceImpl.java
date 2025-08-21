@@ -61,7 +61,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final ProcessParamService processParamService;
 
-    private final AttachmentService transactionFileService;
+    private final AttachmentService attachmentService;
 
     private final TransactionWordService transactionWordService;
 
@@ -92,7 +92,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     processParamService.deleteByProcessSerialNumber(processSerialNumber);
                     List<String> list = new ArrayList<>();
                     list.add(processSerialNumber);
-                    transactionFileService.delBatchByProcessSerialNumbers(list);
+                    attachmentService.delBatchByProcessSerialNumbers(list);
                     transactionWordService.delBatchByProcessSerialNumbers(list);
                 } catch (Exception e) {
                     LOGGER.error("删除流程参数失败", e);

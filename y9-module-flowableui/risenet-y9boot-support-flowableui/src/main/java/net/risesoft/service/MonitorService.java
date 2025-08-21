@@ -77,16 +77,4 @@ public interface MonitorService {
     Y9Page<Map<String, Object>> pageMonitorDoneList(String processDefinitionKey, String searchTerm, Integer page,
         Integer rows);
 
-    /**
-     * 获取回收列表
-     *
-     * @param processDefinitionKey
-     * @param searchTerm 搜索词
-     * @param page
-     * @param rows
-     * @return
-     */
-    Map<String, Object> pageMonitorRecycleList(String processDefinitionKey, String searchTerm, Integer page,
-        Integer rows);
-
 }

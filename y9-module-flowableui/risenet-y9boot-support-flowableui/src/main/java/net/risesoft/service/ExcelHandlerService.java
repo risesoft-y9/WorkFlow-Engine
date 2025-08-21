@@ -12,5 +12,4 @@ import java.util.Map;
 public interface ExcelHandlerService {
 
     void export(OutputStream outStream, List<Map<String, Object>> mapList, String[] columns);
-
 }

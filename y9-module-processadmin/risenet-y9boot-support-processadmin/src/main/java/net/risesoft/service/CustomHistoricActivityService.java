@@ -17,10 +17,10 @@ public interface CustomHistoricActivityService {
     /**
      * 根据流程实例ID和执行ID获取历史节点实例
      *
-     * @param processInstanceId
-     * @param executionId
-     * @param year
-     * @return
+     * @param processInstanceId 流程实例ID
+     * @param executionId 执行id
+     * @param year 年丰
+     * @return Y9Result<List<HistoricActivityInstanceModel>>
      */
     Y9Result<List<HistoricActivityInstanceModel>> getTaskListByExecutionId(String processInstanceId, String executionId,
         String year);
@@ -28,27 +28,16 @@ public interface CustomHistoricActivityService {
     /**
      * 根据流程实例获取历史节点实例
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例id
+     * @return List<HistoricActivityInstance>
      */
     List<HistoricActivityInstance> listByProcessInstanceId(String processInstanceId);
 
     /**
-     * 根据流程实例和流程节点类型获取历史节点实例
      *
-     * @param processInstanceId
-     * @param activityType
-     * @return
-     */
-    List<HistoricActivityInstance> listByProcessInstanceIdAndActivityType(String processInstanceId,
-        String activityType);
-
-    /**
-     * Description:
-     *
-     * @param processInstanceId
-     * @param year
-     * @return
+     * @param processInstanceId 流程实例id
+     * @param year 年份
+     * @return List<HistoricActivityInstance>
      */
     List<HistoricActivityInstance> listByProcessInstanceIdAndYear(String processInstanceId, String year);
 }

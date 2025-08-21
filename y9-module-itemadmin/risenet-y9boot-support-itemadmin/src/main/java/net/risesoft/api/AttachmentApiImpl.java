@@ -49,7 +49,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/attachment", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AttachmentApiImpl implements AttachmentApi {
 
-    private final AttachmentService transactionFileService;
+    private final AttachmentService attachmentService;
 
     private final AttachmentRepository attachmentRepository;
 
@@ -71,7 +71,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public Y9Result<Object> delBatchByProcessSerialNumbers(@RequestParam String tenantId,
         @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        transactionFileService.delBatchByProcessSerialNumbers(processSerialNumbers);
+        attachmentService.delBatchByProcessSerialNumbers(processSerialNumbers);
         return Y9Result.success();
     }
 
@@ -86,7 +86,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @Override
     public Y9Result<Object> delFile(@RequestParam String tenantId, @RequestParam String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        transactionFileService.delFile(ids);
+        attachmentService.delFile(ids);
         return Y9Result.success();
     }
 
@@ -101,7 +101,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @Override
     public Y9Result<Integer> fileCounts(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int num = transactionFileService.fileCounts(processSerialNumber);
+        int num = attachmentService.fileCounts(processSerialNumber);
         return Y9Result.success(num);
     }
 
@@ -116,7 +116,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @Override
     public Y9Result<AttachmentModel> findById(@RequestParam String tenantId, @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Attachment file = transactionFileService.findById(id);
+        Attachment file = attachmentService.findById(id);
         AttachmentModel model = null;
         if (file != null) {
             model = new AttachmentModel();
@@ -140,7 +140,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         String fileSource, String fileType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         fileType = fileType.toLowerCase();
-        int num = transactionFileService.getTransactionFileCount(processSerialNumber, fileSource, fileType);
+        int num = attachmentService.getAttachmentCount(processSerialNumber, fileSource, fileType);
         return Y9Result.success(num);
     }
 
@@ -159,7 +159,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public Y9Page<AttachmentModel> getAttachmentList(@RequestParam String tenantId,
         @RequestParam String processSerialNumber, String fileSource, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return transactionFileService.pageByProcessSerialNumber(processSerialNumber, fileSource, page, rows);
+        return attachmentService.pageByProcessSerialNumber(processSerialNumber, fileSource, page, rows);
     }
 
     /**
@@ -176,7 +176,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         @RequestParam String processSerialNumber, String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Attachment> attachmentList =
-            transactionFileService.listSearchByProcessSerialNumber(processSerialNumber, fileSource);
+            attachmentService.listSearchByProcessSerialNumber(processSerialNumber, fileSource);
         List<AttachmentModel> list = ItemAdminModelConvertUtil.attachmentList2ModelList(attachmentList);
         return Y9Result.success(list);
     }
@@ -235,7 +235,7 @@ public class AttachmentApiImpl implements AttachmentApi {
             file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
             file.setProcessSerialNumber(processSerialNumber);
             file.setUploadTime(sdf.format(new Date()));
-            transactionFileService.save(file);
+            attachmentService.save(file);
         }
         return Y9Result.success();
     }
@@ -266,7 +266,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Attachment attachment = transactionFileService.getFileInfoByFileName(fileName, processSerialNumber);
+            Attachment attachment = attachmentService.getFileInfoByFileName(fileName, processSerialNumber);
             if (null != attachment) {
                 attachment.setFileStoreId(y9FileStoreId);
                 attachment.setName(fileName);
@@ -290,7 +290,7 @@ public class AttachmentApiImpl implements AttachmentApi {
                 fileAttachment.setProcessSerialNumber(processSerialNumber);
                 fileAttachment.setTaskId(taskId);
                 fileAttachment.setFileSource(fileSource);
-                fileAttachment.setTabIndex(transactionFileService.fileCounts(processSerialNumber) + 1);
+                fileAttachment.setTabIndex(attachmentService.fileCounts(processSerialNumber) + 1);
                 attachmentRepository.save(fileAttachment);
             }
             msg = "success:true";
@@ -364,7 +364,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes,
+        attachmentService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes,
             fileSource, y9FileStoreId);
         return Y9Result.successMsg("上传成功");
     }
@@ -386,16 +386,16 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         Attachment file = new Attachment();
         Y9BeanUtil.copyProperties(attachmentModel, file);
-        transactionFileService.uploadRestModel(file);
+        attachmentService.uploadRestModel(file);
         return Y9Result.success();
     }
 
     /**
      * 获取附件配置信息
      * 
-     * @param tenantId
-     * @param attachmentType
-     * @return
+     * @param tenantId 租户id
+     * @param attachmentType 附件类型
+     * @return Y9Result<List<AttachmentConfModel>>
      */
     @Override
     public Y9Result<List<AttachmentConfModel>> findByAttachmentType(@RequestParam String tenantId,

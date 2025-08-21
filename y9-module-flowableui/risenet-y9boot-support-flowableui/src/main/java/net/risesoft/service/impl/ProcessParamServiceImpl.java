@@ -25,7 +25,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "processParamService")
+@Service
 @Transactional(readOnly = true)
 public class ProcessParamServiceImpl implements ProcessParamService {
 

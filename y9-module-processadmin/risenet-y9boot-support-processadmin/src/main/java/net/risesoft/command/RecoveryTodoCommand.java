@@ -16,7 +16,6 @@ import org.flowable.identitylink.service.HistoricIdentityLinkService;
 import org.flowable.identitylink.service.IdentityLinkService;
 import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntity;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.task.service.HistoricTaskService;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
 
@@ -54,8 +53,6 @@ public class RecoveryTodoCommand implements Command<Void> {
         IdentityLinkService identityLinkService = CommandContextUtil.getIdentityLinkService();
         HistoricProcessInstanceEntityManager historicProcessInstanceEntityManager =
             CommandContextUtil.getHistoricProcessInstanceEntityManager();
-        HistoricTaskService historicTaskService = CommandContextUtil.getHistoricTaskService();
-
         String processInstanceId = hisTask.getProcessInstanceId(), taskId = hisTask.getId();
         String assignee = hisTask.getAssignee();
         /*
@@ -97,8 +94,8 @@ public class RecoveryTodoCommand implements Command<Void> {
          */
         ProcessEngineConfigurationImpl processEngineConfiguration =
             org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
-        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
-            TaskListener.EVENTNAME_CREATE);
+        processEngineConfiguration.getListenerNotificationHelper()
+            .executeTaskListeners(taskEntity, TaskListener.EVENTNAME_CREATE);
         /*
          * 2-设置历史任务办结时间为null
          */

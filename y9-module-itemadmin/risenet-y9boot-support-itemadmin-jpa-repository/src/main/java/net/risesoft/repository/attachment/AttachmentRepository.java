@@ -22,16 +22,6 @@ import net.risesoft.entity.attachment.Attachment;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface AttachmentRepository extends JpaRepository<Attachment, String>, JpaSpecificationExecutor<Attachment> {
 
-    @Modifying
-    @Transactional(readOnly = false)
-    @Query("delete from Attachment where processSerialNumber in (?1)")
-    void delBatchByProcessSerialNumbers(List<String> processSerialNumbers);
-
-    @Modifying
-    @Transactional(readOnly = false)
-    @Query("delete from Attachment t where t.processSerialNumber=?1 and t.name=?2")
-    int delFileByName(String processSerialNumber, String name);
-
     @Query("select count(*) from Attachment t where t.processSerialNumber=?1")
     Integer fileCounts(String processSerialNumber);
 
@@ -43,9 +33,6 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String>,
 
     @Query("from Attachment t where t.processSerialNumber in (?1)")
     List<Attachment> findByProcessSerialNumbers(List<String> processSerialNumbers);
-
-    @Query("from Attachment t where t.processSerialNumber=?1 order by t.tabIndex ASC")
-    List<Attachment> findTransactionFileByProcessSerialNumber(String processSerialNumber);
 
     @Query("from Attachment t where t.processSerialNumber=?1")
     List<Attachment> getAttachmentList(String processSerialNumber);
@@ -63,10 +50,10 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String>,
     Attachment getFileInfoByFileName(String name, String processSerialNumber);
 
     @Query("select count(*) from Attachment t where t.processSerialNumber=?1 and t.fileSource = ?2")
-    Integer getTransactionFileCount(String processSerialNumber, String fileSource);
+    Integer getAttachmentCount(String processSerialNumber, String fileSource);
 
     @Query("select count(*) from Attachment t where t.processSerialNumber=?1 and t.fileSource = ?2 and t.fileType = ?3")
-    Integer getTransactionFileCountByFileType(String processSerialNumber, String fileSource, String fileType);
+    Integer getAttachmentCountByFileType(String processSerialNumber, String fileSource, String fileType);
 
     @Query("from Attachment t where t.tabIndex=?1 and t.processSerialNumber=?2 order by t.tabIndex asc")
     Attachment getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber);

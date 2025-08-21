@@ -1,20 +1,13 @@
 package net.risesoft.service.attachment.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,21 +42,11 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
         return attachmentTypeRepository.findAll(sort);
     }
 
-    @SuppressWarnings("serial")
     @Override
     public Page<AttachmentType> pageAll(int page, int rows) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return attachmentTypeRepository.findAll(new Specification<AttachmentType>() {
-
-            @Override
-            public Predicate toPredicate(Root<AttachmentType> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
-                Predicate[] predicates = new Predicate[list.size()];
-                list.toArray(predicates);
-                return builder.and(predicates);
-            }
-        }, pageable);
+        return attachmentTypeRepository.findAll(pageable);
     }
 
     @Override

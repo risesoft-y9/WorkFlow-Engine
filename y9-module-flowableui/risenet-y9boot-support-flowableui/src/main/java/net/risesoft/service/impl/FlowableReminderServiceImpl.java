@@ -26,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "flowableReminderService")
+@Service
 public class FlowableReminderServiceImpl implements FlowableReminderService {
 
     private final TaskApi taskApi;

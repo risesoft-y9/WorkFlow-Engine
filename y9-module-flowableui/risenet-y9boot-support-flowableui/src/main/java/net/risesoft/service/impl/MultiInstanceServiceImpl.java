@@ -31,7 +31,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service(value = "multiInstanceService")
+@Service
 public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final TaskApi taskApi;
