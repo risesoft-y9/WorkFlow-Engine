@@ -65,5 +65,4 @@ public class CustomViewController {
     public Y9Result<Object> saveCustomView(@RequestParam String jsonData) {
         return customViewApi.saveCustomView(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), jsonData);
     }
-
 }

@@ -12,11 +12,11 @@ public class Y9FlowableProperties {
 
     private String monitorManageRoleName = "监控管理员角色";
 
-    private String repositionrManageRoleName = "重定向角色";
+    private String repositionManagerRoleName = "重定向角色";
 
-    private String fawenManageRoleName = "发文角色";
+    private String faWenManageRoleName = "发文角色";
 
-    private String shouwenManageRoleName = "收文角色";
+    private String shouWenManageRoleName = "收文角色";
 
     private String leaveManageRoleName = "人事统计角色";
 

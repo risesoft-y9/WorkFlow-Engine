@@ -244,10 +244,10 @@ public class MainRestController {
         map.put("monitorManage", b);
         boolean b1 =
             positionRoleApi
-                .hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
+                .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
                     Y9LoginUserHolder.getPositionId())
                 .getData();
-        map.put("repositionrManage", b1);
+        map.put("repositionManager", b1);
         return Y9Result.success(map, "获取成功");
     }
 
@@ -268,18 +268,18 @@ public class MainRestController {
         map.put("monitorManage", b);
         boolean b1 =
             positionRoleApi
-                .hasPublicRole(tenantId, y9FlowableProperties.getRepositionrManageRoleName(),
+                .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
                     Y9LoginUserHolder.getPositionId())
                 .getData();
-        map.put("repositionrManage", b1);
+        map.put("repositionManager", b1);
         boolean b2 = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getFawenManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .hasPublicRole(tenantId, y9FlowableProperties.getFaWenManageRoleName(), Y9LoginUserHolder.getPositionId())
             .getData();
-        map.put("fawenManage", b2);
+        map.put("faWenManage", b2);
         boolean b3 = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getShouwenManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .hasPublicRole(tenantId, y9FlowableProperties.getShouWenManageRoleName(), Y9LoginUserHolder.getPositionId())
             .getData();
-        map.put("shouwenManage", b3);
+        map.put("shouWenManage", b3);
         map.put("itemList", itemList);
         return Y9Result.success(map, "获取成功");
     }
