@@ -51,8 +51,9 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                     }
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
-                    List<Position> list = personApi
-                        .listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
+                    List<Position> list =
+                        personApi.listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId())
+                            .getData();
                     if (!list.isEmpty()) {
                         Y9LoginUserHolder.setPosition(list.get(0));
                     }
@@ -65,7 +66,7 @@ public class CheckUserLoginFilter4Flowable implements Filter {
     }
 
     @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
+    public void init(final FilterConfig filterConfig) {
         log.debug("......................................init Y9SkipSSOFilter ...");
     }
 }

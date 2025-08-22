@@ -229,13 +229,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @Override
     public Y9Result<TransactionWordModel> findWordByProcessSerialNumber(@RequestParam String tenantId,
         @RequestParam String processSerialNumber) {
-        TransactionWordModel word = new TransactionWordModel();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             List<TransactionWord> list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
             if (list != null && !list.isEmpty()) {
                 TransactionWord transactionWord = list.get(0);
-                word = getTransactionWord(transactionWord);
+                TransactionWordModel word = getTransactionWord(transactionWord);
                 word.setFileName(transactionWord.getTitle() + transactionWord.getFileType());
 
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, transactionWord.getUserId()).getData();
@@ -325,7 +324,6 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
                 return Y9Result.success(transactionWord.getFileStoreId());
             } else {
-                LOGGER.error("fileStoreId为空，保存正文的时候出错");
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
             }
         } else {// 打开事项配置的正文模板
@@ -344,10 +342,10 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 if (wordTemplate != null && wordTemplate.getId() != null) {
                     return Y9Result.success(wordTemplate.getFilePath());
                 } else {
-                    LOGGER.error("数据库没有processSerialNumber=" + processSerialNumber + "和bindVvalue=" + bindValue
-                        + "绑定的正文，请联系管理员");
-                    return Y9Result.failure("数据库没有processSerialNumber=" + processSerialNumber + "和bindVvalue="
-                        + bindValue + "绑定的正文，请联系管理员");
+                    LOGGER.error("数据库没有processSerialNumber={}和bindValue={}绑定的正文，请联系管理员", processSerialNumber,
+                        bindValue);
+                    return Y9Result.failure(
+                        "数据库没有processSerialNumber=" + processSerialNumber + "和bindValue=" + bindValue + "绑定的正文，请联系管理员");
                 }
             } else {
                 ItemWordTemplateBind wordTemplateBind =
@@ -358,7 +356,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 if (wordTemplate != null && wordTemplate.getId() != null) {
                     return Y9Result.success(wordTemplate.getFilePath());
                 } else {
-                    LOGGER.error("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
+                    LOGGER.error("数据库没有processSerialNumber={}的正文，请联系管理员", processSerialNumber);
                     return Y9Result.failure("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
                 }
             }
@@ -386,13 +384,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         if (list.isEmpty()) {
             list = transactionWordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, "0");
         }
-        TransactionWord transactionWord;
         if (!list.isEmpty()) {
-            transactionWord = list.get(0);
+            TransactionWord transactionWord = list.get(0);
             if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
                 return Y9Result.success(transactionWord.getFileStoreId());
             } else {
-                LOGGER.error("fileStoreId为空，保存正文的时候出错");
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
             }
         }
@@ -414,7 +410,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        LOGGER.debug("call /ntko/openTaohongTemplate");
+        LOGGER.debug("call /ntko/openTaoHongTemplate");
         byte[] buf;
         TaoHongTemplate taohongTemplate = taoHongTemplateService.getById(templateGuid);
         if (null != taohongTemplate) {
@@ -428,7 +424,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 }
             }
         } else {
-            LOGGER.error("数据库没有templateGUID=" + templateGuid + "的模版，请联系管理员");
+            LOGGER.error("数据库没有templateGUID={}的模版，请联系管理员", templateGuid);
             return Y9Result.failure("数据库没有templateGUID=" + templateGuid + "的模版，请联系管理员");
         }
         return Y9Result.failure("未找到文档信息");
@@ -485,13 +481,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         if (StringUtils.isNotBlank(processSerialNumber)) {
             list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
         }
-        TransactionWord transactionWord;
         if (!list.isEmpty()) {
-            transactionWord = list.get(0);
+            TransactionWord transactionWord = list.get(0);
             if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
                 return Y9Result.success(transactionWord.getFileStoreId());
-            } else {// 从数据库读取正文
-                LOGGER.error("fileStoreId为空，保存正文的时候出错");
+            } else {
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
             }
         }
@@ -740,17 +734,17 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         List<TaoHongTemplateModel> retList = new ArrayList<>();
         List<TaoHongTemplate> list = taoHongTemplateService.listByBureauGuid(currentBureauGuid);
         if (list.isEmpty()) {
-            TaoHongTemplateModel taohong = new TaoHongTemplateModel();
-            taohong.setHasDocumentTemplate("0");
-            retList.add(taohong);
+            TaoHongTemplateModel taoHong = new TaoHongTemplateModel();
+            taoHong.setHasDocumentTemplate("0");
+            retList.add(taoHong);
         } else {
             for (TaoHongTemplate taoHongTemplate : list) {
-                TaoHongTemplateModel taohong = new TaoHongTemplateModel();
-                taohong.setHasDocumentTemplate("1");
-                taohong.setTemplateGuid(taoHongTemplate.getTemplateGuid());
-                taohong.setTemplateFileName(taoHongTemplate.getTemplateFileName());
-                taohong.setTemplateType(taoHongTemplate.getTemplateType());
-                retList.add(taohong);
+                TaoHongTemplateModel taoHong = new TaoHongTemplateModel();
+                taoHong.setHasDocumentTemplate("1");
+                taoHong.setTemplateGuid(taoHongTemplate.getTemplateGuid());
+                taoHong.setTemplateFileName(taoHongTemplate.getTemplateFileName());
+                taoHong.setTemplateType(taoHongTemplate.getTemplateType());
+                retList.add(taoHong);
             }
         }
         return Y9Result.success(retList);

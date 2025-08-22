@@ -15,23 +15,14 @@ public class ToolUtil {
     /**
      * 去除字符串中的空格、回车、换行符、制表符等
      *
-     * @param str
-     * @return
+     * @param str 字符串
+     * @return String 去除空格后的字符串
      */
     public static String replaceSpecialStr(String str) {
-        String repl = "";
-        if (str != null) {
-            Matcher m = p.matcher(str);
-            repl = m.replaceAll("").trim();
+        if (str == null) {
+            return "";
         }
-        return repl;
-    }
-
-    public static boolean isObjectNotNullAndStringNotEmpty(Object obj) {
-        if (obj != null) {
-            String str = obj.toString();
-            return !str.isEmpty();
-        }
-        return false;
+        Matcher m = p.matcher(str);
+        return m.replaceAll("").trim();
     }
 }

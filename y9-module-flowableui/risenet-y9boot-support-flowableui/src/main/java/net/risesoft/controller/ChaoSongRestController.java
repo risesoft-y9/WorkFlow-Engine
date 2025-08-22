@@ -1,8 +1,6 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,23 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.AssociatedFileApi;
-import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.itemadmin.ChaoSongApi;
-import net.risesoft.api.itemadmin.OfficeFollowApi;
-import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
-import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
-import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 抄送
@@ -53,19 +42,7 @@ public class ChaoSongRestController {
 
     private final ChaoSongApi chaoSongApi;
 
-    private final AttachmentApi attachmentApi;
-
-    private final TransactionWordApi transactionWordApi;
-
-    private final SpeakInfoApi speakInfoApi;
-
-    private final AssociatedFileApi associatedFileApi;
-
-    private final OfficeFollowApi officeFollowApi;
-
     private final DocumentApi documentApi;
-
-    private final Y9Properties y9Config;
 
     /**
      * 改变抄送件意见状态
@@ -119,60 +96,6 @@ public class ChaoSongRestController {
             LOGGER.error("deleteList error", e);
         }
         return Y9Result.failure("删除失败");
-    }
-
-    /**
-     * 获取抄送件详情数据
-     *
-     * @param id 抄送id
-     * @param processInstanceId 流程实例id
-     * @param openNotRead 是否打开不已阅
-     * @param status 抄送状态
-     * @return Y9Result<Map < String, Object>>
-     */
-    @GetMapping(value = "/detail")
-    public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
-        @RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) Boolean openNotRead,
-        @RequestParam Integer status) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map;
-        try {
-            OpenDataModel model =
-                chaoSongApi.detail(person.getTenantId(), positionId, id, processInstanceId, status, openNotRead, false)
-                    .getData();
-            String str = Y9JsonUtil.writeValueAsString(model);
-            map = Y9JsonUtil.readHashMap(str);
-            map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
-            map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
-            map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
-            map.put("jsVersion", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-            String processSerialNumber = model.getProcessSerialNumber();
-            Integer fileNum = attachmentApi.fileCounts(tenantId, processSerialNumber).getData();
-            int docNum = 0;
-            // 是否正文正常
-            TransactionWordModel wordMap =
-                transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            if (wordMap != null && wordMap.getId() != null) {
-                docNum = 1;
-            }
-            int speakInfoNum =
-                speakInfoApi.getNotReadCount(tenantId, person.getPersonId(), processInstanceId).getData();
-            int associatedFileNum = associatedFileApi.countAssociatedFile(tenantId, processSerialNumber).getData();
-            map.put("userName", Y9LoginUserHolder.getUserInfo().getName());
-            map.put("docNum", docNum);
-            map.put("speakInfoNum", speakInfoNum);
-            map.put("associatedFileNum", associatedFileNum);
-            map.put("fileNum", fileNum);
-            map.put("tenantId", tenantId);
-            map.put("userId", person.getPersonId());
-            int follow = officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-            map.put("follow", follow > 0);
-            return Y9Result.success(map, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("detail error", e);
-        }
-        return Y9Result.failure("获取失败");
     }
 
     /**
