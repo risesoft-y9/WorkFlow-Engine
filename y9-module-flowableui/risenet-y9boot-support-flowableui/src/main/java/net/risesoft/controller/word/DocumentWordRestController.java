@@ -145,7 +145,7 @@ public class DocumentWordRestController {
      *
      * @param processSerialNumber 流程实例id
      * @param wordType 正文类型
-     * @return Y9Result<List<DocumentWordModel>>
+     * @return Y9Result<List < DocumentWordModel>>
      */
     @FlowableLog(operationName = "获取历史正文")
     @RequestMapping(value = "/getHisWord")
@@ -189,12 +189,12 @@ public class DocumentWordRestController {
         List<DocumentWordModel> list = documentWordApi
             .findByProcessSerialNumberAndWordType(Y9LoginUserHolder.getTenantId(), processSerialNumber, wordType)
             .getData();
-        return Y9Result.success(list.size() == 0 ? null : list.get(0), "获取信息成功");
+        return Y9Result.success(list.isEmpty() ? null : list.get(0), "获取信息成功");
     }
 
     /**
      * 替换正文
-     * 
+     *
      * @param oldId 旧文件id
      * @param taskId 任务id
      * @param file 文件
@@ -208,25 +208,25 @@ public class DocumentWordRestController {
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            DocumentWordModel oldmodel = documentWordApi.findWordById(tenantId, oldId).getData();
+            DocumentWordModel oldModel = documentWordApi.findWordById(tenantId, oldId).getData();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
             String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", oldmodel.getProcessSerialNumber());
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", oldModel.getProcessSerialNumber());
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             DocumentWordModel model = new DocumentWordModel();
             model.setId(Y9IdGenerator.genId());
-            model.setFileType(oldmodel.getFileType());
-            model.setFileName(oldmodel.getFileName());
+            model.setFileType(oldModel.getFileType());
+            model.setFileName(oldModel.getFileName());
             model.setFileSize(y9FileStore.getDisplayFileSize());
             model.setUserId(userId);
             model.setUserName(person.getName());
-            model.setType(oldmodel.getType());
+            model.setType(oldModel.getType());
             model.setSaveDate(sdf.format(new Date()));
-            model.setProcessSerialNumber(oldmodel.getProcessSerialNumber());
-            model.setProcessInstanceId(oldmodel.getProcessInstanceId());
-            model.setWordType(oldmodel.getWordType());
+            model.setProcessSerialNumber(oldModel.getProcessSerialNumber());
+            model.setProcessInstanceId(oldModel.getProcessInstanceId());
+            model.setWordType(oldModel.getWordType());
             model.setTaskId(taskId);
             model.setUpdateDate(sdf.format(new Date()));
             model.setFileStoreId(y9FileStore.getId());

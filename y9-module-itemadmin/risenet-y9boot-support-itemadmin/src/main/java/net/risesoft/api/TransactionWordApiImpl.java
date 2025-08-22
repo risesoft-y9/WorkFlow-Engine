@@ -195,7 +195,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                     || ItemWordTypeEnum.PDF2.getValue().equals(historyWord.getIstaohong())) {
                     history.setOpenWordOrPdf("openPDF");
                 } else if (ItemWordTypeEnum.WORD.getValue().equals(historyWord.getIstaohong())
-                    || ItemWordTypeEnum.REDHEADWORD.getValue().equals(historyWord.getIstaohong())) {
+                    || ItemWordTypeEnum.WORD_RED_HEAD.getValue().equals(historyWord.getIstaohong())) {
                     history.setOpenWordOrPdf("openWord");
                 }
             } else {
@@ -607,7 +607,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<Y9WordInfo> showWord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String itemId, String itembox, String taskId,
         String bindValue) {
-        Y9WordInfo retMap = new Y9WordInfo();
+        Y9WordInfo wordInfo = new Y9WordInfo();
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -647,16 +647,16 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             } else if (d.getIstaohong().equals(ItemWordTypeEnum.PDF.getValue())) {
                 openWordOrPdf = "openPDF";
                 isTaoHong = "2";
-            } else if (d.getIstaohong().equals(ItemWordTypeEnum.REDHEADWORD.getValue())) {
+            } else if (d.getIstaohong().equals(ItemWordTypeEnum.WORD_RED_HEAD.getValue())) {
                 openWordOrPdf = "openTaoHongWord";
                 isTaoHong = "1";
             } else {
                 openWordOrPdf = "openWord";
                 isTaoHong = "0";
             }
-            retMap.setFileType(d.getFileType());
-            retMap.setFileStoreId(d.getFileStoreId());
-            retMap.setUid(d.getFileStoreId());
+            wordInfo.setFileType(d.getFileType());
+            wordInfo.setFileStoreId(d.getFileStoreId());
+            wordInfo.setUid(d.getFileStoreId());
         } else {
             String processDefinitionId;
             if (StringUtils.isNoneBlank(taskId)) {
@@ -699,20 +699,20 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             }
         }
         String activitiUser = person.getId();
-        retMap.setFileType(fileType);
-        retMap.setDocCategory(docCategory);
-        retMap.setActivitiUser(activitiUser);
-        retMap.setFileDocumentId(fileDocumentId);
-        retMap.setProcessSerialNumber(processSerialNumber);
-        retMap.setUserName(person.getName());
-        retMap.setSaveDate(saveDate);
-        retMap.setOpenWordOrPdf(openWordOrPdf);
-        retMap.setWordReadOnly(wordReadOnly);
-        retMap.setItemId(itemId);
-        retMap.setItembox(itembox);
-        retMap.setTaskId(taskId);
-        retMap.setIsTaoHong(isTaoHong);
-        return Y9Result.success(retMap);
+        wordInfo.setFileType(fileType);
+        wordInfo.setDocCategory(docCategory);
+        wordInfo.setActivitiUser(activitiUser);
+        wordInfo.setFileDocumentId(fileDocumentId);
+        wordInfo.setProcessSerialNumber(processSerialNumber);
+        wordInfo.setUserName(person.getName());
+        wordInfo.setSaveDate(saveDate);
+        wordInfo.setOpenWordOrPdf(openWordOrPdf);
+        wordInfo.setWordReadOnly(wordReadOnly);
+        wordInfo.setItemId(itemId);
+        wordInfo.setItembox(itembox);
+        wordInfo.setTaskId(taskId);
+        wordInfo.setIsTaoHong(isTaoHong);
+        return Y9Result.success(wordInfo);
     }
 
     /**

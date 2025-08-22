@@ -15,14 +15,14 @@ public enum ItemWordTypeEnum {
     /** 未套红文件 */
     WORD("0", "未套红文件"),
     /** 红头文件 */
-    REDHEADWORD("1", "红头文件"),
-    /** jsp */
+    WORD_RED_HEAD("1", "红头文件"),
+    /** 流式文件 */
     PDF("2", "流式文件"),
     // FIXME
     /** quikui */
     PDF1("3", "PDF1"),
     /** freemarker */
-    PDF2("4", "PDF1");
+    PDF2("4", "PDF2");
 
     private final String value;
     private final String name;
