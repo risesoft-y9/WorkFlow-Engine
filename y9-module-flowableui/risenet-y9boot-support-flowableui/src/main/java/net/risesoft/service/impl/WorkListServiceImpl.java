@@ -820,8 +820,7 @@ public class WorkListServiceImpl implements WorkListService {
             assigneeNames += "等，共" + taskList.size() + "人";
         }
         list.add(StringUtils.isNotBlank(taskName) ? taskName
-            : signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DELETED_DONE.getValue()) ? "会签结束(减签)"
-                : "会签结束");
+            : signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DELETED_DONE) ? "会签结束(减签)" : "会签结束");
         list.add(StringUtils.isBlank(assigneeNames) ? "无" : assigneeNames);
         return list;
     }

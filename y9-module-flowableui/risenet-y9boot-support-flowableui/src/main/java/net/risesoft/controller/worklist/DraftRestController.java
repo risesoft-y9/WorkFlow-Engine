@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.AssociatedFileApi;
-import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.view.ItemViewConfApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -26,7 +23,6 @@ import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * 草稿箱
@@ -43,14 +39,6 @@ public class DraftRestController {
     private final DraftApi draftApi;
 
     private final ItemViewConfApi itemViewConfApi;
-
-    private final AttachmentApi attachmentApi;
-
-    private final TransactionWordApi transactionWordApi;
-
-    private final AssociatedFileApi associatedFileApi;
-
-    private final Y9Properties y9Config;
 
     /**
      * 彻底删除草稿
@@ -157,5 +145,4 @@ public class DraftRestController {
         return draftApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number,
             level, title);
     }
-
 }

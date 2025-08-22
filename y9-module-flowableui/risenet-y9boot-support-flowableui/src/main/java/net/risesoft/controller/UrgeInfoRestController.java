@@ -63,7 +63,7 @@ public class UrgeInfoRestController {
      *
      * @param processSerialNumbers isSub:processSerialNumber:executionId 组成的数据
      * @param msgContent 催办消息
-     * @return
+     * @return Y9Result<Object>
      */
     @FlowableLog(operationName = "保存催办信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/save")

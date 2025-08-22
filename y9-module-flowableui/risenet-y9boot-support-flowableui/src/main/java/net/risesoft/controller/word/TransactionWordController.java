@@ -112,7 +112,7 @@ public class TransactionWordController {
             // String fileName = y9FileStore.getFileName();
             String userAgent = request.getHeader("User-Agent");
             String title;
-            Object documentTitle;
+            String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
@@ -121,7 +121,7 @@ public class TransactionWordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = documentTitle != null ? documentTitle : "正文";
             title = ToolUtil.replaceSpecialStr(title);
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
@@ -162,7 +162,7 @@ public class TransactionWordController {
         HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Object documentTitle;
+            String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
@@ -171,7 +171,7 @@ public class TransactionWordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = documentTitle != null ? documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
@@ -222,7 +222,7 @@ public class TransactionWordController {
             TransactionWordModel map =
                 transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = map.getFileStoreId();
-            Object documentTitle;
+            String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
@@ -231,7 +231,7 @@ public class TransactionWordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = documentTitle != null ? documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
@@ -625,7 +625,7 @@ public class TransactionWordController {
         String title;
         String result = "success:false";
         try {
-            Object documentTitle;
+            String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
@@ -634,11 +634,14 @@ public class TransactionWordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = documentTitle != null ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            Boolean result2 =
+                transactionWordApi
+                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }
@@ -752,7 +755,7 @@ public class TransactionWordController {
             } else {
                 isTaoHong = "0";
             }
-            Object documentTitle;
+            String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
@@ -761,11 +764,14 @@ public class TransactionWordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = documentTitle != null ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
-            Boolean result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            Boolean result =
+                transactionWordApi
+                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
             if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType.equals(".pdf") || fileType.equals(".tif")) {
@@ -804,7 +810,7 @@ public class TransactionWordController {
         String title;
         String result = "success:false";
         try {
-            Object documentTitle;
+            String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
@@ -814,11 +820,14 @@ public class TransactionWordController {
                 documentTitle = processModel.getTitle();
             }
 
-            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = documentTitle != null ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, docCategory, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            Boolean result2 =
+                transactionWordApi
+                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, docCategory, taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }
