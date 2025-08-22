@@ -101,10 +101,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             if (StringUtils.isNotBlank(processParam.getDeptIds())) {
                 oldProcessParam.setDeptIds(processParam.getDeptIds());
             }
-            oldProcessParam.setIsSendSms(processParam.getIsSendSms());
-            oldProcessParam.setIsShuMing(processParam.getIsShuMing());
-            oldProcessParam.setSmsContent(processParam.getSmsContent());
-            oldProcessParam.setSmsPersonId(processParam.getSmsPersonId());
             oldProcessParam.setCompleter(processParam.getCompleter());
             if (StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
                 oldProcessParam.setProcessInstanceId(processParam.getProcessInstanceId());
@@ -138,39 +134,35 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             return oldProcessParam;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ProcessParam newpp = new ProcessParam();
-        newpp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newpp.setBureauIds(processParam.getBureauIds());
-        newpp.setCustomLevel(processParam.getCustomLevel());
-        newpp.setCustomNumber(processParam.getCustomNumber());
-        newpp.setDeptIds(processParam.getDeptIds());
-        newpp.setItemId(processParam.getItemId());
-        newpp.setItemName(processParam.getItemName());
-        newpp.setProcessInstanceId(processParam.getProcessInstanceId());
-        newpp.setProcessSerialNumber(processParam.getProcessSerialNumber());
-        newpp.setSystemName(processParam.getSystemName());
-        newpp.setSystemCnName(processParam.getSystemCnName());
-        newpp.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
-        newpp.setSearchTerm(processParam.getSearchTerm());
-        newpp.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
-        newpp.setIsSendSms(processParam.getIsSendSms());
-        newpp.setIsShuMing(processParam.getIsShuMing());
-        newpp.setSmsContent(processParam.getSmsContent());
-        newpp.setSmsPersonId(processParam.getSmsPersonId());
-        newpp.setCompleter(processParam.getCompleter());
-        newpp.setStartor(processParam.getStartor());
-        newpp.setStartorName(processParam.getStartorName());
-        newpp.setSponsorGuid(processParam.getSponsorGuid());
-        newpp.setSended(processParam.getSended());
-        newpp.setCreateTime(sdf.format(new Date()));
-        newpp.setCustomItem(processParam.getCustomItem());
-        newpp.setTarget(processParam.getTarget());
-        newpp.setDueDate(processParam.getDueDate());
-        newpp.setDescription(processParam.getDescription());
-        newpp.setHostDeptId(processParam.getHostDeptId());
-        newpp.setHostDeptName(processParam.getHostDeptName());
-        processParamRepository.save(newpp);
-        return newpp;
+        ProcessParam newProcessParam = new ProcessParam();
+        newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newProcessParam.setBureauIds(processParam.getBureauIds());
+        newProcessParam.setCustomLevel(processParam.getCustomLevel());
+        newProcessParam.setCustomNumber(processParam.getCustomNumber());
+        newProcessParam.setDeptIds(processParam.getDeptIds());
+        newProcessParam.setItemId(processParam.getItemId());
+        newProcessParam.setItemName(processParam.getItemName());
+        newProcessParam.setProcessInstanceId(processParam.getProcessInstanceId());
+        newProcessParam.setProcessSerialNumber(processParam.getProcessSerialNumber());
+        newProcessParam.setSystemName(processParam.getSystemName());
+        newProcessParam.setSystemCnName(processParam.getSystemCnName());
+        newProcessParam.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
+        newProcessParam.setSearchTerm(processParam.getSearchTerm());
+        newProcessParam.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
+        newProcessParam.setCompleter(processParam.getCompleter());
+        newProcessParam.setStartor(processParam.getStartor());
+        newProcessParam.setStartorName(processParam.getStartorName());
+        newProcessParam.setSponsorGuid(processParam.getSponsorGuid());
+        newProcessParam.setSended(processParam.getSended());
+        newProcessParam.setCreateTime(sdf.format(new Date()));
+        newProcessParam.setCustomItem(processParam.getCustomItem());
+        newProcessParam.setTarget(processParam.getTarget());
+        newProcessParam.setDueDate(processParam.getDueDate());
+        newProcessParam.setDescription(processParam.getDescription());
+        newProcessParam.setHostDeptId(processParam.getHostDeptId());
+        newProcessParam.setHostDeptName(processParam.getHostDeptName());
+        processParamRepository.save(newProcessParam);
+        return newProcessParam;
     }
 
     @Override

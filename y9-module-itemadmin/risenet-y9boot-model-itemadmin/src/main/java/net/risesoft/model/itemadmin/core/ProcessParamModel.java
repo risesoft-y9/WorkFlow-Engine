@@ -83,22 +83,6 @@ public class ProcessParamModel implements Serializable {
     private String searchTerm;
 
     /**
-     * 是否发送短信
-     */
-    private String isSendSms;
-    /**
-     * 是否署名
-     */
-    private String isShuMing;
-    /**
-     * 发送短信内容
-     */
-    private String smsContent;
-    /**
-     * 接收短信人员id
-     */
-    private String smsPersonId;
-    /**
      * 主办人id
      */
     private String sponsorGuid;

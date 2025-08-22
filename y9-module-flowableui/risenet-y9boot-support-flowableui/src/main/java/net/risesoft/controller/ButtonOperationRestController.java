@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.itemadmin.SmsDetailApi;
 import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
@@ -42,6 +43,7 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.itemadmin.SmsDetailModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Position;
@@ -88,6 +90,7 @@ public class ButtonOperationRestController {
     private final CustomProcessInfoApi customProcessInfoApi;
     private final ButtonOperationService buttonOperationService;
     private final ActRuDetailApi actRuDetailApi;
+    private final SmsDetailApi smsDetailApi;
 
     /**
      * 任务签收
@@ -354,11 +357,13 @@ public class ButtonOperationRestController {
                     processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNodeKey).getData();
                 TargetModel startNode = routeToTasks.get(0);
                 routeToTasks = processDefinitionApi
-                    .getTargetNodes4UserTask(tenantId, processDefinitionId, startNode.getTaskDefKey(), true).getData();
+                    .getTargetNodes4UserTask(tenantId, processDefinitionId, startNode.getTaskDefKey(), true)
+                    .getData();
                 routeToTasks.add(0, startNode);
             } else {
-                routeToTasks = processDefinitionApi
-                    .getTargetNodes4UserTask(tenantId, processDefinitionId, taskDefKey, true).getData();
+                routeToTasks =
+                    processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId, taskDefKey, true)
+                        .getData();
             }
             return Y9Result.success(routeToTasks, "获取成功");
         } catch (Exception e) {
@@ -390,7 +395,8 @@ public class ButtonOperationRestController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
             String multiInstance = processDefinitionApi
-                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey()).getData();
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+                .getData();
             List<String> users = (List<String>)variables.get("users");
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (String user : users) {
@@ -424,8 +430,9 @@ public class ButtonOperationRestController {
                         isEnd = false;
                     } else if (isEnd) {
                         map.put("status", "完成");
-                        List<HistoricTaskInstanceModel> htims = historictaskApi
-                            .getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "").getData();
+                        List<HistoricTaskInstanceModel> htims =
+                            historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "")
+                                .getData();
                         for (HistoricTaskInstanceModel hai : htims) {
                             if (hai.getAssignee().equals(users.get(i))) {// 获取串行多人处理的完成时间
                                 map.put("endTime", sdf.format(hai.getEndTime()));
@@ -466,7 +473,8 @@ public class ButtonOperationRestController {
                                 variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor").getData();
                         } else {
                             HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
-                                .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "").getData();
+                                .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "")
+                                .getData();
                             parallelSponsorObj =
                                 parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
                         }
@@ -674,14 +682,19 @@ public class ButtonOperationRestController {
                 String[] arr = user.split(":");
                 users.add(arr[1]);
             }
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            processParamModel.setIsSendSms(isSendSms);
-            processParamModel.setIsShuMing(isShuMing);
-            processParamModel.setSmsContent(smsContent);
-            processParamModel.setSmsPersonId("");
-            processParamApi.saveOrUpdate(tenantId, processParamModel);
-
+            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
+                .processSerialNumber(processSerialNumber)
+                .positionId(Y9LoginUserHolder.getPositionId())
+                .positionName(Y9LoginUserHolder.getUserInfo().getName())
+                .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
+                .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
+                .content(smsContent)
+                .positionIds(userChoice)
+                .build();
+            Y9Result<Object> result = smsDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), smsDetailModel);
+            if (!result.isSuccess()) {
+                return Y9Result.failure("保存短信详情失败！");
+            }
             buttonOperationApi.reposition(tenantId, positionId, taskId, routeToTaskId, users, "",
                 StringUtils.isBlank(sponsorGuid) ? "" : sponsorGuid);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
@@ -737,8 +750,9 @@ public class ButtonOperationRestController {
         try {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
-            String type = processDefinitionApi
-                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            String type =
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
                     reason = "未填写。";
@@ -845,8 +859,9 @@ public class ButtonOperationRestController {
                         signList.add(task);
                     }
                     if (subTaskList.isEmpty()) {
-                        List<TargetModel> data = processDefinitionApi
-                            .getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
+                        List<TargetModel> data =
+                            processDefinitionApi.getSubProcessChildNode(tenantId, task.getProcessDefinitionId())
+                                .getData();
                         if (data.stream().anyMatch(m -> m.getTaskDefKey().equals(task.getTaskDefinitionKey()))) {
                             subTaskList.add(task);
                         }

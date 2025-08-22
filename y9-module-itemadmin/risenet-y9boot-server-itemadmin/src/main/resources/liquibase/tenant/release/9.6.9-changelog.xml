@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1704700546666-1" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_PROCESS_PARAM" columnName="ISSENDSMS"/>
+        </preConditions>
+        <dropColumn tableName="FF_PROCESS_PARAM">
+            <column name="ISSENDSMS"/>
+            <column name="ISSHUMING"/>
+            <column name="SMSCONTENT"/>
+            <column name="SMSPERSONID"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="1704700546666-2" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_SMS_DETAIL"/>
+            </not>
+        </preConditions>
+        <createTable remarks="短信详情" tableName="FF_SMS_DETAIL">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POSITIONID" remarks="源文件id,版式文件的源文件id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POSITIONNAME" remarks="文件名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="SEND" remarks="是否发送短信" type="INT"/>
+            <column defaultValueNumeric="0" name="SIGN" remarks="是否署名" type="INT"/>
+            <column name="CONTENT" remarks="短信内容" type="VARCHAR(1000)"/>
+            <column name="POSITIONIDS" type="CLOB" remarks="选择的岗位ID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
