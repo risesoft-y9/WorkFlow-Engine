@@ -157,7 +157,9 @@ public class AttachmentRestController {
             String packDownloadPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "packDownload";
             File folder = new File(packDownloadPath);
             if (!folder.exists() && !folder.isDirectory()) {
-                folder.mkdirs();
+                if (!folder.mkdirs()) {
+                    LOGGER.error("创建目录失败：{}", packDownloadPath);
+                }
             }
             String zipPath = packDownloadPath + File.separator + fileZip;
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(zipPath));
@@ -166,8 +168,8 @@ public class AttachmentRestController {
             for (AttachmentModel file : list) {
                 String filename = file.getName();
                 String fileStoreId = file.getFileStoreId();
-                byte[] filebyte = y9FileStoreService.downloadFileToBytes(fileStoreId);
-                InputStream bis = new ByteArrayInputStream(filebyte);
+                byte[] fileByte = y9FileStoreService.downloadFileToBytes(fileStoreId);
+                InputStream bis = new ByteArrayInputStream(fileByte);
                 ze = new ZipEntry(filename);
                 zos.putNextEntry(ze);
                 int s;
@@ -207,7 +209,9 @@ public class AttachmentRestController {
                 }
                 in.close();
                 // 删除服务器本地产生的临时压缩文件
-                reportZip.delete();
+                if (!reportZip.delete()) {
+                    LOGGER.warn("删除服务器本地产生的临时压缩文件失败！{}", reportZip.getAbsolutePath());
+                }
             }
         } catch (Exception e) {
             LOGGER.error("下载失败", e);
@@ -255,8 +259,8 @@ public class AttachmentRestController {
     /**
      * 获取附件配置
      *
-     * @param attachmentType
-     * @return
+     * @param attachmentType 附件类型
+     * @return Y9Result<List<AttachmentConfModel>>
      */
     @FlowableLog(operationName = "获取附件配置")
     @GetMapping(value = "/getAttachmentConfig")
