@@ -108,8 +108,6 @@ public class TransactionWordController {
         String fileStoreId = map.getFileStoreId();
 
         try (ServletOutputStream out = response.getOutputStream()) {
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
-            // String fileName = y9FileStore.getFileName();
             String userAgent = request.getHeader("User-Agent");
             String title;
             String documentTitle;
