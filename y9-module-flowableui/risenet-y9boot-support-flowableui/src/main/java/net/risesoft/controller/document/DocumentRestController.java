@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.SmsDetailApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.itemadmin.core.DocumentApi;
@@ -51,6 +52,7 @@ import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemStartNodeRoleModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
+import net.risesoft.model.itemadmin.SmsDetailModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
@@ -113,6 +115,8 @@ public class DocumentRestController {
     private final FormDataApi formDataApi;
 
     private final Y9FlowableProperties y9FlowableProperties;
+
+    private final SmsDetailApi smsDetailApi;
 
     /**
      * 检查是否可以批量发送
@@ -388,14 +392,19 @@ public class DocumentRestController {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> variables = new HashMap<>(16);
         try {
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber)
-                    .getData();
-            processParamModel.setIsSendSms(isSendSms);
-            processParamModel.setIsShuMing(isShuMing);
-            processParamModel.setSmsContent(smsContent);
-            processParamModel.setSmsPersonId("");
-            processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
+            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
+                .processSerialNumber(processSerialNumber)
+                .positionId(Y9LoginUserHolder.getPositionId())
+                .positionName(Y9LoginUserHolder.getUserInfo().getName())
+                .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
+                .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
+                .content(smsContent)
+                .positionIds(userChoice)
+                .build();
+            Y9Result<Object> result = smsDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), smsDetailModel);
+            if (!result.isSuccess()) {
+                return Y9Result.failure("保存短信详情失败！");
+            }
             Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9LoginUserHolder.getTenantId(),
                 Y9LoginUserHolder.getPositionId(), processInstanceId, taskId, sponsorHandle, itemId,
                 processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);

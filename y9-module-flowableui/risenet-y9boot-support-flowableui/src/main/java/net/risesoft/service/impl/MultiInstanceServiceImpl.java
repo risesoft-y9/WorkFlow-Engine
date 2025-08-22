@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
+import net.risesoft.api.itemadmin.SmsDetailApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
@@ -21,6 +22,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
+import net.risesoft.model.itemadmin.SmsDetailModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
@@ -50,6 +52,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final SignDeptDetailApi signDeptDetailApi;
 
+    private final SmsDetailApi smsDetailApi;
+
     @Override
     public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms,
         String isShuMing, String smsContent) throws Exception {
@@ -60,15 +64,18 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         ProcessParamModel processParamModel =
             processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         try {
-            if (processParamModel != null && processParamModel.getId() != null) {
-                processParamModel.setSmsContent(smsContent);
-                processParamModel.setIsSendSms(isSendSms);
-                processParamModel.setIsShuMing(isShuMing);
-                processParamModel.setSmsPersonId("");
-                processParamApi.saveOrUpdate(tenantId, processParamModel);
-            }
+            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
+                .processSerialNumber(processParamModel.getProcessSerialNumber())
+                .positionId(Y9LoginUserHolder.getPositionId())
+                .positionName(Y9LoginUserHolder.getUserInfo().getName())
+                .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
+                .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
+                .content(smsContent)
+                .positionIds(userChoice)
+                .build();
+            smsDetailApi.saveOrUpdate(tenantId, smsDetailModel);
         } catch (Exception e) {
-            LOGGER.error("保存流程参数失败", e);
+            LOGGER.error("保存短信详情失败", e);
         }
         for (String user : users) {
             buttonOperationApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId, user);

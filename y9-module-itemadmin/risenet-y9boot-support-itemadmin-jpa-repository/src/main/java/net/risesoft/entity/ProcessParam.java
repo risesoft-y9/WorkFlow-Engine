@@ -104,23 +104,6 @@ public class ProcessParam implements Serializable {
     @Column(name = "SEARCHTERM", nullable = false)
     private String searchTerm;
 
-    @Comment("是否发送短信")
-    @Column(name = "isSendSms", length = 50)
-    private String isSendSms;
-
-    @Comment("是否署名")
-    @Column(name = "isShuMing", length = 50)
-    private String isShuMing;
-
-    @Comment("发送短信内容")
-    @Column(name = "smsContent", length = 2000)
-    private String smsContent;
-
-    @Comment("接收短信人员id")
-    @Lob
-    @Column(name = "smsPersonId")
-    private String smsPersonId;
-
     @Comment("主办人id")
     @Column(name = "sponsorGuid", length = 50)
     private String sponsorGuid;
