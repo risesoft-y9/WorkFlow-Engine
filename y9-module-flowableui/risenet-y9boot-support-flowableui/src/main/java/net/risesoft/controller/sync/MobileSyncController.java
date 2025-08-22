@@ -97,13 +97,11 @@ public class MobileSyncController {
                     String sql3 = "DELETE from ACT_HI_TASKINST where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     jdbcTemplate.execute(sql3);// 删除历史任务
 
-                    sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY" + " WHERE" + "	ID_ IN (" + "		SELECT"
-                        + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM"
-                        + "			 ACT_GE_BYTEARRAY b"
-                        + "		  LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE"
-                        + "			 v.PROC_INST_ID_ = '" + PROC_INST_ID_ + "'" + "		  AND v.NAME_ = 'users'"
-                        + "       ) TT" + "	)";
-                    jdbcTemplate.execute(sql3);// 删除二进制数据表
+                    // 删除二进制数据表
+                    sql3 = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN ( SELECT * FROM ( SELECT b.ID_ FROM"
+                        + "	ACT_GE_BYTEARRAY b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE"
+                        + " v.PROC_INST_ID_ = '" + PROC_INST_ID_ + "' AND v.NAME_ = 'users' ) TT )";
+                    jdbcTemplate.execute(sql3);
 
                     sql3 = "DELETE from ACT_HI_VARINST where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     jdbcTemplate.execute(sql3);// 删除历史变量

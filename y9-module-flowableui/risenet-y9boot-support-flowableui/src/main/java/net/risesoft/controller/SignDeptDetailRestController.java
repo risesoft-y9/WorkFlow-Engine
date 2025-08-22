@@ -2,15 +2,12 @@ package net.risesoft.controller;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +22,6 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.itemadmin.core.ActRuDetailApi;
-import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
@@ -65,44 +61,25 @@ public class SignDeptDetailRestController {
 
     private final TaskRelatedApi taskRelatedApi;
 
-    private final FormDataApi formDataApi;
-
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
-
     /**
      * 根据主键删除会签信息
      *
      * @param id 主键
-     * @param tzsDeptId tzs部门id
      * @return Y9Result<Object>
      * @since 9.6.8
      */
     @FlowableLog(operationType = FlowableOperationTypeEnum.DELETE, operationName = "删除会签信息")
     @PostMapping(value = "/deleteById")
-    Y9Result<Object> deleteById(@RequestParam @NotBlank String id, @RequestParam String tzsDeptId) {
+    Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
             signDeptDetailApi.findByProcessSerialNumber(tenantId, signDeptDetail.getProcessSerialNumber()).getData();
         if (signDeptDetailModels.stream()
-            .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING.getValue())).count() == 1) {
+            .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING))
+            .count() == 1) {
             return Y9Result.failure("仅剩一个会签部门，不能删除会签信息");
         }
-
-        if (tzsDeptId.equals(signDeptDetail.getDeptId())) {// 投资司会签
-            String sql = "select * from y9_form_fw where (wtpg = '1' or tzjhxdlwj like '%1%') AND GUID='"
-                + signDeptDetail.getProcessSerialNumber() + "'";
-            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            if (list.size() > 0) {// 委托评估,中央预算内投资计划下达类文件,不能减签投资司会签
-                String msg = "中央预算内投资计划下达类文件";
-                if (list.get(0).get("wtpg") != null && list.get(0).get("wtpg").toString().equals("1")) {
-                    msg = "委托评估类文件";
-                }
-                return Y9Result.failure("该文件为" + msg + "，不能删除投资司会签");
-            }
-        }
-
         /*
          * 1、删除流程参与信息
          */
@@ -116,7 +93,8 @@ public class SignDeptDetailRestController {
          */
         List<TaskModel> taskModelList =
             taskApi.findByProcessInstanceId(tenantId, signDeptDetail.getProcessInstanceId()).getData();
-        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), signDeptDetail.getExecutionId()))
+        taskModelList.stream()
+            .filter(tm -> StringUtils.equals(tm.getExecutionId(), signDeptDetail.getExecutionId()))
             .forEach(tm -> {
                 List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
                 taskRelatedModels.stream()
@@ -131,13 +109,13 @@ public class SignDeptDetailRestController {
          * 4、如果该部门不存在正常办结的会签详情，则删除委内会签部门
          */
         boolean match = signDeptDetailModels.stream()
-            .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DONE.getValue()))
+            .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DONE))
             .anyMatch(ssd -> ssd.getDeptId().equals(signDeptDetail.getDeptId()));
         if (!match) {
             List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList(tenantId, "0", processSerialNumber).getData();
-            sdmList.stream().filter(sdm -> sdm.getDeptId().equals(signDeptDetail.getDeptId())).forEach(sdm -> {
-                signDeptInfoApi.deleteById(tenantId, Y9LoginUserHolder.getPositionId(), sdm.getId());
-            });
+            sdmList.stream()
+                .filter(sdm -> sdm.getDeptId().equals(signDeptDetail.getDeptId()))
+                .forEach(sdm -> signDeptInfoApi.deleteById(tenantId, Y9LoginUserHolder.getPositionId(), sdm.getId()));
         }
         return Y9Result.success();
     }
@@ -156,7 +134,8 @@ public class SignDeptDetailRestController {
         String bureauId;
         if (StringUtils.isBlank(signDeptDetailId)) {
             bureauId = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId())
-                .getData().getId();
+                .getData()
+                .getId();
         } else {
             bureauId =
                 signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDeptDetailId).getData().getDeptId();
@@ -183,7 +162,8 @@ public class SignDeptDetailRestController {
         List<SignDeptDetailModel> sddList =
             signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
         List<SignDeptDetailModel> collect = sddList.stream()
-            .filter(sdd -> sdd.getExecutionId().equals(task.getExecutionId())).collect(Collectors.toList());
+            .filter(sdd -> sdd.getExecutionId().equals(task.getExecutionId()))
+            .collect(Collectors.toList());
         if (collect.isEmpty()) {
             return Y9Result.failure("未找到会签部门详情");
         }
@@ -233,7 +213,8 @@ public class SignDeptDetailRestController {
          * 3、修改历程信息
          */
         List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, ssd.getProcessInstanceId()).getData();
-        taskModelList.stream().filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
+        taskModelList.stream()
+            .filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
             .forEach(tm -> {
                 List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
                 taskRelatedModels.stream()
