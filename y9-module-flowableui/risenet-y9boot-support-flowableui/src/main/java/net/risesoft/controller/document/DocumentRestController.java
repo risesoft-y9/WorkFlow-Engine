@@ -353,7 +353,6 @@ public class DocumentRestController {
         map.put("taskId", actRuDetail.getTaskId());
         map.put("taskName", actRuDetail.getTaskDefName());
         map.put("actRuDetailId", actRuDetail.getId());
-        // map.put("lsh", numberY9Result.getData());
         map.put("userName", actRuDetail.getAssigneeName());
         if (yuanResult.isSuccess() && fuResult.isSuccess()) {
             return Y9Result.success(map);
