@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +26,7 @@ import net.risesoft.repository.form.Y9FormItemBindRepository;
 import net.risesoft.repository.form.Y9FormItemMobileBindRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.Y9FormItemBindService;
+import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -200,6 +203,11 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         } catch (Exception e) {
             LOGGER.error("删除表单绑定信息失败", e);
         }
+    }
+
+    @Override
+    public Integer getMaxTabIndex(String itemId, String processDefinitionId) {
+        return y9FormItemBindRepository.getMaxTabIndex(itemId, processDefinitionId);
     }
 
     @Override
@@ -408,6 +416,25 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             e.printStackTrace();
         }
         return Y9Result.failure("保存失败");
+    }
+
+    @Override
+    @Transactional
+    public void updateOrder(String[] idAndTabIndexs) {
+        List<String> list = Lists.newArrayList(idAndTabIndexs);
+        try {
+            for (String s : list) {
+                String[] arr = s.split(SysVariables.COLON);
+                String index = arr[1];
+                Integer tabIndex = null;
+                if (!index.equals("null")) {
+                    tabIndex = Integer.parseInt(arr[1]);
+                }
+                y9FormItemBindRepository.updateOrder(tabIndex, arr[0]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

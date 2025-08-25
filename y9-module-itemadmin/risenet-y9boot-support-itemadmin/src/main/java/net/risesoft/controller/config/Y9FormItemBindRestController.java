@@ -305,6 +305,68 @@ public class Y9FormItemBindRestController {
     }
 
     /**
+     * 保存表单标签页设置
+     *
+     * @param eformItem 绑定信息
+     * @return
+     */
+    @PostMapping(value = "/saveTabSetting")
+    public Y9Result<String> saveTabSetting(Y9FormItemBind eformItem) {
+        List<Y9FormItemBind> list = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(
+            eformItem.getItemId(), eformItem.getProcessDefinitionId(), eformItem.getTaskDefKey());
+        for (Y9FormItemBind bind : list) {
+            bind.setShowDocumentTab(eformItem.isShowDocumentTab());
+            bind.setShowFileTab(eformItem.isShowFileTab());
+            bind.setShowHistoryTab(eformItem.isShowHistoryTab());
+            y9FormItemBindService.save(bind);
+        }
+        return Y9Result.success("保存设置成功");
+
+    }
+
+    @PostMapping(value = "/saveFormBind")
+    public Y9Result<String> saveFormBind(String bindType, String[] formInfos, String itemId, String processDefinitionId,
+        String taskDefKey) {
+        for (String formInfo : formInfos) {
+            String formId = formInfo.split(":")[0];
+            String formName = formInfo.split(":")[1];
+            if (bindType.equals("PC")) {
+                Y9FormItemBind eformItem = new Y9FormItemBind();
+                eformItem.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                eformItem.setItemId(itemId);
+                eformItem.setProcessDefinitionId(processDefinitionId);
+                eformItem.setTaskDefKey(taskDefKey);
+                eformItem.setFormId(formId);
+                eformItem.setFormName(formName);
+                Integer tabIndex = y9FormItemBindService.getMaxTabIndex(itemId, processDefinitionId);
+                eformItem.setTabIndex(tabIndex == null ? 0 : tabIndex + 1);
+                y9FormItemBindService.save(eformItem);
+            } else {
+                Y9FormItemMobileBind eformMobileItem = new Y9FormItemMobileBind();
+                eformMobileItem.setItemId(itemId);
+                eformMobileItem.setProcessDefinitionId(processDefinitionId);
+                eformMobileItem.setTaskDefKey(taskDefKey);
+                eformMobileItem.setFormId(formId);
+                eformMobileItem.setFormName(formName);
+                y9FormItemBindService.save(eformMobileItem);
+            }
+        }
+        return Y9Result.success("保存成功");
+
+    }
+
+    /**
+     * 保存排序
+     *
+     * @param idAndTabIndexs 视图id和排序索引
+     */
+    @PostMapping(value = "/saveOrder")
+    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
+        y9FormItemBindService.updateOrder(idAndTabIndexs);
+        return Y9Result.successMsg("保存成功");
+    }
+
+    /**
      * 保存手机端绑定表单
      *
      * @param eformItem 绑定信息
