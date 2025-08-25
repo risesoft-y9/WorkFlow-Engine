@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.y9.Y9Context;
@@ -159,6 +161,7 @@ public class FileNTKOController {
      * @param userId 人员id
      * @return String
      */
+    @FlowableLog(operationName = "更新附件列表文件内容", operationType = FlowableOperationTypeEnum.SAVE)
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
     public String uploadWord(@RequestParam(required = false) String fileId,
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String positionId,

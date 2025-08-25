@@ -17,6 +17,8 @@ import net.risesoft.api.itemadmin.entrust.EntrustApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Organization;
@@ -49,6 +51,7 @@ public class EntrustRestController {
      * @param id 委托id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除委托信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteEntrust")
     public Y9Result<String> deleteEntrust(@RequestParam String id) {
         try {
@@ -77,6 +80,7 @@ public class EntrustRestController {
      *
      * @return Y9Result<List < Organization>>
      */
+    @FlowableLog(operationName = "获取组织架构")
     @GetMapping(value = "/getOrgList")
     public Y9Result<List<Organization>> getOrgList() {
         try {
@@ -114,6 +118,7 @@ public class EntrustRestController {
      * @param jsonData json数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存委托数据", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam String jsonData) {
         try {
@@ -134,6 +139,7 @@ public class EntrustRestController {
      * @param treeType 树类型
      * @return Y9Result<List < OrgUnit>>
      */
+    @FlowableLog(operationName = "组织架构树搜索委托人")
     @GetMapping(value = "/treeSearch")
     public Y9Result<List<OrgUnit>> treeSearch(@RequestParam(required = false) String name, OrgTreeTypeEnum treeType) {
         try {

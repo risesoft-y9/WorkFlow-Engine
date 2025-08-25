@@ -128,7 +128,6 @@ public class AttachmentRestController {
      * @param rows 条数
      * @return Y9Page<AttachmentModel>
      */
-    @FlowableLog(operationName = "获取附件列表")
     @GetMapping(value = "/getAttachmentList")
     public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
@@ -262,7 +261,6 @@ public class AttachmentRestController {
      * @param attachmentType 附件类型
      * @return Y9Result<List<AttachmentConfModel>>
      */
-    @FlowableLog(operationName = "获取附件配置")
     @GetMapping(value = "/getAttachmentConfig")
     public Y9Result<List<AttachmentConfModel>> getAttachmentConfig(@RequestParam @NotBlank String attachmentType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -275,7 +273,7 @@ public class AttachmentRestController {
      * @param file 文件
      * @return Y9Result<String>
      */
-    @FlowableLog(operationName = "上传附件", operationType = FlowableOperationTypeEnum.UPLOAD)
+    @FlowableLog(operationName = "上传附件带表单信息", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/uploadForm")
     public Y9Result<Object> uploadForm(@RequestParam("file") MultipartFile file,
         @ModelAttribute AttachmentModel attachmentModel) {

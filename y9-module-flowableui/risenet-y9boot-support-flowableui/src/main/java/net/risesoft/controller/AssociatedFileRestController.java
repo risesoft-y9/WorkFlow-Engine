@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AssociatedFileApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -47,6 +49,7 @@ public class AssociatedFileRestController {
      * @param processInstanceIds 要删除的流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除关联流程", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delAssociatedFile")
     public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String processInstanceIds) {
@@ -99,6 +102,7 @@ public class AssociatedFileRestController {
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存关联的流程", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveAssociatedFile")
     public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String processInstanceIds) {

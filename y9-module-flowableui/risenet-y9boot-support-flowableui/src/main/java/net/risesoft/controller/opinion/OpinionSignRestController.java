@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.opinion.OpinionSignApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.OpinionSignListModel;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.user.UserInfo;
@@ -67,11 +69,12 @@ public class OpinionSignRestController {
     }
 
     /**
-     * 删除意见
+     * 删除会签意见
      *
      * @param id 意见id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除会签意见", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam @NotBlank String id) {
         try {
@@ -129,6 +132,7 @@ public class OpinionSignRestController {
      * @param jsonData 意见实体json
      * @return Y9Result<OpinionModel>
      */
+    @FlowableLog(operationName = "保存会签意见", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<OpinionSignModel> save(@RequestParam @NotBlank String jsonData) {
         try {

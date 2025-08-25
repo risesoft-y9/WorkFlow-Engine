@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.view.ItemViewConfApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -46,6 +48,7 @@ public class DraftRestController {
      * @param ids 草稿ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "彻底删除草稿", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteDraft")
     public Y9Result<Object> deleteDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -104,6 +107,7 @@ public class DraftRestController {
      * @param id 草稿id
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "还原草稿", operationType = FlowableOperationTypeEnum.RESUME)
     @PostMapping(value = "/reduction")
     public Y9Result<Object> reduction(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -116,6 +120,7 @@ public class DraftRestController {
      * @param ids 草稿ids，逗号隔开
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "批量删除草稿", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/removeDraft")
     public Y9Result<Object> removeDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -133,6 +138,7 @@ public class DraftRestController {
      * @param title 标题
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存草稿信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveDraft")
     public Y9Result<Object> saveDraft(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,

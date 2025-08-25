@@ -412,7 +412,6 @@ public class MainRestController {
      *
      * @return Y9Result<Map < String, Object>>
      */
-
     @GetMapping(value = "/getReadCount")
     public Y9Result<Map<String, Object>> getReadCount() {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();

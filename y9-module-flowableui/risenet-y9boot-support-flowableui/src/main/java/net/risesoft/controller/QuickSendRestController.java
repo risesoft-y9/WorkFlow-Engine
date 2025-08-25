@@ -22,6 +22,8 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.platform.org.CustomGroup;
 import net.risesoft.model.platform.org.Department;
 import net.risesoft.model.platform.org.OrgUnit;
@@ -102,6 +104,7 @@ public class QuickSendRestController {
      * @param assignee 发送人
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存快捷发送人信息", operationType = FlowableOperationTypeEnum.SAVE)
     @RequestMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey,
         @RequestParam(required = false) String assignee) {

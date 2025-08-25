@@ -24,6 +24,8 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
@@ -63,6 +65,7 @@ public class OfficeFollowRestController {
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "取消关注", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delOfficeFollow")
     public Y9Result<String> delOfficeFollow(@RequestParam String processInstanceIds) {
         try {
@@ -111,6 +114,7 @@ public class OfficeFollowRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存关注的办件信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOfficeFollow")
     public Y9Result<String> saveOfficeFollow(@RequestParam @NotBlank String processInstanceId) {
         try {

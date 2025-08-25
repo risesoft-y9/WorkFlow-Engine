@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.view.CustomViewApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomViewModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -39,6 +41,7 @@ public class CustomViewController {
      * @param viewType 视图类型
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "删除自定义视图", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delCustomView")
     public Y9Result<Object> delCustomView(@RequestParam String viewType) {
         return customViewApi.delCustomView(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), viewType);
@@ -61,6 +64,7 @@ public class CustomViewController {
      * @param jsonData 数据信息
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "保存视图信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveCustomView")
     public Y9Result<Object> saveCustomView(@RequestParam String jsonData) {
         return customViewApi.saveCustomView(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), jsonData);
